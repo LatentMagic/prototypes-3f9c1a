@@ -1,0 +1,49 @@
+/* Chain's now card on its library game page (app/gs-chain-now.jsx): Today's link, in the session page's tiles, joints and links
+   (gs-chain.css) and on Guess's tiles (gs-word.css: .wd-t, --wd-dash). */
+
+/* The card: the body takes the spare height above the pinned action row, and the picture centres in it, full width, in its own
+   band under the head; nothing stretches the card. */
+.cn { container: cn / inline-size; }
+.cn .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
+.cn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
+.cn-pic { align-self: center; justify-self: stretch; min-width: 0; }
+.cn-stack { display: grid; justify-items: center; gap: 16px; }
+
+/* Tiles: one size for the word (--t), letters at half, never under 13px. */
+.cn { --t: 48px; }
+.cn-word { display: inline-flex; gap: 4px; flex: none; }
+.cn-t { width: var(--t); height: var(--t); font-size: max(13px, calc(var(--t) * .5)); }
+.cn-t.is-end { background: var(--off-white); color: var(--page); }
+.cn-t.is-shown { background: #918B80; color: var(--page); }
+.cn-t.is-found { border: 2px solid var(--success); color: var(--text); }
+.cn-t.is-given { border: 2px solid #E5A63B; color: #E5A63B; }
+.cn-t.is-more { background: var(--wd-dash); }
+.cn-joint { display: grid; place-items: center; flex: none; width: 22px; height: 16px; }
+.cn-joint svg { display: block; }
+.cn-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
+
+/* The guesses' chain of links, numbered. */
+.cn-links { display: grid; justify-items: center; gap: 4px; max-width: 100%; }
+.cn-links svg { display: block; overflow: visible; }
+.cn-links text { font: 600 13px/1 var(--font-text); fill: var(--muted); }
+.cn-loop { fill: none; stroke-width: 3.5; }
+.cn-bar { stroke: #918B80; stroke-width: 2; }
+.cn-loop.is-right { stroke: var(--success); }
+.cn-loop.is-wrong { stroke: #918B80; }
+.cn-loop.is-given { stroke: #E5A63B; }
+
+/* The count of words found. */
+.cn-cap { font: 400 14px/1.3 var(--font-text); color: var(--muted); text-align: center; }
+.cn-cap b { font: 700 20px/1 var(--font-heading); color: var(--text); margin-right: 4px; }
+
+/* The word large, the guesses and the count in one row under it. */
+.cn-focus { display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; }
+.cn-joints { display: inline-flex; gap: 4px; }
+.cn-under { display: flex; align-items: center; justify-content: center; gap: 24px; max-width: 100%; }
+
+/* KEEP: on a phone (card under 640px) a solved chain's two ends stack with the joints between them, each tile 36px, and the count
+   sits 16px under the links instead of beside them. Tiles stay 48px: a container query cannot restyle its own container. */
+@container cn (max-width: 639.98px) {
+  .cn .is-ends { flex-direction: column; gap: 8px; --t: 36px; }
+  .cn-under { flex-direction: column; gap: 16px; }
+}

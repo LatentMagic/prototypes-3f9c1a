@@ -18,7 +18,8 @@
 // option is the default. Styles: app/playground.css.
 //
 // Every playground's bar has a Fit button (app/fit.jsx; also Config → Global → Fit): it shows the same page laid out 1280px
-// wide, scaled to the window, so a phone shows the desktop. The bar stays outside, at phone size, and drives the framed page. The keys `fit` and `pgframe` are reserved: a setting must never use them.
+// wide, scaled to the window, so a phone shows the desktop. The bar stays outside, at phone size, and drives the framed page.
+// A setting with `when: { key, value }` shows in the bar only while that other setting has that value. The keys `fit` and `pgframe` are reserved: a setting must never use them.
 // ============================================================================
 import React from 'react';
 import { gsUseMenuDismiss } from './gs-parts.jsx';
@@ -90,7 +91,7 @@ export const PgBar = () => {
     <header className="gs-top pg-top" aria-label={'Playground: ' + def.title} {...(framed ? { inert: '', 'aria-hidden': 'true' } : {})}>
       <div className="gs-wrap pg-top-in">
         <span className="pg-title">{def.title}</span>
-        {def.settings.map((s) => { const v = pgValue(s); return (
+        {def.settings.filter((s) => !s.when || pgValue(def.settings.find((x) => x.key === s.when.key)) === s.when.value).map((s) => { const v = pgValue(s); return (
           <div key={s.key} className="pg-set" role="group" aria-label={s.label}>
             <span className="pg-label">{s.label}</span>
             <PgPick s={s} v={v} />

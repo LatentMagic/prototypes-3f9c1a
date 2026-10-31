@@ -3476,6 +3476,103 @@
       ]
     };
   }
+  const cnRead = (P, live) => {
+    const end = P.w.length - 1;
+    const w = P.w.map((word, i) => ({ i, word, state: i === 0 || i === end ? "end" : "hidden", shown: i === 0 || i === end ? word.length : 1 }));
+    let last = null;
+    const g = P.p.map(([guess, k], j) => {
+      const x = w[k];
+      let res;
+      if (guess === x.word) {
+        res = "right";
+        x.state = "found";
+        last = k;
+      } else {
+        x.shown += 1;
+        res = x.shown >= x.word.length ? "given" : "wrong";
+        if (res === "given") {
+          x.state = "given";
+          x.shown = x.word.length;
+          last = k;
+        }
+      }
+      return { n: j + 1, res };
+    });
+    const mid = w.slice(1, end);
+    const r = live ? { kind: "live", label: "In progress" } : mid.some((x) => x.state === "given") ? { kind: "bad", label: "Failed" } : { kind: "ok", label: "Solved" };
+    return { w, g, r, last, mid, found: mid.filter((x) => x.state === "found").length };
+  };
+  const CnWord = ({ x, n }) => n ? /* @__PURE__ */ React$1.createElement("span", { className: "cn-word", "aria-hidden": "true" }, Array.from({ length: n }, (_, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t cn-t is-more" }))) : x.state === "hidden" ? /* @__PURE__ */ React$1.createElement("span", { className: "cn-word", role: "img", "aria-label": "Starts " + x.word.slice(0, x.shown) }, x.word.slice(0, x.shown).split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t cn-t is-shown", "aria-hidden": "true" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cn-t is-more", "aria-hidden": "true" })) : /* @__PURE__ */ React$1.createElement("span", { className: "cn-word", role: "img", "aria-label": x.word + (x.state === "given" ? ", given away" : "") }, x.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement(
+    "span",
+    {
+      key: j,
+      "aria-hidden": "true",
+      className: "wd-t cn-t is-" + (x.state === "end" ? "end" : x.state === "given" ? "given" : j < x.shown ? "shown" : "found")
+    },
+    ch
+  )));
+  const CnJoint = () => /* @__PURE__ */ React$1.createElement("span", { className: "cn-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "22", height: "16", viewBox: "0 0 22 16" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "12", height: "8", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "8.5", y: "6.5", width: "12", height: "8", rx: "4" })));
+  const CN_W = 16;
+  const CN_H = 30;
+  const CN_STEP = CN_H + 8;
+  const CN_GAP = { wrong: 14, given: 8 };
+  const cnLoop = (res, len, th) => {
+    const per = 2 * (len - th) + Math.PI * th;
+    const gap = CN_GAP[res];
+    return res === "right" ? {} : { strokeDasharray: (res === "given" ? per / 2 - gap : per - gap) + " " + gap, strokeDashoffset: per - gap / 2 - (len - th) / 2 };
+  };
+  const CN_SAY = { right: "right", wrong: "wrong", given: "given away" };
+  const CnLinkRow = ({ items }) => {
+    const len = 8 + (items.length - 1) * CN_STEP + CN_H;
+    return /* @__PURE__ */ React$1.createElement("svg", { width: len, height: "48", viewBox: "0 0 " + len + " 48", "aria-hidden": "true" }, items.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "cn-bar", x1: 4 + i * CN_STEP + CN_H, y1: 4 + CN_W / 2, x2: 4 + (i + 1) * CN_STEP, y2: 4 + CN_W / 2 })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("rect", { key: i, x: 4 + i * CN_STEP, y: 4, width: CN_H, height: CN_W, rx: CN_W / 2, className: "cn-loop is-" + t.res, ...cnLoop(t.res, CN_H, CN_W) })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CN_STEP + CN_H / 2, y: "44", textAnchor: "middle" }, t.n)));
+  };
+  const cnFold = (g, per) => {
+    const rows = Math.ceil(g.length / per);
+    const size = Math.ceil(g.length / rows);
+    const out = [];
+    for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
+    return out;
+  };
+  const CnLinks = ({ g }) => {
+    const ref = React$1.useRef(null);
+    const [per, setPer] = React$1.useState(8);
+    React$1.useLayoutEffect(() => {
+      const me = ref.current;
+      const pic = me.closest(".cn-pic");
+      if (!pic) return void 0;
+      const fit = () => {
+        let room = pic.clientWidth;
+        const par = me.parentElement;
+        if (getComputedStyle(par).flexDirection === "row") room -= [...par.children].filter((c) => c !== me).reduce((n, c) => n + c.offsetWidth + 24, 0);
+        setPer(Math.max(1, Math.floor((room - 8 - CN_H) / CN_STEP) + 1));
+      };
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(pic);
+      return () => ro.disconnect();
+    }, []);
+    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cn-links", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CN_SAY[t.res]).join(", ") }, cnFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnLinkRow, { key: r, items: row })));
+  };
+  const CnCount = ({ p }) => /* @__PURE__ */ React$1.createElement("span", { className: "cn-cap", role: "img", "aria-label": p.found + " of " + p.mid.length + " words" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
+  const CnPic = ({ p }) => {
+    const solved = p.r.kind === "ok";
+    const k = p.last == null ? 1 : p.last;
+    const x = p.w[k];
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus is-ends" }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus" }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
+  };
+  const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
+  const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus" }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, /* @__PURE__ */ React$1.createElement(CnCount, { p: CN_FRESH })));
+  const cnStaged = (k) => ({ failed: CH_FAIL, hard: CH_HARD })[k];
+  const ChNow = ({ c, done, none }) => {
+    const gs = useGs();
+    const staged = cnStaged(gs.review.chain);
+    const title = "#" + GS_SESSIONS[c.today].number;
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cn" }, /* @__PURE__ */ React$1.createElement(CnFresh, null));
+    const sid = staged ? Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === "chain" && / found/.test(GS_SESSIONS[k].result || "")) || c.today : done ? c.today : c.liveSid;
+    const s = GS_SESSIONS[sid];
+    const p = cnRead(staged || s.play, !staged && !done);
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cn" }, /* @__PURE__ */ React$1.createElement(CnPic, { p }));
+  };
   const CPR_SHIP_LIB = {};
   const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
   let CPR_FIRST;
@@ -3675,7 +3772,7 @@
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "casebook", title: c.title, result: !c.live && cbStatus(c), tag: true, open: () => cbGo(gs, c.id), span: true }, /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }));
   };
   const PzNow = (props) => {
-    const own = props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
+    const own = props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : props.id === "chain" ? /* @__PURE__ */ React$1.createElement(ChNow, { c: props.c, done: props.done, none: props.none }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
     const Pg = GS_NOW[props.id];
     return Pg ? /* @__PURE__ */ React$1.createElement(Pg, { ...props }, own) : own;
   };
@@ -4069,6 +4166,7 @@
   let CH_TODAY;
   let CH_OK;
   let CH_FAIL;
+  let CH_HARD;
   let SV_COLS;
   const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
   const svAt = (ships) => {
@@ -4225,8 +4323,9 @@
       return { ...base, number: n, hints: r.hints, figures: [r.guesses + " of 6 guesses", r.hints ? "1 hint" : "No hints"], listTitle: "Every guess", share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
     }
     if (id === "chain") {
-      const r = dpChain(x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL);
-      return { ...base, number: n, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: "Every guess", share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+      const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL;
+      const r = dpChain(play);
+      return { ...base, number: n, play, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: "Every guess", share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
     }
     const d = dpSvDay(i, x.ok);
     return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], listTitle: "Every dive", share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -4236,6 +4335,7 @@
   let dpSeeResult;
   const dpMono = (text) => ({ type: "mono", text });
   const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + " …"), t.w[t.w.length - 1]].join("\n");
+  const dpSessAt = (k) => k === "chain" ? ["Screens", "7. Session page: "] : ["Daily puzzles 1213", "Session page: "];
   const dpEarlier = (k, ok) => () => {
     const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok);
     return x.sid;
@@ -4322,6 +4422,29 @@
       { w: ["KEY", "BOARD", "WALK", "WAY", "SIDE", "CAR"], p: [["BOARD", 1], ["SIDE", 4], ["WAY", 3], ["WAR", 2], ["WALK", 2]] },
       { w: ["HAND", "BAG", "PIPE", "LINE", "DANCE"], p: [["BALL", 1], ["BAG", 1], ["LINE", 3], ["PIPE", 2]] }
     ];
+    CH_HARD = { w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "TRAIN", "WAGON"], p: [
+      ["BELL", 1],
+      ["BULL", 1],
+      ["BAIL", 1],
+      ["BALL", 1],
+      ["ROAM", 2],
+      ["ROOF", 2],
+      ["ROBE", 2],
+      ["SERVER", 3],
+      ["SURVEY", 3],
+      ["SURFACE", 3],
+      ["SERVING", 3],
+      ["SERVANT", 3],
+      ["SEVERE", 3],
+      ["STATE", 4],
+      ["STAGE", 4],
+      ["STATUS", 4],
+      ["STATIC", 4],
+      ["STATION", 4],
+      ["TRAM", 5],
+      ["TRAIL", 5],
+      ["TRAIN", 5]
+    ] };
     CH_FAIL = { w: ["GOLD", "FISH", "BONE", "DRY", "CLEAN"], p: [["FINCH", 1], ["FISH", 1], ["DUST", 3], ["DRY", 3], ["BALL", 2], ["BOWL", 2], ["BOAT", 2]] };
     SV_COLS = "ABCDEFGH";
     SV_TODAY = [[[1, 1], [2, 1], [3, 1], [4, 1]], [[6, 0], [6, 1], [6, 2]], [[0, 4], [0, 5], [0, 6]], [[3, 4], [4, 4]], [[6, 6], [7, 6]]];
@@ -4381,6 +4504,7 @@
         game: GS_NAME.chain,
         art: "chain",
         number: DP_NO,
+        play: CH_TODAY,
         result: dpChResult(dpChT),
         date: GS.today,
         figures: [dpChT.words + " words", dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())],
@@ -4395,6 +4519,7 @@
         game: GS_NAME.chain,
         art: "chain",
         number: DP_NO,
+        play: { ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) },
         live: true,
         result: "In progress",
         date: GS.today,
@@ -4617,7 +4742,7 @@
     });
     DP_SESSION_STATES = ["where", "chain"].flatMap((k) => {
       const n = GS_NAME[k];
-      const g = "Daily puzzles 1213";
+      const [g, sp] = dpSessAt(k);
       const open = (id, extra) => (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -4625,9 +4750,9 @@
         c.go("session", { id: typeof id === "function" ? id() : id });
       };
       return [
-        { group: g, id: "session-" + k + "-in-progress", label: "Session page: " + n + " in progress", stage: open(k + "-live", { week: "live" }) },
-        { group: g, id: "session-" + k + "-failed", label: "Session page: " + n + ", an earlier play that failed", stage: open(dpEarlier(k, false)) },
-        { group: g, id: "session-" + k + "-earlier", label: "Session page: " + n + ", an earlier play (played once)", stage: open(dpEarlier(k, true)) }
+        { group: g, id: "session-" + k + "-in-progress", label: sp + n + " in progress", stage: open(k + "-live", { week: "live" }) },
+        { group: g, id: "session-" + k + "-failed", label: sp + n + ", an earlier play that failed", stage: open(dpEarlier(k, false)) },
+        { group: g, id: "session-" + k + "-earlier", label: sp + n + ", an earlier play (played once)", stage: open(dpEarlier(k, true)) }
       ];
     });
     DP_PZ_STATES = DP_IDS.flatMap((k) => {
@@ -4666,7 +4791,27 @@
           c.setConnected(true);
           c.go(k, { page: "record", list: true });
         } },
-        { group: g, id: "session-" + k, label: "Session page: " + n + " today, with Share", stage: (c) => {
+        ...k === "chain" ? [
+          { group: g, id: "library-chain-never-played", label: "Chain in your library, with the Pass, not yet played", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ never: "chain" });
+            c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-chain-failed", label: "Chain in your library, today failed (a word given away)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ chain: "failed" });
+            c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-chain-hard", label: "Chain in your library, a hard day (21 guesses)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ chain: "hard" });
+            c.go(k, { page: "record" });
+          } }
+        ] : [],
+        { group: dpSessAt(k)[0], id: "session-" + k, label: k === "chain" ? dpSessAt(k)[1] + n : "Session page: " + n + " today, with Share", stage: (c) => {
           c.setView("pass");
           c.setConnected(true);
           c.go("session", { id: k + "-today" });
@@ -9293,7 +9438,7 @@
     }, []);
     const framed = isFramed();
     const fitted = useFit();
-    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.map((s) => {
+    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.filter((s) => !s.when || pgValue(def.settings.find((x) => x.key === s.when.key)) === s.when.value).map((s) => {
       const v = pgValue(s);
       return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }));
     }), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit")));
@@ -9485,6 +9630,79 @@
       { key: "ans", label: "On a loss", options: [{ value: "last", label: "Last guess" }, { value: "word", label: "The word" }] }
     ] });
     GS_NOW.word = PgnCard;
+  };
+  const chnRead = (s) => {
+    const P = s.play;
+    const last = P.w.length - 1;
+    const w = P.w.map((word, i) => {
+      const end = i === 0 || i === last;
+      return { i, word, state: end ? "end" : "hidden", shown: end ? word.length : 1 };
+    });
+    const g = P.p.map(([guess, k, near], j) => {
+      const x = w[k];
+      let res;
+      if (guess === x.word) {
+        res = "right";
+        x.state = "found";
+      } else {
+        x.shown += 1;
+        res = x.shown >= x.word.length ? "given" : near ? "near" : "wrong";
+        if (res === "given") {
+          x.state = "given";
+          x.shown = x.word.length;
+        }
+      }
+      return { n: j + 1, res };
+    });
+    const r = s.live ? { tone: "live", word: "In progress" } : w.some((x) => x.state === "given") ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
+    return { w, g, r, long: Math.max(...w.map((x) => x.state === "hidden" ? x.shown + 1 : x.word.length)) };
+  };
+  const ChnTiles = ({ x }) => x.state === "hidden" ? /* @__PURE__ */ React$1.createElement("div", { className: "chn-row", role: "img", "aria-label": "Starts " + x.word.slice(0, x.shown) }, x.word.slice(0, x.shown).split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t chn-t is-shown", "aria-hidden": "true" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t chn-t is-more", "aria-hidden": "true" })) : /* @__PURE__ */ React$1.createElement("div", { className: "chn-row", role: "img", "aria-label": x.word + (x.state === "given" ? ", given away" : "") }, x.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement(
+    "span",
+    {
+      key: j,
+      "aria-hidden": "true",
+      className: "wd-t chn-t is-" + (x.state === "end" ? "end" : x.state === "given" ? "given" : j < x.shown ? "shown" : "found")
+    },
+    ch
+  )));
+  const ChnJoint = () => /* @__PURE__ */ React$1.createElement("div", { className: "chn-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "16", height: "22", viewBox: "0 0 16 22" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "8", height: "12", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "6.5", y: "8.5", width: "8", height: "12", rx: "4" })));
+  const CHN_W = 16;
+  const CHN_H = 30;
+  const CHN_STEP = CHN_H + 8;
+  const CHN_P = 2 * (CHN_H - CHN_W) + Math.PI * CHN_W;
+  const CHN_GAP = { wrong: 14, near: 6, given: 8 };
+  const chnDash = (res) => res === "right" ? void 0 : res === "given" ? CHN_P / 2 - CHN_GAP.given + " " + CHN_GAP.given : CHN_P - CHN_GAP[res] + " " + CHN_GAP[res];
+  const chnOffset = (res, across) => res === "right" ? void 0 : CHN_P - CHN_GAP[res] / 2 - (across ? (CHN_H - CHN_W) / 2 : Math.PI * CHN_W / 4 + (CHN_H - CHN_W) / 2);
+  const ChnLoop = ({ res, x, y, across }) => /* @__PURE__ */ React$1.createElement(
+    "rect",
+    {
+      x,
+      y,
+      width: across ? CHN_H : CHN_W,
+      height: across ? CHN_W : CHN_H,
+      rx: CHN_W / 2,
+      className: "chn-loop is-" + res,
+      strokeDasharray: chnDash(res),
+      strokeDashoffset: chnOffset(res, across)
+    }
+  );
+  const ChnChain = ({ g, across }) => {
+    const len = 8 + (g.length - 1) * CHN_STEP + CHN_H;
+    return across ? /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-across", width: len, height: "46", viewBox: "0 0 " + len + " 46", style: { "--cw": len, "--ch": 46 }, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 4 + i * CHN_STEP + CHN_H, y1: 4 + CHN_W / 2, x2: 4 + (i + 1) * CHN_STEP, y2: 4 + CHN_W / 2 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, across: true, x: 4 + i * CHN_STEP, y: 4 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CHN_STEP + CHN_H / 2, y: "42", textAnchor: "middle" }, t.n))) : /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-down", width: "56", height: len, viewBox: "0 0 56 " + len, style: { "--cw": 56, "--ch": len }, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 32 + CHN_W / 2, y1: 4 + i * CHN_STEP + CHN_H, x2: 32 + CHN_W / 2, y2: 4 + (i + 1) * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, x: 32, y: 4 + i * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: "20", y: 4 + i * CHN_STEP + CHN_H / 2 + 4, textAnchor: "end" }, t.n)));
+  };
+  const CHN_KINDS = [["right", "Right"], ["wrong", "Wrong"], ["near", "Near miss"], ["given", "Given away"]];
+  const ChnGuesses = ({ g }) => {
+    const kinds = CHN_KINDS.map(([k, label]) => [k, label, g.filter((t) => t.res === k).length]).filter((x) => x[2] > 0);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "chn-guesses", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + kinds.map((x) => x[2] + " " + x[1].toLowerCase()).join(", ") }, /* @__PURE__ */ React$1.createElement(ChnChain, { g, across: true }), /* @__PURE__ */ React$1.createElement(ChnChain, { g }), /* @__PURE__ */ React$1.createElement("ul", { className: "chn-key", "aria-hidden": "true" }, kinds.map(([k, label, n]) => /* @__PURE__ */ React$1.createElement("li", { key: k }, /* @__PURE__ */ React$1.createElement("svg", { width: "12", height: "20", viewBox: "0 0 20 34" }, /* @__PURE__ */ React$1.createElement(ChnLoop, { res: k, x: 2, y: 2 })), label, " ", /* @__PURE__ */ React$1.createElement("b", null, n)))));
+  };
+  const ChnSessBody = ({ s }) => {
+    if (!s.play) return s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
+    const p = chnRead(s);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card pgr-6a pgr-lift chn-card", style: { "--chn-n": p.long, "--chn-rows": p.w.length }, "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement(PgrTop, { p }), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement("div", { className: "chn-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(ChnTiles, { x }), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChnJoint, null))))), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-panel chn-panel" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(ChnGuesses, { g: p.g }))))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const initGsChain = () => {
+    GS_SESSION_BODY.chain = ChnSessBody;
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
@@ -9895,6 +10113,7 @@
   initGsChats();
   initGsGame();
   initGsWhereChainSalvage();
+  initGsChain();
   initGsCasebookData();
   initGsCasebook();
   initGsDelveLibrary();

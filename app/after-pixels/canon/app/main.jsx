@@ -92,6 +92,7 @@ import { PgBar, pgActive } from './playground.jsx';
 import { FitView, isFramed, useFit } from './fit.jsx';
 import { initPlaygroundGuessResult } from './playground-guess-result.jsx';
 import { initPlaygroundGuessNow } from './playground-guess-now.jsx';
+import { initGsChain } from './gs-chain.jsx';
 
 const { useState, useEffect, useRef } = React;
 
@@ -459,6 +460,7 @@ createRoot(document.getElementById('root')).render(<KitApp />);
 initGsChats();
 initGsGame();
 initGsWhereChainSalvage();
+initGsChain();
 initGsCasebookData();
 initGsCasebook();
 initGsDelveLibrary();

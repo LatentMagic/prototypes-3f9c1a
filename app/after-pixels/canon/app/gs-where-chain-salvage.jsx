@@ -65,9 +65,12 @@ const dpChain = (t) => {
 };
 const dpChResult = (r) => GS_RESULT.chain(r.given ? { given: true, found: r.found, of: r.hidden } : { wrong: r.wrong });
 const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' + r.hidden + ' words found' : 'solved · ' + dpWrong(r.wrong));
-let CH_TODAY;
-let CH_OK;
-let CH_FAIL;
+// Chain's sample plays, read by its session body (gs-chain.jsx) too.
+export let CH_TODAY;
+export let CH_OK;
+export let CH_FAIL;
+// A hard day for the library card's states: seven words (five hidden), no guess limit, 21 guesses: three words found, two given away.
+export let CH_HARD;
 
 let SV_COLS;
 const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
@@ -161,8 +164,8 @@ export const dpSession = (id, c, x, base) => {
     return { ...base, number: n, hints: r.hints, figures: [r.guesses + ' of 6 guesses', r.hints ? '1 hint' : 'No hints'], listTitle: 'Every guess', share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
   }
   if (id === 'chain') {
-    const r = dpChain(x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL);
-    return { ...base, number: n, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: 'Every guess', share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+    const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL; const r = dpChain(play);
+    return { ...base, number: n, play, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: 'Every guess', share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
   }
   const d = dpSvDay(i, x.ok);
   return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of 30 dives'], listTitle: 'Every dive', share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -182,6 +185,9 @@ const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + ' …'), 
 
 // ---- Staged states (app/states.jsx spreads them into its register). ----
 // Where and Chain's session pages: today's play, in progress, failed, and an earlier play (the same four states as Daily Mystery).
+// Chain's session states sit with every other game's session page (Screens, "7. Session page: …"), so the States half of the
+// Config pill lists its four together, beside the rest.
+const dpSessAt = (k) => (k === 'chain' ? ['Screens', '7. Session page: '] : ['Daily puzzles 1213', 'Session page: ']);
 const dpEarlier = (k, ok) => () => { const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok); return x.sid; };
 let DP_SESSION_STATES;
 let DP_PZ_STATES;
@@ -241,6 +247,9 @@ CH_OK = [
   { w: ['KEY', 'BOARD', 'WALK', 'WAY', 'SIDE', 'CAR'], p: [['BOARD', 1], ['SIDE', 4], ['WAY', 3], ['WAR', 2], ['WALK', 2]] },
   { w: ['HAND', 'BAG', 'PIPE', 'LINE', 'DANCE'], p: [['BALL', 1], ['BAG', 1], ['LINE', 3], ['PIPE', 2]] },
 ];
+CH_HARD = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'TRAIN', 'WAGON'], p: [['BELL', 1], ['BULL', 1], ['BAIL', 1], ['BALL', 1], ['ROAM', 2], ['ROOF', 2], ['ROBE', 2],
+  ['SERVER', 3], ['SURVEY', 3], ['SURFACE', 3], ['SERVING', 3], ['SERVANT', 3], ['SEVERE', 3], ['STATE', 4], ['STAGE', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4],
+  ['TRAM', 5], ['TRAIL', 5], ['TRAIN', 5]] };
 CH_FAIL = { w: ['GOLD', 'FISH', 'BONE', 'DRY', 'CLEAN'], p: [['FINCH', 1], ['FISH', 1], ['DUST', 3], ['DRY', 3], ['BALL', 2], ['BOWL', 2], ['BOAT', 2]] };
 // ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
 // never touching, not even at a corner. 30 dives, each a hit, a miss or sunk ("Sunk: the wreck of 3" names its length). One hint, which
@@ -267,9 +276,9 @@ Object.assign(GS_SESSIONS, {
     figures: [dpWhT.guesses + ' of 6 guesses', '1 hint'], listTitle: 'Every guess', share: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), shareLines: [dpWhHead(DP_NO, dpWhT, true), dpWhT.marks], lines: dpWhT.lines },
   'where-live': { kind: 'puzzle', gid: 'where', game: GS_NAME.where, art: 'where', number: DP_NO, hints: 0, live: true, result: 'In progress', date: GS.today,
     figures: ['2 of 6 guesses', 'No hints'], listTitle: 'Every guess', share: null, lines: dpWhT.lines.slice(0, 2) },
-  'chain-today': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, result: dpChResult(dpChT), date: GS.today,
+  'chain-today': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: CH_TODAY, result: dpChResult(dpChT), date: GS.today,
     figures: [dpChT.words + ' words', dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())], listTitle: 'Every guess', share: dpChResult(dpChT), shareLines: [dpChHead(DP_NO, dpChT), dpChT.marks], lines: dpChT.lines },
-  'chain-live': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, live: true, result: 'In progress', date: GS.today,
+  'chain-live': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: { ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) }, live: true, result: 'In progress', date: GS.today,
     figures: [dpChL.found + ' of ' + dpChL.hidden + ' words', dpWrong(dpChL.wrong).replace(/^./, (c) => c.toUpperCase())], listTitle: 'Every guess', share: null, lines: dpChL.lines },
   'salvage-today': { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, hints: 1, result: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }), date: GS.today,
     figures: ['5 of 5 wrecks', SV_TODAY_DIVES.length + ' of 30 dives', '1 hint'], listTitle: 'Every dive', share: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }), shareLines: [dpSvHead(DP_NO, SV_TODAY_DIVES, true), ...svMarks(SV_TODAY_DIVES)],
@@ -377,12 +386,12 @@ Object.assign(GS_CHATS, {
       gscAi('salvage', 'Sunk: the wreck of 4. ' + (30 - 8) + ' dives left.', null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])] },
   ],
 });
-DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213';
+DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const [g, sp] = dpSessAt(k);
   const open = (id, extra) => (c) => { c.setView('pass'); c.setConnected(true); if (extra) c.setReview(extra); c.go('session', { id: typeof id === 'function' ? id() : id }); };
   return [
-    { group: g, id: 'session-' + k + '-in-progress', label: 'Session page: ' + n + ' in progress', stage: open(k + '-live', { week: 'live' }) },
-    { group: g, id: 'session-' + k + '-failed', label: 'Session page: ' + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
-    { group: g, id: 'session-' + k + '-earlier', label: 'Session page: ' + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) },
+    { group: g, id: 'session-' + k + '-in-progress', label: sp + n + ' in progress', stage: open(k + '-live', { week: 'live' }) },
+    { group: g, id: 'session-' + k + '-failed', label: sp + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
+    { group: g, id: 'session-' + k + '-earlier', label: sp + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) },
   ]; });
 DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213'; return [
   { group: g, id: k + '-signed-out', label: n + ', signed out', stage: (c) => c.go(k) },
@@ -392,7 +401,12 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
   { group: g, id: 'library-' + k + '-in-progress', label: n + ' in your library, today in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go(k, { page: 'record' }); } },
   { group: g, id: 'library-' + k + '-free', label: n + ' in your library, free account (Needs the Pass)', stage: (c) => { c.setView('free'); c.setConnected(true); c.go(k, { page: 'record' }); } },
   { group: g, id: 'library-' + k + '-editions', label: n + ': every ' + GS_GAMES[k].ed[0] + ' (the editions list)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go(k, { page: 'record', list: true }); } },
-  { group: g, id: 'session-' + k, label: 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
+  ...(k === 'chain' ? [
+    { group: g, id: 'library-chain-never-played', label: 'Chain in your library, with the Pass, not yet played', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ never: 'chain' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-chain-failed', label: 'Chain in your library, today failed (a word given away)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ chain: 'failed' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (21 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ chain: 'hard' }); c.go(k, { page: 'record' }); } },
+  ] : []),
+  { group: dpSessAt(k)[0], id: 'session-' + k, label: k === 'chain' ? dpSessAt(k)[1] + n : 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
 ]; });
 DP_STATES = [...DP_PZ_STATES, ...DP_SESSION_STATES];
 }
