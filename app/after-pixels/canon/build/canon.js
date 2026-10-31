@@ -9486,6 +9486,65 @@
     ] });
     GS_NOW.word = PgnCard;
   };
+  const whKm = (km) => km.toLocaleString("en-GB") + " km";
+  const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
+  const whBand = (km) => km === null ? "found" : km >= 1e3 ? "far" : km >= 100 ? "mid" : "near";
+  const WH_POINTS = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"];
+  const whRead = (s) => {
+    const g = [];
+    let hint = null;
+    let answer = null;
+    (s.lines || []).forEach((l) => {
+      if (/^Guess/.test(l[0])) {
+        const km = /^Found/.test(l[2]) ? null : /^Shares/.test(l[2]) ? 0 : Number(l[2].split(" ")[0].replace(/,/g, ""));
+        g.push({ n: g.length + 1, c: l[1], km, band: whBand(km) });
+      } else if (l[0] === "Hint") {
+        const m = /lies (\S+) of (.+)$/.exec(l[1]);
+        if (m) hint = { dir: m[1], from: m[2], after: g.length };
+      } else if (l[0] === "Answer") answer = l[1];
+    });
+    const live = !!s.live;
+    const lost = !live && answer !== null;
+    const r = live ? { tone: "live", word: "In progress" } : lost ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
+    return { g, hint, answer: lost ? answer : g.length ? g[g.length - 1].c : null, live, lost, r };
+  };
+  const whSay = (p) => p.hint ? p.hint.dir[0].toUpperCase() + p.hint.dir.slice(1) + " of " + p.hint.from : p.live ? "Not used yet" : "No hint";
+  const WhLog = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "wh-log" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-line is-head" }, /* @__PURE__ */ React$1.createElement("span", null, "Guess"), /* @__PURE__ */ React$1.createElement("span", null, "Country"), /* @__PURE__ */ React$1.createElement("span", null, "Distance")), p.g.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.n, className: "wh-line is-" + g.band }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-n" }, g.n), /* @__PURE__ */ React$1.createElement("b", null, g.c), /* @__PURE__ */ React$1.createElement("span", { className: "wh-km" }, whDist(g.km)))));
+  const WhGlobe = ({ p }) => {
+    const c = 60;
+    const R = 52;
+    const lon = [-90, -60, -30, 0, 30, 60, 90].map((d) => d * Math.PI / 180);
+    const down = (l) => "A " + Math.abs(R * Math.sin(l)) + " " + R + " 0 0 " + (l < 0 ? 0 : 1) + " " + c + " " + (c + R);
+    const up = (l) => "A " + Math.abs(R * Math.sin(l)) + " " + R + " 0 0 " + (l > 0 ? 0 : 1) + " " + c + " " + (c - R);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-globe", role: "img", "aria-label": p.g.length + " of six guesses" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, [0, 1, 2, 3, 4, 5].map((i) => /* @__PURE__ */ React$1.createElement("path", { key: i, className: i < p.g.length ? "is-" + p.g[i].band : "is-spare", d: "M " + c + " " + (c - R) + " " + down(lon[i]) + " " + up(lon[i + 1]) + " Z" })), /* @__PURE__ */ React$1.createElement("line", { x1: c - R, y1: c, x2: c + R, y2: c, className: "wh-g-eq" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: R, className: "wh-g-rim" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, p.g.length, " of 6"));
+  };
+  const WhChart = ({ p }) => {
+    const h = p.hint;
+    const a = h ? (WH_POINTS.indexOf(h.dir) * 45 - 90) * Math.PI / 180 : 0;
+    const c = 60;
+    const L = 44;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-chart" + (h ? "" : " is-none"), role: "img", "aria-label": h ? "Hint: the country lies " + h.dir + " of " + h.from : whSay(p) }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: "8", y: "8", width: "104", height: "104", className: "wh-ch-box" }), [34, 60, 86].map((v) => /* @__PURE__ */ React$1.createElement("g", { key: v }, /* @__PURE__ */ React$1.createElement("line", { x1: v, y1: "8", x2: v, y2: "112", className: "wh-ch-grid" }), /* @__PURE__ */ React$1.createElement("line", { x1: "8", y1: v, x2: "112", y2: v, className: "wh-ch-grid" }))), /* @__PURE__ */ React$1.createElement("text", { x: "60", y: "22", className: "wh-ch-n" }, "N"), h && /* @__PURE__ */ React$1.createElement("line", { x1: c, y1: c, x2: c + Math.cos(a) * L, y2: c + Math.sin(a) * L, className: "wh-ch-bear" }), h && /* @__PURE__ */ React$1.createElement("circle", { cx: c + Math.cos(a) * L, cy: c + Math.sin(a) * L, r: "4", className: "wh-ch-end" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: "5", className: "wh-ch-from" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, whSay(p)));
+  };
+  const WhSessBody = ({ s }) => {
+    const p = whRead(s);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "dv2 pgr-card pgr-6a pgr-lift wh-card", "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + p.r.tone }, p.r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-boardcol" }, /* @__PURE__ */ React$1.createElement(WhLog, { p })), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-panel" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Guesses"), /* @__PURE__ */ React$1.createElement(WhGlobe, { p })), /* @__PURE__ */ React$1.createElement("div", { className: "pgr-prow" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "Hint"), /* @__PURE__ */ React$1.createElement(WhChart, { p })), p.lost && /* @__PURE__ */ React$1.createElement("div", { className: "wh-a" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgr-cap" }, "The country"), /* @__PURE__ */ React$1.createElement("b", null, p.answer))))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const WH_NOW_RESULT = { ok: { kind: "ok", label: "Solved" }, bad: { kind: "bad", label: "Failed" }, live: { kind: "live", label: "In progress" } };
+  const WhNow = ({ c, done, none, children }) => {
+    const gs = useGs();
+    if (none) return children;
+    const sid = done ? c.today : c.liveSid;
+    const s = GS_SESSIONS[sid];
+    if (!s) return children;
+    const p = whRead(s);
+    const g = p.g[p.g.length - 1];
+    if (!g) return children;
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#" + s.number, result: WH_NOW_RESULT[p.r.tone], open: () => gs.go("session", { id: sid }), next: c.next, className: "wh-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-" + (p.lost ? "lost" : g.band) }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, p.lost ? "The country" : "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, p.lost ? p.answer : g.c), /* @__PURE__ */ React$1.createElement("span", { className: "wh-km" }, p.lost ? "Not found" : whDist(g.km))), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p }), /* @__PURE__ */ React$1.createElement(WhChart, { p }))));
+  };
+  const initGsWhere = () => {
+    GS_SESSION_BODY.where = WhSessBody;
+    GS_NOW.where = WhNow;
+  };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
   let GS_USER_DEFAULT;
@@ -9914,4 +9973,5 @@
   initMain();
   initPlaygroundGuessResult();
   initPlaygroundGuessNow();
+  initGsWhere();
 })(React, ReactDOM);

@@ -1,0 +1,85 @@
+/* Where's session card and library now card (app/gs-where.jsx). The session card builds on Guess's card (.pgr-card, .pgr-duo,
+   .pgr-panel in playground-guess-result.css) and Delve's result band (.dv7r-band, gs-delve.css); it is imported after them. */
+
+/* ---- Parts ---- */
+.wh-cap { font: 600 12px/1.2 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.wh-say { font: 600 13px/1.2 var(--font-text); color: var(--text); text-align: center; }
+.is-none > .wh-say { color: var(--muted); }
+.wh-n, .wh-km { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* The board. The last line has no rule of its own: the card's edge or the next part closes it, so a phone never shows two rules
+   stacked under the board (Joe, 2026-10-30). */
+.wh-log { display: grid; width: 100%; }
+.wh-line { display: grid; grid-template-columns: 56px 1fr auto; align-items: end; gap: 16px; height: 44px; padding: 0 4px 8px 0; box-sizing: border-box;
+  border-bottom: 1px solid var(--line); font: 600 14px/1 var(--font-text); }
+.wh-line:last-child { border-bottom: 0; }
+/* KEEP: the margin rule is inset 8px from each line's top, so it never touches the rule above (Joe, 2026-10-31). */
+.wh-line > .wh-n, .wh-line.is-head > span:first-child { align-self: stretch; display: grid; place-items: end center; margin-top: 8px; border-right: 1px solid var(--control-edge); }
+.wh-line b { font: 700 18px/1 var(--font-heading); color: var(--text); }
+.wh-line.is-found b, .wh-line.is-found .wh-km { color: var(--success); }
+.wh-line.is-head { height: 32px; font: 600 11px/1 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.wh-line.is-head > span:last-child { text-align: right; }
+
+/* ---- The figures. On the session card at Guess's ring size: 104px, 128px from a 672px card. ---- */
+.wh-card { --fig: 104px; }
+@container dv2 (min-width: 672px) { .wh-card { --fig: 128px; } }
+.wh-globe, .wh-chart { display: grid; justify-items: center; gap: 8px; }
+.wh-globe svg, .wh-chart svg { display: block; width: var(--fig); height: var(--fig); }
+.wh-globe path { fill: transparent; stroke: var(--line); stroke-width: 1.5; }
+.wh-globe path.is-far { fill: color-mix(in srgb, var(--text) 22%, var(--card)); }
+.wh-globe path.is-mid { fill: color-mix(in srgb, var(--text) 45%, var(--card)); }
+.wh-globe path.is-near { fill: color-mix(in srgb, var(--text) 75%, var(--card)); }
+.wh-globe path.is-found { fill: var(--success); }
+.wh-g-eq { stroke: var(--line); stroke-width: 1.5; }
+.wh-g-rim { fill: none; stroke: var(--control-edge); stroke-width: 2; }
+.wh-ch-box { fill: none; stroke: var(--control-edge); stroke-width: 2; }
+.wh-ch-grid { stroke: var(--line); stroke-width: 1; }
+.wh-ch-n { fill: var(--muted); font: 700 11px/1 var(--font-heading); text-anchor: middle; }
+.wh-ch-bear { stroke: var(--text); stroke-width: 2; stroke-dasharray: 5 3; }
+.wh-ch-end { fill: none; stroke: var(--text); stroke-width: 2; }
+.wh-ch-from { fill: var(--text); }
+.wh-chart.is-none svg { opacity: .5; }
+
+/* ---- The session card ---- */
+/* The country on a loss: the panel's last row, full width on a phone (as Guess's word). */
+.pgr-panel > .wh-a { grid-column: 1 / -1; display: grid; justify-items: center; gap: 8px; }
+.wh-a b { font: 700 20px/1.1 var(--font-heading); color: var(--muted); }
+.wh-card .pgr-boardcol { width: 100%; justify-items: stretch; }
+/* Desktop: the board at its own width (400px at most) centred left of the rule; Guesses and Hint side by side, the country under
+   both. The panel has equal space either side, so it centres between the rule and the card's edge. */
+@container dv2 (min-width: 672px) {
+  .wh-card .pgr-duo { grid-template-columns: minmax(0, 1fr) auto; justify-content: stretch; column-gap: 0; }
+  .wh-card .pgr-boardcol { width: auto; justify-self: stretch; justify-items: center; padding-right: clamp(24px, 6cqi, 64px); }
+  .wh-card .wh-log { width: min(400px, 100%); }
+  .wh-card .pgr-panel { grid-template-columns: auto auto; column-gap: 40px; row-gap: 24px; padding: 0 clamp(24px, 6cqi, 64px); }
+}
+
+/* ---- The now card: the last guess, then the globe and the chart as one group that never splits (Joe, 2026-10-31). ---- */
+.wh-now { container: whnow / inline-size; position: relative; }
+.wh-now > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
+.wh-now > .lb-foot { margin-top: 8px; }
+.wh-now .wh-globe svg, .wh-now .wh-chart svg { width: var(--fig); height: var(--fig); }
+.wh-row { --fig: 64px; display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 12px; min-width: 0; align-self: center; }
+.wh-figs { display: flex; align-items: flex-start; justify-content: center; gap: 8px; }
+.wh-last { display: grid; justify-items: center; gap: 4px; text-align: center; }
+.wh-last b { font: 700 28px/1.1 var(--font-heading); color: var(--text); }
+.wh-last .wh-km { font: 600 15px/1.2 var(--font-text); }
+.wh-last.is-found b, .wh-last.is-found .wh-km { color: var(--success); }
+.wh-last.is-lost b { color: var(--muted); }
+/* Under 600px: everything on one row under the head, the figures 48px and their words wrapped short, the country 22px. */
+@container whnow (max-width: 599.98px) {
+  .wh-now .wh-say { font-size: 12px; }
+  .wh-figs { --fig: 48px; }
+  .wh-figs .wh-say { max-width: 76px; }
+  .wh-last b { font-size: 22px; }
+  .wh-last .wh-km { font-size: 13px; }
+}
+/* From 600px: the row at the centre of the whole card, head and action row included, as Guess's now card (D2); the body keeps
+   Guess's 132px so the card holds it. */
+@container whnow (min-width: 600px) {
+  .wh-row { --fig: 72px; column-gap: 48px; }
+  .wh-figs { column-gap: 48px; }
+  .wh-now > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
+  /* KEEP: the row is centred on the whole card, not on the space under the head, so it sits where Guess's tiles do (Joe, 2026-10-31). */
+  .wh-row { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+}
