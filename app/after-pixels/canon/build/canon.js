@@ -3476,6 +3476,103 @@
       ]
     };
   }
+  const cnRead = (P, live) => {
+    const end = P.w.length - 1;
+    const w = P.w.map((word, i) => ({ i, word, state: i === 0 || i === end ? "end" : "hidden", shown: i === 0 || i === end ? word.length : 1 }));
+    let last = null;
+    const g = P.p.map(([guess, k], j) => {
+      const x = w[k];
+      let res;
+      if (guess === x.word) {
+        res = "right";
+        x.state = "found";
+        last = k;
+      } else {
+        x.shown += 1;
+        res = x.shown >= x.word.length ? "given" : "wrong";
+        if (res === "given") {
+          x.state = "given";
+          x.shown = x.word.length;
+          last = k;
+        }
+      }
+      return { n: j + 1, res };
+    });
+    const mid = w.slice(1, end);
+    const r = live ? { kind: "live", label: "In progress" } : mid.some((x) => x.state === "given") ? { kind: "bad", label: "Failed" } : { kind: "ok", label: "Solved" };
+    return { w, g, r, last, mid, found: mid.filter((x) => x.state === "found").length };
+  };
+  const CnWord = ({ x, n }) => n ? /* @__PURE__ */ React$1.createElement("span", { className: "cn-word", "aria-hidden": "true" }, Array.from({ length: n }, (_, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t cn-t is-more" }))) : x.state === "hidden" ? /* @__PURE__ */ React$1.createElement("span", { className: "cn-word", role: "img", "aria-label": "Starts " + x.word.slice(0, x.shown) }, x.word.slice(0, x.shown).split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t cn-t is-shown", "aria-hidden": "true" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cn-t is-more", "aria-hidden": "true" })) : /* @__PURE__ */ React$1.createElement("span", { className: "cn-word", role: "img", "aria-label": x.word + (x.state === "given" ? ", given away" : "") }, x.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement(
+    "span",
+    {
+      key: j,
+      "aria-hidden": "true",
+      className: "wd-t cn-t is-" + (x.state === "end" ? "end" : x.state === "given" ? "given" : j < x.shown ? "shown" : "found")
+    },
+    ch
+  )));
+  const CnJoint = () => /* @__PURE__ */ React$1.createElement("span", { className: "cn-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "22", height: "16", viewBox: "0 0 22 16" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "12", height: "8", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "8.5", y: "6.5", width: "12", height: "8", rx: "4" })));
+  const CN_W = 16;
+  const CN_H = 30;
+  const CN_STEP = CN_H + 8;
+  const CN_GAP = { wrong: 14, given: 8 };
+  const cnLoop = (res, len, th) => {
+    const per = 2 * (len - th) + Math.PI * th;
+    const gap = CN_GAP[res];
+    return res === "right" ? {} : { strokeDasharray: (res === "given" ? per / 2 - gap : per - gap) + " " + gap, strokeDashoffset: per - gap / 2 - (len - th) / 2 };
+  };
+  const CN_SAY = { right: "right", wrong: "wrong", given: "given away" };
+  const CnLinkRow = ({ items }) => {
+    const len = 8 + (items.length - 1) * CN_STEP + CN_H;
+    return /* @__PURE__ */ React$1.createElement("svg", { width: len, height: "48", viewBox: "0 0 " + len + " 48", "aria-hidden": "true" }, items.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "cn-bar", x1: 4 + i * CN_STEP + CN_H, y1: 4 + CN_W / 2, x2: 4 + (i + 1) * CN_STEP, y2: 4 + CN_W / 2 })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("rect", { key: i, x: 4 + i * CN_STEP, y: 4, width: CN_H, height: CN_W, rx: CN_W / 2, className: "cn-loop is-" + t.res, ...cnLoop(t.res, CN_H, CN_W) })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CN_STEP + CN_H / 2, y: "44", textAnchor: "middle" }, t.n)));
+  };
+  const cnFold = (g, per) => {
+    const rows = Math.ceil(g.length / per);
+    const size = Math.ceil(g.length / rows);
+    const out = [];
+    for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
+    return out;
+  };
+  const CnLinks = ({ g }) => {
+    const ref = React$1.useRef(null);
+    const [per, setPer] = React$1.useState(8);
+    React$1.useLayoutEffect(() => {
+      const me = ref.current;
+      const pic = me.closest(".cn-pic");
+      if (!pic) return void 0;
+      const fit = () => {
+        let room = pic.clientWidth;
+        const par = me.parentElement;
+        if (getComputedStyle(par).flexDirection === "row") room -= [...par.children].filter((c) => c !== me).reduce((n, c) => n + c.offsetWidth + 24, 0);
+        setPer(Math.max(1, Math.floor((room - 8 - CN_H) / CN_STEP) + 1));
+      };
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(pic);
+      return () => ro.disconnect();
+    }, []);
+    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cn-links", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CN_SAY[t.res]).join(", ") }, cnFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnLinkRow, { key: r, items: row })));
+  };
+  const CnCount = ({ p }) => /* @__PURE__ */ React$1.createElement("span", { className: "cn-cap", role: "img", "aria-label": p.found + " of " + p.mid.length + " words" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
+  const CnPic = ({ p }) => {
+    const solved = p.r.kind === "ok";
+    const k = p.last == null ? 1 : p.last;
+    const x = p.w[k];
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus is-ends" }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus" }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
+  };
+  const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
+  const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus" }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, /* @__PURE__ */ React$1.createElement(CnCount, { p: CN_FRESH })));
+  const cnStaged = (k) => ({ failed: CH_FAIL, hard: CH_HARD })[k];
+  const ChNow = ({ c, done, none }) => {
+    const gs = useGs();
+    const staged = cnStaged(gs.review.chain);
+    const title = "#" + GS_SESSIONS[c.today].number;
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cn" }, /* @__PURE__ */ React$1.createElement(CnFresh, null));
+    const sid = staged ? Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === "chain" && / found/.test(GS_SESSIONS[k].result || "")) || c.today : done ? c.today : c.liveSid;
+    const s = GS_SESSIONS[sid];
+    const p = cnRead(staged || s.play, !staged && !done);
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cn" }, /* @__PURE__ */ React$1.createElement(CnPic, { p }));
+  };
   const CPR_SHIP_LIB = {};
   const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
   let CPR_FIRST;
@@ -3675,7 +3772,7 @@
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "casebook", title: c.title, result: !c.live && cbStatus(c), tag: true, open: () => cbGo(gs, c.id), span: true }, /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }));
   };
   const PzNow = (props) => {
-    const own = props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
+    const own = props.id === "word" && !props.none ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : props.id === "chain" ? /* @__PURE__ */ React$1.createElement(ChNow, { c: props.c, done: props.done, none: props.none }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
     const Pg = GS_NOW[props.id];
     return Pg ? /* @__PURE__ */ React$1.createElement(Pg, { ...props }, own) : own;
   };
@@ -4069,6 +4166,7 @@
   let CH_TODAY;
   let CH_OK;
   let CH_FAIL;
+  let CH_HARD;
   let SV_COLS;
   const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
   const svAt = (ships) => {
@@ -4324,6 +4422,29 @@
       { w: ["KEY", "BOARD", "WALK", "WAY", "SIDE", "CAR"], p: [["BOARD", 1], ["SIDE", 4], ["WAY", 3], ["WAR", 2], ["WALK", 2]] },
       { w: ["HAND", "BAG", "PIPE", "LINE", "DANCE"], p: [["BALL", 1], ["BAG", 1], ["LINE", 3], ["PIPE", 2]] }
     ];
+    CH_HARD = { w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "TRAIN", "WAGON"], p: [
+      ["BELL", 1],
+      ["BULL", 1],
+      ["BAIL", 1],
+      ["BALL", 1],
+      ["ROAM", 2],
+      ["ROOF", 2],
+      ["ROBE", 2],
+      ["SERVER", 3],
+      ["SURVEY", 3],
+      ["SURFACE", 3],
+      ["SERVING", 3],
+      ["SERVANT", 3],
+      ["SEVERE", 3],
+      ["STATE", 4],
+      ["STAGE", 4],
+      ["STATUS", 4],
+      ["STATIC", 4],
+      ["STATION", 4],
+      ["TRAM", 5],
+      ["TRAIL", 5],
+      ["TRAIN", 5]
+    ] };
     CH_FAIL = { w: ["GOLD", "FISH", "BONE", "DRY", "CLEAN"], p: [["FINCH", 1], ["FISH", 1], ["DUST", 3], ["DRY", 3], ["BALL", 2], ["BOWL", 2], ["BOAT", 2]] };
     SV_COLS = "ABCDEFGH";
     SV_TODAY = [[[1, 1], [2, 1], [3, 1], [4, 1]], [[6, 0], [6, 1], [6, 2]], [[0, 4], [0, 5], [0, 6]], [[3, 4], [4, 4]], [[6, 6], [7, 6]]];
@@ -4670,6 +4791,26 @@
           c.setConnected(true);
           c.go(k, { page: "record", list: true });
         } },
+        ...k === "chain" ? [
+          { group: g, id: "library-chain-never-played", label: "Chain in your library, with the Pass, not yet played", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ never: "chain" });
+            c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-chain-failed", label: "Chain in your library, today failed (a word given away)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ chain: "failed" });
+            c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-chain-hard", label: "Chain in your library, a hard day (21 guesses)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ chain: "hard" });
+            c.go(k, { page: "record" });
+          } }
+        ] : [],
         { group: dpSessAt(k)[0], id: "session-" + k, label: k === "chain" ? dpSessAt(k)[1] + n : "Session page: " + n + " today, with Share", stage: (c) => {
           c.setView("pass");
           c.setConnected(true);
@@ -9562,232 +9703,6 @@
   const initGsChain = () => {
     GS_SESSION_BODY.chain = ChnSessBody;
   };
-  const cnwHere = () => new URLSearchParams(window.location.search).get("pg") === "chain-now";
-  const CNW_TODAY = { w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "WAGON"], p: [["BALL", 1], ["RACE", 2], ["ROOM", 2], ["STATION", 4], ["SUITE", 3], ["SERVICE", 3]] };
-  const CNW_PLAYS = {
-    live: { ...CNW_TODAY, p: CNW_TODAY.p.slice(0, 3), live: true },
-    solved: CNW_TODAY,
-    // A hard day: Chain has no guess limit, so seven words (five hidden) can take 21 guesses: three words found, two given away.
-    hard: { w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "TRAIN", "WAGON"], p: [
-      ["BELL", 1],
-      ["BULL", 1],
-      ["BAIL", 1],
-      ["BALL", 1],
-      ["ROAM", 2],
-      ["ROOF", 2],
-      ["ROBE", 2],
-      ["SERVER", 3],
-      ["SURVEY", 3],
-      ["SURFACE", 3],
-      ["SERVING", 3],
-      ["SERVANT", 3],
-      ["SEVERE", 3],
-      ["STATE", 4],
-      ["STAGE", 4],
-      ["STATUS", 4],
-      ["STATIC", 4],
-      ["STATION", 4],
-      ["TRAM", 5],
-      ["TRAIL", 5],
-      ["TRAIN", 5]
-    ] },
-    failed: { w: ["GOLD", "FISH", "BONE", "DRY", "CLEAN"], p: [["FINCH", 1], ["FISH", 1], ["DUST", 3], ["DRY", 3], ["BALL", 2], ["BOWL", 2], ["BOAT", 2]] }
-  };
-  const cnwRead = (P) => {
-    const end = P.w.length - 1;
-    const w = P.w.map((word, i) => ({ i, word, state: i === 0 || i === end ? "end" : "hidden", shown: i === 0 || i === end ? word.length : 1 }));
-    let last = null;
-    const g = P.p.map(([guess, k], j) => {
-      const x = w[k];
-      let res;
-      if (guess === x.word) {
-        res = "right";
-        x.state = "found";
-        last = k;
-      } else {
-        x.shown += 1;
-        res = x.shown >= x.word.length ? "given" : "wrong";
-        if (res === "given") {
-          x.state = "given";
-          x.shown = x.word.length;
-          last = k;
-        }
-      }
-      return { n: j + 1, res };
-    });
-    const mid = w.slice(1, end);
-    const r = P.live ? { kind: "live", label: "In progress" } : mid.some((x) => x.state === "given") ? { kind: "bad", label: "Failed" } : { kind: "ok", label: "Solved" };
-    return { w, g, r, last, mid, found: mid.filter((x) => x.state === "found").length };
-  };
-  const CnwWord = ({ x, n, cls = "" }) => n ? /* @__PURE__ */ React$1.createElement("span", { className: "cnw-word " + cls, "aria-hidden": "true" }, Array.from({ length: n }, (_, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t cnw-t is-more" }))) : x.state === "hidden" ? /* @__PURE__ */ React$1.createElement("span", { className: "cnw-word " + cls, role: "img", "aria-label": "Starts " + x.word.slice(0, x.shown) }, x.word.slice(0, x.shown).split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t cnw-t is-shown", "aria-hidden": "true" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cnw-t is-more", "aria-hidden": "true" })) : /* @__PURE__ */ React$1.createElement("span", { className: "cnw-word " + cls, role: "img", "aria-label": x.word + (x.state === "given" ? ", given away" : "") }, x.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement(
-    "span",
-    {
-      key: j,
-      "aria-hidden": "true",
-      className: "wd-t cnw-t is-" + (x.state === "end" ? "end" : x.state === "given" ? "given" : j < x.shown ? "shown" : "found")
-    },
-    ch
-  )));
-  const CnwJoint = ({ cls = "" }) => /* @__PURE__ */ React$1.createElement("span", { className: "cnw-joint " + cls, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "22", height: "16", viewBox: "0 0 22 16" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "12", height: "8", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "8.5", y: "6.5", width: "12", height: "8", rx: "4" })));
-  const CNW_W = 16;
-  const CNW_H = 30;
-  const CNW_STEP = CNW_H + 8;
-  const CNW_GAP = { wrong: 14, given: 8 };
-  const cnwLoop = (res, len, th) => {
-    const per = 2 * (len - th) + Math.PI * th;
-    const gap = CNW_GAP[res];
-    return res === "right" ? {} : { strokeDasharray: (res === "given" ? per / 2 - gap : per - gap) + " " + gap, strokeDashoffset: per - gap / 2 - (len - th) / 2 };
-  };
-  const CNW_SAY = { right: "right", wrong: "wrong", given: "given away" };
-  const CnwLinkRow = ({ items }) => {
-    const step = CNW_STEP;
-    const len = 8 + (items.length - 1) * step + CNW_H;
-    return /* @__PURE__ */ React$1.createElement("svg", { width: len, height: "48", viewBox: "0 0 " + len + " 48", "aria-hidden": "true" }, items.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "cnw-bar", x1: 4 + i * step + CNW_H, y1: 4 + CNW_W / 2, x2: 4 + (i + 1) * step, y2: 4 + CNW_W / 2 })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("rect", { key: i, x: 4 + i * step, y: 4, width: CNW_H, height: CNW_W, rx: CNW_W / 2, className: "cnw-loop is-" + t.res, ...cnwLoop(t.res, CNW_H, CNW_W) })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * step + CNW_H / 2, y: "44", textAnchor: "middle" }, t.n)));
-  };
-  const cnwFold = (g, per) => {
-    const rows = Math.ceil(g.length / per);
-    const size = Math.ceil(g.length / rows);
-    const out = [];
-    for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
-    return out;
-  };
-  const CnwLinks = ({ g }) => {
-    const step = CNW_STEP;
-    const ref = React$1.useRef(null);
-    const [per, setPer] = React$1.useState(8);
-    React$1.useLayoutEffect(() => {
-      const me = ref.current;
-      const pic = me.closest(".cnw-pic");
-      if (!pic) return void 0;
-      const fit = () => {
-        let room = pic.clientWidth;
-        const par = me.parentElement;
-        if (par.classList.contains("cnw-under") && getComputedStyle(par).flexDirection === "row") room -= [...par.children].filter((c) => c !== me).reduce((n, c) => n + c.offsetWidth + 24, 0);
-        setPer(Math.max(1, Math.floor((room - 8 - CNW_H) / step) + 1));
-      };
-      fit();
-      const ro = new ResizeObserver(fit);
-      ro.observe(pic);
-      return () => ro.disconnect();
-    }, [step]);
-    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cnw-links", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CNW_SAY[t.res]).join(", ") }, cnwFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnwLinkRow, { key: r, items: row })));
-  };
-  const CnwProg = ({ p, prog }) => {
-    const say = p.found + " of " + p.mid.length + " words";
-    if (prog === "pips") return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-pips", role: "img", "aria-label": say }, p.mid.map((x) => /* @__PURE__ */ React$1.createElement("span", { key: x.i, "aria-hidden": "true", className: "cnw-pip is-" + x.state })));
-    if (prog === "figure") return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-fig", role: "img", "aria-label": say }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found + "/" + p.mid.length), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "words"));
-    return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-cap", role: "img", "aria-label": say }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
-  };
-  const CNW_LW = 56;
-  const CNW_LH = 28;
-  const CnwOpenLink = ({ ch, w = CNW_LW, h = CNW_LH }) => /* @__PURE__ */ React$1.createElement("svg", { className: "cnw-lk", width: w + 4, height: h + 4, viewBox: "0 0 " + (w + 4) + " " + (h + 4), "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: "2", y: "2", width: w, height: h, rx: h / 2, className: "cnw-loop is-wrong", ...cnwLoop("wrong", w, h) }), ch && /* @__PURE__ */ React$1.createElement("text", { x: (w + 4) / 2, y: h / 2 + 7, textAnchor: "middle" }, ch));
-  const cnwUnfound = (x, unf) => {
-    const letters = x ? x.word.slice(0, x.shown) : "";
-    if (unf === "session") return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-ses" }, letters.split("").filter(Boolean).map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t cnw-st is-shown" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cnw-st is-more" }));
-    if (unf === "link") return /* @__PURE__ */ React$1.createElement(CnwOpenLink, { ch: letters[0] });
-    if (unf === "unlit") return letters[0] || "";
-    return letters ? letters + " " + "·".repeat(x.word.length - x.shown) : "";
-  };
-  const CnwBox = ({ x, unf, out, back }) => {
-    const hid = !x || x.state === "hidden";
-    return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-box is-" + (x ? x.state : "blank") + (hid ? " is-unf-" + unf : ""), "aria-hidden": "true" }, back && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: "cnw-stub is-in" }), hid ? cnwUnfound(x, unf) : x.word, out && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: "cnw-stub is-out" }));
-  };
-  const CnwTile = ({ x, end, unf }) => {
-    if (!x) return /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cnw-t is-more" });
-    if (end) return /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cnw-t is-end is-three" }, x.word.slice(0, 3));
-    if (x.state === "hidden" && unf === "link") return /* @__PURE__ */ React$1.createElement(CnwOpenLink, { ch: x.word[0], w: 34, h: 26 });
-    const cls = x.state === "found" ? "is-found" : x.state === "given" ? "is-given" : unf === "session" ? "is-shown" : unf === "unlit" ? "is-unlit" : "is-more is-dim";
-    return /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cnw-t " + cls }, x.word[0]);
-  };
-  const cnwTextW = (txt, fam) => {
-    const g = cnwTextW.g || (cnwTextW.g = document.createElement("canvas").getContext("2d"));
-    g.font = "600 13px " + fam;
-    g.letterSpacing = "0.39px";
-    return g.measureText(txt.toUpperCase()).width;
-  };
-  const cnwBoxW = (x, unf, fam) => {
-    if (x && x.state !== "hidden") return cnwTextW(x.word, fam) + 20;
-    if (unf === "session") return ((x ? x.shown : 0) + 1) * 28 + 20;
-    if (unf === "link") return 64;
-    const t = x ? x.word.slice(0, x.shown) + (unf === "dashed" ? " " + "·".repeat(x.word.length - x.shown) : "") : "";
-    return Math.max(56, cnwTextW(t, fam) + 20);
-  };
-  const CnwBalanced = ({ list, unf }) => {
-    const ref = React$1.useRef(null);
-    const [room, setRoom] = React$1.useState(0);
-    const [fam, setFam] = React$1.useState("sans-serif");
-    React$1.useLayoutEffect(() => {
-      const pic = ref.current.closest(".cnw-pic");
-      const fit = () => {
-        setRoom(pic.clientWidth);
-        setFam(getComputedStyle(pic).fontFamily);
-      };
-      fit();
-      const ro = new ResizeObserver(fit);
-      ro.observe(pic);
-      return () => ro.disconnect();
-    }, []);
-    const last = list.length - 1;
-    const rows = cnwFold(list.map((x, i) => ({ x, i })), 4);
-    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "cnw-bal", "aria-hidden": "true" }, rows.map((row, r) => {
-      const tight = room > 0 && row.reduce((n, { x }) => n + cnwBoxW(x, unf, fam), 0) + (row.length - 1) * 22 > room;
-      const more = r < rows.length - 1;
-      const short = r === rows.length - 1 && row.length < rows[0].length;
-      if (tight) return /* @__PURE__ */ React$1.createElement("div", { key: r, className: "cnw-bal-row is-tight", style: { "--n": row.length + (r > 0) + more } }, r > 0 && /* @__PURE__ */ React$1.createElement(CnwJoint, null), row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwTile, { x, end: x && (i === 0 || i === last), unf }), (k < row.length - 1 || more) && /* @__PURE__ */ React$1.createElement(CnwJoint, null))));
-      return /* @__PURE__ */ React$1.createElement("div", { key: r, className: "cnw-bal-row" + (short ? " is-short" : " is-full") }, row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf, out: more && k === row.length - 1, back: r > 0 && k === 0 }), k < row.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, null))));
-    }));
-  };
-  const CnwRoute = ({ w, n, unf }) => {
-    const list = w || Array.from({ length: n }, () => null);
-    const last = list.length - 1;
-    const rows = [];
-    list.forEach((x, i) => {
-      if (i % 3 === 0) rows.push([]);
-      rows[rows.length - 1].push({ x, i });
-    });
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-route", role: "img", "aria-label": w ? w.map((x) => x.state === "hidden" ? "a word starting " + x.word.slice(0, x.shown) : x.word + (x.state === "given" ? " (given away)" : "")).join(", ") : n + " words to link" }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf, out: i % 3 === 2 && i < last, back: i % 3 === 0 && i > 0 }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: i % 3 === 2 ? "is-brk" : "" })))), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend", "aria-hidden": "true" }, rows.map((row, r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend-row" + (r % 2 ? " is-rev" : "") }, row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf }), k < row.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))), r < rows.length - 1 && /* @__PURE__ */ React$1.createElement("div", { className: "cnw-turn" + (r % 2 ? " is-left" : "") }, /* @__PURE__ */ React$1.createElement(CnwJoint, null))))), /* @__PURE__ */ React$1.createElement(CnwBalanced, { list, unf }), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-fit", "aria-hidden": "true", style: { "--n": list.length } }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwTile, { x, end: x && (i === 0 || i === last), unf }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))));
-  };
-  const CnwA = ({ p, unf }) => /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { w: p.w, unf }), p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { g: p.g }));
-  const CnwB = ({ p, prog }) => {
-    const solved = p.r.kind === "ok";
-    const k = p.last == null ? 1 : p.last;
-    const x = p.w[k];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus is-ends" }, /* @__PURE__ */ React$1.createElement(CnwWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cnw-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnwJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnwWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus" }, /* @__PURE__ */ React$1.createElement(CnwWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { key: prog, g: p.g }), /* @__PURE__ */ React$1.createElement(CnwProg, { p, prog })));
-  };
-  const CNW_FRESH_PLAY = { w: ["", "", "", "", "", ""].map((_, i) => ({ i, word: "", state: i === 0 || i === 5 ? "end" : "hidden", shown: 0 })), g: [], r: { kind: "live" }, last: null, found: 0 };
-  CNW_FRESH_PLAY.mid = CNW_FRESH_PLAY.w.slice(1, 5);
-  const CnwFresh = ({ dir, unf, prog }) => dir === "c1" ? /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { n: 6, unf }), /* @__PURE__ */ React$1.createElement("span", { className: "cnw-cap" }, "No guesses yet")) : /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus" }, /* @__PURE__ */ React$1.createElement(CnwWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, /* @__PURE__ */ React$1.createElement(CnwProg, { p: CNW_FRESH_PLAY, prog })));
-  const CNW_PIC = { c1: CnwA, c2: CnwB };
-  const CnwCard = ({ c }) => {
-    const gs = useGs();
-    const dir = usePgSetting("dir");
-    const play = usePgSetting("play");
-    const prog = usePgSetting("prog");
-    const wrap = usePgSetting("wrap");
-    const unf = usePgSetting("unfound");
-    const title = "#" + GS_SESSIONS[c.today].number;
-    if (play === "fresh") return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cnw cnw-" + dir + " cnw-wrap-" + wrap + " cnw-unf-" + unf }, /* @__PURE__ */ React$1.createElement(CnwFresh, { dir, unf, prog }));
-    const p = cnwRead(CNW_PLAYS[play]);
-    const Pic = CNW_PIC[dir];
-    const sid = play === "live" ? c.liveSid : play === "solved" ? c.today : Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === "chain" && / found/.test(GS_SESSIONS[k].result || "")) || c.today;
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cnw cnw-" + dir + " cnw-wrap-" + wrap + " cnw-unf-" + unf }, /* @__PURE__ */ React$1.createElement(Pic, { p, unf, prog }));
-  };
-  const initPlaygroundChainNow = () => {
-    pgRegister("chain-now", { title: "Chain now card", settings: [
-      { key: "dir", label: "Concept", options: [{ value: "c1", label: "A Route" }, { value: "c2", label: "B Today's link" }] },
-      { key: "prog", label: "Progress", when: { key: "dir", value: "c2" }, options: [{ value: "count", label: "Count" }, { value: "pips", label: "Pips" }, { value: "figure", label: "Figure" }] },
-      { key: "wrap", label: "Phone wrap", when: { key: "dir", value: "c1" }, options: [{ value: "rows", label: "Rows" }, { value: "down", label: "Down" }, { value: "fit", label: "Fit one line" }, { value: "bend", label: "Bend" }, { value: "balanced", label: "Balanced" }] },
-      { key: "unfound", label: "Unfound", when: { key: "dir", value: "c1" }, options: [{ value: "dashed", label: "Dashed" }, { value: "session", label: "Session tiles" }, { value: "link", label: "Open link" }, { value: "unlit", label: "Unlit" }] },
-      { key: "play", label: "Play", options: [
-        { value: "fresh", label: "Not yet played", state: "library-chain", go: (gs) => gs.setReview({ never: "chain" }) },
-        { value: "live", label: "In progress", state: "library-chain-in-progress" },
-        { value: "solved", label: "Solved", state: "library-chain" },
-        { value: "failed", label: "Failed", state: "library-chain" },
-        { value: "hard", label: "Hard day, 21 guesses", state: "library-chain" }
-      ] }
-    ] });
-    if (cnwHere()) GS_NOW.chain = CnwCard;
-  };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
   let GS_USER_DEFAULT;
@@ -10217,5 +10132,4 @@
   initMain();
   initPlaygroundGuessResult();
   initPlaygroundGuessNow();
-  initPlaygroundChainNow();
 })(React, ReactDOM);
