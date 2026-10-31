@@ -23,6 +23,7 @@ import { useCpr, cprFirstState, CprPassEnd, cprLapsedOf, cprStore, cprLocked, CP
 import { EsNow } from './gs-escape.jsx';
 import { WdNow } from './gs-word.jsx';
 import { DlNow } from './gs-delve.jsx';
+import { ChNow } from './gs-chain-now.jsx';
 import { GS_LIBRARY, GS_NOW } from './registry.js';
 
 const CPR_SHIP_LIB = {};
@@ -296,10 +297,11 @@ export const CbNow = ({ c }) => {
 };
 
 // The now card of a library game page. Daily Word's and Escape's own cards (WdNow in gs-word.jsx, EsNow in gs-escape.jsx) take it once
-// there is a play, Word's first; every other card is CprPzNow.
+// there is a play, Word's first; Chain's (ChNow in gs-chain-now.jsx) takes it always, fresh included; every other card is CprPzNow.
 export const PzNow = (props) => {
   const own = props.id === 'word' && !props.none ? <WdNow c={props.c} done={props.done} />
     : props.id === 'escape' && !props.none ? <EsNow title={props.c.title} next={props.c.next} />
+    : props.id === 'chain' ? <ChNow c={props.c} done={props.done} none={props.none} />
     : <CprPzNow {...props} />;
   const Pg = GS_NOW[props.id]; // a playground's card, registered only under ?pg=
   return Pg ? <Pg {...props}>{own}</Pg> : own;

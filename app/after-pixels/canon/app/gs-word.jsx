@@ -94,7 +94,7 @@ const WdAnswer = ({ s }) => (s.loss && s.answer ? (
     <div className="wd-ans-row" aria-hidden="true">{s.answer.split('').map((ch, i) => <span key={i} className="wd-t wd-ans-t">{ch}</span>)}</div>
   </div>) : null);
 export const WdSessBody = ({ s }) => { const p = wdPlay(s); return <>
-  <GsSessCard r={wdResult(s)} className="wd-sc" board={<WdBoard s={s} guessesOnly />}
+  <GsSessCard r={wdResult(s)} board={<WdBoard s={s} guessesOnly />}
     rows={[['Guesses', <WdRing s={s} p={p} />], ['Hint', <WdPlaces s={s} p={p} />]]} last={<WdAnswer s={s} />} />
   <GsMoves s={s} />
 </>; };

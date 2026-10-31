@@ -47,11 +47,6 @@
   .wd-nrow { grid-template-columns: 1ch auto; } .wd-nrow > span:last-child { display: none; }
 }
 /* ---- Daily Word's session card (app/gs-word.jsx WdSessBody, on the shared GsSessCard, gs-sess-card.css). ---- */
-/* KEEP: the tiles read 100cqi where they are drawn, inside the card (a container), so the phone size subtracts only the number
-   gutters either side (2 x 28px): about 49px at 390px wide. From 640px: from the window's height, so the hard play fits under
-   the head on a laptop, 56 to 72px. */
-.wd-sc { --g: 6px; --t: min(64px, calc((100cqi - 2 * 28px - 4 * var(--g)) / 5)); }
-@container gs (min-width: 640px) { .wd-sc { --g: 8px; --t: clamp(56px, calc((100vh - 560px) / 5), 72px); } }
 /* The ring: 104px, 128px from a 672px card. */
 .wd-ring { position: relative; width: 104px; height: 104px; }
 .wd-ring svg { display: block; width: 100%; height: 100%; }

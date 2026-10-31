@@ -92,11 +92,11 @@ export const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   );
 };
 
-// The session card a daily puzzle's body is built on (Daily Word's, Where's): the result statement top left; below it the game's
+// The session card a daily puzzle's body is built on (Daily Word's, Where's, Chain's): the result statement top left; below it the game's
 // board, and beside it a panel ruled off at its left, a captioned figure per row (Guesses, Hint) and an optional last row (the
 // answer on a loss). Phone: the result, the board, then the figures side by side under a rule. Styles: app/gs-sess-card.css.
-export const GsSessCard = ({ r, board, rows, last, className = '' }) => (
-  <section className={'dv2 gs-sc ' + className} aria-label="How it went">
+export const GsSessCard = ({ r, board, rows, last, className = '', style }) => (
+  <section className={'dv2 gs-sc ' + className} style={style} aria-label="How it went">
     <div className="dv7r-band"><h2 className={'dv7r-word is-' + r.tone}>{r.word}</h2></div>
     <div className="gs-sc-duo">
       <div className="gs-sc-board">{board}</div>
