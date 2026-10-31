@@ -2982,5 +2982,5 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .cnw-wrap-balanced .cnw-stub { display: grid; }
   .cnw-c2 { --t: min(44px, calc((100cqi - 24px) / 7)); }
   .cnw-c2 .is-ends { flex-direction: column; gap: 8px; --t: 36px; }
-  .cnw-under { flex-direction: column; gap: 8px; }
+  .cnw-under { flex-direction: column; gap: 16px; }
 }
