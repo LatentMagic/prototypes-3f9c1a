@@ -69,41 +69,42 @@
 .wd-ans-row { display: flex; gap: 4px; }
 .wd-ans-t { width: calc(var(--t) * .5); height: calc(var(--t) * .5); font-size: calc(var(--t) * .26); border: 1.5px solid #918B80; color: #ABA79E; }
 
-/* ---- Daily Word's now card (app/gs-word.jsx WdNow; owner, 2026-10-28). ---- */
+/* ---- Daily Word's now card (app/gs-word.jsx WdNow; Joe's pick, D2), on the shared frame (LbNowCard). ---- */
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
-.wd-now { container: wdnow / inline-size; }
-.wd-now-pic { display: grid; justify-self: center; }
-.wd-now-line { --t: 56px; --g: 6px; display: flex; align-items: center; gap: 16px; }
-.wd-now-row { display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
-.wd-trail { display: grid; gap: 3px; }
-.wd-tr { display: grid; grid-template-columns: repeat(5, 10px); gap: 2px; }
-.wd-tr > i { display: block; aspect-ratio: 1; box-sizing: border-box; }
-.wd-tr > i.is-hit { background: #4CC38A; }
-.wd-tr > i.is-near { background: #E5A63B; }
-/* KEEP: the trail's misses at a 1px outline, so the small blocks read lighter than the big tiles. */
-.wd-tr > i.is-miss { border: 1px solid #918B80; }
-/* A guess not used: a flat block in the line colour, so it never reads as a miss. */
-.wd-tr > i.is-empty { background: var(--line); }
-/* KEEP: the hint at trail size: a 10px square under the letter it gave, edged in 1px dots 3px apart (a dot at each corner, four
-   a side) so it reads as dotted at this size; the rest of its row empty. */
-.wd-tr > i.is-hint { background:
-  linear-gradient(90deg, #ABA79E 1px, transparent 0) top / 3px 1px repeat-x,
-  linear-gradient(90deg, #ABA79E 1px, transparent 0) bottom / 3px 1px repeat-x,
-  linear-gradient(180deg, #ABA79E 1px, transparent 0) left / 1px 3px repeat-y,
-  linear-gradient(180deg, #ABA79E 1px, transparent 0) right / 1px 3px repeat-y; }
-/* KEEP: stacked (a card under 600px): the gap below the picture matches the gap above it as seen. The title's line box ends about
-   6px under its figures, so the picture gets 6px more below it. Under 480px the trail's gap is 12px and the tiles fit the card
-   (44px at most), so the row never runs past the card's right padding. */
-@container wdnow (max-width: 599.98px) { .lb-now-in > .wd-now-pic { margin-bottom: 6px; } }
-@container wdnow (max-width: 479.98px) { .wd-now-line { gap: 12px; --t: min(44px, calc((100cqi - 96px) / 5)); } }
-/* KEEP: on a card 600px wide or more, the label and title, the picture and the result share the top row (the result stays top
-   right) and the foot runs below. The head gives way before the picture, so the tiles never spill into the gutters. */
+.wd-now { container: wdnow / inline-size; position: relative; }
+.wd-now > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
+/* The result word at In progress's size and face, so Solved and Failed read as large as In progress (Joe); it never wraps. */
+.wd-now > .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
+.wd-now > .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
+/* The picture: the tiles, then the ring and the hint box as one small row under them, either side of the card's centre line, so
+   the ring never shifts as the hint's words change. */
+.wd-now-pic { --t: 56px; --g: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; align-self: center; gap: 14px; min-width: 0; }
+.wd-ntiles { flex: none; display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
+.wd-nans-t { border: 1.5px solid #918B80; color: #ABA79E; background: none; }
+.wd-now-facts { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 20px; width: 100%; }
+.wd-nring { --r: 56px; position: relative; flex: none; width: var(--r); height: var(--r); justify-self: end; }
+.wd-nring svg { display: block; width: 100%; height: 100%; }
+.wd-nring circle { fill: none; stroke-width: 12; stroke: var(--line); }
+.wd-nring circle.is-used { stroke: #918B80; }
+.wd-nring circle.is-win { stroke: var(--success); }
+.wd-nring circle.is-lost { stroke: var(--warning); }
+.wd-nring-n { position: absolute; inset: 0; display: grid; place-items: center; font: 700 20px/1 var(--font-heading); color: var(--text); }
+.wd-nhint { display: flex; align-items: center; gap: 8px; justify-self: start; }
+.wd-nhint-box { box-sizing: border-box; width: 30px; height: 30px; display: grid; place-items: center; background: var(--line); }
+.wd-nhint-box.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 15px/1 var(--font-heading); }
+.wd-nhint-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.wd-nhint-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+/* KEEP (Joe): from 600px the tiles and the ring row are one block centred on the whole card's height and width, the same gap
+   above as below; never pinned to the top. The title and result stay in the top corners, the action row at the bottom. */
 @container wdnow (min-width: 600px) {
-  .wd-now > .lb-now-in { grid-template-columns: minmax(0, auto) minmax(max-content, 1fr) auto; grid-template-areas: "head pic res"; column-gap: 24px; row-gap: 24px; }
-  .wd-now > .lb-now-in > .lb-top { display: contents; }
-  .wd-now > .lb-now-in > .lb-top > .gs-stack-xs { grid-area: head; align-self: start; }
-  .wd-now > .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { grid-area: res; align-self: start; max-width: none; }
-  .lb-now-in > .wd-now-pic { grid-area: pic; align-self: start; }
+  .wd-now > .lb-now-in { grid-template-rows: auto; min-height: 132px; }
+  .wd-now-pic { --t: 52px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+}
+/* Phone: the tiles fit the card (44px at most); the ring and the hint box sit in a centred row under them. */
+@container wdnow (max-width: 479.98px) {
+  .wd-now-pic { --t: min(44px, calc((100cqi - 24px) / 5)); flex-wrap: wrap; }
+  .wd-nring { --r: 40px; }
+  .wd-nring-n { font-size: 15px; }
 }
 /* KEEP: Daily Word's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
    stroke 3.2 so it draws at 2); when the pressable thing it sits in is hovered, focused or pressed (--on 1, the design system's
