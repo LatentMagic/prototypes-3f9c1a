@@ -9292,7 +9292,7 @@
       window.history.replaceState(null, "", url);
     }, []);
     const framed = isFramed();
-    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.map((s) => {
+    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.filter((s) => !s.when || pgValue(def.settings.find((x) => x.key === s.when.key)) === s.when.value).map((s) => {
       const v = pgValue(s);
       return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }));
     })));
@@ -9562,10 +9562,10 @@
     return res === "right" ? {} : { strokeDasharray: (res === "given" ? per / 2 - gap : per - gap) + " " + gap, strokeDashoffset: per - gap / 2 - (len - th) / 2 };
   };
   const CNW_SAY = { right: "right", wrong: "wrong", given: "given away" };
-  const CNW_OVERLAP = 22;
-  const CnwLinkRow = ({ items, step }) => {
+  const CnwLinkRow = ({ items }) => {
+    const step = CNW_STEP;
     const len = 8 + (items.length - 1) * step + CNW_H;
-    return /* @__PURE__ */ React$1.createElement("svg", { width: len, height: "48", viewBox: "0 0 " + len + " 48", "aria-hidden": "true" }, step === CNW_STEP && items.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "cnw-bar", x1: 4 + i * step + CNW_H, y1: 4 + CNW_W / 2, x2: 4 + (i + 1) * step, y2: 4 + CNW_W / 2 })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("rect", { key: i, x: 4 + i * step, y: 4, width: CNW_H, height: CNW_W, rx: CNW_W / 2, className: "cnw-loop is-" + t.res, ...cnwLoop(t.res, CNW_H, CNW_W) })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * step + CNW_H / 2, y: "44", textAnchor: "middle" }, t.n)));
+    return /* @__PURE__ */ React$1.createElement("svg", { width: len, height: "48", viewBox: "0 0 " + len + " 48", "aria-hidden": "true" }, items.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "cnw-bar", x1: 4 + i * step + CNW_H, y1: 4 + CNW_W / 2, x2: 4 + (i + 1) * step, y2: 4 + CNW_W / 2 })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("rect", { key: i, x: 4 + i * step, y: 4, width: CNW_H, height: CNW_W, rx: CNW_W / 2, className: "cnw-loop is-" + t.res, ...cnwLoop(t.res, CNW_H, CNW_W) })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * step + CNW_H / 2, y: "44", textAnchor: "middle" }, t.n)));
   };
   const cnwFold = (g, per) => {
     const rows = Math.ceil(g.length / per);
@@ -9575,7 +9575,7 @@
     return out;
   };
   const CnwLinks = ({ g }) => {
-    const step = usePgSetting("links") === "overlap" ? CNW_OVERLAP : CNW_STEP;
+    const step = CNW_STEP;
     const ref = React$1.useRef(null);
     const [per, setPer] = React$1.useState(8);
     React$1.useLayoutEffect(() => {
@@ -9593,16 +9593,13 @@
       ro.observe(pic);
       return () => ro.disconnect();
     }, [step]);
-    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cnw-links", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CNW_SAY[t.res]).join(", ") }, cnwFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnwLinkRow, { key: r, items: row, step })));
+    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cnw-links", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CNW_SAY[t.res]).join(", ") }, cnwFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnwLinkRow, { key: r, items: row })));
   };
-  const cnwSaid = (p) => {
-    const wrong = p.g.filter((t) => t.res === "wrong").length;
-    const given = p.g.filter((t) => t.res === "given").length;
-    return [p.found + " of " + p.mid.length + " words", wrong ? wrong + " wrong" : "", given ? given + " given away" : ""].filter(Boolean);
-  };
-  const CnwCount = ({ p }) => {
-    const [first, ...more] = cnwSaid(p);
-    return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-cap", role: "img", "aria-label": cnwSaid(p).join(", ") }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, first.slice(String(p.found).length) + more.map((m) => " · " + m).join("")));
+  const CnwProg = ({ p, prog }) => {
+    const say = p.found + " of " + p.mid.length + " words";
+    if (prog === "pips") return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-pips", role: "img", "aria-label": say }, p.mid.map((x) => /* @__PURE__ */ React$1.createElement("span", { key: x.i, "aria-hidden": "true", className: "cnw-pip is-" + x.state })));
+    if (prog === "figure") return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-fig", role: "img", "aria-label": say }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found + "/" + p.mid.length), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "words"));
+    return /* @__PURE__ */ React$1.createElement("span", { className: "cnw-cap", role: "img", "aria-label": say }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
   };
   const CNW_LW = 56;
   const CNW_LH = 28;
@@ -9674,43 +9671,36 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-route", role: "img", "aria-label": w ? w.map((x) => x.state === "hidden" ? "a word starting " + x.word.slice(0, x.shown) : x.word + (x.state === "given" ? " (given away)" : "")).join(", ") : n + " words to link" }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf, out: i % 3 === 2 && i < last, back: i % 3 === 0 && i > 0 }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: i % 3 === 2 ? "is-brk" : "" })))), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend", "aria-hidden": "true" }, rows.map((row, r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend-row" + (r % 2 ? " is-rev" : "") }, row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf }), k < row.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))), r < rows.length - 1 && /* @__PURE__ */ React$1.createElement("div", { className: "cnw-turn" + (r % 2 ? " is-left" : "") }, /* @__PURE__ */ React$1.createElement(CnwJoint, null))))), /* @__PURE__ */ React$1.createElement(CnwBalanced, { list, unf }), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-fit", "aria-hidden": "true", style: { "--n": list.length } }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwTile, { x, end: x && (i === 0 || i === last), unf }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))));
   };
   const CnwA = ({ p, unf }) => /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { w: p.w, unf }), p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { g: p.g }));
-  const CnwB = ({ p }) => {
+  const CnwB = ({ p, prog }) => {
     const solved = p.r.kind === "ok";
     const k = p.last == null ? 1 : p.last;
     const x = p.w[k];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus is-ends" }, /* @__PURE__ */ React$1.createElement(CnwWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cnw-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnwJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnwWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus" }, /* @__PURE__ */ React$1.createElement(CnwWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnwCount, { p })));
-  };
-  const CnwNode = ({ x }) => /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cnw-t " + (x && x.state === "found" ? "is-found" : x && x.state === "given" ? "is-given" : "is-more"), "aria-hidden": "true" }, x && x.state !== "hidden" ? x.word[0] : "");
-  const CnwC = ({ p, fresh }) => {
-    const first = p.w[0];
-    const last = p.w[p.w.length - 1];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-ends", role: "img", "aria-label": (fresh ? "The two end words, not yet seen" : first.word + " to " + last.word) + ", " + p.mid.length + " words between" }, fresh ? /* @__PURE__ */ React$1.createElement(CnwWord, { n: 4, cls: "is-first" }) : /* @__PURE__ */ React$1.createElement(CnwWord, { x: first, cls: "is-first" }), /* @__PURE__ */ React$1.createElement("span", { className: "cnw-mid" }, p.mid.map((x) => /* @__PURE__ */ React$1.createElement(CnwNode, { key: x.i, x: fresh ? null : x }))), fresh ? /* @__PURE__ */ React$1.createElement(CnwWord, { n: 5, cls: "is-last" }) : /* @__PURE__ */ React$1.createElement(CnwWord, { x: last, cls: "is-last" })), /* @__PURE__ */ React$1.createElement(CnwCount, { p }));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus is-ends" }, /* @__PURE__ */ React$1.createElement(CnwWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cnw-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnwJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnwWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus" }, /* @__PURE__ */ React$1.createElement(CnwWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { key: prog, g: p.g }), /* @__PURE__ */ React$1.createElement(CnwProg, { p, prog })));
   };
   const CNW_FRESH_PLAY = { w: ["", "", "", "", "", ""].map((_, i) => ({ i, word: "", state: i === 0 || i === 5 ? "end" : "hidden", shown: 0 })), g: [], r: { kind: "live" }, last: null, found: 0 };
   CNW_FRESH_PLAY.mid = CNW_FRESH_PLAY.w.slice(1, 5);
-  const CnwFresh = ({ dir, unf }) => dir === "c1" ? /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { n: 6, unf }), /* @__PURE__ */ React$1.createElement("span", { className: "cnw-cap" }, "No guesses yet")) : dir === "c2" ? /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus" }, /* @__PURE__ */ React$1.createElement(CnwWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, /* @__PURE__ */ React$1.createElement(CnwCount, { p: CNW_FRESH_PLAY }))) : /* @__PURE__ */ React$1.createElement(CnwC, { p: CNW_FRESH_PLAY, fresh: true });
-  const CNW_PIC = { c1: CnwA, c2: CnwB, c3: CnwC };
+  const CnwFresh = ({ dir, unf, prog }) => dir === "c1" ? /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { n: 6, unf }), /* @__PURE__ */ React$1.createElement("span", { className: "cnw-cap" }, "No guesses yet")) : /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-focus" }, /* @__PURE__ */ React$1.createElement(CnwWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-under" }, /* @__PURE__ */ React$1.createElement(CnwProg, { p: CNW_FRESH_PLAY, prog })));
+  const CNW_PIC = { c1: CnwA, c2: CnwB };
   const CnwCard = ({ c }) => {
     const gs = useGs();
     const dir = usePgSetting("dir");
     const play = usePgSetting("play");
-    const away = usePgSetting("away");
+    const prog = usePgSetting("prog");
     const wrap = usePgSetting("wrap");
     const unf = usePgSetting("unfound");
     const title = "#" + GS_SESSIONS[c.today].number;
-    if (play === "fresh") return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cnw cnw-" + dir + " cnw-away-" + away + " cnw-wrap-" + wrap + " cnw-unf-" + unf }, /* @__PURE__ */ React$1.createElement(CnwFresh, { dir, unf }));
+    if (play === "fresh") return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cnw cnw-" + dir + " cnw-wrap-" + wrap + " cnw-unf-" + unf }, /* @__PURE__ */ React$1.createElement(CnwFresh, { dir, unf, prog }));
     const p = cnwRead(CNW_PLAYS[play]);
     const Pic = CNW_PIC[dir];
     const sid = play === "live" ? c.liveSid : play === "solved" ? c.today : Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === "chain" && / found/.test(GS_SESSIONS[k].result || "")) || c.today;
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cnw cnw-" + dir + " cnw-away-" + away + " cnw-wrap-" + wrap + " cnw-unf-" + unf }, /* @__PURE__ */ React$1.createElement(Pic, { p, unf }));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cnw cnw-" + dir + " cnw-wrap-" + wrap + " cnw-unf-" + unf }, /* @__PURE__ */ React$1.createElement(Pic, { p, unf, prog }));
   };
   const initPlaygroundChainNow = () => {
     pgRegister("chain-now", { title: "Chain now card", settings: [
-      { key: "dir", label: "Concept", options: [{ value: "c1", label: "A Route" }, { value: "c2", label: "B Today's link" }, { value: "c3", label: "C Two ends" }] },
-      { key: "away", label: "Given away", options: [{ value: "amber", label: "Amber" }, { value: "grey", label: "Grey, as Where" }] },
-      { key: "wrap", label: "Phone wrap (A)", options: [{ value: "rows", label: "Rows" }, { value: "down", label: "Down" }, { value: "fit", label: "Fit one line" }, { value: "bend", label: "Bend" }, { value: "balanced", label: "Balanced" }] },
-      { key: "unfound", label: "Unfound (A)", options: [{ value: "dashed", label: "Dashed" }, { value: "session", label: "Session tiles" }, { value: "link", label: "Open link" }, { value: "unlit", label: "Unlit" }] },
-      { key: "links", label: "Guess links", options: [{ value: "apart", label: "Apart" }, { value: "overlap", label: "Overlapping" }] },
+      { key: "dir", label: "Concept", options: [{ value: "c1", label: "A Route" }, { value: "c2", label: "B Today's link" }] },
+      { key: "prog", label: "Progress", when: { key: "dir", value: "c2" }, options: [{ value: "count", label: "Count" }, { value: "pips", label: "Pips" }, { value: "figure", label: "Figure" }] },
+      { key: "wrap", label: "Phone wrap", when: { key: "dir", value: "c1" }, options: [{ value: "rows", label: "Rows" }, { value: "down", label: "Down" }, { value: "fit", label: "Fit one line" }, { value: "bend", label: "Bend" }, { value: "balanced", label: "Balanced" }] },
+      { key: "unfound", label: "Unfound", when: { key: "dir", value: "c1" }, options: [{ value: "dashed", label: "Dashed" }, { value: "session", label: "Session tiles" }, { value: "link", label: "Open link" }, { value: "unlit", label: "Unlit" }] },
       { key: "play", label: "Play", options: [
         { value: "fresh", label: "Not yet played", state: "library-chain", go: (gs) => gs.setReview({ never: "chain" }) },
         { value: "live", label: "In progress", state: "library-chain-in-progress" },

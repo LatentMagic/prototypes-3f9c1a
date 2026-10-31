@@ -2912,11 +2912,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cnw-box.is-hidden { background: var(--wd-dash); background-origin: border-box; color: var(--muted); }
 .cnw-box.is-blank { background: var(--wd-dash); background-origin: border-box; }
 
-/* Given away in grey (the Given away setting), as Where's now card shows what was not found: a solid grey tile, and a link broken in
-   two in a darker grey than the wrong guesses' open links. Unfound stays dashed. */
-.cnw-away-grey .cnw-box.is-given, .cnw-away-grey .cnw-t.is-given { border-color: transparent; background: #4A453E; color: #ABA79E; }
-.cnw-away-grey .cnw-loop.is-given { stroke: #746E65; }
-
 /* Unfound words (the Unfound setting): session tiles, an open link, or a dark unlit slot, in place of the dashed box. */
 .cnw-box.is-unf-session, .cnw-box.is-unf-link { background: none; }
 .cnw-box.is-unf-unlit { background: #2D2A26; color: var(--muted); }
@@ -2960,13 +2955,14 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cnw-joints { display: inline-flex; gap: 4px; }
 .cnw-under { display: flex; align-items: center; justify-content: center; gap: 24px; max-width: 100%; }
 
-/* C, Two ends: the end words at the edges, the tiles for the words between spread across, one tile size, on a line. */
-.cnw-ends { display: flex; align-items: center; width: 100%; gap: 16px; }
-.cnw-mid { flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; position: relative; }
-.cnw-mid::before { content: ''; position: absolute; left: -16px; right: -16px; top: 50%; border-top: 2px solid #918B80; }
-.cnw-mid > .wd-t { position: relative; background-color: var(--card); }
-.cnw-mid > .wd-t.is-more { background: var(--wd-dash) var(--card); }
-.cnw-mid > .wd-t.is-found, .cnw-mid > .wd-t.is-given { font-weight: 700; }
+/* B's progress: pips, one small tile a word between the ends; or a bold N/M figure with a muted label. */
+.cnw-pips { display: inline-flex; gap: 6px; }
+.cnw-pip { box-sizing: border-box; width: 18px; height: 18px; background: #2D2A26; }
+.cnw-pip.is-found { background: none; border: 2px solid var(--success); }
+.cnw-pip.is-given { background: none; border: 2px solid #E5A63B; }
+.cnw-fig { display: grid; justify-items: center; gap: 2px; }
+.cnw-fig b { font: 700 28px/1 var(--font-heading); color: var(--text); }
+.cnw-fig span { font: 400 14px/1.2 var(--font-text); color: var(--muted); }
 
 /* Phone (card under 640px): A three to a row, a joint dropped from the first row's end; B shrinks to fit; C's nodes under the ends. */
 @container cnw (max-width: 639.98px) {
@@ -2987,9 +2983,4 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .cnw-c2 { --t: min(44px, calc((100cqi - 24px) / 7)); }
   .cnw-c2 .is-ends { flex-direction: column; gap: 8px; --t: 36px; }
   .cnw-under { flex-direction: column; gap: 8px; }
-  .cnw-c3 { --t: 36px; }
-  .cnw-ends { flex-direction: column; align-items: stretch; gap: 12px; }
-  .cnw-ends > .is-first { align-self: flex-start; }
-  .cnw-ends > .is-last { align-self: flex-end; }
-  .cnw-mid::before { left: 0; right: 0; }
 }
