@@ -2931,8 +2931,10 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 
 /* The stubs of a phone's row break, and the layouts the Wrap setting swaps in on a phone: hidden until then. */
 .cnw-stub { display: none; position: absolute; top: 50%; translate: 0 -50%; }
-.cnw-stub.is-in { left: -11px; }
-.cnw-stub.is-out { right: -11px; }
+.cnw-stub { width: 14px; }
+.cnw-stub svg { width: 14px; height: 10px; }
+.cnw-stub.is-in { right: calc(100% + 3px); }
+.cnw-stub.is-out { left: calc(100% + 3px); }
 .cnw-bend, .cnw-fit { display: none; width: 100%; }
 .cnw-bend-row { display: flex; align-items: center; }
 .cnw-bend-row.is-rev { flex-direction: row-reverse; }
