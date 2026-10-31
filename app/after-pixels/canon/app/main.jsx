@@ -93,6 +93,7 @@ import { FitView, isFramed, useFit } from './fit.jsx';
 import { initPlaygroundGuessResult } from './playground-guess-result.jsx';
 import { initPlaygroundGuessNow } from './playground-guess-now.jsx';
 import { initGsChain } from './gs-chain.jsx';
+import { initPlaygroundChainNow } from './playground-chain-now.jsx';
 
 const { useState, useEffect, useRef } = React;
 
@@ -480,3 +481,4 @@ initGsDelve();
 initMain();
 initPlaygroundGuessResult();
 initPlaygroundGuessNow();
+initPlaygroundChainNow();
