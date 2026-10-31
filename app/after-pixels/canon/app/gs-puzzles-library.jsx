@@ -26,14 +26,14 @@ const pzSession = (id, c, x) => {
   else if (id === 'word') {
     const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
     const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
-    s = { ...base, number: 212 - i, answer, listTitle: 'Every guess', share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
+    s = { ...base, number: 212 - i, answer, share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
   } else if (id === 'groups') {
     const mis = x.ok ? (i === 1 ? 0 : i % 4) : 4; const found = x.ok ? 4 : 2; const lines = []; const rows = [];
     for (let k = 0, f = 0, m = 0; f < found || m < mis; k++) {
       if (m < mis && (k % 2 === 1 || f >= found)) { const g = PZ_GROUPS[f % 4][0]; const o = PZ_GROUPS[(f + 1) % 4][0]; rows.push(g + g + g + o); lines.push(['Try ' + (k + 1), 'Mixed four', m === 0 ? 'One away' : 'Not a group']); m++; }
       else { const [g, w] = PZ_GROUPS[f]; rows.push(g + g + g + g); lines.push(['Try ' + (k + 1), w.split(': ')[1], 'Found: ' + w.split(': ')[0]]); f++; }
     }
-    s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], listTitle: 'Every try', share: x.line,
+    s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], share: x.line,
       shareHead: 'Daily Groups #' + (88 - i) + ' · ' + pzMis(mis), rows, lines };
   } else if (id === 'mystery') {
     const cs = (i * 3) % 8; const cw = (i * 5 + 1) % 8; const cr = (i * 7 + 2) % 8; const q = i % 3;
@@ -43,7 +43,7 @@ const pzSession = (id, c, x) => {
     const part = i % 3;
     const acc = x.ok ? pzAcc(PZ_SUS[cs], PZ_WPN[cw], PZ_RMS[cr])
       : pzAcc(PZ_SUS[part === 0 ? (cs + 1) % 8 : cs], PZ_WPN[part === 1 ? (cw + 1) % 8 : cw], PZ_RMS[part === 2 ? (cr + 1) % 8 : cr]);
-    s = { ...base, number: 64 - i, q, hints: 0, listTitle: 'Every question', share: x.line, figures: [pzQn(q), 'No hints'],
+    s = { ...base, number: 64 - i, q, hints: 0, share: x.line, figures: [pzQn(q), 'No hints'],
       lines: [...qs, x.ok ? ['Accusation', acc, 'Right'] : ['Accusation', acc, 'Wrong', ['The suspect was wrong', 'The weapon was wrong', 'The room was wrong'][part]]] };
   } else {
     // Escape's earlier rooms are seeded at the foot of this file; this is only a fallback.
@@ -213,7 +213,7 @@ Object.entries(PZ).forEach(([id, c]) => {
       lines.push(['Move ' + (++n), 'Tried EXIT on the door lock', 'Out']);
       GS_SESSIONS[sid] = { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', date: pzLong(d), result: line, share: line,
         figures: [min + ' min, ' + par, fig(hints, 'hint', 'hints', 'No hints'), fig(wrong, 'wrong try', 'wrong tries', 'No wrong tries')],
-        shareLines: ['Escape · ' + title + ' · escaped in ' + min + ' min, ' + par], listTitle: 'Every move', lines,
+        shareLines: ['Escape · ' + title + ' · escaped in ' + min + ' min, ' + par], lines,
         esTimes: { min, opened: [Math.round(min * 0.55), min] } };
       x.sid = sid;
     }

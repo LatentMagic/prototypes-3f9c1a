@@ -1208,7 +1208,6 @@
       date: "Monday 5 October",
       figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 9/13"],
       tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
-      listTitle: "Every roll",
       lines: GS_DV_WON,
       endings: GS_DV_ENDINGS,
       reached: "Elsie rescued",
@@ -1234,7 +1233,6 @@
       hints: 1,
       result: "Solved in 3 of 6",
       date: GS.today,
-      listTitle: "Every guess",
       share: "Solved in 3 of 6",
       lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STILL"])
     },
@@ -1250,7 +1248,6 @@
       hints: 1,
       result: "Solved in 5 of 6",
       date: "Sunday 4 October",
-      listTitle: "Every guess",
       share: "Solved in 5 of 6",
       lines: gsWordLines("FLOOR", ["CRANE", "ROBOT", ["Hint", "Letter 1 is F."], "FROGS", "FLOUR", "FLOOR"])
     },
@@ -1265,7 +1262,6 @@
       hints: 1,
       result: "Failed",
       date: "Friday 2 October",
-      listTitle: "Every guess",
       share: "Failed",
       lines: gsWordLines("STEAL", ["CRANE", ["Hint", "Letter 4 is A."], "METAL", "PETAL", "DECAL", "SEPAL", "SHOAL"])
     },
@@ -1278,7 +1274,6 @@
       result: "Escaped in 28 min, under par",
       date: GS.today,
       figures: ["28 min, under par", "1 hint", "2 wrong tries"],
-      listTitle: "Every move",
       share: "Escaped in 28 min, under par",
       shareLines: ["Escape No. 1 · escaped in 28 min, under par · 1 hint 💡 · 2 wrong tries"],
       lines: GS_ES1_LINES
@@ -1297,7 +1292,6 @@
       setting: "a storm-bound weekend at Hollowmere House",
       victim: "Madame Odette Varga, the medium",
       figures: ["2 questions", "No hints"],
-      listTitle: "Every question",
       share: "Failed",
       lines: [...GS_MYSTERY_QS, ["Accusation", "Sebastian Wyle, with the iron poker, in the dining room", "Wrong", "The suspect, the weapon and the room were all wrong"]]
     },
@@ -1310,7 +1304,6 @@
       answer: "CHAIN",
       result: "Solved in 4 of 6",
       date: "Monday 5 October",
-      listTitle: "Every guess",
       share: "Solved in 4 of 6",
       lines: gsWordLines("CHAIN", ["CRANE", "CHANT", "CHAIR", "CHAIN"])
     },
@@ -1323,7 +1316,6 @@
       result: "All 4 groups, 1 mistake",
       date: GS.today,
       figures: ["4 of 4 groups", "1 mistake"],
-      listTitle: "Every try",
       share: "All 4 groups, 1 mistake",
       shareHead: "Daily Groups #88 · 1 mistake",
       rows: ["🟪🟦🟦🟦", "🟦🟦🟦🟦", "🟨🟨🟨🟨", "🟪🟪🟪🟪", "🟩🟩🟩🟩"],
@@ -1343,7 +1335,6 @@
       result: "All 4 groups, no mistakes",
       date: "Monday 5 October",
       figures: ["4 of 4 groups", "No mistakes"],
-      listTitle: "Every try",
       share: "All 4 groups, no mistakes",
       shareHead: "Daily Groups #87 · no mistakes",
       rows: ["🟨🟨🟨🟨", "🟦🟦🟦🟦", "🟩🟩🟩🟩", "🟪🟪🟪🟪"],
@@ -1363,7 +1354,6 @@
       result: "Solved",
       date: "Monday 5 October",
       figures: ["11 of 16 turns", "4 of 4 lies exposed", "You accused Dr. Celia Rourke"],
-      listTitle: "Every turn",
       share: "Solved",
       shareLines: ["Casebook: The Last Night at Gull Point", "✅ solved · 11 of 16 turns · 4 lies exposed"],
       lines: gsCbLines(GS_CB_REC)
@@ -1381,7 +1371,6 @@
       setting: "the annual gala of the Royal Botanical Society",
       victim: "Dr Ambrose Kell, the collector",
       figures: ["2 questions", "No hints"],
-      listTitle: "Every question",
       share: "Solved",
       lines: [
         ["Question 1", "Was Mr Graves in the study?", "The inspector said yes"],
@@ -1479,7 +1468,6 @@
       live: true,
       result: "In progress",
       date: GS.today,
-      listTitle: "Every guess",
       share: null,
       lines: gsWordLines("STILL", ["CRANE", "SLATE"])
     },
@@ -1492,7 +1480,6 @@
       result: "In progress",
       date: GS.today,
       figures: ["2 of 4 groups", "1 mistake"],
-      listTitle: "Every try",
       share: null,
       lines: [["Try 1", "BASS · PIKE · CARP · SOLE", "One away"], ["Try 2", "PIKE · CARP · SOLE · PERCH", "Found: fish"], ["Try 3", "FROST · MIST · HAIL · SLEET", "Found: weather"]]
     },
@@ -1508,7 +1495,6 @@
       result: "In progress",
       date: GS.today,
       figures: ["2 questions", "No hints"],
-      listTitle: "Every question",
       share: null,
       lines: GS_MYSTERY_QS.slice()
     },
@@ -1520,7 +1506,6 @@
       live: true,
       result: "In progress",
       date: GS.today,
-      listTitle: "Every move",
       share: null,
       lines: GS_SESSIONS["escape-week"].lines.slice(0, 4)
     },
@@ -2874,7 +2859,6 @@
       art: "barrow",
       result: "Quest complete",
       figures: ["3 sessions", "Level 2"],
-      listTitle: "The story",
       lines: CPR_BW_JOURNAL.map(([n, t]) => ["Session " + n, t]),
       share: "Quest complete",
       shareLines: ["Adventure: The Barrow of Hollowmere", "Wren the Rogue, level 2 · ✅ Bell returned · 3 sessions"],
@@ -3903,7 +3887,7 @@
       const answer = PZ_WORDS[i % PZ_WORDS.length];
       const n = x.ok ? 3 + i % 4 : 6;
       const guesses = Array.from({ length: n }, (_, k) => x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]);
-      s = { ...base, number: 212 - i, answer, listTitle: "Every guess", share: x.line, lines: guesses.map((g, k) => ["Guess " + (k + 1), g, ...gsGuessParts(g, answer)]) };
+      s = { ...base, number: 212 - i, answer, share: x.line, lines: guesses.map((g, k) => ["Guess " + (k + 1), g, ...gsGuessParts(g, answer)]) };
     } else if (id === "groups") {
       const mis = x.ok ? i === 1 ? 0 : i % 4 : 4;
       const found = x.ok ? 4 : 2;
@@ -3926,7 +3910,6 @@
       s = {
         ...base,
         figures: [found + " of 4 groups", mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : "No mistakes"],
-        listTitle: "Every try",
         share: x.line,
         shareHead: "Daily Groups #" + (88 - i) + " · " + pzMis(mis),
         rows,
@@ -3945,7 +3928,6 @@
         number: 64 - i,
         q,
         hints: 0,
-        listTitle: "Every question",
         share: x.line,
         figures: [pzQn(q), "No hints"],
         lines: [...qs, x.ok ? ["Accusation", acc, "Right"] : ["Accusation", acc, "Wrong", ["The suspect was wrong", "The weapon was wrong", "The room was wrong"][part]]]
@@ -4175,7 +4157,6 @@
             share: line,
             figures: [min + " min, " + par, fig(hints, "hint", "hints", "No hints"), fig(wrong, "wrong try", "wrong tries", "No wrong tries")],
             shareLines: ["Escape · " + title + " · escaped in " + min + " min, " + par],
-            listTitle: "Every move",
             lines,
             esTimes: { min, opened: [Math.round(min * 0.55), min] }
           };
@@ -4388,15 +4369,15 @@
     const i = x.i;
     if (id === "where") {
       const r = dpWhere(x.ok ? WH_OK[i % WH_OK.length] : WH_FAIL, x.ok);
-      return { ...base, number: n, hints: r.hints, figures: [r.guesses + " of 6 guesses", r.hints ? "1 hint" : "No hints"], listTitle: "Every guess", share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
+      return { ...base, number: n, hints: r.hints, figures: [r.guesses + " of 6 guesses", r.hints ? "1 hint" : "No hints"], share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
     }
     if (id === "chain") {
       const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL;
       const r = dpChain(play);
-      return { ...base, number: n, play, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], listTitle: "Every guess", share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+      return { ...base, number: n, play, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
     }
     const d = dpSvDay(i, x.ok);
-    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], listTitle: "Every dive", share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
+    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
   };
   let DP_PZ;
   const dpStep = (b, rest) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, b), rest);
@@ -4546,7 +4527,6 @@
         result: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }),
         date: GS.today,
         figures: [dpWhT.guesses + " of 6 guesses", "1 hint"],
-        listTitle: "Every guess",
         share: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }),
         shareLines: [dpWhHead(DP_NO, dpWhT, true), dpWhT.marks],
         lines: dpWhT.lines
@@ -4562,7 +4542,6 @@
         result: "In progress",
         date: GS.today,
         figures: ["2 of 6 guesses", "No hints"],
-        listTitle: "Every guess",
         share: null,
         lines: dpWhT.lines.slice(0, 2)
       },
@@ -4576,7 +4555,6 @@
         result: dpChResult(dpChT),
         date: GS.today,
         figures: [dpChT.words + " words", dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())],
-        listTitle: "Every guess",
         share: dpChResult(dpChT),
         shareLines: [dpChHead(DP_NO, dpChT), dpChT.marks],
         lines: dpChT.lines
@@ -4592,7 +4570,6 @@
         result: "In progress",
         date: GS.today,
         figures: [dpChL.found + " of " + dpChL.hidden + " words", dpWrong(dpChL.wrong).replace(/^./, (c) => c.toUpperCase())],
-        listTitle: "Every guess",
         share: null,
         lines: dpChL.lines
       },
@@ -4606,7 +4583,6 @@
         result: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }),
         date: GS.today,
         figures: ["5 of 5 wrecks", SV_TODAY_DIVES.length + " of 30 dives", "1 hint"],
-        listTitle: "Every dive",
         share: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }),
         shareLines: [dpSvHead(DP_NO, SV_TODAY_DIVES, true), ...svMarks(SV_TODAY_DIVES)],
         lines: svLines(SV_TODAY_DIVES, SV_TODAY_HINT)
@@ -4621,7 +4597,6 @@
         result: "In progress",
         date: GS.today,
         figures: [svSunk(dpSvL) + " of 5 wrecks", dpSvL.length + " of 30 dives"],
-        listTitle: "Every dive",
         share: null,
         lines: svLines(dpSvL)
       }
@@ -4970,7 +4945,6 @@
         result: hgStatus(x).label,
         date: x.d.toLocaleString("en-GB", { weekday: "long" }) + " " + x.date,
         figures: x.end ? [x.title, x.end] : [x.title],
-        listTitle: "The day",
         share: null,
         lines: x.facts
       };
@@ -5355,7 +5329,6 @@
         edKey: g.id,
         result: null,
         date: pzLong(gAt) + ", 21:40",
-        listTitle: "Every try",
         share: null,
         lines: [["Try 1", "OAK · ASH · ELM · YEW", "Found: trees"], ["Try 2", "BASS · CHORD · SCALE · PIKE", "One away"]]
       };
@@ -5872,7 +5845,7 @@
     );
   };
   const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap), fig)), last)));
-  const GsMoves = ({ s }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React$1.createElement(DS.Disclosure, { title: gsOr(s.listTitle) + " (" + s.lines.length + ")" }, /* @__PURE__ */ React$1.createElement(DS.MoveList, { label: gsOr(s.listTitle) }, s.lines.map((l, i) => /* @__PURE__ */ React$1.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
+  const GsMoves = ({ s }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React$1.createElement(DS.Disclosure, { title: "Every move (" + s.lines.length + ")" }, /* @__PURE__ */ React$1.createElement(DS.MoveList, { label: "Every move" }, s.lines.map((l, i) => /* @__PURE__ */ React$1.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
   const gsHeadGame = (s) => s.gid === "word" ? "Guess" : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
   const gsHeadTitle = (s, ed) => ed ? ed.title || "No. " + ed.n : s.title || (s.number != null ? "No. " + s.number : null);

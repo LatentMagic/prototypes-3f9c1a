@@ -54,7 +54,7 @@ CPR_BW_JOURNAL = [
   [3, 'Rang the Bell of Hollowmere in the chapel tower again. The mist drew back from the marsh. Quest complete.'],
 ];
 GS_SESSIONS['gs-pu-barrow-ch1'] = { kind: 'chapter', gid: 'barrow', edKey: 'bw1', game: GS_GAMES.barrow.name, art: 'barrow', result: 'Quest complete',
-  figures: ['3 sessions', 'Level 2'], listTitle: 'The story', lines: CPR_BW_JOURNAL.map(([n, t]) => ['Session ' + n, t]), share: 'Quest complete',
+  figures: ['3 sessions', 'Level 2'], lines: CPR_BW_JOURNAL.map(([n, t]) => ['Session ' + n, t]), share: 'Quest complete',
   shareLines: ['Adventure: The Barrow of Hollowmere', 'Wren the Rogue, level 2 · ✅ Bell returned · 3 sessions'], credit: true };
 // Sample achievements. Those naming cut content (the seal, loot, the bronze ring, five levels, the sheep) are cut or reworded to the authored world.
 BW_ACH = [

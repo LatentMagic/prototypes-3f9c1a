@@ -345,7 +345,7 @@ PH_UNF_EDS = (() => {
   // The second unplayed earlier day of Daily Groups.
   const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1];
   const gAt = phAt(g.d, 21, 40);
-  GS_SESSIONS['groups-unfinished'] = { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', listTitle: 'Every try', share: null,
+  GS_SESSIONS['groups-unfinished'] = { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', share: null,
     lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'BASS · CHORD · SCALE · PIKE', 'One away']] };
   GS_SESSIONS['delve-unfinished'] = GS_SESSIONS['delve-live'];
   return { [g.id]: { gid: 'groups', x: g, sid: 'groups-unfinished', at: gAt } };

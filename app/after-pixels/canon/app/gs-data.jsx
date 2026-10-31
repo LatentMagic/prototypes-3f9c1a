@@ -231,7 +231,7 @@ export const GS_SESSIONS = {
     kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Elsie rescued', date: 'Monday 5 October',
     figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 9/13'],
     tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
-    listTitle: 'Every roll', lines: GS_DV_WON,
+    lines: GS_DV_WON,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
     setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 13, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
@@ -241,50 +241,50 @@ export const GS_SESSIONS = {
   // Daily Word and Daily Mystery tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
-    listTitle: 'Every guess', share: 'Solved in 3 of 6',
+    share: 'Solved in 3 of 6',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STILL']),
   },
   // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
   // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
   'word-hard': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
-    listTitle: 'Every guess', share: 'Solved in 5 of 6',
+    share: 'Solved in 5 of 6',
     lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOUR', 'FLOOR']),
   },
   'word-failed': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
-    listTitle: 'Every guess', share: 'Failed',
+    share: 'Failed',
     lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 4 is A.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
   },
   // This week's room, No. 1 The Clockmaker’s Study, played on Tuesday: escaped in 28 min, under par, 1 hint, 2 wrong tries.
   'escape-week': {
     kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', result: 'Escaped in 28 min, under par', date: GS.today,
     figures: ['28 min, under par', '1 hint', '2 wrong tries'],
-    listTitle: 'Every move', share: 'Escaped in 28 min, under par', shareLines: ['Escape No. 1 · escaped in 28 min, under par · 1 hint 💡 · 2 wrong tries'],
+    share: 'Escaped in 28 min, under par', shareLines: ['Escape No. 1 · escaped in 28 min, under par · 1 hint 💡 · 2 wrong tries'],
     lines: GS_ES1_LINES,
   },
   'mystery-today': {
     kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, result: 'Failed', loss: true, date: GS.today,
     setting: 'a storm-bound weekend at Hollowmere House', victim: 'Madame Odette Varga, the medium',
-    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Failed',
+    figures: ['2 questions', 'No hints'], share: 'Failed',
     lines: [...GS_MYSTERY_QS, ['Accusation', 'Sebastian Wyle, with the iron poker, in the dining room', 'Wrong', 'The suspect, the weapon and the room were all wrong']],
   },
   'word-1005': {
     kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
-    listTitle: 'Every guess', share: 'Solved in 4 of 6',
+    share: 'Solved in 4 of 6',
     lines: gsWordLines('CHAIN', ['CRANE', 'CHANT', 'CHAIR', 'CHAIN']),
   },
   // Daily Groups. Fish 🟦, weather 🟨, music 🟪, fence 🟩. Share rows hide every word.
   'groups-today': {
     kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', result: 'All 4 groups, 1 mistake', date: GS.today,
-    figures: ['4 of 4 groups', '1 mistake'], listTitle: 'Every try', share: 'All 4 groups, 1 mistake',
+    figures: ['4 of 4 groups', '1 mistake'], share: 'All 4 groups, 1 mistake',
     shareHead: 'Daily Groups #88 · 1 mistake', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟨', '🟪🟪🟪🟪', '🟩🟩🟩🟩'],
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'],
       ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather'], ['Try 4', 'BASS · CHORD · SCALE · NOTE', 'Found: music'], ['Try 5', 'RAIL · GATE · POST · PANEL', 'Found: parts of a fence']],
   },
   'groups-1005': {
     kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', result: 'All 4 groups, no mistakes', date: 'Monday 5 October',
-    figures: ['4 of 4 groups', 'No mistakes'], listTitle: 'Every try', share: 'All 4 groups, no mistakes',
+    figures: ['4 of 4 groups', 'No mistakes'], share: 'All 4 groups, no mistakes',
     shareHead: 'Daily Groups #87 · no mistakes', rows: ['🟨🟨🟨🟨', '🟦🟦🟦🟦', '🟩🟩🟩🟩', '🟪🟪🟪🟪'],
     lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'JACK · KING · QUEEN · ACE', 'Found: playing cards'],
       ['Try 3', 'MARS · VENUS · PLUTO · EARTH', 'Found: planets'], ['Try 4', 'BOW · STERN · DECK · HULL', 'Found: parts of a ship']],
@@ -292,14 +292,14 @@ export const GS_SESSIONS = {
   // Case 1, The Last Night at Gull Point, solved.
   casebook: {
     kind: 'case', gid: 'casebook', game: GS_NAME.casebook, art: 'casebook', result: 'Solved', date: 'Monday 5 October',
-    figures: ['11 of 16 turns', '4 of 4 lies exposed', 'You accused Dr. Celia Rourke'], listTitle: 'Every turn', share: 'Solved',
+    figures: ['11 of 16 turns', '4 of 4 lies exposed', 'You accused Dr. Celia Rourke'], share: 'Solved',
     shareLines: ['Casebook: The Last Night at Gull Point', '✅ solved · 11 of 16 turns · 4 lies exposed'],
     lines: gsCbLines(GS_CB_REC),
   },
   'mystery-1004': {
     kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 62, q: 2, hints: 0, result: 'Solved', date: 'Sunday 4 October',
     setting: 'the annual gala of the Royal Botanical Society', victim: 'Dr Ambrose Kell, the collector',
-    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: 'Solved',
+    figures: ['2 questions', 'No hints'], share: 'Solved',
     lines: [['Question 1', 'Was Mr Graves in the study?', 'The inspector said yes'], ['Question 2', 'Did Dr Helena Strand have the curtain cord?', 'The inspector said yes'],
       ['Accusation', 'Ivy Marchbank, with the vial of foxglove, in the wine cellar', 'Right']],
   },
@@ -336,13 +336,13 @@ export const GS_ED_SIDS = {
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
-  'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, listTitle: 'Every guess', share: null,
+  'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
     lines: gsWordLines('STILL', ['CRANE', 'SLATE']) },
-  'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], listTitle: 'Every try', share: null,
+  'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },
   'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, live: true, result: 'In progress', date: GS.today,
-    figures: ['2 questions', 'No hints'], listTitle: 'Every question', share: null, lines: GS_MYSTERY_QS.slice() },
-  'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, listTitle: 'Every move', share: null,
+    figures: ['2 questions', 'No hints'], share: null, lines: GS_MYSTERY_QS.slice() },
+  'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 11/11'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,

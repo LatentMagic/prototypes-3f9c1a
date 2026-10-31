@@ -70,7 +70,7 @@ A route in `GS_BARE` (`main.jsx`) shows no top bar, and a route in `GS_LISTING` 
 </important>
 
 <important if="you are changing a fact a screen shows, or who can play a game">
-Every fact a screen shows is held once and read from there, never retyped: in `gs-data.jsx`, or in the file that adds that game to `GS_GAMES` (`gs-where-chain-salvage.jsx`, `gs-more-games.jsx`). Who can play what is each game's `access` in `GS_GAMES`, derived by `gsAccess`. Each session's moves are `GS_SESSIONS[sid].lines`, titled by that session's own `listTitle`.
+Every fact a screen shows is held once and read from there, never retyped: in `gs-data.jsx`, or in the file that adds that game to `GS_GAMES` (`gs-where-chain-salvage.jsx`, `gs-more-games.jsx`). Who can play what is each game's `access` in `GS_GAMES`, derived by `gsAccess`. Each session's moves are `GS_SESSIONS[sid].lines`, all titled "Every move (N)" by `GsMoves` in `gs-session.jsx`, whatever the game.
 </important>
 
 <important if="you are touching a game's editions">

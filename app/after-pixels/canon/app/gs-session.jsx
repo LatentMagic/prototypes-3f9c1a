@@ -110,8 +110,8 @@ export const GsSessCard = ({ r, board, rows, last, className = '', style }) => (
 // Every move: the game's list as the design system's MoveList, closed, below the game's own section; the same for every game.
 export const GsMoves = ({ s }) => (
   <section className="gs-moves">
-    <DS.Disclosure title={gsOr(s.listTitle) + ' (' + s.lines.length + ')'}>
-      <DS.MoveList label={gsOr(s.listTitle)}>
+    <DS.Disclosure title={'Every move (' + s.lines.length + ')'}>
+      <DS.MoveList label="Every move">
         {s.lines.map((l, i) => <DS.MoveRow key={i} label={l[0]} parts={l.slice(1)} />)}
       </DS.MoveList>
     </DS.Disclosure>
