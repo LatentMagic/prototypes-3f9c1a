@@ -74,30 +74,32 @@ const cnwLoop = (res, len, th) => {
 const CNW_SAY = { right: 'right', wrong: 'wrong', given: 'given away' };
 // Folded into balanced rows so no link shrinks and none stands alone: the card's width fixes how many links a row holds, the rows
 // share the guesses as evenly as they can (a hard day of 20+ guesses is two or three rows). The numbers run on across rows.
-const CnwLinkRow = ({ items }) => {
-  const len = 8 + (items.length - 1) * CNW_STEP + CNW_H;
+const CNW_OVERLAP = 22;
+const CnwLinkRow = ({ items, step }) => {
+  const len = 8 + (items.length - 1) * step + CNW_H;
   return (
     <svg width={len} height="48" viewBox={'0 0 ' + len + ' 48'} aria-hidden="true">
-      {items.slice(1).map((t, i) => <line key={'b' + i} className="cnw-bar" x1={4 + i * CNW_STEP + CNW_H} y1={4 + CNW_W / 2} x2={4 + (i + 1) * CNW_STEP} y2={4 + CNW_W / 2} />)}
-      {items.map((t, i) => <rect key={i} x={4 + i * CNW_STEP} y={4} width={CNW_H} height={CNW_W} rx={CNW_W / 2} className={'cnw-loop is-' + t.res} {...cnwLoop(t.res, CNW_H, CNW_W)} />)}
-      {items.map((t, i) => <text key={'n' + i} x={4 + i * CNW_STEP + CNW_H / 2} y="44" textAnchor="middle">{t.n}</text>)}
+      {step === CNW_STEP && items.slice(1).map((t, i) => <line key={'b' + i} className="cnw-bar" x1={4 + i * step + CNW_H} y1={4 + CNW_W / 2} x2={4 + (i + 1) * step} y2={4 + CNW_W / 2} />)}
+      {items.map((t, i) => <rect key={i} x={4 + i * step} y={4} width={CNW_H} height={CNW_W} rx={CNW_W / 2} className={'cnw-loop is-' + t.res} {...cnwLoop(t.res, CNW_H, CNW_W)} />)}
+      {items.map((t, i) => <text key={'n' + i} x={4 + i * step + CNW_H / 2} y="44" textAnchor="middle">{t.n}</text>)}
     </svg>);
 };
 const cnwFold = (g, per) => { const rows = Math.ceil(g.length / per); const size = Math.ceil(g.length / rows); const out = [];
   for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
   return out; };
 const CnwLinks = ({ g }) => {
+  const step = usePgSetting('links') === 'overlap' ? CNW_OVERLAP : CNW_STEP;
   const ref = React.useRef(null); const [per, setPer] = React.useState(8);
   React.useLayoutEffect(() => {
     const me = ref.current; const pic = me.closest('.cnw-pic'); if (!pic) return undefined;
     const fit = () => { let room = pic.clientWidth; const par = me.parentElement;
       if (par.classList.contains('cnw-under') && getComputedStyle(par).flexDirection === 'row') room -= [...par.children].filter((c) => c !== me).reduce((n, c) => n + c.offsetWidth + 24, 0);
-      setPer(Math.max(1, Math.floor((room - 8 - CNW_H) / CNW_STEP) + 1)); };
+      setPer(Math.max(1, Math.floor((room - 8 - CNW_H) / step) + 1)); };
     fit(); const ro = new ResizeObserver(fit); ro.observe(pic); return () => ro.disconnect();
-  }, []);
+  }, [step]);
   return (
     <span ref={ref} className="cnw-links" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + g.map((t) => CNW_SAY[t.res]).join(', ')}>
-      {cnwFold(g, per).map((row, r) => <CnwLinkRow key={r} items={row} />)}
+      {cnwFold(g, per).map((row, r) => <CnwLinkRow key={r} items={row} step={step} />)}
     </span>);
 };
 
@@ -262,6 +264,7 @@ export const initPlaygroundChainNow = () => {
     { key: 'away', label: 'Given away', options: [{ value: 'amber', label: 'Amber' }, { value: 'grey', label: 'Grey, as Where' }] },
     { key: 'wrap', label: 'Phone wrap (A)', options: [{ value: 'rows', label: 'Rows' }, { value: 'down', label: 'Down' }, { value: 'fit', label: 'Fit one line' }, { value: 'bend', label: 'Bend' }, { value: 'balanced', label: 'Balanced' }] },
     { key: 'unfound', label: 'Unfound (A)', options: [{ value: 'dashed', label: 'Dashed' }, { value: 'session', label: 'Session tiles' }, { value: 'link', label: 'Open link' }, { value: 'unlit', label: 'Unlit' }] },
+    { key: 'links', label: 'Guess links', options: [{ value: 'apart', label: 'Apart' }, { value: 'overlap', label: 'Overlapping' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'fresh', label: 'Not yet played', state: 'library-chain', go: (gs) => gs.setReview({ never: 'chain' }) },
       { value: 'live', label: 'In progress', state: 'library-chain-in-progress' },
