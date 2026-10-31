@@ -92,7 +92,6 @@ import { PgBar, pgActive } from './playground.jsx';
 import { FitView, isFramed, useFit } from './fit.jsx';
 import { initPlaygroundGuessResult } from './playground-guess-result.jsx';
 import { initPlaygroundGuessNow } from './playground-guess-now.jsx';
-import { initPlaygroundChainSize } from './playground-chain-size.jsx';
 import { initGsChain } from './gs-chain.jsx';
 
 const { useState, useEffect, useRef } = React;
@@ -481,4 +480,3 @@ initGsDelve();
 initMain();
 initPlaygroundGuessResult();
 initPlaygroundGuessNow();
-initPlaygroundChainSize();

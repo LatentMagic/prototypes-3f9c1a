@@ -77,7 +77,7 @@ const ChnGuesses = ({ g }) => {
     </div>);
 };
 
-// --cw and --ch (each chain's drawn size) and --chn-rows (the board's rows) are for a playground to size by; canon does not read them.
+// --cw and --ch (each chain's drawn size) and --chn-rows (the board's rows) size the chains against the board (gs-chain.css).
 export const ChnSessBody = ({ s }) => {
   if (!s.play) return s.lines.length ? <GsMoves s={s} /> : null;
   const p = chnRead(s);

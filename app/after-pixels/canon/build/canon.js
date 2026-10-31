@@ -9562,30 +9562,6 @@
   const initGsChain = () => {
     GS_SESSION_BODY.chain = ChnSessBody;
   };
-  const ChsBody = ({ s }) => {
-    const dir = usePgSetting("dir");
-    return /* @__PURE__ */ React$1.createElement("div", { className: "chs chs-" + dir }, /* @__PURE__ */ React$1.createElement(ChnSessBody, { s }));
-  };
-  const CHS = { title: "Chain size", settings: [
-    { key: "dir", label: "Direction", options: [
-      { value: "rebalance", label: "A Rebalanced" },
-      { value: "fluid", label: "B Fluid" },
-      { value: "tied", label: "C Links as tiles" },
-      { value: "capped", label: "D Fits the screen" },
-      { value: "matched", label: "E Chain as long as the board" },
-      { value: "canon", label: "As built" }
-    ] },
-    { key: "play", label: "Play", options: [
-      { value: "solved", label: "Solved", state: "session-chain" },
-      { value: "live", label: "In progress", state: "session-chain-in-progress" },
-      { value: "failed", label: "Failed", state: "session-chain-failed" },
-      { value: "earlier", label: "Earlier", state: "session-chain-earlier" }
-    ] }
-  ] };
-  const initPlaygroundChainSize = () => {
-    pgRegister("chain-size", CHS);
-    if (pgActive() === CHS) GS_SESSION_BODY.chain = ChsBody;
-  };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
   let GS_USER_DEFAULT;
@@ -10015,5 +9991,4 @@
   initMain();
   initPlaygroundGuessResult();
   initPlaygroundGuessNow();
-  initPlaygroundChainSize();
 })(React, ReactDOM);

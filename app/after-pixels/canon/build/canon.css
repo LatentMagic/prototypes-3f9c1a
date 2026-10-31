@@ -2867,8 +2867,14 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    and layout (playground-guess-result.css: .pgr-card, .pgr-duo, .pgr-panel) and its tiles (gs-word.css: .wd-t, --wd-dash), so it
    is imported after both. */
 
-/* The tiles at Guess's size, shrunk only when the longest row (--chn-n tiles) would not fit the card. */
-.chn-board { --tc: min(var(--t), calc((100cqi - (var(--chn-n) - 1) * var(--g)) / var(--chn-n))); display: grid; justify-items: center; }
+/* KEEP: the tile is 40px on a phone and 44px from 760px, shrunk only when the longest row (--chn-n tiles) would not fit the card
+   (--wcap); the joint between rows is 20px; one chain unit --lu is 1.3px (1.5px from 760px), so a link stands about one tile tall;
+   the key's type is 14px (15px from 760px). The board shows every word, so it is always five to seven rows high, and these sizes
+   keep the guesses in proportion to it. */
+.chn-card { --wcap: calc((100cqi - (var(--chn-n) - 1) * var(--g)) / var(--chn-n)); --ct: min(var(--wcap), 40px); --jh: 20px; --lu: 1.3px; --kf: 14px;
+  --bh: calc(var(--chn-rows) * var(--ct) + (var(--chn-rows) - 1) * var(--jh)); }
+@media (min-width: 760px) { .chn-card { --ct: min(var(--wcap), 44px); --lu: 1.5px; --kf: 15px; } }
+.chn-board { --tc: var(--ct); display: grid; justify-items: center; }
 .chn-row { display: flex; justify-content: center; gap: var(--g); }
 .chn-t { width: var(--tc); height: var(--tc); font-size: calc(var(--tc) * .5); }
 .chn-t.is-end { background: var(--off-white); color: var(--page); }
@@ -2876,14 +2882,19 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .chn-t.is-found { border: 2px solid #4CC38A; color: var(--text); }
 .chn-t.is-given { border: 2px solid #E5A63B; color: #E5A63B; }
 .chn-t.is-more { background: var(--wd-dash); }
-.chn-joint { display: grid; place-items: center; height: 24px; }
-.chn-joint svg { display: block; }
+.chn-joint { display: grid; place-items: center; height: var(--jh); }
+.chn-joint svg { display: block; height: max(16px, calc(var(--jh) - 4px)); width: auto; aspect-ratio: 16 / 22; }
 .chn-joint rect { fill: none; stroke: #918B80; stroke-width: 2; }
 
 /* The guesses: one prow, full width on a phone (Guess's panel splits in two for its ring and hint). */
 .chn-panel { grid-template-columns: 1fr; }
 .chn-guesses { display: grid; justify-items: center; gap: 16px; }
-.chn-chain { display: block; overflow: visible; }
+.chn-chain { display: block; overflow: visible; width: min(calc(var(--cw) * var(--lu)), 100%); height: auto; aspect-ratio: var(--cw) / var(--ch); }
+/* KEEP: under 760px the guesses take the card's full width; from 760px the chain down never runs longer than the board (--bh);
+   from 1100px the key stands beside the chain, so the board sets the card's height (between, a tablet has no room beside). */
+@media (max-width: 759.98px) { .chn-guesses { grid-template-columns: minmax(0, 1fr); width: 100%; } }
+@media (min-width: 760px) { .chn-chain.is-down { width: auto; height: min(calc(var(--ch) * var(--lu)), var(--bh)); } }
+@media (min-width: 1100px) { .chn-guesses { grid-auto-flow: column; align-items: center; gap: 24px; } }
 .chn-chain text { font: 600 12px/1 var(--font-text); fill: var(--muted); }
 .chn-chain.is-down { display: none; }
 @container dv2 (min-width: 672px) {
@@ -2898,59 +2909,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .chn-loop.is-given { stroke: #E5A63B; }
 .chn-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 0; padding: 0; list-style: none; }
 @container dv2 (min-width: 672px) { .chn-key { flex-direction: column; align-items: flex-start; } }
-.chn-key li { display: flex; align-items: center; gap: 6px; font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+.chn-key li { display: flex; align-items: center; gap: 6px; font: 600 var(--kf)/1.2 var(--font-text); color: var(--muted); }
 .chn-key b { color: var(--text); font-variant-numeric: tabular-nums; }
-.chn-key svg { flex: none; }
-/* PLAYGROUND, not canon: Chain's session card sized five ways (app/playground-chain-size.jsx). Imported after gs-chain.css, whose
-   board, joints and chains it resizes. Every direction sets the same four properties on the card, where --g, --chn-n and
-   --chn-rows are known:
-   --ct  the tile's side;  --jh  the joint's height between rows;  --lu  one unit of the chains' drawing (a link is 16 by 30 units,
-   38 units from one link to the next);  --kf  the key's type size.
-   --wcap is the most a tile can be for the longest row to fit the card. */
-
-.chs { display: contents; }
-.chs .chn-card { --wcap: calc((100cqi - (var(--chn-n) - 1) * var(--g)) / var(--chn-n)); }
-
-/* Shared by the five directions (not "As built"): the board reads --ct and --jh, the chains --lu, the key --kf. */
-.chs:not(.chs-canon) .chn-board { --tc: var(--ct); }
-.chs:not(.chs-canon) .chn-joint { height: var(--jh); }
-.chs:not(.chs-canon) .chn-joint svg { height: max(16px, calc(var(--jh) - 4px)); width: auto; aspect-ratio: 16 / 22; }
-.chs:not(.chs-canon) .chn-chain { width: min(calc(var(--cw) * var(--lu)), 100%); height: auto; aspect-ratio: var(--cw) / var(--ch); }
-.chs:not(.chs-canon) .chn-key li { font-size: var(--kf); }
-.chs:not(.chs-canon) .chn-key svg { width: calc(var(--kf) * .9); height: auto; }
-/* --bh is the board's height. From 760px the chain never runs longer than the board. From 1100px the key stands beside the chain,
-   so the board sets the card's height; between (a tablet has no room beside) the key stays under it. Under 760px the chain across
-   may take the card's full width. */
-.chs:not(.chs-canon) .chn-card { --bh: calc(var(--chn-rows) * var(--ct) + (var(--chn-rows) - 1) * var(--jh)); }
-@media (max-width: 759.98px) { .chs:not(.chs-canon) .chn-guesses { grid-template-columns: minmax(0, 1fr); width: 100%; } }
-@media (min-width: 760px) { .chs:not(.chs-canon) .chn-chain.is-down { width: auto; height: min(calc(var(--ch) * var(--lu)), var(--bh)); } }
-@media (min-width: 1100px) { .chs:not(.chs-canon) .chn-guesses { grid-auto-flow: column; align-items: center; gap: 24px; } }
-
-/* A. Rebalanced: fixed sizes, one ratio. The tile comes down to 44px (40 on a phone) and a link stands 45px tall (about one
-   tile); the key goes up a size. */
-.chs-rebalance .chn-card { --ct: min(var(--wcap), 40px); --jh: 20px; --lu: 1.3px; --kf: 14px; }
-@media (min-width: 760px) { .chs-rebalance .chn-card { --ct: min(var(--wcap), 44px); --lu: 1.5px; --kf: 15px; } }
-
-/* B. Fluid: tile, joint and link all follow the window, wide or short, with no breakpoint. */
-.chs-fluid .chn-card { --ct: min(var(--wcap), clamp(32px, min(4.6vw + 14px, 5.6vh), 60px)); --jh: max(18px, calc(var(--ct) * .35));
-  --lu: clamp(1.2px, .08vw + .1vh + .2px, 2px); --kf: clamp(13px, .4vw + 10px, 16px); }
-
-/* C. Links as tiles: one size drives both. A link is exactly a tile tall and the joints between rows scale with it, so board
-   and guesses read at one scale. */
-.chs-tied .chn-card { --ct: min(var(--wcap), 42px); --jh: max(18px, calc(var(--ct) * .35)); --lu: calc(var(--ct) / 30); --kf: 14px; }
-@media (min-width: 760px) { .chs-tied .chn-card { --ct: min(var(--wcap), 50px); --kf: 15px; } }
-
-/* D. Fits the screen: the tile is the most the room under the page head allows for this board's rows (seven rows still fit),
-   between 28px and 56px, so the card ends on the first screen of a desktop; the guesses at a fixed 1.4 (1.6 from 760px). */
-.chs-capped .chn-card { --room: calc(100svh - var(--above)); --above: 300px; --jh: max(18px, calc(var(--ct) * .35)); --lu: 1.4px; --kf: 14px;
-  --ct: max(28px, min(var(--wcap), 52px, calc(var(--room) / (1.35 * var(--chn-rows) - .35)))); }
-@media (min-width: 760px) { .chs-capped .chn-card { --above: 470px; --lu: 1.6px; --kf: 15px;
-  --ct: max(28px, min(var(--wcap), 56px, calc(var(--room) / (1.35 * var(--chn-rows) - .35)))); } }
-
-/* E. Chain as long as the board: from 760px the guesses run the board's full height (so the two columns end level), up to
-   2.4 units; on a phone they run across the card's width. Tiles at 48px (40 on a phone). */
-.chs-matched .chn-card { --ct: min(var(--wcap), 40px); --jh: 20px; --lu: 1.8px; --kf: 14px; }
-@media (min-width: 760px) {
-  .chs-matched .chn-card { --ct: min(var(--wcap), 48px); --jh: 20px; --kf: 15px; }
-  .chs-matched .chn-chain.is-down { height: min(var(--bh), calc(var(--ch) * 2.4px)); }
-}
+.chn-key svg { flex: none; width: calc(var(--kf) * .9); height: auto; }
