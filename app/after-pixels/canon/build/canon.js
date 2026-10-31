@@ -9623,6 +9623,44 @@
     const cls = x.state === "found" ? "is-found" : x.state === "given" ? "is-given" : unf === "session" ? "is-shown" : unf === "unlit" ? "is-unlit" : "is-more is-dim";
     return /* @__PURE__ */ React$1.createElement("span", { className: "wd-t cnw-t " + cls }, x.word[0]);
   };
+  const cnwTextW = (txt, fam) => {
+    const g = cnwTextW.g || (cnwTextW.g = document.createElement("canvas").getContext("2d"));
+    g.font = "600 13px " + fam;
+    g.letterSpacing = "0.39px";
+    return g.measureText(txt.toUpperCase()).width;
+  };
+  const cnwBoxW = (x, unf, fam) => {
+    if (x && x.state !== "hidden") return cnwTextW(x.word, fam) + 20;
+    if (unf === "session") return ((x ? x.shown : 0) + 1) * 28 + 20;
+    if (unf === "link") return 64;
+    const t = x ? x.word.slice(0, x.shown) + (unf === "dashed" ? " " + "·".repeat(x.word.length - x.shown) : "") : "";
+    return Math.max(56, cnwTextW(t, fam) + 20);
+  };
+  const CnwBalanced = ({ list, unf }) => {
+    const ref = React$1.useRef(null);
+    const [room, setRoom] = React$1.useState(0);
+    const [fam, setFam] = React$1.useState("sans-serif");
+    React$1.useLayoutEffect(() => {
+      const pic = ref.current.closest(".cnw-pic");
+      const fit = () => {
+        setRoom(pic.clientWidth);
+        setFam(getComputedStyle(pic).fontFamily);
+      };
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(pic);
+      return () => ro.disconnect();
+    }, []);
+    const last = list.length - 1;
+    const rows = cnwFold(list.map((x, i) => ({ x, i })), 4);
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "cnw-bal", "aria-hidden": "true" }, rows.map((row, r) => {
+      const tight = room > 0 && row.reduce((n, { x }) => n + cnwBoxW(x, unf, fam), 0) + (row.length - 1) * 22 > room;
+      const more = r < rows.length - 1;
+      const short = r === rows.length - 1 && row.length < rows[0].length;
+      if (tight) return /* @__PURE__ */ React$1.createElement("div", { key: r, className: "cnw-bal-row is-tight", style: { "--n": row.length + (r > 0) + more } }, r > 0 && /* @__PURE__ */ React$1.createElement(CnwJoint, null), row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwTile, { x, end: x && (i === 0 || i === last), unf }), (k < row.length - 1 || more) && /* @__PURE__ */ React$1.createElement(CnwJoint, null))));
+      return /* @__PURE__ */ React$1.createElement("div", { key: r, className: "cnw-bal-row" + (short ? " is-short" : " is-full") }, row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf, out: more && k === row.length - 1, back: r > 0 && k === 0 }), k < row.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, null))));
+    }));
+  };
   const CnwRoute = ({ w, n, unf }) => {
     const list = w || Array.from({ length: n }, () => null);
     const last = list.length - 1;
@@ -9631,7 +9669,7 @@
       if (i % 3 === 0) rows.push([]);
       rows[rows.length - 1].push({ x, i });
     });
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-route", role: "img", "aria-label": w ? w.map((x) => x.state === "hidden" ? "a word starting " + x.word.slice(0, x.shown) : x.word + (x.state === "given" ? " (given away)" : "")).join(", ") : n + " words to link" }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf, out: i % 3 === 2 && i < last, back: i % 3 === 0 && i > 0 }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: i % 3 === 2 ? "is-brk" : "" })))), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend", "aria-hidden": "true" }, rows.map((row, r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend-row" + (r % 2 ? " is-rev" : "") }, row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf }), k < row.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))), r < rows.length - 1 && /* @__PURE__ */ React$1.createElement("div", { className: "cnw-turn" + (r % 2 ? " is-left" : "") }, /* @__PURE__ */ React$1.createElement(CnwJoint, null))))), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-fit", "aria-hidden": "true", style: { "--n": list.length } }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwTile, { x, end: x && (i === 0 || i === last), unf }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-route", role: "img", "aria-label": w ? w.map((x) => x.state === "hidden" ? "a word starting " + x.word.slice(0, x.shown) : x.word + (x.state === "given" ? " (given away)" : "")).join(", ") : n + " words to link" }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf, out: i % 3 === 2 && i < last, back: i % 3 === 0 && i > 0 }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, { cls: i % 3 === 2 ? "is-brk" : "" })))), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend", "aria-hidden": "true" }, rows.map((row, r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("div", { className: "cnw-bend-row" + (r % 2 ? " is-rev" : "") }, row.map(({ x, i }, k) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwBox, { x, unf }), k < row.length - 1 && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))), r < rows.length - 1 && /* @__PURE__ */ React$1.createElement("div", { className: "cnw-turn" + (r % 2 ? " is-left" : "") }, /* @__PURE__ */ React$1.createElement(CnwJoint, null))))), /* @__PURE__ */ React$1.createElement(CnwBalanced, { list, unf }), /* @__PURE__ */ React$1.createElement("div", { className: "cnw-fit", "aria-hidden": "true", style: { "--n": list.length } }, list.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(CnwTile, { x, end: x && (i === 0 || i === last), unf }), i < last && /* @__PURE__ */ React$1.createElement(CnwJoint, null)))));
   };
   const CnwA = ({ p, unf }) => /* @__PURE__ */ React$1.createElement("div", { className: "cnw-pic cnw-stack" }, /* @__PURE__ */ React$1.createElement(CnwRoute, { w: p.w, unf }), p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnwLinks, { g: p.g }));
   const CnwB = ({ p }) => {
@@ -9668,7 +9706,7 @@
     pgRegister("chain-now", { title: "Chain now card", settings: [
       { key: "dir", label: "Concept", options: [{ value: "c1", label: "A Route" }, { value: "c2", label: "B Today's link" }, { value: "c3", label: "C Two ends" }] },
       { key: "away", label: "Given away", options: [{ value: "amber", label: "Amber" }, { value: "grey", label: "Grey, as Where" }] },
-      { key: "wrap", label: "Phone wrap (A)", options: [{ value: "rows", label: "Rows" }, { value: "down", label: "Down" }, { value: "fit", label: "Fit one line" }, { value: "bend", label: "Bend" }] },
+      { key: "wrap", label: "Phone wrap (A)", options: [{ value: "rows", label: "Rows" }, { value: "down", label: "Down" }, { value: "fit", label: "Fit one line" }, { value: "bend", label: "Bend" }, { value: "balanced", label: "Balanced" }] },
       { key: "unfound", label: "Unfound (A)", options: [{ value: "dashed", label: "Dashed" }, { value: "session", label: "Session tiles" }, { value: "link", label: "Open link" }, { value: "unlit", label: "Unlit" }] },
       { key: "play", label: "Play", options: [
         { value: "fresh", label: "Not yet played", state: "library-chain", go: (gs) => gs.setReview({ never: "chain" }) },

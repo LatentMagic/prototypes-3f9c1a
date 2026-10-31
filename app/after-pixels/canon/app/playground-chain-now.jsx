@@ -143,6 +143,38 @@ const CnwTile = ({ x, end, unf }) => {
   const cls = x.state === 'found' ? 'is-found' : x.state === 'given' ? 'is-given' : unf === 'session' ? 'is-shown' : unf === 'unlit' ? 'is-unlit' : 'is-more is-dim';
   return <span className={'wd-t cnw-t ' + cls}>{x.word[0]}</span>;
 };
+// Balanced (a phone): rows of at most four words, shared as evenly as they go (5 is 3+2, 7 is 4+3), each box as wide as its word; a full
+// row stretches across, a short last row stays at the right so the last end is bottom-right. A row that would not fit at its words' width
+// falls back to fit's compact tiles. Widths are measured from the text (canvas), at the box's 13px.
+const cnwTextW = (txt, fam) => { const g = cnwTextW.g || (cnwTextW.g = document.createElement('canvas').getContext('2d'));
+  g.font = '600 13px ' + fam; g.letterSpacing = '0.39px'; return g.measureText(txt.toUpperCase()).width; };
+const cnwBoxW = (x, unf, fam) => {
+  if (x && x.state !== 'hidden') return cnwTextW(x.word, fam) + 20;
+  if (unf === 'session') return ((x ? x.shown : 0) + 1) * 28 + 20;
+  if (unf === 'link') return 64;
+  const t = x ? x.word.slice(0, x.shown) + (unf === 'dashed' ? ' ' + '\u00B7'.repeat(x.word.length - x.shown) : '') : '';
+  return Math.max(56, cnwTextW(t, fam) + 20);
+};
+const CnwBalanced = ({ list, unf }) => {
+  const ref = React.useRef(null); const [room, setRoom] = React.useState(0); const [fam, setFam] = React.useState('sans-serif');
+  React.useLayoutEffect(() => {
+    const pic = ref.current.closest('.cnw-pic'); const fit = () => { setRoom(pic.clientWidth); setFam(getComputedStyle(pic).fontFamily); };
+    fit(); const ro = new ResizeObserver(fit); ro.observe(pic); return () => ro.disconnect();
+  }, []);
+  const last = list.length - 1; const rows = cnwFold(list.map((x, i) => ({ x, i })), 4);
+  return (
+    <div ref={ref} className="cnw-bal" aria-hidden="true">{rows.map((row, r) => {
+      const tight = room > 0 && row.reduce((n, { x }) => n + cnwBoxW(x, unf, fam), 0) + (row.length - 1) * 22 > room;
+      const more = r < rows.length - 1; const short = r === rows.length - 1 && row.length < rows[0].length;
+      if (tight) return (
+        <div key={r} className="cnw-bal-row is-tight" style={{ '--n': row.length + (r > 0) + more }}>
+          {r > 0 && <CnwJoint />}
+          {row.map(({ x, i }, k) => <React.Fragment key={i}><CnwTile x={x} end={x && (i === 0 || i === last)} unf={unf} />{(k < row.length - 1 || more) && <CnwJoint />}</React.Fragment>)}</div>);
+      return (
+        <div key={r} className={'cnw-bal-row' + (short ? ' is-short' : ' is-full')}>
+          {row.map(({ x, i }, k) => <React.Fragment key={i}><CnwBox x={x} unf={unf} out={more && k === row.length - 1} back={r > 0 && k === 0} />{k < row.length - 1 && <CnwJoint />}</React.Fragment>)}</div>);
+    })}</div>);
+};
 // Phone layouts (the Wrap setting), all drawn and shown by css: rows three to a row with joint stubs at the break; down one word per
 // row; fit one line of tiles; bend two rows as one chain, the second running right to left, joined at the turn.
 const CnwRoute = ({ w, n, unf }) => {
@@ -156,6 +188,7 @@ const CnwRoute = ({ w, n, unf }) => {
     <div className="cnw-bend" aria-hidden="true">{rows.map((row, r) => <React.Fragment key={r}>
       <div className={'cnw-bend-row' + (r % 2 ? ' is-rev' : '')}>{row.map(({ x, i }, k) => <React.Fragment key={i}><CnwBox x={x} unf={unf} />{k < row.length - 1 && <CnwJoint />}</React.Fragment>)}</div>
       {r < rows.length - 1 && <div className={'cnw-turn' + (r % 2 ? ' is-left' : '')}><CnwJoint /></div>}</React.Fragment>)}</div>
+    <CnwBalanced list={list} unf={unf} />
     <div className="cnw-fit" aria-hidden="true" style={{ '--n': list.length }}>{list.map((x, i) => <React.Fragment key={i}>
       <CnwTile x={x} end={x && (i === 0 || i === last)} unf={unf} />{i < last && <CnwJoint />}</React.Fragment>)}</div>
   </>;
@@ -227,7 +260,7 @@ export const initPlaygroundChainNow = () => {
   pgRegister('chain-now', { title: 'Chain now card', settings: [
     { key: 'dir', label: 'Concept', options: [{ value: 'c1', label: 'A Route' }, { value: 'c2', label: "B Today's link" }, { value: 'c3', label: 'C Two ends' }] },
     { key: 'away', label: 'Given away', options: [{ value: 'amber', label: 'Amber' }, { value: 'grey', label: 'Grey, as Where' }] },
-    { key: 'wrap', label: 'Phone wrap (A)', options: [{ value: 'rows', label: 'Rows' }, { value: 'down', label: 'Down' }, { value: 'fit', label: 'Fit one line' }, { value: 'bend', label: 'Bend' }] },
+    { key: 'wrap', label: 'Phone wrap (A)', options: [{ value: 'rows', label: 'Rows' }, { value: 'down', label: 'Down' }, { value: 'fit', label: 'Fit one line' }, { value: 'bend', label: 'Bend' }, { value: 'balanced', label: 'Balanced' }] },
     { key: 'unfound', label: 'Unfound (A)', options: [{ value: 'dashed', label: 'Dashed' }, { value: 'session', label: 'Session tiles' }, { value: 'link', label: 'Open link' }, { value: 'unlit', label: 'Unlit' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'fresh', label: 'Not yet played', state: 'library-chain', go: (gs) => gs.setReview({ never: 'chain' }) },

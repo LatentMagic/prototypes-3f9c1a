@@ -75,11 +75,16 @@
 .cnw-turn { display: flex; justify-content: flex-end; height: 24px; padding-right: calc((100% - 44px) / 6 - 8px); }
 .cnw-turn.is-left { justify-content: flex-start; padding: 0 0 0 calc((100% - 44px) / 6 - 8px); }
 .cnw-turn svg { transform: rotate(90deg); }
-.cnw-fit { --t: min(36px, calc((100cqi - (var(--n) - 1) * 14px) / var(--n))); align-items: center; justify-content: center; }
-.cnw-fit .cnw-joint { width: 14px; }
-.cnw-fit .cnw-joint svg { width: 14px; height: 10px; }
-.cnw-fit .cnw-t { flex: none; font-size: 16px; }
-.cnw-fit .cnw-t.is-three { font-size: 13px; }
+.cnw-fit, .cnw-bal-row.is-tight { --t: min(36px, calc((100cqi - (var(--n) - 1) * 14px) / var(--n))); align-items: center; justify-content: center; }
+:is(.cnw-fit, .is-tight) .cnw-joint { width: 14px; }
+:is(.cnw-fit, .is-tight) .cnw-joint svg { width: 14px; height: 10px; }
+:is(.cnw-fit, .is-tight) .cnw-t { flex: none; font-size: 16px; }
+:is(.cnw-fit, .is-tight) .cnw-t.is-three { font-size: 13px; }
+.cnw-bal { display: none; width: 100%; gap: 8px; }
+.cnw-bal-row { display: flex; align-items: center; }
+.cnw-bal-row.is-short { justify-content: flex-end; }
+.cnw-bal-row:not(.is-tight) > .cnw-box { flex: 0 0 auto; padding: 0 8px; font-size: 13px; }
+.cnw-bal-row.is-full > .cnw-box { flex: 1 1 auto; }
 
 /* B, Today's link: the word large, the guesses and the count in one row under it. */
 .cnw-c2 { --t: 48px; }
@@ -109,6 +114,9 @@
   .cnw-wrap-bend .cnw-route, .cnw-wrap-fit .cnw-route { display: none; }
   .cnw-wrap-bend .cnw-bend { display: block; }
   .cnw-wrap-fit .cnw-fit { display: flex; }
+  .cnw-wrap-balanced .cnw-route { display: none; }
+  .cnw-wrap-balanced .cnw-bal { display: grid; }
+  .cnw-wrap-balanced .cnw-stub { display: grid; }
   .cnw-c2 { --t: min(44px, calc((100cqi - 24px) / 7)); }
   .cnw-c2 .is-ends { flex-direction: column; gap: 8px; --t: 36px; }
   .cnw-under { flex-direction: column; gap: 8px; }
