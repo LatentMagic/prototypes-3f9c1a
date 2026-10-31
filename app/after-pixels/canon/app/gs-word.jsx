@@ -10,7 +10,7 @@
 // The engine's marking: greens first, then each remaining letter of the answer lights at most one amber, left to right.
 import React from 'react';
 import { DS, useGs, GS_SESSIONS } from './gs-data.jsx';
-import { GsMoves } from './gs-session.jsx';
+import { GsMoves, GsSessCard } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
@@ -54,18 +54,50 @@ export const WdBoard = ({ s, guessesOnly }) => {
     </div>);
 };
 
-// ---- The result statement (owner, 2026-10-28): the store's status Tag at heading size, centred on the board's height: Solved
-// (green), Failed (amber), In progress (the neutral fill). It is the element every game's session page has. ----
+// ---- The result statement: Solved, Failed or In progress. It is the element every game's session page has. ----
 export const wdResult = (s) => (s.live ? { tone: 'live', word: 'In progress' } : s.loss ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' });
-export const WdResult = ({ s }) => { const r = wdResult(s); return (
-  <div className="wd-res"><h2 className={'wd-tag is-' + r.tone}>{r.tone !== 'live' && <DS.Icon name={r.tone === 'ok' ? 'check' : 'close'} size={24} />}{r.word}</h2></div>); };
 
-// ---- The session page's own part, under the shared head: one card holding the board and the result. Every guess is the store's
-// plain list, collapsed. ----
-export const WdSessBody = ({ s }) => <>
-  <div className="wd-play"><section className="wd-card" aria-label="How it went"><WdBoard s={s} /><WdResult s={s} /></section></div>
+// ---- The session page's own part, under the shared head (Joe, 2026-10-30, 6a Ring lifted): the shared session card (GsSessCard)
+// with the board (guesses only), the guesses as a ring and the hint in its place among five; the word on a loss as the panel's
+// last row, never on the left. Every guess is the store's plain list, collapsed. ----
+const wdPlay = (s) => {
+  const ev = wdRead(s).events; const guesses = ev.filter((e) => e.kind === 'guess');
+  return { n: guesses.length, hint: ev.find((e) => e.kind === 'hint') || null, won: !s.live && !s.loss };
+};
+// The ring: six segments, one per guess: green for the guess that solved it, amber when all six were spent, grey for one used,
+// the card's line for one not reached (in progress too: no mark for the next guess, Joe). The panel names it, so it holds the number alone.
+const WD_RING_R = 52; const WD_RING_C = 2 * Math.PI * WD_RING_R; const WD_RING_SEG = WD_RING_C / 6; const WD_RING_GAP = 7;
+const WdRing = ({ s, p }) => {
+  const seg = (i) => (i <= p.n ? (p.won && i === p.n ? 'win' : s.loss ? 'lost' : 'used') : 'spare');
+  return (
+    <div className="wd-ring" role="img" aria-label={p.n + (p.n === 1 ? ' guess' : ' guesses') + ' of six'}>
+      <svg viewBox="0 0 128 128" aria-hidden="true">
+        {[1, 2, 3, 4, 5, 6].map((i) => <circle key={i} className={'is-' + seg(i)} cx="64" cy="64" r={WD_RING_R}
+          strokeDasharray={(WD_RING_SEG - WD_RING_GAP) + ' ' + (WD_RING_C - WD_RING_SEG + WD_RING_GAP)} transform={'rotate(' + (-90 + (i - 1) * 60 + (WD_RING_GAP / WD_RING_C) * 180) + ' 64 64)'} />)}
+      </svg>
+      <span className="wd-ring-n" aria-hidden="true"><b>{p.n}</b></span>
+    </div>);
+};
+// The hint in its place among the word's five letters: the hint's square dashed with its letter (the hint edge), the others flat
+// in the line colour, so only the hint reads.
+const WdPlaces = ({ s, p }) => (
+  <div className={'wd-places' + (p.hint ? '' : ' is-none')} role="img" aria-label={p.hint ? 'Hint: ' + p.hint.text : s.live ? 'Hint not used yet' : 'No hint'}>
+    <div className="wd-places-row" aria-hidden="true">
+      {[0, 1, 2, 3, 4].map((j) => (p.hint && p.hint.pos === j ? <span key={j} className="wd-place is-hint">{p.hint.letter}</span> : <span key={j} className="wd-place" />))}
+    </div>
+    {!p.hint && <span className="wd-places-note" aria-hidden="true">{s.live ? 'Not used yet' : 'None taken'}</span>}
+  </div>);
+// A loss: the word in outlined tiles at half the board's.
+const WdAnswer = ({ s }) => (s.loss && s.answer ? (
+  <div className="wd-ans" role="img" aria-label={'The word was ' + s.answer}>
+    <span className="gs-sc-cap" aria-hidden="true">The word</span>
+    <div className="wd-ans-row" aria-hidden="true">{s.answer.split('').map((ch, i) => <span key={i} className="wd-t wd-ans-t">{ch}</span>)}</div>
+  </div>) : null);
+export const WdSessBody = ({ s }) => { const p = wdPlay(s); return <>
+  <GsSessCard r={wdResult(s)} className="wd-sc" board={<WdBoard s={s} guessesOnly />}
+    rows={[['Guesses', <WdRing s={s} p={p} />], ['Hint', <WdPlaces s={s} p={p} />]]} last={<WdAnswer s={s} />} />
   <GsMoves s={s} />
-</>;
+</>; };
 
 // The head carries no result: the game's part has it (as Escape's).
 export const registerWord = () => {

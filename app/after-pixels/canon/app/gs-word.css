@@ -2,11 +2,6 @@
    Imported by canon.css in the order listed there; later files win ties. */
 
 /* ---- Daily Word (1236): the session page's board and cover (app/gs-word.jsx) ---- */
-/* KEEP: the card is exactly as wide as what it holds and centred in the column: no stretch of card with nothing in it. */
-.wd-play { display: grid; justify-items: center; min-width: 0; }
-/* The tile size (--t) and gap (--g) are set on the card, so the board and the result share them. */
-.wd-card { --g: 6px; --t: min(64px, calc((100cqi - 32px - 34px - 2 * 28px - 4 * var(--g)) / 5));
-  box-sizing: border-box; width: max-content; max-width: 100%; min-width: 0; padding: 16px; display: grid; gap: 20px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); }
 /* Tiles are square. Phone: from the column's width (page and card padding, the number gutters out), up to 64px. From 640px:
    from the window's height, so the hard play fits under the head on a laptop, 56 to 72px. */
 .wd-board { display: grid; gap: var(--g); justify-content: center; }
@@ -42,28 +37,43 @@
    stay centred while the board has the card to itself. */
 .wd-nrow { display: grid; grid-template-columns: 20px auto 20px; align-items: center; gap: 8px; font: 600 13px/1 var(--font-text); }
 .wd-n { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-/* The result statement: the system's Tag (fill, ink, icon, square edge) at heading size. On a phone it sits above the board,
-   centred, never wider than it (so the card hugs the tiles).
-   KEEP: a faint rule parts the tag from the board, 20px either side at every width (owner, 2026-10-28): under the tag here,
-   upright beside it from 900px. */
-.wd-res { order: -1; width: 0; min-width: 100%; display: flex; align-items: center; justify-content: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
-/* KEEP: the tag is exactly one tile high at every tile size; its type, icon and padding scale with the tile. */
-.wd-tag { margin: 0; box-sizing: border-box; display: inline-flex; align-items: center; gap: calc(var(--t) * .16); height: var(--t); padding: 0 calc(var(--t) * .3); font: 700 calc(var(--t) * .42)/1 var(--font-heading); white-space: nowrap; }
-.wd-tag svg { width: calc(var(--t) * .4); height: calc(var(--t) * .4); }
-.wd-tag.is-ok { background: var(--success); color: var(--success-on, #08140E); } .wd-tag.is-bad { background: var(--warning); color: var(--warning-on, #1B1917); }
-.wd-tag.is-live { background: color-mix(in srgb, var(--text) 14%, var(--page)); color: var(--text); }
 @container gs (min-width: 640px) {
-  .wd-card { --g: 8px; --t: clamp(56px, calc((100vh - 560px) / 5), 72px); padding: 24px; gap: 20px; }
   .wd-nrow { grid-template-columns: 24px auto 24px; gap: 12px; font-size: 14px; }
 }
 /* KEEP: from 900px the result sits to the right of the board, centred on its height, so the card is wide rather than tall.
    Beside it the numbers' mirrored gutter goes, and the number column is exactly one digit wide (1ch in the numbers' own
    font) on every row, the hint row's empty one included, so the card hugs the numbers and the hint stays in its columns. */
 @container gs (min-width: 900px) {
-  .wd-card { grid-template-columns: auto auto; column-gap: 20px; align-items: center; }
-  .wd-res { order: 0; width: auto; min-width: 0; align-self: stretch; padding: 0 0 0 20px; border-bottom: 0; border-left: 1px solid var(--line); }
   .wd-nrow { grid-template-columns: 1ch auto; } .wd-nrow > span:last-child { display: none; }
 }
+/* ---- Daily Word's session card (app/gs-word.jsx WdSessBody, on the shared GsSessCard, gs-sess-card.css). ---- */
+/* KEEP: the tiles read 100cqi where they are drawn, inside the card (a container), so the phone size subtracts only the number
+   gutters either side (2 x 28px): about 49px at 390px wide. From 640px: from the window's height, so the hard play fits under
+   the head on a laptop, 56 to 72px. */
+.wd-sc { --g: 6px; --t: min(64px, calc((100cqi - 2 * 28px - 4 * var(--g)) / 5)); }
+@container gs (min-width: 640px) { .wd-sc { --g: 8px; --t: clamp(56px, calc((100vh - 560px) / 5), 72px); } }
+/* The ring: 104px, 128px from a 672px card. */
+.wd-ring { position: relative; width: 104px; height: 104px; }
+.wd-ring svg { display: block; width: 100%; height: 100%; }
+.wd-ring circle { fill: none; stroke-width: 12; stroke: var(--line); }
+.wd-ring circle.is-used { stroke: #918B80; }
+.wd-ring circle.is-win { stroke: var(--success); }
+.wd-ring circle.is-lost { stroke: var(--warning); }
+.wd-ring-n { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 2px; }
+.wd-ring-n b { font: 700 36px/1 var(--font-heading); color: var(--text); }
+@container dv2 (min-width: 672px) { .wd-ring { width: 128px; height: 128px; } .wd-ring-n b { font-size: 44px; } }
+/* The hint among five places: 30px squares, 36px from a 672px card. */
+.wd-places { --pt: 30px; display: grid; justify-items: center; gap: 10px; }
+.wd-places-row { display: flex; gap: 4px; }
+.wd-place { box-sizing: border-box; width: var(--pt); height: var(--pt); display: grid; place-items: center; background: var(--line); }
+.wd-place.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 calc(var(--pt) * .5)/1 var(--font-heading); }
+.wd-places-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+@container dv2 (min-width: 672px) { .wd-places { --pt: 36px; } }
+/* The word on a loss: tiles at half the board's, outlined in the ring's grey, the letters in the grey of a letter not in the word. */
+.wd-ans { display: grid; justify-items: center; gap: 8px; width: 100%; }
+.wd-ans-row { display: flex; gap: 4px; }
+.wd-ans-t { width: calc(var(--t) * .5); height: calc(var(--t) * .5); font-size: calc(var(--t) * .26); border: 1.5px solid #918B80; color: #ABA79E; }
+
 /* ---- Daily Word's now card (app/gs-word.jsx WdNow; owner, 2026-10-28). ---- */
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
 .wd-now { container: wdnow / inline-size; }

@@ -40,7 +40,7 @@ const PgnLast = ({ s, p, cls = 'pgn-tiles' }) => {
   return <div className={cls} role="img" aria-label={wdSay(p.last)}>{p.last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + p.last.marks[j]} aria-hidden="true">{ch}</span>)}</div>;
 };
 
-// The session page's ring (playground-guess-result), smaller: six segments, one per guess, the count inside, no caption.
+// The session page's ring (gs-word.jsx WdRing), smaller: six segments, one per guess, the count inside, no caption.
 const PGN_RING_R = 52; const PGN_RING_C = 2 * Math.PI * PGN_RING_R; const PGN_RING_SEG = PGN_RING_C / 6; const PGN_RING_GAP = 7;
 const PgnRing = ({ s, p }) => {
   const seg = (i) => (i <= p.n ? (p.won && i === p.n ? 'win' : s.loss ? 'lost' : 'used') : 'spare');

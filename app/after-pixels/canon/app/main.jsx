@@ -90,7 +90,6 @@ import { registerWord } from './gs-word.jsx';
 import { registerDelve } from './gs-delve.jsx';
 import { PgBar, pgActive } from './playground.jsx';
 import { FitView, isFramed, useFit } from './fit.jsx';
-import { initPlaygroundGuessResult } from './playground-guess-result.jsx';
 import { initPlaygroundGuessNow } from './playground-guess-now.jsx';
 import { initGsWhere } from './gs-where.jsx';
 
@@ -477,6 +476,5 @@ initGsPassHome();
 initGsPassLibrary();
 initGsDelve();
 initMain();
-initPlaygroundGuessResult();
 initPlaygroundGuessNow();
 initGsWhere();

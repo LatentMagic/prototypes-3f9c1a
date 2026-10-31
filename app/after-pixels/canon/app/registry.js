@@ -4,4 +4,4 @@ export const GS_LIBRARY = {}; // the library game pages, by game id
 export const GS_EDITIONS = {}; // each game's editions, by game id: (gs) => rows, newest first (edList in gs-history.jsx)
 export const GS_SESSION_BODY = {}; // each game's session body, by game id
 export const GS_SESSION_QUIET = {}; // each game's quiet session head, by game id
-export const GS_NOW = {}; // a playground's replacement for a game's now card, by game id: a component given the card's props, and canon's own card as children
+export const GS_NOW = {}; // a game's own now card, by game id (Daily Word's and Where's; a playground may set one under ?pg=): a component given the card's props, and the default card as children

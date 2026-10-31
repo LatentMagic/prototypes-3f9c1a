@@ -53,7 +53,7 @@
   .pgn-line { text-align: center; }
 }
 
-/* On a loss with "The word": the answer in tiles outlined in off-white, as the session page's (playground-guess-result.css .pgr-ans-t). */
+/* On a loss with "The word": the answer in tiles outlined in off-white, as the session page's (gs-word.css .wd-ans-t). */
 .pgn-ans-t { border: 1.5px solid #918B80; color: #ABA79E; background: none; }
 
 /* D: C's picture in A's card. The ring and the hint box sit after the tiles in the picture's line; on a phone the hint box takes
@@ -142,7 +142,7 @@
   .pgn-vc-big .pgn-ring-n { font-size: 14px; }
 }
 
-/* As the session page (playground-guess-result, 6a Ring lifted, Joe's pick): the hint box at the session's size (30px, its letter at
+/* As the session page (gs-word.jsx WdSessBody, 6a Ring lifted, Joe's pick): the hint box at the session's size (30px, its letter at
    half the box; set above), the label in capitals, and a note in its place when there was no hint; the word on a loss in quiet outlined tiles (set above). */
 .pgn-cap.is-label { letter-spacing: .04em; text-transform: uppercase; }
 .pgn-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }

@@ -1,5 +1,5 @@
-/* Where's session card and library now card (app/gs-where.jsx). The session card builds on Guess's card (.pgr-card, .pgr-duo,
-   .pgr-panel in playground-guess-result.css) and Delve's result band (.dv7r-band, gs-delve.css); it is imported after them. */
+/* Where's session card and library now card (app/gs-where.jsx). The session card is the shared one (gs-sess-card.css), and
+   this file is imported after it. */
 
 /* ---- Parts ---- */
 .wh-cap { font: 600 12px/1.2 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
@@ -42,16 +42,16 @@
 
 /* ---- The session card ---- */
 /* The country on a loss: the panel's last row, full width on a phone (as Guess's word). */
-.pgr-panel > .wh-a { grid-column: 1 / -1; display: grid; justify-items: center; gap: 8px; }
+.wh-a { display: grid; justify-items: center; gap: 8px; }
 .wh-a b { font: 700 20px/1.1 var(--font-heading); color: var(--muted); }
-.wh-card .pgr-boardcol { width: 100%; justify-items: stretch; }
+.wh-card .gs-sc-board { width: 100%; justify-items: stretch; }
 /* Desktop: the board at its own width (400px at most) centred left of the rule; Guesses and Hint side by side, the country under
    both. The panel has equal space either side, so it centres between the rule and the card's edge. */
 @container dv2 (min-width: 672px) {
-  .wh-card .pgr-duo { grid-template-columns: minmax(0, 1fr) auto; justify-content: stretch; column-gap: 0; }
-  .wh-card .pgr-boardcol { width: auto; justify-self: stretch; justify-items: center; padding-right: clamp(24px, 6cqi, 64px); }
+  .wh-card .gs-sc-duo { grid-template-columns: minmax(0, 1fr) auto; justify-content: stretch; column-gap: 0; }
+  .wh-card .gs-sc-board { width: auto; justify-self: stretch; justify-items: center; padding-right: clamp(24px, 6cqi, 64px); }
   .wh-card .wh-log { width: min(400px, 100%); }
-  .wh-card .pgr-panel { grid-template-columns: auto auto; column-gap: 40px; row-gap: 24px; padding: 0 clamp(24px, 6cqi, 64px); }
+  .wh-card .gs-sc-panel { grid-template-columns: auto auto; column-gap: 40px; row-gap: 24px; padding: 0 clamp(24px, 6cqi, 64px); }
 }
 
 /* ---- The now card: the last guess, then the globe and the chart as one group that never splits (Joe, 2026-10-31). ---- */

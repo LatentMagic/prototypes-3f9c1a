@@ -92,6 +92,21 @@ export const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   );
 };
 
+// The session card a daily puzzle's body is built on (Daily Word's, Where's): the result statement top left; below it the game's
+// board, and beside it a panel ruled off at its left, a captioned figure per row (Guesses, Hint) and an optional last row (the
+// answer on a loss). Phone: the result, the board, then the figures side by side under a rule. Styles: app/gs-sess-card.css.
+export const GsSessCard = ({ r, board, rows, last, className = '' }) => (
+  <section className={'dv2 gs-sc ' + className} aria-label="How it went">
+    <div className="dv7r-band"><h2 className={'dv7r-word is-' + r.tone}>{r.word}</h2></div>
+    <div className="gs-sc-duo">
+      <div className="gs-sc-board">{board}</div>
+      <div className="gs-sc-panel">
+        {rows.map(([cap, fig]) => <div key={cap} className="gs-sc-row"><span className="gs-sc-cap">{cap}</span>{fig}</div>)}
+        {last}
+      </div>
+    </div>
+  </section>);
+
 // Every move: the game's list as the design system's MoveList, closed, below the game's own section; the same for every game.
 export const GsMoves = ({ s }) => (
   <section className="gs-moves">

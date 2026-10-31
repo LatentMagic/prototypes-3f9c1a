@@ -1,0 +1,17 @@
+/* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
+   (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
+.gs-sc-cap { font: 600 12px/1.2 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+/* Phone: the board, then the figures side by side under a rule, each centred in half the card. */
+.gs-sc-duo { display: grid; gap: 24px; justify-items: center; }
+.gs-sc-board { display: grid; gap: 20px; justify-items: center; }
+.gs-sc-panel { display: grid; grid-template-columns: 1fr 1fr; row-gap: 20px; width: 100%; padding-top: 20px; border-top: 1px solid var(--line); }
+.gs-sc-row { display: grid; justify-items: center; align-content: start; gap: 12px; }
+/* The last row (the answer on a loss) spans the panel. */
+.gs-sc-panel > :not(.gs-sc-row) { grid-column: 1 / -1; }
+/* From a 672px card: the board and the panel side by side, centred in the card, the panel ruled off at its left.
+   KEEP: the panel and its rule rise past the result band and the card's gap (29px + 24px), so the panel centres on the whole
+   card and fills the space beside the result (Joe, Guess 6a Ring lifted). */
+@container dv2 (min-width: 672px) {
+  .gs-sc-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 64px; }
+  .gs-sc-panel { grid-template-columns: auto; align-self: stretch; align-content: center; column-gap: 32px; width: auto; margin-top: calc(-1 * (29px + 24px)); padding: 0 0 0 64px; border-top: 0; border-left: 1px solid var(--line); }
+}

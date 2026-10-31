@@ -3,6 +3,7 @@
 
 /* The product's stylesheets, in the order index.html used to link them: a later file wins a tie, so this order is the cascade. */
 @import './gs-delve.css';
+@import './gs-sess-card.css';
 @import './aids.css';
 @import './gs-shell.css';
 @import './gs-player.css';
@@ -18,8 +19,7 @@
 @import './gs-pass.css';
 @import './gs-escape.css';
 @import './gs-word.css';
+@import './gs-where.css';
 @import './fit.css';
 @import './playground.css';
-@import './playground-guess-result.css';
 @import './playground-guess-now.css';
-@import './gs-where.css';

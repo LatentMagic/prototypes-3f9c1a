@@ -1,14 +1,13 @@
 // ============================================================================
-// Where's session card and library now card (Joe, 2026-10-31). The session card sits in Guess's places (Daily Word's 6a Ring
-// lifted, playground-guess-result.jsx) and reuses its classes, so its places move when Guess's do: the result top left, the
-// board (a ruled log of the guesses made, never the hint), and a panel ruled off at the board's right holding Guesses (the globe)
-// and Hint (the chart). The now card is the last guess, then the globe and the chart as one group, centred on the whole card as
+// Where's session card and library now card (Joe, 2026-10-31). The session card is the shared one Daily Word's is
+// (GsSessCard, gs-session.jsx), so its places move when Guess's do: the result top left, the board (a ruled log of the guesses
+// made, never the hint), and a panel ruled off at the board's right holding Guesses (the globe) and Hint (the chart). The now card is the last guess, then the globe and the chart as one group, centred on the whole card as
 // Guess's is. A play is read from its session's lines (gs-where-chain-salvage.jsx dpWhere), so the cards and Every guess agree.
 // Styles: app/gs-where.css.
 // ============================================================================
 import React from 'react';
 import { useGs, GS_SESSIONS } from './gs-data.jsx';
-import { GsMoves } from './gs-session.jsx';
+import { GsMoves, GsSessCard } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { GS_SESSION_BODY, GS_NOW } from './registry.js';
 
@@ -76,21 +75,11 @@ const WhChart = ({ p }) => {
     </div>);
 };
 
-// ---- The session card. Desktop: Guesses and Hint side by side in the panel, the panel centred between its rule and the card's
-// edge, the board centred in the space left of the rule. Phone: Guess's own (the result, the board, the two figures under a rule).
-// The country shows as the panel's last row on a loss. ----
+// ---- The session card, on the shared GsSessCard. Desktop: Guesses and Hint side by side in the panel, the panel centred between
+// its rule and the card's edge, the board centred in the space left of the rule. The country shows as the panel's last row on a loss. ----
 const WhSessBody = ({ s }) => { const p = whRead(s); return <>
-  <section className="dv2 pgr-card pgr-6a pgr-lift wh-card" aria-label="How it went">
-    <div className="dv7r-band"><h2 className={'dv7r-word is-' + p.r.tone}>{p.r.word}</h2></div>
-    <div className="pgr-duo">
-      <div className="pgr-boardcol"><WhLog p={p} /></div>
-      <div className="pgr-panel">
-        <div className="pgr-prow"><span className="pgr-cap">Guesses</span><WhGlobe p={p} /></div>
-        <div className="pgr-prow"><span className="pgr-cap">Hint</span><WhChart p={p} /></div>
-        {p.lost && <div className="wh-a"><span className="pgr-cap">The country</span><b>{p.answer}</b></div>}
-      </div>
-    </div>
-  </section>
+  <GsSessCard r={p.r} className="wh-card" board={<WhLog p={p} />} rows={[['Guesses', <WhGlobe p={p} />], ['Hint', <WhChart p={p} />]]}
+    last={p.lost && <div className="wh-a"><span className="gs-sc-cap">The country</span><b>{p.answer}</b></div>} />
   <GsMoves s={s} />
 </>; };
 
