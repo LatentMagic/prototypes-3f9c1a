@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Share Sheet Test</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1e;--mute:#6b6b70;--line:#d8d8dc;--acc:#1c1c1e;--accInk:#fff;--wa:#1f8f4e;--bad:#c62828}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111113;--card:#1c1c1f;--ink:#ececee;--mute:#9a9aa0;--line:#333338;--acc:#ececee;--accInk:#111;--wa:#25d366;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#111113;--card:#1c1c1f;--ink:#ececee;--mute:#9a9aa0;--line:#333338;--acc:#ececee;--accInk:#111;--wa:#25d366;--bad:#ff8a80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:18px;margin:4px 0 4px}
+.lead{color:var(--mute);font-size:13px;margin:0 0 14px}
+.t{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.t h2{font-size:15px;margin:0 0 2px}
+.t p{color:var(--mute);font-size:13px;margin:0 0 10px}
+.t button,.t a.btn{display:inline-flex;align-items:center;justify-content:center;font:inherit;font-size:15px;min-height:44px;padding:8px 16px;border-radius:10px;border:1px solid var(--acc);background:var(--acc);color:var(--accInk);text-decoration:none;cursor:pointer}
+.t a.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+.st{font-size:12px;color:var(--mute);margin-top:6px;min-height:1em}
+.st.err{color:var(--bad)}
+</style></head><body><main>
+<h1>Share sheet test</h1>
+<p class="lead">Try each button into WhatsApp and Messages. Note for each: is the result intact, and does the game's card show?</p>
+<div id="tests"></div>
+</main>
+<script>
+var URL_='https://games.harnessintent.com/discover/daily-word';
+var RESULT='Guess No. 412 · 4/6\n\n⬛🟨⬛⬛⬛\n🟨⬛🟩⬛⬛\n⬛🟩🟩🟨⬛\n🟩🟩🟩🟩🟩';
+var LAST=RESULT+'\n\n'+URL_, FIRST=URL_+'\n\n'+RESULT;
+var T=[
+ {n:'1. Share sheet: result and link passed separately',p:'Each app decides where the link goes.',d:{text:RESULT,url:URL_}},
+ {n:'2. Share sheet: whole text, link last',p:'One block of text, link at the end.',d:{text:LAST}},
+ {n:'3. Share sheet: whole text, link first',p:'One block of text, link at the top.',d:{text:FIRST}},
+ {n:'4. Copy: link last',p:'What the live site does today, for comparison.',copy:LAST}
+];
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var box=document.getElementById('tests');
+box.innerHTML=T.map(function(t,i){
+  var act=t.wa?'<a class="btn wa" href="https://wa.me/?text='+encodeURIComponent(t.wa)+'" target="_blank" rel="noopener">Open in WhatsApp</a>':'<button type="button" data-i="'+i+'">'+(t.copy?'Copy':'Share')+'</button>';
+  return '<section class="t"><h2>'+esc(t.n)+'</h2><p>'+esc(t.p)+'</p>'+act+'<div class="st" id="st'+i+'"></div></section>'}).join('');
+function say(i,m,bad){var e=document.getElementById('st'+i);e.textContent=m;e.className='st'+(bad?' err':'')}
+function copy(text,i){
+  function fb(){var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);var r=false;try{r=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);say(i,r?'Copied':'Copy failed',!r)}
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(function(){say(i,'Copied')},fb);else fb()}
+box.querySelectorAll('button[data-i]').forEach(function(b){b.onclick=function(){var i=+b.dataset.i,t=T[i];
+  if(t.copy)return copy(t.copy,i);
+  if(!navigator.share)return say(i,'This browser has no share sheet here. Try opening the page in Safari directly.',true);
+  navigator.share(t.d).then(function(){say(i,'Shared')},function(e){say(i,e&&e.name==='AbortError'?'Cancelled':'Share failed: '+(e&&e.name||e),e&&e.name!=='AbortError')})}});
+</script></body></html>
