@@ -13,5 +13,5 @@ The three built-in pieces (`groups`, `casebook`, `hunter`) are examples of the m
 - A card with a second control inside: `mcp-art-host` on the card box, `mcp-art-link` on its one main link or button stretched over the card. The art moves with that link and rests over the second control.
 - Motion: 400ms, one curve, shapes nearly in step (stagger 50ms at most), held until the pointer leaves. On touch it plays while a finger is down. Nothing overrides the long-press menu.
 - Light shapes stay in the right half, and every cover passes the product-page title test (`guidelines/game-art-motion.md`, Title on the cover).
-- In the 4:3 frame the subject stays inside the centre square, x 20-140 of 160 units; only ground and decoration may pass it (`guidelines/game-art-motion.md`, Shape).
+- Keep the subject inside the centre square of the 4:3 frame; only ground may run past it (`guidelines/game-art-motion.md`, Shape).
 - Pieces recompose for each frame shape; add a new piece by writing its description first (`guidelines/game-art-motion.md`).

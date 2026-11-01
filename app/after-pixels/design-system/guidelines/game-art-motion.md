@@ -92,6 +92,8 @@ Text sits on a cover in one place only, the page head of a single game: the labe
 
 The five pieces that follow are examples of the method.
 
+**Keep the subject in the centre square.** In its 4:3 frame a cover's subject stays inside the frame's centre square: the middle three quarters of its width (x 20-140 on a 160×120 stage), at every height. Only ground may run past it. For art cropped into the frame (`slice`), measure on the part that shows: on a 171×108 viewBox that is x 31.5-139.5. The cover is also its product page's link-preview image, drawn 1200×630, and some apps crop that image to its centre square; the cropped square must still read as the whole picture.
+
 ### Daily Mystery
 A cigarette beside a ring. An orange ring left of centre and an upright cream cigarette with an amber tip to its right. Wine ground.
 - Always: the ring is whole and never touches the cigarette; the tip sits on top of the cigarette.
@@ -107,8 +109,6 @@ Three tiles of a guess, in the game's own marks. Three squares in a row across t
 - Hover: the grey block grows to full tile size as its outline thins away, over 400ms, and fills grey 100ms behind, over 300ms. Three full tiles: a marked guess. On touch, the product's game-page cover opens and closes the block by tap (the product owns that; ratified by the owner in the product, 2026-10-27).
 
 Each piece is written in words before it is drawn. The words say what must stay true and what may move, so the art can be recomposed for square (1:1), landscape (4:3) and wide (3:1) frames without losing anything. A frame that doesn't suit the original drawing gets a recomposition, not a crop. Write the description, then draw each frame from it.
-
-**Keep the subject in the centre square.** In its 4:3 frame a cover's subject stays between x 20 and 140 of the 160-unit width, at every height; only ground and decoration may run past that band. The cover is also its product page's link-preview image, drawn 1200×630, and some apps crop that image to its centre square. The cropped square must still read as the whole picture.
 
 ### Daily Groups
 The four groups of a solved board. Sixteen equal squares in a 4 by 4 grid on indigo, one colour per row: amber, teal, orange, lilac from the top.
