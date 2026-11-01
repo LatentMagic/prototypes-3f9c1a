@@ -69,7 +69,7 @@ import { registerCasebook } from './gs-casebook.jsx';
 import { registerDelveLibrary } from './gs-delve-library.jsx';
 import { registerPuzzlesLibrary } from './gs-puzzles-library.jsx';
 import { registerHunterLibrary } from './gs-hunter-library.jsx';
-import { GsDelve, GsWord, GsGroups, GsMystery, GsWhere, GsChain, GsSalvage, GsEscape, GsCasebook, GsHunter, GsBarrow } from './gs-player.jsx';
+import { GsDelve, GsWord, GsGroups, GsMystery, GsWhere, GsChain, GsSalvage, GsCommon, GsEscape, GsCasebook, GsHunter, GsBarrow } from './gs-player.jsx';
 import { GsSignUp, GsSignIn, GsVerify, GsRecover, GsReturning } from './gs-auth.jsx';
 import { GsUsername } from './gs-username.jsx';
 import { GsConnect, gsPlayReq } from './gs-connect.jsx';
@@ -137,6 +137,7 @@ const GsScreen = ({ name }) => {
     case 'where': return <GsWhere />;
     case 'chain': return <GsChain />;
     case 'salvage': return <GsSalvage />;
+    case 'common': return <GsCommon />;
     case 'escape': return <GsEscape />;
     case 'casebook': return <GsCasebook />;
     case 'hunter': return <GsHunter />;

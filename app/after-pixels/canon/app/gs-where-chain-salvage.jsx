@@ -1,5 +1,5 @@
 // ============================================================================
-// After Pixels — Where, Chain and Salvage: three Pass-only daily puzzles, built as Daily Groups is.
+// After Pixels — Where, Chain, Salvage and Common: four Pass-only daily puzzles, built as Daily Groups is.
 // Loads after gs-library.jsx and before gs-puzzles-library.jsx, which spreads DP_PZ into PZ and calls dpSession for each earlier edition.
 // Here: each game's card, cover and motion art, product page, chats, results, today's and in-progress plays, the templates the
 // earlier plays are drawn from, and the staged states. Every play is SAMPLE; distances are approximate.
@@ -12,8 +12,9 @@ import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
 import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 
-export const DP_IDS = ['where', 'chain', 'salvage'];
-const DP_NO = 21; // today's edition of each: the three games are three weeks old in the seed
+export const DP_IDS = ['where', 'chain', 'salvage', 'common'];
+const DP_NO = 21; // today's edition of Where, Chain and Salvage: the three games are three weeks old in the seed
+const CM_NO = 7; // today's edition of Common, the newest game: No. 7, the day its product page's chat pictures show
  // working titles
 
 
@@ -156,9 +157,35 @@ let dpChL; let dpSvL;
 
 
 
+// ---- Common. A day is three threads of four items sharing one hidden link; the items show one at a time. A right guess scores 5, 3, 2 or 1 with
+// 1, 2, 3 or 4 items showing; a thread closes found, passed or lost (two wrong guesses) at 0. The day is out of 15; completed means all three links found.
+// A play from a template: a thread is [items showing when it closed, points, how it closed ('passed' or 'lost' when not found)]. ----
+const cmMarks = (t) => '●'.repeat(t[0]) + '○'.repeat(4 - t[0]);
+const cmScore = (day) => day.reduce((a, t) => a + t[1], 0);
+const cmFound = (day) => day.filter((t) => !t[2]).length;
+const cmResult = (day) => GS_RESULT.common({ score: cmScore(day), done: cmFound(day) === 3 });
+const cmHead = (n, day) => 'Common No. ' + n + ' · ' + cmScore(day) + ' of 15 · ' + (cmFound(day) === 3 ? 'completed' : 'not completed');
+const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => (k + 1) + '  ' + cmMarks(t) + '  ' + t[1])];
+// An earlier day names no item or link: those belong to that day's content, which the seed does not carry.
+const cmLines = (day) => day.map((t, k) => ['Thread ' + (k + 1), t[2] === 'passed' ? 'Passed' : t[2] === 'lost' ? 'Two wrong guesses' : 'Link found', t[0] + (t[0] === 1 ? ' item' : ' items') + ' showing', t[1] + (t[1] === 1 ? ' point' : ' points')]);
+// Today's play: No. 7, the example the product page's chats show. Thread 1 is the chats' worked play.
+const CM_TODAY_LINES = [
+  ['Thread 1', 'Next item', 'A GUITAR'],
+  ['Thread 1', 'Guess: Music.', 'Not it, but close', 'A YO-YO shows'],
+  ['Thread 1', 'Guess: Things with strings.', 'Right', '2 points'],
+  ['Thread 2', 'Guess: A jam.', 'Right', '5 points'],
+  ['Thread 3', 'Next item', 'THE TRAFFIC'],
+  ['Thread 3', 'Next item', 'A DUSTY RUG'],
+  ['Thread 3', 'Next item', 'THE OTHER TEAM'],
+  ['Thread 3', 'Guess: Beat.', 'Right', '1 point'],
+];
+const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
+const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
+const CM_FAIL = [[2, 3], [3, 0, 'passed'], [4, 0, 'lost']];
+
 // ---- An earlier edition's session (gs-puzzles-library.jsx pzSession). base: kind, gid, game, art, date, result, loss. ----
 export const dpSession = (id, c, x, base) => {
-  const n = DP_NO - x.i; const i = x.i;
+  const n = (id === 'common' ? CM_NO : DP_NO) - x.i; const i = x.i;
   if (id === 'where') {
     const r = dpWhere(x.ok ? WH_OK[i % WH_OK.length] : WH_FAIL, x.ok);
     return { ...base, number: n, hints: r.hints, figures: [r.guesses + ' of 6 guesses', r.hints ? '1 hint' : 'No hints'], share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
@@ -166,6 +193,10 @@ export const dpSession = (id, c, x, base) => {
   if (id === 'chain') {
     const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL; const r = dpChain(play);
     return { ...base, number: n, play, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+  }
+  if (id === 'common') {
+    const day = x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL;
+    return { ...base, number: n, figures: [cmScore(day) + ' of 15 points', cmFound(day) + ' of 3 links'], share: x.line, shareLines: cmShare(n, day), lines: cmLines(day) };
   }
   const d = dpSvDay(i, x.ok);
   return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of 30 dives'], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -196,7 +227,7 @@ export let DP_STATES;
 
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsWhereChainSalvage() {
-Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage' });
+Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage', common: 'Common' });
 Object.assign(GS_GAMES, {
   where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], edLine: 'You get six guesses to find the country.', daily: true, once: true,
     blurb: 'Today’s country is somewhere on the map. Find it in six guesses.', tags: ['Daily', '5 min'] }),
@@ -204,25 +235,31 @@ Object.assign(GS_GAMES, {
     blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily', '10 min'] }),
   salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], edLine: 'You get thirty dives to find five wrecks.', daily: true, once: true,
     blurb: 'Five wrecks lie under today’s sea. Find them in thirty dives.', tags: ['Daily', '15 min'] }),
+  common: gsAccess({ access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], edLine: 'Three threads of four items. Name each link early.', daily: true, once: true,
+    blurb: 'Four items share one hidden link. Name it as early as you dare.', tags: ['Daily', '10 min'] }),
 });
 GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);
 // ---- Art. The static cover is the moving piece's rest pose on its 160 by 120 stage (the same numbers as the CSS in index.html).
 // Where: the hint's needle pointing the wrong way, and today's country. Chain: five words, the ends and their links found, the three middle words empty.
-// Salvage: a board mid-hunt, cream misses and two orange hits in a row, one dive from finding a wreck of three. ----
+// Salvage: a board mid-hunt, cream misses and two orange hits in a row, one dive from finding a wreck of three.
+// Common: four shapes in a row, one a link, each a different shape and colour. ----
 Object.assign(GS_ART, {
   where: { ground: 'forest', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><g transform="rotate(45 52 60)"><path d="M52 32L60 60L44 60Z" fill="#D66847"/><path d="M44 60L60 60L52 88Z" fill="#F2EBE0"/></g><rect x="96" y="44" width="32" height="32" fill="#E5A63B"/>') },
   chain: { ground: 'wine', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><g fill="#F2EBE0"><rect x="32" y="57.33" width="16" height="5.33"/><rect x="112" y="57.33" width="16" height="5.33"/><rect x="24" y="52" width="16" height="16"/><rect x="120" y="52" width="16" height="16"/></g><g fill="none" stroke-width="2.67"><rect x="49.33" y="53.33" width="13.33" height="13.33" stroke="#D66847"/><rect x="73.33" y="53.33" width="13.33" height="13.33" stroke="#E5A63B"/><rect x="97.33" y="53.33" width="13.33" height="13.33" stroke="#A390B2"/></g>') },
   salvage: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="32" cy="60" r="6" fill="#F2EBE0"/><circle cx="104" cy="36" r="6" fill="#F2EBE0"/><circle cx="56" cy="84" r="6" fill="#F2EBE0"/><circle cx="128" cy="84" r="6" fill="#F2EBE0"/><circle cx="56" cy="60" r="6" fill="#D66847"/><circle cx="80" cy="60" r="6" fill="#D66847"/>') },
+  common: { ground: 'indigo', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="34" cy="60" r="10" fill="#D66847"/><rect x="54" y="50" width="20" height="20" fill="#328A88"/><polygon points="96,51 106,68.32 86,68.32" fill="#A390B2"/><polygon points="126,50 136,60 126,70 116,60" fill="#F2EBE0"/>') },
 });
 Object.assign(GS_ART_LOCAL, {
   where: { bg: 'is-forest', body: <>{I('ga-wh-needle')}{I('ga-wh-ans')}</> },
   chain: { bg: 'is-wine', body: <>{I('ga-ch-l ga-ch-l1')}{I('ga-ch-l ga-ch-l2')}{I('ga-ch ga-ch-1')}{I('ga-ch ga-ch-o ga-ch-2')}{I('ga-ch ga-ch-o ga-ch-3')}{I('ga-ch ga-ch-o ga-ch-4')}{I('ga-ch ga-ch-5')}</> },
   salvage: { bg: '', body: <>{I('ga-sv-p ga-sv-miss ga-sv-m1')}{I('ga-sv-p ga-sv-miss ga-sv-m2')}{I('ga-sv-p ga-sv-miss ga-sv-m3')}{I('ga-sv-p ga-sv-miss ga-sv-m4')}{I('ga-sv-hull')}{I('ga-sv-p ga-sv-hit ga-sv-h1')}{I('ga-sv-p ga-sv-hit ga-sv-h2')}{I('ga-sv-p ga-sv-hit ga-sv-h3')}</> },
+  common: { bg: '', body: <>{I('ga-cm ga-cm-1')}{I('ga-cm ga-cm-2')}{I('ga-cm ga-cm-3')}{I('ga-cm ga-cm-4')}</> },
 });
 Object.assign(GS_RESULT, {
   where: (r) => (r.ok ? 'Found in ' + r.guesses + ' of 6' : 'Not found'),
   chain: (r) => (r.given ? r.found + ' of ' + r.of + ' words found' : 'Solved, ' + dpWrong(r.wrong)),
   salvage: (r) => (r.found === 5 ? 'All 5 wrecks, ' + r.dives + ' of 30 dives' : r.found + ' of 5 wrecks found'),
+  common: (r) => r.score + ' of 15, ' + (r.done ? 'completed' : 'not completed'),
 });
 WH_TODAY = { a: 'Hungary', g: [['Spain', 1110], ['Poland', 80]], hint: 'From Poland, the country lies south' };
 WH_OK = [
@@ -285,6 +322,10 @@ Object.assign(GS_SESSIONS, {
     lines: svLines(SV_TODAY_DIVES, SV_TODAY_HINT) },
   'salvage-live': { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, live: true, result: 'In progress', date: GS.today,
     figures: [svSunk(dpSvL) + ' of 5 wrecks', dpSvL.length + ' of 30 dives'], share: null, lines: svLines(dpSvL) },
+  'common-today': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', number: CM_NO, result: cmResult(CM_TODAY), date: GS.today,
+    figures: [cmScore(CM_TODAY) + ' of 15 points', '3 of 3 links'], share: cmResult(CM_TODAY), shareLines: cmShare(CM_NO, CM_TODAY), lines: CM_TODAY_LINES },
+  'common-live': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', number: CM_NO, live: true, result: 'In progress', date: GS.today,
+    figures: ['Thread 1 of 3', '0 of 15 points'], share: null, lines: CM_TODAY_LINES.slice(0, 2) },
 });
 DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
@@ -323,6 +364,17 @@ DP_PZ = {
       { k: 'sv5', n: 'Five dives to spare', how: 'Find all five wrecks in 25 dives or fewer.', by: (p) => { const m = /^All 5 wrecks, (\d+) of 30/.exec(p.status.label); return !!m && +m[1] <= 25; } },
       { k: 'sv7', n: 'Seven days in a row', how: 'Find every wreck seven days running.', of: 7 }],
   },
+  common: {
+    count: CM_NO, no: (i) => GS_NAME.common + ' #' + (CM_NO - i), salt: 14, keep: {}, today: 'common-today', liveSid: 'common-live',
+    ok: (i) => cmResult(CM_OK[i % CM_OK.length]), bad: cmResult(CM_FAIL),
+    title: 'Today’s threads', next: 'Next threads: tomorrow',
+    live: { line: 'You’re on thread 1 of 3. One guess is used and two items show.', bar: ['Thread 1 of 3', 1, 3] },
+    done: { st: { kind: 'ok', label: GS_SESSIONS['common-today'].result }, line: 'You found all three links and scored ' + cmScore(CM_TODAY) + ' of 15.', bar: [cmScore(CM_TODAY) + ' of 15 points', cmScore(CM_TODAY), 15] },
+    recent: 'Your days',
+    ach: [{ k: 'cm1', n: 'First Thread', how: 'Find a link.', by: (p) => p.status.kind === 'ok' },
+      { k: 'cm3', n: 'Clean Sweep', how: 'Find all three links in a day.', by: (p) => p.status.kind === 'ok' },
+      { k: 'cm7', n: 'Seven Days in a Row', how: 'Find all three links seven days running.', of: 7 }],
+  },
 };
 dpSeeResult = <><b>See your result</b> on your session page.</>;
 Object.assign(GS_PAGES, {
@@ -359,6 +411,17 @@ Object.assign(GS_PAGES, {
     who: { ai: 'Reads the sea back to you after every dive, row by row.', server: 'Holds the wrecks, answers every dive and counts the dives you have left.' },
     week: { title: 'Today’s sea', line: 'You get thirty dives to find five wrecks.', session: 'salvage-today' },
   },
+  common: {
+    rhythm: 'NEW EVERY DAY',
+    box: { label: 'ONLY WITH THE PASS', heading: 'Three new threads every day', button: 'Play today’s threads',
+      steps: [GS_STEP_CONNECT, dpStep('Name today’s three links.', ' You get two guesses a thread.'), dpSeeResult], small: GS_NAME.common + ' comes only with the After Pixels Pass.' },
+    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    pitch: { h: 'An egg, a tortoise and a peanut have something in common. Name it early.', ps: [
+      'Each day has three threads, the same for everyone. A thread is four items with one hidden link, and the game shows them one at a time. Ask for the next item, name the link, or pass.',
+      'Name the link from one item and it scores 5; from two, three or four it scores 3, 2 or 1. A day is out of 15. You get two guesses a thread, and a wrong guess shows the next item. There are no hints. Your AI is told only the items you see. Name your first link.'] },
+    who: { ai: 'Reads out each item, thinks it through with you when you ask, and tells the story of each link once a thread closes.', server: 'Holds the items you haven’t seen and each link, marks every guess and scores the thread.' },
+    week: { title: 'Today’s threads', line: 'Three threads, the same for everyone.', session: 'common-today' },
+  },
 });
 Object.assign(GS_CHATS, {
   where: [
@@ -384,6 +447,16 @@ Object.assign(GS_CHATS, {
       gscU('E3.'), gscAi('salvage', 'Miss. 28 dives left.')] },
     { cap: 'The board is redrawn after every dive, so your AI can read it aloud.', turns: [gscU('B2.'),
       gscAi('salvage', 'Sunk: the wreck of 4. ' + (30 - 8) + ' dives left.', null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])] },
+  ],
+  common: [
+    { cap: 'Say you want to play. Everyone gets the same three threads today.', turns: [gscU('I want to play Common.'),
+      gscAi('common', ['Common No. ' + CM_NO + '. Thread 1 of 3.', 'Name the link now for 5 points, ask for the next item, or pass. You have two guesses.'], null, [dpMono('A TENNIS RACKET')])] },
+    { cap: 'Every item that shows lowers what the link scores, and a wrong guess shows the next one.', turns: [gscU('Next.'),
+      gscAi('common', 'A right guess now scores 3.', null, [dpMono('A TENNIS RACKET\nA GUITAR')]),
+      gscU('Music.'),
+      gscAi('common', 'Not it. Close: what do they all have stretched or tied to them? A right guess now scores 2, and you have one guess left.', null, [dpMono('A TENNIS RACKET\nA GUITAR\nA YO-YO')])] },
+    { cap: 'When a thread closes, your AI tells its story.', turns: [gscU('Things with strings.'),
+      gscAi('common', ['Things with strings is right, for 2 points.', 'A tennis racket is strung tight, a guitar has strings to pluck, a yo-yo winds up on one, and a harp has dozens.', 'Thread 2 of 3. Name the link now for 5 points, ask for the next item, or pass. You have two guesses. Your score is 2.'], null, [dpMono('A PRINTER')])] },
   ],
 });
 DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const [g, sp] = dpSessAt(k);

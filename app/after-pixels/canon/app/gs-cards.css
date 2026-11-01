@@ -63,6 +63,14 @@
 .ga-ch-l { --y: 57.33; --h: 5.33; --fill: var(--cover-cream); --s: 0; }
 .ga-ch-l1 { --x: 32; --w: 49; transform-origin: 0 50%; transform: scaleX(calc(.3265 + var(--on) * .6735)); }
 .ga-ch-l2 { --x: 79; --w: 49; transform-origin: 100% 50%; transform: scaleX(calc(.3265 + var(--on) * .6735)); }
+/* Common: four shapes in a row on indigo, each a different shape and colour (an orange circle, a teal square, a lilac triangle, a cream diamond). On hover each turns one notch (90 degrees, the triangle 120) so it lands looking the same, and turns gold; there is no lift. Rotation and colour only, so it lands exactly at any size. */
+/* KEEP: Common's shapes span x 24-136 of the 160-unit stage, inside the centre square a square crop of the cover's link-preview image keeps, at rest and on hover; the triangle sits 1 unit lower and turns about its centre (50% 57.7%), so it reads level with the others. The colour change is a background-color transition kept beside transform: the system's pieces transition transform and border-radius only. */
+.ga-cm { --y: 50; --w: 20; --h: 20; --fill: color-mix(in srgb, var(--c) calc((1 - var(--on)) * 100%), var(--cover-amber)); transform: rotate(calc(var(--on) * var(--r))); }
+.mcp-art i.ga-cm { transition: transform var(--time-art) var(--ease-art) 0ms, background-color var(--time-art) var(--ease-art) 0ms; }
+.ga-cm-1 { --x: 24; --c: var(--cover-orange); --r: 90deg; --s: 0; border-radius: 50%; }
+.ga-cm-2 { --x: 54; --c: var(--cover-teal); --r: 90deg; --s: 30; }
+.ga-cm-3 { --x: 86; --y: 51; --c: var(--cover-lilac); --r: 120deg; --s: 60; clip-path: polygon(50% 0, 100% 86.6%, 0 86.6%); transform-origin: 50% 57.7%; }
+.ga-cm-4 { --x: 116; --c: var(--cover-cream); --r: 90deg; --s: 90; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
 /* Salvage: a board mid-hunt. Cream misses and two orange hits in a row. The last dive lands as a third hit, the misses recede to nothing, and the wreck under the three hits shows itself, 50ms behind. Every move is a scale about a shape's own centre, so it lands exactly at any size. */
 .ga-sv-p { --w: 12; --h: 12; --s: 0; border-radius: 50%; }
 .ga-sv-miss { --fill: var(--cover-cream); transform: scale(calc(1 - var(--on))); }

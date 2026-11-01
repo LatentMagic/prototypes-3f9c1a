@@ -42,6 +42,7 @@ export let GsGroups;
 export let GsMystery;
 export let GsWhere;
 export let GsChain;
+export let GsCommon;
 export let GsSalvage;
 export let GsEscape;
 export let GsCasebook;
@@ -52,13 +53,13 @@ export let GsBarrow;
 export function initGsPlayer() {
 // Per game: the unit you play, named in the card's default line.
 GP_CFG = { delve: { units: 'runs' }, word: { units: 'words' }, groups: { units: 'groups' }, mystery: { units: 'cases' }, where: { units: 'countries' }, chain: { units: 'chains' },
-  salvage: { units: 'seas' }, escape: { units: 'rooms' }, casebook: { units: 'cases' }, hunter: { units: 'days' } };
+  salvage: { units: 'seas' }, common: { units: 'days' }, escape: { units: 'rooms' }, casebook: { units: 'cases' }, hunter: { units: 'days' } };
 // Card lines. Delve uses the default line.
 GP_LINE = {
   word: 'See every day’s word and how many guesses it took you.', groups: 'See every day’s groups and how many mistakes you made.',
   mystery: 'See every case you closed and every one that got away.',
   where: 'See every day’s country and how many guesses it took you.', chain: 'See every day’s chain and how many wrong guesses you made.',
-  salvage: 'See every day’s sea and how many dives it took you.', escape: 'See every room you got out of, with your time against par, hints and wrong tries.',
+  salvage: 'See every day’s sea and how many dives it took you.', common: 'See every day you’ve played and what each thread scored.', escape: 'See every room you got out of, with your time against par, hints and wrong tries.',
   casebook: 'See every case you’ve worked and the lies you caught.', hunter: 'See every day you’ve explored, what you learned and who you met.',
   delve: 'See every week’s run you’ve played and how each one ended.',
   barrow: 'See every chapter you’ve played and how each one ended.' };
@@ -69,6 +70,7 @@ GsMystery = gpGame('mystery');
 GsWhere = gpGame('where');
 GsChain = gpGame('chain');
 GsSalvage = gpGame('salvage');
+GsCommon = gpGame('common');
 GsEscape = gpGame('escape');
 GsCasebook = gpGame('casebook');
 GsHunter = gpGame('hunter');

@@ -42,6 +42,9 @@ const KIT_QA = [
     note: 'Each page: facts band, More games. Every "—" is a gap in the record.',
     steps: ['groups-pass', 'groups-free', 'casebook-pass', 'casebook-free', 'delve-pass', 'hunter-pass', 'hunter-free', 'session-casebook', 'session-hunter', 'history', 'free-history', 'games', 'games-free', 'games-signed-out'] },
 ];
+KIT_QA.unshift({ key: 'common-game', title: 'Common',
+  note: 'Common is a Pass-only daily puzzle. Product page signed out, free (Get the Pass) and with the Pass; library page done, in progress and free (Needs the Pass); the editions list; a session. Point at, Tab to and press its card and tile: the four shapes each turn once and go gold; with reduced motion they stay still.',
+  steps: ['common-signed-out', 'common-free', 'common-pass', 'library-common', 'library-common-in-progress', 'library-common-free', 'library-common-editions', 'session-common', 'games', 'games-free', 'library', 'history'] });
 KIT_QA.unshift({ key: 'daily-puzzles-1213', title: 'Where, Chain and Salvage (1213)',
   note: 'Each game, at phone and desktop width: product page signed out, free (Get the Pass) and with the Pass; library page done, in progress and free (Needs the Pass); the editions list; a session and its Share text (no country, word or square named). Point at, Tab to and press each card, tile and Library or History row: the art moves and holds; with reduced motion it stays still. Daily Pin appears nowhere.',
   steps: ['where-signed-out', 'where-free', 'where-pass', 'library-where', 'library-where-in-progress', 'library-where-free', 'library-where-editions', 'session-where',

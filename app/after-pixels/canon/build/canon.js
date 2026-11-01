@@ -2881,7 +2881,7 @@
   let GS_LIB_READY;
   function initGsDiscover() {
     GS_ADDED = ["barrow", "casebook", "delve", "escape"];
-    GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
+    GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", common: "Today’s threads are ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
   }
   const ESX_ROOM = {
     text: "A dim study at the top of a narrow house: a workbench under a cold lamp, a glass cabinet of pocket watches, a tall case clock, a portrait of a girl, and a fireplace with carved panelling. Grey light seeps through a small round window. The door behind you is shut fast.",
@@ -4394,8 +4394,9 @@
       })];
     })();
   }
-  const DP_IDS = ["where", "chain", "salvage"];
+  const DP_IDS = ["where", "chain", "salvage", "common"];
   const DP_NO = 21;
+  const CM_NO = 7;
   const dpWrong = (n) => n === 0 ? "no wrong guesses" : n === 1 ? "1 wrong guess" : n + " wrong guesses";
   const dpKm = (n) => n.toLocaleString("en-GB") + " km";
   const dpWhMark = (km) => km >= 1e3 ? "○" : km >= 100 ? "◐" : "●";
@@ -4592,8 +4593,28 @@
   let dpChT;
   let dpChL;
   let dpSvL;
+  const cmMarks = (t) => "●".repeat(t[0]) + "○".repeat(4 - t[0]);
+  const cmScore = (day) => day.reduce((a, t) => a + t[1], 0);
+  const cmFound = (day) => day.filter((t) => !t[2]).length;
+  const cmResult = (day) => GS_RESULT.common({ score: cmScore(day), done: cmFound(day) === 3 });
+  const cmHead = (n, day) => "Common No. " + n + " · " + cmScore(day) + " of 15 · " + (cmFound(day) === 3 ? "completed" : "not completed");
+  const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => k + 1 + "  " + cmMarks(t) + "  " + t[1])];
+  const cmLines = (day) => day.map((t, k) => ["Thread " + (k + 1), t[2] === "passed" ? "Passed" : t[2] === "lost" ? "Two wrong guesses" : "Link found", t[0] + (t[0] === 1 ? " item" : " items") + " showing", t[1] + (t[1] === 1 ? " point" : " points")]);
+  const CM_TODAY_LINES = [
+    ["Thread 1", "Next item", "A GUITAR"],
+    ["Thread 1", "Guess: Music.", "Not it, but close", "A YO-YO shows"],
+    ["Thread 1", "Guess: Things with strings.", "Right", "2 points"],
+    ["Thread 2", "Guess: A jam.", "Right", "5 points"],
+    ["Thread 3", "Next item", "THE TRAFFIC"],
+    ["Thread 3", "Next item", "A DUSTY RUG"],
+    ["Thread 3", "Next item", "THE OTHER TEAM"],
+    ["Thread 3", "Guess: Beat.", "Right", "1 point"]
+  ];
+  const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
+  const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
+  const CM_FAIL = [[2, 3], [3, 0, "passed"], [4, 0, "lost"]];
   const dpSession = (id, c, x, base) => {
-    const n = DP_NO - x.i;
+    const n = (id === "common" ? CM_NO : DP_NO) - x.i;
     const i = x.i;
     if (id === "where") {
       const r = dpWhere(x.ok ? WH_OK[i % WH_OK.length] : WH_FAIL, x.ok);
@@ -4603,6 +4624,10 @@
       const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL;
       const r = dpChain(play);
       return { ...base, number: n, play, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+    }
+    if (id === "common") {
+      const day = x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL;
+      return { ...base, number: n, figures: [cmScore(day) + " of 15 points", cmFound(day) + " of 3 links"], share: x.line, shareLines: cmShare(n, day), lines: cmLines(day) };
     }
     const d = dpSvDay(i, x.ok);
     return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -4621,7 +4646,7 @@
   let DP_PZ_STATES;
   let DP_STATES;
   function initGsWhereChainSalvage() {
-    Object.assign(GS_NAME, { where: "Where", chain: "Chain", salvage: "Salvage" });
+    Object.assign(GS_NAME, { where: "Where", chain: "Chain", salvage: "Salvage", common: "Common" });
     Object.assign(GS_GAMES, {
       where: gsAccess({
         access: "pass",
@@ -4661,23 +4686,39 @@
         once: true,
         blurb: "Five wrecks lie under today’s sea. Find them in thirty dives.",
         tags: ["Daily", "15 min"]
+      }),
+      common: gsAccess({
+        access: "pass",
+        name: GS_NAME.common,
+        category: "PUZZLE",
+        art: "common",
+        route: "common",
+        ed: ["day", "days"],
+        edLine: "Three threads of four items. Name each link early.",
+        daily: true,
+        once: true,
+        blurb: "Four items share one hidden link. Name it as early as you dare.",
+        tags: ["Daily", "10 min"]
       })
     });
     GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf("mystery") + 1, 0, ...DP_IDS);
     Object.assign(GS_ART, {
       where: { ground: "forest", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><g transform="rotate(45 52 60)"><path d="M52 32L60 60L44 60Z" fill="#D66847"/><path d="M44 60L60 60L52 88Z" fill="#F2EBE0"/></g><rect x="96" y="44" width="32" height="32" fill="#E5A63B"/>') },
       chain: { ground: "wine", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><g fill="#F2EBE0"><rect x="32" y="57.33" width="16" height="5.33"/><rect x="112" y="57.33" width="16" height="5.33"/><rect x="24" y="52" width="16" height="16"/><rect x="120" y="52" width="16" height="16"/></g><g fill="none" stroke-width="2.67"><rect x="49.33" y="53.33" width="13.33" height="13.33" stroke="#D66847"/><rect x="73.33" y="53.33" width="13.33" height="13.33" stroke="#E5A63B"/><rect x="97.33" y="53.33" width="13.33" height="13.33" stroke="#A390B2"/></g>') },
-      salvage: { ground: "indigo", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="32" cy="60" r="6" fill="#F2EBE0"/><circle cx="104" cy="36" r="6" fill="#F2EBE0"/><circle cx="56" cy="84" r="6" fill="#F2EBE0"/><circle cx="128" cy="84" r="6" fill="#F2EBE0"/><circle cx="56" cy="60" r="6" fill="#D66847"/><circle cx="80" cy="60" r="6" fill="#D66847"/>') }
+      salvage: { ground: "indigo", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="32" cy="60" r="6" fill="#F2EBE0"/><circle cx="104" cy="36" r="6" fill="#F2EBE0"/><circle cx="56" cy="84" r="6" fill="#F2EBE0"/><circle cx="128" cy="84" r="6" fill="#F2EBE0"/><circle cx="56" cy="60" r="6" fill="#D66847"/><circle cx="80" cy="60" r="6" fill="#D66847"/>') },
+      common: { ground: "indigo", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="34" cy="60" r="10" fill="#D66847"/><rect x="54" y="50" width="20" height="20" fill="#328A88"/><polygon points="96,51 106,68.32 86,68.32" fill="#A390B2"/><polygon points="126,50 136,60 126,70 116,60" fill="#F2EBE0"/>') }
     });
     Object.assign(GS_ART_LOCAL, {
       where: { bg: "is-forest", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-wh-needle"), I("ga-wh-ans")) },
       chain: { bg: "is-wine", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-ch-l ga-ch-l1"), I("ga-ch-l ga-ch-l2"), I("ga-ch ga-ch-1"), I("ga-ch ga-ch-o ga-ch-2"), I("ga-ch ga-ch-o ga-ch-3"), I("ga-ch ga-ch-o ga-ch-4"), I("ga-ch ga-ch-5")) },
-      salvage: { bg: "", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-sv-p ga-sv-miss ga-sv-m1"), I("ga-sv-p ga-sv-miss ga-sv-m2"), I("ga-sv-p ga-sv-miss ga-sv-m3"), I("ga-sv-p ga-sv-miss ga-sv-m4"), I("ga-sv-hull"), I("ga-sv-p ga-sv-hit ga-sv-h1"), I("ga-sv-p ga-sv-hit ga-sv-h2"), I("ga-sv-p ga-sv-hit ga-sv-h3")) }
+      salvage: { bg: "", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-sv-p ga-sv-miss ga-sv-m1"), I("ga-sv-p ga-sv-miss ga-sv-m2"), I("ga-sv-p ga-sv-miss ga-sv-m3"), I("ga-sv-p ga-sv-miss ga-sv-m4"), I("ga-sv-hull"), I("ga-sv-p ga-sv-hit ga-sv-h1"), I("ga-sv-p ga-sv-hit ga-sv-h2"), I("ga-sv-p ga-sv-hit ga-sv-h3")) },
+      common: { bg: "", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-cm ga-cm-1"), I("ga-cm ga-cm-2"), I("ga-cm ga-cm-3"), I("ga-cm ga-cm-4")) }
     });
     Object.assign(GS_RESULT, {
       where: (r) => r.ok ? "Found in " + r.guesses + " of 6" : "Not found",
       chain: (r) => r.given ? r.found + " of " + r.of + " words found" : "Solved, " + dpWrong(r.wrong),
-      salvage: (r) => r.found === 5 ? "All 5 wrecks, " + r.dives + " of 30 dives" : r.found + " of 5 wrecks found"
+      salvage: (r) => r.found === 5 ? "All 5 wrecks, " + r.dives + " of 30 dives" : r.found + " of 5 wrecks found",
+      common: (r) => r.score + " of 15, " + (r.done ? "completed" : "not completed")
     });
     WH_TODAY = { a: "Hungary", g: [["Spain", 1110], ["Poland", 80]], hint: "From Poland, the country lies south" };
     WH_OK = [
@@ -4827,6 +4868,32 @@
         figures: [svSunk(dpSvL) + " of 5 wrecks", dpSvL.length + " of 30 dives"],
         share: null,
         lines: svLines(dpSvL)
+      },
+      "common-today": {
+        kind: "puzzle",
+        gid: "common",
+        game: GS_NAME.common,
+        art: "common",
+        number: CM_NO,
+        result: cmResult(CM_TODAY),
+        date: GS.today,
+        figures: [cmScore(CM_TODAY) + " of 15 points", "3 of 3 links"],
+        share: cmResult(CM_TODAY),
+        shareLines: cmShare(CM_NO, CM_TODAY),
+        lines: CM_TODAY_LINES
+      },
+      "common-live": {
+        kind: "puzzle",
+        gid: "common",
+        game: GS_NAME.common,
+        art: "common",
+        number: CM_NO,
+        live: true,
+        result: "In progress",
+        date: GS.today,
+        figures: ["Thread 1 of 3", "0 of 15 points"],
+        share: null,
+        lines: CM_TODAY_LINES.slice(0, 2)
       }
     });
     DP_IDS.forEach((k) => {
@@ -4900,6 +4967,26 @@
           } },
           { k: "sv7", n: "Seven days in a row", how: "Find every wreck seven days running.", of: 7 }
         ]
+      },
+      common: {
+        count: CM_NO,
+        no: (i) => GS_NAME.common + " #" + (CM_NO - i),
+        salt: 14,
+        keep: {},
+        today: "common-today",
+        liveSid: "common-live",
+        ok: (i) => cmResult(CM_OK[i % CM_OK.length]),
+        bad: cmResult(CM_FAIL),
+        title: "Today’s threads",
+        next: "Next threads: tomorrow",
+        live: { line: "You’re on thread 1 of 3. One guess is used and two items show.", bar: ["Thread 1 of 3", 1, 3] },
+        done: { st: { kind: "ok", label: GS_SESSIONS["common-today"].result }, line: "You found all three links and scored " + cmScore(CM_TODAY) + " of 15.", bar: [cmScore(CM_TODAY) + " of 15 points", cmScore(CM_TODAY), 15] },
+        recent: "Your days",
+        ach: [
+          { k: "cm1", n: "First Thread", how: "Find a link.", by: (p) => p.status.kind === "ok" },
+          { k: "cm3", n: "Clean Sweep", how: "Find all three links in a day.", by: (p) => p.status.kind === "ok" },
+          { k: "cm7", n: "Seven Days in a Row", how: "Find all three links seven days running.", of: 7 }
+        ]
       }
     };
     dpSeeResult = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.");
@@ -4957,6 +5044,24 @@
         ] },
         who: { ai: "Reads the sea back to you after every dive, row by row.", server: "Holds the wrecks, answers every dive and counts the dives you have left." },
         week: { title: "Today’s sea", line: "You get thirty dives to find five wrecks.", session: "salvage-today" }
+      },
+      common: {
+        rhythm: "NEW EVERY DAY",
+        box: {
+          label: "ONLY WITH THE PASS",
+          heading: "Three new threads every day",
+          button: "Play today’s threads",
+          steps: [GS_STEP_CONNECT, dpStep("Name today’s three links.", " You get two guesses a thread."), dpSeeResult],
+          small: GS_NAME.common + " comes only with the After Pixels Pass."
+        },
+        facts: { long: "10 min", often: "New every day" },
+        tags: [],
+        pitch: { h: "An egg, a tortoise and a peanut have something in common. Name it early.", ps: [
+          "Each day has three threads, the same for everyone. A thread is four items with one hidden link, and the game shows them one at a time. Ask for the next item, name the link, or pass.",
+          "Name the link from one item and it scores 5; from two, three or four it scores 3, 2 or 1. A day is out of 15. You get two guesses a thread, and a wrong guess shows the next item. There are no hints. Your AI is told only the items you see. Name your first link."
+        ] },
+        who: { ai: "Reads out each item, thinks it through with you when you ask, and tells the story of each link once a thread closes.", server: "Holds the items you haven’t seen and each link, marks every guess and scores the thread." },
+        week: { title: "Today’s threads", line: "Three threads, the same for everyone.", session: "common-today" }
       }
     });
     Object.assign(GS_CHATS, {
@@ -5008,6 +5113,22 @@
         { cap: "The board is redrawn after every dive, so your AI can read it aloud.", turns: [
           gscU("B2."),
           gscAi("salvage", "Sunk: the wreck of 4. " + (30 - 8) + " dives left.", null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])
+        ] }
+      ],
+      common: [
+        { cap: "Say you want to play. Everyone gets the same three threads today.", turns: [
+          gscU("I want to play Common."),
+          gscAi("common", ["Common No. " + CM_NO + ". Thread 1 of 3.", "Name the link now for 5 points, ask for the next item, or pass. You have two guesses."], null, [dpMono("A TENNIS RACKET")])
+        ] },
+        { cap: "Every item that shows lowers what the link scores, and a wrong guess shows the next one.", turns: [
+          gscU("Next."),
+          gscAi("common", "A right guess now scores 3.", null, [dpMono("A TENNIS RACKET\nA GUITAR")]),
+          gscU("Music."),
+          gscAi("common", "Not it. Close: what do they all have stretched or tied to them? A right guess now scores 2, and you have one guess left.", null, [dpMono("A TENNIS RACKET\nA GUITAR\nA YO-YO")])
+        ] },
+        { cap: "When a thread closes, your AI tells its story.", turns: [
+          gscU("Things with strings."),
+          gscAi("common", ["Things with strings is right, for 2 points.", "A tennis racket is strung tight, a guitar has strings to pluck, a yo-yo winds up on one, and a harp has dozens.", "Thread 2 of 3. Name the link now for 5 points, ask for the next item, or pass. You have two guesses. Your score is 2."], null, [dpMono("A PRINTER")])
         ] }
       ]
     });
@@ -6849,6 +6970,7 @@
   let GsMystery;
   let GsWhere;
   let GsChain;
+  let GsCommon;
   let GsSalvage;
   let GsEscape;
   let GsCasebook;
@@ -6863,6 +6985,7 @@
       where: { units: "countries" },
       chain: { units: "chains" },
       salvage: { units: "seas" },
+      common: { units: "days" },
       escape: { units: "rooms" },
       casebook: { units: "cases" },
       hunter: { units: "days" }
@@ -6874,6 +6997,7 @@
       where: "See every day’s country and how many guesses it took you.",
       chain: "See every day’s chain and how many wrong guesses you made.",
       salvage: "See every day’s sea and how many dives it took you.",
+      common: "See every day you’ve played and what each thread scored.",
       escape: "See every room you got out of, with your time against par, hints and wrong tries.",
       casebook: "See every case you’ve worked and the lies you caught.",
       hunter: "See every day you’ve explored, what you learned and who you met.",
@@ -6887,6 +7011,7 @@
     GsWhere = gpGame("where");
     GsChain = gpGame("chain");
     GsSalvage = gpGame("salvage");
+    GsCommon = gpGame("common");
     GsEscape = gpGame("escape");
     GsCasebook = gpGame("casebook");
     GsHunter = gpGame("hunter");
@@ -8134,7 +8259,7 @@
         c.setConnected(true);
         c.go("session", { id: "nowhere" });
       } },
-      // Where, Chain and Salvage: held in app/gs-where-chain-salvage.jsx.
+      // Where, Chain, Salvage and Common: held in app/gs-where-chain-salvage.jsx.
       ...DP_STATES || [],
       // Directory listing mocks: held in app/directory-listings.jsx (droppable); absent ⇒ none.
       ...DL_STATES || []
@@ -8364,6 +8489,12 @@
       steps: ["groups-pass", "groups-free", "casebook-pass", "casebook-free", "delve-pass", "hunter-pass", "hunter-free", "session-casebook", "session-hunter", "history", "free-history", "games", "games-free", "games-signed-out"]
     }
   ];
+  KIT_QA.unshift({
+    key: "common-game",
+    title: "Common",
+    note: "Common is a Pass-only daily puzzle. Product page signed out, free (Get the Pass) and with the Pass; library page done, in progress and free (Needs the Pass); the editions list; a session. Point at, Tab to and press its card and tile: the four shapes each turn once and go gold; with reduced motion they stay still.",
+    steps: ["common-signed-out", "common-free", "common-pass", "library-common", "library-common-in-progress", "library-common-free", "library-common-editions", "session-common", "games", "games-free", "library", "history"]
+  });
   KIT_QA.unshift({
     key: "daily-puzzles-1213",
     title: "Where, Chain and Salvage (1213)",
@@ -9927,6 +10058,8 @@
         return /* @__PURE__ */ React$1.createElement(GsChain, null);
       case "salvage":
         return /* @__PURE__ */ React$1.createElement(GsSalvage, null);
+      case "common":
+        return /* @__PURE__ */ React$1.createElement(GsCommon, null);
       case "escape":
         return /* @__PURE__ */ React$1.createElement(GsEscape, null);
       case "casebook":
