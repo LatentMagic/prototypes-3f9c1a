@@ -985,6 +985,26 @@
       }
     );
   };
+  const kitCopy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return ok;
+      } catch (e2) {
+        return false;
+      }
+    }
+  };
   const kitScrollLocks = /* @__PURE__ */ new Map();
   const kitLockScroll = () => {
     const scroller = document.querySelector(".kit-phone-screen") || document.scrollingElement || document.documentElement;
@@ -8312,24 +8332,7 @@
     const [copied, setCopied] = useStState(null);
     const copy = async () => {
       const url = kitStateLink(state.id);
-      let ok = false;
-      try {
-        await navigator.clipboard.writeText(url);
-        ok = true;
-      } catch (e) {
-        try {
-          const ta = document.createElement("textarea");
-          ta.value = url;
-          ta.style.position = "fixed";
-          ta.style.opacity = "0";
-          document.body.appendChild(ta);
-          ta.select();
-          ok = document.execCommand("copy");
-          document.body.removeChild(ta);
-        } catch (e2) {
-          ok = false;
-        }
-      }
+      const ok = await kitCopy(url);
       setCopied({ ok, url });
     };
     return /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-item" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-row" }, /* @__PURE__ */ React$1.createElement("button", { className: "kit-states-jump", onClick: () => onGo(state.id) }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, state.label), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", state.id, state.aliases && state.aliases.length ? " · also " + state.aliases.join(", ") : "")), /* @__PURE__ */ React$1.createElement(
@@ -9071,6 +9074,15 @@
     const [open, setOpen] = useCState(false);
     const [statesOpen, setStatesOpen] = useCState(false);
     const [qaOpen, setQaOpen] = useCState(false);
+    const [linkCopied, setLinkCopied] = useCState(false);
+    const linkTimer = useCRef(null);
+    useCEffect(() => () => clearTimeout(linkTimer.current), []);
+    const copyLink = async () => {
+      if (!await kitCopy(location.href)) return;
+      setLinkCopied(true);
+      clearTimeout(linkTimer.current);
+      linkTimer.current = setTimeout(() => setLinkCopied(false), 1500);
+    };
     const [btnPos, setBtnPos] = useCState(() => {
       try {
         const v = JSON.parse(localStorage.getItem("kit_launcher_pos") || "null");
@@ -9188,6 +9200,16 @@
         title: "QA — drag to move"
       },
       /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 20 })
+    ), /* @__PURE__ */ React$1.createElement(
+      "button",
+      {
+        className: "kit-launcher-half",
+        onPointerDown,
+        onClick: () => tapped(copyLink),
+        "aria-label": "Copy link to this view",
+        title: "Copy link to this view — drag to move"
+      },
+      /* @__PURE__ */ React$1.createElement(Icon, { name: linkCopied ? "check" : "link", size: 20 })
     )), !fitted && hasQa && qaOpen && /* @__PURE__ */ React$1.createElement(
       QaPalette,
       {

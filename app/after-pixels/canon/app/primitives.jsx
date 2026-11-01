@@ -27,6 +27,22 @@ export const Icon = ({ name, size = 20, color = 'currentColor', style = {}, stro
   );
 };
 
+// ---- Copy to clipboard, shared by the aids ----------------------------------
+// Resolves true when copied. Falls back to a hidden textarea where the clipboard API is absent or refused
+// (an insecure origin, an iframe without permission).
+export const kitCopy = async (text) => {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e2) { return false; }
+  }
+};
+
 // ---- Scroll lock, shared by the aids' dialogs --------------------------------
 // KEEP: a scroll that starts on a dialog's scrim never moves the page behind it (the phone frame's screen when
 // forced-mobile), and stacked dialogs release it only when the last one closes.

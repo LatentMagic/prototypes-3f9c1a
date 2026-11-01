@@ -14,7 +14,7 @@
 // window.StatesIndex and config.jsx on window.StatesPalette.
 // ============================================================================
 import React from 'react';
-import { Icon, kitLockScroll } from './primitives.jsx';
+import { Icon, kitLockScroll, kitCopy } from './primitives.jsx';
 import { kitStateLink } from './states.jsx';
 
 const { useState: useStState, useEffect: useStEffect, useMemo: useStMemo, useRef: useStRef } = React;
@@ -24,16 +24,7 @@ const StatesRow = ({ state, onGo }) => {
   const [copied, setCopied] = useStState(null);
   const copy = async () => {
     const url = kitStateLink(state.id);
-    let ok = false;
-    try { await navigator.clipboard.writeText(url); ok = true; } catch (e) {
-      try {
-        const ta = document.createElement('textarea');
-        ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
-        document.body.appendChild(ta); ta.select();
-        ok = document.execCommand('copy');
-        document.body.removeChild(ta);
-      } catch (e2) { ok = false; }
-    }
+    const ok = await kitCopy(url);
     // The link is shown either way: copied, so it can be read back; not copied,
     // so it can still be taken by hand.
     setCopied({ ok, url });

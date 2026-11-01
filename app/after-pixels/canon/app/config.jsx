@@ -1,14 +1,18 @@
 // ============================================================================
 // Kit — the Config pill (PROTOTYPE AID, not part of the product).
 //
-// A floating, draggable pill of up to three halves, all prototype aids and none
+// A floating, draggable pill of up to four halves, all prototype aids and none
 // part of the product:
 //   settings glyph → Config. Review settings only: modes you hold while looking.
 //   list glyph     → States (app/states-ui.jsx). Where you GO — a state to jump
 //                    to, and a link to hand someone.
 //   check glyph    → QA (app/qa.jsx). The states to check for work in flight.
-//   While the page is fitted (Config → Global → Fit, app/fit.jsx) the pill holds only the Config half,
-//   so Fit can be set Off; the other halves would act on the hidden outer page.
+//   link glyph     → copies the page's address as it stands (the open ?state= and any
+//                    ?pg= settings come with it), then shows a check for 1.5 s. A tap, not
+//                    a dialog; it shows whenever the pill does, fitted or not.
+//   While the page is fitted (Config → Global → Fit, app/fit.jsx) the pill holds only the Config and link halves,
+//   so Fit can be set Off; the States and QA halves would act on the hidden outer page.
+//   The link half stays: it copies the outer page's address, which is what is shared.
 //
 // The split is the point: a setting is a mode you hold, a state is an address you
 // open. An address needs a register of its own (app/states.jsx) before
@@ -33,7 +37,7 @@
 // drills in: the section list, then one section under a back control.
 // ============================================================================
 import React from 'react';
-import { Icon, kitLockScroll } from './primitives.jsx';
+import { Icon, kitLockScroll, kitCopy } from './primitives.jsx';
 import { StatesPalette } from './states-ui.jsx';
 import { QaPalette } from './qa.jsx';
 import { ConfigExtra } from './gs-pass-aids.jsx';
@@ -52,6 +56,15 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
   const [open, setOpen] = useCState(false);
   const [statesOpen, setStatesOpen] = useCState(false);
   const [qaOpen, setQaOpen] = useCState(false);
+  const [linkCopied, setLinkCopied] = useCState(false);
+  const linkTimer = useCRef(null);
+  useCEffect(() => () => clearTimeout(linkTimer.current), []);
+  const copyLink = async () => {
+    if (!(await kitCopy(location.href))) return;
+    setLinkCopied(true);
+    clearTimeout(linkTimer.current);
+    linkTimer.current = setTimeout(() => setLinkCopied(false), 1500);
+  };
   // draggable Config pill position. null = default bottom-right.
   const [btnPos, setBtnPos] = useCState(() => {
     try { const v = JSON.parse(localStorage.getItem('kit_launcher_pos') || 'null'); return v && Number.isFinite(v.x) && Number.isFinite(v.y) ? v : null; } catch (e) { return null; }
@@ -142,6 +155,11 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
             <Icon name="check" size={20} />
           </button>
         )}
+        <button className="kit-launcher-half" onPointerDown={onPointerDown}
+          onClick={() => tapped(copyLink)}
+          aria-label="Copy link to this view" title="Copy link to this view — drag to move">
+          <Icon name={linkCopied ? 'check' : 'link'} size={20} />
+        </button>
       </div>
       {!fitted && hasQa && qaOpen && (
         <QaPalette statesGroups={statesGroups}
