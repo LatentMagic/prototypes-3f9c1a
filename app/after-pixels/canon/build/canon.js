@@ -1017,9 +1017,9 @@
     groups: { ground: "indigo", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/>' + ["#E5A63B", "#328A88", "#D66847", "#A390B2"].map((c, r) => [0, 1, 2, 3].map((k) => '<rect x="' + (31 + k * 26) + '" y="' + (11 + r * 26) + '" width="20" height="20" fill="' + c + '"/>').join("")).join("")) },
     word: { ground: "forest", extend: "centre", svg: '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice"><rect width="160" height="120" fill="#163328"/><rect x="24" y="44" width="32" height="32" fill="#4CC38A"/><rect x="64" y="44" width="32" height="32" fill="#E5A63B"/><rect class="wd-cover-miss" x="104" y="44" width="32" height="32" fill="#918B80" stroke="#918B80"/></svg>' },
     derelict: { ground: "indigo", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><circle cx="100" cy="56" r="32" fill="none" stroke="#A390B2" stroke-width="10"/><rect x="28" y="74" width="20" height="20" fill="#D66847"/><circle cx="40" cy="30" r="4" fill="#F2EBE0"/>') },
-    barrow: { ground: "wine", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><path d="M12 120L52 52L92 120Z" fill="#E5A63B"/><path d="M68 120L108 64L148 120Z" fill="#328A88"/><rect x="100" y="20" width="16" height="16" fill="#F2EBE0"/>') },
+    barrow: { ground: "wine", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><path d="M20 120L56 52L92 120Z" fill="#E5A63B"/><path d="M68 120L104 64L140 120Z" fill="#328A88"/><rect x="100" y="20" width="16" height="16" fill="#F2EBE0"/>') },
     casebook: { ground: "indigo", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="30" y="40" width="18" height="80" fill="#D66847"/><rect x="62" y="28" width="18" height="92" fill="#A390B2"/><rect x="94" y="46" width="18" height="74" fill="#F2EBE0"/><circle cx="128" cy="26" r="12" fill="#E5A63B"/>') },
-    hunter: { ground: "forest", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L100 50L160 120Z" fill="#A390B2"/><rect x="18" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>') }
+    hunter: { ground: "forest", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#163328"/><circle cx="52" cy="74" r="26" fill="#E5A63B"/><path d="M40 120L88 50L136 120Z" fill="#A390B2"/><rect x="22" y="104" width="14" height="14" fill="#328A88"/><rect x="128" y="20" width="10" height="10" fill="#F2EBE0"/>') }
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
@@ -9128,7 +9128,7 @@
       once: true,
       blurb: "Someone left the sleeper car and never reached the next one.",
       ready: "This week’s case is ready",
-      art: ["indigo", "bottom", '<rect width="160" height="120" fill="#1D1B3A"/><rect x="14" y="62" width="132" height="36" fill="#D66847"/><rect x="26" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="54" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="82" y="70" width="16" height="12" fill="#1D1B3A"/><rect x="110" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="0" y="106" width="160" height="6" fill="#E5A63B"/><circle cx="128" cy="28" r="10" fill="#A390B2"/>'],
+      art: ["indigo", "bottom", '<rect width="160" height="120" fill="#1D1B3A"/><rect x="22" y="62" width="116" height="36" fill="#D66847"/><rect x="30" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="58" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="86" y="70" width="16" height="12" fill="#1D1B3A"/><rect x="114" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="0" y="106" width="160" height="6" fill="#E5A63B"/><circle cx="128" cy="28" r="10" fill="#A390B2"/>'],
       page: {
         rhythm: "A NEW CASE EVERY WEEK",
         heading: "A new case every week",
@@ -9268,7 +9268,7 @@
       editions: [["Low Water at Kimmeridge", "5 October"], ["Spring Tide at Wembury", "28 September"], ["The Pools at Robin Hood’s Bay", "21 September"]],
       blurb: "One low tide on a rocky shore. Turn over every stone.",
       ready: "Low tide is ready",
-      art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><rect x="0" y="84" width="160" height="36" fill="#328A88"/><rect x="24" y="66" width="40" height="22" fill="#A390B2"/><circle cx="104" cy="96" r="12" fill="#D66847"/><circle cx="132" cy="24" r="14" fill="#E5A63B"/>'],
+      art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><rect x="0" y="84" width="160" height="36" fill="#328A88"/><rect x="24" y="66" width="40" height="22" fill="#A390B2"/><circle cx="104" cy="96" r="12" fill="#D66847"/><circle cx="124" cy="24" r="14" fill="#E5A63B"/>'],
       page: {
         rhythm: "ONE TIDE",
         heading: "A different shore every time",
