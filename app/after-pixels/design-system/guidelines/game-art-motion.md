@@ -108,6 +108,8 @@ Three tiles of a guess, in the game's own marks. Three squares in a row across t
 
 Each piece is written in words before it is drawn. The words say what must stay true and what may move, so the art can be recomposed for square (1:1), landscape (4:3) and wide (3:1) frames without losing anything. A frame that doesn't suit the original drawing gets a recomposition, not a crop. Write the description, then draw each frame from it.
 
+**Keep the subject in the centre square.** In its 4:3 frame a cover's subject stays between x 20 and 140 of the 160-unit width, at every height; only ground and decoration may run past that band. The cover is also its product page's link-preview image, drawn 1200×630, and some apps crop that image to its centre square. The cropped square must still read as the whole picture.
+
 ### Daily Groups
 The four groups of a solved board. Sixteen equal squares in a 4 by 4 grid on indigo, one colour per row: amber, teal, orange, lilac from the top.
 - Always: the grid is square and whole; gaps are about a third of a square; at least one gap's width of indigo on every side.

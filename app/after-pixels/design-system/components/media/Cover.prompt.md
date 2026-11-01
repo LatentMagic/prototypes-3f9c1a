@@ -7,6 +7,7 @@ Cover shows a game's 4:3 flat-shape art with its name below; use it for every ga
 ```
 
 - Art is flat geometric shapes in solid cover colours on an indigo, wine or forest ground. No gradients, outlines-as-decoration or photos.
+- Keep the subject inside the centre square of the 4:3 frame, x 20-140 of 160 units, at every height; only ground and decoration may run past it. A cover is also its product page's link-preview image, drawn 1200×630, and some apps crop that to its centre square, which must still read as the whole picture (`guidelines/game-art-motion.md`, Shape).
 - The five `art` keys are the hand-off's examples only. Cover assembly rules are not decided.
 
 **Beside a heading** (a game's page head): `fill` the cover so it and the text share a top and a bottom edge.

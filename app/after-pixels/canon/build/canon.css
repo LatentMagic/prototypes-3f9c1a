@@ -379,7 +379,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-art-hu-peak{--fill:var(--cover-lilac);--s:80; /* @kind other */clip-path:polygon(0 100%,50% 0,100% 100%);transform-origin:50% 100%;transform:scale(calc(1 + var(--on)*.07));left:22cqw;width:78cqw;top:42cqh;bottom:0}
 .mcp-art-hu-teal{--fill:var(--cover-teal);--s:0; /* @kind other */border-radius:calc(var(--on)*50%);left:6cqw;top:86cqh;width:11cqh;height:11cqh}
 .mcp-art-hu-cream{--fill:var(--cover-cream);--s:120; /* @kind other */border-radius:calc(var(--on)*50%);left:78cqw;top:16cqh;width:8cqh;height:8cqh;transform:translate(calc(var(--on)*30%),calc(var(--on)*-30%))}
-@container (min-aspect-ratio:6/5){.mcp-art-hu-sun{left:16.25cqw;top:40cqh;width:43.3cqh;height:43.3cqh}.mcp-art-hu-peak{left:25cqw;width:75cqw;top:41.7cqh}.mcp-art-hu-teal{left:11.25cqw;top:86.7cqh;width:11.7cqh;height:11.7cqh}.mcp-art-hu-cream{left:80cqw;top:16.7cqh;width:8.3cqh;height:8.3cqh}}
+@container (min-aspect-ratio:6/5){.mcp-art-hu-sun{left:16.25cqw;top:40cqh;width:43.3cqh;height:43.3cqh}.mcp-art-hu-peak{left:25cqw;width:60cqw;top:41.7cqh}.mcp-art-hu-teal{left:12.5cqw;top:86.7cqh;width:11.7cqh;height:11.7cqh}.mcp-art-hu-cream{left:78cqw;top:16.7cqh;width:8.3cqh;height:8.3cqh}}
 @container (min-aspect-ratio:2/1){.mcp-art-hu-sun{left:30cqw;top:36cqh;width:48cqh;height:48cqh}.mcp-art-hu-peak{left:38cqw;width:36cqw;top:30cqh}.mcp-art-hu-teal{left:24cqw;top:80cqh;width:12cqh;height:12cqh}.mcp-art-hu-cream{left:78cqw;top:14cqh;width:9cqh;height:9cqh}}
 .mcp-art.is-wine{background:var(--cover-bg-wine)}
 /* Daily Word and Daily Mystery, from the Game Store prototype. Each is drawn on a centred 4:3 stage so square and wide frames show the whole piece with more ground; --u is 1/160 of the stage. */
@@ -2205,28 +2205,29 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .ga-e-door { --x: 60; --y: 26; --w: 44; --h: 134; --fill: var(--cover-teal); --s: 0; border-radius: calc(var(--on) * var(--u) * 22) calc(var(--on) * var(--u) * 22) 0 0; }
 .ga-e-knob { --x: 89; --y: 71; --w: 10; --h: 10; --fill: var(--cover-amber); --s: 50; border-radius: calc((1 - var(--on)) * 50%); transform: translateY(max(var(--on) * var(--u) * -5, -8px)); }
 .ga-e-win { --x: 22; --y: 22; --w: 16; --h: 16; --fill: var(--cover-cream); --s: 100; border-radius: calc(var(--on) * 50%); transform: translate(calc(var(--on) * min(var(--u) * 6, 10px)), calc(var(--on) * max(var(--u) * -6, -10px))); }
+/* KEEP: Delve's torches and Chain's chain sit inside x 20-140 of the 160-unit stage, the centre square that a square crop of the cover's link-preview image keeps; the torch flames span 24-136 and the chain 24-136, at rest and on hover. */
 .ga-d-out { --x: 50; --y: 10; --w: 60; --h: 150; --fill: var(--cover-lilac); --s: 0; border-radius: calc(var(--u) * 30) calc(var(--u) * 30) 0 0; }
 .ga-d-in { --x: 64; --y: 36; --w: 32; --h: 124; --fill: var(--cover-bg-indigo); --s: 40; border-radius: calc(var(--u) * 16) calc(var(--u) * 16) 0 0; transform-origin: 50% calc(var(--u) * 84); transform: scale(calc(1 + var(--on) * .07)); }
 .ga-d-st { --x: 64; --y: 88; --w: 32; --h: 8; --fill: var(--cover-amber); --s: 0; }
 .ga-d-st2 { --x: 68; --y: 100; --w: 24; --h: 8; --fill: var(--cover-amber); --s: 0; }
 .ga-d-st3 { --x: 72; --y: 112; --w: 16; --h: 8; --fill: var(--cover-amber); --s: 0; }
 .ga-d-post { --y: 62; --w: 6; --h: 30; --fill: var(--cover-cream); --s: 0; transform-origin: 50% 100%; transform: scaleY(calc(1 + var(--on) * .25)); }
-.ga-d-post.l { --x: 22; } .ga-d-post.r { --x: 132; }
+.ga-d-post.l { --x: 29; } .ga-d-post.r { --x: 125; }
 .ga-d-fl { --y: 46; --w: 16; --h: 16; --fill: var(--cover-orange); --s: 60; border-radius: calc((1 - var(--on)) * 50%); transform: translateY(calc(var(--on) * var(--u) * -7.5)); }
-.ga-d-fl.l { --x: 17; } .ga-d-fl.r { --x: 127; }
+.ga-d-fl.l { --x: 24; } .ga-d-fl.r { --x: 120; }
 /* Where: the hint's needle swings from north-east round to east and points at today's country, which rounds into a pin: found. Rotation only, so it lands exactly at any size. */
 .ga-wh-needle { --x: 44; --y: 32; --w: 16; --h: 56; --fill: linear-gradient(var(--cover-orange) 50%, var(--cover-cream) 50%); --s: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transform: rotate(calc(45deg + var(--on) * 45deg)); }
 .ga-wh-ans { --x: 96; --y: 44; --w: 32; --h: 32; --fill: var(--cover-amber); --s: 50; border-radius: calc(var(--on) * 50%); }
 /* Chain: the two end words and their links are found; the three middle words are empty. The cream line grows inward from both ends and meets in the middle, and each word fills as the line reaches it (border thickens inward, so it never grows). */
 .ga-ch { --y: 51; --w: 18; --h: 18; --s: 0; }
-.ga-ch-1 { --x: 11; --fill: var(--cover-cream); } .ga-ch-5 { --x: 131; --fill: var(--cover-cream); }
+.ga-ch-1 { --x: 24; --fill: var(--cover-cream); } .ga-ch-5 { --x: 118; --fill: var(--cover-cream); }
 /* KEEP: The empty words are drawn with an inset shadow, not a border: the square never changes size, and at rest past half its width the shadow fills it edge to edge with no pixel-rounding gap. */
 .ga-ch-o { --fill: transparent; box-shadow: inset 0 0 0 max(var(--u) * (3 + var(--on) * 7), 1.5px + var(--on) * var(--u) * 10) var(--c); }
 .mcp-art i.ga-ch-o { transition: transform var(--time-art) var(--ease-art) 0ms, box-shadow var(--time-art) var(--ease-art) 0ms; }
-.ga-ch-2 { --x: 41; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 101; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 71; --c: var(--cover-amber); --s: 100; }
+.ga-ch-2 { --x: 47.5; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 94.5; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 71; --c: var(--cover-amber); --s: 100; }
 .ga-ch-l { --y: 57; --h: 6; --fill: var(--cover-cream); --s: 0; }
-.ga-ch-l1 { --x: 20; --w: 61; transform-origin: 0 50%; transform: scaleX(calc(.3443 + var(--on) * .6557)); }
-.ga-ch-l2 { --x: 79; --w: 61; transform-origin: 100% 50%; transform: scaleX(calc(.3443 + var(--on) * .6557)); }
+.ga-ch-l1 { --x: 33; --w: 48; transform-origin: 0 50%; transform: scaleX(calc(.302 + var(--on) * .698)); }
+.ga-ch-l2 { --x: 79; --w: 48; transform-origin: 100% 50%; transform: scaleX(calc(.302 + var(--on) * .698)); }
 /* Salvage: a board mid-hunt. Cream misses and two orange hits in a row. The last dive lands as a third hit, the misses recede to nothing, and the wreck under the three hits shows itself, 50ms behind. Every move is a scale about a shape's own centre, so it lands exactly at any size. */
 .ga-sv-p { --w: 12; --h: 12; --s: 0; border-radius: 50%; }
 .ga-sv-miss { --fill: var(--cover-cream); transform: scale(calc(1 - var(--on))); }

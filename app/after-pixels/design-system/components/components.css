@@ -287,7 +287,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-art-hu-peak{--fill:var(--cover-lilac);--s:80; /* @kind other */clip-path:polygon(0 100%,50% 0,100% 100%);transform-origin:50% 100%;transform:scale(calc(1 + var(--on)*.07));left:22cqw;width:78cqw;top:42cqh;bottom:0}
 .mcp-art-hu-teal{--fill:var(--cover-teal);--s:0; /* @kind other */border-radius:calc(var(--on)*50%);left:6cqw;top:86cqh;width:11cqh;height:11cqh}
 .mcp-art-hu-cream{--fill:var(--cover-cream);--s:120; /* @kind other */border-radius:calc(var(--on)*50%);left:78cqw;top:16cqh;width:8cqh;height:8cqh;transform:translate(calc(var(--on)*30%),calc(var(--on)*-30%))}
-@container (min-aspect-ratio:6/5){.mcp-art-hu-sun{left:16.25cqw;top:40cqh;width:43.3cqh;height:43.3cqh}.mcp-art-hu-peak{left:25cqw;width:75cqw;top:41.7cqh}.mcp-art-hu-teal{left:11.25cqw;top:86.7cqh;width:11.7cqh;height:11.7cqh}.mcp-art-hu-cream{left:80cqw;top:16.7cqh;width:8.3cqh;height:8.3cqh}}
+@container (min-aspect-ratio:6/5){.mcp-art-hu-sun{left:16.25cqw;top:40cqh;width:43.3cqh;height:43.3cqh}.mcp-art-hu-peak{left:25cqw;width:60cqw;top:41.7cqh}.mcp-art-hu-teal{left:12.5cqw;top:86.7cqh;width:11.7cqh;height:11.7cqh}.mcp-art-hu-cream{left:78cqw;top:16.7cqh;width:8.3cqh;height:8.3cqh}}
 @container (min-aspect-ratio:2/1){.mcp-art-hu-sun{left:30cqw;top:36cqh;width:48cqh;height:48cqh}.mcp-art-hu-peak{left:38cqw;width:36cqw;top:30cqh}.mcp-art-hu-teal{left:24cqw;top:80cqh;width:12cqh;height:12cqh}.mcp-art-hu-cream{left:78cqw;top:14cqh;width:9cqh;height:9cqh}}
 .mcp-art.is-wine{background:var(--cover-bg-wine)}
 /* Daily Word and Daily Mystery, from the Game Store prototype. Each is drawn on a centred 4:3 stage so square and wide frames show the whole piece with more ground; --u is 1/160 of the stage. */
