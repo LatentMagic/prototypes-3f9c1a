@@ -9405,6 +9405,7 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React$1.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React$1.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React$1.createElement(CprDiscoverBody, { f, setF })));
   };
   const PG = {};
+  const PG_DESK = 1280;
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -9439,10 +9440,35 @@
     const [open, setOpen] = React$1.useState(false);
     const wrap = React$1.useRef(null);
     gsUseMenuDismiss(open, setOpen, wrap);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "pg-pick gs-menu-anchor", ref: wrap }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-pick-btn", "aria-label": s.label + ": " + pgOption(s, v).label, "aria-expanded": open, "aria-haspopup": "menu", onClick: () => setOpen((o) => !o) }, pgOption(s, v).label), open && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pop pg-pop", role: "menu", "aria-label": s.label }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", role: "menuitemradio", "aria-checked": o.value === v, className: "gs-menu-item", onClick: () => {
+    const i = s.options.findIndex((o) => o.value === v);
+    const step = (d) => {
+      const o = s.options[i + d];
+      if (o) pgSet(s, o.value);
+    };
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pg-concept", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-step", "aria-label": "Previous " + s.label, disabled: i <= 0, onClick: () => step(-1) }, "‹"), /* @__PURE__ */ React$1.createElement("div", { className: "pg-pick gs-menu-anchor", ref: wrap }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-pick-btn", "aria-label": s.label + ": " + pgOption(s, v).label, "aria-expanded": open, "aria-haspopup": "menu", onClick: () => setOpen((o) => !o) }, s.label, ": ", pgOption(s, v).label), open && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pop pg-pop", role: "menu", "aria-label": s.label }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", role: "menuitemradio", "aria-checked": o.value === v, className: "gs-menu-item", onClick: () => {
       setOpen(false);
       pgSet(s, o.value);
-    } }, o.label))));
+    } }, o.label)))), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-step", "aria-label": "Next " + s.label, disabled: i >= s.options.length - 1, onClick: () => step(1) }, "›"));
+  };
+  const PgConfig = ({ settings }) => {
+    const [open, setOpen] = React$1.useState(false);
+    const wrap = React$1.useRef(null);
+    gsUseMenuDismiss(open, setOpen, wrap);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pg-config", ref: wrap }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-config-btn", "aria-expanded": open, "aria-haspopup": "dialog", onClick: () => setOpen((o) => !o) }, "Config"), open && /* @__PURE__ */ React$1.createElement("div", { className: "pg-config-pop", role: "dialog", "aria-label": "Config" }, /* @__PURE__ */ React$1.createElement("div", { className: "pg-config-head" }, /* @__PURE__ */ React$1.createElement("span", null, "Config"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-config-x", onClick: () => {
+      setOpen(false);
+    } }, "Close")), /* @__PURE__ */ React$1.createElement("div", { className: "pg-config-body" }, settings.map((s) => {
+      const v = pgValue(s);
+      return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-config-set", role: "radiogroup", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("div", { className: "pg-config-label" }, s.label), /* @__PURE__ */ React$1.createElement("div", { className: "pg-config-opts" }, s.options.map((o) => /* @__PURE__ */ React$1.createElement("button", { key: o.value, type: "button", role: "radio", "aria-checked": o.value === v, className: "pg-config-opt", onClick: () => pgSet(s, o.value) }, o.label))));
+    }))));
+  };
+  const usePgNarrow = () => {
+    const [n, setN] = React$1.useState(window.innerWidth < PG_DESK);
+    React$1.useEffect(() => {
+      const f = () => setN(window.innerWidth < PG_DESK);
+      window.addEventListener("resize", f);
+      return () => window.removeEventListener("resize", f);
+    }, []);
+    return n;
   };
   const PgBar = () => {
     const def = pgActive();
@@ -9466,10 +9492,11 @@
     }, []);
     const framed = isFramed();
     const fitted = useFit();
-    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), def.settings.filter((s) => !s.when || pgValue(def.settings.find((x) => x.key === s.when.key)) === s.when.value).map((s) => {
-      const v = pgValue(s);
-      return /* @__PURE__ */ React$1.createElement("div", { key: s.key, className: "pg-set", role: "group", "aria-label": s.label }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-label" }, s.label), /* @__PURE__ */ React$1.createElement(PgPick, { s, v }));
-    }), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit")));
+    const narrow = usePgNarrow();
+    const shown = def.settings.filter((s) => !s.when || pgValue(def.settings.find((x) => x.key === s.when.key)) === s.when.value);
+    const concepts = shown.filter((s) => s.kind === "concept");
+    const config = shown.filter((s) => s.kind !== "concept");
+    return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pg-title" }, def.title), concepts.map((s) => /* @__PURE__ */ React$1.createElement(PgPick, { key: s.key, s, v: pgValue(s) })), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
