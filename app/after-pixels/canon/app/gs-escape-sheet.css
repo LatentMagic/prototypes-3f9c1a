@@ -1,0 +1,89 @@
+/* Escape's character sheet (app/gs-escape-sheet.jsx): three stat cards and the latest slot, their chips and the reader.
+   The card is Delve's sheet surface (.dv4, .dv4-g in gs-delve.css), so this file is imported after it. */
+
+/* KEEP: at rest the sheet is at most one row of Delve's sheet tall (Delve's sheet card: 134px at 390); its padding is Delve's tight sheet's. */
+.esx-sheet { position: relative; gap: 0; padding: 12px 16px; }
+
+/* ---- Marks. KEEP: every mark (square, slip, door, pouch) shows as a 14px box in a 16px cell, in the cards, the chips and the reader alike, so no group's mark is bigger than another's. ---- */
+.esx-mk { flex: none; display: grid; place-items: center; width: 16px; height: 16px; }
+.esx-sq { display: block; width: 14px; height: 14px; background: var(--off-white); }
+/* KEEP: not looked at reads on the thing itself, with no word: a plain empty square, thin solid outline, its name muted in italics. */
+.esx-sq.is-unread { background: none; outline: 1px solid var(--control-edge); outline-offset: -1px; }
+.esx-door { color: var(--text); }
+.esx-door svg { width: 14px; height: 14px; }
+.esx-slip { position: relative; display: block; width: 14px; height: 14px; background: var(--off-white); }
+.esx-slip::before, .esx-slip::after { content: ''; position: absolute; left: 2px; right: 2px; height: 1.5px; background: var(--card); }
+.esx-slip::before { top: 4px; }
+.esx-slip::after { top: 8px; }
+.dv4-g.esx-g { width: 14px; height: 14px; margin: 1px; }
+.dv4-g.esx-g svg { width: 10px; height: 10px; }
+
+/* The system's dropdown: height by grid rows (0fr to 1fr) over 220ms, the transition always on the element so it runs. */
+.esx-fold { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--time-dropdown) var(--ease), opacity var(--time-dropdown) var(--ease); }
+.esx-fold > div { overflow: hidden; min-height: 0; }
+.esx-fold.is-open { grid-template-rows: 1fr; opacity: 1; }
+@keyframes esx-in { from { opacity: 0; transform: translateY(6px); } }
+.esx-in { animation: esx-in var(--time-swap) var(--ease); }
+
+/* A thing opened: its name and mark at 14px, then its sentence in the system's body (16/1.5). */
+.esx-read { display: grid; gap: 6px; margin-top: 12px; padding: 12px; background: var(--page); }
+.esx-nm { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.esx-nm > b { font: 600 14px/1.3 var(--font-text); color: var(--text); }
+.esx-tx { margin: 0; font: 400 16px/1.5 var(--font-text); color: var(--text); }
+
+/* ---- Tappable and static. KEEP: a tappable chip has a 1px control-edge border, the pointer, a 6% hover fill, the press scale and the focus ring; static text has none of these. Open, its border turns off-white. ---- */
+.esx-chip:is(button) { background: none; border: 1px solid var(--control-edge); color: var(--text); cursor: pointer; transition: background var(--time-swap) var(--ease), border-color var(--time-swap) var(--ease), transform var(--time-press) var(--ease); }
+.esx-chip:is(button):active:active { transform: scale(var(--press-scale)); }
+@media (hover: hover) { .esx-chip:is(button):hover:hover { background: color-mix(in srgb, var(--text) 6%, transparent); } }
+.esx-chip[aria-expanded="true"][aria-expanded="true"] { border-color: var(--off-white); background: color-mix(in srgb, var(--text) 6%, transparent); }
+.esx-sheet button:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.esx-still { display: flex; align-items: center; gap: 8px; min-width: 0; border: 1px solid transparent; color: var(--muted); }
+.esx-still .esx-rn { display: grid; font: 600 14px/1.2 var(--font-text); }
+.esx-still.is-unread .esx-rn { font-style: italic; }
+
+/* ---- A group opened: its things as chips in an even grid. KEEP: three equal columns filling the row, two on a phone (card under 480px); every chip is 52px tall (two lines of its 14px name, plus padding), tappable or not; a long name wraps inside its chip rather than spanning columns. ---- */
+.esx-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+@container dv4 (max-width: 480px) { .esx-sheet .esx-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.esx-chip { display: flex; align-items: center; gap: 8px; box-sizing: border-box; min-width: 0; height: 52px; overflow: hidden; padding: 8px 10px 8px 8px; font: 600 14px/1.2 var(--font-text); text-align: left; }
+.esx-chip > b { font: inherit; min-width: 0; overflow-wrap: break-word; }
+
+/* ---- The cards on the left, the latest slot across the rest of the row. ---- */
+.esx-stat { display: flex; align-items: stretch; gap: 16px; }
+.esx-latest { flex: 1; min-width: 0; display: block; padding-left: 16px; border-left: 1px solid var(--line); }
+.esx-lh { display: block; margin-bottom: 6px; font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.esx-l1 { display: block; font: var(--type-card-title); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.esx-lt { display: none; }
+.esx-l2 { margin: 6px 0 0; font: var(--type-body); color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* KEEP: on a phone (sheet card 560px wide or less) the latest slot is one 20px line under the cards: its label, then the line in 14px, with a short result (20 characters or fewer) after it. */
+@container dv4 (max-width: 560px) {
+  .esx-stat { display: grid; gap: 8px; }
+  .esx-latest { display: flex; align-items: baseline; gap: 8px; height: 20px; padding-left: 0; border-left: 0; overflow: hidden; white-space: nowrap; }
+  .esx-lh { margin: 0; flex: none; }
+  .esx-l1 { font: 600 14px/20px var(--font-text); flex: 0 1 auto; min-width: 0; }
+  .esx-lt { display: block; flex: none; font: 600 14px/20px var(--font-text); color: var(--text); margin-left: -8px; white-space: pre; }
+  .esx-l2 { display: none; }
+}
+
+/* KEEP: a card is 120x120 on a desktop sheet and a third of the row by 80px on a phone; the group's mark and name sit top left; the numeral is centred in the space below; no item marks. */
+.esx-card { background: var(--card); border: 1px solid var(--control-edge); color: var(--text); font: inherit; text-align: left; cursor: pointer; min-width: 0; font-variant-numeric: tabular-nums;
+  position: relative; display: grid; grid-template-rows: auto 1fr auto; justify-items: start; height: 120px; box-sizing: border-box; padding: 12px;
+  transition: background var(--time-swap) var(--ease), border-color var(--time-swap) var(--ease), transform var(--time-press) var(--ease); }
+.esx-card:active { transform: scale(var(--press-scale)); }
+@media (hover: hover) { .esx-card:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); } }
+.esx-card.is-open { border-color: var(--off-white); background: color-mix(in srgb, var(--text) 6%, var(--card)); }
+.esx-card:disabled { border-color: var(--line); background: var(--card); cursor: default; transform: none; }
+.esx-cards { display: grid; grid-template-columns: repeat(3, 120px); gap: 8px; flex: none; }
+.esx-hole { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; box-sizing: border-box; border: 1.5px solid var(--control-edge); border-radius: 50%; }
+.esx-cl1 { display: flex; align-items: center; gap: 6px; height: 16px; font: 600 var(--size-2xs)/16px var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.esx-num { align-self: center; justify-self: center; font-family: var(--font-heading); font-weight: 700; color: var(--text); font-size: var(--size-page-title); line-height: 34px; height: 34px; white-space: nowrap; }
+.esx-num i { font-style: normal; color: var(--muted); font-size: 60%; }
+@container dv4 (max-width: 560px) {
+  .esx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .esx-card { height: 80px; padding: 8px; }
+  .esx-num { font-size: 24px; line-height: 24px; height: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esx-fold, .esx-card, .esx-chip { transition: none; }
+  .esx-in { animation: none; }
+}

@@ -10,6 +10,7 @@ import { gsEdPick, GS_ES_PARTS, GS_ES1_CLOSED, GS_SESSIONS, GS_ES1_PAR, DS, useG
 import { GsMoves } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { GS_SESSION_BODY } from './registry.js';
+import { EsSheet } from './gs-escape-sheet.jsx';
 
 export const ES_SIDS = { under: 'escape-week', par: 'escape-par', over: 'escape-over', hard: 'escape-hard' };
 export const esFinished = (gs) => gsEdPick('escape', gs) || ES_SIDS[gs.review.escape] || 'escape-week';
@@ -140,23 +141,25 @@ const EsLine = ({ m, sel, onSel, card }) => {
   );
 };
 
-// ---- The session page's result: the door at cover size, open once you are out, beside "Escaped" and how that stands against
-// par. No time: the line has it. In progress: the door shut, "Still inside". ----
-const EsResult = ({ m, card }) => (
-  <div className={'es-res' + (card ? ' is-card' : '')}>
-    {m.live ? <EsDoor w={card ? 20 : 40} h={card ? 34 : 68} /> : <EsOpen w={card ? 20 : 40} h={card ? 34 : 68} />}
+// ---- The session page's result: the door at cover size, open once you are out, beside the shared band (word and line, as Guess,
+// Where and Delve draw theirs): "Escaped" always, in the success colour, with how that stands against par as the line beside it
+// (the text colour under or on par, the warning colour over). No time: the line below has it. In progress: the door shut,
+// "Still inside" in the text colour and no line. ----
+const EsResult = ({ m }) => (
+  <div className="es-res">
+    {m.live ? <EsDoor w={40} h={68} /> : <EsOpen w={40} h={68} />}
     <div className="es-rest">
-      <div className="es-resh">
-        {card ? <p className="es-h">{m.live ? 'Still inside' : 'Escaped'}</p> : <h2 className="es-h">{m.live ? 'Still inside' : 'Escaped'}</h2>}
-        {!m.live && <p className={'gs-vd is-' + (m.over ? 'over' : 'ok')}><DS.Icon name={m.over ? 'close' : 'check'} size={20} />{esSpare(m)}</p>}
+      <div className="dv7r-band">
+        <h2 className={'dv7r-word is-' + (m.live ? 'live' : 'ok')}>{m.live ? 'Still inside' : 'Escaped'}</h2>
+        {!m.live && <p className={'dv7r-line' + (m.over ? ' is-over' : '')}>{esSpare(m)}</p>}
       </div>
-      {!card && <p className="es-cap">{esFigs(m).join(' · ')}</p>}
+      <p className="es-cap">{esFigs(m).join(' · ')}</p>
     </div>
   </div>);
 
-// The now card's result: one word, coloured by how it stands against par (green under or on par, amber over). The line's
-// "Out 28 min" and par tick give the minutes.
-const esNowResult = (m) => (m.live ? { kind: 'live', label: 'In progress' } : { kind: m.over ? 'bad' : 'ok', label: 'Escaped' });
+// The now card's result: "Escaped" in the success colour at every finished moment, so the word says what happened and nothing
+// else; over par shows only in the card's picture (the amber part of the bar past the par tick).
+const esNowResult = (m) => (m.live ? { kind: 'live', label: 'In progress' } : { kind: 'ok', label: 'Escaped' });
 
 // ---- Lanes: one per lock, each a small line: its tries and hints left to right, running on to the lock's door at the right edge.
 // A typed lock's wrong try has no word under its mark. ----
@@ -181,14 +184,15 @@ const EsBody = ({ s, sid }) => {
   const gs = useGs(); const m = React.useMemo(() => esBuild(s), [s]);
   const def = (m.locks.find((l) => l.exit) || m.locks[m.locks.length - 1] || {}).key;
   const [sel, setSel] = React.useState(() => (m.locks.some((l) => l.key === gs.route.lock) ? gs.route.lock : def));
-  return <>
+  return <div className="dv4-lay">
+    <EsSheet sid={sid} />
     <section className="es-card" aria-label="How you got out">
       <EsResult m={m} />
       <EsLine m={m} sel={sel} onSel={setSel} />
       {m.locks.length > 0 && <div className="es-detail" aria-label="The locks"><EsLanes m={m} sel={sel} onSel={setSel} /></div>}
     </section>
     <GsMoves s={s} />
-  </>;
+  </div>;
 };
 const EsSessBody = (props) => <EsBody key={props.sid} {...props} />;
 

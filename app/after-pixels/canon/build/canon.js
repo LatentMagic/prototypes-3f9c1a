@@ -2883,6 +2883,234 @@
     GS_ADDED = ["barrow", "casebook", "delve", "escape"];
     GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
   }
+  const ESX_ROOM = {
+    text: "A dim study at the top of a narrow house: a workbench under a cold lamp, a glass cabinet of pocket watches, a tall case clock, a portrait of a girl, and a fireplace with carved panelling. Grey light seeps through a small round window. The door behind you is shut fast.",
+    lit: "Late-afternoon sun pours through the round window, and a single beam crosses the study: first over the workbench, then the portrait, then the glass cabinet, and last the fireplace, where a panel has swung back on a narrow oak door."
+  };
+  const ESX_OBJS = [
+    {
+      id: "bench",
+      key: "workbench",
+      name: "The workbench",
+      text: "A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth. The crank turns the 20-tooth gear, which turns the 9, which turns the 3, which turns the 11. The tray reads “One tooth, one letter.” Below it, a drawer with a four-letter lock.",
+      open: "A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth, and the crank still turns them. Below it, the drawer hangs open and empty.",
+      lit: "A workbench scattered with tools, now in a bar of sunlight. Where the beam lands, a letter scratched into the wood, too faint to see before, stands out in shadow: T. The gear tray sits beside it, and the drawer hangs open."
+    },
+    {
+      id: "cabinet",
+      key: "glass cabinet",
+      name: "The glass cabinet",
+      text: "A glass cabinet with a four-digit lock. Through the glass, four pocket watches hang on tagged chains: Thursday’s shows nine o’clock, Monday’s seven, Wednesday’s one, Tuesday’s four. A brass plate on the frame: “My code is my watches’ hours, Monday to Thursday.”",
+      lit: "A glass cabinet with a four-digit lock. Four pocket watches hang on tagged chains: Thursday’s shows nine o’clock, Monday’s seven, Wednesday’s one, Tuesday’s four. A brass plate on the frame: “My code is my watches’ hours, Monday to Thursday.” The sunlight through the glass throws a shadow on the wall behind, where the watch chains hang in the curve of a letter: C."
+    },
+    {
+      id: "clock",
+      key: "case clock",
+      name: "The case clock",
+      text: "A tall case clock, stopped, its hands stiff. There is a winding hole in its face.",
+      lit: "A tall case clock, ticking again, its hands at a quarter to four."
+    },
+    {
+      id: "portrait",
+      key: "portrait",
+      name: "The portrait",
+      text: "A girl of about ten, reaching up to a tall clock, a locket at her throat lost in the gloom. Beneath, in Ezra’s hand: “Ada.”",
+      lit: "A girl of about ten, reaching up to a tall clock. The sunbeam catches the gilt locket at her throat, and you see it is shaped like a letter: O. Beneath, in Ezra’s hand: “Ada.”"
+    },
+    {
+      id: "fireplace",
+      key: "fireplace",
+      name: "The fireplace",
+      text: "Cold ashes in an iron grate. The panelling beside it is carved with tiny gears, too shadowed to make out.",
+      lit: "Cold ashes in an iron grate. In the low, raking light, one of the tiny gears carved in the panelling shows a letter cut into its centre: K. Beside it, a narrow oak door stands in the wall."
+    }
+  ];
+  const ESX_OAK = { id: "oak", key: "oak door", name: "The oak door", text: GS_ES1.door };
+  const ESX_KEY = { id: "key", name: "Brass winding key", text: "A small brass key, its bow shaped like a clock face.", use: "Used on the case clock" };
+  const esxKeyOf = (n) => n.replace(/^the /i, "").toLowerCase();
+  const esxCap = (n) => n.replace(/^./, (c) => c.toUpperCase());
+  const esxRead = (sid) => {
+    const objs = ESX_OBJS.slice();
+    const extra = [];
+    const seen = /* @__PURE__ */ new Set();
+    const text = {};
+    const fixed = /* @__PURE__ */ new Set();
+    const notes = [];
+    let room = ESX_ROOM.text;
+    let n = 0;
+    const at = {};
+    const stamp = (id) => {
+      if (!(id in at)) at[id] = ++n;
+    };
+    let held = false;
+    let used = false;
+    let reveal = false;
+    const objOf = (k) => objs.find((o) => o.key === k) || (k === ESX_OAK.key ? ESX_OAK : null) || extra.find((o) => o.key === k);
+    const rewrite = (field) => objs.forEach((o) => {
+      if (o[field]) {
+        text[o.id] = o[field];
+        fixed.add(o.id);
+      }
+    });
+    GS_SESSIONS[sid].lines.forEach(([label, what = "", res = "", more]) => {
+      let m;
+      if (label === "Item") {
+        held = true;
+        stamp("key");
+        return;
+      }
+      if (!/^Move \d+$/.test(label)) return;
+      if (m = /^Examined the (.+)$/.exec(what)) {
+        let o = objOf(m[1]);
+        if (!o) {
+          o = { id: m[1], key: m[1], name: "The " + m[1], text: res };
+          extra.push(o);
+        }
+        seen.add(o.id);
+        stamp(o.id);
+        if (!fixed.has(o.id)) text[o.id] = res;
+        return;
+      }
+      if (m = /^Used the brass winding key on the (.+)$/.exec(what)) {
+        used = true;
+        const o = objOf(m[1]);
+        if (o && more) {
+          text[o.id] = more;
+          fixed.add(o.id);
+        }
+        return;
+      }
+      const typed = /^Tried (\S+) on (.+)$/.exec(what);
+      const mech = /^Set (the .+?): /.exec(what);
+      const name = typed ? typed[2] : mech && mech[1];
+      if (!name) return;
+      if (typed ? res === "Wrong" : /^\d+ of \d+ .* into place\.$/.test(res)) return;
+      if (res !== "Out") {
+        notes.push({ id: esxKeyOf(name), name: esxCap(name), text: res, kind: "note" });
+        stamp(esxKeyOf(name));
+      }
+      if (esxKeyOf(name) === "workbench drawer" && res === GS_ES1.drawer) {
+        held = true;
+        stamp("key");
+        rewrite("open");
+      }
+      if (esxKeyOf(name) === "clock hands") {
+        reveal = true;
+        if (res === GS_ES1.hands) {
+          room = ESX_ROOM.lit;
+          rewrite("lit");
+        }
+      }
+    });
+    const shown = [...objs, ...extra, ...reveal || seen.has(ESX_OAK.id) ? [ESX_OAK] : []].map((o) => ({ id: o.id, kind: "thing", name: o.name, seen: seen.has(o.id), text: text[o.id] || o.text, at: at[o.id] }));
+    return { room, shown, held, used, notes: notes.map((x) => ({ ...x, at: at[x.id] })), keyAt: at.key };
+  };
+  const esxGroups = (sid) => {
+    const r = esxRead(sid);
+    return [
+      { key: "room", head: "Room", items: [{ id: "room", kind: "room", name: "The room", text: r.room, at: 0 }, ...r.shown] },
+      { key: "pockets", head: "Pockets", items: r.held ? [{ ...ESX_KEY, kind: "item", used: r.used, at: r.keyAt }] : [] },
+      { key: "notes", head: "Notes", items: r.notes }
+    ];
+  };
+  const esxOpens = (it) => it.kind === "thing" ? it.seen : it.kind === "item" ? !it.used : true;
+  const esxThings = (grp) => grp.items.filter((i) => i.kind === "thing");
+  const esxCount = (grp) => grp.key === "room" ? esxThings(grp).filter((i) => i.seen).length + "/" + esxThings(grp).length : grp.key === "pockets" ? String(grp.items.filter((i) => !i.used).length) : String(grp.items.length);
+  const esxCountParts = (grp) => {
+    const c = esxCount(grp);
+    const i = c.indexOf("/");
+    return i < 0 ? [c, ""] : [c.slice(0, i), c.slice(i)];
+  };
+  const esxShortName = (it) => it.kind === "room" ? it.name : it.name.replace(/^The /, "").replace(/^./, (c) => c.toUpperCase());
+  const ESX_POUCH = "M5 9h14l-1.5 11h-11zM9 9V7a3 3 0 0 1 6 0v2";
+  const ESX_DOOR = "M6 21V3.5h12V21M3.5 21h17M14.5 12.5h.01";
+  const EsxIcon = ({ d, cls }) => /* @__PURE__ */ React$1.createElement("span", { className: cls, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d })));
+  const EsxMark = ({ it }) => {
+    if (it.kind === "item") return /* @__PURE__ */ React$1.createElement(EsxIcon, { d: ESX_POUCH, cls: "dv4-g esx-g" + (it.used ? " is-used" : "") });
+    if (it.kind === "room") return /* @__PURE__ */ React$1.createElement(EsxIcon, { d: ESX_DOOR, cls: "esx-mk esx-door" });
+    if (it.kind === "note") return /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-slip" }));
+    return /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-sq" + (it.seen ? "" : " is-unread") }));
+  };
+  const ESX_GMARK = { room: { kind: "room" }, notes: { kind: "note" }, pockets: { kind: "item", used: false } };
+  const EsxFold = ({ open, children }) => {
+    const kept = React$1.useRef(null);
+    if (open) kept.current = children;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "esx-fold" + (open ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("div", null, open ? children : kept.current));
+  };
+  const esxReveal = (el, wait = 260) => setTimeout(() => {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const lim = window.innerHeight - 150;
+    if (r.bottom > lim) window.scrollBy({ top: Math.max(0, Math.min(r.bottom - lim, el.closest(".esx-sheet").getBoundingClientRect().top - 80)), behavior: "smooth" });
+  }, wait);
+  const useEsxReveal = (ref, key) => React$1.useEffect(() => {
+    if (!key || !ref.current) return void 0;
+    const t = esxReveal(ref.current);
+    return () => clearTimeout(t);
+  }, [key]);
+  const EsxRead = ({ it }) => /* @__PURE__ */ React$1.createElement("div", { key: it.id, className: "esx-read esx-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-nm" }, /* @__PURE__ */ React$1.createElement(EsxMark, { it }), /* @__PURE__ */ React$1.createElement("b", null, it.name)), /* @__PURE__ */ React$1.createElement("p", { className: "esx-tx" }, it.text));
+  const EsxStill = ({ it }) => /* @__PURE__ */ React$1.createElement("div", { className: "esx-still esx-chip " + (it.kind === "thing" ? "is-unread" : "is-used"), "aria-label": it.name + ", " + (it.kind === "thing" ? "not looked at" : it.use.toLowerCase()) }, /* @__PURE__ */ React$1.createElement(EsxMark, { it }), /* @__PURE__ */ React$1.createElement("span", { className: "esx-rn" }, esxShortName(it)));
+  const EsxChip = ({ it, sel, pick }) => esxOpens(it) ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "esx-chip", "aria-expanded": sel === it.id, onClick: () => pick(it.id) }, /* @__PURE__ */ React$1.createElement(EsxMark, { it }), /* @__PURE__ */ React$1.createElement("b", null, esxShortName(it))) : /* @__PURE__ */ React$1.createElement(EsxStill, { it });
+  const EsxReader = ({ it }) => {
+    const read = React$1.useRef(null);
+    useEsxReveal(read, it && it.id);
+    return /* @__PURE__ */ React$1.createElement("div", { ref: read }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement(EsxRead, { it })));
+  };
+  const EsxChips = ({ grp, sel, pick }) => /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "esx-chips esx-in", role: "group", "aria-label": grp.head }, grp.items.map((it) => /* @__PURE__ */ React$1.createElement(EsxChip, { key: it.id, it, sel, pick })));
+  const esxLastLine = (sid) => GS_SESSIONS[sid].lines.filter(([label]) => /^(Move \d+|Hint|Item)$/.test(label)).pop();
+  const esxLatest = (sid) => {
+    const last = esxLastLine(sid);
+    if (!last) return null;
+    const [label, what = "", res = "", more = ""] = last;
+    let l1;
+    let l2;
+    let tail = "";
+    if (label === "Hint") {
+      l1 = res + " · " + what;
+      l2 = more;
+    } else if (label === "Item") {
+      l1 = what;
+      l2 = res;
+    } else {
+      l1 = what;
+      l2 = res;
+      if (res.length <= 20) tail = res;
+    }
+    return { head: GS_SESSIONS[sid].live ? "Latest" : "Last move", l1, l2, tail };
+  };
+  const EsxLatest = ({ lt }) => lt && /* @__PURE__ */ React$1.createElement("div", { className: "esx-latest" }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-lh" }, lt.head), /* @__PURE__ */ React$1.createElement("b", { className: "esx-l1" }, lt.l1), lt.tail && /* @__PURE__ */ React$1.createElement("span", { className: "esx-lt" }, " · " + lt.tail), lt.l2 && /* @__PURE__ */ React$1.createElement("p", { className: "esx-l2" }, lt.l2));
+  const EsSheet = ({ sid }) => {
+    const g = React$1.useMemo(() => esxGroups(sid), [sid]);
+    const lt = React$1.useMemo(() => esxLatest(sid), [sid]);
+    const [open, setOpen] = React$1.useState(null);
+    const [sel, setSel] = React$1.useState(null);
+    const it = sel && g.flatMap((x) => x.items).find((x) => x.id === sel);
+    const grp = g.find((x) => x.key === open);
+    const tiles = ["room", "notes", "pockets"].map((k) => g.find((x) => x.key === k));
+    const tap = (x) => {
+      const shut = open === x.key;
+      setOpen(shut ? null : x.key);
+      setSel(!shut && x.items.length === 1 && esxOpens(x.items[0]) ? x.items[0].id : null);
+    };
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet", "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "esx-stat" }, /* @__PURE__ */ React$1.createElement("div", { className: "esx-cards" }, tiles.map((x) => {
+      const [n, of] = esxCountParts(x);
+      return /* @__PURE__ */ React$1.createElement(
+        "button",
+        {
+          key: x.key,
+          type: "button",
+          className: "esx-card is-" + x.key + (open === x.key ? " is-open" : ""),
+          "aria-expanded": open === x.key,
+          "aria-label": x.head + " " + esxCount(x),
+          disabled: !x.items.length,
+          onClick: () => tap(x)
+        },
+        /* @__PURE__ */ React$1.createElement("span", { className: "esx-hole", "aria-hidden": "true" }),
+        /* @__PURE__ */ React$1.createElement("span", { className: "esx-cl1" }, /* @__PURE__ */ React$1.createElement(EsxMark, { it: ESX_GMARK[x.key] }), /* @__PURE__ */ React$1.createElement("span", null, x.head)),
+        /* @__PURE__ */ React$1.createElement("b", { className: "esx-num" }, n, of && /* @__PURE__ */ React$1.createElement("i", null, of))
+      );
+    })), /* @__PURE__ */ React$1.createElement(EsxLatest, { lt })), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && /* @__PURE__ */ React$1.createElement(EsxChips, { grp, sel, pick: (id) => setSel(sel === id ? null : id) })), /* @__PURE__ */ React$1.createElement(EsxReader, { it }));
+  };
   const ES_SIDS = { under: "escape-week", par: "escape-par", over: "escape-over", hard: "escape-hard" };
   const esFinished = (gs) => gsEdPick("escape", gs) || ES_SIDS[gs.review.escape] || "escape-week";
   const esSid = (gs) => gs.review.week === "live" ? "escape-live" : esFinished(gs);
@@ -3075,15 +3303,15 @@
       ));
     })));
   };
-  const EsResult = ({ m, card }) => /* @__PURE__ */ React$1.createElement("div", { className: "es-res" + (card ? " is-card" : "") }, m.live ? /* @__PURE__ */ React$1.createElement(EsDoor, { w: card ? 20 : 40, h: card ? 34 : 68 }) : /* @__PURE__ */ React$1.createElement(EsOpen, { w: card ? 20 : 40, h: card ? 34 : 68 }), /* @__PURE__ */ React$1.createElement("div", { className: "es-rest" }, /* @__PURE__ */ React$1.createElement("div", { className: "es-resh" }, card ? /* @__PURE__ */ React$1.createElement("p", { className: "es-h" }, m.live ? "Still inside" : "Escaped") : /* @__PURE__ */ React$1.createElement("h2", { className: "es-h" }, m.live ? "Still inside" : "Escaped"), !m.live && /* @__PURE__ */ React$1.createElement("p", { className: "gs-vd is-" + (m.over ? "over" : "ok") }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: m.over ? "close" : "check", size: 20 }), esSpare(m))), !card && /* @__PURE__ */ React$1.createElement("p", { className: "es-cap" }, esFigs(m).join(" · "))));
-  const esNowResult = (m) => m.live ? { kind: "live", label: "In progress" } : { kind: m.over ? "bad" : "ok", label: "Escaped" };
+  const EsResult = ({ m }) => /* @__PURE__ */ React$1.createElement("div", { className: "es-res" }, m.live ? /* @__PURE__ */ React$1.createElement(EsDoor, { w: 40, h: 68 }) : /* @__PURE__ */ React$1.createElement(EsOpen, { w: 40, h: 68 }), /* @__PURE__ */ React$1.createElement("div", { className: "es-rest" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + (m.live ? "live" : "ok") }, m.live ? "Still inside" : "Escaped"), !m.live && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" + (m.over ? " is-over" : "") }, esSpare(m))), /* @__PURE__ */ React$1.createElement("p", { className: "es-cap" }, esFigs(m).join(" · "))));
+  const esNowResult = (m) => m.live ? { kind: "live", label: "In progress" } : { kind: "ok", label: "Escaped" };
   const EsLanes = ({ m, sel, onSel }) => /* @__PURE__ */ React$1.createElement("div", { className: "es-lanes" }, m.locks.map((l) => /* @__PURE__ */ React$1.createElement("button", { key: l.key, type: "button", className: "es-lane" + (sel === l.key ? " is-sel" : ""), "aria-pressed": sel === l.key, onClick: () => onSel(l.key) }, /* @__PURE__ */ React$1.createElement("span", { className: "es-lnh" }, /* @__PURE__ */ React$1.createElement("span", { className: "es-lname" }, /* @__PURE__ */ React$1.createElement(EsNum, { n: l.index, size: 24 }), /* @__PURE__ */ React$1.createElement("b", null, l.short)), /* @__PURE__ */ React$1.createElement("span", { className: "es-cap" }, esFacts(l))), /* @__PURE__ */ React$1.createElement("span", { className: "es-steps" }, l.rows.map((r, i) => r.k === "hint" ? /* @__PURE__ */ React$1.createElement("span", { key: "h" + i, className: "es-step is-hint" }, /* @__PURE__ */ React$1.createElement("i", { className: "es-hm" }), /* @__PURE__ */ React$1.createElement("small", null, "Hint " + r.rung)) : /* @__PURE__ */ React$1.createElement("span", { key: r.n, className: "es-step" }, /* @__PURE__ */ React$1.createElement(EsMark, { r, size: 24 }), /* @__PURE__ */ React$1.createElement("small", null, !r.ok && r.kind === "typed" ? " " : esWord(r)))), /* @__PURE__ */ React$1.createElement("span", { className: "es-step is-door" }, l.exit && !m.live ? /* @__PURE__ */ React$1.createElement(EsOpen, { w: 12, h: 24 }) : /* @__PURE__ */ React$1.createElement(EsDoor, { w: 12, h: 24 }), /* @__PURE__ */ React$1.createElement("small", null, l.exit && !m.live ? "Out" : " "))))));
   const EsBody = ({ s, sid }) => {
     const gs = useGs();
     const m = React$1.useMemo(() => esBuild(s), [s]);
     const def = (m.locks.find((l) => l.exit) || m.locks[m.locks.length - 1] || {}).key;
     const [sel, setSel] = React$1.useState(() => m.locks.some((l) => l.key === gs.route.lock) ? gs.route.lock : def);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("section", { className: "es-card", "aria-label": "How you got out" }, /* @__PURE__ */ React$1.createElement(EsResult, { m }), /* @__PURE__ */ React$1.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React$1.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(EsSheet, { sid }), /* @__PURE__ */ React$1.createElement("section", { className: "es-card", "aria-label": "How you got out" }, /* @__PURE__ */ React$1.createElement(EsResult, { m }), /* @__PURE__ */ React$1.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React$1.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const EsSessBody = (props) => /* @__PURE__ */ React$1.createElement(EsBody, { key: props.sid, ...props });
   const EsNow = ({ label, title, next, pass }) => {

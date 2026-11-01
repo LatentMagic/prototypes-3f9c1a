@@ -18,14 +18,12 @@
 .es-res { display: flex; align-items: center; gap: 24px; min-width: 0; }
 .es-res > .es-od { margin-right: 20px; }
 .es-rest { display: grid; gap: 8px; min-width: 0; }
-.es-resh { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
-.es-h { margin: 0; font: 700 34px/1.1 var(--font-heading); letter-spacing: -.01em; color: var(--text); }
-/* the now card's result (EsResult card; unused while the card shows "Escaped" alone) */
-.es-res.is-card { flex: none; gap: 12px; }
-.es-res.is-card > .es-od { margin-right: 10px; }
-.es-res.is-card .es-resh { gap: 4px 12px; }
-.es-res.is-card .es-h { font: 700 20px/1.25 var(--font-heading); }
-.es-res.is-card .gs-vd { font-size: 16px; }
+/* the shared band (dv7r-*, gs-delve.css) in Escape's result: the word and the par line side by side, stacked under 560px as the shared band stacks. */
+.es-rest .dv7r-line.is-over { color: var(--warning); }
+@container gs (max-width: 559.98px) {
+  .es-rest .dv7r-band { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .es-rest .dv7r-band .dv7r-word { padding-right: 0; font-size: 24px; }
+}
 
 /* the line */
 .es-line { position: relative; width: 100%; }
