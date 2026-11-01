@@ -19,8 +19,9 @@
 //
 // The bar has a Fit button below 1280px wide (app/fit.jsx; also Config → Global → Fit): it shows the same page laid out 1280px
 // wide, scaled to the window, so a phone shows the desktop. The bar stays outside, at phone size, and drives the framed page.
-// A setting declares its kind: `kind: 'concept'` is an idea being compared (a dropdown in the bar, with previous / next buttons
-// beside it); anything unmarked is config, a data or state knob, listed with the others in the popover of the bar's one Config button.
+// A setting declares its kind: `kind: 'concept'` is the idea being compared (a dropdown in the bar, with previous / next buttons
+// beside it). A playground has one concept: if several are marked, only the first is the dropdown and the rest are config.
+// Anything unmarked is config, a data or state knob, listed with the others in the popover of the bar's one Config button.
 // A setting with `when: { key, value }` shows in the bar only while that other setting has that value. The keys `fit` and `pgframe` are reserved: a setting must never use them.
 // ============================================================================
 import React from 'react';
@@ -62,7 +63,7 @@ const pgSet = (s, v) => {
 
 window.pgSetFromParent = (key, v) => { const s = pgActive()?.settings.find((x) => x.key === key); if (s) pgSet(s, v); };
 
-// A concept as a button naming its label and choice, opening canon's menu (gs-pop) at once. Not a native select: a phone's
+// A concept as a button naming its current choice, opening canon's menu (gs-pop) at once. Not a native select: a phone's
 // own picker animates in and out, too slow for flicking between options. Previous / next buttons beside it step through the
 // options without opening the menu.
 const PgPick = ({ s, v }) => {
@@ -74,7 +75,7 @@ const PgPick = ({ s, v }) => {
     <div className="pg-concept" role="group" aria-label={s.label}>
       <button type="button" className="pg-step" aria-label={'Previous ' + s.label} disabled={i <= 0} onClick={() => step(-1)}>‹</button>
       <div className="pg-pick gs-menu-anchor" ref={wrap}>
-        <button type="button" className="pg-pick-btn" aria-label={s.label + ': ' + pgOption(s, v).label} aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}>{s.label}: {pgOption(s, v).label}</button>
+        <button type="button" className="pg-pick-btn" aria-label={s.label + ': ' + pgOption(s, v).label} aria-expanded={open} aria-haspopup="menu" onClick={() => setOpen((o) => !o)}><span>{pgOption(s, v).label}</span></button>
         {open && <div className="gs-pop pg-pop" role="menu" aria-label={s.label}>
           {s.options.map((o) => <button key={o.value} type="button" role="menuitemradio" aria-checked={o.value === v} className="gs-menu-item" onClick={() => { setOpen(false); pgSet(s, o.value); }}>{o.label}</button>)}
         </div>}
@@ -113,9 +114,9 @@ const usePgNarrow = () => {
   return n;
 };
 
-// KEEP: the bar takes the top bar's place (sticky), so the page below sits where it does in canon. At every width: the title, each
-// concept as a dropdown (full "Label: choice", wrapping onto further rows, never cut) with previous / next beside it, one Config
-// button for the rest, and Fit below 1280px.
+// KEEP: the bar takes the top bar's place (sticky), so the page below sits where it does in canon. At every width it is one row,
+// at most 56px tall, with no title: previous, the concept's dropdown (current choice only; it may ellipsize on a phone), next, then
+// Config for everything else, and Fit below 1280px.
 export const PgBar = () => {
   const def = pgActive(); const [, bump] = React.useState(0);
   React.useEffect(() => { const f = () => bump((n) => n + 1); pgSubs.add(f); return () => pgSubs.delete(f); }, []);
@@ -129,12 +130,11 @@ export const PgBar = () => {
   }, []);
   const framed = isFramed(); const fitted = useFit(); const narrow = usePgNarrow();
   const shown = def.settings.filter((s) => !s.when || pgValue(def.settings.find((x) => x.key === s.when.key)) === s.when.value);
-  const concepts = shown.filter((s) => s.kind === 'concept'); const config = shown.filter((s) => s.kind !== 'concept');
+  const concept = shown.find((s) => s.kind === 'concept'); const config = shown.filter((s) => s !== concept);
   return (
     <header className="gs-top pg-top" aria-label={'Playground: ' + def.title} {...(framed ? { inert: '', 'aria-hidden': 'true' } : {})}>
       <div className="gs-wrap pg-top-in">
-        <span className="pg-title">{def.title}</span>
-        {concepts.map((s) => <PgPick key={s.key} s={s} v={pgValue(s)} />)}
+        {concept && <PgPick s={concept} v={pgValue(concept)} />}
         <div className="pg-tools">
           {config.length > 0 && <PgConfig settings={config} />}
           {(narrow || fitted) && <button type="button" className="pg-fit-btn" aria-pressed={fitted} onClick={() => setFit(!fitted)}>Fit</button>}

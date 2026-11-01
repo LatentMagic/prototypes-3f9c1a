@@ -3,28 +3,30 @@
 
 /* The top bar's frame (gs-shell.css .gs-top) with a dashed foot, so it never reads as the product's own bar. */
 .pg-top { border-bottom-style: dashed; border-bottom-color: var(--control-edge); }
-/* KEEP: at every width the bar wraps onto further rows; no label or choice is ever cut by an ellipsis. */
-.pg-top-in { display: flex; position: relative; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 64px; padding-block: 10px; }
-.pg-title { flex: 0 0 auto; font: 600 12px/1.2 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-/* A concept: previous, dropdown, next. On a phone it fills its own row; wider, the concepts share rows. */
-.pg-concept { display: flex; align-items: stretch; flex: 1 1 280px; min-width: 0; max-width: 460px; }
-.pg-step { flex: 0 0 44px; min-height: 44px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge); font: 600 20px/1 var(--font-text); cursor: pointer; }
+/* KEEP: at every width the bar is one row, at most 56px tall, and never wraps; on a phone the dropdown's value ellipsizes so the
+   previous / next buttons and Config stay visible. */
+.pg-top-in { display: flex; position: relative; flex-wrap: nowrap; align-items: center; gap: 8px; min-height: 52px; padding-block: 6px; }
+/* The concept: previous, dropdown, next. */
+.pg-concept { display: flex; align-items: stretch; flex: 0 1 460px; min-width: 0; }
+.pg-step { flex: 0 0 40px; min-height: 40px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge); font: 600 20px/1 var(--font-text); cursor: pointer; }
 .pg-step:disabled { opacity: .35; cursor: default; }
 .pg-pick { flex: 1 1 0; min-width: 0; }
-.pg-pick-btn { width: 100%; height: 100%; min-height: 44px; padding: 8px 28px 8px 12px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge); border-inline: 0; text-align: left;
-  font: 600 14px/1.25 var(--font-text); white-space: normal; overflow-wrap: anywhere; cursor: pointer;
+.pg-pick-btn { width: 100%; height: 100%; min-height: 40px; padding: 0 28px 0 12px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge); border-inline: 0; text-align: left;
+  font: 600 14px/1.25 var(--font-text); cursor: pointer;
   background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
   background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
-.pg-pop { left: 0; right: auto; min-width: 100%; max-width: 100%; }
+.pg-pick-btn > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-pop { left: 0; right: auto; min-width: min(280px, calc(100vw - 72px)); max-width: calc(100vw - 72px); }
 .pg-pop .gs-menu-item { white-space: normal; text-align: left; overflow-wrap: anywhere; }
 .pg-pop .gs-menu-item[aria-checked="true"] { background: color-mix(in srgb, var(--text) 10%, var(--popup)); }
 /* Config and Fit sit together at the bar's end. */
 .pg-tools { display: flex; gap: 8px; margin-left: auto; flex: 0 0 auto; }
+.pg-tools button { padding-inline: 10px; }
 
-.pg-config-btn, .pg-fit-btn, .pg-config-x, .pg-config-opt { min-height: 44px; padding: 0 14px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge); font: 600 14px/1.2 var(--font-text); cursor: pointer; }
+.pg-config-btn, .pg-fit-btn, .pg-config-x, .pg-config-opt { min-height: 40px; padding: 0 14px; background: var(--card); color: var(--text); border: 1px solid var(--control-edge); font: 600 14px/1.2 var(--font-text); cursor: pointer; }
 .pg-fit-btn[aria-pressed="true"], .pg-config-opt[aria-checked="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
 /* The Config popover: below its button, kept inside the screen on a phone, its settings stacked with full labels and full-text options. */
-.pg-config-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; width: min(440px, calc(100vw - 32px)); max-height: 70vh; display: flex; flex-direction: column;
+.pg-config-pop { position: absolute; top: calc(100% + 8px); right: 16px; z-index: 50; width: min(440px, calc(100vw - 32px)); max-height: 70vh; display: flex; flex-direction: column;
   background: var(--popup); border: 1px solid var(--control-edge); box-shadow: var(--shadow-card); color: var(--text); }
 .pg-config-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px 8px 16px; border-bottom: 1px solid var(--control-edge); font: 600 15px/1.2 var(--font-text); }
 .pg-config-body { overflow-y: auto; padding: 12px 16px 16px; display: grid; gap: 16px; }
