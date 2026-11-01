@@ -4971,7 +4971,7 @@
       common: {
         count: CM_NO,
         no: (i) => GS_NAME.common + " #" + (CM_NO - i),
-        salt: 14,
+        salt: 11,
         keep: {},
         today: "common-today",
         liveSid: "common-live",
@@ -4979,11 +4979,11 @@
         bad: cmResult(CM_FAIL),
         title: "Today’s threads",
         next: "Next threads: tomorrow",
-        live: { line: "You’re on thread 1 of 3. One guess is used and two items show.", bar: ["Thread 1 of 3", 1, 3] },
+        live: { line: "You’re on thread 1 of 3. One guess is used and three items show.", bar: ["Thread 1 of 3", 1, 3] },
         done: { st: { kind: "ok", label: GS_SESSIONS["common-today"].result }, line: "You found all three links and scored " + cmScore(CM_TODAY) + " of 15.", bar: [cmScore(CM_TODAY) + " of 15 points", cmScore(CM_TODAY), 15] },
         recent: "Your days",
         ach: [
-          { k: "cm1", n: "First Thread", how: "Find a link.", by: (p) => p.status.kind === "ok" },
+          { k: "cm1", n: "First Thread", how: "Find a link.", by: (p) => /^[1-9]\d* of 15/.test(p.status.label) },
           { k: "cm3", n: "Clean Sweep", how: "Find all three links in a day.", by: (p) => p.status.kind === "ok" },
           { k: "cm7", n: "Seven Days in a Row", how: "Find all three links seven days running.", of: 7 }
         ]
