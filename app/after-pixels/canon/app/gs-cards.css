@@ -54,15 +54,15 @@
 .ga-wh-needle { --x: 44; --y: 32; --w: 16; --h: 56; --fill: linear-gradient(var(--cover-orange) 50%, var(--cover-cream) 50%); --s: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transform: rotate(calc(45deg + var(--on) * 45deg)); }
 .ga-wh-ans { --x: 96; --y: 44; --w: 32; --h: 32; --fill: var(--cover-amber); --s: 50; border-radius: calc(var(--on) * 50%); }
 /* Chain: the two end words and their links are found; the three middle words are empty. The cream line grows inward from both ends and meets in the middle, and each word fills as the line reaches it (border thickens inward, so it never grows). */
-.ga-ch { --y: 51; --w: 18; --h: 18; --s: 0; }
-.ga-ch-1 { --x: 24; --fill: var(--cover-cream); } .ga-ch-5 { --x: 118; --fill: var(--cover-cream); }
+.ga-ch { --y: 52; --w: 16; --h: 16; --s: 0; }
+.ga-ch-1 { --x: 24; --fill: var(--cover-cream); } .ga-ch-5 { --x: 120; --fill: var(--cover-cream); }
 /* KEEP: The empty words are drawn with an inset shadow, not a border: the square never changes size, and at rest past half its width the shadow fills it edge to edge with no pixel-rounding gap. */
-.ga-ch-o { --fill: transparent; box-shadow: inset 0 0 0 max(var(--u) * (3 + var(--on) * 7), 1.5px + var(--on) * var(--u) * 10) var(--c); }
+.ga-ch-o { --fill: transparent; box-shadow: inset 0 0 0 max(var(--u) * (2.667 + var(--on) * 6.222), 1.333px + var(--on) * var(--u) * 8.889) var(--c); }
 .mcp-art i.ga-ch-o { transition: transform var(--time-art) var(--ease-art) 0ms, box-shadow var(--time-art) var(--ease-art) 0ms; }
-.ga-ch-2 { --x: 47.5; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 94.5; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 71; --c: var(--cover-amber); --s: 100; }
-.ga-ch-l { --y: 57; --h: 6; --fill: var(--cover-cream); --s: 0; }
-.ga-ch-l1 { --x: 33; --w: 48; transform-origin: 0 50%; transform: scaleX(calc(.302 + var(--on) * .698)); }
-.ga-ch-l2 { --x: 79; --w: 48; transform-origin: 100% 50%; transform: scaleX(calc(.302 + var(--on) * .698)); }
+.ga-ch-2 { --x: 48; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 96; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 72; --c: var(--cover-amber); --s: 100; }
+.ga-ch-l { --y: 57.33; --h: 5.33; --fill: var(--cover-cream); --s: 0; }
+.ga-ch-l1 { --x: 32; --w: 49; transform-origin: 0 50%; transform: scaleX(calc(.3265 + var(--on) * .6735)); }
+.ga-ch-l2 { --x: 79; --w: 49; transform-origin: 100% 50%; transform: scaleX(calc(.3265 + var(--on) * .6735)); }
 /* Salvage: a board mid-hunt. Cream misses and two orange hits in a row. The last dive lands as a third hit, the misses recede to nothing, and the wreck under the three hits shows itself, 50ms behind. Every move is a scale about a shape's own centre, so it lands exactly at any size. */
 .ga-sv-p { --w: 12; --h: 12; --s: 0; border-radius: 50%; }
 .ga-sv-miss { --fill: var(--cover-cream); transform: scale(calc(1 - var(--on))); }
