@@ -123,12 +123,12 @@ const edMore = (gs, gid, list) => { const m = phMoreOn(gs) && PH_MORE[gid]; if (
 let PH_ALL;
 let PH_BROKEN;
 let PH_UNF_PLAYS;
-// KEEP: This edition's finished play, as Config → This edition picks it: the current edition's, and the first edition of a player without the
-// Pass (the one edition they have, which a game may list apart from its current one). A play with `pick` reads its pick itself (Casebook's case);
+// KEEP: This edition's finished play, as Config → This edition picks it: the current edition's only; a free player's first Escape room is an older edition and keeps
+// its own play. A play with `pick` reads its pick itself (Casebook's case);
 // the others read c.today (PZ) or gsEdPick, and a pick the game does not have leaves the seeded play.
 const phCur = (p, gs) => {
   if (p.pick) return { ...p, ...p.pick(gs) };
-  if (!p.cur && !(PH_FIRST[p.gid] === p.ed && gs.view !== 'pass')) return p;
+  if (!p.cur) return p;
   const sid = p.cur && PZ[p.gid] ? PZ[p.gid].today : gsEdPick(p.gid, gs);
   if (!sid || sid === p.sid) return p;
   return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid) };

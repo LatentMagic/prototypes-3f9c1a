@@ -2568,6 +2568,7 @@
     if (gs.view === "pass") return id === "barrow" && cprStore.get().bwDone ? "done" : "pass";
     if (gsLapsed(gs)) return cprLapsedOf(id).used ? "done" : "none";
     if (gsFresh(gs)) return "none";
+    if ((id === "escape" || id === "delve") && gs.view === "free" && gs.review && gs.review.today === "none") return "none";
     if (id === "barrow") return cprStore.get().bwDone ? "done" : "none";
     if (id === "escape" && cprStore.get().freeNew) return "none";
     if (!lbWeekDone(gs)) return "live";
@@ -3370,9 +3371,9 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(EsSheet, { sid }), /* @__PURE__ */ React$1.createElement("section", { className: "es-card", "aria-label": "How you got out" }, /* @__PURE__ */ React$1.createElement(EsResult, { m }), /* @__PURE__ */ React$1.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React$1.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const EsSessBody = (props) => /* @__PURE__ */ React$1.createElement(EsBody, { key: props.sid, ...props });
-  const EsNow = ({ label, title, next, pass }) => {
+  const EsNow = ({ label, title, next, pass, first }) => {
     const gs = useGs();
-    const sid = esSid(gs);
+    const sid = first ? gs.review.week === "live" ? "escape-live" : ES_SIDS[gs.review.escape] || "escape-week" : esSid(gs);
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => esBuild(s), [s]);
     const open = (lock) => gs.go("session", lock ? { id: sid, lock } : { id: sid });
@@ -3919,7 +3920,7 @@
     const st = cprFirstState(gs, id);
     const done = st === "done";
     const pass = done && gs.view !== "pass";
-    if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass });
+    if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
     if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass });
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
@@ -4798,30 +4799,27 @@
       { w: ["KEY", "BOARD", "WALK", "WAY", "SIDE", "CAR"], p: [["BOARD", 1], ["SIDE", 4], ["WAY", 3], ["WAR", 2], ["WALK", 2]] },
       { w: ["HAND", "BAG", "PIPE", "LINE", "DANCE"], p: [["BALL", 1], ["BAG", 1], ["LINE", 3], ["PIPE", 2]] }
     ];
-    CH_HARD = { w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "TRAIN", "WAGON"], p: [
+    CH_HARD = { w: CH_TODAY.w, p: [
       ["BELL", 1],
-      ["BULL", 1],
+      ["BAKE", 1],
       ["BALL", 1],
-      ["ROAM", 2],
-      ["ROOF", 2],
+      ["RACE", 2],
+      ["ROAD", 2],
       ["ROOM", 2],
+      ["SALAD", 3],
+      ["SECOND", 3],
       ["SERVER", 3],
-      ["SURVEY", 3],
-      ["SURFACE", 3],
+      ["SERVED", 3],
       ["SERVING", 3],
-      ["SERVANT", 3],
       ["SERVICE", 3],
-      ["STATE", 4],
+      ["STORE", 4],
       ["STAGE", 4],
+      ["STAMP", 4],
       ["STATUS", 4],
       ["STATIC", 4],
-      ["STATION", 4],
-      ["TRAM", 5],
-      ["TRAIL", 5],
-      ["TRACK", 5],
-      ["TRAIN", 5]
+      ["STATION", 4]
     ] };
-    CH_FAIL = { w: ["GOLD", "FISH", "BONE", "DRY", "CLEAN"], p: [["FINCH", 1], ["FISH", 1], ["DUST", 3], ["DRY", 3], ["BALL", 2], ["BOWL", 2], ["BOAT", 2]] };
+    CH_FAIL = { w: CH_TODAY.w, p: [["BELL", 1], ["BALL", 1], ["RACE", 2], ["ROAD", 2], ["ROOF", 2], ["SUITE", 3], ["SERVICE", 3], ["STORE", 4], ["STATION", 4]] };
     SV_COLS = "ABCDEFGH";
     SV_TODAY = [[[1, 1], [2, 1], [3, 1], [4, 1]], [[6, 0], [6, 1], [6, 2]], [[0, 4], [0, 5], [0, 6]], [[3, 4], [4, 4]], [[6, 6], [7, 6]]];
     SV_TODAY_DIVES = svReplay(SV_TODAY, ["D4", "E2", "E3", "E1", "F2", "D2", "C2", "B2", "G2", "G3", "G1", "A6", "A5", "A7", "E6", "E5", "F5", "D5", "G6", "H8", "G7", "H7"].map((s) => [SV_COLS.indexOf(s[0]), +s.slice(1) - 1]));
@@ -5308,7 +5306,7 @@
             c.setReview({ ed: "failed" });
             c.go(k, { page: "record" });
           } },
-          { group: g, id: "library-chain-hard", label: "Chain in your library, a hard day (21 guesses)", stage: (c) => {
+          { group: g, id: "library-chain-hard", label: "Chain in your library, a hard day (18 guesses)", stage: (c) => {
             c.setView("pass");
             c.setConnected(true);
             c.setReview({ ed: "hard" });
@@ -5564,7 +5562,7 @@
   let PH_UNF_PLAYS;
   const phCur = (p, gs) => {
     if (p.pick) return { ...p, ...p.pick(gs) };
-    if (!p.cur && !(PH_FIRST[p.gid] === p.ed && gs.view !== "pass")) return p;
+    if (!p.cur) return p;
     const sid = p.cur && PZ[p.gid] ? PZ[p.gid].today : gsEdPick(p.gid, gs);
     if (!sid || sid === p.sid) return p;
     return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid) };
@@ -5908,7 +5906,7 @@
   let DV_LIVE;
   let DV_DONE;
   let DV_NEXT;
-  const dvEnded = (ps) => ps.filter((p) => !!p.src.end);
+  const dvEnded = (ps) => ps.filter((p) => p.status.kind === "ok");
   let DV_ACH;
   let DV_BADGES;
   const dvStatus = (s) => !s.played ? { kind: "none", label: "Not played" } : !s.end ? { kind: "live", label: "In progress" } : DV_END[s.end];
@@ -5917,9 +5915,9 @@
   const dvRun = (gs) => {
     const by = {};
     phVisible(gs).forEach((p) => {
-      if (p.gid === "delve" && p.status.kind !== "live") by[p.ed] = true;
+      if (p.gid === "delve" && p.status.kind !== "live") by[p.ed] = p.status.kind;
     });
-    return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: !!by[s.id], failed: false }));
+    return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: by[s.id] === "ok", failed: by[s.id] === "bad" }));
   };
   const DvLibrary = () => {
     const gs = useGs();
@@ -6327,13 +6325,17 @@
     const ids = (GS_ED_SIDS || {})[gid] || {};
     return [c && (c.todayBase || c.today), c && c.liveSid, ...Object.values(ids), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []].filter(Boolean);
   };
-  const gsNoPlay = (gs, gid) => !!(GS_TODAY_PLAYED[gs.view] || {})[gid] && !gsTodayPlayed(gs)[gid];
+  const gsNoPlay = (gs, gid) => {
+    if (gsFresh(gs) || gs.review && gs.review.never === gid) return true;
+    if (gs.view === "free" && (gid === "escape" || gid === "delve")) return cprFirstState(gs, gid) === "none";
+    return !!PZ[gid] && gs.view !== "out" && (GS_GAMES[gid].free || gs.view === "pass") && !gsTodayPlayed(gs)[gid];
+  };
   const gsThisEdOf = (gs, gid) => {
     const c = PZ[gid];
     const ids = (GS_ED_SIDS || {})[gid] || {};
     const live = gs.review && gs.review.week === "live";
     if (gsNoPlay(gs, gid)) return null;
-    if (live) return c ? c.liveSid : ids.live;
+    if (live) return c ? c.liveSid : ids.live || null;
     return c ? c.today : gsEdPick(gid, gs) || ids.average;
   };
   const gsThisEdSid = (gs, sid) => {
@@ -9012,6 +9014,7 @@
     const edVal = r.today === "none" ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
     const setEd = (v) => set(() => {
       api.setReview({ today: v === "none" ? "none" : "played", week: v === "live" ? "live" : "done", ed: ["average", "hard", "failed"].includes(v) ? v : null });
+      GsPassStage.set({ freeNew: v === "none" });
       setTimeout(() => gsEdFollow(window.gsApi), 0);
     });
     const keys = Object.keys(GS_GAMES);
@@ -9021,7 +9024,7 @@
     const lostHard = names(withEd.filter((k) => GS_ED_SIDS[k].hard && GS_SESSIONS[GS_ED_SIDS[k].hard].loss));
     const noFailed = names(withEd.filter((k) => !GS_ED_SIDS[k].failed));
     const noResult = [...names(keys.filter((k) => !GS_ED_SIDS[k] && !GS_GAMES[k].added)), ...keys.some((k) => !GS_ED_SIDS[k] && GS_GAMES[k].added) ? ["the added games"] : []];
-    const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: every try and hint used." + (lostHard.length ? " " + list(lostHard) + " end in a loss." : "") + (noFailed.length ? " " + list(noFailed) + (noFailed.length > 1 ? " have" : " has") + " no Failed." : "") + (noResult.length ? " " + list(noResult) + (noResult.length > 1 ? " have" : " has") + " no result for an edition." : "") + " Not played applies to a free account. Nothing picked: as seeded.";
+    const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: a win that took most of the tries or hints." + (lostHard.length ? " " + list(lostHard) + (lostHard.length > 1 ? " end" : " ends") + " in a loss." : "") + (noFailed.length ? " " + list(noFailed) + (noFailed.length > 1 ? " have" : " has") + " no Failed." : "") + (noResult.length ? " " + list(noResult) + (noResult.length > 1 ? " have" : " has") + " no result for an edition." : "") + " Not played applies to a free account. Nothing picked: as seeded.";
     const setSub = (patch) => set(() => {
       if (api.view === "out") api.setView("free");
       api.setSub(patch);

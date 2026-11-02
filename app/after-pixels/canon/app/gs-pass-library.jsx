@@ -39,7 +39,7 @@ const CprFirst = ({ id }) => {
   const st = cprFirstState(gs, id); const done = st === 'done';
   const pass = done && gs.view !== 'pass';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
-  if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} />;
+  if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} first />;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
   if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass} />;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;

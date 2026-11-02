@@ -14,8 +14,9 @@ let DV_ROOMS;
 let DV_RITUAL;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play
-// (Bryn: a streak of five strong hits, HP 9 of 13) meets Hot Streak only. Every run with an ending counts as completed.
-const dvEnded = (ps) => ps.filter((p) => !!p.src.end);
+// (Bryn: a streak of five strong hits, HP 9 of 13) meets Hot Streak only. A run counts as completed when its status is a win: Config → This edition: Failed
+// or Hard makes this week's a loss (gsSessStatus), so it is not completed.
+const dvEnded = (ps) => ps.filter((p) => p.status.kind === 'ok');
 export let DV_ACH;
 export let DV_BADGES;
 export const dvStatus = (s) => (!s.played ? { kind: 'none', label: 'Not played' } : !s.end ? { kind: 'live', label: 'In progress' } : DV_END[s.end]);
@@ -28,9 +29,9 @@ export const dvBar = (s) => [s.rooms + ' of ' + DV_ROOMS + ' rooms reached', s.r
 export const dvRecap = (s) => (s.end
   ? 'You played ' + s.hero + ' and won in ' + s.rolls + ' rolls, with the ritual ' + s.ritual + ' of ' + DV_RITUAL + ' along.'
   : 'You’re playing ' + s.hero + ', ' + s.rooms + ' of ' + DV_ROOMS + ' rooms in, with the ritual ' + s.ritual + ' of ' + DV_RITUAL + '.');
-// Every week's run counts once it reaches any ending, won or not (completed weeks in a row), as the record holds it.
-export const dvRun = (gs) => { const by = {}; phVisible(gs).forEach((p) => { if (p.gid === 'delve' && p.status.kind !== 'live') by[p.ed] = true; });
-  return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: !!by[s.id], failed: false })); };
+// A week's run counts as completed when it was won, as the record holds it (this week's follows Config → This edition); a run lost is played, not completed.
+export const dvRun = (gs) => { const by = {}; phVisible(gs).forEach((p) => { if (p.gid === 'delve' && p.status.kind !== 'live') by[p.ed] = p.status.kind; });
+  return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: by[s.id] === 'ok', failed: by[s.id] === 'bad' })); };
 
 const DvLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');

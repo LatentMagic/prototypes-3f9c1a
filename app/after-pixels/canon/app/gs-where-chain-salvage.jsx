@@ -70,7 +70,8 @@ const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' 
 export let CH_TODAY;
 export let CH_OK;
 export let CH_FAIL;
-// A hard day for the library card's states and Config's Hard: seven words (five hidden), no guess limit, 21 guesses (16 wrong), every word found and none given away.
+// Today's chain on Config's Hard: every hidden word found and none given away, but only just. 18 guesses, 14 of them wrong (the most a win allows: a word of n letters is given away on its (n-1)th wrong guess).
+// Each wrong guess starts with the letters the game was showing for that word.
 export let CH_HARD;
 
 let SV_COLS;
@@ -286,10 +287,10 @@ CH_OK = [
   { w: ['KEY', 'BOARD', 'WALK', 'WAY', 'SIDE', 'CAR'], p: [['BOARD', 1], ['SIDE', 4], ['WAY', 3], ['WAR', 2], ['WALK', 2]] },
   { w: ['HAND', 'BAG', 'PIPE', 'LINE', 'DANCE'], p: [['BALL', 1], ['BAG', 1], ['LINE', 3], ['PIPE', 2]] },
 ];
-CH_HARD = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'TRAIN', 'WAGON'], p: [['BELL', 1], ['BULL', 1], ['BALL', 1], ['ROAM', 2], ['ROOF', 2], ['ROOM', 2],
-  ['SERVER', 3], ['SURVEY', 3], ['SURFACE', 3], ['SERVING', 3], ['SERVANT', 3], ['SERVICE', 3], ['STATE', 4], ['STAGE', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4],
-  ['TRAM', 5], ['TRAIL', 5], ['TRACK', 5], ['TRAIN', 5]] };
-CH_FAIL = { w: ['GOLD', 'FISH', 'BONE', 'DRY', 'CLEAN'], p: [['FINCH', 1], ['FISH', 1], ['DUST', 3], ['DRY', 3], ['BALL', 2], ['BOWL', 2], ['BOAT', 2]] };
+CH_HARD = { w: CH_TODAY.w, p: [['BELL', 1], ['BAKE', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOM', 2],
+  ['SALAD', 3], ['SECOND', 3], ['SERVER', 3], ['SERVED', 3], ['SERVING', 3], ['SERVICE', 3], ['STORE', 4], ['STAGE', 4], ['STAMP', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4]] };
+// Config's Failed on today's chain: ROOM is given away on its third wrong guess (ROO shown, four letters), the other words found.
+CH_FAIL = { w: CH_TODAY.w, p: [['BELL', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOF', 2], ['SUITE', 3], ['SERVICE', 3], ['STORE', 4], ['STATION', 4]] };
 // ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
 // never touching, not even at a corner. 30 dives, each a hit, a miss or sunk ("Sunk: the wreck of 3" names its length). One hint, which
 // costs no dive: sonar on a row or a column says how many wreck squares it holds. Complete: every wreck found within the dives. ----
@@ -513,7 +514,7 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
   ...(k === 'chain' ? [
     { group: g, id: 'library-chain-never-played', label: 'Chain in your library, with the Pass, not yet played', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ never: 'chain' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-chain-failed', label: 'Chain in your library, today failed (a word given away)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
-    { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (21 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (18 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
   ] : []),
   { group: dpSessAt(k)[0], id: 'session-' + k, label: k === 'chain' ? dpSessAt(k)[1] + n : 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
 ]; });

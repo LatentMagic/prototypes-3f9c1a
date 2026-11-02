@@ -8,6 +8,7 @@ import { ConfigGroup, ConfigRow } from './config.jsx';
 import { GsBarrowConfigRow } from './gs-pass-aids.jsx';
 import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS } from './gs-data.jsx';
 import { gsEdFollow } from './gs-session.jsx';
+import { GsPassStage } from './gs-pass-store.jsx';
 
 export const ConfigExtraBase = () => {
   const api = window.gsApi || {};
@@ -23,6 +24,8 @@ export const ConfigExtraBase = () => {
   // A session page of an earlier edition then no longer is the edition described, so it moves (gsEdFollow) once the pick has rendered.
   const setEd = (v) => set(() => {
     api.setReview({ today: v === 'none' ? 'none' : 'played', week: v === 'live' ? 'live' : 'done', ed: ['average', 'hard', 'failed'].includes(v) ? v : null });
+    // The Free: Word and Escape row below says the same: Not played leaves Word's day and Escape's first room unplayed, any other pick plays them.
+    GsPassStage.set({ freeNew: v === 'none' });
     setTimeout(() => gsEdFollow(window.gsApi), 0);
   });
   // The hint says what the pick does not reach, read from the data: which games lack a pick and which have no result for an edition.
@@ -32,8 +35,8 @@ export const ConfigExtraBase = () => {
   const lostHard = names(withEd.filter((k) => GS_ED_SIDS[k].hard && GS_SESSIONS[GS_ED_SIDS[k].hard].loss));
   const noFailed = names(withEd.filter((k) => !GS_ED_SIDS[k].failed));
   const noResult = [...names(keys.filter((k) => !GS_ED_SIDS[k] && !GS_GAMES[k].added)), ...(keys.some((k) => !GS_ED_SIDS[k] && GS_GAMES[k].added) ? ['the added games'] : [])];
-  const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: every try and hint used."
-    + (lostHard.length ? ' ' + list(lostHard) + ' end in a loss.' : '') + (noFailed.length ? ' ' + list(noFailed) + (noFailed.length > 1 ? ' have' : ' has') + ' no Failed.' : '')
+  const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: a win that took most of the tries or hints."
+    + (lostHard.length ? ' ' + list(lostHard) + (lostHard.length > 1 ? ' end' : ' ends') + ' in a loss.' : '') + (noFailed.length ? ' ' + list(noFailed) + (noFailed.length > 1 ? ' have' : ' has') + ' no Failed.' : '')
     + (noResult.length ? ' ' + list(noResult) + (noResult.length > 1 ? ' have' : ' has') + ' no result for an edition.' : '') + ' Not played applies to a free account. Nothing picked: as seeded.';
   const setSub = (patch) => set(() => { if (api.view === 'out') api.setView('free'); api.setSub(patch); });
   const R = (label, value, onChange, options, hint) => <Row label={label} value={value} onChange={onChange} options={options} hint={hint} />;

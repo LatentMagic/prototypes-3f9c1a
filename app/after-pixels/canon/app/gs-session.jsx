@@ -10,7 +10,7 @@
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 // text: the line where it isn't the edition's own (a kept session).
 import React from 'react';
-import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, GS_TODAY_PLAYED, gsTodayPlayed, gsEdPick, gsStartsOver, gsSessDate, gsRhythm, GS_BARROW_CREDIT } from './gs-data.jsx';
+import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsTodayPlayed, gsEdPick, gsStartsOver, gsSessDate, gsRhythm, gsFresh, GS_BARROW_CREDIT } from './gs-data.jsx';
 import { GsNotFound } from './gs-site.jsx';
 import { GsCover } from './gs-parts.jsx';
 import { GsGap, gsOr } from './gs-game.jsx';
@@ -18,6 +18,7 @@ import { lbCopy, LbBackTo } from './gs-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 import { gsSessEd } from './gs-connect.jsx';
 import { PH_FIRST, PH_UNF } from './gs-history.jsx';
+import { cprFirstState } from './gs-pass-store.jsx';
 import { ES_SIDS } from './gs-escape.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
@@ -147,14 +148,20 @@ const gsEdMine = (gid) => {
   const c = PZ[gid]; const ids = (GS_ED_SIDS || {})[gid] || {};
   return [c && (c.todayBase || c.today), c && c.liveSid, ...Object.values(ids), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])].filter(Boolean);
 };
-// A seeded game this account has played this edition of, which Config → This edition: Not played empties (a free account's).
-const gsNoPlay = (gs, gid) => !!(GS_TODAY_PLAYED[gs.view] || {})[gid] && !gsTodayPlayed(gs)[gid];
+// This account has no play of this edition, by the library page's own tests (lbNow, cprFirstState, review.never, gsFresh): a new account,
+// a game marked never played, a free player's unplayed first Escape room or Delve run, or a seeded daily that Config → This edition: Not played empties.
+const gsNoPlay = (gs, gid) => {
+  if (gsFresh(gs) || (gs.review && gs.review.never === gid)) return true;
+  if (gs.view === 'free' && (gid === 'escape' || gid === 'delve')) return cprFirstState(gs, gid) === 'none';
+  // The daily puzzles, as lbNow reads them: a play of this edition exists only for a game the account can play.
+  return !!PZ[gid] && gs.view !== 'out' && (GS_GAMES[gid].free || gs.view === 'pass') && !gsTodayPlayed(gs)[gid];
+};
 // KEEP: This edition's session as Config → This edition and the demo bar leave it: in progress shows the play so far, finished shows the play Config
 // picks, and null means this edition has no play (Not played). Every surface that opens this edition's play reads it from here.
 export const gsThisEdOf = (gs, gid) => {
   const c = PZ[gid]; const ids = (GS_ED_SIDS || {})[gid] || {}; const live = gs.review && gs.review.week === 'live';
   if (gsNoPlay(gs, gid)) return null;
-  if (live) return c ? c.liveSid : ids.live;
+  if (live) return c ? c.liveSid : ids.live || null;
   return c ? c.today : gsEdPick(gid, gs) || ids.average;
 };
 // KEEP: a session page open on this edition's play follows Config → This edition and the demo bar while it is open: in progress
