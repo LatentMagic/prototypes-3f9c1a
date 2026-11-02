@@ -94,14 +94,15 @@
 .wd-nhint-box.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 15px/1 var(--font-heading); }
 .wd-nhint-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
 .wd-nhint-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
-/* KEEP (Joe): from 600px the tiles and the ring row are one block centred on the whole card's height and width, the same gap
+/* KEEP (Joe): on a page from 640px the tiles and the ring row are one block centred on the whole card's height and width, the same gap
    above as below; never pinned to the top. The title and result stay in the top corners, the action row at the bottom. */
-@container wdnow (min-width: 600px) {
+@container gs (min-width: 640px) {
   .wd-now > .lb-now-in { grid-template-rows: auto; min-height: 132px; }
   .wd-now-pic { --t: 52px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
-/* Phone: the tiles fit the card (44px at most); the ring and the hint box sit in a centred row under them. */
-@container wdnow (max-width: 479.98px) {
+/* Phone (card under 440px inside its padding): the tiles fit the card (44px at most); the ring and the hint box sit in a centred row
+   under them. KEEP: under 440px, so it never meets the two-column page's 508px card, which keeps the layout above. */
+@container wdnow (max-width: 439.98px) {
   .wd-now-pic { --t: min(44px, calc((100cqi - 24px) / 5)); flex-wrap: wrap; }
   .wd-nring { --r: 40px; }
   .wd-nring-n { font-size: 15px; }

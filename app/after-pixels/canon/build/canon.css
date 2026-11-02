@@ -2707,14 +2707,15 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wd-nhint-box.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 15px/1 var(--font-heading); }
 .wd-nhint-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
 .wd-nhint-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
-/* KEEP (Joe): from 600px the tiles and the ring row are one block centred on the whole card's height and width, the same gap
+/* KEEP (Joe): on a page from 640px the tiles and the ring row are one block centred on the whole card's height and width, the same gap
    above as below; never pinned to the top. The title and result stay in the top corners, the action row at the bottom. */
-@container wdnow (min-width: 600px) {
+@container gs (min-width: 640px) {
   .wd-now > .lb-now-in { grid-template-rows: auto; min-height: 132px; }
   .wd-now-pic { --t: 52px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
-/* Phone: the tiles fit the card (44px at most); the ring and the hint box sit in a centred row under them. */
-@container wdnow (max-width: 479.98px) {
+/* Phone (card under 440px inside its padding): the tiles fit the card (44px at most); the ring and the hint box sit in a centred row
+   under them. KEEP: under 440px, so it never meets the two-column page's 508px card, which keeps the layout above. */
+@container wdnow (max-width: 439.98px) {
   .wd-now-pic { --t: min(44px, calc((100cqi - 24px) / 5)); flex-wrap: wrap; }
   .wd-nring { --r: 40px; }
   .wd-nring-n { font-size: 15px; }
@@ -2796,10 +2797,10 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wh-last .wh-km { font: 600 15px/1.2 var(--font-text); }
 .wh-last.is-found b, .wh-last.is-found .wh-km { color: var(--success); }
 .wh-last.is-lost b { color: var(--muted); }
-/* Under 600px: everything on one row under the head, the figures 48px and their words wrapped short, the country 22px.
+/* On a page under 640px (a phone): everything on one row under the head, the figures 48px and their words wrapped short, the country 22px.
    KEEP: the gaps grow with the card (12 to 40px between the guess and the figures, 8 to 24px between the figures), so a phone's
    spare width goes between them instead of to the card's edges (Joe, 2026-10-31). */
-@container whnow (max-width: 599.98px) {
+@container gs (max-width: 639.98px) {
   .wh-now .wh-say { font-size: 12px; }
   .wh-row { column-gap: clamp(12px, 8cqi, 40px); }
   .wh-figs { --fig: 48px; column-gap: clamp(8px, 5cqi, 24px); }
@@ -2807,9 +2808,10 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .wh-last b { font-size: 22px; }
   .wh-last .wh-km { font-size: 13px; }
 }
-/* From 600px: the row at the centre of the whole card, head and action row included, as Guess's now card (D2); the body keeps
-   Guess's 132px so the card holds it. */
-@container whnow (min-width: 600px) {
+/* On a page from 640px: the row at the centre of the whole card, head and action row included, as Guess's now card (D2); the body
+   keeps Guess's 132px so the card holds it. KEEP: the switch reads the page's width, not the card's, so the card keeps this layout
+   when the page goes two-column at 900px and the card narrows to about 508px; the row fits in 460px. */
+@container gs (min-width: 640px) {
   .wh-row { --fig: 72px; column-gap: 48px; }
   .wh-figs { column-gap: 48px; }
   .wh-now > .lb-now-in { min-height: 132px; grid-template-rows: auto; }

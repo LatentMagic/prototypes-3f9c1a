@@ -66,10 +66,10 @@
 .wh-last .wh-km { font: 600 15px/1.2 var(--font-text); }
 .wh-last.is-found b, .wh-last.is-found .wh-km { color: var(--success); }
 .wh-last.is-lost b { color: var(--muted); }
-/* Under 600px: everything on one row under the head, the figures 48px and their words wrapped short, the country 22px.
+/* On a page under 640px (a phone): everything on one row under the head, the figures 48px and their words wrapped short, the country 22px.
    KEEP: the gaps grow with the card (12 to 40px between the guess and the figures, 8 to 24px between the figures), so a phone's
    spare width goes between them instead of to the card's edges (Joe, 2026-10-31). */
-@container whnow (max-width: 599.98px) {
+@container gs (max-width: 639.98px) {
   .wh-now .wh-say { font-size: 12px; }
   .wh-row { column-gap: clamp(12px, 8cqi, 40px); }
   .wh-figs { --fig: 48px; column-gap: clamp(8px, 5cqi, 24px); }
@@ -77,9 +77,10 @@
   .wh-last b { font-size: 22px; }
   .wh-last .wh-km { font-size: 13px; }
 }
-/* From 600px: the row at the centre of the whole card, head and action row included, as Guess's now card (D2); the body keeps
-   Guess's 132px so the card holds it. */
-@container whnow (min-width: 600px) {
+/* On a page from 640px: the row at the centre of the whole card, head and action row included, as Guess's now card (D2); the body
+   keeps Guess's 132px so the card holds it. KEEP: the switch reads the page's width, not the card's, so the card keeps this layout
+   when the page goes two-column at 900px and the card narrows to about 508px; the row fits in 460px. */
+@container gs (min-width: 640px) {
   .wh-row { --fig: 72px; column-gap: 48px; }
   .wh-figs { column-gap: 48px; }
   .wh-now > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
