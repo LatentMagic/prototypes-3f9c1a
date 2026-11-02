@@ -6,7 +6,7 @@
 // in the now card's place. For Casebook, Delve and Escape a Pass holder gets canon's page; the Barrow has no canon page.
 // Canon's library pages for the games a Pass holder still gets them for: copied from GS_LIBRARY in registerPassLibrary().
 import React from 'react';
-import { useGs, DS, GS_SESSIONS, gsLapsed, GS_GAMES, GS_NAME, gsFresh, gsTodayPlayed, gsRhythm, gsForms, GS_RHYTHMS } from './gs-data.jsx';
+import { useGs, DS, GS_SESSIONS, gsSessStatus, gsLapsed, GS_GAMES, GS_NAME, gsFresh, gsTodayPlayed, gsRhythm, gsForms, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsTile } from './gs-parts.jsx';
 import { GS_PAGES } from './gs-game.jsx';
@@ -39,7 +39,7 @@ const CprFirst = ({ id }) => {
   const st = cprFirstState(gs, id); const done = st === 'done';
   const pass = done && gs.view !== 'pass';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
-  if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} />;
+  if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} first />;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
   if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass} />;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
@@ -271,15 +271,17 @@ export const GsLibrary = () => {
 
 // ---- The daily games' now card, and Casebook's. While a play is under way the In progress tag (owner, 2026-10-30); a card
 // not yet ruled (tag: Groups, Salvage, Casebook) shows no result until finished. ----
+// KEEP: a finished card's result, line and bar come from this edition's play (c.today, which follows Config → This edition), never from the seeded `done` alone:
+// a picked play carries its own `now`, else the seeded line stands.
 const CprPzNow = ({ c, done, none, id }) => {
-  const gs = useGs(); const st = done ? c.done : c.live;
+  const gs = useGs(); const s = GS_SESSIONS[c.today]; const st = done ? { ...c.done, ...s.now, st: gsSessStatus(s) } : c.live;
   if (none) return (
     <LbNowCard gid={id} title={c.title} play={() => gs.playReq({ kind: 'edition', e: edList(gs, id)[0] })} next={c.next}>
       <p>{GS_PAGES[id].week.line}</p>
     </LbNowCard>
   );
   return (
-    <LbNowCard gid={id} title={c.title} result={done ? c.done.st : !c.tag && { kind: 'live', label: 'In progress' }} tag={c.tag} open={() => gs.go('session', { id: done ? c.today : c.liveSid })} next={c.next}>
+    <LbNowCard gid={id} title={c.title} result={done ? st.st : !c.tag && { kind: 'live', label: 'In progress' }} tag={c.tag} open={() => gs.go('session', { id: done ? c.today : c.liveSid })} next={c.next}>
       <p>{st.line}</p>
       {st.bar && <DS.ProgressBar label={st.bar[0]} value={st.bar[1]} max={st.bar[2]} showValue={false} />}
     </LbNowCard>

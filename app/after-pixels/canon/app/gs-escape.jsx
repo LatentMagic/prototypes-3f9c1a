@@ -198,8 +198,9 @@ const EsSessBody = (props) => <EsBody key={props.sid} {...props} />;
 
 // ---- The now card, once this week's room is played or started: the shared frame (LbNowCard), with the session page's line at the
 // card's size. A door opens the session page at its lock. No lanes: the session page has them. ----
-export const EsNow = ({ label, title, next, pass }) => {
-  const gs = useGs(); const sid = esSid(gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => esBuild(s), [s]);
+// first: a free player's first room, an older edition than this week's, so Config → This edition's pick does not reach it.
+export const EsNow = ({ label, title, next, pass, first }) => {
+  const gs = useGs(); const sid = first ? (gs.review.week === 'live' ? 'escape-live' : ES_SIDS[gs.review.escape] || 'escape-week') : esSid(gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => esBuild(s), [s]);
   const open = (lock) => gs.go('session', lock ? { id: sid, lock } : { id: sid });
   return (
     <LbNowCard gid="escape" className="es-now" label={label} title={title} result={esNowResult(m)} open={() => open()} next={next} pass={pass}>

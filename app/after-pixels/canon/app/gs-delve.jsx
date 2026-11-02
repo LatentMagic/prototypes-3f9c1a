@@ -252,14 +252,14 @@ export const registerDelve = () => {
 export function initGsDelve() {
 // ---- Sample plays beside the seeded ones, staged by States: a run that fell, and the hard play built to delve.md's limits
 // (every room, going back three times, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
-GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
+GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
   sheet: { used: { 'Shield bash': 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'Rolled 14 + 0 = 14 against DC 12'], ['Room', 'Entered the chime run'],
   ['Dexterity', 'Miss', 'Rolled 5 + 1 = 6 against DC 12', 'HP 11/13'], ['Dexterity', 'Weak hit', 'Rolled 12 + 1 = 13 against DC 12', 'HP 10/13'], ['Dexterity', 'Strong hit', 'Rolled 19 + 1 = 20 against DC 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Strength', 'Miss', 'Rolled 3 + 3 = 6 against DC 12', 'HP 7/13'], ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'HP 5/13'], ['Strength', 'Miss', 'Natural 1', 'Rolled 1 + 3 = 4 against DC 12', 'HP 2/13'],
   ['Strength', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12'], ['Strength', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'HP 0/13']] };
-GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
+GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 11, threat: 12, sheet: { used: { Backstab: 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 1 = 2 against DC 12', 'HP 10/11'], ['Room', 'Entered the chime run'],
   ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'HP 9/11'], ['Dexterity', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],

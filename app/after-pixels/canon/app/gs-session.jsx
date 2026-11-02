@@ -10,15 +10,15 @@
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 // text: the line where it isn't the edition's own (a kept session).
 import React from 'react';
-import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsStartsOver, gsSessDate, gsRhythm, GS_BARROW_CREDIT } from './gs-data.jsx';
+import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsTodayPlayed, gsEdPick, gsStartsOver, gsSessDate, gsRhythm, gsFresh, GS_BARROW_CREDIT } from './gs-data.jsx';
 import { GsNotFound } from './gs-site.jsx';
 import { GsCover } from './gs-parts.jsx';
 import { GsGap, gsOr } from './gs-game.jsx';
 import { lbCopy, LbBackTo } from './gs-library.jsx';
-import { DP_PZ } from './gs-where-chain-salvage.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 import { gsSessEd } from './gs-connect.jsx';
 import { PH_FIRST, PH_UNF } from './gs-history.jsx';
+import { cprFirstState } from './gs-pass-store.jsx';
 import { ES_SIDS } from './gs-escape.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
@@ -143,16 +143,42 @@ const GsSessResult = ({ s, title }) => (
   </section>
 );
 
+// This edition's session ids for a game: the seeded finished play, the ones Config → This edition picks (GS_ED_SIDS), Escape's own finished plays, and the in-progress one.
+const gsEdMine = (gid) => {
+  const c = PZ[gid]; const ids = (GS_ED_SIDS || {})[gid] || {};
+  return [c && (c.todayBase || c.today), c && c.liveSid, ...Object.values(ids), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])].filter(Boolean);
+};
+// This account has no play of this edition, by the library page's own tests (lbNow, cprFirstState, review.never, gsFresh): a new account,
+// a game marked never played, a free player's unplayed first Escape room or Delve run, or a seeded daily that Config → This edition: Not played empties.
+const gsNoPlay = (gs, gid) => {
+  if (gsFresh(gs) || (gs.review && gs.review.never === gid)) return true;
+  if (gs.view === 'free' && (gid === 'escape' || gid === 'delve')) return cprFirstState(gs, gid) === 'none';
+  // The daily puzzles, as lbNow reads them: a play of this edition exists only for a game the account can play.
+  return !!PZ[gid] && gs.view !== 'out' && (GS_GAMES[gid].free || gs.view === 'pass') && !gsTodayPlayed(gs)[gid];
+};
+// KEEP: This edition's session as Config → This edition and the demo bar leave it: in progress shows the play so far, finished shows the play Config
+// picks, and null means this edition has no play (Not played). Every surface that opens this edition's play reads it from here.
+export const gsThisEdOf = (gs, gid) => {
+  const c = PZ[gid]; const ids = (GS_ED_SIDS || {})[gid] || {}; const live = gs.review && gs.review.week === 'live';
+  if (gsNoPlay(gs, gid)) return null;
+  if (live) return c ? c.liveSid : ids.live || null;
+  return c ? c.today : gsEdPick(gid, gs) || ids.average;
+};
 // KEEP: a session page open on this edition's play follows Config → This edition and the demo bar while it is open: in progress
-// shows the play so far, finished shows the play Config picks. An earlier edition's page is left alone.
-const gsThisEdSid = (gs, sid) => {
-  const s = GS_SESSIONS[sid]; const gid = s && s.gid; const live = gs.review && gs.review.week === 'live';
-  if (gid === 'delve') return sid === 'delve' || sid === 'delve-live' ? (live ? 'delve-live' : 'delve') : sid;
-  const c = gid && ((typeof PZ !== 'undefined' && PZ[gid]) || (typeof DP_PZ !== 'undefined' && DP_PZ[gid])); if (!c) return sid;
-  const mine = [c.todayBase || c.today, c.liveSid, ...Object.values((GS_ED_SIDS || {})[gid] || {}), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])];
-  if (!mine.includes(sid)) return sid;
-  const to = live ? c.liveSid : c.today;
-  return GS_SESSIONS[to] ? to : sid;
+// shows the play so far, finished shows the play Config picks, Not played has no page. An earlier edition's page is left alone.
+export const gsThisEdSid = (gs, sid) => {
+  const s = GS_SESSIONS[sid]; const gid = s && s.gid; if (!gid) return sid;
+  if (!gsEdMine(gid).some((m) => GS_SESSIONS[m] === s)) return sid;
+  const to = gsThisEdOf(gs, gid);
+  return to === null ? null : GS_SESSIONS[to] ? to : sid;
+};
+// Config → This edition changed while a session page of an earlier edition is open: that page no longer is the edition Config describes, so the player
+// goes to this edition's play, or to the game's library page when this edition has no play. Off a game, or on a page that updates in place, nothing moves.
+export const gsEdFollow = (gs) => {
+  const r = gs.route; const s = r.name === 'session' && GS_SESSIONS[r.id]; const gid = s && s.gid;
+  if (!gid || !gsEdMine(gid).length || gsEdMine(gid).some((m) => GS_SESSIONS[m] === s)) return;
+  const to = gsThisEdOf(gs, gid);
+  if (to) gs.go('session', { id: to }); else gs.go(GS_GAMES[gid].route, { page: 'record' });
 };
 const GsSessionRecord = () => {
   const gs = useGs();
@@ -208,5 +234,11 @@ const GsSessionRecord = () => {
   </>);
 };
 
-export const GsSession = () => { const r = useGs().route; return GS_SESSIONS[r.id] ? <GsSessionRecord /> : <GsNotFound />; };
+// This edition has no play to show (Not played): the game's library page takes the place of this one.
+const GsSessionGone = ({ gid }) => { const gs = useGs(); React.useEffect(() => { gs.go(GS_GAMES[gid].route, { page: 'record', replace: true }); }, []); return null; };
+export const GsSession = () => {
+  const gs = useGs(); const r = gs.route;
+  if (!GS_SESSIONS[r.id]) return <GsNotFound />;
+  return gsThisEdSid(gs, r.id) === null ? <GsSessionGone gid={GS_SESSIONS[r.id].gid} /> : <GsSessionRecord />;
+};
 

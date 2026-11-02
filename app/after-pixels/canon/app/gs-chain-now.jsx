@@ -8,7 +8,6 @@ import React from 'react';
 import { useGs, GS_SESSIONS } from './gs-data.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { edList } from './gs-history.jsx';
-import { CH_FAIL, CH_HARD } from './gs-where-chain-salvage.jsx';
 
 // ---- The model, replayed the engine's way (as gs-chain.jsx): each word starts with one letter shown, a wrong guess shows one
 // more, and a word whose shown letters would reach its length is given away. Per word its state; per guess its result; `last`
@@ -106,18 +105,15 @@ const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
 const CnFresh = () => (
   <div className="cn-pic cn-stack"><div className="cn-focus"><CnWord n={5} /></div><div className="cn-under"><CnCount p={CN_FRESH} /></div></div>);
 
-// Config's review.chain stages a failed or a hard day (the library-chain-failed and library-chain-hard states): neither is a session of
-// its own in canon, so Go to session opens an earlier failed Chain.
-const cnStaged = (k) => ({ failed: CH_FAIL, hard: CH_HARD })[k]; // read at render: the plays are set when gs-where-chain-salvage.jsx's init runs
 export const ChNow = ({ c, done, none }) => {
-  const gs = useGs(); const staged = cnStaged(gs.review.chain);
+  const gs = useGs();
   const title = '#' + GS_SESSIONS[c.today].number;
   if (none) return (
     <LbNowCard gid="chain" title={title} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'chain')[0] })} next={c.next} className="cn">
       <CnFresh />
     </LbNowCard>);
-  const sid = staged ? Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === 'chain' && / found/.test(GS_SESSIONS[k].result || '')) || c.today : done ? c.today : c.liveSid;
-  const s = GS_SESSIONS[sid]; const p = cnRead(staged || s.play, !staged && !done);
+  const sid = done ? c.today : c.liveSid;
+  const s = GS_SESSIONS[sid]; const p = cnRead(s.play, !done);
   return (
     <LbNowCard gid="chain" title={title} result={p.r} open={() => gs.go('session', { id: sid })} next={c.next} className="cn">
       <CnPic p={p} />

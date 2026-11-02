@@ -6,7 +6,7 @@
 // Each game is played through text in the player's own AI: the chats carry text and a plain text board, never a picture.
 // ============================================================================
 import React from 'react';
-import { GS_NAME, GS_GAMES, gsAccess, GS_GAME_ORDER, GS_ART, GS_SVG, GS_RESULT, GS_SESSIONS, GS, GS_TODAY_PLAYED } from './gs-data.jsx';
+import { GS_NAME, GS_GAMES, gsAccess, GS_GAME_ORDER, GS_ART, GS_SVG, GS_RESULT, GS_SESSIONS, GS, GS_TODAY_PLAYED, GS_ED_SIDS } from './gs-data.jsx';
 import { GS_ART_LOCAL, I } from './gs-parts.jsx';
 import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
 import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
@@ -70,7 +70,8 @@ const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' 
 export let CH_TODAY;
 export let CH_OK;
 export let CH_FAIL;
-// A hard day for the library card's states: seven words (five hidden), no guess limit, 21 guesses: three words found, two given away.
+// Today's chain on Config's Hard: every hidden word found and none given away, but only just. 18 guesses, 14 of them wrong (the most a win allows: a word of n letters is given away on its (n-1)th wrong guess).
+// Each wrong guess starts with the letters the game was showing for that word.
 export let CH_HARD;
 
 let SV_COLS;
@@ -182,6 +183,8 @@ const CM_TODAY_LINES = [
 const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
 const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
 const CM_FAIL = [[2, 3], [3, 0, 'passed'], [4, 0, 'lost']];
+// Today's threads on the hard play: every link found only with all four items showing.
+const CM_HARD = [[4, 1], [4, 1], [4, 1]];
 
 // ---- An earlier edition's session (gs-puzzles-library.jsx pzSession). base: kind, gid, game, art, date, result, loss. ----
 export const dpSession = (id, c, x, base) => {
@@ -284,10 +287,10 @@ CH_OK = [
   { w: ['KEY', 'BOARD', 'WALK', 'WAY', 'SIDE', 'CAR'], p: [['BOARD', 1], ['SIDE', 4], ['WAY', 3], ['WAR', 2], ['WALK', 2]] },
   { w: ['HAND', 'BAG', 'PIPE', 'LINE', 'DANCE'], p: [['BALL', 1], ['BAG', 1], ['LINE', 3], ['PIPE', 2]] },
 ];
-CH_HARD = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'TRAIN', 'WAGON'], p: [['BELL', 1], ['BULL', 1], ['BAIL', 1], ['BALL', 1], ['ROAM', 2], ['ROOF', 2], ['ROBE', 2],
-  ['SERVER', 3], ['SURVEY', 3], ['SURFACE', 3], ['SERVING', 3], ['SERVANT', 3], ['SEVERE', 3], ['STATE', 4], ['STAGE', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4],
-  ['TRAM', 5], ['TRAIL', 5], ['TRAIN', 5]] };
-CH_FAIL = { w: ['GOLD', 'FISH', 'BONE', 'DRY', 'CLEAN'], p: [['FINCH', 1], ['FISH', 1], ['DUST', 3], ['DRY', 3], ['BALL', 2], ['BOWL', 2], ['BOAT', 2]] };
+CH_HARD = { w: CH_TODAY.w, p: [['BELL', 1], ['BAKE', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOM', 2],
+  ['SALAD', 3], ['SECOND', 3], ['SERVER', 3], ['SERVED', 3], ['SERVING', 3], ['SERVICE', 3], ['STORE', 4], ['STAGE', 4], ['STAMP', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4]] };
+// Config's Failed on today's chain: ROOM is given away on its third wrong guess (ROO shown, four letters), the other words found.
+CH_FAIL = { w: CH_TODAY.w, p: [['BELL', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOF', 2], ['SUITE', 3], ['SERVICE', 3], ['STORE', 4], ['STATION', 4]] };
 // ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
 // never touching, not even at a corner. 30 dives, each a hit, a miss or sunk ("Sunk: the wreck of 3" names its length). One hint, which
 // costs no dive: sonar on a row or a column says how many wreck squares it holds. Complete: every wreck found within the dives. ----
@@ -328,6 +331,40 @@ Object.assign(GS_SESSIONS, {
     figures: ['Thread 1 of 3', '0 of 15 points'], share: null, lines: CM_TODAY_LINES.slice(0, 2) },
 });
 DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
+// ---- This edition as Config → This edition picks it (GS_ED_SIDS). SAMPLES on today's edition: today's number and date. Hard: every guess, dive or
+// item used and the edition still won. Failed: the edition lost. now: the line and bar of
+// the library now card (CprPzNow); Chain's card draws from the play itself. ----
+const dpHardWh = { a: 'Hungary', g: [['Spain', 1110], ['Poland', 80], ['Austria', 0], ['Slovakia', 0], ['Romania', 0]], hint: 'From Romania, the country lies west' };
+const dpPickWh = (ok) => {
+  const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ['Croatia', 0]] }, ok); const res = GS_RESULT.where({ ok, guesses: r.guesses });
+  return { ...GS_SESSIONS['where-today'], loss: !ok, hints: r.hints, result: res, share: res, figures: [r.guesses + ' of 6 guesses', '1 hint'], shareLines: [dpWhHead(DP_NO, r, ok), r.marks], lines: r.lines,
+    now: { line: ok ? 'You found the country on your sixth guess, with the hint.' : 'You used all six guesses and the hint without finding the country.', bar: ['Guess 6 of 6', 6, 6] } };
+};
+const dpPickCh = (play) => {
+  const r = dpChain(play); const res = dpChResult(r);
+  return { ...GS_SESSIONS['chain-today'], loss: r.given > 0, play, result: res, share: res, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (c) => c.toUpperCase())], shareLines: [dpChHead(DP_NO, r), r.marks], lines: r.lines };
+};
+const dpDives = SV_TODAY_DIVES.map((d) => d[0]);
+const dpCells = (list) => list.map((c) => [SV_COLS.indexOf(c[0]), +c.slice(1) - 1]);
+const dpPickSv = (extra, upTo, now) => {
+  const log = svReplay(SV_TODAY, [...dpDives.slice(0, upTo), ...dpCells(extra), ...dpDives.slice(upTo)].slice(0, 30)); const sunk = svSunk(log); const res = GS_RESULT.salvage({ found: sunk, dives: log.length });
+  return { ...GS_SESSIONS['salvage-today'], loss: sunk < 5, result: res, share: res, figures: [sunk + ' of 5 wrecks', log.length + ' of 30 dives', '1 hint'], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
+};
+const dpPickCm = (day, now) => {
+  const res = cmResult(day);
+  return { ...GS_SESSIONS['common-today'], loss: cmFound(day) < 3, result: res, share: res, figures: [cmScore(day) + ' of 15 points', cmFound(day) + ' of 3 links'], shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
+};
+Object.assign(GS_SESSIONS, {
+  'where-today-hard': dpPickWh(true), 'where-today-failed': dpPickWh(false),
+  'chain-today-hard': dpPickCh(CH_HARD), 'chain-today-failed': dpPickCh(CH_FAIL),
+  'salvage-today-hard': dpPickSv(['A1', 'H1', 'H2', 'A8', 'C7', 'F7', 'B4', 'F8'], 14,
+    { line: 'You found all five wrecks on your last dive, with one hint.', bar: ['30 of 30 dives', 30, 30] }),
+  'salvage-today-failed': dpPickSv(['A1', 'H1', 'H2', 'A8', 'C7', 'F7', 'B4', 'F8', 'C4', 'B6', 'H4', 'H5', 'D7', 'E8', 'C1', 'D8'], 14,
+    { line: 'You used all 30 dives and found 3 of the 5 wrecks.', bar: ['30 of 30 dives', 30, 30] }),
+  'common-today-hard': dpPickCm(CM_HARD, { line: 'You found all three links, each with all four items showing, and scored 3 of 15.', bar: ['3 of 15 points', 3, 15] }),
+  'common-today-failed': dpPickCm(CM_FAIL, { line: 'You found 1 of the 3 links and scored 3 of 15.', bar: ['3 of 15 points', 3, 15] }),
+});
+DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-today-hard', failed: k + '-today-failed' }; });
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
 DP_PZ = {
   where: {
@@ -476,8 +513,8 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
   { group: g, id: 'library-' + k + '-editions', label: n + ': every ' + GS_GAMES[k].ed[0] + ' (the editions list)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go(k, { page: 'record', list: true }); } },
   ...(k === 'chain' ? [
     { group: g, id: 'library-chain-never-played', label: 'Chain in your library, with the Pass, not yet played', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ never: 'chain' }); c.go(k, { page: 'record' }); } },
-    { group: g, id: 'library-chain-failed', label: 'Chain in your library, today failed (a word given away)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ chain: 'failed' }); c.go(k, { page: 'record' }); } },
-    { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (21 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ chain: 'hard' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-chain-failed', label: 'Chain in your library, today failed (a word given away)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (18 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
   ] : []),
   { group: dpSessAt(k)[0], id: 'session-' + k, label: k === 'chain' ? dpSessAt(k)[1] + n : 'Session page: ' + n + ' today, with Share', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: k + '-today' }); } },
 ]; });

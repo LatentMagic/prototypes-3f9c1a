@@ -32,6 +32,8 @@ export const cprFirstState = (gs, id) => {
   if (gs.view === 'pass') return id === 'barrow' && cprStore.get().bwDone ? 'done' : 'pass';
   if (gsLapsed(gs)) return cprLapsedOf(id).used ? 'done' : 'none';
   if (gsFresh(gs)) return 'none';
+  // Config → This edition: Not played reaches a free player's first Escape room and first Delve run too.
+  if ((id === 'escape' || id === 'delve') && gs.view === 'free' && gs.review && gs.review.today === 'none') return 'none';
   if (id === 'barrow') return cprStore.get().bwDone ? 'done' : 'none';
   if (id === 'escape' && cprStore.get().freeNew) return 'none';
   if (!lbWeekDone(gs)) return 'live';
