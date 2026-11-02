@@ -250,14 +250,17 @@ const KitApp = () => {
   }, []);
   const go = (name, extra, asView) => {
     // asView false: a staged state, which sets the view itself in the same tick.
-    const r0 = { name, ...(extra || {}) };
+    // replace: the page takes the place of the one being left, so Back skips it (a session page that has no play to show).
+    const { replace, ...rest } = extra || {};
+    const r0 = { name, ...rest };
     const r = asView === false ? r0 : land(r0, asView || view);
     // Where the player came from, for back links (LbBackTo). A staged state has no earlier page.
-    const cur = stack.current[idx.current];
+    const cur = stack.current[replace ? idx.current - 1 : idx.current];
     if (asView !== false && cur) r.prev = { name: cur.name, page: cur.page || null };
-    idx.current += 1; backNav.current = false;
+    if (!replace) idx.current += 1;
+    backNav.current = false;
     stack.current = stack.current.slice(0, idx.current).concat([r]);
-    try { window.history.pushState({ gsIdx: idx.current }, ''); } catch (e) {}
+    try { window.history[replace ? 'replaceState' : 'pushState']({ gsIdx: idx.current }, ''); } catch (e) {}
     setPlaying(null); setRoute(r); setTimeout(gsScrollTop, 0);
   };
   const setReview = (patch) => setReviewState((r) => ({ ...r, ...patch }));

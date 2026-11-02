@@ -221,6 +221,19 @@ export const GS_CB_REC = [
 ];
 // The session page's rows: numbered turns, then the accusation.
 const gsCbLines = (rec) => rec.map((r, i) => (r.c === 'A' ? ['Accused ' + r.what, r.out] : ['Turn ' + (i + 1), r.what, ...(r.out ? [r.out] : [])]));
+// Case 1 as Config → This edition picks it (GS_ED_SIDS.casebook). SAMPLES, the same case and culprit. Hard: all 16 turns used, every lie exposed, still right.
+// Failed: seven turns, then a wrong accusation.
+export const GS_CB_HARD = [
+  ...GS_CB_REC.slice(0, 5),
+  { c: 'H', act: 'Show evidence', what: 'Showed a letter of dismissal to Maeve Doyle', out: 'Their story stood' },
+  { c: 'Q', act: 'Question', what: 'Asked Tobias Pike about the ferry' },
+  { c: 'H', act: 'Show evidence', what: 'Showed a partnership deed to Tobias Pike', out: 'Their story stood' },
+  ...GS_CB_REC.slice(5, 11),
+  { c: 'Q', act: 'Question', what: 'Asked Maeve Doyle about the harbour' },
+  { c: 'H', act: 'Show evidence', what: 'Showed a green silk scarf to Maeve Doyle', out: 'Their story stood' },
+  GS_CB_REC[11],
+];
+export const GS_CB_FAILED = [...GS_CB_REC.slice(0, 7), { c: 'A', act: 'Accusation', what: 'Tobias Pike', out: 'Wrong' }];
 
 // Today's Daily Mystery questions, shared by the finished play and its in-progress form.
 const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'The inspector said yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'The inspector said yes']];
@@ -306,33 +319,44 @@ export const GS_SESSIONS = {
 };
 // This edition's play as Config → This edition picks it (gsEdPick): Average, Hard (every try and hint used, still won) or Failed.
 // Same edition, same answer as today's play and its in-progress form. A game with no entry for a pick keeps its seeded play.
+// now: the line and bar its library now card prints where it is not the seeded play's (CprPzNow reads it, else the game's own `done`).
 Object.assign(GS_SESSIONS, {
   'word-today-hard': { ...GS_SESSIONS['word-today'], result: 'Solved in 5 of 6', share: 'Solved in 5 of 6',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STOOL', 'STALL', 'STILL']) },
   'word-today-failed': { ...GS_SESSIONS['word-today'], loss: true, result: 'Failed', share: 'Failed',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STALL', 'SPILL', 'SKILL', 'SWILL']) },
-  'groups-today-hard': { ...GS_SESSIONS['groups-today'], result: 'All 4 groups, 3 mistakes', share: 'All 4 groups, 3 mistakes', figures: ['4 of 4 groups', '3 mistakes'],
+  'groups-today-hard': { ...GS_SESSIONS['groups-today'], now: { line: 'You found all four groups with three mistakes, and no hints.', bar: ['4 of 4 groups', 4, 4] }, result: 'All 4 groups, 3 mistakes', share: 'All 4 groups, 3 mistakes', figures: ['4 of 4 groups', '3 mistakes'],
     shareHead: 'Daily Groups #88 · 3 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟪🟪🟪', '🟩🟩🟩🟩'],
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
       ['Try 5', 'CHORD · SCALE · NOTE · RAIL', 'One away'], ['Try 6', 'BASS · CHORD · SCALE · NOTE', 'Found: music'], ['Try 7', 'RAIL · GATE · POST · PANEL', 'Found: parts of a fence']] },
-  'groups-today-failed': { ...GS_SESSIONS['groups-today'], loss: true, result: '2 of 4 groups', share: '2 of 4 groups', figures: ['2 of 4 groups', '4 mistakes'],
+  'groups-today-failed': { ...GS_SESSIONS['groups-today'], now: { line: 'You found 2 of the 4 groups before your fourth mistake.', bar: ['2 of 4 groups', 2, 4] }, loss: true, result: '2 of 4 groups', share: '2 of 4 groups', figures: ['2 of 4 groups', '4 mistakes'],
     shareHead: 'Daily Groups #88 · 4 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟩🟩🟪'],
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
       ['Try 5', 'CHORD · SCALE · NOTE · RAIL', 'One away'], ['Try 6', 'NOTE · RAIL · GATE · BASS', 'Not a group']] },
   // Daily Mystery asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
-  'mystery-today-avg': { ...GS_SESSIONS['mystery-today'], loss: false, q: 1, result: 'Solved', share: 'Solved', figures: ['1 question', 'No hints'],
+  'mystery-today-avg': { ...GS_SESSIONS['mystery-today'], loss: false, now: { line: 'You asked the inspector one question, then named the right suspect, weapon and room.' }, q: 1, result: 'Solved', share: 'Solved', figures: ['1 question', 'No hints'],
     lines: [GS_MYSTERY_QS[0], ['Accusation', 'Delphine Rooke, with the curtain cord, in the conservatory', 'Right']] },
-  'mystery-today-hard': { ...GS_SESSIONS['mystery-today'], loss: false, result: 'Solved', share: 'Solved',
+  'mystery-today-hard': { ...GS_SESSIONS['mystery-today'], loss: false, now: { line: 'You asked the inspector both questions, then named the right suspect, weapon and room.' }, result: 'Solved', share: 'Solved',
     lines: [...GS_MYSTERY_QS, ['Accusation', 'Delphine Rooke, with the curtain cord, in the conservatory', 'Right']] },
 });
+Object.assign(GS_SESSIONS, {
+  'casebook-hard': { ...GS_SESSIONS.casebook, figures: ['16 of 16 turns', '4 of 4 lies exposed', 'You accused Dr. Celia Rourke'], lines: gsCbLines(GS_CB_HARD) },
+  'casebook-failed': { ...GS_SESSIONS.casebook, loss: true, result: 'Wrong accusation', share: 'Wrong accusation', figures: ['7 of 16 turns', '2 of 4 lies exposed', 'You accused Tobias Pike'],
+    shareLines: ['Casebook: The Last Night at Gull Point', '❌ wrong accusation · 7 of 16 turns · 2 lies exposed'], lines: gsCbLines(GS_CB_FAILED) },
+});
+// Each game's finished play of this edition, by what Config → This edition picks: the one source every surface reads (gsEdPick).
+// A pick a game cannot have is absent (Escape has no losing outcome); Escape's average follows Config → Escape. live: the in-progress form of a game with no PZ entry.
 export const GS_ED_SIDS = {
   word: { average: 'word-today', hard: 'word-today-hard', failed: 'word-today-failed' },
   groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
   mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
   escape: { hard: 'escape-hard' },
-  delve: { hard: 'delve-hard' },
+  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live' },
+  casebook: { average: 'casebook', hard: 'casebook-hard', failed: 'casebook-failed' },
 };
 // The finished play Config → This edition picks for a game, or null to keep the seeded one.
+// How a finished session reads in a row: a loss (`loss`) is bad, anything else is ok.
+export const gsSessStatus = (s) => ({ kind: s.loss ? 'bad' : 'ok', label: s.result });
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {

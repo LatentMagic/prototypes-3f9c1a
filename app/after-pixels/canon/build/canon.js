@@ -1216,6 +1216,17 @@
     { c: "A", act: "Accusation", what: "Dr. Celia Rourke", out: "Right" }
   ];
   const gsCbLines = (rec) => rec.map((r, i) => r.c === "A" ? ["Accused " + r.what, r.out] : ["Turn " + (i + 1), r.what, ...r.out ? [r.out] : []]);
+  const GS_CB_HARD = [
+    ...GS_CB_REC.slice(0, 5),
+    { c: "H", act: "Show evidence", what: "Showed a letter of dismissal to Maeve Doyle", out: "Their story stood" },
+    { c: "Q", act: "Question", what: "Asked Tobias Pike about the ferry" },
+    { c: "H", act: "Show evidence", what: "Showed a partnership deed to Tobias Pike", out: "Their story stood" },
+    ...GS_CB_REC.slice(5, 11),
+    { c: "Q", act: "Question", what: "Asked Maeve Doyle about the harbour" },
+    { c: "H", act: "Show evidence", what: "Showed a green silk scarf to Maeve Doyle", out: "Their story stood" },
+    GS_CB_REC[11]
+  ];
+  const GS_CB_FAILED = [...GS_CB_REC.slice(0, 7), { c: "A", act: "Accusation", what: "Tobias Pike", out: "Wrong" }];
   const GS_MYSTERY_QS = [["Question 1", "Was Delphine Rooke in the study?", "The inspector said yes"], ["Question 2", "Did Arthur Penhallow have the paper knife?", "The inspector said yes"]];
   const GS_SESSIONS = {
     // Delve run 1 won, Bryn the Fighter.
@@ -1415,6 +1426,7 @@
     },
     "groups-today-hard": {
       ...GS_SESSIONS["groups-today"],
+      now: { line: "You found all four groups with three mistakes, and no hints.", bar: ["4 of 4 groups", 4, 4] },
       result: "All 4 groups, 3 mistakes",
       share: "All 4 groups, 3 mistakes",
       figures: ["4 of 4 groups", "3 mistakes"],
@@ -1432,6 +1444,7 @@
     },
     "groups-today-failed": {
       ...GS_SESSIONS["groups-today"],
+      now: { line: "You found 2 of the 4 groups before your fourth mistake.", bar: ["2 of 4 groups", 2, 4] },
       loss: true,
       result: "2 of 4 groups",
       share: "2 of 4 groups",
@@ -1451,6 +1464,7 @@
     "mystery-today-avg": {
       ...GS_SESSIONS["mystery-today"],
       loss: false,
+      now: { line: "You asked the inspector one question, then named the right suspect, weapon and room." },
       q: 1,
       result: "Solved",
       share: "Solved",
@@ -1460,9 +1474,22 @@
     "mystery-today-hard": {
       ...GS_SESSIONS["mystery-today"],
       loss: false,
+      now: { line: "You asked the inspector both questions, then named the right suspect, weapon and room." },
       result: "Solved",
       share: "Solved",
       lines: [...GS_MYSTERY_QS, ["Accusation", "Delphine Rooke, with the curtain cord, in the conservatory", "Right"]]
+    }
+  });
+  Object.assign(GS_SESSIONS, {
+    "casebook-hard": { ...GS_SESSIONS.casebook, figures: ["16 of 16 turns", "4 of 4 lies exposed", "You accused Dr. Celia Rourke"], lines: gsCbLines(GS_CB_HARD) },
+    "casebook-failed": {
+      ...GS_SESSIONS.casebook,
+      loss: true,
+      result: "Wrong accusation",
+      share: "Wrong accusation",
+      figures: ["7 of 16 turns", "2 of 4 lies exposed", "You accused Tobias Pike"],
+      shareLines: ["Casebook: The Last Night at Gull Point", "❌ wrong accusation · 7 of 16 turns · 2 lies exposed"],
+      lines: gsCbLines(GS_CB_FAILED)
     }
   });
   const GS_ED_SIDS = {
@@ -1470,8 +1497,10 @@
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
-    delve: { hard: "delve-hard" }
+    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live" },
+    casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
+  const gsSessStatus = (s) => ({ kind: s.loss ? "bad" : "ok", label: s.result });
   const gsEdPick = (gid, gs) => {
     gs = gs || window.gsApi;
     const e = gs && gs.review && gs.review.ed;
@@ -2733,6 +2762,8 @@
   let CB_DONE;
   let CB_LIVE;
   let CB_ALL;
+  let CB_BY_SID;
+  const cbDone = (gs) => CB_BY_SID[gsEdPick("casebook", gs)] || CB_DONE;
   const cbRight = (p) => p.src.verdict === "right";
   let CB_ACH;
   let CB_BADGES;
@@ -2741,6 +2772,11 @@
   const cbRecap = (c) => c.live ? "You’ve used " + c.turns + " of 16 turns and exposed " + (c.lies === 1 ? "1 lie" : c.lies + " lies") + ". You haven’t named the killer yet." : "You used " + c.turns + " of 16 turns and exposed " + c.lies + " of " + c.total + " lies.";
   function initGsCasebookData() {
     CB_DONE = { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, "right", 4, GS_CB_REC), cast: CB_CAST, places: 4 };
+    CB_BY_SID = {
+      casebook: CB_DONE,
+      "casebook-hard": { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, "right", 4, GS_CB_HARD), cast: CB_CAST, places: 4 },
+      "casebook-failed": { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, "wrong", 4, GS_CB_FAILED), cast: CB_CAST, places: 4 }
+    };
     CB_LIVE = { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, null, 4, GS_CB_REC.filter((r) => r.c !== "A").slice(0, 6)), cast: CB_CAST };
     CB_ALL = [CB_LIVE];
     CB_ACH = [
@@ -2769,12 +2805,12 @@
   const GS_SESSION_BODY = {};
   const GS_NOW = {};
   const cbGo = (gs, sid) => gs.go("casebook", sid ? { page: "record", sid } : { page: "record" });
-  const cbWeek = (gs) => lbWeekDone(gs) ? CB_DONE : CB_LIVE;
+  const cbWeek = (gs) => lbWeekDone(gs) ? cbDone(gs) : CB_LIVE;
   let CB_FIRST;
   const cbFirstOf = (gs) => {
     const st = phFirstSt ? phFirstSt(gs, "casebook") : "done";
     if (st === "none") return null;
-    return st === "live" ? CB_LIVE : CB_DONE;
+    return st === "live" ? CB_LIVE : cbDone(gs);
   };
   const cbStatus = (c) => !c.played ? { kind: "none", label: "Not played" } : c.live ? { kind: "live", label: "In progress" } : { kind: c.verdict === "right" ? "ok" : "bad", label: GS_RESULT.casebook({ ok: c.verdict === "right" }) };
   let CB_KINDS;
@@ -2809,7 +2845,7 @@
   };
   const registerCasebook = () => {
     GS_LIBRARY.casebook = CbLibrary;
-    GS_EDITIONS.casebook = (gs) => edRuns(gs, "casebook", { all: CB_ALL, done: CB_DONE, status: cbStatus, openCur: (g, x) => cbGo(g, x.id), open: (g, x) => cbGo(g, x.id) });
+    GS_EDITIONS.casebook = (gs) => edRuns(gs, "casebook", { all: CB_ALL, done: CB_DONE, doneStatus: (g) => cbStatus(cbDone(g)), status: cbStatus, openCur: (g, x) => cbGo(g, x.id), open: (g, x) => cbGo(g, x.id) });
   };
   function initGsCasebook() {
     CB_FIRST = CB_DONE;
@@ -3708,6 +3744,7 @@
   function initGsDelve() {
     GS_SESSIONS["delve-fallen"] = {
       ...GS_SESSIONS.delve,
+      loss: true,
       end: "fallen",
       result: "Fell in the warren",
       reached: "Fell in the warren",
@@ -3732,6 +3769,7 @@
     };
     GS_SESSIONS["delve-hard"] = {
       ...GS_SESSIONS.delve,
+      loss: true,
       end: "overrun",
       result: "Too late: the ritual was completed",
       reached: "Too late: the ritual was completed",
@@ -3862,15 +3900,13 @@
   };
   const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
   const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus" }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, /* @__PURE__ */ React$1.createElement(CnCount, { p: CN_FRESH })));
-  const cnStaged = (k) => ({ failed: CH_FAIL, hard: CH_HARD })[k];
   const ChNow = ({ c, done, none }) => {
     const gs = useGs();
-    const staged = cnStaged(gs.review.chain);
     const title = "#" + GS_SESSIONS[c.today].number;
     if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "chain")[0] }), next: c.next, className: "cn" }, /* @__PURE__ */ React$1.createElement(CnFresh, null));
-    const sid = staged ? Object.keys(GS_SESSIONS).find((k) => GS_SESSIONS[k].gid === "chain" && / found/.test(GS_SESSIONS[k].result || "")) || c.today : done ? c.today : c.liveSid;
+    const sid = done ? c.today : c.liveSid;
     const s = GS_SESSIONS[sid];
-    const p = cnRead(staged || s.play, !staged && !done);
+    const p = cnRead(s.play, !done);
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cn" }, /* @__PURE__ */ React$1.createElement(CnPic, { p }));
   };
   const CPR_SHIP_LIB = {};
@@ -4063,9 +4099,10 @@
   };
   const CprPzNow = ({ c, done, none, id }) => {
     const gs = useGs();
-    const st = done ? c.done : c.live;
+    const s = GS_SESSIONS[c.today];
+    const st = done ? { ...c.done, ...s.now, st: gsSessStatus(s) } : c.live;
     if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: id, title: c.title, play: () => gs.playReq({ kind: "edition", e: edList(gs, id)[0] }), next: c.next }, /* @__PURE__ */ React$1.createElement("p", null, GS_PAGES[id].week.line));
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: id, title: c.title, result: done ? c.done.st : !c.tag && { kind: "live", label: "In progress" }, tag: c.tag, open: () => gs.go("session", { id: done ? c.today : c.liveSid }), next: c.next }, /* @__PURE__ */ React$1.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: id, title: c.title, result: done ? st.st : !c.tag && { kind: "live", label: "In progress" }, tag: c.tag, open: () => gs.go("session", { id: done ? c.today : c.liveSid }), next: c.next }, /* @__PURE__ */ React$1.createElement("p", null, st.line), st.bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: st.bar[0], value: st.bar[1], max: st.bar[2], showValue: false }));
   };
   const CbNow = ({ c }) => {
     const gs = useGs();
@@ -4633,6 +4670,7 @@
   const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
   const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
   const CM_FAIL = [[2, 3], [3, 0, "passed"], [4, 0, "lost"]];
+  const CM_HARD = [[4, 1], [4, 1], [4, 1]];
   const dpSession = (id, c, x, base) => {
     const n = (id === "common" ? CM_NO : DP_NO) - x.i;
     const i = x.i;
@@ -4918,6 +4956,60 @@
     });
     DP_IDS.forEach((k) => {
       GS_TODAY_PLAYED.pass[k] = k + "-today";
+    });
+    const dpHardWh = { a: "Hungary", g: [["Spain", 1110], ["Poland", 80], ["Austria", 0], ["Slovakia", 0], ["Romania", 0]], hint: "From Romania, the country lies west" };
+    const dpPickWh = (ok) => {
+      const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ["Croatia", 0]] }, ok);
+      const res = GS_RESULT.where({ ok, guesses: r.guesses });
+      return {
+        ...GS_SESSIONS["where-today"],
+        loss: !ok,
+        hints: r.hints,
+        result: res,
+        share: res,
+        figures: [r.guesses + " of 6 guesses", "1 hint"],
+        shareLines: [dpWhHead(DP_NO, r, ok), r.marks],
+        lines: r.lines,
+        now: { line: ok ? "You found the country on your sixth guess, with the hint." : "You used all six guesses and the hint without finding the country.", bar: ["Guess 6 of 6", 6, 6] }
+      };
+    };
+    const dpPickCh = (play) => {
+      const r = dpChain(play);
+      const res = dpChResult(r);
+      return { ...GS_SESSIONS["chain-today"], loss: r.given > 0, play, result: res, share: res, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (c) => c.toUpperCase())], shareLines: [dpChHead(DP_NO, r), r.marks], lines: r.lines };
+    };
+    const dpDives = SV_TODAY_DIVES.map((d) => d[0]);
+    const dpCells = (list) => list.map((c) => [SV_COLS.indexOf(c[0]), +c.slice(1) - 1]);
+    const dpPickSv = (extra, upTo, now) => {
+      const log = svReplay(SV_TODAY, [...dpDives.slice(0, upTo), ...dpCells(extra), ...dpDives.slice(upTo)].slice(0, 30));
+      const sunk = svSunk(log);
+      const res = GS_RESULT.salvage({ found: sunk, dives: log.length });
+      return { ...GS_SESSIONS["salvage-today"], loss: sunk < 5, result: res, share: res, figures: [sunk + " of 5 wrecks", log.length + " of 30 dives", "1 hint"], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
+    };
+    const dpPickCm = (day, now) => {
+      const res = cmResult(day);
+      return { ...GS_SESSIONS["common-today"], loss: cmFound(day) < 3, result: res, share: res, figures: [cmScore(day) + " of 15 points", cmFound(day) + " of 3 links"], shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
+    };
+    Object.assign(GS_SESSIONS, {
+      "where-today-hard": dpPickWh(true),
+      "where-today-failed": dpPickWh(false),
+      "chain-today-hard": dpPickCh(CH_HARD),
+      "chain-today-failed": dpPickCh(CH_FAIL),
+      "salvage-today-hard": dpPickSv(
+        ["A1", "H1", "H2", "A8", "C7", "F7", "B4", "F8"],
+        14,
+        { line: "You found all five wrecks on your last dive, with one hint.", bar: ["30 of 30 dives", 30, 30] }
+      ),
+      "salvage-today-failed": dpPickSv(
+        ["A1", "H1", "H2", "A8", "C7", "F7", "B4", "F8", "C4", "B6", "H4", "H5", "D7", "E8", "C1", "D8"],
+        14,
+        { line: "You used all 30 dives and found 3 of the 5 wrecks.", bar: ["30 of 30 dives", 30, 30] }
+      ),
+      "common-today-hard": dpPickCm(CM_HARD, { line: "You found all three links, each with all four items showing, and scored 3 of 15.", bar: ["3 of 15 points", 3, 15] }),
+      "common-today-failed": dpPickCm(CM_FAIL, { line: "You found 1 of the 3 links and scored 3 of 15.", bar: ["3 of 15 points", 3, 15] })
+    });
+    DP_IDS.forEach((k) => {
+      GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed" };
     });
     DP_PZ = {
       where: {
@@ -5213,13 +5305,13 @@
           { group: g, id: "library-chain-failed", label: "Chain in your library, today failed (a word given away)", stage: (c) => {
             c.setView("pass");
             c.setConnected(true);
-            c.setReview({ chain: "failed" });
+            c.setReview({ ed: "failed" });
             c.go(k, { page: "record" });
           } },
           { group: g, id: "library-chain-hard", label: "Chain in your library, a hard day (21 guesses)", stage: (c) => {
             c.setView("pass");
             c.setConnected(true);
-            c.setReview({ chain: "hard" });
+            c.setReview({ ed: "hard" });
             c.go(k, { page: "record" });
           } }
         ] : [],
@@ -5393,7 +5485,7 @@
       const curOld = i === 0 && !now && signed && lapsed && mine(x);
       const unf = signed && i > 0 && phUnf(gs, x.id);
       const played = i === 0 ? !!now || curOld : signed && mine(x);
-      let st = !signed ? null : unf ? PH_UNF : i === 0 ? now ? now.status : curOld ? src.status(src.done) : ED_NONE : played ? src.status(x) : ED_NONE;
+      let st = !signed ? null : unf ? PH_UNF : i === 0 ? now ? now.status : curOld ? src.doneStatus ? src.doneStatus(gs) : src.status(src.done) : ED_NONE : played ? src.status(x) : ED_NONE;
       const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
       if (fr && !fresh) {
         st = fr.status;
@@ -5470,14 +5562,15 @@
   let PH_ALL;
   let PH_BROKEN;
   let PH_UNF_PLAYS;
-  const phCur = (p) => {
-    const c = PZ[p.gid];
-    if (!p.cur || !c || !p.now || c.today === p.sid) return p;
-    const s = GS_SESSIONS[c.today];
-    return { ...p, sid: c.today, status: { kind: s.loss ? "bad" : "ok", label: s.result }, open: phSess(c.today) };
+  const phCur = (p, gs) => {
+    if (p.pick) return { ...p, ...p.pick(gs) };
+    if (!p.cur && !(PH_FIRST[p.gid] === p.ed && gs.view !== "pass")) return p;
+    const sid = p.cur && PZ[p.gid] ? PZ[p.gid].today : gsEdPick(p.gid, gs);
+    if (!sid || sid === p.sid) return p;
+    return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid) };
   };
   const phLog = (gs) => {
-    const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== "word1").concat(PH_BROKEN) : PH_ALL).map(phCur);
+    const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== "word1").concat(PH_BROKEN) : PH_ALL).map((p) => phCur(p, gs));
     const u = gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l;
     return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
   };
@@ -5487,7 +5580,7 @@
   const phFirstRec = (gs, gid) => {
     const e = PH_EDS[PH_FIRST[gid]];
     if (!e) return null;
-    const p = e.plays[0];
+    const p = phCur(e.plays[0], gs);
     const st = phFirstSt(gs, gid);
     return { gid, ed: e.ed, st, at: p.at, date: lbDate(p.at), status: st === "live" ? PH_LIVE : st === "none" ? ED_NONE : p.status, open: st === "live" ? PH_FIRST_LIVE[gid] : st === "none" ? null : p.open };
   };
@@ -5742,7 +5835,7 @@
       let first;
       if (cur) {
         const s = GS_SESSIONS[c.today];
-        first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: { kind: s.loss ? "bad" : "ok", label: s.result }, now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } };
+        first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } };
       } else first = { at: phAt(x.d, 7 + (x.i * 5 + c.salt * 3) % 15, (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? "ok" : "bad", label: x.line } };
       first.open = phSess(sid);
       first.sid = sid;
@@ -5753,7 +5846,7 @@
       if (!cb.played) return;
       const ed = phParse(cb.week);
       const cur = cb === CB_LIVE;
-      const first = cur ? { at: phAt(ed, 20, 10 + k % 40), status: cbStatus(CB_DONE), src: CB_DONE, open: (gs) => cbGo(gs, cb.id), now: { status: PH_LIVE, open: (gs) => cbGo(gs, cb.id) } } : { at: phAt(ed, 20, 10 + k % 40, k % 3), status: cbStatus(cb), src: cb, open: (gs) => cbGo(gs, cb.id) };
+      const first = cur ? { at: phAt(ed, 20, 10 + k % 40), status: cbStatus(CB_DONE), src: CB_DONE, pick: (gs) => ({ src: cbDone(gs), status: cbStatus(cbDone(gs)) }), open: (gs) => cbGo(gs, cb.id), now: { status: PH_LIVE, open: (gs) => cbGo(gs, cb.id) } } : { at: phAt(ed, 20, 10 + k % 40, k % 3), status: cbStatus(cb), src: cb, open: (gs) => cbGo(gs, cb.id) };
       phEd("casebook", cb.id, cb.title, ed, [first], cur);
     });
     DV_ALL.forEach((s, i) => {
@@ -5793,6 +5886,15 @@
       s.phEd = q.ed;
       s.date = pzLong(q.at) + ", " + phTime(q.at);
     }));
+    Object.values(GS_ED_SIDS).forEach((m) => Object.values(m).forEach((sid) => {
+      const s = GS_SESSIONS[sid];
+      const b = GS_SESSIONS[m.average];
+      if (s && b && b.__dated && !s.__dated) {
+        s.__dated = true;
+        s.phEd = b.phEd;
+        s.date = b.date;
+      }
+    }));
     (() => {
       const dv = GS_SESSIONS.delve;
       GS_SESSIONS["delve-first-live"] = { ...GS_SESSIONS["delve-live"], date: dv.date, __dated: true };
@@ -5830,7 +5932,7 @@
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
-    GS_EDITIONS.delve = (gs) => edRuns(gs, "delve", { all: DV_ALL, done: DV_DONE, status: dvStatus, openCur: (g) => g.go("session", { id: "delve" }), open: (g, x) => g.go("session", { id: dvSid(x) }) });
+    GS_EDITIONS.delve = (gs) => edRuns(gs, "delve", { all: DV_ALL, done: DV_DONE, doneStatus: (g) => gsSessStatus(GS_SESSIONS[gsEdPick("delve", g) || "delve"]), status: dvStatus, openCur: (g) => g.go("session", { id: "delve" }), open: (g, x) => g.go("session", { id: dvSid(x) }) });
   };
   function initGsDelveLibrary() {
     DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, ritual: { kind: "bad", label: GS_RESULT.delve({ end: "ritual" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
@@ -6220,17 +6322,36 @@
   const gsHeadTitle = (s, ed) => ed ? ed.title || "No. " + ed.n : s.title || (s.number != null ? "No. " + s.number : null);
   const GsSessHead = ({ art, label, title, actions }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React$1.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-acts" }, actions)));
   const GsSessResult = ({ s, title }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, gsOr(s.result)), (s.figures || []).filter((f) => f !== title).length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "gs-figs" }, s.figures.filter((f) => f !== title).map((f, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "gs-fig" }, gsOr(f)))));
+  const gsEdMine = (gid) => {
+    const c = PZ[gid];
+    const ids = (GS_ED_SIDS || {})[gid] || {};
+    return [c && (c.todayBase || c.today), c && c.liveSid, ...Object.values(ids), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []].filter(Boolean);
+  };
+  const gsNoPlay = (gs, gid) => !!(GS_TODAY_PLAYED[gs.view] || {})[gid] && !gsTodayPlayed(gs)[gid];
+  const gsThisEdOf = (gs, gid) => {
+    const c = PZ[gid];
+    const ids = (GS_ED_SIDS || {})[gid] || {};
+    const live = gs.review && gs.review.week === "live";
+    if (gsNoPlay(gs, gid)) return null;
+    if (live) return c ? c.liveSid : ids.live;
+    return c ? c.today : gsEdPick(gid, gs) || ids.average;
+  };
   const gsThisEdSid = (gs, sid) => {
     const s = GS_SESSIONS[sid];
     const gid = s && s.gid;
-    const live = gs.review && gs.review.week === "live";
-    if (gid === "delve") return sid === "delve" || sid === "delve-live" ? live ? "delve-live" : "delve" : sid;
-    const c = gid && (typeof PZ !== "undefined" && PZ[gid] || typeof DP_PZ !== "undefined" && DP_PZ[gid]);
-    if (!c) return sid;
-    const mine = [c.todayBase || c.today, c.liveSid, ...Object.values((GS_ED_SIDS || {})[gid] || {}), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []];
-    if (!mine.includes(sid)) return sid;
-    const to = live ? c.liveSid : c.today;
-    return GS_SESSIONS[to] ? to : sid;
+    if (!gid) return sid;
+    if (!gsEdMine(gid).some((m) => GS_SESSIONS[m] === s)) return sid;
+    const to = gsThisEdOf(gs, gid);
+    return to === null ? null : GS_SESSIONS[to] ? to : sid;
+  };
+  const gsEdFollow = (gs) => {
+    const r = gs.route;
+    const s = r.name === "session" && GS_SESSIONS[r.id];
+    const gid = s && s.gid;
+    if (!gid || !gsEdMine(gid).length || gsEdMine(gid).some((m) => GS_SESSIONS[m] === s)) return;
+    const to = gsThisEdOf(gs, gid);
+    if (to) gs.go("session", { id: to });
+    else gs.go(GS_GAMES[gid].route, { page: "record" });
   };
   const GsSessionRecord = () => {
     const gs = useGs();
@@ -6255,9 +6376,18 @@
     if (s.unfinished) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title }), /* @__PURE__ */ React$1.createElement("p", null, (gsRhythm(s.gid) === "daily" ? "The day" : "The week") + " ended before you finished. What you played stays in your history."), body));
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
   };
+  const GsSessionGone = ({ gid }) => {
+    const gs = useGs();
+    React$1.useEffect(() => {
+      gs.go(GS_GAMES[gid].route, { page: "record", replace: true });
+    }, []);
+    return null;
+  };
   const GsSession = () => {
-    const r = useGs().route;
-    return GS_SESSIONS[r.id] ? /* @__PURE__ */ React$1.createElement(GsSessionRecord, null) : /* @__PURE__ */ React$1.createElement(GsNotFound, null);
+    const gs = useGs();
+    const r = gs.route;
+    if (!GS_SESSIONS[r.id]) return /* @__PURE__ */ React$1.createElement(GsNotFound, null);
+    return gsThisEdSid(gs, r.id) === null ? /* @__PURE__ */ React$1.createElement(GsSessionGone, { gid: GS_SESSIONS[r.id].gid }) : /* @__PURE__ */ React$1.createElement(GsSessionRecord, null);
   };
   const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
   const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== "daily";
@@ -6548,12 +6678,15 @@
     const done = lbWeekDone(gs);
     if (gsFresh(gs)) return null;
     if (id === "casebook") return gs.view === "pass" ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
-    if (id === "delve") return gs.view === "pass" ? { status: dvStatus(done ? DV_DONE : DV_LIVE), open: () => gs.go("session", { id: done ? "delve" : "delve-live" }) } : null;
+    if (id === "delve") {
+      const sid = done ? gsEdPick("delve", gs) || "delve" : "delve-live";
+      return gs.view === "pass" ? { status: done ? gsSessStatus(GS_SESSIONS[sid]) : dvStatus(DV_LIVE), open: () => gs.go("session", { id: sid }) } : null;
+    }
     const c = PZ && PZ[id];
     if (!c || !gsTodayPlayed(gs)[id]) return null;
     if (!done) return { status: { kind: "live", label: "In progress" }, open: () => gs.go("session", { id: c.liveSid }) };
     const s = GS_SESSIONS[c.today];
-    return { status: { kind: s.loss ? "bad" : "ok", label: s.result }, open: () => gs.go("session", { id: c.today }) };
+    return { status: gsSessStatus(s), open: () => gs.go("session", { id: c.today }) };
   };
   const GsCover = ({ art, fit, fill }) => {
     const a = GS_ART[art] || {};
@@ -7496,11 +7629,13 @@
       { group: "Screens", id: "session-delve-fallen", label: "7. Session page: Delve, a run that fell", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
+        c.setReview({ ed: "failed" });
         c.go("session", { id: "delve-fallen" });
       } },
       { group: "Screens", id: "session-delve-hard", label: "7. Session page: Delve, the hard play (overrun, going back three times)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
+        c.setReview({ ed: "hard" });
         c.go("session", { id: "delve-hard" });
       } },
       { group: "Screens", id: "session-delve-in-progress", label: "7. Session page: Delve in progress (Wren)", stage: (c) => {
@@ -8875,7 +9010,18 @@
     const Row = ConfigRow;
     const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
     const edVal = r.today === "none" ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
-    const setEd = (v) => set(() => api.setReview({ today: v === "none" ? "none" : "played", week: v === "live" ? "live" : "done", ed: ["average", "hard", "failed"].includes(v) ? v : null }));
+    const setEd = (v) => set(() => {
+      api.setReview({ today: v === "none" ? "none" : "played", week: v === "live" ? "live" : "done", ed: ["average", "hard", "failed"].includes(v) ? v : null });
+      setTimeout(() => gsEdFollow(window.gsApi), 0);
+    });
+    const keys = Object.keys(GS_GAMES);
+    const names = (ks) => ks.map((k) => GS_GAMES[k].name);
+    const list = (n) => n.length > 1 ? n.slice(0, -1).join(", ") + " and " + n[n.length - 1] : n[0];
+    const withEd = keys.filter((k) => GS_ED_SIDS[k]);
+    const lostHard = names(withEd.filter((k) => GS_ED_SIDS[k].hard && GS_SESSIONS[GS_ED_SIDS[k].hard].loss));
+    const noFailed = names(withEd.filter((k) => !GS_ED_SIDS[k].failed));
+    const noResult = [...names(keys.filter((k) => !GS_ED_SIDS[k] && !GS_GAMES[k].added)), ...keys.some((k) => !GS_ED_SIDS[k] && GS_GAMES[k].added) ? ["the added games"] : []];
+    const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: every try and hint used." + (lostHard.length ? " " + list(lostHard) + " end in a loss." : "") + (noFailed.length ? " " + list(noFailed) + (noFailed.length > 1 ? " have" : " has") + " no Failed." : "") + (noResult.length ? " " + list(noResult) + (noResult.length > 1 ? " have" : " has") + " no result for an edition." : "") + " Not played applies to a free account. Nothing picked: as seeded.";
     const setSub = (patch) => set(() => {
       if (api.view === "out") api.setView("free");
       api.setSub(patch);
@@ -8913,7 +9059,7 @@
       edVal,
       setEd,
       o([["none", "Not played"], ["live", "In progress"], ["average", "Average"], ["hard", "Hard"], ["failed", "Failed"]]),
-      "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: every try and hint used, still won. Average, Hard and Failed are staged for Daily Word, Daily Groups and Daily Mystery (Escape has Hard only); other games keep their seeded play. Not played applies to a free account. Nothing picked: as seeded."
+      edHint
     ), R(
       "Ended unfinished",
       r.unfinished ? "on" : "off",
@@ -10184,15 +10330,16 @@
       return () => window.removeEventListener("popstate", onPop);
     }, []);
     const go = (name, extra, asView) => {
-      const r0 = { name, ...extra || {} };
+      const { replace, ...rest } = extra || {};
+      const r0 = { name, ...rest };
       const r = asView === false ? r0 : land(r0, asView || view);
-      const cur = stack.current[idx.current];
+      const cur = stack.current[replace ? idx.current - 1 : idx.current];
       if (asView !== false && cur) r.prev = { name: cur.name, page: cur.page || null };
-      idx.current += 1;
+      if (!replace) idx.current += 1;
       backNav.current = false;
       stack.current = stack.current.slice(0, idx.current).concat([r]);
       try {
-        window.history.pushState({ gsIdx: idx.current }, "");
+        window.history[replace ? "replaceState" : "pushState"]({ gsIdx: idx.current }, "");
       } catch (e) {
       }
       setPlaying(null);

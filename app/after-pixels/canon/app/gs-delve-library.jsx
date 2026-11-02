@@ -1,5 +1,5 @@
 import React from 'react';
-import { GS_RESULT, GS_SESSIONS, useGs, gsFresh, GS_GAMES } from './gs-data.jsx';
+import { GS_RESULT, GS_SESSIONS, useGs, gsFresh, GS_GAMES, gsEdPick, gsSessStatus } from './gs-data.jsx';
 import { lbAutoBadges, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
 import { DlNow } from './gs-delve.jsx';
@@ -51,7 +51,7 @@ const DvLibrary = () => {
 };
 export const registerDelveLibrary = () => {
   GS_LIBRARY.delve = DvLibrary;
-  GS_EDITIONS.delve = (gs) => edRuns(gs, 'delve', { all: DV_ALL, done: DV_DONE, status: dvStatus, openCur: (g) => g.go('session', { id: 'delve' }), open: (g, x) => g.go('session', { id: dvSid(x) }) });
+  GS_EDITIONS.delve = (gs) => edRuns(gs, 'delve', { all: DV_ALL, done: DV_DONE, doneStatus: (g) => gsSessStatus(GS_SESSIONS[gsEdPick('delve', g) || 'delve']), status: dvStatus, openCur: (g) => g.go('session', { id: 'delve' }), open: (g, x) => g.go('session', { id: dvSid(x) }) });
 };
 
 // Load-time code, run by main.jsx in index.html's old tag order.

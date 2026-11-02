@@ -7,12 +7,12 @@
 // ============================================================================
 // ---- Dates ----
 import React from 'react';
-import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEndedOn, gsTodayPlayed, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
+import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED_SIDS, gsEndedOn, gsTodayPlayed, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, LbChoice } from './gs-library.jsx';
 import { DP_IDS } from './gs-where-chain-salvage.jsx';
-import { CB_ALL, CB_DONE, CB_LIVE } from './gs-casebook-data.jsx';
+import { CB_ALL, CB_DONE, CB_LIVE, cbDone } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
 import { DV_ALL, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
 import { PZ, pzStatus, pzLong } from './gs-puzzles-library.jsx';
@@ -51,7 +51,7 @@ export const edPuzzle = (gs, gid) => {
     open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? (phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs))) : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null }));
 };
 // Casebook's cases and Delve's runs: one list each, newest first. src: { all, done, status(x), openCur(gs, x), open(gs, x) };
-// done is this edition's finished play, openCur opens this edition's play when lbNow has none.
+// done is this edition's finished play (doneStatus(gs): its status as Config → This edition picks it), openCur opens this edition's play when lbNow has none.
 export const edRuns = (gs, gid, src) => {
   const pass = gs.view === 'pass'; const signed = gs.view !== 'out'; const now = signed ? lbNow(gs, gid) : null;
   const all = src.all; const first = all[all.length - 1]; const lapsed = gsLapsed(gs); const fresh = gsFresh(gs);
@@ -61,7 +61,7 @@ export const edRuns = (gs, gid, src) => {
     const curOld = i === 0 && !now && signed && lapsed && mine(x);
     const unf = signed && i > 0 && phUnf(gs, x.id);
     const played = i === 0 ? !!now || curOld : signed && mine(x);
-    let st = !signed ? null : unf ? PH_UNF : i === 0 ? (now ? now.status : curOld ? src.status(src.done) : ED_NONE) : played ? src.status(x) : ED_NONE;
+    let st = !signed ? null : unf ? PH_UNF : i === 0 ? (now ? now.status : curOld ? (src.doneStatus ? src.doneStatus(gs) : src.status(src.done)) : ED_NONE) : played ? src.status(x) : ED_NONE;
     // The free first edition reads its one record.
     const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
     if (fr && !fresh) { st = fr.status; return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: true, now: false, status: st, open: fr.open && (() => fr.open(gs)) }; }
@@ -123,10 +123,18 @@ const edMore = (gs, gid, list) => { const m = phMoreOn(gs) && PH_MORE[gid]; if (
 let PH_ALL;
 let PH_BROKEN;
 let PH_UNF_PLAYS;
-// This edition's finished play, as Config → This edition picks it (PZ's c.today).
-const phCur = (p) => { const c = PZ[p.gid]; if (!p.cur || !c || !p.now || c.today === p.sid) return p; const s = GS_SESSIONS[c.today]; return { ...p, sid: c.today, status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: phSess(c.today) }; };
+// KEEP: This edition's finished play, as Config → This edition picks it: the current edition's, and the first edition of a player without the
+// Pass (the one edition they have, which a game may list apart from its current one). A play with `pick` reads its pick itself (Casebook's case);
+// the others read c.today (PZ) or gsEdPick, and a pick the game does not have leaves the seeded play.
+const phCur = (p, gs) => {
+  if (p.pick) return { ...p, ...p.pick(gs) };
+  if (!p.cur && !(PH_FIRST[p.gid] === p.ed && gs.view !== 'pass')) return p;
+  const sid = p.cur && PZ[p.gid] ? PZ[p.gid].today : gsEdPick(p.gid, gs);
+  if (!sid || sid === p.sid) return p;
+  return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid) };
+};
 const phLog = (gs) => {
-  const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL).map(phCur);
+  const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL).map((p) => phCur(p, gs));
   const u = gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l;
   return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
 };
@@ -136,7 +144,7 @@ let PH_FIRST_LIVE;
 export const phFirstSt = (gs, gid) => (PH_FIRST[gid] && GS_GAMES[gid].first && gs && gs.view && gs.view !== 'pass' && gs.view !== 'out' && cprFirstState ? cprFirstState(gs, gid) : null);
 const phFirstRec = (gs, gid) => {
   const e = PH_EDS[PH_FIRST[gid]]; if (!e) return null;
-  const p = e.plays[0]; const st = phFirstSt(gs, gid);
+  const p = phCur(e.plays[0], gs); const st = phFirstSt(gs, gid);
   return { gid, ed: e.ed, st, at: p.at, date: lbDate(p.at), status: st === 'live' ? PH_LIVE : st === 'none' ? ED_NONE : p.status, open: st === 'live' ? PH_FIRST_LIVE[gid] : st === 'none' ? null : p.open };
 };
 // What this player's record holds: every play the app shows of any game, in any view, is read from here.
@@ -374,7 +382,7 @@ Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
   if (!x.played) return;
   const cur = x.i === 0; const sid = cur ? c.today : x.sid;
   let first;
-  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
+  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
   else first = { at: phAt(x.d, 7 + ((x.i * 5 + c.salt * 3) % 15), (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? 'ok' : 'bad', label: x.line } };
   first.open = phSess(sid); first.sid = sid; first.src = x;
   phEd(id, x.id, x.title, x.d, [first], cur);
@@ -383,7 +391,7 @@ CB_ALL.forEach((cb, k) => {
   if (!cb.played) return;
   const ed = phParse(cb.week); const cur = cb === CB_LIVE;
   // The log holds the case's finished form (CB_DONE); its in-progress form is `now`.
-  const first = cur ? { at: phAt(ed, 20, 10 + (k % 40)), status: cbStatus(CB_DONE), src: CB_DONE, open: (gs) => cbGo(gs, cb.id), now: { status: PH_LIVE, open: (gs) => cbGo(gs, cb.id) } }
+  const first = cur ? { at: phAt(ed, 20, 10 + (k % 40)), status: cbStatus(CB_DONE), src: CB_DONE, pick: (gs) => ({ src: cbDone(gs), status: cbStatus(cbDone(gs)) }), open: (gs) => cbGo(gs, cb.id), now: { status: PH_LIVE, open: (gs) => cbGo(gs, cb.id) } }
     : { at: phAt(ed, 20, 10 + (k % 40), k % 3), status: cbStatus(cb), src: cb, open: (gs) => cbGo(gs, cb.id) };
   phEd('casebook', cb.id, cb.title, ed, [first], cur);
 });
@@ -425,6 +433,9 @@ PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filte
   const s = id && GS_SESSIONS[id]; if (!s || s.__dated) return;
   s.__dated = true; s.phEd = q.ed; s.date = pzLong(q.at) + ', ' + phTime(q.at);
 }));
+// A picked play of this edition (Config → This edition) is dated as the seeded play of the same edition is.
+Object.values(GS_ED_SIDS).forEach((m) => Object.values(m).forEach((sid) => { const s = GS_SESSIONS[sid]; const b = GS_SESSIONS[m.average];
+  if (s && b && b.__dated && !s.__dated) { s.__dated = true; s.phEd = b.phEd; s.date = b.date; } }));
 // The free first run and room in progress: the same play as this week's, the record so far (one edition each so far).
 (() => {
   const dv = GS_SESSIONS.delve;

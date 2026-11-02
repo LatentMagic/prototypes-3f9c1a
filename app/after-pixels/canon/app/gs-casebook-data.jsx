@@ -3,7 +3,7 @@
 // Casebook is episodic: cases are its editions, with no schedule, no streak and no next-case line.
 // The case's turns are GS_CB_REC (gs-data.jsx). `week` is the case's internal edition date, never printed: the play is dated Monday 5 October.
 // ============================================================================
-import { GS_CB_REC, gsLink } from './gs-data.jsx';
+import { GS_CB_REC, GS_CB_HARD, GS_CB_FAILED, gsLink, gsEdPick } from './gs-data.jsx';
 
 const cbMake = (id, week, month, title, played, verdict, total, rec) => {
   const turns = rec.filter((r) => r.c !== 'A');
@@ -16,6 +16,9 @@ const CB_CAST = ['Maeve Doyle', 'Tobias Pike', 'Dr. Celia Rourke'];
 export let CB_DONE;
 export let CB_LIVE;
 export let CB_ALL;
+// Case 1's finished play by session id, as Config → This edition picks it (GS_ED_SIDS.casebook).
+let CB_BY_SID;
+export const cbDone = (gs) => CB_BY_SID[gsEdPick('casebook', gs)] || CB_DONE;
 
 // Sample achievements. None is about a streak or a week: Casebook has no cadence.
 // Each is earned by the first play in the record that meets it (src is the case as that play left it); counts count solved cases.
@@ -35,6 +38,9 @@ export function initGsCasebookData() {
 // Finished: 11 turns, 4 of 4 lies exposed, the accusation right.
 // places: the case's four searchable places (sample).
 CB_DONE = { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, 'right', 4, GS_CB_REC), cast: CB_CAST, places: 4 };
+CB_BY_SID = { casebook: CB_DONE,
+  'casebook-hard': { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, 'right', 4, GS_CB_HARD), cast: CB_CAST, places: 4 },
+  'casebook-failed': { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, 'wrong', 4, GS_CB_FAILED), cast: CB_CAST, places: 4 } };
 // In progress: the same play after its first six turns (1 lie exposed). The total stays held back while the case is open.
 CB_LIVE = { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, null, 4, GS_CB_REC.filter((r) => r.c !== 'A').slice(0, 6)), cast: CB_CAST };
 // Every case, newest first. One so far; its row in the log is the in-progress form, finished by the Config switch (cbWeek).

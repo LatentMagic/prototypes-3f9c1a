@@ -6,11 +6,11 @@
 // What this player can play of a game: 'all' everything the game offers; 'first' the game's one first edition; 'none' nothing.
 // Read from the game's access (gs-data.jsx): a Pass holder or 'daily', 'all'; 'first', 'first'; 'pass', 'none'.
 import React from 'react';
-import { GS_GAMES, gsLapsed, gsEndedOn, DS, useGs, GS_ART, gsRhythm, gsNorm, gsFresh, gsTodayPlayed, GS_SESSIONS } from './gs-data.jsx';
+import { GS_GAMES, gsLapsed, gsEndedOn, DS, useGs, GS_ART, gsRhythm, gsNorm, gsFresh, gsTodayPlayed, GS_SESSIONS, gsEdPick, gsSessStatus } from './gs-data.jsx';
 import { GsSharePopup } from './gs-session.jsx';
 import { CB_LIVE } from './gs-casebook-data.jsx';
 import { cbStatus, cbWeek, cbGo } from './gs-casebook.jsx';
-import { dvStatus, DV_DONE, DV_LIVE } from './gs-delve-library.jsx';
+import { dvStatus, DV_LIVE } from './gs-delve-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 import { pgeList } from './gs-editions.jsx';
 
@@ -317,9 +317,10 @@ export const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
 export const lbNow = (gs, id) => {
   const done = lbWeekDone(gs); if (gsFresh(gs)) return null;
   if (id === 'casebook') return gs.view === 'pass' ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
-  if (id === 'delve') return gs.view === 'pass' ? { status: dvStatus(done ? DV_DONE : DV_LIVE), open: () => gs.go('session', { id: done ? 'delve' : 'delve-live' }) } : null;
+  if (id === 'delve') { const sid = done ? gsEdPick('delve', gs) || 'delve' : 'delve-live';
+    return gs.view === 'pass' ? { status: done ? gsSessStatus(GS_SESSIONS[sid]) : dvStatus(DV_LIVE), open: () => gs.go('session', { id: sid }) } : null; }
   const c = PZ && PZ[id]; if (!c || !gsTodayPlayed(gs)[id]) return null;
   if (!done) return { status: { kind: 'live', label: 'In progress' }, open: () => gs.go('session', { id: c.liveSid }) };
   const s = GS_SESSIONS[c.today];
-  return { status: { kind: s.loss ? 'bad' : 'ok', label: s.result }, open: () => gs.go('session', { id: c.today }) };
+  return { status: gsSessStatus(s), open: () => gs.go('session', { id: c.today }) };
 };
