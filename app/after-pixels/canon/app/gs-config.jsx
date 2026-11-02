@@ -6,7 +6,7 @@ import React from 'react';
 import { GS_DAY0 } from './gs-billing.jsx';
 import { ConfigGroup, ConfigRow } from './config.jsx';
 import { GsBarrowConfigRow } from './gs-pass-aids.jsx';
-import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS } from './gs-data.jsx';
+import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS, gsGameOfRoute } from './gs-data.jsx';
 import { gsEdFollow } from './gs-session.jsx';
 import { GsPassStage } from './gs-pass-store.jsx';
 
@@ -21,8 +21,32 @@ export const ConfigExtraBase = () => {
   // Changing the subscription signs in, so the demo bar moves with it.
   // This edition: one pick over the old week (in progress), today (a free account's not played) and ed (the finished play).
   const edVal = r.today === 'none' ? 'none' : r.week === 'live' ? 'live' : ['average', 'hard', 'failed'].includes(r.ed) ? r.ed : null;
+  // The game on screen: a game's own page, or the game of the session page open.
+  const route = api.route || {};
+  const gid = gsGameOfRoute(route.name) || (route.name === 'session' && GS_SESSIONS[route.id] ? GS_SESSIONS[route.id].gid : null);
+  const g = gid ? GS_GAMES[gid] : null;
+  const needsPass = !!g && !g.free && !g.first;
+  const [forced, setForced] = React.useState(null);
+  const edAt = (v) => [v, route.name, route.id, route.page].join('|');
+  const edLabel = { hard: 'Hard', failed: 'Failed' };
+  // When the pick does nothing for the game on screen, or moves the view to work: the first rule that fits, in order. The view moves only in setEd, at the pick.
+  const edWhy = (v) => {
+    if (!g || !v) return null;
+    const ids = GS_ED_SIDS[gid];
+    if (!ids) return { text: g.name + ' has no result for an edition, so this doesn\u2019t change it.' };
+    if (v !== 'none' && api.view === 'free' && needsPass) return { view: 'pass', text: g.name + ' needs the Pass, so the view is now Pass.' };
+    if (v === 'none' && api.view === 'pass' && !needsPass) return { view: 'free', text: 'Not played is for a free account, so the view is now Free.' };
+    if (v === 'none' && needsPass) return { text: 'Not played is for a free account, and ' + g.name + ' needs the Pass.' };
+    if (edLabel[v] && !ids[v]) return { text: g.name + ' has no ' + edLabel[v] + ' play, so it shows its normal play.' };
+    return null;
+  };
+  const edForce = (v) => { const w = edWhy(v); return w && w.view ? w : null; };
+  const edNote = (forced && forced.at === edAt(edVal) ? forced.text : null) || (() => { const w = edWhy(edVal); return w && !w.view ? w.text : null; })();
   // A session page of an earlier edition then no longer is the edition described, so it moves (gsEdFollow) once the pick has rendered.
   const setEd = (v) => set(() => {
+    const forced = edForce(v);
+    if (forced) api.setDemoView(forced.view);
+    setForced(forced ? { text: forced.text, at: edAt(v) } : null);
     api.setReview({ today: v === 'none' ? 'none' : 'played', week: v === 'live' ? 'live' : 'done', ed: ['average', 'hard', 'failed'].includes(v) ? v : null });
     // The Free: Word and Escape row below says the same: Not played leaves Word's day and Escape's first room unplayed, any other pick plays them.
     GsPassStage.set({ freeNew: v === 'none' });
@@ -68,6 +92,7 @@ export const ConfigExtraBase = () => {
       <Group title="Editions">
         {R('This edition', edVal, setEd, o([['none', 'Not played'], ['live', 'In progress'], ['average', 'Average'], ['hard', 'Hard'], ['failed', 'Failed']]),
           edHint)}
+        {edNote ? <p className="kit-config-note" role="status">{edNote}</p> : null}
         {R('Ended unfinished', r.unfinished ? 'on' : 'off', (v) => set(() => api.setReview({ unfinished: v === 'on' })), o([['off', 'None'], ['on', 'A day']]),
           'Adds a Daily Groups day and a Delve week that ended before you finished.')}
       </Group>

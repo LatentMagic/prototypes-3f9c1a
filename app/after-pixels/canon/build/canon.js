@@ -9012,7 +9012,35 @@
     const Row = ConfigRow;
     const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
     const edVal = r.today === "none" ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
+    const route = api.route || {};
+    const gid = gsGameOfRoute(route.name) || (route.name === "session" && GS_SESSIONS[route.id] ? GS_SESSIONS[route.id].gid : null);
+    const g = gid ? GS_GAMES[gid] : null;
+    const needsPass = !!g && !g.free && !g.first;
+    const [forced, setForced] = React$1.useState(null);
+    const edAt = (v) => [v, route.name, route.id, route.page].join("|");
+    const edLabel2 = { hard: "Hard", failed: "Failed" };
+    const edWhy = (v) => {
+      if (!g || !v) return null;
+      const ids = GS_ED_SIDS[gid];
+      if (!ids) return { text: g.name + " has no result for an edition, so this doesn’t change it." };
+      if (v !== "none" && api.view === "free" && needsPass) return { view: "pass", text: g.name + " needs the Pass, so the view is now Pass." };
+      if (v === "none" && api.view === "pass" && !needsPass) return { view: "free", text: "Not played is for a free account, so the view is now Free." };
+      if (v === "none" && needsPass) return { text: "Not played is for a free account, and " + g.name + " needs the Pass." };
+      if (edLabel2[v] && !ids[v]) return { text: g.name + " has no " + edLabel2[v] + " play, so it shows its normal play." };
+      return null;
+    };
+    const edForce = (v) => {
+      const w = edWhy(v);
+      return w && w.view ? w : null;
+    };
+    const edNote = (forced && forced.at === edAt(edVal) ? forced.text : null) || (() => {
+      const w = edWhy(edVal);
+      return w && !w.view ? w.text : null;
+    })();
     const setEd = (v) => set(() => {
+      const forced2 = edForce(v);
+      if (forced2) api.setDemoView(forced2.view);
+      setForced(forced2 ? { text: forced2.text, at: edAt(v) } : null);
       api.setReview({ today: v === "none" ? "none" : "played", week: v === "live" ? "live" : "done", ed: ["average", "hard", "failed"].includes(v) ? v : null });
       GsPassStage.set({ freeNew: v === "none" });
       setTimeout(() => gsEdFollow(window.gsApi), 0);
@@ -9063,7 +9091,7 @@
       setEd,
       o([["none", "Not played"], ["live", "In progress"], ["average", "Average"], ["hard", "Hard"], ["failed", "Failed"]]),
       edHint
-    ), R(
+    ), edNote ? /* @__PURE__ */ React$1.createElement("p", { className: "kit-config-note", role: "status" }, edNote) : null, R(
       "Ended unfinished",
       r.unfinished ? "on" : "off",
       (v) => set(() => api.setReview({ unfinished: v === "on" })),

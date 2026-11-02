@@ -137,6 +137,7 @@ input:focus-visible {
 .kit-config-events-head { display: flex; align-items: center; gap: var(--space-2); min-height: 24px; margin-bottom: var(--space-3); }
 .kit-config-events-title { font: 600 var(--text-sm) var(--font-text); color: var(--text); }
 .kit-config-events-sub { font: 400 12px var(--font-text); color: var(--muted); }
+.kit-config-note { margin: var(--space-2) 0 0; max-width: 64ch; font: 400 var(--text-sm)/1.5 var(--font-text); color: var(--error); overflow-wrap: anywhere; }
 .kit-config-events .kit-config-tip { margin: 0 0 var(--space-3); }
 .kit-config-events-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .kit-config-action {
