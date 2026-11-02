@@ -92,7 +92,7 @@ export const ConfigExtraBase = () => {
       <Group title="Editions">
         {R('This edition', edVal, setEd, o([['none', 'Not played'], ['live', 'In progress'], ['average', 'Average'], ['hard', 'Hard'], ['failed', 'Failed']]),
           edHint)}
-        {edNote ? <p className="kit-config-note" role="status">{edNote}</p> : null}
+        {edNote ? <p className="kit-config-edwarn" role="status">{edNote}</p> : null}
         {R('Ended unfinished', r.unfinished ? 'on' : 'off', (v) => set(() => api.setReview({ unfinished: v === 'on' })), o([['off', 'None'], ['on', 'A day']]),
           'Adds a Daily Groups day and a Delve week that ended before you finished.')}
       </Group>

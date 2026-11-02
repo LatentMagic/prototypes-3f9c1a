@@ -9091,7 +9091,7 @@
       setEd,
       o([["none", "Not played"], ["live", "In progress"], ["average", "Average"], ["hard", "Hard"], ["failed", "Failed"]]),
       edHint
-    ), edNote ? /* @__PURE__ */ React$1.createElement("p", { className: "kit-config-note", role: "status" }, edNote) : null, R(
+    ), edNote ? /* @__PURE__ */ React$1.createElement("p", { className: "kit-config-edwarn", role: "status" }, edNote) : null, R(
       "Ended unfinished",
       r.unfinished ? "on" : "off",
       (v) => set(() => api.setReview({ unfinished: v === "on" })),
