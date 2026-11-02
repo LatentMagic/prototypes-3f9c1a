@@ -70,7 +70,7 @@ const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' 
 export let CH_TODAY;
 export let CH_OK;
 export let CH_FAIL;
-// A hard day for the library card's states: seven words (five hidden), no guess limit, 21 guesses: three words found, two given away.
+// A hard day for the library card's states and Config's Hard: seven words (five hidden), no guess limit, 21 guesses (16 wrong), every word found and none given away.
 export let CH_HARD;
 
 let SV_COLS;
@@ -286,9 +286,9 @@ CH_OK = [
   { w: ['KEY', 'BOARD', 'WALK', 'WAY', 'SIDE', 'CAR'], p: [['BOARD', 1], ['SIDE', 4], ['WAY', 3], ['WAR', 2], ['WALK', 2]] },
   { w: ['HAND', 'BAG', 'PIPE', 'LINE', 'DANCE'], p: [['BALL', 1], ['BAG', 1], ['LINE', 3], ['PIPE', 2]] },
 ];
-CH_HARD = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'TRAIN', 'WAGON'], p: [['BELL', 1], ['BULL', 1], ['BAIL', 1], ['BALL', 1], ['ROAM', 2], ['ROOF', 2], ['ROBE', 2],
-  ['SERVER', 3], ['SURVEY', 3], ['SURFACE', 3], ['SERVING', 3], ['SERVANT', 3], ['SEVERE', 3], ['STATE', 4], ['STAGE', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4],
-  ['TRAM', 5], ['TRAIL', 5], ['TRAIN', 5]] };
+CH_HARD = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'TRAIN', 'WAGON'], p: [['BELL', 1], ['BULL', 1], ['BALL', 1], ['ROAM', 2], ['ROOF', 2], ['ROOM', 2],
+  ['SERVER', 3], ['SURVEY', 3], ['SURFACE', 3], ['SERVING', 3], ['SERVANT', 3], ['SERVICE', 3], ['STATE', 4], ['STAGE', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4],
+  ['TRAM', 5], ['TRAIL', 5], ['TRACK', 5], ['TRAIN', 5]] };
 CH_FAIL = { w: ['GOLD', 'FISH', 'BONE', 'DRY', 'CLEAN'], p: [['FINCH', 1], ['FISH', 1], ['DUST', 3], ['DRY', 3], ['BALL', 2], ['BOWL', 2], ['BOAT', 2]] };
 // ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
 // never touching, not even at a corner. 30 dives, each a hit, a miss or sunk ("Sunk: the wreck of 3" names its length). One hint, which
@@ -331,7 +331,7 @@ Object.assign(GS_SESSIONS, {
 });
 DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
 // ---- This edition as Config → This edition picks it (GS_ED_SIDS). SAMPLES on today's edition: today's number and date. Hard: every guess, dive or
-// item used and the edition still won, but Chain's staged hard day (CH_HARD) gives two words away. Failed: the edition lost. now: the line and bar of
+// item used and the edition still won. Failed: the edition lost. now: the line and bar of
 // the library now card (CprPzNow); Chain's card draws from the play itself. ----
 const dpHardWh = { a: 'Hungary', g: [['Spain', 1110], ['Poland', 80], ['Austria', 0], ['Slovakia', 0], ['Romania', 0]], hint: 'From Romania, the country lies west' };
 const dpPickWh = (ok) => {

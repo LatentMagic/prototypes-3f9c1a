@@ -4801,17 +4801,16 @@
     CH_HARD = { w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "TRAIN", "WAGON"], p: [
       ["BELL", 1],
       ["BULL", 1],
-      ["BAIL", 1],
       ["BALL", 1],
       ["ROAM", 2],
       ["ROOF", 2],
-      ["ROBE", 2],
+      ["ROOM", 2],
       ["SERVER", 3],
       ["SURVEY", 3],
       ["SURFACE", 3],
       ["SERVING", 3],
       ["SERVANT", 3],
-      ["SEVERE", 3],
+      ["SERVICE", 3],
       ["STATE", 4],
       ["STAGE", 4],
       ["STATUS", 4],
@@ -4819,6 +4818,7 @@
       ["STATION", 4],
       ["TRAM", 5],
       ["TRAIL", 5],
+      ["TRACK", 5],
       ["TRAIN", 5]
     ] };
     CH_FAIL = { w: ["GOLD", "FISH", "BONE", "DRY", "CLEAN"], p: [["FINCH", 1], ["FISH", 1], ["DUST", 3], ["DRY", 3], ["BALL", 2], ["BOWL", 2], ["BOAT", 2]] };
