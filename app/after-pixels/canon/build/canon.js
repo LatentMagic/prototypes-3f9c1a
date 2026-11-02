@@ -4714,7 +4714,7 @@
         art: "common",
         route: "common",
         ed: ["day", "days"],
-        edLine: "Three threads of four items. Name each link early.",
+        edLine: "You get three threads of four items. Name each link early.",
         daily: true,
         once: true,
         blurb: "Four items share one hidden link. Name it as early as you dare.",
@@ -5077,11 +5077,11 @@
         facts: { long: "10 min", often: "New every day" },
         tags: [],
         pitch: { h: "An egg, a tortoise and a peanut have something in common. Name it early.", ps: [
-          "Each day has three threads, the same for everyone. A thread is four items with one hidden link, and the game shows them one at a time. Ask for the next item, name the link, or pass.",
-          "Name the link from one item and it scores 5; from two, three or four it scores 3, 2 or 1. A day is out of 15. You get two guesses a thread, and a wrong guess shows the next item. There are no hints. Your AI is told only the items you see. Name your first link."
+          "Each day has three threads, the same for everyone. A thread is four items with one hidden link. The game shows them one at a time. Ask for the next item, name the link, or pass.",
+          "Name the link from the first item and it scores 5. Each item after that lowers it to 3, 2, then 1. A day is out of 15. You get two guesses a thread, and a wrong guess shows the next item. There are no hints. Your AI is told only the items you see. Name your first link."
         ] },
-        who: { ai: "Reads out each item, thinks it through with you when you ask, and tells the story of each link once a thread closes.", server: "Holds the items you haven’t seen and each link, marks every guess and scores the thread." },
-        week: { title: "Today’s threads", line: "Three threads, the same for everyone.", session: "common-today" }
+        who: { ai: "Reads out each item and thinks it through with you when you ask. Tells the story of each link once a thread closes.", server: "Holds the unseen items and each link, marks every guess and scores the thread." },
+        week: { title: "Today’s threads", line: "You get three threads, the same for everyone.", session: "common-today" }
       }
     });
     Object.assign(GS_CHATS, {
@@ -5140,7 +5140,7 @@
           gscU("I want to play Common."),
           gscAi("common", ["Common No. " + CM_NO + ". Thread 1 of 3.", "Name the link now for 5 points, ask for the next item, or pass. You have two guesses."], null, [dpMono("A TENNIS RACKET")])
         ] },
-        { cap: "Every item that shows lowers what the link scores, and a wrong guess shows the next one.", turns: [
+        { cap: "Each item that shows lowers what the link scores. A wrong guess shows the next.", turns: [
           gscU("Next."),
           gscAi("common", "A right guess now scores 3.", null, [dpMono("A TENNIS RACKET\nA GUITAR")]),
           gscU("Music."),
