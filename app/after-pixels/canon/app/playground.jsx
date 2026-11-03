@@ -38,6 +38,9 @@ const pgOption = (s, v) => s.options.find((o) => o.value === v) || s.options[0];
 const pgValue = (s) => pgOption(s, pgQuery().get(s.key)).value;
 
 const pgSubs = new Set();
+// The tab title's name for the open playground: its registered title, else its id; null without ?pg=.
+export const pgTabName = () => { const d = pgActive(); return d ? (d.title || pgQuery().get('pg')) : null; };
+export const pgSubscribe = (f) => { pgSubs.add(f); return () => pgSubs.delete(f); };
 export const usePgSetting = (key) => {
   const [, bump] = React.useState(0);
   React.useEffect(() => { const f = () => bump((n) => n + 1); pgSubs.add(f); return () => pgSubs.delete(f); }, []);
