@@ -77,7 +77,7 @@ No hover, so the pose plays while a finger is down on the card, as a button show
 - **Bottom:** the subject stands on the bottom edge. The drawing stays put on the bottom; the ground grows above it.
 - **Centre:** the subject floats. The drawing stays centred; the ground grows above and below equally.
 
-Either way the drawing keeps its size and shape: no stretch, no crop. A cover has one flat ground colour so it can extend.
+Either way the drawing keeps its size and shape: no stretch, no crop. A cover has one flat ground colour so it can extend. On a game's product page from 720px, the hero box is taller than the 4:3 drawing, and extend fills the difference.
 
 ## Title on the cover
 
