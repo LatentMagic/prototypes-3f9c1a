@@ -2090,8 +2090,11 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .gs-wide-only { display: flex; }
   .gs-narrow-only { display: none; }
 }
-@container gs (min-width: 900px) {
+/* KEEP: product page head: two columns (2fr art, 1fr play box) from 720px, so the cover is never the full-width 4:3 hero above the play box on a tablet */
+@container gs (min-width: 720px) {
   .gs-head-split { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+}
+@container gs (min-width: 900px) {
   .gs-hero2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: stretch; padding-top: 36px; }
   .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
 }
@@ -2313,8 +2316,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .gs-pz-item:active { transform: none; }
 }
 
-/* KEEP: product page: the cover takes the play box's height, so the two always end level (the art is sliced, never stretched) */
-@container gs (min-width: 900px) {
+/* KEEP: product page from 720px: the cover takes the play box's height, so the two always end level (the art is shown whole, its ground extended to fill, never stretched or cropped) */
+@container gs (min-width: 720px) {
   .gs-head-split { align-items: stretch; }
   .gs-hero-cover { min-height: 320px; }
   .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }
