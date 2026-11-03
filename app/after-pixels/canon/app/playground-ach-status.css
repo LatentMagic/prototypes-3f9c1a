@@ -1,0 +1,5 @@
+/* Playground "Achievement status line": each option restyles .lb-ach-st, using existing tokens only. */
+html[data-pg-ach="a"] .lb-ach-st.is-got { color: var(--success); }
+html[data-pg-ach="b"] .lb-ach-st { color: var(--control-edge); }
+html[data-pg-ach="c"] .lb-ach-st { font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; text-transform: uppercase; }
+html[data-pg-ach="c"] .lb-ach-st.is-got { color: var(--success); }

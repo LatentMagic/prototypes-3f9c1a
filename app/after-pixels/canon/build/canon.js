@@ -6598,7 +6598,7 @@
     const list = lbAchView(items, access, gs);
     const kept = list.some((a) => a.state === "kept");
     const of = kept ? items.length : list.length;
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Achievements"), list.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, lbAchEarned(list) + " of " + of + " earned")), access === "first" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "These are the achievements the first " + (ed || ["edition"])[0] + " can earn. Every other " + (ed || ["edition"])[0] + " comes with the Pass."), kept && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "You can’t earn the rest until the Pass returns."), /* @__PURE__ */ React$1.createElement("ul", { className: "lb-ach" }, list.map((a) => /* @__PURE__ */ React$1.createElement("li", { key: a.k }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lb-achbtn", onClick: () => setOpen(a) }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[a.k], got: !!a.got }), /* @__PURE__ */ React$1.createElement("span", { className: "lb-achtx" }, /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-n" }, a.n), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-sub" }, a.how), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-st" }, lbAchLine(a))))))), /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!open, onClose: () => setOpen(null), title: open ? open.n : "", actions: /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(null) }, "Close") }, open && /* @__PURE__ */ React$1.createElement("div", { className: "lb-achpop" }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[open.k], got: !!open.got }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("p", null, open.how), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, lbAchLine(open))))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Achievements"), list.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, lbAchEarned(list) + " of " + of + " earned")), access === "first" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "These are the achievements the first " + (ed || ["edition"])[0] + " can earn. Every other " + (ed || ["edition"])[0] + " comes with the Pass."), kept && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "You can’t earn the rest until the Pass returns."), /* @__PURE__ */ React$1.createElement("ul", { className: "lb-ach" }, list.map((a) => /* @__PURE__ */ React$1.createElement("li", { key: a.k }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lb-achbtn", onClick: () => setOpen(a) }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[a.k], got: !!a.got }), /* @__PURE__ */ React$1.createElement("span", { className: "lb-achtx" }, /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-n" }, a.n), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-sub" }, a.how), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-st" + (a.got ? " is-got" : "") }, lbAchLine(a))))))), /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!open, onClose: () => setOpen(null), title: open ? open.n : "", actions: /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(null) }, "Close") }, open && /* @__PURE__ */ React$1.createElement("div", { className: "lb-achpop" }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[open.k], got: !!open.got }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("p", null, open.how), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, lbAchLine(open))))));
   };
   const lbDate = (d) => d.getDate() + " " + d.toLocaleString("en-GB", { month: "long" }) + (d.getFullYear() !== 2026 ? " " + d.getFullYear() : "");
   const lbMonth = (d) => d.toLocaleString("en-GB", { month: "long" }) + (d.getFullYear() !== 2026 ? " " + d.getFullYear() : "");
@@ -9994,6 +9994,9 @@
   };
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10002,6 +10005,17 @@
   const pgOption = (s, v) => s.options.find((o) => o.value === v) || s.options[0];
   const pgValue = (s) => pgOption(s, pgQuery().get(s.key)).value;
   const pgSubs = /* @__PURE__ */ new Set();
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
+  };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
       const had = url.searchParams.get("state") === o.state;
@@ -10086,6 +10100,26 @@
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
+  const PgAchApply = () => {
+    const v = usePgSetting("ach");
+    React$1.useEffect(() => {
+      document.documentElement.dataset.pgAch = v;
+    }, [v]);
+    return null;
+  };
+  function initPlaygroundAchStatus() {
+    pgRegister("ach-status", { title: "Achievement status line", settings: [
+      { key: "ach", kind: "concept", label: "Status line", options: [
+        { value: "a", label: "a Earned in green", state: "library-common" },
+        { value: "b", label: "b Quieter grey", state: "library-common" },
+        { value: "c", label: "c Small caps label", state: "library-common" }
+      ] }
+    ] });
+    if (!pgActive()) return;
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    client.createRoot(host).render(/* @__PURE__ */ React$1.createElement(PgAchApply, null));
+  }
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
   const whBand = (km) => km === null ? "found" : km >= 1e3 ? "far" : km >= 100 ? "mid" : "near";
@@ -10667,4 +10701,5 @@
   initGsDelve();
   initMain();
   initGsWhere();
+  initPlaygroundAchStatus();
 })(React, ReactDOM);
