@@ -23,10 +23,10 @@
   .gs-pz-item:active { transform: none; }
 }
 
-/* KEEP: product page: the cover takes the play box's height, so the two always end level (the art is sliced, never stretched) */
+/* KEEP: product page from 900px: the cover panel is never shorter than the art's 4:3 (a 752px-wide panel is at least 564px tall); the cover and the play box both stretch to the taller of the two so they always end level, and the art is shown whole, never stretched or cropped. Without the minimum a wide panel letterboxes the art with bare ground at both sides. */
 @container gs (min-width: 900px) {
   .gs-head-split { align-items: stretch; }
-  .gs-hero-cover { min-height: 320px; }
+  .gs-hero-cover::before { content: ""; display: block; aspect-ratio: 4 / 3; }
   .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }
   .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; }
 }
