@@ -1,6 +1,6 @@
 import React from 'react';
 import {Icon} from '../media/Icon.jsx';
-// A row of cards that scrolls sideways when they don't fit. Previous and Next sit on the heading's line, only while the row overflows.
+// A row of cards that scrolls sideways when they don't fit. Previous and Next show only while the row overflows, on the line just above the cards: the sentence's if there is one, else the heading's.
 export function CardRow({title,sub,label,as='h2',kind='cards',children,className=''}){
   const ref=React.useRef(null),prev=React.useRef(null),next=React.useRef(null),pressed=React.useRef(null);
   const [at,setAt]=React.useState({over:false,start:true,end:true});

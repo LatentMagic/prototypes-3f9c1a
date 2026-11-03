@@ -484,6 +484,9 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
 .mcp-crow-nav{grid-column:2;grid-row:1;display:flex;gap:4px}
 .mcp-crow-sub{grid-column:1/-1;margin:0;color:var(--muted);text-wrap:pretty}
+/* KEEP: Previous and Next sit on the line just above the cards: beside the sentence, centred on it, when the row has one; on the heading line otherwise. They move the cards, so they stay next to them. The 44px buttons overhang a one-line sentence by 10px each way, so the heading-to-sentence spacing stays as it was. */
+.mcp-crow-nav:has(+.mcp-crow-sub){grid-row:2;align-self:center;margin-block:-10px}
+.mcp-crow-nav+.mcp-crow-sub{grid-column:1;grid-row:2;align-self:center}
 .mcp-crow-btn{width:44px;height:44px;display:inline-grid;place-items:center;flex:none;background:none;border:0;padding:0;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease)}
 .mcp-crow-btn:active{opacity:.55}
 .mcp-crow-btn:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
