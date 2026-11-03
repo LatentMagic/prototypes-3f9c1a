@@ -88,7 +88,7 @@ import { buildStates } from './gs-pass-aids.jsx';
 import { registerEscape } from './gs-escape.jsx';
 import { registerWord } from './gs-word.jsx';
 import { registerDelve } from './gs-delve.jsx';
-import { PgBar, pgActive } from './playground.jsx';
+import { PgBar, pgActive, pgTabName, pgSubscribe } from './playground.jsx';
 import { FitView, isFramed, useFit } from './fit.jsx';
 import { initGsWhere } from './gs-where.jsx';
 import { initGsChain } from './gs-chain.jsx';
@@ -343,9 +343,21 @@ const KitApp = () => {
   const { byId: STATE_BY_ID, groups: STATE_GROUPS } = (buildStates
     ? buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPlatform })
     : { byId: {}, groups: [] });
-  const goState = (id) => { const s = STATE_BY_ID[id]; if (s) { s.go(); setLanding(null); } };
+  // The state last opened in the page, for the tab title; a landing on the index or a state seeds it, a reset clears it.
+  const [shown, setShown] = useState(() => (landing && landing.kind !== 'unresolved' ? landing : null));
+  const goState = (id) => { const s = STATE_BY_ID[id]; if (s) { s.go(); setLanding(null); setShown({ kind: 'state', id }); } };
   window.kitGoState = goState; // opens a state by id from a script (checking a build)
-  const resetAndShow = buildStates && (() => { reset(); setLanding(null); });
+  const resetAndShow = buildStates && (() => { reset(); setLanding(null); setShown(null); });
+
+  // The tab says what is shown: the open playground, else the open state, else index.html's own title.
+  // KEEP: the tab reads "<playground title> · playground · After Pixels" under ?pg=, else "<state id> · After Pixels" ("States · After Pixels" on the index), else "After Pixels".
+  const shownRef = useRef(shown); shownRef.current = shown;
+  const retitle = () => {
+    const pg = pgTabName(); const s = shownRef.current;
+    document.title = pg ? pg + ' · playground · After Pixels'
+      : s ? (s.kind === 'index' ? 'States' : s.id) + ' · After Pixels' : 'After Pixels';
+  };
+  useEffect(() => { retitle(); return pgSubscribe(retitle); }, [shown]);
 
   const deepLinked = useRef(false);
   useEffect(() => {
@@ -396,7 +408,7 @@ const KitApp = () => {
   return (
     <>
       {showIndex ? (
-        <StatesIndexView reason={landing} groups={STATE_GROUPS} onGo={goState} onDismiss={() => setLanding(null)} />
+        <StatesIndexView reason={landing} groups={STATE_GROUPS} onGo={goState} onDismiss={() => { setLanding(null); setShown(null); }} />
       ) : forcedMobile ? (
         <div className="kit-stage">
           <div className="kit-phone">
@@ -411,7 +423,7 @@ const KitApp = () => {
       {/* KEEP: the Config pill stays fixed to the window in the phone frame too (mounted outside it: the frame's transform would capture position: fixed). */}
       {ConfigLauncher && !isFramed() && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
-        onOpenStatesIndex={() => setLanding({ kind: 'index', name: 'index' })}
+        onOpenStatesIndex={() => { setLanding({ kind: 'index', name: 'index' }); setShown({ kind: 'index' }); }}
         onReset={resetAndShow}
         layout={layout} onLayoutChange={setLayout}
         platform={platform} onPlatformChange={setPlatform} />}

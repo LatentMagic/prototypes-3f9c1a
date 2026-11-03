@@ -9972,6 +9972,14 @@
   const pgOption = (s, v) => s.options.find((o) => o.value === v) || s.options[0];
   const pgValue = (s) => pgOption(s, pgQuery().get(s.key)).value;
   const pgSubs = /* @__PURE__ */ new Set();
+  const pgTabName = () => {
+    const d = pgActive();
+    return d ? d.title || pgQuery().get("pg") : null;
+  };
+  const pgSubscribe = (f) => {
+    pgSubs.add(f);
+    return () => pgSubs.delete(f);
+  };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
       const had = url.searchParams.get("state") === o.state;
@@ -10512,18 +10520,32 @@
     window.gsApi = gs;
     const [landing, setLanding] = useState(() => kitResolveState ? kitResolveState() : null);
     const { byId: STATE_BY_ID, groups: STATE_GROUPS } = buildStates ? buildStates({ reset, setView, setConnected, setReview, go: (n, e) => go(n, e, false), setSub, setProvider, setChoice, setUser, setPlatform }) : { byId: {}, groups: [] };
+    const [shown, setShown] = useState(() => landing && landing.kind !== "unresolved" ? landing : null);
     const goState = (id) => {
       const s = STATE_BY_ID[id];
       if (s) {
         s.go();
         setLanding(null);
+        setShown({ kind: "state", id });
       }
     };
     window.kitGoState = goState;
     const resetAndShow = buildStates && (() => {
       reset();
       setLanding(null);
+      setShown(null);
     });
+    const shownRef = useRef(shown);
+    shownRef.current = shown;
+    const retitle = () => {
+      const pg = pgTabName();
+      const s = shownRef.current;
+      document.title = pg ? pg + " · playground · After Pixels" : s ? (s.kind === "index" ? "States" : s.id) + " · After Pixels" : "After Pixels";
+    };
+    useEffect(() => {
+      retitle();
+      return pgSubscribe(retitle);
+    }, [shown]);
     const deepLinked = useRef(false);
     useEffect(() => {
       if (deepLinked.current || !landing || landing.kind !== "state") return;
@@ -10544,12 +10566,18 @@
     const Cand = window.KitCandidate || null;
     if (Cand && Cand.bind) Cand.bind(gs);
     const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root" + (fitted ? " fitted" : ""), ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? /* @__PURE__ */ React$1.createElement(PgBar, null) : !fitted && /* @__PURE__ */ React$1.createElement(GsTopBar, null)), fitted ? /* @__PURE__ */ React$1.createElement(FitView, null) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null)))));
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => setLanding(null) }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && !isFramed() && /* @__PURE__ */ React$1.createElement(
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => {
+      setLanding(null);
+      setShown(null);
+    } }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && !isFramed() && /* @__PURE__ */ React$1.createElement(
       ConfigLauncher,
       {
         statesGroups: STATE_GROUPS,
         onGoState: goState,
-        onOpenStatesIndex: () => setLanding({ kind: "index", name: "index" }),
+        onOpenStatesIndex: () => {
+          setLanding({ kind: "index", name: "index" });
+          setShown({ kind: "index" });
+        },
         onReset: resetAndShow,
         layout,
         onLayoutChange: setLayout,
