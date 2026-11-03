@@ -173,16 +173,33 @@ const cmFigures = (day) => [cmScore(day) + ' of 15', cmFound(day) + ' of 3 conne
 const cmHow = { passed: 'Passed', lost: 'Out of guesses' };
 // An earlier day names no item or connection: those belong to that day's content, which the seed does not carry.
 const cmLines = (day) => day.map((t, k) => ['Thread ' + (k + 1), t[2] ? cmHow[t[2]] : 'Found', ...(t[0] ? [t[0] + (t[0] === 1 ? ' item' : ' items') + ' showing'] : []), t[1] + (t[1] === 1 ? ' point' : ' points')]);
-// Today's play: No. 7, the example the product page's chats show. Thread 1 is the chats' worked play, spending 2 of the day's guesses.
+// Today's play: No. 7, the example the product page's chats show. Thread 1 is the chats' worked play, spending 2 of the day's guesses. Lines follow
+// the platform's record: a thread opens with Item 1, a wrong guess is followed by the item it shows, and a closed thread reads Connection, How it fits, then its points.
 const CM_TODAY_LINES = [
-  ['Thread 1', 'Another item', 'TORTOISE'],
-  ['Thread 1', 'Guess: Things that are slow.', 'Not it', 'PEANUT shows'],
-  ['Thread 1', 'Guess: They all have a shell.', 'Right', '2 points'],
-  ['Thread 2', 'Guess: A jam.', 'Right', '5 points'],
-  ['Thread 3', 'Another item', 'THE TRAFFIC'],
-  ['Thread 3', 'Another item', 'A DUSTY RUG'],
-  ['Thread 3', 'Another item', 'THE OTHER TEAM'],
-  ['Thread 3', 'Guess: Beat.', 'Right', '1 point'],
+  ['Thread 1'],
+  ['Item 1', 'EGG'],
+  ['Item 2', 'TORTOISE'],
+  ['Guess', 'Things that are slow.', 'Wrong'],
+  ['Item 3', 'PEANUT'],
+  ['Guess', 'They all have a shell.', 'Right'],
+  ['Connection', 'Shell'],
+  ['How it fits', 'An egg, a tortoise, a peanut and a hermit crab all have one.'],
+  ['Found', '2 points'],
+  ['Thread 2'],
+  ['Item 1', 'A PRINTER'],
+  ['Guess', 'A jam.', 'Right'],
+  ['Connection', 'Jam'],
+  ['How it fits', 'A printer, a zip, a door and a radio signal can all jam.'],
+  ['Found', '5 points'],
+  ['Thread 3'],
+  ['Item 1', 'A DRUM'],
+  ['Item 2', 'THE TRAFFIC'],
+  ['Item 3', 'A DUSTY RUG'],
+  ['Item 4', 'THE OTHER TEAM'],
+  ['Guess', 'Beat.', 'Right'],
+  ['Connection', 'Beat'],
+  ['How it fits', 'You can beat a drum, the traffic, a dusty rug and the other team.'],
+  ['Found', '1 point'],
 ];
 const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
 const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
