@@ -144,7 +144,7 @@ export const LbAch = ({ items, badges, access, ended, ed }) => {
       <ul className="lb-ach">
         {list.map((a) => (
           <li key={a.k}><button type="button" className="lb-achbtn" onClick={() => setOpen(a)}><LbBadge art={badges[a.k]} got={!!a.got} />
-            <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{a.how}</span><span className={'lb-ach-st' + (a.got ? ' is-got' : '')}>{lbAchLine(a)}</span></span></button></li>
+            <span className="lb-achtx"><span className="lb-ach-n">{a.n}</span><span className="lb-ach-sub">{a.how}</span><span className="lb-ach-st">{lbAchLine(a)}</span></span></button></li>
         ))}
       </ul>
       <DS.Popup open={!!open} onClose={() => setOpen(null)} title={open ? open.n : ''} actions={<DS.Button variant="secondary" onClick={() => setOpen(null)}>Close</DS.Button>}>
