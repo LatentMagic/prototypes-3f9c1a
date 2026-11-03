@@ -4376,7 +4376,7 @@
       c.all = Array.from({ length: c.count || (c.weekly ? 30 : 40) }, (_, i) => {
         const d = new Date(2026, 9, c.weekly ? 5 - 7 * i : 6 - i);
         const played = i === 0 || !!c.keep[i] || (i + c.salt) % 6 !== 5 && (i + c.salt) % 9 !== 6;
-        const ok = played && (!!c.keep[i] || (i + 2 * c.salt) % 5 !== 4);
+        const ok = played && (!!c.keep[i] || !!c.alwaysCompletes || (i + 2 * c.salt) % 5 !== 4);
         return { id: id + i, i, d, date: lbDate(d), month: lbMonth(d), title: c.no(i), played, ok, done: played && ok, line: ok ? c.ok(i) : c.bad };
       });
       c.all.slice(1).forEach((x) => {
@@ -4654,23 +4654,25 @@
   const cmMarks = (t) => "●".repeat(t[0]) + "○".repeat(4 - t[0]);
   const cmScore = (day) => day.reduce((a, t) => a + t[1], 0);
   const cmFound = (day) => day.filter((t) => !t[2]).length;
-  const cmResult = (day) => GS_RESULT.common({ score: cmScore(day), done: cmFound(day) === 3 });
-  const cmHead = (n, day) => "Common No. " + n + " · " + cmScore(day) + " of 15 · " + (cmFound(day) === 3 ? "completed" : "not completed");
+  const cmResult = (day) => GS_RESULT.common({ score: cmScore(day) });
+  const cmHead = (n, day) => "Common No. " + n + " · " + cmScore(day) + " of 15";
   const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => k + 1 + "  " + cmMarks(t) + "  " + t[1])];
-  const cmLines = (day) => day.map((t, k) => ["Thread " + (k + 1), t[2] === "passed" ? "Passed" : t[2] === "lost" ? "Two wrong guesses" : "Link found", t[0] + (t[0] === 1 ? " item" : " items") + " showing", t[1] + (t[1] === 1 ? " point" : " points")]);
+  const cmFigures = (day) => [cmScore(day) + " of 15", cmFound(day) + " of 3 connections found"];
+  const cmHow = { passed: "Passed", lost: "Out of guesses" };
+  const cmLines = (day) => day.map((t, k) => ["Thread " + (k + 1), t[2] ? cmHow[t[2]] : "Found", ...t[0] ? [t[0] + (t[0] === 1 ? " item" : " items") + " showing"] : [], t[1] + (t[1] === 1 ? " point" : " points")]);
   const CM_TODAY_LINES = [
-    ["Thread 1", "Next item", "A GUITAR"],
-    ["Thread 1", "Guess: Music.", "Not it, but close", "A YO-YO shows"],
-    ["Thread 1", "Guess: Things with strings.", "Right", "2 points"],
+    ["Thread 1", "Another item", "TORTOISE"],
+    ["Thread 1", "Guess: Things that are slow.", "Not it", "PEANUT shows"],
+    ["Thread 1", "Guess: They all have a shell.", "Right", "2 points"],
     ["Thread 2", "Guess: A jam.", "Right", "5 points"],
-    ["Thread 3", "Next item", "THE TRAFFIC"],
-    ["Thread 3", "Next item", "A DUSTY RUG"],
-    ["Thread 3", "Next item", "THE OTHER TEAM"],
+    ["Thread 3", "Another item", "THE TRAFFIC"],
+    ["Thread 3", "Another item", "A DUSTY RUG"],
+    ["Thread 3", "Another item", "THE OTHER TEAM"],
     ["Thread 3", "Guess: Beat.", "Right", "1 point"]
   ];
   const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
   const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
-  const CM_FAIL = [[2, 3], [3, 0, "passed"], [4, 0, "lost"]];
+  const CM_FAIL = [[4, 1], [2, 0, "lost"], [0, 0, "lost"]];
   const CM_HARD = [[4, 1], [4, 1], [4, 1]];
   const dpSession = (id, c, x, base) => {
     const n = (id === "common" ? CM_NO : DP_NO) - x.i;
@@ -4686,10 +4688,14 @@
     }
     if (id === "common") {
       const day = x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL;
-      return { ...base, number: n, figures: [cmScore(day) + " of 15 points", cmFound(day) + " of 3 links"], share: x.line, shareLines: cmShare(n, day), lines: cmLines(day) };
+      return { ...base, number: n, figures: cmFigures(day), share: x.line, shareLines: cmShare(n, day), lines: cmLines(day) };
     }
     const d = dpSvDay(i, x.ok);
     return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
+  };
+  const cmFoundIn = (p) => {
+    const m = /^(\d) of 3 connections found$/.exec(((GS_SESSIONS[p.sid] || {}).figures || [])[1] || "");
+    return m ? +m[1] : 0;
   };
   let DP_PZ;
   const dpStep = (b, rest) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, b), rest);
@@ -4753,10 +4759,10 @@
         art: "common",
         route: "common",
         ed: ["day", "days"],
-        edLine: "You get three threads of four items. Name each link early.",
+        edLine: "You get three threads of four items. Name each connection early.",
         daily: true,
         once: true,
-        blurb: "Four items share one hidden link. Name it as early as you dare.",
+        blurb: "Name the hidden connection between four items, as early as you dare.",
         tags: ["Daily", "10 min"]
       })
     });
@@ -4777,7 +4783,7 @@
       where: (r) => r.ok ? "Found in " + r.guesses + " of 6" : "Not found",
       chain: (r) => r.given ? r.found + " of " + r.of + " words found" : "Solved, " + dpWrong(r.wrong),
       salvage: (r) => r.found === 5 ? "All 5 wrecks, " + r.dives + " of 30 dives" : r.found + " of 5 wrecks found",
-      common: (r) => r.score + " of 15, " + (r.done ? "completed" : "not completed")
+      common: (r) => "Completed · " + r.score + " of 15"
     });
     WH_TODAY = { a: "Hungary", g: [["Spain", 1110], ["Poland", 80]], hint: "From Poland, the country lies south" };
     WH_OK = [
@@ -4933,10 +4939,11 @@
         number: CM_NO,
         result: cmResult(CM_TODAY),
         date: GS.today,
-        figures: [cmScore(CM_TODAY) + " of 15 points", "3 of 3 links"],
+        figures: cmFigures(CM_TODAY),
         share: cmResult(CM_TODAY),
         shareLines: cmShare(CM_NO, CM_TODAY),
-        lines: CM_TODAY_LINES
+        lines: CM_TODAY_LINES,
+        recovered: true
       },
       "common-live": {
         kind: "puzzle",
@@ -4947,7 +4954,7 @@
         live: true,
         result: "In progress",
         date: GS.today,
-        figures: ["Thread 1 of 3", "0 of 15 points"],
+        figures: ["Thread 1 of 3", "0 points so far"],
         share: null,
         lines: CM_TODAY_LINES.slice(0, 2)
       }
@@ -4986,7 +4993,7 @@
     };
     const dpPickCm = (day, now) => {
       const res = cmResult(day);
-      return { ...GS_SESSIONS["common-today"], loss: cmFound(day) < 3, result: res, share: res, figures: [cmScore(day) + " of 15 points", cmFound(day) + " of 3 links"], shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
+      return { ...GS_SESSIONS["common-today"], loss: false, recovered: false, result: res, share: res, figures: cmFigures(day), shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
     };
     Object.assign(GS_SESSIONS, {
       "where-today-hard": dpPickWh(true),
@@ -5003,8 +5010,8 @@
         14,
         { line: "You used all 30 dives and found 3 of the 5 wrecks.", bar: ["30 of 30 dives", 30, 30] }
       ),
-      "common-today-hard": dpPickCm(CM_HARD, { line: "You found all three links, each with all four items showing, and scored 3 of 15.", bar: ["3 of 15 points", 3, 15] }),
-      "common-today-failed": dpPickCm(CM_FAIL, { line: "You found 1 of the 3 links and scored 3 of 15.", bar: ["3 of 15 points", 3, 15] })
+      "common-today-hard": dpPickCm(CM_HARD, { line: "You found all three connections and scored 3 of 15.", bar: ["3 of 15", 3, 15] }),
+      "common-today-failed": dpPickCm(CM_FAIL, { line: "You found 1 of the 3 connections and scored 1 of 15.", bar: ["1 of 15", 1, 15] })
     });
     DP_IDS.forEach((k) => {
       GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed" };
@@ -5083,19 +5090,26 @@
         no: (i) => GS_NAME.common + " #" + (CM_NO - i),
         salt: 11,
         keep: {},
+        alwaysCompletes: true,
         today: "common-today",
         liveSid: "common-live",
         ok: (i) => cmResult(CM_OK[i % CM_OK.length]),
         bad: cmResult(CM_FAIL),
         title: "Today’s threads",
         next: "Next threads: tomorrow",
-        live: { line: "You’re on thread 1 of 3. One guess is used and three items show.", bar: ["Thread 1 of 3", 1, 3] },
-        done: { st: { kind: "ok", label: GS_SESSIONS["common-today"].result }, line: "You found all three links and scored " + cmScore(CM_TODAY) + " of 15.", bar: [cmScore(CM_TODAY) + " of 15 points", cmScore(CM_TODAY), 15] },
+        live: { line: "You’re on thread 1 of 3, with 0 points so far.", bar: ["Thread 1 of 3", 1, 3] },
+        done: { st: { kind: "ok", label: GS_SESSIONS["common-today"].result }, line: "You found all three connections and scored " + cmScore(CM_TODAY) + " of 15.", bar: [cmScore(CM_TODAY) + " of 15", cmScore(CM_TODAY), 15] },
         recent: "Your days",
+        // Common's eight achievements (verbatim from the platform), in the platform's order. Every finished day completes, so a day's status is always ok.
         ach: [
-          { k: "cm1", n: "First Thread", how: "Find a link.", by: (p) => /^[1-9]\d* of 15/.test(p.status.label) },
-          { k: "cm3", n: "Clean Sweep", how: "Find all three links in a day.", by: (p) => p.status.kind === "ok" },
-          { k: "cm7", n: "Seven Days in a Row", how: "Find all three links seven days running.", of: 7 }
+          { k: "cm1", n: "First Thread", how: "Find a connection.", by: (p) => cmFoundIn(p) > 0 },
+          { k: "cm2", n: "Clean Sweep", how: "Find all three connections in a day.", by: (p) => cmFoundIn(p) === 3 },
+          { k: "cm3", n: "Ten Days", how: "Finish ten days.", of: 10, count: (ps) => ps },
+          { k: "cm4", n: "Seven Days in a Row", how: "Finish a day seven days running.", of: 7 },
+          { k: "cm5", n: "Thirty Days in a Row", how: "Finish a day thirty days running.", of: 30 },
+          { k: "cm6", n: "Sharp Eye", how: "Find a connection from its first item alone.", by: (p) => ((GS_SESSIONS[p.sid] || {}).shareLines || []).some((l) => /●○○○ {2}5$/.test(l)) },
+          { k: "cm7", n: "Full Marks", how: "Score 15 in a day.", by: (p) => /· 15 of 15$/.test(p.status.label) },
+          { k: "cm8", n: "Second Wind", how: "Recover from a false start.", by: (p) => !!(GS_SESSIONS[p.sid] || {}).recovered }
         ]
       }
     };
@@ -5161,17 +5175,17 @@
           label: "ONLY WITH THE PASS",
           heading: "Three new threads every day",
           button: "Play today’s threads",
-          steps: [GS_STEP_CONNECT, dpStep("Name today’s three links.", " You get two guesses a thread."), dpSeeResult],
+          steps: [GS_STEP_CONNECT, dpStep("Ask for another item", ", guess, or pass."), dpSeeResult],
           small: GS_NAME.common + " comes only with the After Pixels Pass."
         },
         facts: { long: "10 min", often: "New every day" },
         tags: [],
         pitch: { h: "An egg, a tortoise and a peanut have something in common. Name it early.", ps: [
-          "Each day has three threads, the same for everyone. A thread is four items with one hidden link. The game shows them one at a time. Ask for the next item, name the link, or pass.",
-          "Name the link from the first item and it scores 5. Each item after that lowers it to 3, 2, then 1. A day is out of 15. You get two guesses a thread, and a wrong guess shows the next item. There are no hints. Your AI is told only the items you see. Name your first link."
+          "Each day brings three threads, the same for every player. A thread is four items that share one hidden connection, and the game shows one at a time.",
+          "The earlier you name the connection, the more it scores: 5 points from one item, then 3, 2 and 1. You have five guesses for the whole day, right or wrong, and a pass spends none. Early items can point at a wrong connection, so the skill is knowing when to commit. When a thread closes, the game shows the connection, so a thread that scored nothing still ends with the answer."
         ] },
-        who: { ai: "Reads out each item and thinks it through with you when you ask. Tells the story of each link once a thread closes.", server: "Holds the unseen items and each link, marks every guess and scores the thread." },
-        week: { title: "Today’s threads", line: "You get three threads, the same for everyone.", session: "common-today" }
+        who: { ai: "Reads out each item, helps only when asked and gives the connection and how each item fits. It has seen only what you have seen.", server: "Holds the items not yet shown and each connection, and marks every guess." },
+        week: { title: "Today’s threads", line: "Three threads, the same for everyone.", session: "common-today" }
       }
     });
     Object.assign(GS_CHATS, {
@@ -5226,19 +5240,19 @@
         ] }
       ],
       common: [
-        { cap: "Say you want to play. Everyone gets the same three threads today.", turns: [
+        { cap: "The game shows one item at a time.", turns: [
           gscU("I want to play Common."),
-          gscAi("common", ["Common No. " + CM_NO + ". Thread 1 of 3.", "Name the link now for 5 points, ask for the next item, or pass. You have two guesses."], null, [dpMono("A TENNIS RACKET")])
+          gscAi("common", "Common No. " + CM_NO + ". Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.", null, [dpMono("EGG")])
         ] },
-        { cap: "Each item that shows lowers what the link scores. A wrong guess shows the next.", turns: [
-          gscU("Next."),
-          gscAi("common", "A right guess now scores 3.", null, [dpMono("A TENNIS RACKET\nA GUITAR")]),
-          gscU("Music."),
-          gscAi("common", "Not it. Close: what do they all have stretched or tied to them? A right guess now scores 2, and you have one guess left.", null, [dpMono("A TENNIS RACKET\nA GUITAR\nA YO-YO")])
+        { cap: "The earlier you name the connection, the more it scores.", turns: [
+          gscU("Another item."),
+          gscAi("common", "A right guess now scores 3.", null, [dpMono("EGG\nTORTOISE")]),
+          gscU("Things that are slow."),
+          gscAi("common", "Not it, so another item shows. A right guess now scores 2, and you have four guesses left today.", null, [dpMono("EGG\nTORTOISE\nPEANUT")])
         ] },
-        { cap: "When a thread closes, your AI tells its story.", turns: [
-          gscU("Things with strings."),
-          gscAi("common", ["Things with strings is right, for 2 points.", "A tennis racket is strung tight, a guitar has strings to pluck, a yo-yo winds up on one, and a harp has dozens.", "Thread 2 of 3. Name the link now for 5 points, ask for the next item, or pass. You have two guesses. Your score is 2."], null, [dpMono("A PRINTER")])
+        { cap: "When a thread closes, your AI gives the connection and how each item fits.", turns: [
+          gscU("They all have a shell."),
+          gscAi("common", ["Shell is right, for 2 points.", "An egg, a tortoise, a peanut and a hermit crab all have one. On to Thread 2."])
         ] }
       ]
     });
@@ -7152,7 +7166,7 @@
       where: "See every day’s country and how many guesses it took you.",
       chain: "See every day’s chain and how many wrong guesses you made.",
       salvage: "See every day’s sea and how many dives it took you.",
-      common: "See every day you’ve played and what each thread scored.",
+      common: "See every day you’ve played and how early you named each connection.",
       escape: "See every room you got out of, with your time against par, hints and wrong tries.",
       casebook: "See every case you’ve worked and the lies you caught.",
       hunter: "See every day you’ve explored, what you learned and who you met.",

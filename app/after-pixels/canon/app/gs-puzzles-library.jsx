@@ -162,7 +162,7 @@ Object.entries(PZ).forEach(([id, c]) => {
   c.all = Array.from({ length: c.count || (c.weekly ? 30 : 40) }, (_, i) => {
     const d = new Date(2026, 9, c.weekly ? 5 - 7 * i : 6 - i);
     const played = i === 0 || !!c.keep[i] || ((i + c.salt) % 6 !== 5 && (i + c.salt) % 9 !== 6);
-    const ok = played && (!!c.keep[i] || (i + 2 * c.salt) % 5 !== 4);
+    const ok = played && (!!c.keep[i] || !!c.alwaysCompletes || (i + 2 * c.salt) % 5 !== 4);
     return { id: id + i, i, d, date: lbDate(d), month: lbMonth(d), title: c.no(i), played, ok, done: played && ok, line: ok ? c.ok(i) : c.bad };
   });
   // Every earlier edition played gets its own session page, so each row opens a real record.
