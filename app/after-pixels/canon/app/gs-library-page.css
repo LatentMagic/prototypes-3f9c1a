@@ -177,6 +177,9 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .lb-ach > li { display: grid; min-width: 0; }
 .lb-ach-n { font-weight: 600; line-height: 1.3; text-wrap: pretty; }
 .lb-ach-sub { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
+/* KEEP: the status line (Earned date, Not earned yet, 1 of 10) is the design system's caption type, smaller than the description; earned reads in full text colour, the rest muted */
+.lb-ach-st { font: var(--type-caption); color: var(--muted); }
+.lb-ach-st.is-got { color: var(--text); }
 .lb-badge { width: 40px; height: 40px; flex: none; display: block; }
 .lb-badge svg { width: 100%; height: 100%; display: block; }
 .lb-badge.is-todo { box-shadow: inset 0 0 0 1px var(--line); }
@@ -273,8 +276,8 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 /* C2: achievement items align to the top */
 .lb-achbtn { align-items: start; }
 /* KEEP: C1, reversed by the owner 2026-10-13: cards side by side on the library game page end level; the shorter one takes the spare space at its foot */
-/* KEEP: C1, C2: beside the plays card the achievements are one list, a row each, so no title wraps in a narrow column */
-@container gs (min-width: 900px) { .lb-lay .lb-card > .lb-ach { grid-template-columns: minmax(0, 1fr); } }
+/* KEEP: C1, C2: beside the plays card the achievements wrap into as many columns as fit, each at least 260px wide, so a description wraps to two lines at most and every achievement shows (Common has eight) */
+@container gs (min-width: 900px) { .lb-lay .lb-card > .lb-ach { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); } }
 
 /* KEEP: F6 (owner, 2026-10-13): the editions list's rows are one height, the played row's, so the Played line never makes a row taller than its neighbours */
 .ed-results .mcp-rows { display: grid; grid-auto-rows: 1fr; }
