@@ -130,3 +130,10 @@ Dawn over open ground. A lilac peak rises from the bottom edge, right of centre,
 - May change: in wider frames the peak narrows relative to the frame and moves towards the centre, with the sun kept tucked against its left slope.
 - Extends: from the bottom edge.
 - Hover: the teal square rounds, the sun turns square and rises, the peak grows 7% from its base, the cream square rounds and steps up and right.
+
+### Common
+Four shapes in a two by two block. An orange circle and a teal square above, a lilac triangle and a cream diamond below, on indigo. Each shape is 40 units on the 160×120 stage, 10 apart, the block spanning x 35-125 and y 8-98.
+- Always: the four shapes are the same size and evenly spaced; the cream diamond stays in the right half; the block stays inside the centre square (x 20-140).
+- May change: drawn on a centred 4:3 stage, so square and wide frames show the whole piece with more indigo around it, never a crop.
+- Extends: from the centre.
+- Hover: each shape turns one notch (90 degrees, the triangle 120) and turns gold, 30ms apart in reading order.
