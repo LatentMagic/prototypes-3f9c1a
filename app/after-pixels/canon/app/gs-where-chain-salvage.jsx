@@ -374,9 +374,9 @@ const dpPickSv = (extra, upTo, now) => {
   const log = svReplay(SV_TODAY, [...dpDives.slice(0, upTo), ...dpCells(extra), ...dpDives.slice(upTo)].slice(0, 30)); const sunk = svSunk(log); const res = GS_RESULT.salvage({ found: sunk, dives: log.length });
   return { ...GS_SESSIONS['salvage-today'], loss: sunk < 5, result: res, share: res, figures: [sunk + ' of 5 wrecks', log.length + ' of 30 dives', '1 hint'], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
 };
-const dpPickCm = (day, now) => {
+const dpPickCm = (day, recovered, now) => {
   const res = cmResult(day);
-  return { ...GS_SESSIONS['common-today'], loss: false, recovered: false, result: res, share: res, figures: cmFigures(day), shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
+  return { ...GS_SESSIONS['common-today'], loss: false, recovered, result: res, share: res, figures: cmFigures(day), shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
 };
 Object.assign(GS_SESSIONS, {
   'where-today-hard': dpPickWh(true), 'where-today-failed': dpPickWh(false),
@@ -385,8 +385,8 @@ Object.assign(GS_SESSIONS, {
     { line: 'You found all five wrecks on your last dive, with one hint.', bar: ['30 of 30 dives', 30, 30] }),
   'salvage-today-failed': dpPickSv(['A1', 'H1', 'H2', 'A8', 'C7', 'F7', 'B4', 'F8', 'C4', 'B6', 'H4', 'H5', 'D7', 'E8', 'C1', 'D8'], 14,
     { line: 'You used all 30 dives and found 3 of the 5 wrecks.', bar: ['30 of 30 dives', 30, 30] }),
-  'common-today-hard': dpPickCm(CM_HARD, { line: 'You found all three connections and scored 3 of 15.', bar: ['3 of 15', 3, 15] }),
-  'common-today-failed': dpPickCm(CM_FAIL, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
+  'common-today-hard': dpPickCm(CM_HARD, false, { line: 'You found all three connections and scored 3 of 15.', bar: ['3 of 15', 3, 15] }),
+  'common-today-failed': dpPickCm(CM_FAIL, true, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
 });
 DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-today-hard', failed: k + '-today-failed' }; });
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
