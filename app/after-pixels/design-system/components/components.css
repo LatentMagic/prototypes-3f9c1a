@@ -478,7 +478,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-cb-search input::placeholder{color:var(--cb-ink2)}
 @media (prefers-reduced-motion:reduce){.mcp-cb-choice,.mcp-cb-go,button.mcp-cb-chip{transition:none}:is(button,a):is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip):active{transform:none}}
 
-/* KEEP: CardRow. Previous and Next move the cards, so they sit on the line just above them, on the right. With a sentence under the heading, they sit beside it, centred on it; the 44px buttons overhang a one-line sentence by 10px each way, so the heading-to-sentence spacing stays as it was. Without one, they sit on the heading line, centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). */
+/* KEEP: CardRow. Previous and Next move the cards, so they sit on the line just above them, on the right. With a sentence under the heading, they sit beside it, centred on it; the 44px buttons overhang a one-line (24px) sentence by 10px each way, so the row is no taller than the sentence. Without one, they sit on the heading line, centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). */
 .mcp-crow{container:mcp-crow/inline-size;display:grid;gap:var(--space-4);min-width:0}
 .mcp-crow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);row-gap:var(--space-2);align-items:start}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
