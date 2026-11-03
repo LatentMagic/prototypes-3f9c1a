@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Common cover canvas</title>
+<link rel="stylesheet" href="../../design-system/styles.css">
+<style>
+  body { margin: 0; background: var(--page); color: var(--text); font: 400 14px/1.4 var(--font-text); }
+  main { max-width: 1440px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font: var(--type-section-title); margin: 0 0 4px; }
+  .intro { color: var(--muted); margin: 0 0 24px; max-width: 70ch; }
+  .row { margin-bottom: 40px; }
+  .row > h2 { font: 700 16px/1.2 var(--font-heading); margin: 0 0 2px; }
+  .row > p { color: var(--muted); margin: 0 0 12px; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  @media (min-width: 900px) { .cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  figure { margin: 0; }
+  figcaption { margin-top: 6px; font-weight: 600; }
+  figcaption span { display: block; color: var(--muted); font-weight: 400; }
+
+  /* One frame. Its size is the frame shape; every length inside is in stage units (u = 1/160 of the 4:3 stage width, or 1/120 of its height, whichever is smaller). */
+  .frame { position: relative; width: 100%; aspect-ratio: var(--ratio); max-width: var(--max, none);
+    background: var(--cover-bg-indigo); container-type: size; overflow: hidden; --u: min(100cqw / 160, 100cqh / 120); }
+  .frame i { position: absolute; display: block; width: calc(var(--u) * var(--w, 20)); height: calc(var(--u) * var(--w, 20)); background: var(--c); }
+  .frame .ci { border-radius: 50%; --c: var(--cover-orange); }
+  .frame .sq { --c: var(--cover-teal); }
+  .frame .tr { --c: var(--cover-lilac); clip-path: polygon(50% 0, 100% 86.6%, 0 86.6%); }
+  .frame .di { --c: var(--cover-cream); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+
+  /* A: the centred 4:3 stage. The dashed line marks that stage; it is not part of the cover. */
+  .a::after { content: ""; position: absolute; left: 50%; top: 50%; width: calc(var(--u) * 160); height: calc(var(--u) * 120);
+    translate: -50% -50%; outline: 1px dashed color-mix(in srgb, var(--cover-cream) 35%, transparent); outline-offset: -1px; }
+  .a i { left: calc(50% - var(--u) * 80 + var(--u) * var(--x)); top: calc(50% - var(--u) * 10 + var(--dy, 0) * var(--u)); }
+  .a .ci { --x: 24; } .a .sq { --x: 54; } .a .tr { --x: 86; --dy: 1; } .a .di { --x: 116; }
+
+  /* B: same row, same shape size, spread across the frame's width; the margin matches A's 24 units. */
+  .b { --m: calc(var(--u) * 24); --s: calc(var(--u) * 20); --step: calc((100cqw - 2 * var(--m) - var(--s)) / 3); }
+  .b i { left: calc(var(--m) + var(--k) * var(--step)); top: calc(50% - var(--u) * 10 + var(--dy, 0) * var(--u)); }
+  .b .ci { --k: 0; } .b .sq { --k: 1; } .b .tr { --k: 2; --dy: 1; } .b .di { --k: 3; }
+
+  /* C: 2 x 2 block, 40-unit shapes, x 35-125, y 8-98 of the centred stage (from candidate/cover-fit). */
+  .c i { --w: 40; left: calc(50% - var(--u) * 80 + var(--u) * var(--x)); top: calc(50% - var(--u) * 60 + var(--u) * var(--y)); }
+  .c .ci { --x: 35; --y: 8; } .c .sq { --x: 85; --y: 8; } .c .tr { --x: 35; --y: 60.68; } .c .di { --x: 85; --y: 58; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Common cover: three drawings, four frames</h1>
+  <p class="intro">Same colours, flat style and indigo ground as the cover. Shapes are never stretched or cropped. Each frame keeps its real width to height ratio and is scaled to fit its column; the phone frame is drawn at 2x.</p>
+  <div id="rows"></div>
+</main>
+<script>
+  const frames = [
+    { name: 'Wide', size: '752 x 360 (2.09:1)', note: 'Product page, desktop at 1470.', ratio: '752 / 360' },
+    { name: 'Middling', size: '592 x 444 (4:3)', note: 'Product page at 960.', ratio: '592 / 444' },
+    { name: 'Phone head', size: '96 x 72 (4:3)', note: 'Small cover beside the title. Drawn at 2x (192 x 144).', ratio: '96 / 72', max: '192px' },
+    { name: 'Taller than 4:3', size: '400 x 600 (2:3)', note: 'A tall box, as the design system’s “extending a cover” rule covers.', ratio: '400 / 600', max: '400px' },
+  ];
+  const cols = [
+    { cls: 'a', name: 'A. Today: letterbox', note: 'Row of four, 4:3 art centred, empty ground round it.' },
+    { cls: 'b', name: 'B. Row, spread to fill', note: 'Same row, same shape size, spaced across the width.' },
+    { cls: 'c', name: 'C. 2 x 2 block', note: 'Four larger shapes in a block, 4:3 art centred.' },
+  ];
+  const shapes = '<i class="ci"></i><i class="sq"></i><i class="tr"></i><i class="di"></i>';
+  document.getElementById('rows').innerHTML = frames.map(f => `
+    <section class="row">
+      <h2>${f.name} · ${f.size}</h2>
+      <p>${f.note}</p>
+      <div class="cols">${cols.map(c => `
+        <figure>
+          <div class="frame ${c.cls}" style="--ratio:${f.ratio};${f.max ? '--max:' + f.max : ''}" role="img" aria-label="${c.name}, ${f.name}">${shapes}</div>
+          <figcaption>${c.name}<span>${c.note}</span></figcaption>
+        </figure>`).join('')}
+      </div>
+    </section>`).join('');
+</script>
+</body>
+</html>
