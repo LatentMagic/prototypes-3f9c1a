@@ -4688,7 +4688,7 @@
   ];
   const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
   const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
-  const CM_FAIL = [[4, 1], [2, 0, "lost"], [0, 0, "lost"]];
+  const CM_FAIL = [[4, 1], [1, 0, "lost"], [0, 0, "lost"]];
   const CM_HARD = [[4, 1], [4, 1], [4, 1]];
   const dpSession = (id, c, x, base) => {
     const n = (id === "common" ? CM_NO : DP_NO) - x.i;

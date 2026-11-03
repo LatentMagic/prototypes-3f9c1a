@@ -203,8 +203,8 @@ const CM_TODAY_LINES = [
 ];
 const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
 const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
-// The run out: three wrong guesses and a right one on thread 1, a wrong fifth on thread 2, and thread 3 closes without ever opening.
-const CM_FAIL = [[4, 1], [2, 0, 'lost'], [0, 0, 'lost']];
+// The run out: three wrong guesses and a right one on thread 1, a wrong fifth on thread 2, which closes with the one item it showed (the last guess reveals no item), and thread 3 closes without ever opening.
+const CM_FAIL = [[4, 1], [1, 0, 'lost'], [0, 0, 'lost']];
 // Today's threads on the hard play: every connection found only with all four items showing.
 const CM_HARD = [[4, 1], [4, 1], [4, 1]];
 
