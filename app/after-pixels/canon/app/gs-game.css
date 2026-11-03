@@ -49,3 +49,16 @@
 /* KEEP: S10: the pitch heading wraps at the column's width, as the paragraph under it does */
 
 .gs-pitch h2 { text-wrap: pretty; }
+
+/* KEEP: Common's product-page cover when its frame is wider than 3:2: the four shapes are drawn 1.7 times their 4:3 size and spread across the panel, replacing the letterboxed 4:3 picture (never stretched or cropped; same colours, flat). Sizes and spacing count in v, one 120th of the panel's height, shrunk only so the row (86v each side of centre) still fits a narrower panel; the cream diamond stays in the right half so the title bottom-left clears it. The 4:3 cover itself (cards, share image) is unchanged, its shapes inside x 20-140 of 160. */
+.gs-hero-cover .gs-cm-cover .mcp-cover-art { container-type: size; position: relative; }
+.gs-hero-cover .gs-cm-wide { display: none; }
+@container (min-aspect-ratio: 3/2) {
+  .gs-hero-cover .gs-cm-cover .mcp-cover-art svg { display: none; }
+  .gs-hero-cover .gs-cm-wide { display: block; --v: min(calc(100cqh / 120), calc(100cqw / 172)); position: absolute; inset: 0; }
+  .gs-cm-wide > i { position: absolute; top: calc(50% - 0.5 * var(--v) * 8); width: calc(34 * var(--v)); height: calc(34 * var(--v)); translate: -50% -50%; }
+  .gs-cmw-1 { left: calc(50% - 69 * var(--v)); background: var(--cover-orange); border-radius: 50%; }
+  .gs-cmw-2 { left: calc(50% - 24 * var(--v)); background: var(--cover-teal); }
+  .gs-cmw-3 { left: calc(50% + 24 * var(--v)); background: var(--cover-lilac); clip-path: polygon(50% 0, 100% 86.6%, 0 86.6%); }
+  .gs-cmw-4 { left: calc(50% + 69 * var(--v)); background: var(--cover-cream); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+}

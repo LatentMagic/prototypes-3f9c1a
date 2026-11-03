@@ -79,6 +79,8 @@ No hover, so the pose plays while a finger is down on the card, as a button show
 
 Either way the drawing keeps its size and shape: no stretch, no crop. A cover has one flat ground colour so it can extend.
 
+**A box wider than 4:3.** Extending only grows ground vertically, so a wider box shows the 4:3 drawing whole with ground at the sides. A piece made of separate shapes may instead declare a wide drawing: the same shapes, scaled up and spread across the box, same colours, never stretched or cropped. Common's four shapes do this: 1.7 times their 4:3 size, in the box once it is wider than 3:2. The 4:3 drawing is unchanged and is the one used for the link-preview image, so its shapes stay in the centre square. A piece with no wide drawing keeps the letterbox.
+
 ## Title on the cover
 
 Text sits on a cover in one place only, the page head of a single game: the label and title, in light text, bottom-left. It is the strictest test of a cover, so art that passes there is safe on every other surface without a further check.

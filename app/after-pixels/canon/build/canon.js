@@ -6725,6 +6725,7 @@
     let svg = a.svg || "";
     if (fill) return /* @__PURE__ */ React$1.createElement(DS.Cover, { fill: true, ground: a.ground || "indigo", extend: a.extend || "centre" }, /* @__PURE__ */ React$1.createElement("span", { style: { display: "block" }, dangerouslySetInnerHTML: { __html: svg } }));
     if (fit) svg = svg.replace("xMidYMid slice", a.extend === "bottom" ? "xMidYMax meet" : "xMidYMid meet");
+    if (fit && art === "common") return /* @__PURE__ */ React$1.createElement(DS.Cover, { className: "gs-cover-fit gs-cm-cover is-" + (a.ground || "indigo") }, /* @__PURE__ */ React$1.createElement("span", { style: { display: "contents" }, dangerouslySetInnerHTML: { __html: svg } }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-cm-wide", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "gs-cmw-1" }), /* @__PURE__ */ React$1.createElement("i", { className: "gs-cmw-2" }), /* @__PURE__ */ React$1.createElement("i", { className: "gs-cmw-3" }), /* @__PURE__ */ React$1.createElement("i", { className: "gs-cmw-4" })));
     return /* @__PURE__ */ React$1.createElement(DS.Cover, { className: fit ? "gs-cover-fit is-" + (a.ground || "indigo") : "" }, /* @__PURE__ */ React$1.createElement("span", { style: { display: "contents" }, dangerouslySetInnerHTML: { __html: svg } }));
   };
   const GS_ART_MOTION = ["groups", "casebook", "hunter"];

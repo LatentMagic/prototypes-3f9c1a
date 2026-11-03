@@ -18,6 +18,7 @@ export const GsCover = ({ art, fit, fill }) => {
   const a = GS_ART[art] || {}; let svg = a.svg || '';
   if (fill) return <DS.Cover fill ground={a.ground || 'indigo'} extend={a.extend || 'centre'}><span style={{ display: 'block' }} dangerouslySetInnerHTML={{ __html: svg }} /></DS.Cover>;
   if (fit) svg = svg.replace('xMidYMid slice', a.extend === 'bottom' ? 'xMidYMax meet' : 'xMidYMid meet');
+  if (fit && art === 'common') return <DS.Cover className={'gs-cover-fit gs-cm-cover is-' + (a.ground || 'indigo')}><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} /><span className="gs-cm-wide" aria-hidden="true"><i className="gs-cmw-1" /><i className="gs-cmw-2" /><i className="gs-cmw-3" /><i className="gs-cmw-4" /></span></DS.Cover>;
   return <DS.Cover className={fit ? 'gs-cover-fit is-' + (a.ground || 'indigo') : ''}><span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} /></DS.Cover>;
 };
 // Game art that answers the pointer (design system GameArt, guidelines/game-art-motion.md). Only these pieces
