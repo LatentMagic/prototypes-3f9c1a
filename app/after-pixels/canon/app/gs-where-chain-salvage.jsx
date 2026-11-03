@@ -153,16 +153,46 @@ const svPlay = (ships, seed) => {
 };
 let dpSvDay;
 
-let dpWhT; let dpChT;
+let dpWhT; let dpChT; let dpCmToday;
 let dpChL; let dpSvL;
 
 
 
 // ---- Common, version 6. A day is three threads of four items sharing one hidden connection; the items show one at a time. A right guess scores
 // 5, 3, 2 or 1 with 1, 2, 3 or 4 items showing. The day has five guesses shared by its threads, each spent right or wrong, and a wrong guess shows
-// another item. A pass is free and scores 0. A thread closes found, passed or lost (out of guesses) at 0; when the guesses run out, the threads
-// left close lost, and a thread never opened shows no item. The day is out of 15, and every finished day is completed, whatever the score.
-// A play from a template: a thread is [items showing when it closed, points, how it closed ('passed' or 'lost' when not found)]. ----
+// another item (none at 4 showing, and none on the day's last guess). A pass is free and scores 0. A thread closes found, passed or lost (out of
+// guesses) at 0; when the guesses run out, the threads left close lost, and a thread never opened shows no item. The day is out of 15, and every
+// finished day is completed, whatever the score.
+// A play is a day's content (per thread its four items, the connection and how each item fits) and its moves, in order: [thread index, 'more'],
+// [thread index, 'pass'] or [thread index, guess, right]. cmPlay replays it into the threads, the guesses and the record's lines; the session
+// page (gs-common.jsx) draws from the same replay. ----
+const CM_PTS = [5, 3, 2, 1];
+const cmCount = (n) => n + (n === 1 ? ' point' : ' points');
+const CM_HOW = { found: 'Found', passed: 'Passed', lost: 'Out of guesses' };
+// Lines follow the platform's record: a thread opens with Item 1, a wrong guess is followed by the item it shows, and a closed thread reads
+// Connection, How it fits, then its points. A thread the run out closes before it opens gets its heading and closing lines, no item.
+export const cmPlay = ({ c, m }, live) => {
+  const t = c.map((x, k) => ({ k, items: x.items, link: x.link, shown: 0, state: 'waiting', pts: 0, at: 0 }));
+  const pool = []; const lines = [];
+  const open = (k) => { if (!t[k]) return; t[k].state = 'open'; t[k].shown = 1; lines.push(['Thread ' + (k + 1)], ['Item 1', c[k].items[0]]); };
+  const close = (x, how, pts) => { if (x.state === 'waiting') lines.push(['Thread ' + (x.k + 1)]);
+    x.state = how; x.pts = pts; lines.push(['Connection', c[x.k].link], ['How it fits', c[x.k].fits], [CM_HOW[how], cmCount(pts)]); };
+  const runOut = () => t.forEach((x) => { if (x.state === 'open' || x.state === 'waiting') close(x, 'lost', 0); });
+  open(0);
+  m.forEach(([k, a, right]) => {
+    const x = t[k];
+    if (a === 'more') { x.shown += 1; lines.push(['Item ' + x.shown, c[k].items[x.shown - 1]]); return; }
+    if (a === 'pass') { close(x, 'passed', 0); open(k + 1); return; }
+    pool.push({ k, right }); const last = pool.length === 5;
+    lines.push(['Guess', a, right ? 'Right' : 'Wrong']);
+    if (right) { x.at = x.shown; close(x, 'found', CM_PTS[x.shown - 1]); if (last) runOut(); else open(k + 1); return; }
+    if (last) { runOut(); return; }
+    if (x.shown < 4) { x.shown += 1; lines.push(['Item ' + x.shown, c[k].items[x.shown - 1]]); }
+  });
+  // A thread as the share card and figures read it: [items showing when it closed, points, how it closed when not found].
+  const day = t.map((x) => [x.shown, x.pts, ...(x.state === 'found' ? [] : [x.state])]);
+  return { t, pool, lines, day, live: !!live };
+};
 const cmMarks = (t) => '●'.repeat(t[0]) + '○'.repeat(4 - t[0]);
 const cmScore = (day) => day.reduce((a, t) => a + t[1], 0);
 const cmFound = (day) => day.filter((t) => !t[2]).length;
@@ -170,43 +200,44 @@ const cmResult = (day) => GS_RESULT.common({ score: cmScore(day) });
 const cmHead = (n, day) => 'Common No. ' + n + ' · ' + cmScore(day) + ' of 15';
 const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => (k + 1) + '  ' + cmMarks(t) + '  ' + t[1])];
 const cmFigures = (day) => [cmScore(day) + ' of 15', cmFound(day) + ' of 3 connections found'];
-const cmHow = { passed: 'Passed', lost: 'Out of guesses' };
-// An earlier day names no item or connection: those belong to that day's content, which the seed does not carry.
-const cmLines = (day) => day.map((t, k) => ['Thread ' + (k + 1), t[2] ? cmHow[t[2]] : 'Found', ...(t[0] ? [t[0] + (t[0] === 1 ? ' item' : ' items') + ' showing'] : []), t[1] + (t[1] === 1 ? ' point' : ' points')]);
-// Today's play: No. 7, the example the product page's chats show. Thread 1 is the chats' worked play, spending 2 of the day's guesses. Lines follow
-// the platform's record: a thread opens with Item 1, a wrong guess is followed by the item it shows, and a closed thread reads Connection, How it fits, then its points.
-const CM_TODAY_LINES = [
-  ['Thread 1'],
-  ['Item 1', 'EGG'],
-  ['Item 2', 'TORTOISE'],
-  ['Guess', 'Things that are slow.', 'Wrong'],
-  ['Item 3', 'PEANUT'],
-  ['Guess', 'They all have a shell.', 'Right'],
-  ['Connection', 'Shell'],
-  ['How it fits', 'An egg, a tortoise, a peanut and a hermit crab all have one.'],
-  ['Found', '2 points'],
-  ['Thread 2'],
-  ['Item 1', 'A PRINTER'],
-  ['Guess', 'A jam.', 'Right'],
-  ['Connection', 'Jam'],
-  ['How it fits', 'A printer, a zip, a door and a radio signal can all jam.'],
-  ['Found', '5 points'],
-  ['Thread 3'],
-  ['Item 1', 'A DRUM'],
-  ['Item 2', 'THE TRAFFIC'],
-  ['Item 3', 'A DUSTY RUG'],
-  ['Item 4', 'THE OTHER TEAM'],
-  ['Guess', 'Beat.', 'Right'],
-  ['Connection', 'Beat'],
-  ['How it fits', 'You can beat a drum, the traffic, a dusty rug and the other team.'],
-  ['Found', '1 point'],
-];
-const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
-const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
-// The run out: three wrong guesses and a right one on thread 1, a wrong fifth on thread 2, which closes with the one item it showed (the last guess reveals no item), and thread 3 closes without ever opening.
-const CM_FAIL = [[4, 1], [1, 0, 'lost'], [0, 0, 'lost']];
+// A finished session's own fields, from its play.
+const cmSess = (n, play) => { const p = cmPlay(play); const res = cmResult(p.day);
+  return { number: n, play, result: res, figures: cmFigures(p.day), shareLines: cmShare(n, p.day), lines: p.lines, day: p.day }; };
+// Today: No. 7, the example the product page's chats show. Thread 1 is the chats' worked play, spending 2 of the day's guesses.
+const CM_C7 = [
+  { items: ['EGG', 'TORTOISE', 'PEANUT', 'HERMIT CRAB'], link: 'Shell', fits: 'An egg, a tortoise, a peanut and a hermit crab all have one.' },
+  { items: ['A PRINTER', 'A ZIP', 'A DOOR', 'A RADIO SIGNAL'], link: 'Jam', fits: 'A printer, a zip, a door and a radio signal can all jam.' },
+  { items: ['A DRUM', 'THE TRAFFIC', 'A DUSTY RUG', 'THE OTHER TEAM'], link: 'Beat', fits: 'You can beat a drum, the traffic, a dusty rug and the other team.' }];
+// Earlier days' threads, from the owner's version 6 playtests; the earlier plays alternate between them.
+const CM_CA = [
+  { items: ['A CLOWN', 'A TRAPEZE', 'A TIGHTROPE WALKER', 'A RINGMASTER'], link: 'Things at the circus', fits: 'A clown, a trapeze, a tightrope walker and a ringmaster are all at the circus.' },
+  { items: ['A PIANIST', 'A SINGER', 'A SALMON', 'A SNAKE'], link: 'Things with scales', fits: 'A pianist and a singer practise scales; a salmon and a snake are covered in them.' },
+  { items: ['THE SALT', 'A NOTE IN CLASS', 'THE TIME', 'A DRIVING TEST'], link: 'Things you can pass', fits: 'You can pass the salt, a note in class, the time and a driving test.' }];
+const CM_CB = [
+  { items: ['A SLICE OF PIZZA', 'A COAT HANGER', 'A SAIL', 'A SANDWICH CUT CORNER TO CORNER'], link: 'Things shaped like a triangle', fits: 'A slice of pizza, a coat hanger, a sail and a sandwich cut corner to corner are all triangles.' },
+  { items: ['A SHARK', 'A DOLPHIN', 'A ROCKET', 'A SURFBOARD'], link: 'Things with fins', fits: 'A shark, a dolphin, a rocket and a surfboard all have fins.' },
+  { items: ['YOUR VOICE', 'YOUR TEMPER', 'WEIGHT', 'YOUR KEYS'], link: 'Things you can lose', fits: 'You can lose your voice, your temper, weight and your keys.' }];
+const CM_TODAY = { c: CM_C7, m: [[0, 'more'], [0, 'Things that are slow.', false], [0, 'They all have a shell.', true], [1, 'A jam.', true],
+  [2, 'more'], [2, 'more'], [2, 'more'], [2, 'Beat.', true]] };
+// In progress: thread 1 with three items showing, after one wrong guess.
+const CM_LIVE = { c: CM_C7, m: CM_TODAY.m.slice(0, 2) };
+// Earlier finished days, each guess's words written for its thread (a: No. 21's threads, b: No. 28's).
+const CM_OK = [
+  { c: CM_CA, m: [[0, 'The circus.', true], [1, 'more'], [1, 'Scales.', true], [2, 'Things you can catch.', false], [2, 'more'], [2, 'more'], [2, 'Things you can pass.', true]] },
+  { c: CM_CB, m: [[0, 'Pointy things.', false], [0, 'Triangles.', true], [1, 'Fins.', true], [2, 'more'], [2, 'more'], [2, 'Things you can lose.', true]] },
+  { c: CM_CA, m: [[0, 'more'], [0, 'Things in a show.', false], [0, 'The circus.', true], [1, 'more'], [1, 'more'], [1, 'Scales.', true], [2, 'more'], [2, 'Things you can pass.', true]] },
+  { c: CM_CB, m: [[0, 'Triangles.', true], [1, 'Fins.', true], [2, 'Things you can drop.', false], [2, 'Things you can lose.', true]] },
+  { c: CM_CA, m: [[0, 'more'], [0, 'more'], [0, 'more'], [0, 'The circus.', true], [1, 'more'], [1, 'Scales.', true],
+    [2, 'Things you can hand over.', false], [2, 'Things you can fail.', false], [2, 'Things you can pass.', true]] }];
+// The run out: three wrong guesses and a right one on thread 1, a wrong fifth on thread 2, which closes with the one item it showed (the last
+// guess reveals no item), and thread 3 closes without ever opening.
+const CM_FAIL = { c: CM_CB, m: [[0, 'Things in a kitchen.', false], [0, 'Things you hang up.', false], [0, 'Flat things.', false], [0, 'Triangles.', true],
+  [1, 'Things that swim.', false]] };
+// Today's threads run out the same way (Config → This edition: failed).
+const CM_FAIL_TODAY = { c: CM_C7, m: [[0, 'Things that are slow.', false], [0, 'Round things.', false], [0, 'Things you can crack.', false], [0, 'Shell.', true],
+  [1, 'Things in an office.', false]] };
 // Today's threads on the hard play: every connection found only with all four items showing.
-const CM_HARD = [[4, 1], [4, 1], [4, 1]];
+const CM_HARD = { c: CM_C7, m: [0, 1, 2].flatMap((k) => [[k, 'more'], [k, 'more'], [k, 'more'], [k, CM_C7[k].link + '.', true]]) };
 
 // ---- An earlier edition's session (gs-puzzles-library.jsx pzSession). base: kind, gid, game, art, date, result, loss. ----
 export const dpSession = (id, c, x, base) => {
@@ -220,8 +251,8 @@ export const dpSession = (id, c, x, base) => {
     return { ...base, number: n, play, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
   }
   if (id === 'common') {
-    const day = x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL;
-    return { ...base, number: n, figures: cmFigures(day), share: x.line, shareLines: cmShare(n, day), lines: cmLines(day) };
+    const { day, result, ...own } = cmSess(n, x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL);
+    return { ...base, ...own, share: x.line };
   }
   const d = dpSvDay(i, x.ok);
   return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of 30 dives'], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -331,7 +362,7 @@ dpSvDay = (() => { const memo = {}; return (i, ok) => {
   return (memo[k] = { ships: SV_TODAY, log: SV_TODAY_DIVES });
 }; })();
 // ---- Today's plays, and their in-progress forms (Config: today in progress). ----
-dpWhT = dpWhere(WH_TODAY, true);
+dpWhT = dpWhere(WH_TODAY, true); dpCmToday = cmSess(CM_NO, CM_TODAY);
 dpChT = dpChain(CH_TODAY);
 dpChL = dpChain({ ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) });
 dpSvL = SV_TODAY_DIVES.slice(0, 11);
@@ -349,10 +380,9 @@ Object.assign(GS_SESSIONS, {
     lines: svLines(SV_TODAY_DIVES, SV_TODAY_HINT) },
   'salvage-live': { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, live: true, result: 'In progress', date: GS.today,
     figures: [svSunk(dpSvL) + ' of 5 wrecks', dpSvL.length + ' of 30 dives'], share: null, lines: svLines(dpSvL) },
-  'common-today': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', number: CM_NO, result: cmResult(CM_TODAY), date: GS.today,
-    figures: cmFigures(CM_TODAY), share: cmResult(CM_TODAY), shareLines: cmShare(CM_NO, CM_TODAY), lines: CM_TODAY_LINES, recovered: true },
-  'common-live': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', number: CM_NO, live: true, result: 'In progress', date: GS.today,
-    figures: ['Thread 1 of 3', '0 points so far'], share: null, lines: CM_TODAY_LINES.slice(0, 2) },
+  'common-today': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', date: GS.today, ...dpCmToday, share: dpCmToday.result, recovered: true },
+  'common-live': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', number: CM_NO, play: CM_LIVE, live: true, result: 'In progress', date: GS.today,
+    figures: ['Thread 1 of 3', '0 points so far'], share: null, lines: cmPlay(CM_LIVE, true).lines },
 });
 DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
 // ---- This edition as Config → This edition picks it (GS_ED_SIDS). SAMPLES on today's edition: today's number and date. Hard: every guess, dive or
@@ -374,9 +404,9 @@ const dpPickSv = (extra, upTo, now) => {
   const log = svReplay(SV_TODAY, [...dpDives.slice(0, upTo), ...dpCells(extra), ...dpDives.slice(upTo)].slice(0, 30)); const sunk = svSunk(log); const res = GS_RESULT.salvage({ found: sunk, dives: log.length });
   return { ...GS_SESSIONS['salvage-today'], loss: sunk < 5, result: res, share: res, figures: [sunk + ' of 5 wrecks', log.length + ' of 30 dives', '1 hint'], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
 };
-const dpPickCm = (day, recovered, now) => {
-  const res = cmResult(day);
-  return { ...GS_SESSIONS['common-today'], loss: false, recovered, result: res, share: res, figures: cmFigures(day), shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
+const dpPickCm = (play, recovered, now) => {
+  const { day, ...own } = cmSess(CM_NO, play);
+  return { ...GS_SESSIONS['common-today'], loss: false, recovered, ...own, share: own.result, now };
 };
 Object.assign(GS_SESSIONS, {
   'where-today-hard': dpPickWh(true), 'where-today-failed': dpPickWh(false),
@@ -386,7 +416,7 @@ Object.assign(GS_SESSIONS, {
   'salvage-today-failed': dpPickSv(['A1', 'H1', 'H2', 'A8', 'C7', 'F7', 'B4', 'F8', 'C4', 'B6', 'H4', 'H5', 'D7', 'E8', 'C1', 'D8'], 14,
     { line: 'You used all 30 dives and found 3 of the 5 wrecks.', bar: ['30 of 30 dives', 30, 30] }),
   'common-today-hard': dpPickCm(CM_HARD, false, { line: 'You found all three connections and scored 3 of 15.', bar: ['3 of 15', 3, 15] }),
-  'common-today-failed': dpPickCm(CM_FAIL, true, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
+  'common-today-failed': dpPickCm(CM_FAIL_TODAY, true, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
 });
 DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-today-hard', failed: k + '-today-failed' }; });
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
@@ -427,10 +457,10 @@ DP_PZ = {
   },
   common: {
     count: CM_NO, no: (i) => GS_NAME.common + ' #' + (CM_NO - i), salt: 11, keep: {}, alwaysCompletes: true, today: 'common-today', liveSid: 'common-live',
-    ok: (i) => cmResult(CM_OK[i % CM_OK.length]), bad: cmResult(CM_FAIL),
+    ok: (i) => cmSess(0, CM_OK[i % CM_OK.length]).result, bad: cmSess(0, CM_FAIL).result,
     title: 'Today’s threads', next: 'Next threads: tomorrow',
     live: { line: 'You’re on thread 1 of 3, with 0 points so far.', bar: ['Thread 1 of 3', 1, 3] },
-    done: { st: { kind: 'ok', label: GS_SESSIONS['common-today'].result }, line: 'You found all three connections and scored ' + cmScore(CM_TODAY) + ' of 15.', bar: [cmScore(CM_TODAY) + ' of 15', cmScore(CM_TODAY), 15] },
+    done: { st: { kind: 'ok', label: GS_SESSIONS['common-today'].result }, line: 'You found all three connections and scored ' + cmScore(dpCmToday.day) + ' of 15.', bar: [cmScore(dpCmToday.day) + ' of 15', cmScore(dpCmToday.day), 15] },
     recent: 'Your days',
     // Common's eight achievements (verbatim from the platform), in the platform's order. Every finished day completes, so a day's status is always ok.
     ach: [{ k: 'cm1', n: 'First Thread', how: 'Find a connection.', by: (p) => cmFoundIn(p) > 0 },

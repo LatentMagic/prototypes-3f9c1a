@@ -92,6 +92,7 @@ import { PgBar, pgActive } from './playground.jsx';
 import { FitView, isFramed, useFit } from './fit.jsx';
 import { initGsWhere } from './gs-where.jsx';
 import { initGsChain } from './gs-chain.jsx';
+import { initGsCommon } from './gs-common.jsx';
 
 const { useState, useEffect, useRef } = React;
 
@@ -482,3 +483,4 @@ initGsPassLibrary();
 initGsDelve();
 initMain();
 initGsWhere();
+initGsCommon();

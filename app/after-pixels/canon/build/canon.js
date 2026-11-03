@@ -4649,8 +4649,66 @@
   let dpSvDay;
   let dpWhT;
   let dpChT;
+  let dpCmToday;
   let dpChL;
   let dpSvL;
+  const CM_PTS = [5, 3, 2, 1];
+  const cmCount = (n) => n + (n === 1 ? " point" : " points");
+  const CM_HOW = { found: "Found", passed: "Passed", lost: "Out of guesses" };
+  const cmPlay = ({ c, m }, live) => {
+    const t = c.map((x, k) => ({ k, items: x.items, link: x.link, shown: 0, state: "waiting", pts: 0, at: 0 }));
+    const pool = [];
+    const lines = [];
+    const open = (k) => {
+      if (!t[k]) return;
+      t[k].state = "open";
+      t[k].shown = 1;
+      lines.push(["Thread " + (k + 1)], ["Item 1", c[k].items[0]]);
+    };
+    const close = (x, how, pts) => {
+      if (x.state === "waiting") lines.push(["Thread " + (x.k + 1)]);
+      x.state = how;
+      x.pts = pts;
+      lines.push(["Connection", c[x.k].link], ["How it fits", c[x.k].fits], [CM_HOW[how], cmCount(pts)]);
+    };
+    const runOut = () => t.forEach((x) => {
+      if (x.state === "open" || x.state === "waiting") close(x, "lost", 0);
+    });
+    open(0);
+    m.forEach(([k, a, right]) => {
+      const x = t[k];
+      if (a === "more") {
+        x.shown += 1;
+        lines.push(["Item " + x.shown, c[k].items[x.shown - 1]]);
+        return;
+      }
+      if (a === "pass") {
+        close(x, "passed", 0);
+        open(k + 1);
+        return;
+      }
+      pool.push({ k, right });
+      const last = pool.length === 5;
+      lines.push(["Guess", a, right ? "Right" : "Wrong"]);
+      if (right) {
+        x.at = x.shown;
+        close(x, "found", CM_PTS[x.shown - 1]);
+        if (last) runOut();
+        else open(k + 1);
+        return;
+      }
+      if (last) {
+        runOut();
+        return;
+      }
+      if (x.shown < 4) {
+        x.shown += 1;
+        lines.push(["Item " + x.shown, c[k].items[x.shown - 1]]);
+      }
+    });
+    const day = t.map((x) => [x.shown, x.pts, ...x.state === "found" ? [] : [x.state]]);
+    return { t, pool, lines, day, live: !!live };
+  };
   const cmMarks = (t) => "●".repeat(t[0]) + "○".repeat(4 - t[0]);
   const cmScore = (day) => day.reduce((a, t) => a + t[1], 0);
   const cmFound = (day) => day.filter((t) => !t[2]).length;
@@ -4658,38 +4716,69 @@
   const cmHead = (n, day) => "Common No. " + n + " · " + cmScore(day) + " of 15";
   const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => k + 1 + "  " + cmMarks(t) + "  " + t[1])];
   const cmFigures = (day) => [cmScore(day) + " of 15", cmFound(day) + " of 3 connections found"];
-  const cmHow = { passed: "Passed", lost: "Out of guesses" };
-  const cmLines = (day) => day.map((t, k) => ["Thread " + (k + 1), t[2] ? cmHow[t[2]] : "Found", ...t[0] ? [t[0] + (t[0] === 1 ? " item" : " items") + " showing"] : [], t[1] + (t[1] === 1 ? " point" : " points")]);
-  const CM_TODAY_LINES = [
-    ["Thread 1"],
-    ["Item 1", "EGG"],
-    ["Item 2", "TORTOISE"],
-    ["Guess", "Things that are slow.", "Wrong"],
-    ["Item 3", "PEANUT"],
-    ["Guess", "They all have a shell.", "Right"],
-    ["Connection", "Shell"],
-    ["How it fits", "An egg, a tortoise, a peanut and a hermit crab all have one."],
-    ["Found", "2 points"],
-    ["Thread 2"],
-    ["Item 1", "A PRINTER"],
-    ["Guess", "A jam.", "Right"],
-    ["Connection", "Jam"],
-    ["How it fits", "A printer, a zip, a door and a radio signal can all jam."],
-    ["Found", "5 points"],
-    ["Thread 3"],
-    ["Item 1", "A DRUM"],
-    ["Item 2", "THE TRAFFIC"],
-    ["Item 3", "A DUSTY RUG"],
-    ["Item 4", "THE OTHER TEAM"],
-    ["Guess", "Beat.", "Right"],
-    ["Connection", "Beat"],
-    ["How it fits", "You can beat a drum, the traffic, a dusty rug and the other team."],
-    ["Found", "1 point"]
+  const cmSess = (n, play) => {
+    const p = cmPlay(play);
+    const res = cmResult(p.day);
+    return { number: n, play, result: res, figures: cmFigures(p.day), shareLines: cmShare(n, p.day), lines: p.lines, day: p.day };
+  };
+  const CM_C7 = [
+    { items: ["EGG", "TORTOISE", "PEANUT", "HERMIT CRAB"], link: "Shell", fits: "An egg, a tortoise, a peanut and a hermit crab all have one." },
+    { items: ["A PRINTER", "A ZIP", "A DOOR", "A RADIO SIGNAL"], link: "Jam", fits: "A printer, a zip, a door and a radio signal can all jam." },
+    { items: ["A DRUM", "THE TRAFFIC", "A DUSTY RUG", "THE OTHER TEAM"], link: "Beat", fits: "You can beat a drum, the traffic, a dusty rug and the other team." }
   ];
-  const CM_TODAY = [[3, 2], [1, 5], [4, 1]];
-  const CM_OK = [[[1, 5], [2, 3], [4, 1]], [[2, 3], [1, 5], [3, 2]], [[3, 2], [3, 2], [2, 3]], [[1, 5], [1, 5], [2, 3]], [[4, 1], [2, 3], [3, 2]]];
-  const CM_FAIL = [[4, 1], [1, 0, "lost"], [0, 0, "lost"]];
-  const CM_HARD = [[4, 1], [4, 1], [4, 1]];
+  const CM_CA = [
+    { items: ["A CLOWN", "A TRAPEZE", "A TIGHTROPE WALKER", "A RINGMASTER"], link: "Things at the circus", fits: "A clown, a trapeze, a tightrope walker and a ringmaster are all at the circus." },
+    { items: ["A PIANIST", "A SINGER", "A SALMON", "A SNAKE"], link: "Things with scales", fits: "A pianist and a singer practise scales; a salmon and a snake are covered in them." },
+    { items: ["THE SALT", "A NOTE IN CLASS", "THE TIME", "A DRIVING TEST"], link: "Things you can pass", fits: "You can pass the salt, a note in class, the time and a driving test." }
+  ];
+  const CM_CB = [
+    { items: ["A SLICE OF PIZZA", "A COAT HANGER", "A SAIL", "A SANDWICH CUT CORNER TO CORNER"], link: "Things shaped like a triangle", fits: "A slice of pizza, a coat hanger, a sail and a sandwich cut corner to corner are all triangles." },
+    { items: ["A SHARK", "A DOLPHIN", "A ROCKET", "A SURFBOARD"], link: "Things with fins", fits: "A shark, a dolphin, a rocket and a surfboard all have fins." },
+    { items: ["YOUR VOICE", "YOUR TEMPER", "WEIGHT", "YOUR KEYS"], link: "Things you can lose", fits: "You can lose your voice, your temper, weight and your keys." }
+  ];
+  const CM_TODAY = { c: CM_C7, m: [
+    [0, "more"],
+    [0, "Things that are slow.", false],
+    [0, "They all have a shell.", true],
+    [1, "A jam.", true],
+    [2, "more"],
+    [2, "more"],
+    [2, "more"],
+    [2, "Beat.", true]
+  ] };
+  const CM_LIVE = { c: CM_C7, m: CM_TODAY.m.slice(0, 2) };
+  const CM_OK = [
+    { c: CM_CA, m: [[0, "The circus.", true], [1, "more"], [1, "Scales.", true], [2, "Things you can catch.", false], [2, "more"], [2, "more"], [2, "Things you can pass.", true]] },
+    { c: CM_CB, m: [[0, "Pointy things.", false], [0, "Triangles.", true], [1, "Fins.", true], [2, "more"], [2, "more"], [2, "Things you can lose.", true]] },
+    { c: CM_CA, m: [[0, "more"], [0, "Things in a show.", false], [0, "The circus.", true], [1, "more"], [1, "more"], [1, "Scales.", true], [2, "more"], [2, "Things you can pass.", true]] },
+    { c: CM_CB, m: [[0, "Triangles.", true], [1, "Fins.", true], [2, "Things you can drop.", false], [2, "Things you can lose.", true]] },
+    { c: CM_CA, m: [
+      [0, "more"],
+      [0, "more"],
+      [0, "more"],
+      [0, "The circus.", true],
+      [1, "more"],
+      [1, "Scales.", true],
+      [2, "Things you can hand over.", false],
+      [2, "Things you can fail.", false],
+      [2, "Things you can pass.", true]
+    ] }
+  ];
+  const CM_FAIL = { c: CM_CB, m: [
+    [0, "Things in a kitchen.", false],
+    [0, "Things you hang up.", false],
+    [0, "Flat things.", false],
+    [0, "Triangles.", true],
+    [1, "Things that swim.", false]
+  ] };
+  const CM_FAIL_TODAY = { c: CM_C7, m: [
+    [0, "Things that are slow.", false],
+    [0, "Round things.", false],
+    [0, "Things you can crack.", false],
+    [0, "Shell.", true],
+    [1, "Things in an office.", false]
+  ] };
+  const CM_HARD = { c: CM_C7, m: [0, 1, 2].flatMap((k) => [[k, "more"], [k, "more"], [k, "more"], [k, CM_C7[k].link + ".", true]]) };
   const dpSession = (id, c, x, base) => {
     const n = (id === "common" ? CM_NO : DP_NO) - x.i;
     const i = x.i;
@@ -4703,8 +4792,8 @@
       return { ...base, number: n, play, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
     }
     if (id === "common") {
-      const day = x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL;
-      return { ...base, number: n, figures: cmFigures(day), share: x.line, shareLines: cmShare(n, day), lines: cmLines(day) };
+      const { day, result, ...own } = cmSess(n, x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL);
+      return { ...base, ...own, share: x.line };
     }
     const d = dpSvDay(i, x.ok);
     return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
@@ -4860,6 +4949,7 @@
       };
     })();
     dpWhT = dpWhere(WH_TODAY, true);
+    dpCmToday = cmSess(CM_NO, CM_TODAY);
     dpChT = dpChain(CH_TODAY);
     dpChL = dpChain({ ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) });
     dpSvL = SV_TODAY_DIVES.slice(0, 11);
@@ -4947,32 +5037,20 @@
         share: null,
         lines: svLines(dpSvL)
       },
-      "common-today": {
-        kind: "puzzle",
-        gid: "common",
-        game: GS_NAME.common,
-        art: "common",
-        number: CM_NO,
-        result: cmResult(CM_TODAY),
-        date: GS.today,
-        figures: cmFigures(CM_TODAY),
-        share: cmResult(CM_TODAY),
-        shareLines: cmShare(CM_NO, CM_TODAY),
-        lines: CM_TODAY_LINES,
-        recovered: true
-      },
+      "common-today": { kind: "puzzle", gid: "common", game: GS_NAME.common, art: "common", date: GS.today, ...dpCmToday, share: dpCmToday.result, recovered: true },
       "common-live": {
         kind: "puzzle",
         gid: "common",
         game: GS_NAME.common,
         art: "common",
         number: CM_NO,
+        play: CM_LIVE,
         live: true,
         result: "In progress",
         date: GS.today,
         figures: ["Thread 1 of 3", "0 points so far"],
         share: null,
-        lines: CM_TODAY_LINES.slice(0, 2)
+        lines: cmPlay(CM_LIVE, true).lines
       }
     });
     DP_IDS.forEach((k) => {
@@ -5007,9 +5085,9 @@
       const res = GS_RESULT.salvage({ found: sunk, dives: log.length });
       return { ...GS_SESSIONS["salvage-today"], loss: sunk < 5, result: res, share: res, figures: [sunk + " of 5 wrecks", log.length + " of 30 dives", "1 hint"], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
     };
-    const dpPickCm = (day, recovered, now) => {
-      const res = cmResult(day);
-      return { ...GS_SESSIONS["common-today"], loss: false, recovered, result: res, share: res, figures: cmFigures(day), shareLines: cmShare(CM_NO, day), lines: cmLines(day), now };
+    const dpPickCm = (play, recovered, now) => {
+      const { day, ...own } = cmSess(CM_NO, play);
+      return { ...GS_SESSIONS["common-today"], loss: false, recovered, ...own, share: own.result, now };
     };
     Object.assign(GS_SESSIONS, {
       "where-today-hard": dpPickWh(true),
@@ -5027,7 +5105,7 @@
         { line: "You used all 30 dives and found 3 of the 5 wrecks.", bar: ["30 of 30 dives", 30, 30] }
       ),
       "common-today-hard": dpPickCm(CM_HARD, false, { line: "You found all three connections and scored 3 of 15.", bar: ["3 of 15", 3, 15] }),
-      "common-today-failed": dpPickCm(CM_FAIL, true, { line: "You found 1 of the 3 connections and scored 1 of 15.", bar: ["1 of 15", 1, 15] })
+      "common-today-failed": dpPickCm(CM_FAIL_TODAY, true, { line: "You found 1 of the 3 connections and scored 1 of 15.", bar: ["1 of 15", 1, 15] })
     });
     DP_IDS.forEach((k) => {
       GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed" };
@@ -5109,12 +5187,12 @@
         alwaysCompletes: true,
         today: "common-today",
         liveSid: "common-live",
-        ok: (i) => cmResult(CM_OK[i % CM_OK.length]),
-        bad: cmResult(CM_FAIL),
+        ok: (i) => cmSess(0, CM_OK[i % CM_OK.length]).result,
+        bad: cmSess(0, CM_FAIL).result,
         title: "Today’s threads",
         next: "Next threads: tomorrow",
         live: { line: "You’re on thread 1 of 3, with 0 points so far.", bar: ["Thread 1 of 3", 1, 3] },
-        done: { st: { kind: "ok", label: GS_SESSIONS["common-today"].result }, line: "You found all three connections and scored " + cmScore(CM_TODAY) + " of 15.", bar: [cmScore(CM_TODAY) + " of 15", cmScore(CM_TODAY), 15] },
+        done: { st: { kind: "ok", label: GS_SESSIONS["common-today"].result }, line: "You found all three connections and scored " + cmScore(dpCmToday.day) + " of 15.", bar: [cmScore(dpCmToday.day) + " of 15", cmScore(dpCmToday.day), 15] },
         recent: "Your days",
         // Common's eight achievements (verbatim from the platform), in the platform's order. Every finished day completes, so a day's status is always ok.
         ach: [
@@ -10236,6 +10314,98 @@
   const initGsChain = () => {
     GS_SESSION_BODY.chain = ChnSessBody;
   };
+  const cmClosed = (x) => x.state === "found" || x.state === "passed" || x.state === "lost";
+  const cmItem = (x, i) => i < x.shown ? "seen" : cmClosed(x) ? "unseen" : "hidden";
+  const cmTotal = (p) => p.t.reduce((a, x) => a + x.pts, 0);
+  const cmSentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
+  const cmPoolLabel = (p) => p.pool.length + " of 5 guesses used" + (p.pool.length ? ": " + p.pool.map((g) => "thread " + (g.k + 1) + (g.right ? " right" : " wrong")).join(", ") : "");
+  const cmEven = (el) => {
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    const lines = {};
+    [...r.getClientRects()].forEach((q) => {
+      if (!q.width) return;
+      const k = Math.round(q.top);
+      lines[k] = lines[k] ? [Math.min(lines[k][0], q.left), Math.max(lines[k][1], q.right)] : [q.left, q.right];
+    });
+    const w = Object.keys(lines).sort((a, b) => a - b).map((k) => lines[k][1] - lines[k][0]);
+    return w.length <= 1 || w[w.length - 1] >= 0.7 * Math.max(...w);
+  };
+  const CM_FLOOR = 12;
+  const CmFit = ({ text }) => {
+    const ref = React$1.useRef(null);
+    const sp = text.indexOf(" ");
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const fit = () => {
+        el.style.fontSize = "";
+        el.classList.remove("is-split");
+        if (cmEven(el)) return;
+        if (sp > 0) {
+          el.classList.add("is-split");
+          if (cmEven(el)) return;
+        }
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        while (!cmEven(el) && size > CM_FLOOR) {
+          size -= 0.5;
+          el.style.fontSize = size + "px";
+        }
+      };
+      fit();
+      if (document.fonts) document.fonts.ready.then(fit);
+      const ro = new ResizeObserver(fit);
+      ro.observe(el.parentElement);
+      return () => ro.disconnect();
+    }, [text]);
+    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cm-fit" }, sp > 0 ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "cm-w1" }, text.slice(0, sp)), " ", text.slice(sp + 1)) : text);
+  };
+  const CmPool = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-pool", role: "img", "aria-label": cmPoolLabel(p) }, [0, 1, 2, 3, 4].map((j) => {
+    const g = p.pool[j];
+    return /* @__PURE__ */ React$1.createElement("span", { key: j, "aria-hidden": "true", className: "cm-q " + (g ? g.right ? "is-right th-" + g.k : "is-wrong" : "is-spare") }, g ? g.right ? "✓" : "×" : "");
+  }));
+  const CM_SAY = { open: "Open", waiting: "Not reached" };
+  const CmRow = ({ x }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-row is-" + x.state + " th-" + x.k }, /* @__PURE__ */ React$1.createElement("div", { className: "cm-tiles" }, [0, 1, 2, 3].map((i) => {
+    const st = cmItem(x, i);
+    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st + (i === 0 && st === "seen" ? " is-first" : "") }, st === "hidden" ? "" : /* @__PURE__ */ React$1.createElement(CmFit, { text: cmSentence(x.items[i]) }));
+  })), /* @__PURE__ */ React$1.createElement("span", { className: "cm-pts" }, cmClosed(x) ? x.pts : ""), /* @__PURE__ */ React$1.createElement("p", { className: "cm-conn" }, cmClosed(x) ? /* @__PURE__ */ React$1.createElement("b", null, x.link) : /* @__PURE__ */ React$1.createElement("span", { className: "cm-say" }, CM_SAY[x.state])));
+  const CmScore = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-score", role: "img", "aria-label": cmTotal(p) + " of 15 points" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, cmTotal(p)), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "of 15"));
+  const CmSessBody = ({ s }) => {
+    if (!s.play) return s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
+    const p = cmPlay(s.play, s.live);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
+      GsSessCard,
+      {
+        r: s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
+        className: "cm-card",
+        board: /* @__PURE__ */ React$1.createElement("div", { className: "cm-board" }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(CmRow, { key: x.k, x }))),
+        rows: [["Score", /* @__PURE__ */ React$1.createElement(CmScore, { p })], ["Guesses", /* @__PURE__ */ React$1.createElement(CmPool, { p })]]
+      }
+    ), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const CmMini = ({ x }) => /* @__PURE__ */ React$1.createElement("div", { className: "cmn-row is-" + x.state + " th-" + x.k, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", { className: "cmn-tiles" }, [0, 1, 2, 3].map((i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cmn-t is-" + cmItem(x, i) }))), /* @__PURE__ */ React$1.createElement("span", { className: "cmn-pts" }, cmClosed(x) ? x.pts : ""));
+  const cmBoardLabel = (p) => p.t.map((x) => "thread " + (x.k + 1) + ": " + (x.state === "found" ? "named, " + x.pts + (x.pts === 1 ? " point" : " points") : x.state === "passed" ? "passed" : x.state === "lost" ? "out of guesses" : x.state === "open" ? "open" : "not reached")).join("; ");
+  const CmNowPic = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cmn-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "cmn-board", role: "img", "aria-label": cmBoardLabel(p) }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(CmMini, { key: x.k, x }))), /* @__PURE__ */ React$1.createElement("div", { className: "cmn-sum" }, /* @__PURE__ */ React$1.createElement("div", { className: "cmn-score", role: "img", "aria-label": cmTotal(p) + " of 15 points" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, cmTotal(p)), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "of 15")), /* @__PURE__ */ React$1.createElement(CmPool, { p })));
+  const cmFresh = (play) => {
+    const p = cmPlay({ c: play.c, m: [] }, true);
+    return { ...p, t: p.t.map((x) => ({ ...x, shown: 0, state: "waiting" })) };
+  };
+  const CM_NOW_RESULT = { done: { kind: "ok", label: "Completed" }, live: { kind: "live", label: "In progress" } };
+  const CmNow = ({ c, done, none, children }) => {
+    const gs = useGs();
+    const today = GS_SESSIONS[c.today];
+    if (!today || !today.play) return children;
+    const title = "#" + today.number;
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "common", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "common")[0] }), next: c.next, className: "cmn" }, /* @__PURE__ */ React$1.createElement(CmNowPic, { p: cmFresh(today.play) }));
+    const sid = done ? c.today : c.liveSid;
+    const s = GS_SESSIONS[sid];
+    if (!s || !s.play) return children;
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "common", title, result: CM_NOW_RESULT[done ? "done" : "live"], open: () => gs.go("session", { id: sid }), next: c.next, className: "cmn" }, /* @__PURE__ */ React$1.createElement(CmNowPic, { p: cmPlay(s.play, !done) }));
+  };
+  const initGsCommon = () => {
+    GS_SESSION_BODY.common = CmSessBody;
+    GS_NOW.common = CmNow;
+  };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
   let GS_USER_DEFAULT;
@@ -10667,4 +10837,5 @@
   initGsDelve();
   initMain();
   initGsWhere();
+  initGsCommon();
 })(React, ReactDOM);
