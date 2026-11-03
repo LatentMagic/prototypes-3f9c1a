@@ -177,7 +177,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .lb-ach > li { display: grid; min-width: 0; }
 .lb-ach-n { font-weight: 600; line-height: 1.3; text-wrap: pretty; }
 .lb-ach-sub { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
-/* KEEP: the status line (Earned date, Not earned yet, 1 of 10) is the design system's caption type, smaller than the description; all muted, the badge colour marks earned */
+/* KEEP: an earned achievement shows no status line in the list, its coloured badge says it is earned (its date is in the pop-up); "Not earned yet" and progress (4 of 30) are the design system's caption type in --muted, smaller than the description */
 .lb-ach-st { font: var(--type-caption); color: var(--muted); }
 .lb-badge { width: 40px; height: 40px; flex: none; display: block; }
 .lb-badge svg { width: 100%; height: 100%; display: block; }
