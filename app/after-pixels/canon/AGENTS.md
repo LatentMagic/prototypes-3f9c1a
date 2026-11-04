@@ -21,7 +21,7 @@ A design or copy decision is the owner's. Build what the brief says; name anythi
 ## Comments
 
 - A comment states a rule the code keeps, with its reason, or says where a part sits in the product. Never narrate what the code plainly does, and never cite a task folder, handoff or ticket folder.
-- Mark behaviour that a rebuild from screenshots would get wrong (adaptive styling, overlap or overflow handling, a value chosen against the default) with `// KEEP:`. State the outcome to keep in plain words, numbers included, then one clause of why. The agent that builds the product reads each `KEEP:` as "preserve this". If you change that behaviour, update or remove its `KEEP:` in the same edit.
+- Mark behaviour that a rebuild from screenshots would get wrong (adaptive styling, overlap or overflow handling, a value chosen against the default) with `// KEEP:`. State the outcome to keep in plain words, numbers included, then one clause of why. A `KEEP:` is a heads-up for the engineer who builds the product, not a ruled requirement: they meet the outcome to the product's own standards, and need not copy the mechanism or test it. If you change that behaviour, update or remove its `KEEP:` in the same edit.
 
 <important if="you need to run commands to build, check or serve canon">
 
