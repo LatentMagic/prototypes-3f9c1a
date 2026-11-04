@@ -10432,10 +10432,41 @@
   const PGCT_LONG = [
     { items: ["A SANDWICH CUT CORNER TO CORNER", "THE UNDERGROUND PART OF A TREE", "SPINNING BLADES THAT COOL YOU", "A POWER TOOL FOR MAKING HOLES"], link: "Things shaped like a triangle" },
     { items: ["HIEROGLYPHICS", "TOASTED MARSHMALLOWS", "AN AFTER-SCHOOL GROUP", "A CONVERSATION"], link: "Things with stripes" },
-    { items: ["A FOOTBALL SHIRT", "A TIGHTROPE WALKER", "THE MISSISSIPPI", "RASPBERRIES AND SUGAR"], link: "Things at the circus" }
+    { items: ["THE LEANING TOWER OF PISA", "A TIGHTROPE WALKER", "THE MISSISSIPPI", "THE STATUE OF LIBERTY"], link: "Things at the circus" }
   ];
+  const PGCT_NAMES = [
+    "British",
+    "Canadian",
+    "American",
+    "Saturn",
+    "Mars",
+    "Earth",
+    "Golden Gate",
+    "Statue of Liberty",
+    "Sphinx",
+    "Colosseum",
+    "Leaning Tower of Pisa",
+    "Eiffel Tower",
+    "Mount Fuji",
+    "Thames",
+    "Mississippi",
+    "Danube",
+    "Nile",
+    "North Pole",
+    "Caesar",
+    "TV",
+    "X-ray"
+  ];
+  const pgctWritten = (t) => {
+    let s = cmSentence(t);
+    PGCT_NAMES.forEach((n) => {
+      s = s.replace(new RegExp("\\b" + n.replace("-", "\\-") + "\\b", "i"), n);
+    });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+  const pgctCase = (t, words) => words === "caps" ? t : words === "written" ? pgctWritten(t) : cmSentence(t);
   const PgctText = ({ text }) => {
-    const words = cmSentence(text).split(" ");
+    const words = pgctCase(text, usePgSetting("words")).split(" ");
     return /* @__PURE__ */ React$1.createElement("span", { className: "pgct-tx", lang: "en" }, words.map((w, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, i ? " " : "", /* @__PURE__ */ React$1.createElement("span", { className: "pgct-w" }, w))));
   };
   const PgctRow = ({ x, all }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-row is-" + x.state + " th-" + x.k }, /* @__PURE__ */ React$1.createElement("div", { className: "cm-tiles" }, [0, 1, 2, 3].map((i) => {
@@ -10480,6 +10511,11 @@
         { value: "long", label: "Longest real items" },
         { value: "today", label: "Today (No. 7)" },
         { value: "all", label: "Every real item (756)" }
+      ] },
+      { key: "words", label: "Words", options: [
+        { value: "now", label: "As now" },
+        { value: "caps", label: "Capitals" },
+        { value: "written", label: "As written" }
       ] }
     ] });
     if (pgActive()) {
