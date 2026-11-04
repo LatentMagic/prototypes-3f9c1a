@@ -235,6 +235,10 @@ const CM_OK = [
 // guess reveals no item), and thread 3 closes without ever opening.
 const CM_FAIL = { c: CM_CB, m: [[0, 'Things in a kitchen.', false], [0, 'Things you hang up.', false], [0, 'Flat things.', false], [0, 'Triangles.', true],
   [1, 'Things that swim.', false]] };
+// A day that ended before the player finished (Config: Ended unfinished): thread 1 named after a wrong guess, thread 2 open with 2 items
+// showing, thread 3 not reached; 2 of the 5 guesses spent.
+const CM_UNFINISHED = { c: CM_CB, m: [[0, 'Pointy things.', false], [0, 'Triangles.', true], [1, 'more']] };
+export const cmUnfinished = (x) => { const { number, play, lines } = cmSess(CM_NO - x.i, CM_UNFINISHED); return { number, play, lines }; };
 // Today's threads run out the same way (Config → This edition: failed).
 const CM_FAIL_TODAY = { c: CM_C7, m: [[0, 'Things that are slow.', false], [0, 'Round things.', false], [0, 'Things you can crack.', false], [0, 'Shell.', true],
   [1, 'Things in an office.', false]] };

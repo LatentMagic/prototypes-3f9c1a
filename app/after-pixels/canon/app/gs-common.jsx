@@ -48,7 +48,7 @@ export const CmSessBody = ({ s }) => {
   if (!s.play) return s.lines.length ? <GsMoves s={s} /> : null;
   const p = cmPlay(s.play, s.live);
   return <>
-    <GsSessCard r={s.live ? { tone: 'live', word: 'In progress' } : { tone: 'ok', word: 'Completed' }} className="cm-card"
+    <GsSessCard r={s.unfinished ? null : s.live ? { tone: 'live', word: 'In progress' } : { tone: 'ok', word: 'Completed' }} className="cm-card"
       board={<div className="cm-board">{p.t.map((x) => <CmRow key={x.k} x={x} />)}</div>}
       rows={[['Score', <CmScore p={p} />], ['Guesses', <CmPool p={p} />]]} />
     <GsMoves s={s} />

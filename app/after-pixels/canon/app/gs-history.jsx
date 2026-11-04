@@ -11,7 +11,7 @@ import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, LbChoice } from './gs-library.jsx';
-import { DP_IDS } from './gs-where-chain-salvage.jsx';
+import { DP_IDS, cmUnfinished } from './gs-where-chain-salvage.jsx';
 import { CB_ALL, CB_DONE, CB_LIVE, cbDone } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
 import { DV_ALL, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
@@ -346,17 +346,16 @@ export function initGsHistory() {
 // A game's editions, newest first: { key, gid, n, title, date, month, free, now, status, open }
 // Results agree with the library game page: this edition from lbNow; a free player has played the first edition; a lapsed one, everything played before the Pass ended.
 ED_NONE = { kind: 'none', label: 'Not played' };
-// Sessions whose day or week ended before the player finished (Config: Ended unfinished). One Daily Groups day, an edition the seed leaves unplayed.
+// Sessions whose day or week ended before the player finished (Config: Ended unfinished). One Common day, an edition the seed leaves unplayed.
 // Delve has one run so far, this week's, so no Delve week can have ended unfinished: 'delve-unfinished' reads run 1 in progress.
 PH_UNF = { kind: 'none', label: 'Not finished' };
 PH_UNF_EDS = (() => {
-  // The second unplayed earlier day of Daily Groups.
-  const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1];
+  // The first unplayed earlier day of Common.
+  const g = PZ.common.all.filter((x) => x.i > 0 && !x.played)[0];
   const gAt = phAt(g.d, 21, 40);
-  GS_SESSIONS['groups-unfinished'] = { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', share: null,
-    lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'BASS · CHORD · SCALE · PIKE', 'One away']] };
+  GS_SESSIONS['common-unfinished'] = { kind: 'puzzle', gid: 'common', game: 'Common', art: 'common', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', share: null, ...cmUnfinished(g) };
   GS_SESSIONS['delve-unfinished'] = GS_SESSIONS['delve-live'];
-  return { [g.id]: { gid: 'groups', x: g, sid: 'groups-unfinished', at: gAt } };
+  return { [g.id]: { gid: 'common', x: g, sid: 'common-unfinished', at: gAt } };
 })();
 PH_META = null;
 // ---- The play log. An edition holds its one play. ----

@@ -94,7 +94,7 @@ export const ConfigExtraBase = () => {
           edHint)}
         {edNote ? <p className="kit-config-edwarn" role="status">{edNote}</p> : null}
         {R('Ended unfinished', r.unfinished ? 'on' : 'off', (v) => set(() => api.setReview({ unfinished: v === 'on' })), o([['off', 'None'], ['on', 'A day']]),
-          'Adds a Daily Groups day and a Delve week that ended before you finished.')}
+          'Adds a Common day and a Delve week that ended before you finished.')}
       </Group>
 
       <Group title="Escape">

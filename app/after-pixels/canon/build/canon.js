@@ -4772,6 +4772,11 @@
     [0, "Triangles.", true],
     [1, "Things that swim.", false]
   ] };
+  const CM_UNFINISHED = { c: CM_CB, m: [[0, "Pointy things.", false], [0, "Triangles.", true], [1, "more"]] };
+  const cmUnfinished = (x) => {
+    const { number, play, lines } = cmSess(CM_NO - x.i, CM_UNFINISHED);
+    return { number, play, lines };
+  };
   const CM_FAIL_TODAY = { c: CM_C7, m: [
     [0, "Things that are slow.", false],
     [0, "Round things.", false],
@@ -5887,22 +5892,11 @@
     ED_NONE = { kind: "none", label: "Not played" };
     PH_UNF = { kind: "none", label: "Not finished" };
     PH_UNF_EDS = (() => {
-      const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1];
+      const g = PZ.common.all.filter((x) => x.i > 0 && !x.played)[0];
       const gAt = phAt(g.d, 21, 40);
-      GS_SESSIONS["groups-unfinished"] = {
-        kind: "puzzle",
-        gid: "groups",
-        game: "Daily Groups",
-        art: "groups",
-        unfinished: true,
-        edKey: g.id,
-        result: null,
-        date: pzLong(gAt) + ", 21:40",
-        share: null,
-        lines: [["Try 1", "OAK · ASH · ELM · YEW", "Found: trees"], ["Try 2", "BASS · CHORD · SCALE · PIKE", "One away"]]
-      };
+      GS_SESSIONS["common-unfinished"] = { kind: "puzzle", gid: "common", game: "Common", art: "common", unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ", 21:40", share: null, ...cmUnfinished(g) };
       GS_SESSIONS["delve-unfinished"] = GS_SESSIONS["delve-live"];
-      return { [g.id]: { gid: "groups", x: g, sid: "groups-unfinished", at: gAt } };
+      return { [g.id]: { gid: "common", x: g, sid: "common-unfinished", at: gAt } };
     })();
     PH_META = null;
     PH_EDS = {};
@@ -6422,7 +6416,7 @@
       /* @__PURE__ */ React$1.createElement(GsShareText, { lines })
     );
   };
-  const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap), fig)), last)));
+  const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, r && /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap), fig)), last)));
   const GsMoves = ({ s }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React$1.createElement(DS.Disclosure, { title: "Every move (" + s.lines.length + ")" }, /* @__PURE__ */ React$1.createElement(DS.MoveList, { label: "Every move" }, s.lines.map((l, i) => /* @__PURE__ */ React$1.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
   const gsHeadGame = (s) => s.gid === "word" ? "Guess" : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
@@ -8501,11 +8495,11 @@
         c.setUser({ username: "NewPlayer", fresh: true, locked: true, since: GS_DAY0.getTime() });
         c.go("casebook", { page: "record" });
       } },
-      { group: "Ended unfinished", id: "session-groups-unfinished", label: "Session page, a Daily Groups day that ended unfinished", stage: (c) => {
+      { group: "Ended unfinished", id: "session-common-unfinished", label: "Session page, a Common day that ended unfinished", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ unfinished: true });
-        c.go("session", { id: "groups-unfinished" });
+        c.go("session", { id: "common-unfinished" });
       } },
       { group: "Ended unfinished", id: "session-delve-unfinished", label: "Session page, Delve run 1 in progress (Wren; no Delve week has ended yet)", stage: (c) => {
         c.setView("pass");
@@ -8513,7 +8507,7 @@
         c.setReview({ week: "live" });
         c.go("session", { id: "delve-live" });
       } },
-      { group: "Ended unfinished", id: "history-unfinished", label: "History, with a Daily Groups day that ended unfinished", stage: (c) => {
+      { group: "Ended unfinished", id: "history-unfinished", label: "History, with a Common day that ended unfinished", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ unfinished: true });
@@ -8532,7 +8526,7 @@
     ];
     KIT_STATE_GROUP_NOTES = {
       "Ended unfinished": [
-        "Or set Config “Ended unfinished” to A day: the Daily Groups day shows as Not finished in History and on its library game page. Delve has one run so far, this week’s, so no Delve week can have ended unfinished; its state opens run 1 in progress."
+        "Or set Config “Ended unfinished” to A day: the Common day shows as Not finished in History and on its library game page. Delve has one run so far, this week’s, so no Delve week can have ended unfinished; its state opens run 1 in progress."
       ],
       "Username": [
         "Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.",
@@ -8945,7 +8939,7 @@
       "sign-up",
       "account-email",
       "account-username-wait",
-      "session-groups-unfinished",
+      "session-common-unfinished",
       "session-delve-unfinished",
       "history-unfinished",
       "sign-in-return-library",
@@ -8982,7 +8976,7 @@
       "edition-word-done",
       "edition-mystery-done",
       "edition-casebook-done",
-      "session-groups-unfinished",
+      "session-common-unfinished",
       "session-delve-unfinished",
       "library-hunter-pass-ended",
       "library-hunter-pass-ended-today",
@@ -9205,7 +9199,7 @@
       r.unfinished ? "on" : "off",
       (v) => set(() => api.setReview({ unfinished: v === "on" })),
       o([["off", "None"], ["on", "A day"]]),
-      "Adds a Daily Groups day and a Delve week that ended before you finished."
+      "Adds a Common day and a Delve week that ended before you finished."
     )), /* @__PURE__ */ React$1.createElement(Group, { title: "Escape" }, R(
       "This week’s room, finished",
       r.escape === "par" || r.escape === "over" ? r.escape : "under",
@@ -10343,7 +10337,7 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
-        r: s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
+        r: s.unfinished ? null : s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
         className: "cm-card",
         board: /* @__PURE__ */ React$1.createElement("div", { className: "cm-board" }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(CmRow, { key: x.k, x }))),
         rows: [["Score", /* @__PURE__ */ React$1.createElement(CmScore, { p })], ["Guesses", /* @__PURE__ */ React$1.createElement(CmPool, { p })]]
