@@ -1,8 +1,8 @@
 // ============================================================================
 // PLAYGROUND, not canon (branch candidate/salvage-session-hifi): Salvage's session page body at hi fi, from the ratified low fi
 // (lm-1236 salvage-ratify): Result top; Sea left; Counts above Kit, centred against the Sea; phone order Result, Sea, Counts, Kit.
-// Round 2 settings (app/playground.jsx): Kit icons (the concept), then config: State, Reach, Wreck mark, Miss mark, Margins,
-// Counts word. Open with ?pg=salvage-session. The plays are fixtures on edition No. 21's sea, played by the game's rules below
+// Round 3 settings (app/playground.jsx): Concept (A, B or C, each a fixed combination of the variants), then config: Kit icons, State.
+// Open with ?pg=salvage-session. The plays are fixtures on edition No. 21's sea, played by the game's rules below
 // (counts, reach and every move are worked out from the moves, never typed); the head still reads canon's own Salvage session.
 // To remove it: delete this file and playground-salvage-session.css, and their lines in main.jsx and canon.css.
 // ============================================================================
@@ -189,10 +189,17 @@ const Fig = ({ n, of, cap }) => (<div className="sv-fig" role="img" aria-label={
 const SvCounts = ({ p }) => (<div className="sv-counts"><Fig n={p.dives} of={DIVES} cap="dives" /><Fig n={p.raised.size} of={5} cap="wrecks" /></div>);
 
 const WORD = { haul: 'Haul', tally: 'Tally', score: 'Score' };
+// The three concepts, each a fixed combination of the variants: reach (sq, key, rings), wreck mark (hull, share, hatch), miss mark
+// (ring, dash, fill), margins (chip, box, size) and the counts word.
+const CONCEPTS = {
+  a: { reach: 'sq', hit: 'hull', miss: 'ring', margins: 'chip', word: 'haul' },
+  b: { reach: 'key', hit: 'share', miss: 'dash', margins: 'box', word: 'tally' },
+  c: { reach: 'rings', hit: 'hatch', miss: 'fill', margins: 'size', word: 'score' },
+};
 const SalvageBody = ({ s }) => {
   const g = (k, d) => usePgSetting(k) || d;
-  const dir = g('kit', 'line'); const st = g('play', 'won'); const reachMode = g('reach', 'sq');
-  const hitK = g('hit', 'hull'); const missK = g('miss', 'ring'); const axes = g('margins', 'chip'); const word = g('word', 'haul');
+  const dir = g('kit', 'line'); const st = g('play', 'won');
+  const { reach: reachMode, hit: hitK, miss: missK, margins: axes, word } = CONCEPTS[g('concept', 'a')];
   const p = PLAYS[st]; const R = RESULT[st];
   const r = { tone: R.tone, word: R.ph ? <>{R.word}<span className="sv-ph" title="A placeholder word, not yet chosen">Placeholder</span></> : R.word };
   return <>
@@ -206,13 +213,12 @@ const SalvageBody = ({ s }) => {
 const opts = (o) => Object.keys(o).map((value) => ({ value, label: o[value] }));
 export const initPlaygroundSalvageSession = () => {
   pgRegister('salvage-session', { title: 'Salvage session', settings: [
-    { key: 'kit', kind: 'concept', label: 'Kit icons', options: opts({ line: 'A Line', solid: 'B Solid', reach: 'C Reach shape' }) },
+    { key: 'concept', kind: 'concept', label: 'Concept', options: [
+      { value: 'a', label: 'A Squares · Hull · Ring · Chips · Haul' },
+      { value: 'b', label: 'B Reach key · Share marks · Dash · Boxes · Tally' },
+      { value: 'c', label: 'C Rings · Hatch · Fill · Size · Score' }] },
+    { key: 'kit', label: 'Kit icons', options: opts({ line: 'Line', solid: 'Solid', reach: 'Reach shape' }) },
     { key: 'play', label: 'State', options: ['won', 'lost', 'live'].map((v) => ({ value: v, label: { won: 'Won', lost: 'Lost', live: 'In progress' }[v], state: 'session-puzzle', go: (gs) => gs.go('session', { id: PGS[v] }) })) },
-    { key: 'reach', label: 'Reach', options: opts({ sq: 'Squares', key: 'Reach key', rings: 'Rings' }) },
-    { key: 'hit', label: 'Wreck mark', options: opts({ hull: 'Hull', share: 'Share marks', hatch: 'Hatch' }) },
-    { key: 'miss', label: 'Miss mark', options: opts({ ring: 'Ring', dash: 'Dash', fill: 'Fill' }) },
-    { key: 'margins', label: 'Margins', options: opts({ chip: 'Chips', box: 'Boxes', size: 'Size' }) },
-    { key: 'word', label: 'Counts word', options: opts(WORD) },
   ] });
   if (pgActive()) {
     GS_SESSION_BODY.salvage = SalvageBody;

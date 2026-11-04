@@ -83,11 +83,12 @@
 .sv-key.r-rings i { border-radius: 50%; }
 .sv-key.r-key i { box-shadow: inset 0 0 0 3px var(--tc); }
 
-/* ---- Counts: two figures alike, the number in the heading face at 20px (below the 24px result word), its total and caption beside
-   it on one line, so the row stays one line high. ---- */
+/* ---- Counts: two figures alike, the number as large as Daily Word's guesses figure in its ring (heading face, 700, 36px; 44px from a
+   672px card: gs-word.css .wd-ring-n b), its total and caption beside it on one line, so the row stays one line high. ---- */
 .sv-counts { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 28px; }
 .sv-fig { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
-.sv-fig b { font: 700 var(--size-card-title)/1 var(--font-heading); color: var(--text); }
+.sv-fig b { font: 700 36px/1 var(--font-heading); color: var(--text); }
+@container dv2 (min-width: 672px) { .sv-fig b { font-size: 44px; } }
 .sv-fig small { font: 600 var(--size-body)/1 var(--font-text); color: var(--muted); }
 .sv-fig-cap { font: 600 var(--size-small)/1 var(--font-text); color: var(--muted); }
 
@@ -116,15 +117,12 @@
 .is-reach .is-used .sv-rk { fill: currentColor; stroke: none; }
 .sv-kit .t-sonar { --tc: var(--cover-teal); } .sv-kit .t-detector { --tc: var(--cover-lilac); } .sv-kit .t-net { --tc: var(--cover-amber); }
 
-/* ---- Arrangement. Counts above Kit in one column. From 880px of card: Sea left, the column centred against it (canon's panel rises
-   past the result band to centre on the card; here it centres on the Sea). Under 880px (a phone and a tablet): Result, Sea, Counts,
-   Kit, stacked. ---- */
+/* ---- Arrangement. Counts above Kit in one column. From 672px of card (Daily Word's session card breaks there too, gs-sess-card.css):
+   Sea left, the column centred against it, ruled off at its left; the sea shrinks (26px at the least) to leave the column its room.
+   Under 672px (a phone): Result, Sea, Counts, Kit, stacked. ---- */
 .sv-card .gs-sc-panel { grid-template-columns: minmax(0, 1fr); row-gap: 16px; padding-top: 16px; }
 @container dv2 (min-width: 672px) {
-  .sv-card .gs-sc-duo { grid-template-columns: minmax(0, 1fr); justify-content: stretch; column-gap: 0; }
-  .sv-card .gs-sc-panel { align-self: auto; align-content: start; margin-top: 0; width: 100%; padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--line); }
-}
-@container dv2 (min-width: 880px) {
-  .sv-card .gs-sc-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 56px; }
-  .sv-card .gs-sc-panel { align-self: center; align-content: center; row-gap: 28px; width: auto; min-width: 300px; padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--line); }
+  .sv-card .gs-sc-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 40px; }
+  .sv-card .sv-sea { --c: clamp(26px, calc((100cqi - 40px - 40px - 1px - 260px - 16px - 24px - 9 * var(--sg)) / 8), 44px); }
+  .sv-card .gs-sc-panel { align-self: center; align-content: center; row-gap: 28px; width: auto; min-width: 260px; margin-top: 0; padding: 0 0 0 40px; border-top: 0; border-left: 1px solid var(--line); }
 }

@@ -10443,15 +10443,16 @@
   const Fig = ({ n, of, cap }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-fig", role: "img", "aria-label": n + " of " + of + " " + cap }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, n), /* @__PURE__ */ React$1.createElement("small", null, "/", of)), /* @__PURE__ */ React$1.createElement("span", { className: "sv-fig-cap", "aria-hidden": "true" }, cap));
   const SvCounts = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-counts" }, /* @__PURE__ */ React$1.createElement(Fig, { n: p.dives, of: DIVES, cap: "dives" }), /* @__PURE__ */ React$1.createElement(Fig, { n: p.raised.size, of: 5, cap: "wrecks" }));
   const WORD = { haul: "Haul", tally: "Tally", score: "Score" };
+  const CONCEPTS = {
+    a: { reach: "sq", hit: "hull", miss: "ring", margins: "chip", word: "haul" },
+    b: { reach: "key", hit: "share", miss: "dash", margins: "box", word: "tally" },
+    c: { reach: "rings", hit: "hatch", miss: "fill", margins: "size", word: "score" }
+  };
   const SalvageBody = ({ s }) => {
     const g = (k, d) => usePgSetting(k) || d;
     const dir = g("kit", "line");
     const st = g("play", "won");
-    const reachMode = g("reach", "sq");
-    const hitK = g("hit", "hull");
-    const missK = g("miss", "ring");
-    const axes = g("margins", "chip");
-    const word = g("word", "haul");
+    const { reach: reachMode, hit: hitK, miss: missK, margins: axes, word } = CONCEPTS[g("concept", "a")];
     const p = PLAYS[st];
     const R = RESULT[st];
     const r = { tone: R.tone, word: R.ph ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, R.word, /* @__PURE__ */ React$1.createElement("span", { className: "sv-ph", title: "A placeholder word, not yet chosen" }, "Placeholder")) : R.word };
@@ -10468,13 +10469,13 @@
   const opts = (o) => Object.keys(o).map((value) => ({ value, label: o[value] }));
   const initPlaygroundSalvageSession = () => {
     pgRegister("salvage-session", { title: "Salvage session", settings: [
-      { key: "kit", kind: "concept", label: "Kit icons", options: opts({ line: "A Line", solid: "B Solid", reach: "C Reach shape" }) },
-      { key: "play", label: "State", options: ["won", "lost", "live"].map((v) => ({ value: v, label: { won: "Won", lost: "Lost", live: "In progress" }[v], state: "session-puzzle", go: (gs) => gs.go("session", { id: PGS[v] }) })) },
-      { key: "reach", label: "Reach", options: opts({ sq: "Squares", key: "Reach key", rings: "Rings" }) },
-      { key: "hit", label: "Wreck mark", options: opts({ hull: "Hull", share: "Share marks", hatch: "Hatch" }) },
-      { key: "miss", label: "Miss mark", options: opts({ ring: "Ring", dash: "Dash", fill: "Fill" }) },
-      { key: "margins", label: "Margins", options: opts({ chip: "Chips", box: "Boxes", size: "Size" }) },
-      { key: "word", label: "Counts word", options: opts(WORD) }
+      { key: "concept", kind: "concept", label: "Concept", options: [
+        { value: "a", label: "A Squares · Hull · Ring · Chips · Haul" },
+        { value: "b", label: "B Reach key · Share marks · Dash · Boxes · Tally" },
+        { value: "c", label: "C Rings · Hatch · Fill · Size · Score" }
+      ] },
+      { key: "kit", label: "Kit icons", options: opts({ line: "Line", solid: "Solid", reach: "Reach shape" }) },
+      { key: "play", label: "State", options: ["won", "lost", "live"].map((v) => ({ value: v, label: { won: "Won", lost: "Lost", live: "In progress" }[v], state: "session-puzzle", go: (gs) => gs.go("session", { id: PGS[v] }) })) }
     ] });
     if (pgActive()) {
       GS_SESSION_BODY.salvage = SalvageBody;
