@@ -10,7 +10,7 @@
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 // text: the line where it isn't the edition's own (a kept session).
 import React from 'react';
-import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsTodayPlayed, gsEdPick, gsStartsOver, gsSessDate, gsRhythm, gsFresh, GS_BARROW_CREDIT } from './gs-data.jsx';
+import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsTodayPlayed, gsEdPick, gsStartsOver, gsSessDate, gsFresh, GS_BARROW_CREDIT } from './gs-data.jsx';
 import { GsNotFound } from './gs-site.jsx';
 import { GsCover } from './gs-parts.jsx';
 import { GsGap, gsOr } from './gs-game.jsx';
@@ -206,12 +206,12 @@ const GsSessionRecord = () => {
   const title = gsHeadTitle(s, ed);
   const label = gsHeadGame(s) + ' · ' + gsHeadDay(gsSessDate(s, gs));
   const art = s.art;
-  // A day or week that ended before the player finished: no result, no score line, no play control. What was played stays.
+  // A day or week that ended before the player finished: no result, no score line, no play control, and no line explaining it
+  // (the owner, 2026-11-04). What was played stays.
   if (s.unfinished) return (<>
     {back}
     <main className="gs-wrap gs-main">
       <GsSessHead art={art} label={label} title={title} />
-      <p>{(gsRhythm(s.gid) === 'daily' ? 'The day' : 'The week') + ' ended before you finished. What you played stays in your history.'}</p>
       {body}
     </main>
   </>);
