@@ -10381,13 +10381,15 @@
       const up = p.raised.has(i);
       if (!up && p.state !== "lost") return null;
       const across = slvRowOf(w[0]) === slvRowOf(w[w.length - 1]);
+      const L = 9 * w.length - 2, vw = across ? L : 7, vh = across ? 7 : L;
       return /* @__PURE__ */ React$1.createElement(
         "span",
         {
           key: w[0],
           className: "slv-hull " + (up ? "is-raised" : "is-unfound"),
           style: { gridColumn: slvGc(slvColOf(w[0])) + " / span " + (across ? w.length : 1), gridRow: slvGr(slvRowOf(w[0])) + " / span " + (across ? 1 : w.length) }
-        }
+        },
+        up ? null : /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 " + vw + " " + vh, width: "100%", height: "100%", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: ".3", y: ".3", width: vw - 0.6, height: vh - 0.6, rx: 3.2, fill: "none", stroke: "currentColor", strokeWidth: ".5", strokeDasharray: "1.1 .9" }))
       );
     }));
   };

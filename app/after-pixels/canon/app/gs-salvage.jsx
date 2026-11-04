@@ -114,8 +114,13 @@ const SlvSea = ({ p }) => {
       {p.miss.map((s) => <span key={s} className="slv-mk" style={cell(s)}><i className="slv-dot is-miss" /></span>)}
       {dots.map((s) => <span key={s} className="slv-mk" style={cell(s)}><i className="slv-dot is-hit" /></span>)}
       {SLV_WRECKS.map((w, i) => { const up = p.raised.has(i); if (!up && p.state !== 'lost') return null; const across = slvRowOf(w[0]) === slvRowOf(w[w.length - 1]);
+        // KEEP: an unfound wreck is a dashed pill, the raised pill's shape. Drawn as SVG because a dashed CSS border on a rounded box loses its sides on iPhone Safari.
+        // The viewBox is the hull in ninths of a square (the hull is inset 1/9 each side), so the pill is never stretched.
+        const L = 9 * w.length - 2, vw = across ? L : 7, vh = across ? 7 : L;
         return <span key={w[0]} className={'slv-hull ' + (up ? 'is-raised' : 'is-unfound')}
-          style={{ gridColumn: slvGc(slvColOf(w[0])) + ' / span ' + (across ? w.length : 1), gridRow: slvGr(slvRowOf(w[0])) + ' / span ' + (across ? 1 : w.length) }} />; })}
+          style={{ gridColumn: slvGc(slvColOf(w[0])) + ' / span ' + (across ? w.length : 1), gridRow: slvGr(slvRowOf(w[0])) + ' / span ' + (across ? 1 : w.length) }}>
+          {up ? null : <svg viewBox={'0 0 ' + vw + ' ' + vh} width="100%" height="100%" aria-hidden="true"><rect x=".3" y=".3" width={vw - .6} height={vh - .6} rx={3.2} fill="none" stroke="currentColor" strokeWidth=".5" strokeDasharray="1.1 .9" /></svg>}
+        </span>; })}
     </div>);
 };
 
