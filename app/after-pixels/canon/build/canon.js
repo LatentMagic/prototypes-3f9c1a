@@ -5910,8 +5910,8 @@
         lines: [["Try 1", "OAK · ASH · ELM · YEW", "Found: trees"], ["Try 2", "BASS · CHORD · SCALE · PIKE", "One away"]]
       };
       out[g.id] = { gid: "groups", x: g, sid: "groups-unfinished", at: gAt };
-      const NO = { word: 212, mystery: 64, where: 21, chain: 21, salvage: 21 };
-      ["word", "mystery", "escape", "where", "chain", "salvage"].forEach((gid) => {
+      const NO = { word: 212, mystery: 64, where: 21, chain: 21, salvage: 21, common: 7 };
+      ["word", "mystery", "escape", "where", "chain", "salvage", "common"].forEach((gid) => {
         const x = PZ[gid].all.filter((y) => y.i > 0 && !y.played)[0];
         add(gid, x, GS_SESSIONS[gid + "-live"], NO[gid] ? { number: NO[gid] - x.i } : {});
       });
@@ -8522,9 +8522,9 @@
         c.setReview({ unfinished: true });
         c.go("session", { id: "groups-unfinished" });
       } },
-      // Every daily and weekly game but Common: its session page (the earlier edition the seed leaves unplayed, ended unfinished), its library game page
+      // Every daily and weekly game: its session page (the earlier edition the seed leaves unplayed, ended unfinished), its library game page
       // (the now card is today's, never the ended day), and its editions list (the ended day reads Not finished).
-      ...["word", "mystery", "escape", "delve", "where", "chain", "salvage"].flatMap((gid) => {
+      ...["word", "mystery", "escape", "delve", "where", "chain", "salvage", "common"].flatMap((gid) => {
         const name = GS_GAMES[gid].name;
         const free = GS_GAMES[gid].free;
         const on = (c) => {
@@ -8566,7 +8566,7 @@
     ];
     KIT_STATE_GROUP_NOTES = {
       "Ended unfinished": [
-        "Or set Config “Ended unfinished” to A day: each game’s earlier day (week for Escape and Delve) shows as Not finished in History, in its editions list and among its plays on its library game page. Delve’s is the week before run 1, added to its list as run 1 is with two in progress; Config → Several in progress takes it back to in progress. Common is not staged."
+        "Or set Config “Ended unfinished” to A day: each game’s earlier day (week for Escape and Delve) shows as Not finished in History, in its editions list and among its plays on its library game page. Delve’s is the week before run 1, added to its list as run 1 is with two in progress; Config → Several in progress takes it back to in progress."
       ],
       "Username": [
         "Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.",
@@ -10360,49 +10360,7 @@
   const cmClosed = (x) => x.state === "found" || x.state === "passed" || x.state === "lost";
   const cmItem = (x, i) => i < x.shown ? "seen" : cmClosed(x) ? "unseen" : "hidden";
   const cmTotal = (p) => p.t.reduce((a, x) => a + x.pts, 0);
-  const cmSentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
   const cmPoolLabel = (p) => p.pool.length + " of 5 guesses used" + (p.pool.length ? ": " + p.pool.map((g) => "thread " + (g.k + 1) + (g.right ? " right" : " wrong")).join(", ") : "");
-  const cmEven = (el) => {
-    const r = document.createRange();
-    r.selectNodeContents(el);
-    const lines = {};
-    [...r.getClientRects()].forEach((q) => {
-      if (!q.width) return;
-      const k = Math.round(q.top);
-      lines[k] = lines[k] ? [Math.min(lines[k][0], q.left), Math.max(lines[k][1], q.right)] : [q.left, q.right];
-    });
-    const w = Object.keys(lines).sort((a, b) => a - b).map((k) => lines[k][1] - lines[k][0]);
-    return w.length <= 1 || w[w.length - 1] >= 0.7 * Math.max(...w);
-  };
-  const CM_FLOOR = 12;
-  const CmFit = ({ text }) => {
-    const ref = React$1.useRef(null);
-    const sp = text.indexOf(" ");
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return void 0;
-      const fit = () => {
-        el.style.fontSize = "";
-        el.classList.remove("is-split");
-        if (cmEven(el)) return;
-        if (sp > 0) {
-          el.classList.add("is-split");
-          if (cmEven(el)) return;
-        }
-        let size = parseFloat(getComputedStyle(el).fontSize);
-        while (!cmEven(el) && size > CM_FLOOR) {
-          size -= 0.5;
-          el.style.fontSize = size + "px";
-        }
-      };
-      fit();
-      if (document.fonts) document.fonts.ready.then(fit);
-      const ro = new ResizeObserver(fit);
-      ro.observe(el.parentElement);
-      return () => ro.disconnect();
-    }, [text]);
-    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cm-fit" }, sp > 0 ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "cm-w1" }, text.slice(0, sp)), " ", text.slice(sp + 1)) : text);
-  };
   const CmPool = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-pool", role: "img", "aria-label": cmPoolLabel(p) }, [0, 1, 2, 3, 4].map((j) => {
     const g = p.pool[j];
     return /* @__PURE__ */ React$1.createElement("span", { key: j, "aria-hidden": "true", className: "cm-q " + (g ? g.right ? "is-right th-" + g.k : "is-wrong" : "is-spare") }, g ? g.right ? "✓" : "×" : "");
@@ -10410,7 +10368,7 @@
   const CM_SAY = { open: "Open", waiting: "Not reached" };
   const CmRow = ({ x }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-row is-" + x.state + " th-" + x.k }, /* @__PURE__ */ React$1.createElement("div", { className: "cm-tiles" }, [0, 1, 2, 3].map((i) => {
     const st = cmItem(x, i);
-    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st + (i === 0 && st === "seen" ? " is-first" : "") }, st === "hidden" ? "" : /* @__PURE__ */ React$1.createElement(CmFit, { text: cmSentence(x.items[i]) }));
+    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st + (i === 0 && st === "seen" ? " is-first" : "") }, st === "hidden" ? "" : x.items[i]);
   })), /* @__PURE__ */ React$1.createElement("span", { className: "cm-pts" }, cmClosed(x) ? x.pts : ""), /* @__PURE__ */ React$1.createElement("p", { className: "cm-conn" }, cmClosed(x) ? /* @__PURE__ */ React$1.createElement("b", null, x.link) : /* @__PURE__ */ React$1.createElement("span", { className: "cm-say" }, CM_SAY[x.state])));
   const CmScore = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-score", role: "img", "aria-label": cmTotal(p) + " of 15 points" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, cmTotal(p)), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "of 15"));
   const CmSessBody = ({ s }) => {
@@ -10419,7 +10377,7 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
-        r: s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
+        r: s.unfinished ? null : s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
         className: "cm-card",
         board: /* @__PURE__ */ React$1.createElement("div", { className: "cm-board" }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(CmRow, { key: x.k, x }))),
         rows: [["Score", /* @__PURE__ */ React$1.createElement(CmScore, { p })], ["Guesses", /* @__PURE__ */ React$1.createElement(CmPool, { p })]]

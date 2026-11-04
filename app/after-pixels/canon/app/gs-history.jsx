@@ -365,8 +365,8 @@ PH_UNF_EDS = (() => {
     lines: [['Try 1', 'OAK · ASH · ELM · YEW', 'Found: trees'], ['Try 2', 'BASS · CHORD · SCALE · PIKE', 'One away']] };
   out[g.id] = { gid: 'groups', x: g, sid: 'groups-unfinished', at: gAt };
   // The first unplayed earlier edition of each other game, played as far as its in-progress form.
-  const NO = { word: 212, mystery: 64, where: 21, chain: 21, salvage: 21 };
-  ['word', 'mystery', 'escape', 'where', 'chain', 'salvage'].forEach((gid) => {
+  const NO = { word: 212, mystery: 64, where: 21, chain: 21, salvage: 21, common: 7 };
+  ['word', 'mystery', 'escape', 'where', 'chain', 'salvage', 'common'].forEach((gid) => {
     const x = PZ[gid].all.filter((y) => y.i > 0 && !y.played)[0];
     add(gid, x, GS_SESSIONS[gid + '-live'], NO[gid] ? { number: NO[gid] - x.i } : {});
   });

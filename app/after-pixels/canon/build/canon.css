@@ -2985,14 +2985,18 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cm-row:last-child { padding-bottom: 0; }
 @container dv2 (min-width: 520px) { .cm-row { grid-template-columns: minmax(0, 1fr) 48px; grid-template-areas: "b p" "c ."; column-gap: 12px; } }
 
-/* KEEP: four equal tiles, 72px tall (64px from a 520px card); a long item wraps inside its tile and never widens it. */
+/* KEEP: four equal tiles across, two by two on a phone (card under 520px, each tile twice as wide); a long item wraps as plain text inside
+   its tile and never widens it, and a tile keeps its height as a floor (72px; 64px from a 520px card; 48px on a phone) and grows if its
+   words need more, so the tiles of a row end level. */
 .cm-tiles { --g: 6px; grid-area: b; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--g); }
 @container dv2 (min-width: 520px) { .cm-tiles { --g: 8px; } }
-.cm-t { box-sizing: border-box; display: grid; place-items: center; height: 72px; padding: 4px 2px; overflow: hidden; text-align: center;
+.cm-t { box-sizing: border-box; display: grid; place-items: center; min-height: 72px; padding: 4px 2px; text-align: center; text-wrap: balance;
   font: 700 12px/15px var(--font-text); overflow-wrap: break-word; }
-@container dv2 (min-width: 520px) { .cm-t { height: 64px; font-size: 13px; line-height: 16px; } }
-.cm-fit { display: block; max-width: 100%; text-wrap: balance; }
-.cm-fit.is-split .cm-w1 { display: block; }
+@container dv2 (min-width: 520px) { .cm-t { min-height: 64px; font-size: 13px; line-height: 16px; } }
+@container dv2 (max-width: 519.98px) {
+  .cm-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cm-t { min-height: 48px; padding: 4px 8px; }
+}
 
 /* Grey until named: the items shown are filled (the first quieter), the ones never shown outlined. Named: every shown tile takes the
    thread's colour, and its never-shown tiles a thin outline in it. */

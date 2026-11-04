@@ -341,9 +341,9 @@ KIT_STATE_REGISTER = [
   { group: 'New account', id: 'new-account-history', label: 'History, a new account (empty)', stage: (c) => { c.setView('free'); c.setUser({ username: 'NewPlayer', fresh: true, locked: true, since: GS_DAY0.getTime() }); c.go('history'); } },
   { group: 'New account', id: 'new-account-casebook-pass', label: 'Casebook in your library, a new account with the Pass', stage: (c) => { c.setView('pass'); c.setUser({ username: 'NewPlayer', fresh: true, locked: true, since: GS_DAY0.getTime() }); c.go('casebook', { page: 'record' }); } },
   { group: 'Ended unfinished', id: 'session-groups-unfinished', label: 'Session page, a Daily Groups day that ended unfinished', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ unfinished: true }); c.go('session', { id: 'groups-unfinished' }); } },
-  // Every daily and weekly game but Common: its session page (the earlier edition the seed leaves unplayed, ended unfinished), its library game page
+  // Every daily and weekly game: its session page (the earlier edition the seed leaves unplayed, ended unfinished), its library game page
   // (the now card is today's, never the ended day), and its editions list (the ended day reads Not finished).
-  ...['word', 'mystery', 'escape', 'delve', 'where', 'chain', 'salvage'].flatMap((gid) => {
+  ...['word', 'mystery', 'escape', 'delve', 'where', 'chain', 'salvage', 'common'].flatMap((gid) => {
     const name = GS_GAMES[gid].name;
     // The two free games open as a free account that has not played today, so the now card is today's, empty; Config reaches no such moment for a Pass holder, whose now card reads today's play.
     const free = GS_GAMES[gid].free; const on = (c) => { c.setView(free ? 'free' : 'pass'); c.setConnected(true); c.setReview(free ? { unfinished: true, today: 'none' } : { unfinished: true }); };
@@ -367,7 +367,7 @@ KIT_STATE_REGISTER = [
 // palette, and readable off window.KIT_STATE_NOTES.
 KIT_STATE_GROUP_NOTES = {
   'Ended unfinished': [
-    'Or set Config “Ended unfinished” to A day: each game’s earlier day (week for Escape and Delve) shows as Not finished in History, in its editions list and among its plays on its library game page. Delve’s is the week before run 1, added to its list as run 1 is with two in progress; Config → Several in progress takes it back to in progress. Common is not staged.',
+    'Or set Config “Ended unfinished” to A day: each game’s earlier day (week for Escape and Delve) shows as Not finished in History, in its editions list and among its plays on its library game page. Delve’s is the week before run 1, added to its list as run 1 is with two in progress; Config → Several in progress takes it back to in progress.',
   ],
   'Username': [
     'Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.',

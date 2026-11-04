@@ -20,35 +20,7 @@ import { GS_SESSION_BODY, GS_NOW } from './registry.js';
 const cmClosed = (x) => x.state === 'found' || x.state === 'passed' || x.state === 'lost';
 const cmItem = (x, i) => (i < x.shown ? 'seen' : cmClosed(x) ? 'unseen' : 'hidden');
 const cmTotal = (p) => p.t.reduce((a, x) => a + x.pts, 0);
-const cmSentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
 const cmPoolLabel = (p) => p.pool.length + ' of 5 guesses used' + (p.pool.length ? ': ' + p.pool.map((g) => 'thread ' + (g.k + 1) + (g.right ? ' right' : ' wrong')).join(', ') : '');
-
-// ---- An item's words inside its fixed tile. KEEP: an item never ends on a lone word: it sits on one line, or wraps into lines whose
-// last is at least 70% as wide as the widest (balanced). Where balancing alone leaves a lone word, its first word (often "A" or "The")
-// takes a line of its own; if that still leaves one, its text steps down half a pixel at a time, to 12px at the least. The tile never
-// changes size. ----
-const cmEven = (el) => {
-  const r = document.createRange(); r.selectNodeContents(el);
-  const lines = {}; [...r.getClientRects()].forEach((q) => { if (!q.width) return; const k = Math.round(q.top);
-    lines[k] = lines[k] ? [Math.min(lines[k][0], q.left), Math.max(lines[k][1], q.right)] : [q.left, q.right]; });
-  const w = Object.keys(lines).sort((a, b) => a - b).map((k) => lines[k][1] - lines[k][0]);
-  return w.length <= 1 || w[w.length - 1] >= 0.7 * Math.max(...w);
-};
-const CM_FLOOR = 12;
-const CmFit = ({ text }) => {
-  const ref = React.useRef(null);
-  const sp = text.indexOf(' ');
-  React.useLayoutEffect(() => {
-    const el = ref.current; if (!el) return undefined;
-    const fit = () => { el.style.fontSize = ''; el.classList.remove('is-split'); if (cmEven(el)) return;
-      if (sp > 0) { el.classList.add('is-split'); if (cmEven(el)) return; }
-      let size = parseFloat(getComputedStyle(el).fontSize);
-      while (!cmEven(el) && size > CM_FLOOR) { size -= 0.5; el.style.fontSize = size + 'px'; } };
-    fit(); if (document.fonts) document.fonts.ready.then(fit);
-    const ro = new ResizeObserver(fit); ro.observe(el.parentElement); return () => ro.disconnect();
-  }, [text]);
-  return <span ref={ref} className="cm-fit">{sp > 0 ? <><span className="cm-w1">{text.slice(0, sp)}</span> {text.slice(sp + 1)}</> : text}</span>;
-};
 
 // ---- The guesses: five squares in the order spent. A right guess fills with the colour of the thread it named, with a tick; a wrong one
 // is grey with a cross; one not spent is an outline. ----
@@ -59,14 +31,15 @@ const CmPool = ({ p }) => (
   </div>);
 
 // ---- The session page. A thread's row: the four item tiles, its points at the end, its connection under the tiles. Phone (card under
-// 520px): the tiles across the card, then the connection and the points on the line under them. A row still open says so.
-// KEEP: the four tiles are equal columns (minmax(0, 1fr)) of one fixed height in one grid at every width; a long item wraps inside its
-// tile and never widens it. ----
+// 520px): the tiles two by two, then the connection and the points on the line under them. A row still open says so. An item's words
+// are shown as the content stores them (capitals) and wrap as plain text.
+// KEEP: the tiles are equal columns (minmax(0, 1fr)) in one grid, four across (two by two on a phone); a long item wraps inside its
+// tile and never widens it, and a tile grows taller when its words need more. ----
 const CM_SAY = { open: 'Open', waiting: 'Not reached' };
 const CmRow = ({ x }) => (
   <div className={'cm-row is-' + x.state + ' th-' + x.k}>
     <div className="cm-tiles">{[0, 1, 2, 3].map((i) => { const st = cmItem(x, i);
-      return <span key={i} className={'cm-t is-' + st + (i === 0 && st === 'seen' ? ' is-first' : '')}>{st === 'hidden' ? '' : <CmFit text={cmSentence(x.items[i])} />}</span>; })}</div>
+      return <span key={i} className={'cm-t is-' + st + (i === 0 && st === 'seen' ? ' is-first' : '')}>{st === 'hidden' ? '' : x.items[i]}</span>; })}</div>
     <span className="cm-pts">{cmClosed(x) ? x.pts : ''}</span>
     <p className="cm-conn">{cmClosed(x) ? <b>{x.link}</b> : <span className="cm-say">{CM_SAY[x.state]}</span>}</p>
   </div>);
@@ -76,7 +49,7 @@ export const CmSessBody = ({ s }) => {
   if (!s.play) return s.lines.length ? <GsMoves s={s} /> : null;
   const p = cmPlay(s.play, s.live);
   return <>
-    <GsSessCard r={s.live ? { tone: 'live', word: 'In progress' } : { tone: 'ok', word: 'Completed' }} className="cm-card"
+    <GsSessCard r={s.unfinished ? null : s.live ? { tone: 'live', word: 'In progress' } : { tone: 'ok', word: 'Completed' }} className="cm-card"
       board={<div className="cm-board">{p.t.map((x) => <CmRow key={x.k} x={x} />)}</div>}
       rows={[['Score', <CmScore p={p} />], ['Guesses', <CmPool p={p} />]]} />
     <GsMoves s={s} />
