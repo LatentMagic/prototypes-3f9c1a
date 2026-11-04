@@ -10326,49 +10326,7 @@
   const cmClosed = (x) => x.state === "found" || x.state === "passed" || x.state === "lost";
   const cmItem = (x, i) => i < x.shown ? "seen" : cmClosed(x) ? "unseen" : "hidden";
   const cmTotal = (p) => p.t.reduce((a, x) => a + x.pts, 0);
-  const cmSentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
   const cmPoolLabel = (p) => p.pool.length + " of 5 guesses used" + (p.pool.length ? ": " + p.pool.map((g) => "thread " + (g.k + 1) + (g.right ? " right" : " wrong")).join(", ") : "");
-  const cmEven = (el) => {
-    const r = document.createRange();
-    r.selectNodeContents(el);
-    const lines = {};
-    [...r.getClientRects()].forEach((q) => {
-      if (!q.width) return;
-      const k = Math.round(q.top);
-      lines[k] = lines[k] ? [Math.min(lines[k][0], q.left), Math.max(lines[k][1], q.right)] : [q.left, q.right];
-    });
-    const w = Object.keys(lines).sort((a, b) => a - b).map((k) => lines[k][1] - lines[k][0]);
-    return w.length <= 1 || w[w.length - 1] >= 0.7 * Math.max(...w);
-  };
-  const CM_FLOOR = 12;
-  const CmFit = ({ text }) => {
-    const ref = React$1.useRef(null);
-    const sp = text.indexOf(" ");
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return void 0;
-      const fit = () => {
-        el.style.fontSize = "";
-        el.classList.remove("is-split");
-        if (cmEven(el)) return;
-        if (sp > 0) {
-          el.classList.add("is-split");
-          if (cmEven(el)) return;
-        }
-        let size = parseFloat(getComputedStyle(el).fontSize);
-        while (!cmEven(el) && size > CM_FLOOR) {
-          size -= 0.5;
-          el.style.fontSize = size + "px";
-        }
-      };
-      fit();
-      if (document.fonts) document.fonts.ready.then(fit);
-      const ro = new ResizeObserver(fit);
-      ro.observe(el.parentElement);
-      return () => ro.disconnect();
-    }, [text]);
-    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cm-fit" }, sp > 0 ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "cm-w1" }, text.slice(0, sp)), " ", text.slice(sp + 1)) : text);
-  };
   const CmPool = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-pool", role: "img", "aria-label": cmPoolLabel(p) }, [0, 1, 2, 3, 4].map((j) => {
     const g = p.pool[j];
     return /* @__PURE__ */ React$1.createElement("span", { key: j, "aria-hidden": "true", className: "cm-q " + (g ? g.right ? "is-right th-" + g.k : "is-wrong" : "is-spare") }, g ? g.right ? "✓" : "×" : "");
@@ -10376,7 +10334,7 @@
   const CM_SAY = { open: "Open", waiting: "Not reached" };
   const CmRow = ({ x }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-row is-" + x.state + " th-" + x.k }, /* @__PURE__ */ React$1.createElement("div", { className: "cm-tiles" }, [0, 1, 2, 3].map((i) => {
     const st = cmItem(x, i);
-    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st }, st === "hidden" ? "" : /* @__PURE__ */ React$1.createElement(CmFit, { text: cmSentence(x.items[i]) }));
+    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st }, st === "hidden" ? "" : x.items[i]);
   })), /* @__PURE__ */ React$1.createElement("span", { className: "cm-pts" }, cmClosed(x) ? x.pts : ""), /* @__PURE__ */ React$1.createElement("p", { className: "cm-conn" }, cmClosed(x) ? /* @__PURE__ */ React$1.createElement("b", null, x.link) : /* @__PURE__ */ React$1.createElement("span", { className: "cm-say" }, CM_SAY[x.state])));
   const CmScore = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-score", role: "img", "aria-label": cmTotal(p) + " of 15 points" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, cmTotal(p)), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/ 15"));
   const CmSessBody = ({ s }) => {
