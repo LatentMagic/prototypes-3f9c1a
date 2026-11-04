@@ -71,7 +71,7 @@ const CmRow = ({ x }) => (
     <p className="cm-conn">{cmClosed(x) ? <b>{x.link}</b> : <span className="cm-say">{CM_SAY[x.state]}</span>}</p>
   </div>);
 const CmScore = ({ p }) => (
-  <div className="cm-score" role="img" aria-label={cmTotal(p) + ' of 15 points'}><b aria-hidden="true">{cmTotal(p)}</b><span aria-hidden="true">of 15</span></div>);
+  <div className="cm-score" role="img" aria-label={cmTotal(p) + ' of 15 points'}><b aria-hidden="true">{cmTotal(p)}</b><span aria-hidden="true">/ 15</span></div>);
 export const CmSessBody = ({ s }) => {
   if (!s.play) return s.lines.length ? <GsMoves s={s} /> : null;
   const p = cmPlay(s.play, s.live);
@@ -96,7 +96,7 @@ const CmNowPic = ({ p }) => (
   <div className="cmn-pic">
     <div className="cmn-board" role="img" aria-label={cmBoardLabel(p)}>{p.t.map((x) => <CmMini key={x.k} x={x} />)}</div>
     <div className="cmn-sum">
-      <div className="cmn-score" role="img" aria-label={cmTotal(p) + ' of 15 points'}><b aria-hidden="true">{cmTotal(p)}</b><span aria-hidden="true">of 15</span></div>
+      <div className="cmn-score" role="img" aria-label={cmTotal(p) + ' of 15 points'}><b aria-hidden="true">{cmTotal(p)}</b><span aria-hidden="true">/ 15</span></div>
       <CmPool p={p} />
     </div>
   </div>);

@@ -3016,9 +3016,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 :is(.cm-row.is-passed, .cm-row.is-lost) :is(.cm-conn b, .cm-pts) { color: var(--muted); }
 .cm-say { font: 600 12px/1.3 var(--font-text); letter-spacing: .04em; text-transform: uppercase; }
 
-.cm-score { display: grid; justify-items: center; gap: 4px; }
+.cm-score { display: flex; align-items: baseline; gap: 6px; }
 .cm-score b { font: 700 48px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
-.cm-score span { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+.cm-score span { font: 600 16px/1 var(--font-text); color: var(--muted); }
 .cm-card { --q: 36px; }
 
 /* KEEP: the panel sits beside the board only from an 840px card. The shared card puts it beside from 672px, but the board (560px) and
