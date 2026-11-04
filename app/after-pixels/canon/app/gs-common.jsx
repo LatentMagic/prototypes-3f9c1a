@@ -31,16 +31,15 @@ const CmPool = ({ p }) => (
   </div>);
 
 // ---- The session page. A thread's row: the four item tiles, its points at the end, its connection under the tiles. Phone (card under
-// 520px): the tiles across the card, then the connection and the points on the line under them. A row still open says so.
+// 520px): the tiles across the card, then the connection and the points on the line under them.
 // KEEP: the four tiles are equal columns (minmax(0, 1fr)) in one grid, two by two under a 520px card; a long item wraps inside its
 // tile and never widens it, and the tile grows past its minimum height rather than clip. ----
-const CM_SAY = { open: 'Open', waiting: 'Not reached' };
 const CmRow = ({ x }) => (
   <div className={'cm-row is-' + x.state + ' th-' + x.k}>
     <div className="cm-tiles">{[0, 1, 2, 3].map((i) => { const st = cmItem(x, i);
       return <span key={i} className={'cm-t is-' + st}>{st === 'hidden' ? '' : x.items[i]}</span>; })}</div>
     <span className="cm-pts">{cmClosed(x) ? x.pts : ''}</span>
-    <p className="cm-conn">{cmClosed(x) ? <b>{x.link}</b> : <span className="cm-say">{CM_SAY[x.state]}</span>}</p>
+    {cmClosed(x) && <p className="cm-conn"><b>{x.link}</b></p>}
   </div>);
 const CmScore = ({ p }) => (
   <div className="cm-score" role="img" aria-label={cmTotal(p) + ' of 15 points'}><b aria-hidden="true">{cmTotal(p)}</b><span aria-hidden="true">/ 15</span></div>);
