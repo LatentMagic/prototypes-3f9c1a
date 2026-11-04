@@ -4610,23 +4610,23 @@
     const open = ([x, y]) => x >= 0 && y >= 0 && x < 8 && y < 8 && !tried.has(x + "," + y) && !clear.has(x + "," + y);
     const around = ([x, y]) => [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
     while (log.length < 30 && sunk < 5) {
-      let cell = null;
-      while (queue.length && !cell) {
+      let cell2 = null;
+      while (queue.length && !cell2) {
         const q = queue.shift();
-        if (open(q)) cell = q;
+        if (open(q)) cell2 = q;
       }
-      if (!cell) cell = hunt.find(open);
-      const k = cell[0] + "," + cell[1];
+      if (!cell2) cell2 = hunt.find(open);
+      const k = cell2[0] + "," + cell2[1];
       tried.add(k);
       const si = at2[k];
       if (si == null) {
-        log.push([cell, "miss"]);
+        log.push([cell2, "miss"]);
         continue;
       }
-      hits[si].push(cell);
+      hits[si].push(cell2);
       if (hits[si].length === ships[si].length) {
         sunk += 1;
-        log.push([cell, "sunk", ships[si].length]);
+        log.push([cell2, "sunk", ships[si].length]);
         queue = [];
         ships[si].forEach(([x, y]) => {
           for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) clear.add(x + dx + "," + (y + dy));
@@ -4635,13 +4635,13 @@
           if (j !== si && h.length && h.length < ships[j].length) h.forEach((c) => queue.push(...around(c)));
         });
       } else {
-        log.push([cell, "hit"]);
+        log.push([cell2, "hit"]);
         const h = hits[si];
         if (h.length >= 2) {
           const xs = h.map((c) => c[0]);
           const ys = h.map((c) => c[1]);
           queue = (h[0][1] === h[1][1] ? [[Math.min(...xs) - 1, h[0][1]], [Math.max(...xs) + 1, h[0][1]]] : [[h[0][0], Math.min(...ys) - 1], [h[0][0], Math.max(...ys) + 1]]).concat(queue);
-        } else queue = around(cell).concat(queue);
+        } else queue = around(cell2).concat(queue);
       }
     }
     return log;
@@ -5356,7 +5356,7 @@
         ] }
       ]
     });
-    DP_SESSION_STATES = ["where", "chain"].flatMap((k) => {
+    DP_SESSION_STATES = ["where", "chain", "salvage"].flatMap((k) => {
       const n = GS_NAME[k];
       const [g, sp] = dpSessAt(k);
       const open = (id, extra) => (c) => {
@@ -5367,8 +5367,9 @@
       };
       return [
         { group: g, id: "session-" + k + "-in-progress", label: sp + n + " in progress", stage: open(k + "-live", { week: "live" }) },
-        { group: g, id: "session-" + k + "-failed", label: sp + n + ", an earlier play that failed", stage: open(dpEarlier(k, false)) },
-        { group: g, id: "session-" + k + "-earlier", label: sp + n + ", an earlier play (played once)", stage: open(dpEarlier(k, true)) }
+        // Salvage's own failed and earlier plays are fixtures only on today's edition (app/gs-salvage.jsx), so its failed state is today's, picked in Config → This edition.
+        k === "salvage" ? { group: g, id: "session-salvage-failed", label: sp + n + " today, failed", stage: open("salvage-today-failed", { ed: "failed" }) } : { group: g, id: "session-" + k + "-failed", label: sp + n + ", an earlier play that failed", stage: open(dpEarlier(k, false)) },
+        ...k === "salvage" ? [] : [{ group: g, id: "session-" + k + "-earlier", label: sp + n + ", an earlier play (played once)", stage: open(dpEarlier(k, true)) }]
       ];
     });
     DP_PZ_STATES = DP_IDS.flatMap((k) => {
@@ -10258,6 +10259,174 @@
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
+  const SLV_COLS = "ABCDEFGH";
+  const SLV_N8 = [1, 2, 3, 4, 5, 6, 7, 8];
+  const SLV_WRECKS = [["A5", "B5", "C5", "D5"], ["E3", "F3", "G3"], ["F6", "G6", "H6"], ["G8", "H8"], ["C1", "C2"]];
+  const SLV_SHOWN = { row: [3, 5, 6, 7], col: ["C", "E", "F", "H"] };
+  const SLV_DIVES = 20;
+  const SLV_TOOLS = { sonar: "Sonar", detector: "Metal detector", net: "Dragnet" };
+  const SLV_ALL = Object.keys(SLV_TOOLS);
+  const slvColOf = (sq) => SLV_COLS.indexOf(sq[0]);
+  const slvRowOf = (sq) => +sq.slice(1) - 1;
+  const slvAt = (c, r) => SLV_COLS[c] + (r + 1);
+  const slvWreckOf = (sq) => SLV_WRECKS.findIndex((w) => w.includes(sq));
+  const slvLineSquares = ({ axis, name }, from) => {
+    const sq = SLV_N8.map((_, i) => axis === "row" ? slvAt(i, +name - 1) : slvAt(SLV_COLS.indexOf(name), i));
+    return from === "right" || from === "bottom" ? sq.reverse() : sq;
+  };
+  const slvLineCount = (line) => slvLineSquares(line).filter((s) => slvWreckOf(s) > -1).length;
+  const slvLineWords = ({ axis, name }) => (axis === "row" ? "Row " : "Column ") + name;
+  const slvIsShown = ({ axis, name }) => SLV_SHOWN[axis].includes(name);
+  const slvCountWords = (n) => n === 0 ? "no wreck squares." : n + (n === 1 ? " wreck square" : " wreck squares") + ", found or not.";
+  const slvPatch = (sq) => {
+    const c = slvColOf(sq), r = slvRowOf(sq);
+    const out = [];
+    for (let y = Math.max(0, r - 1); y <= Math.min(7, r + 1); y++) for (let x = Math.max(0, c - 1); x <= Math.min(7, c + 1); x++) out.push(slvAt(x, y));
+    return out;
+  };
+  const slvRunPlay = (moves) => {
+    const hit = /* @__PURE__ */ new Set();
+    const raised = /* @__PURE__ */ new Set();
+    const lines = [];
+    const tools = {};
+    const miss = [];
+    const marks = [];
+    let dives = 0;
+    const strike = (sq) => {
+      hit.add(sq);
+      const w = slvWreckOf(sq);
+      if (SLV_WRECKS[w].every((s) => hit.has(s)) && !raised.has(w)) {
+        raised.add(w);
+        return SLV_WRECKS[w].length;
+      }
+      return 0;
+    };
+    moves.forEach((m) => {
+      if (m.dive) {
+        if (hit.has(m.dive)) return;
+        dives += 1;
+        const w = slvWreckOf(m.dive);
+        let res = "miss";
+        if (w < 0) miss.push(m.dive);
+        else {
+          const sunk = strike(m.dive);
+          res = sunk ? "raised: the wreck of " + sunk : "hit";
+        }
+        marks.push(res === "miss" ? "○" : res === "hit" ? "✕" : "■");
+        lines.push(["Dive " + dives, m.dive, res]);
+      } else if (m.sonar) {
+        const count = slvLineCount(m.sonar);
+        tools.sonar = { line: m.sonar, squares: slvLineSquares(m.sonar) };
+        marks.push("📡");
+        lines.push(["Hint", slvLineWords(m.sonar) + ": " + slvCountWords(count)]);
+      } else if (m.detector) {
+        const sq = slvPatch(m.detector);
+        const count = sq.filter((s) => slvWreckOf(s) > -1).length;
+        tools.detector = { squares: sq };
+        marks.push("🧲");
+        lines.push(["Metal detector", m.detector + " and around it: " + slvCountWords(count)]);
+      } else if (m.net) {
+        const run = slvLineSquares(m.net, m.net.from);
+        const i = run.findIndex((s) => slvWreckOf(s) > -1);
+        const snag = i < 0 ? null : run[i];
+        const head = slvLineWords(m.net) + " from the " + m.net.from;
+        let say = head + ": no wreck squares.";
+        if (snag && hit.has(snag)) say = head + ": the dragnet snags at " + snag + ", already found.";
+        else if (snag) {
+          const sunk = strike(snag);
+          say = head + ": the dragnet snags at " + snag + (sunk ? " and raises the wreck of " + sunk + "." : ", a hit.");
+        }
+        tools.net = { squares: snag ? run.slice(0, i + 1) : run };
+        marks.push("🕸️");
+        lines.push(["Dragnet", say]);
+      }
+    });
+    const state = raised.size === 5 ? "won" : dives >= SLV_DIVES ? "lost" : "live";
+    if (state === "lost") SLV_WRECKS.forEach((w) => lines.push(["Wreck", "The wreck of " + w.length + ": " + w[0] + " to " + w[w.length - 1]]));
+    return { state, dives, hit, raised, miss, tools, lines, marks, sweep: tools.sonar ? tools.sonar.line : null };
+  };
+  const slvDive = (s) => s.split(" ").map((d) => ({ dive: d }));
+  const SLV_PLAYS = {
+    // Won in 16 of 20 dives, all three tools used.
+    won: slvRunPlay([
+      { sonar: { axis: "col", name: "G" } },
+      ...slvDive("A5 B5 C5 D5"),
+      { detector: "F4" },
+      ...slvDive("D3 E3 F3 G3"),
+      { net: { axis: "row", name: 6, from: "left" } },
+      ...slvDive("G6 H6 G7 G8 H8 C3 C2 C1")
+    ]),
+    // Lost: all 20 dives spent with two wrecks not raised; the dragnet not used.
+    lost: slvRunPlay([...slvDive("A1 B1 C1 C2 D3 E3 F3 G3 A5 B5 C5 D5"), { sonar: { axis: "row", name: 8 } }, { detector: "G5" }, ...slvDive("H4 F5 G6 G7 E8 F8 A8 B8")]),
+    // In progress: 9 dives, sonar and detector used, a hit on the wreck in column C.
+    live: slvRunPlay([{ sonar: { axis: "col", name: "A" } }, ...slvDive("A5 B5 C5 D5"), { detector: "E4" }, ...slvDive("D3 E3 F3 G3 C1")])
+  };
+  const slvShareLinesOf = (p) => {
+    const wrecks = p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks";
+    const rows = [];
+    for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(" "));
+    return ["Salvage No. 21 · " + wrecks + " · " + p.dives + " of " + SLV_DIVES + " dives", "", ...rows];
+  };
+  const SLV_RESULT = { won: { tone: "ok", word: "Completed" }, lost: { tone: "bad", word: "Failed" }, live: { tone: "live", word: "In progress" } };
+  const slvGc = (i) => i + 2;
+  const slvGr = (i) => i + 3;
+  const cell = (s) => ({ gridColumn: slvGc(slvColOf(s)), gridRow: slvGr(slvRowOf(s)) });
+  const SlvClue = ({ v, swept, style }) => v === void 0 ? null : /* @__PURE__ */ React$1.createElement("span", { className: "slv-chip" + (swept ? " is-swept" : ""), style, "aria-hidden": "true" }, v);
+  const SlvSea = ({ p }) => {
+    const sw = p.sweep;
+    const isSw = (axis, name) => !!sw && sw.axis === axis && sw.name === name;
+    const clue = (axis, name) => slvIsShown({ axis, name }) || isSw(axis, name) ? slvLineCount({ axis, name }) : void 0;
+    const dots = [...p.hit].filter((s) => !p.raised.has(slvWreckOf(s)));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "slv-sea", role: "img", "aria-label": "The sea: " + p.raised.size + " of 5 wrecks raised, " + p.dives + " of " + SLV_DIVES + " dives" }, SLV_COLS.split("").map((c, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c }, /* @__PURE__ */ React$1.createElement(SlvClue, { v: clue("col", c), swept: isSw("col", c), style: { gridColumn: slvGc(i), gridRow: 1 } }), /* @__PURE__ */ React$1.createElement("span", { className: "slv-ml", style: { gridColumn: slvGc(i), gridRow: 2 }, "aria-hidden": "true" }, c))), SLV_N8.map((r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-ml", style: { gridColumn: 1, gridRow: slvGr(r - 1) }, "aria-hidden": "true" }, r), /* @__PURE__ */ React$1.createElement(SlvClue, { v: clue("row", r), swept: isSw("row", r), style: { gridColumn: 10, gridRow: slvGr(r - 1) } }))), SLV_COLS.split("").flatMap((c, i) => SLV_N8.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: c + r, className: "slv-sq", style: { gridColumn: slvGc(i), gridRow: slvGr(r - 1) } }))), SLV_ALL.filter((k) => p.tools[k]).flatMap((k) => p.tools[k].squares.map((s) => /* @__PURE__ */ React$1.createElement("i", { key: k + s, className: "slv-cv t-" + k, style: cell(s) }))), p.miss.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "slv-mk", style: cell(s) }, /* @__PURE__ */ React$1.createElement("i", { className: "slv-dot is-miss" }))), dots.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "slv-mk", style: cell(s) }, /* @__PURE__ */ React$1.createElement("i", { className: "slv-dot is-hit" }))), SLV_WRECKS.map((w, i) => {
+      const up = p.raised.has(i);
+      if (!up && p.state !== "lost") return null;
+      const across = slvRowOf(w[0]) === slvRowOf(w[w.length - 1]);
+      return /* @__PURE__ */ React$1.createElement(
+        "span",
+        {
+          key: w[0],
+          className: "slv-hull " + (up ? "is-raised" : "is-unfound"),
+          style: { gridColumn: slvGc(slvColOf(w[0])) + " / span " + (across ? w.length : 1), gridRow: slvGr(slvRowOf(w[0])) + " / span " + (across ? 1 : w.length) }
+        }
+      );
+    }));
+  };
+  const Big = ({ n, of, cap }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-big", role: "img", "aria-label": n + " of " + of + " " + cap }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, n), /* @__PURE__ */ React$1.createElement("small", { "aria-hidden": "true" }, "/", of, " ", cap));
+  const SlvHaul = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-haul" }, /* @__PURE__ */ React$1.createElement(Big, { n: p.dives, of: SLV_DIVES, cap: "dives" }), /* @__PURE__ */ React$1.createElement(Big, { n: p.raised.size, of: 5, cap: "wrecks" }));
+  const SLV_ST = { fill: "none", stroke: "currentColor", strokeWidth: 1.75, strokeLinecap: "square", strokeLinejoin: "miter" };
+  const ICON = {
+    sonar: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "5", cy: "12", r: "1.6", fill: "currentColor" }), /* @__PURE__ */ React$1.createElement("path", { d: "M9 8.5a5 5 0 0 1 0 7M12.5 5.5a9.5 9.5 0 0 1 0 13M16 3a13 13 0 0 1 0 18" })),
+    detector: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "M5 3l7 12" }), /* @__PURE__ */ React$1.createElement("ellipse", { cx: "15", cy: "18", rx: "6", ry: "3" })),
+    net: /* @__PURE__ */ React$1.createElement("path", { d: "M3 4h18l-3 16H6z M8 4l1.5 16 M16 4l-1.5 16 M4 10h16 M5 15h14" })
+  };
+  const SlvKit = ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "slv-kit" }, SLV_ALL.map((k) => {
+    const u = !!p.tools[k];
+    return /* @__PURE__ */ React$1.createElement("li", { key: k, className: "slv-tool t-" + k + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-bx" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "22", height: "22", "aria-hidden": "true", ...SLV_ST }, ICON[k])), /* @__PURE__ */ React$1.createElement("span", { className: "slv-nm" }, SLV_TOOLS[k], /* @__PURE__ */ React$1.createElement("span", { className: "slv-sr" }, u ? ", used" : ", not used")));
+  }));
+  const SlvSessBody = ({ s }) => {
+    const p = SLV_PLAYS[s.fx];
+    if (!p) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsSessResult, { s }), s.lines.length > 0 && /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsSessCard, { r: SLV_RESULT[p.state], className: "slv-card", board: /* @__PURE__ */ React$1.createElement(SlvSea, { p }), rows: [["Haul", /* @__PURE__ */ React$1.createElement(SlvHaul, { p })], ["Kit", /* @__PURE__ */ React$1.createElement(SlvKit, { p })]] }), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const FIXTURES = { "salvage-today": "won", "salvage-today-failed": "lost", "salvage-live": "live" };
+  const initGsSalvage = () => {
+    GS_SESSION_BODY.salvage = SlvSessBody;
+    Object.keys(FIXTURES).forEach((sid) => {
+      const fx = FIXTURES[sid];
+      const p = SLV_PLAYS[fx];
+      const done = fx !== "live";
+      const result = done ? SLV_RESULT[fx].word + ": " + (p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks") + " in " + p.dives + " of " + SLV_DIVES + " dives" : "In progress";
+      Object.assign(GS_SESSIONS[sid], {
+        fx,
+        loss: fx === "lost",
+        result,
+        lines: p.lines,
+        figures: [p.raised.size + " of 5 wrecks", p.dives + " of " + SLV_DIVES + " dives"],
+        share: done ? result : null,
+        shareLines: done ? slvShareLinesOf(p) : void 0
+      });
+    });
+  };
   const COLS = "ABCDEFGH";
   const N8 = [1, 2, 3, 4, 5, 6, 7, 8];
   const WRECKS = [["A5", "B5", "C5", "D5"], ["E3", "F3", "G3"], ["F6", "G6", "H6"], ["G8", "H8"], ["C1", "C2"]];
@@ -11134,5 +11303,6 @@
   initMain();
   initGsWhere();
   initGsCommon();
+  initGsSalvage();
   initPlaygroundSalvageSession();
 })(React, ReactDOM);

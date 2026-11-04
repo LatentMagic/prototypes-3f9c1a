@@ -136,7 +136,7 @@ const GsSessHead = ({ art, label, title, actions }) => (
   </section>
 );
 // The result and figures a head does not carry: a game with no body of its own tells them here, under the head.
-const GsSessResult = ({ s, title }) => (
+export const GsSessResult = ({ s, title }) => (
   <section className="gs-stack-md" style={{ justifyItems: 'start' }}>
     <h2 className="mcp-t-sec">{gsOr(s.result)}</h2>
     {(s.figures || []).filter((f) => f !== title).length > 0 && <div className="gs-figs">{s.figures.filter((f) => f !== title).map((f, i) => <span key={i} className="gs-fig">{gsOr(f)}</span>)}</div>}

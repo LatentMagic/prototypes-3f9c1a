@@ -562,12 +562,15 @@ Object.assign(GS_CHATS, {
       gscAi('common', ['Shell is right, for 2 points.', 'An egg, a tortoise, a peanut and a hermit crab all have one. On to Thread 2.'])] },
   ],
 });
-DP_SESSION_STATES = ['where', 'chain'].flatMap((k) => { const n = GS_NAME[k]; const [g, sp] = dpSessAt(k);
+DP_SESSION_STATES = ['where', 'chain', 'salvage'].flatMap((k) => { const n = GS_NAME[k]; const [g, sp] = dpSessAt(k);
   const open = (id, extra) => (c) => { c.setView('pass'); c.setConnected(true); if (extra) c.setReview(extra); c.go('session', { id: typeof id === 'function' ? id() : id }); };
   return [
     { group: g, id: 'session-' + k + '-in-progress', label: sp + n + ' in progress', stage: open(k + '-live', { week: 'live' }) },
-    { group: g, id: 'session-' + k + '-failed', label: sp + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
-    { group: g, id: 'session-' + k + '-earlier', label: sp + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) },
+    // Salvage's own failed and earlier plays are fixtures only on today's edition (app/gs-salvage.jsx), so its failed state is today's, picked in Config → This edition.
+    k === 'salvage'
+      ? { group: g, id: 'session-salvage-failed', label: sp + n + ' today, failed', stage: open('salvage-today-failed', { ed: 'failed' }) }
+      : { group: g, id: 'session-' + k + '-failed', label: sp + n + ', an earlier play that failed', stage: open(dpEarlier(k, false)) },
+    ...(k === 'salvage' ? [] : [{ group: g, id: 'session-' + k + '-earlier', label: sp + n + ', an earlier play (played once)', stage: open(dpEarlier(k, true)) }]),
   ]; });
 DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily puzzles 1213'; return [
   { group: g, id: k + '-signed-out', label: n + ', signed out', stage: (c) => c.go(k) },
