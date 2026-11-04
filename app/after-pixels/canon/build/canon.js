@@ -4709,12 +4709,13 @@
     const day = t.map((x) => [x.shown, x.pts, ...x.state === "found" ? [] : [x.state]]);
     return { t, pool, lines, day, live: !!live };
   };
-  const cmMarks = (t) => "●".repeat(t[0]) + "○".repeat(4 - t[0]);
+  const CM_SQ = ["🟧", "🟦", "🟪"];
+  const cmMarks = (t, k) => (t[2] ? "⬜" : CM_SQ[k]).repeat(t[0]) + "⬛".repeat(4 - t[0]);
   const cmScore = (day) => day.reduce((a, t) => a + t[1], 0);
   const cmFound = (day) => day.filter((t) => !t[2]).length;
   const cmResult = (day) => GS_RESULT.common({ score: cmScore(day) });
-  const cmHead = (n, day) => "Common No. " + n + " · " + cmScore(day) + " of 15";
-  const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => k + 1 + "  " + cmMarks(t) + "  " + t[1])];
+  const cmHead = (n, day) => "Common No. " + n + " · " + cmScore(day) + "/15";
+  const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => cmMarks(t, k) + "  " + t[1])];
   const cmFigures = (day) => [cmScore(day) + " of 15", cmFound(day) + " of 3 connections found"];
   const cmSess = (n, play) => {
     const p = cmPlay(play);
