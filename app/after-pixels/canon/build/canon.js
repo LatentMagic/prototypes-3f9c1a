@@ -10337,7 +10337,7 @@
       GsSessCard,
       {
         r: s.unfinished ? null : s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
-        className: "cm-card",
+        className: s.unfinished ? "cm-card cm-bare" : "cm-card",
         board: /* @__PURE__ */ React$1.createElement("div", { className: "cm-board" }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(CmRow, { key: x.k, x }))),
         rows: [["Score", /* @__PURE__ */ React$1.createElement(CmScore, { p })], ["Guesses", /* @__PURE__ */ React$1.createElement(CmPool, { p })]]
       }
