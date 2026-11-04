@@ -10375,7 +10375,7 @@
   const CM_SAY = { open: "Open", waiting: "Not reached" };
   const CmRow = ({ x }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-row is-" + x.state + " th-" + x.k }, /* @__PURE__ */ React$1.createElement("div", { className: "cm-tiles" }, [0, 1, 2, 3].map((i) => {
     const st = cmItem(x, i);
-    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st + (i === 0 && st === "seen" ? " is-first" : "") }, st === "hidden" ? "" : /* @__PURE__ */ React$1.createElement(CmFit, { text: cmSentence(x.items[i]) }));
+    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st }, st === "hidden" ? "" : /* @__PURE__ */ React$1.createElement(CmFit, { text: cmSentence(x.items[i]) }));
   })), /* @__PURE__ */ React$1.createElement("span", { className: "cm-pts" }, cmClosed(x) ? x.pts : ""), /* @__PURE__ */ React$1.createElement("p", { className: "cm-conn" }, cmClosed(x) ? /* @__PURE__ */ React$1.createElement("b", null, x.link) : /* @__PURE__ */ React$1.createElement("span", { className: "cm-say" }, CM_SAY[x.state])));
   const CmScore = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-score", role: "img", "aria-label": cmTotal(p) + " of 15 points" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, cmTotal(p)), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "of 15"));
   const CmSessBody = ({ s }) => {

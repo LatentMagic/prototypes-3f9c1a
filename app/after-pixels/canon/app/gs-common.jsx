@@ -66,7 +66,7 @@ const CM_SAY = { open: 'Open', waiting: 'Not reached' };
 const CmRow = ({ x }) => (
   <div className={'cm-row is-' + x.state + ' th-' + x.k}>
     <div className="cm-tiles">{[0, 1, 2, 3].map((i) => { const st = cmItem(x, i);
-      return <span key={i} className={'cm-t is-' + st + (i === 0 && st === 'seen' ? ' is-first' : '')}>{st === 'hidden' ? '' : <CmFit text={cmSentence(x.items[i])} />}</span>; })}</div>
+      return <span key={i} className={'cm-t is-' + st}>{st === 'hidden' ? '' : <CmFit text={cmSentence(x.items[i])} />}</span>; })}</div>
     <span className="cm-pts">{cmClosed(x) ? x.pts : ''}</span>
     <p className="cm-conn">{cmClosed(x) ? <b>{x.link}</b> : <span className="cm-say">{CM_SAY[x.state]}</span>}</p>
   </div>);

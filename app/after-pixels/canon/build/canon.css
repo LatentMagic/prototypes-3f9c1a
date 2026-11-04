@@ -2999,10 +2999,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cm-fit { display: block; max-width: 100%; text-wrap: balance; }
 .cm-fit.is-split .cm-w1 { display: block; }
 
-/* Grey until named: the items shown are filled (the first quieter), the ones never shown outlined. Named: every shown tile takes the
+/* Grey until named: every item shown is filled alike, the ones never shown outlined. Named: every shown tile takes the
    thread's colour, and its never-shown tiles a thin outline in it. */
 .cm-t.is-seen { background: var(--cm-grey); color: var(--text); }
-.cm-t.is-first { background: color-mix(in srgb, var(--text) 9%, var(--card)); color: var(--muted); }
 .cm-t.is-unseen, .cm-t.is-hidden { border: 2px solid var(--line); color: var(--muted); }
 .cm-row.is-found .cm-t.is-seen { background: var(--th); color: var(--page); }
 .cm-row.is-found .cm-t.is-unseen { border: 1px solid var(--th); color: var(--text); }
