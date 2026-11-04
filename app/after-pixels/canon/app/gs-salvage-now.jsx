@@ -11,7 +11,7 @@ import { edList } from './gs-history.jsx';
 import { SLV_WRECKS, SLV_DIVES, SLV_ALL, SLV_PLAYS, SLV_RESULT, SLV_ST, ICON } from './gs-salvage.jsx';
 
 // A hull in ninths of a square, as the session page draws one (the pill inset 1/9 each side), so it is never stretched: raised solid,
-// otherwise dashed with a disc in each square already hit.
+// otherwise dashed with a disc for each square already hit, filled from the left.
 const SvnHull = ({ w, p }) => {
   const up = w.every((s) => p.hit.has(s)); const n = w.length; const L = 9 * n - 2;
   return (
@@ -20,7 +20,8 @@ const SvnHull = ({ w, p }) => {
         ? <rect x="0" y="0" width={L} height="7" rx="3.5" />
         : <>
           <rect className="svn-dash" x=".3" y=".3" width={L - .6} height="6.4" rx="3.2" strokeDasharray="1.1 .9" />
-          {w.map((s, i) => p.hit.has(s) && <circle key={s} cx={9 * i + 3.5} cy="3.5" r="2.4" />)}
+          {/* KEEP: hits fill from the left as a count, not at the square that was hit (the card says how much of a wreck is found, not where). */}
+          {w.filter((s) => p.hit.has(s)).map((s, i) => <circle key={s} cx={9 * i + 3.5} cy="3.5" r="2.4" />)}
         </>}
     </svg>);
 };
