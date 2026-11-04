@@ -168,10 +168,10 @@
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(), role: "group", "aria-label": title || "Result" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-result-head" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), st && /* @__PURE__ */ React2.createElement(StatusTag, { tone: st.tone || "won" }, st.label)), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, line), stats.length > 0 && /* @__PURE__ */ React2.createElement(StatRow, { items: stats, grid: true }), actions.length > 0 && /* @__PURE__ */ React2.createElement(NavButtons, { items: actions, onGo, stack: true }));
     }
     const TONE = { hit: "won", weak: "warn", miss: "lost" };
-    const WORD = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
+    const WORD2 = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
     function RollLine({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
       const sum = total ?? roll + mod;
-      const text = outcome || WORD[result] || "";
+      const text = outcome || WORD2[result] || "";
       const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
       return /* @__PURE__ */ React2.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React2.createElement("b", null, label), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React2.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React2.createElement("span", null, "= ", /* @__PURE__ */ React2.createElement("b", null, sum)), target != null && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React2.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
     }
@@ -422,9 +422,9 @@
       });
       return { turns: out, total: last, end: d(p.end), enter: d(p.enter), wordIn: d(p.wordIn) };
     }
-    function enter(T, at, dur) {
-      if (T < at) return null;
-      const q = c01((T - at) / dur);
+    function enter(T, at2, dur) {
+      if (T < at2) return null;
+      const q = c01((T - at2) / dur);
       const e = q >= 1 ? 1 : ease(q);
       return { opacity: +e.toFixed(4), transform: "translateY(" + ((1 - e) * 4).toFixed(2) + "px)" };
     }
@@ -448,12 +448,12 @@
       let typed = null, sent = false;
       tl.turns.forEach(({ type, pieces }) => {
         if (!type) return;
-        const at = pieces.u.at;
-        if (T >= type.start && T < at) {
+        const at2 = pieces.u.at;
+        if (T >= type.start && T < at2) {
           const n = Math.min(type.text.length, Math.floor(c01((T - type.start) / (type.end - type.start)) * type.text.length));
           typed = { text: type.text.slice(0, n), caret: T < type.end || Math.floor((T - type.end) / 150) % 2 === 1 };
         }
-        if (T >= at && T < at + 120) sent = true;
+        if (T >= at2 && T < at2 + 120) sent = true;
       });
       return { fx, typed, sent };
     }
@@ -601,32 +601,32 @@
     }
     function CardRow({ title, sub, label, as = "h2", kind = "cards", children, className = "" }) {
       const ref = React2.useRef(null), prev = React2.useRef(null), next = React2.useRef(null), pressed = React2.useRef(null);
-      const [at, setAt] = React2.useState({ over: false, start: true, end: true });
+      const [at2, setAt] = React2.useState({ over: false, start: true, end: true });
       React2.useLayoutEffect(() => {
         const el = ref.current;
         if (!el) return void 0;
-        const read2 = () => {
+        const read = () => {
           const over2 = el.scrollWidth > el.clientWidth + 1, start = el.scrollLeft <= 1, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
           setAt((a) => a.over === over2 && a.start === start && a.end === end ? a : { over: over2, start, end });
         };
-        read2();
-        el.addEventListener("scroll", read2, { passive: true });
-        const ro = window.ResizeObserver ? new ResizeObserver(read2) : null;
+        read();
+        el.addEventListener("scroll", read, { passive: true });
+        const ro = window.ResizeObserver ? new ResizeObserver(read) : null;
         if (ro) ro.observe(el);
         return () => {
-          el.removeEventListener("scroll", read2);
+          el.removeEventListener("scroll", read);
           if (ro) ro.disconnect();
         };
       }, []);
       React2.useEffect(() => {
-        if (pressed.current === "next" && at.end && prev.current) {
+        if (pressed.current === "next" && at2.end && prev.current) {
           prev.current.focus({ preventScroll: true });
           pressed.current = "prev";
-        } else if (pressed.current === "prev" && at.start && next.current) {
+        } else if (pressed.current === "prev" && at2.start && next.current) {
           next.current.focus({ preventScroll: true });
           pressed.current = "next";
         }
-      }, [at.start, at.end]);
+      }, [at2.start, at2.end]);
       const move = (d) => {
         const el = ref.current;
         if (!el) return;
@@ -636,7 +636,7 @@
         el.scrollBy({ left: d * step, behavior: still ? "auto" : "smooth" });
       };
       const T = as, name = label || (typeof title === "string" ? title : "Cards"), n = React2.Children.count(children);
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-crow" + (kind === "chat" ? " is-chat" : kind === "tiles" ? " is-tiles" : "") + " " + className).trim() }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-head" }, /* @__PURE__ */ React2.createElement(T, { className: "mcp-t-sec mcp-crow-title" }, title), at.over && /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-nav" }, /* @__PURE__ */ React2.createElement("button", { ref: prev, type: "button", className: "mcp-crow-btn", "aria-label": "Previous, " + name, style: at.start ? { visibility: "hidden" } : null, onClick: () => move(-1) }, /* @__PURE__ */ React2.createElement(Icon2, { name: "next", style: { transform: "rotate(180deg)" } })), /* @__PURE__ */ React2.createElement("button", { ref: next, type: "button", className: "mcp-crow-btn", "aria-label": "Next, " + name, style: at.end ? { visibility: "hidden" } : null, onClick: () => move(1) }, /* @__PURE__ */ React2.createElement(Icon2, { name: "next" }))), sub && /* @__PURE__ */ React2.createElement("p", { className: "mcp-crow-sub" }, sub)), /* @__PURE__ */ React2.createElement("div", { ref, className: "mcp-crow-track", role: "region", "aria-label": name, tabIndex: 0, style: { "--n": n } }, children));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-crow" + (kind === "chat" ? " is-chat" : kind === "tiles" ? " is-tiles" : "") + " " + className).trim() }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-head" }, /* @__PURE__ */ React2.createElement(T, { className: "mcp-t-sec mcp-crow-title" }, title), at2.over && /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-nav" }, /* @__PURE__ */ React2.createElement("button", { ref: prev, type: "button", className: "mcp-crow-btn", "aria-label": "Previous, " + name, style: at2.start ? { visibility: "hidden" } : null, onClick: () => move(-1) }, /* @__PURE__ */ React2.createElement(Icon2, { name: "next", style: { transform: "rotate(180deg)" } })), /* @__PURE__ */ React2.createElement("button", { ref: next, type: "button", className: "mcp-crow-btn", "aria-label": "Next, " + name, style: at2.end ? { visibility: "hidden" } : null, onClick: () => move(1) }, /* @__PURE__ */ React2.createElement(Icon2, { name: "next" }))), sub && /* @__PURE__ */ React2.createElement("p", { className: "mcp-crow-sub" }, sub)), /* @__PURE__ */ React2.createElement("div", { ref, className: "mcp-crow-track", role: "region", "aria-label": name, tabIndex: 0, style: { "--n": n } }, children));
     }
     function Disclosure({ title, children, defaultOpen = false }) {
       const [open, setOpen] = React2.useState(defaultOpen);
@@ -697,15 +697,15 @@
         g.style.display = "none";
         if (!over(t)) return;
       }
-      const at = (k) => full.slice(0, k).replace(/[\s\u00b7,\u2013-]+$/, "") + "…";
+      const at2 = (k) => full.slice(0, k).replace(/[\s\u00b7,\u2013-]+$/, "") + "…";
       let lo = 0, hi = full.length;
       while (lo < hi) {
         const m = lo + hi + 1 >> 1;
-        n.textContent = at(m);
+        n.textContent = at2(m);
         if (!over(t)) lo = m;
         else hi = m - 1;
       }
-      n.textContent = at(lo);
+      n.textContent = at2(lo);
     };
     function RowList({ children, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("ul", { className: ("mcp-rows " + className).trim(), "aria-label": label }, React2.Children.map(children, (c, i) => c && /* @__PURE__ */ React2.createElement("li", { key: i }, c)));
@@ -849,8 +849,8 @@
       const c = needsPassCopy({ game, word, words, record, total });
       return /* @__PURE__ */ React2.createElement("section", { className: ("mcp-npass " + className).trim(), style, "aria-label": c.heading }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label", "aria-hidden": c.label ? void 0 : true }, c.label || " "), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-sec" }, c.heading), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, c.foot && /* @__PURE__ */ React2.createElement("p", { className: "mcp-npass-note" }, c.foot))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label" }, c.rightLabel), c.lines.map((l, i) => /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-npass-line" }, l)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, /* @__PURE__ */ React2.createElement(Button, { variant: "secondary", onClick: onGet }, c.action))));
     }
-    function PageGrid({ children, split: split2 = "main", className = "", style }) {
-      return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split2 + " " + className).trim(), style }, children));
+    function PageGrid({ children, split = "main", className = "", style }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split + " " + className).trim(), style }, children));
     }
     function useWide(ref, bp) {
       const [w, setW] = React2.useState(() => typeof window !== "undefined" ? window.innerWidth >= bp : true);
@@ -2065,9 +2065,9 @@
     });
     return out;
   };
-  const useGsForm = (initial, rules, onValid, opts) => {
+  const useGsForm = (initial, rules, onValid, opts2) => {
     const [f, setF] = React$1.useState(initial);
-    const [tried, setTried] = React$1.useState(!!(opts && opts.tried));
+    const [tried, setTried] = React$1.useState(!!(opts2 && opts2.tried));
     const refs = React$1.useRef({});
     const [busy, run] = useGsBusy();
     const errs = tried ? gsCheck(rules, f) : {};
@@ -2089,7 +2089,7 @@
         setTimeout(() => refs.current[bad] && refs.current[bad].focus(), 0);
         return;
       }
-      if (opts && opts.instant) onValid(f);
+      if (opts2 && opts2.instant) onValid(f);
       else run(() => onValid(f));
     };
     const clear = () => {
@@ -2995,9 +2995,9 @@
     const notes = [];
     let room = ESX_ROOM.text;
     let n = 0;
-    const at = {};
+    const at2 = {};
     const stamp = (id) => {
-      if (!(id in at)) at[id] = ++n;
+      if (!(id in at2)) at2[id] = ++n;
     };
     let held = false;
     let used = false;
@@ -3059,8 +3059,8 @@
         }
       }
     });
-    const shown = [...objs, ...extra, ...reveal || seen.has(ESX_OAK.id) ? [ESX_OAK] : []].map((o) => ({ id: o.id, kind: "thing", name: o.name, seen: seen.has(o.id), text: text[o.id] || o.text, at: at[o.id] }));
-    return { room, shown, held, used, notes: notes.map((x) => ({ ...x, at: at[x.id] })), keyAt: at.key };
+    const shown = [...objs, ...extra, ...reveal || seen.has(ESX_OAK.id) ? [ESX_OAK] : []].map((o) => ({ id: o.id, kind: "thing", name: o.name, seen: seen.has(o.id), text: text[o.id] || o.text, at: at2[o.id] }));
+    return { room, shown, held, used, notes: notes.map((x) => ({ ...x, at: at2[x.id] })), keyAt: at2.key };
   };
   const esxGroups = (sid) => {
     const r = esxRead(sid);
@@ -3109,9 +3109,9 @@
   const EsxStill = ({ it }) => /* @__PURE__ */ React$1.createElement("div", { className: "esx-still esx-chip " + (it.kind === "thing" ? "is-unread" : "is-used"), "aria-label": it.name + ", " + (it.kind === "thing" ? "not looked at" : it.use.toLowerCase()) }, /* @__PURE__ */ React$1.createElement(EsxMark, { it }), /* @__PURE__ */ React$1.createElement("span", { className: "esx-rn" }, esxShortName(it)));
   const EsxChip = ({ it, sel, pick }) => esxOpens(it) ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "esx-chip", "aria-expanded": sel === it.id, onClick: () => pick(it.id) }, /* @__PURE__ */ React$1.createElement(EsxMark, { it }), /* @__PURE__ */ React$1.createElement("b", null, esxShortName(it))) : /* @__PURE__ */ React$1.createElement(EsxStill, { it });
   const EsxReader = ({ it }) => {
-    const read2 = React$1.useRef(null);
-    useEsxReveal(read2, it && it.id);
-    return /* @__PURE__ */ React$1.createElement("div", { ref: read2 }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement(EsxRead, { it })));
+    const read = React$1.useRef(null);
+    useEsxReveal(read, it && it.id);
+    return /* @__PURE__ */ React$1.createElement("div", { ref: read }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement(EsxRead, { it })));
   };
   const EsxChips = ({ grp, sel, pick }) => /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "esx-chips esx-in", role: "group", "aria-label": grp.head }, grp.items.map((it) => /* @__PURE__ */ React$1.createElement(EsxChip, { key: it.id, it, sel, pick })));
   const esxLastLine = (sid) => GS_SESSIONS[sid].lines.filter(([label]) => /^(Move \d+|Hint|Item)$/.test(label)).pop();
@@ -3221,9 +3221,9 @@
         lk.closed = GS_ES1_CLOSED[lk.key] || null;
       }
     });
-    const at = live ? GS_SESSIONS["escape-week"].esTimes.opened : t.opened;
+    const at2 = live ? GS_SESSIONS["escape-week"].esTimes.opened : t.opened;
     locks.forEach((lk, i) => {
-      lk.minute = at[i];
+      lk.minute = at2[i];
     });
     const par = GS_ES1_PAR;
     const min = live ? null : t.min;
@@ -3708,12 +3708,12 @@
     React$1.useLayoutEffect(() => {
       const el = ref.current;
       if (!el) return;
-      const read2 = () => {
+      const read = () => {
         const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
         setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
       };
-      read2();
-      const ro = new ResizeObserver(read2);
+      read();
+      const ro = new ResizeObserver(read);
       ro.observe(el);
       return () => ro.disconnect();
     }, [n]);
@@ -4030,7 +4030,7 @@
     const ach = phAch(gs, id, c.ach, n);
     return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, locked ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach, access: "all" }) : /* @__PURE__ */ React$1.createElement(PzNow, { c, done: lbWeekDone(gs), none, id }), /* @__PURE__ */ React$1.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: fz ? fz.weeks : lbRunOf(run) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: recent, allLabel: "See in History", empty: recent + " appear here once you have played one." })), gs.view !== "pass" && !locked && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES[id].ed[1] + " comes with the Pass." }));
   };
-  const cprRow = (result, tone, when, at) => ({ result, tone, when, at });
+  const cprRow = (result, tone, when, at2) => ({ result, tone, when, at: at2 });
   let CPR_FREE_READY;
   let CPR_PASS_READY;
   const gsLibRow = (gs, k) => {
@@ -4506,17 +4506,17 @@
   let SV_COLS;
   const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
   const svAt = (ships) => {
-    const at = {};
+    const at2 = {};
     ships.forEach((s, i) => s.forEach(([x, y]) => {
-      at[x + "," + y] = i;
+      at2[x + "," + y] = i;
     }));
-    return at;
+    return at2;
   };
   const svReplay = (ships, order) => {
-    const at = svAt(ships);
+    const at2 = svAt(ships);
     const hits = ships.map(() => 0);
     return order.map((c) => {
-      const i = at[c[0] + "," + c[1]];
+      const i = at2[c[0] + "," + c[1]];
       if (i == null) return [c, "miss"];
       hits[i] += 1;
       return hits[i] === ships[i].length ? [c, "sunk", ships[i].length] : [c, "hit"];
@@ -4534,12 +4534,12 @@
     return out;
   };
   const svBoard = (ships, log) => {
-    const at = svAt(ships);
+    const at2 = svAt(ships);
     const mark = {};
     const sunk = /* @__PURE__ */ new Set();
     log.forEach(([[x, y], r]) => {
       mark[x + "," + y] = r === "miss" ? "○" : "✕";
-      if (r === "sunk") sunk.add(at[x + "," + y]);
+      if (r === "sunk") sunk.add(at2[x + "," + y]);
     });
     ships.forEach((s, i) => {
       if (sunk.has(i)) s.forEach(([x, y]) => {
@@ -4591,7 +4591,7 @@
   };
   const svPlay = (ships, seed) => {
     const r = svRng(seed + 77);
-    const at = svAt(ships);
+    const at2 = svAt(ships);
     const tried = /* @__PURE__ */ new Set();
     const clear = /* @__PURE__ */ new Set();
     const hits = ships.map(() => []);
@@ -4618,7 +4618,7 @@
       if (!cell) cell = hunt.find(open);
       const k = cell[0] + "," + cell[1];
       tried.add(k);
-      const si = at[k];
+      const si = at2[k];
       if (si == null) {
         log.push([cell, "miss"]);
         continue;
@@ -5899,7 +5899,7 @@
     PH_LIVE = { kind: "live", label: "In progress" };
     PH_PAST = (() => {
       const day = (id) => PZ[id].all.filter((x) => x.i > 0 && !x.played)[0];
-      const play = (gid, x, sid, at, status, late2) => ({ gid, ed: x.id, edTitle: x.title, edDate: x.d, n: 0, cur: false, pid: x.id + "-past", at, status, open: phSess(sid), sid, ...late2 ? { late: true } : {} });
+      const play = (gid, x, sid, at2, status, late2) => ({ gid, ed: x.id, edTitle: x.title, edDate: x.d, n: 0, cur: false, pid: x.id + "-past", at: at2, status, open: phSess(sid), sid, ...late2 ? { late: true } : {} });
       const g = day("common");
       const gAt = phAt(g.d, 21, 40);
       GS_SESSIONS["common-past"] = { kind: "puzzle", gid: "common", game: "Common", art: "common", edKey: g.id, live: true, result: "In progress", date: pzLong(gAt) + ", 21:40", share: null, ...cmPartway(g) };
@@ -6703,7 +6703,7 @@
     }
     return n;
   };
-  const LbChoice = ({ label, value, opts, onPick }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-choicegrp", role: "group", "aria-label": label }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-field-label" }, label), /* @__PURE__ */ React$1.createElement("div", { className: "lb-choice" }, opts.map(([v, l]) => /* @__PURE__ */ React$1.createElement("button", { key: v, type: "button", "aria-pressed": value === v, onClick: () => onPick(v) }, l))));
+  const LbChoice = ({ label, value, opts: opts2, onPick }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-choicegrp", role: "group", "aria-label": label }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-field-label" }, label), /* @__PURE__ */ React$1.createElement("div", { className: "lb-choice" }, opts2.map(([v, l]) => /* @__PURE__ */ React$1.createElement("button", { key: v, type: "button", "aria-pressed": value === v, onClick: () => onPick(v) }, l))));
   const lbfParts = (children) => {
     let search = null;
     const choices = [];
@@ -6994,10 +6994,10 @@
   };
   const GsDemoBar = () => {
     const gs = useGs();
-    const opts = [["out", "signed out"], ["free", "free"], ["pass", "Pass"]];
+    const opts2 = [["out", "signed out"], ["free", "free"], ["pass", "Pass"]];
     const sw = gsWeekSwitch(gs);
     const daily = gsDailyRoute(gs);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-space" + (sw ? " is-two" : ""), "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo", role: "group", "aria-label": "Demo view, not part of the product" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-in" + (sw ? " is-two" : "") }, /* @__PURE__ */ React$1.createElement("span", null, "Demo view:"), opts.map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": gs.view === v, onClick: () => gs.setDemoView(v) }, l))), sw && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true", className: "gs-demo-sep" }), /* @__PURE__ */ React$1.createElement("span", null, gs.route.name === "history" ? "Today and this week:" : daily ? "Today:" : "This week:"), [["live", "in progress"], ["done", daily ? "day complete" : "finished"]].map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": (gs.review.week === "live" ? "live" : "done") === v, onClick: () => gs.setReview({ week: v }) }, l)))))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-space" + (sw ? " is-two" : ""), "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo", role: "group", "aria-label": "Demo view, not part of the product" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-in" + (sw ? " is-two" : "") }, /* @__PURE__ */ React$1.createElement("span", null, "Demo view:"), opts2.map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": gs.view === v, onClick: () => gs.setDemoView(v) }, l))), sw && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true", className: "gs-demo-sep" }), /* @__PURE__ */ React$1.createElement("span", null, gs.route.name === "history" ? "Today and this week:" : daily ? "Today:" : "This week:"), [["live", "in progress"], ["done", daily ? "day complete" : "finished"]].map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": (gs.review.week === "live" ? "live" : "done") === v, onClick: () => gs.setReview({ week: v }) }, l)))))));
   };
   const GsPlayPopup = () => /* @__PURE__ */ React$1.createElement(GsPlayDialog, null);
   const DL_PHONE = 768;
@@ -9233,9 +9233,9 @@
     const noFailed = names(withEd.filter((k) => !GS_ED_SIDS[k].failed));
     const noResult = [...names(keys.filter((k) => !GS_ED_SIDS[k] && !GS_GAMES[k].added)), ...keys.some((k) => !GS_ED_SIDS[k] && GS_GAMES[k].added) ? ["the added games"] : []];
     const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: a win that took most of the tries or hints." + (lostHard.length ? " " + list(lostHard) + (lostHard.length > 1 ? " end" : " ends") + " in a loss." : "") + (noFailed.length ? " " + list(noFailed) + (noFailed.length > 1 ? " have" : " has") + " no Failed." : "") + (noResult.length ? " " + list(noResult) + (noResult.length > 1 ? " have" : " has") + " no result for an edition." : "") + " Not played applies to a free account. Nothing picked: as seeded.";
-    const setSub = (patch) => set(() => {
+    const setSub = (patch2) => set(() => {
       if (api.view === "out") api.setView("free");
-      api.setSub(patch);
+      api.setSub(patch2);
     });
     const R = (label, value, onChange, options, hint) => /* @__PURE__ */ React$1.createElement(Row, { label, value, onChange, options, hint });
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(Group, { title: "After Pixels", scope: "global" }, R("Your AI", api.connected ? "yes" : "no", (v) => set(() => api.setConnected(v === "yes")), o([["yes", "Connected"], ["no", "Not connected"]])), R(
@@ -9390,9 +9390,9 @@
     const [src] = React$1.useState(fitFrameUrl);
     React$1.useEffect(() => {
       const el = box.current;
-      const read2 = () => setSize({ w: el.clientWidth, h: el.clientHeight });
-      read2();
-      const ro = new ResizeObserver(read2);
+      const read = () => setSize({ w: el.clientWidth, h: el.clientHeight });
+      read();
+      const ro = new ResizeObserver(read);
       ro.observe(el);
       return () => ro.disconnect();
     }, []);
@@ -10259,144 +10259,211 @@
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
   const COLS = "ABCDEFGH";
+  const N8 = [1, 2, 3, 4, 5, 6, 7, 8];
   const WRECKS = [["A5", "B5", "C5", "D5"], ["E3", "F3", "G3"], ["F6", "G6", "H6"], ["G8", "H8"], ["C1", "C2"]];
-  const SHOWN_R = { 3: 3, 5: 4, 6: 3, 7: 0 };
-  const SHOWN_C = { C: 3, E: 1, F: 2, H: 2 };
+  const SHOWN = { row: [3, 5, 6, 7], col: ["C", "E", "F", "H"] };
   const DIVES = 20;
   const TOOLS = { sonar: "Sonar", detector: "Metal detector", net: "Dragnet" };
   const ALL = Object.keys(TOOLS);
-  const split = (s) => s.split(" ");
-  const PLAYS = {
-    won: {
-      state: "won",
-      seq: split("A4 A5 B5 C5 D5 D3 E3 F3 G3 H3 C1 C2 F6 H6 E6 H7 G8 H8"),
-      netHit: "G6",
-      tools: { sonar: { used: true, row: 3, count: 3 }, detector: { used: true, sq: "F4", count: 3 }, net: { used: true, col: "G", snag: "G6" } }
-    },
-    // A lost play spends all 20 dives (spec and deployed Salvage give 20; canon's 30 is stale).
-    lost: {
-      state: "lost",
-      seq: split("A1 B1 C1 C2 D1 D3 E3 F3 G3 H3 A5 B5 C5 D5 H4 B7 D7 E8 F8 A8"),
-      netHit: null,
-      tools: { sonar: { used: true, row: 6, count: 3 }, detector: { used: true, sq: "G5", count: 2 }, net: { used: false } }
-    },
-    live: {
-      state: "live",
-      seq: split("A5 B5 C5 D5 D3 E3 F3 G3 C1"),
-      netHit: null,
-      tools: { sonar: { used: true, row: 3, count: 3 }, detector: { used: true, sq: "E4", count: 2 }, net: { used: false } }
-    }
-  };
-  const RESULT = { won: { tone: "ok", word: "Completed" }, lost: { tone: "bad", word: "Failed" }, live: { tone: "live", word: "In progress" } };
-  const PGS = { won: "salvage-today", lost: "salvage-today-failed", live: "salvage-live" };
-  const wreckOf = (sq) => WRECKS.findIndex((w) => w.includes(sq));
-  const read = (p) => {
-    const hit = /* @__PURE__ */ new Set();
-    const miss = /* @__PURE__ */ new Set();
-    p.seq.forEach((s) => (wreckOf(s) > -1 ? hit : miss).add(s));
-    if (p.netHit) hit.add(p.netHit);
-    const wrecks = WRECKS.map((w) => {
-      const raised = w.every((s) => hit.has(s));
-      return { w, raised, unfound: !raised && p.state === "lost", hits: w.filter((s) => hit.has(s)) };
-    });
-    return { wrecks, miss: [...miss], found: wrecks.filter((x) => x.raised).length };
-  };
   const colOf = (sq) => COLS.indexOf(sq[0]);
   const rowOf = (sq) => +sq.slice(1) - 1;
-  const reach = (k, t) => {
-    if (k === "sonar") return { c0: 0, c1: 7, r0: t.row - 1, r1: t.row - 1 };
-    if (k === "detector") {
-      const c = colOf(t.sq), r = rowOf(t.sq);
-      return { c0: Math.max(0, c - 1), c1: Math.min(7, c + 1), r0: Math.max(0, r - 1), r1: Math.min(7, r + 1) };
+  const at = (c, r) => COLS[c] + (r + 1);
+  const wreckOf = (sq) => WRECKS.findIndex((w) => w.includes(sq));
+  const lineSquares = ({ axis, name }, from) => {
+    const sq = N8.map((_, i) => axis === "row" ? at(i, +name - 1) : at(COLS.indexOf(name), i));
+    return from === "right" || from === "bottom" ? sq.reverse() : sq;
+  };
+  const lineCount = (line) => lineSquares(line).filter((s) => wreckOf(s) > -1).length;
+  const lineWords = ({ axis, name }) => (axis === "row" ? "Row " : "Column ") + name;
+  const isShown = ({ axis, name }) => SHOWN[axis].includes(name);
+  const countWords = (n) => n === 0 ? "no wreck squares." : n + (n === 1 ? " wreck square" : " wreck squares") + ", found or not.";
+  const patch = (sq) => {
+    const c = colOf(sq), r = rowOf(sq);
+    const out = [];
+    for (let y = Math.max(0, r - 1); y <= Math.min(7, r + 1); y++) for (let x = Math.max(0, c - 1); x <= Math.min(7, c + 1); x++) out.push(at(x, y));
+    return out;
+  };
+  const runPlay = (moves) => {
+    const hit = /* @__PURE__ */ new Set();
+    const raised = /* @__PURE__ */ new Set();
+    const lines = [];
+    const tools = {};
+    const miss = [];
+    let dives = 0;
+    const strike = (sq) => {
+      hit.add(sq);
+      const w = wreckOf(sq);
+      if (WRECKS[w].every((s) => hit.has(s)) && !raised.has(w)) {
+        raised.add(w);
+        return WRECKS[w].length;
+      }
+      return 0;
+    };
+    moves.forEach((m) => {
+      if (m.dive) {
+        if (hit.has(m.dive)) return;
+        dives += 1;
+        const w = wreckOf(m.dive);
+        let res = "miss";
+        if (w < 0) miss.push(m.dive);
+        else {
+          const sunk = strike(m.dive);
+          res = sunk ? "raised: the wreck of " + sunk : "hit";
+        }
+        lines.push(["Dive " + dives, m.dive, res]);
+      } else if (m.sonar) {
+        if (isShown(m.sonar)) console.error("Salvage playground: sonar on a shown line", m.sonar);
+        const count = lineCount(m.sonar);
+        tools.sonar = { line: m.sonar, count, squares: lineSquares(m.sonar) };
+        lines.push(["Hint", lineWords(m.sonar) + ": " + countWords(count)]);
+      } else if (m.detector) {
+        const sq = patch(m.detector);
+        const count = sq.filter((s) => wreckOf(s) > -1).length;
+        tools.detector = { at: m.detector, count, squares: sq };
+        lines.push(["Metal detector", m.detector + " and around it: " + countWords(count)]);
+      } else if (m.net) {
+        const run = lineSquares(m.net, m.net.from);
+        const i = run.findIndex((s) => wreckOf(s) > -1);
+        const snag = i < 0 ? null : run[i];
+        const head = lineWords(m.net) + " from the " + m.net.from;
+        let say = head + ": no wreck squares.";
+        if (snag && hit.has(snag)) say = head + ": the dragnet snags at " + snag + ", already found.";
+        else if (snag) {
+          const sunk = strike(snag);
+          say = head + ": the dragnet snags at " + snag + (sunk ? " and raises the wreck of " + sunk + "." : ", a hit.");
+        }
+        tools.net = { line: m.net, snag, squares: snag ? run.slice(0, i + 1) : run };
+        lines.push(["Dragnet", say]);
+      }
+    });
+    const state = raised.size === 5 ? "won" : dives >= DIVES ? "lost" : "live";
+    if (state === "lost") WRECKS.forEach((w) => lines.push(["Wreck", "The wreck of " + w.length + ": " + w[0] + " to " + w[w.length - 1]]));
+    return { state, dives, hit, raised, miss, tools, lines };
+  };
+  const dive = (s) => s.split(" ").map((d) => ({ dive: d }));
+  const PLAYS = {
+    // Won in 16 of 20 dives, all three tools used.
+    won: runPlay([
+      { sonar: { axis: "col", name: "G" } },
+      ...dive("A5 B5 C5 D5"),
+      { detector: "F4" },
+      ...dive("D3 E3 F3 G3"),
+      { net: { axis: "row", name: 6, from: "left" } },
+      ...dive("G6 H6 G7 G8 H8 C3 C2 C1")
+    ]),
+    // Lost: all 20 dives spent with two wrecks not raised; the dragnet not used.
+    lost: runPlay([...dive("A1 B1 C1 C2 D3 E3 F3 G3 A5 B5 C5 D5"), { sonar: { axis: "row", name: 8 } }, { detector: "G5" }, ...dive("H4 F5 G6 G7 E8 F8 A8 B8")]),
+    // In progress: 9 dives, sonar and detector used, a hit on the wreck in column C.
+    live: runPlay([{ sonar: { axis: "col", name: "A" } }, ...dive("A5 B5 C5 D5"), { detector: "E4" }, ...dive("D3 E3 F3 G3 C1")])
+  };
+  const RESULT = { won: { tone: "ok", word: "Completed", ph: true }, lost: { tone: "bad", word: "Failed", ph: true }, live: { tone: "live", word: "In progress" } };
+  const PGS = { won: "salvage-today", lost: "salvage-today-failed", live: "salvage-live" };
+  const toolResult = (k, t) => k === "sonar" ? lineWords(t.line) + ": " + t.count : k === "detector" ? t.at + ": " + t.count : t.snag ? lineWords(t.line) + ": " + t.snag : lineWords(t.line) + ": clear";
+  const toolTag = (k, t) => k === "net" ? t.snag || "0" : String(t.count);
+  const ST = { fill: "none", stroke: "currentColor", strokeWidth: 1.75, strokeLinecap: "square", strokeLinejoin: "miter" };
+  const IC_LINE = {
+    sonar: "M2.5 7.5h19l-3 4h-13zM8 7.5V4.5h5v3M12 11.5v1.5M8.5 15.5a3.5 3.5 0 0 0 7 0M5 17a7 7 0 0 0 14 0",
+    detector: "M18.5 3 10 16M15.5 3.5l5 1.5M3 18.5a6 2.5 0 1 0 12 0a6 2.5 0 1 0-12 0M19 13.5l2-1M19.5 17h2",
+    net: "M2 5h20M4.5 5 9 20h6l4.5-15M7.6 5l6.4 15M16.4 5 10 20M6 10.5h12"
+  };
+  const IC_SOLID = {
+    sonar: "M2 5.5h20l-3 4H5zM8 5.5V2.5h5.5v3zM7 12a5 5 0 0 0 10 0h-2.2a2.8 2.8 0 0 1-5.6 0zM3 12a9 9 0 0 0 18 0h-2.2a6.8 6.8 0 0 1-13.6 0z",
+    detector: "M2 18.5a7 3 0 1 0 14 0a7 3 0 1 0-14 0zM16.6 2.3l2.6 1.5-7 12.2-2.6-1.5z",
+    net: "M1.5 2.5h21v2.2h-21zM3.5 6.5h17L16 21.5H8zM9.4 8.5l1.6 2-1.6 2-1.6-2zM14.6 8.5l1.6 2-1.6 2-1.6-2zM12 13l1.6 2-1.6 2-1.6-2z"
+  };
+  const RC = (x, y) => "M" + x + " " + y + "h4.4v4.4H" + x + "z";
+  const IC_REACH = {
+    sonar: { box: [RC(1, 9.8), RC(6.8, 9.8), RC(12.8, 9.8), RC(18.6, 9.8)], key: [] },
+    detector: { box: [RC(3, 3), RC(9.8, 3), RC(16.6, 3), RC(3, 9.8), RC(16.6, 9.8), RC(3, 16.6), RC(9.8, 16.6), RC(16.6, 16.6)], key: [RC(9.8, 9.8)] },
+    net: { box: [RC(9.8, 1), RC(9.8, 6.8)], key: [RC(9.8, 12.6)], line: "M12 19v3.5" }
+  };
+  const KitIcon = ({ dir, k, used }) => {
+    if (dir === "solid") return /* @__PURE__ */ React$1.createElement("svg", { className: "sv-ic", viewBox: "0 0 24 24", width: "30", height: "30", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: IC_SOLID[k], fillRule: "evenodd", ...used ? { ...ST, strokeWidth: 1.5 } : { fill: "currentColor" } }));
+    if (dir === "reach") {
+      const I2 = IC_REACH[k];
+      return /* @__PURE__ */ React$1.createElement("svg", { className: "sv-ic t-" + k, viewBox: "0 0 24 24", width: "30", height: "30", "aria-hidden": "true" }, I2.box.map((d) => /* @__PURE__ */ React$1.createElement("path", { key: d, d, ...ST, strokeWidth: "1.5", className: "sv-rb" })), I2.key.map((d) => /* @__PURE__ */ React$1.createElement("path", { key: d, d, className: "sv-rk" })), I2.line && /* @__PURE__ */ React$1.createElement("path", { d: I2.line, ...ST, strokeWidth: "1.5", className: "sv-rb" }));
     }
-    return { c0: COLS.indexOf(t.col), c1: COLS.indexOf(t.col), r0: 0, r1: rowOf(t.snag) };
+    return /* @__PURE__ */ React$1.createElement("span", { className: "sv-kbox" + (used ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("svg", { className: "sv-ic", viewBox: "0 0 24 24", width: "22", height: "22", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: IC_LINE[k], ...ST })));
   };
-  const reachResult = (k, t) => k === "net" ? t.snag : String(t.count);
-  const IC = {
-    sonar: "M12 20h.01M8.5 16.5a5 5 0 0 1 7 0M5.5 13.5a9 9 0 0 1 13 0M2.5 10.5a13 13 0 0 1 19 0",
-    detector: "M19 3L10.5 16.5M15.5 3H20v4.5M3 19.5a5 2.5 0 1 0 10 0a5 2.5 0 1 0-10 0",
-    net: "M4 4h16l-3 16H7zM9.3 4l.9 16M14.7 4l-.9 16M5.4 10.5h13.2M6.3 15.5h11.4"
-  };
-  const SvIcon = ({ k, size }) => /* @__PURE__ */ React$1.createElement("svg", { className: "sv-ic", viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: IC[k] }));
+  const SvKit = ({ p, dir }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-kit is-" + dir }, ALL.map((k) => {
+    const u = !!p.tools[k];
+    return /* @__PURE__ */ React$1.createElement("div", { key: k, className: "sv-kc" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-kc-fig" }, /* @__PURE__ */ React$1.createElement(KitIcon, { dir, k, used: u })), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), /* @__PURE__ */ React$1.createElement("small", null, u && /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 12 12", width: "11", height: "11", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 6.5 5 9.5 10.5 3", ...ST, strokeWidth: "1.75" })), u ? "Used" : "Not used"));
+  }));
   const gc = (i) => i + 2;
   const gr = (i) => i + 3;
-  const SvMark = ({ k }) => k === "hit" ? /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M6 6l12 12M18 6L6 18" })) : /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4 10c2-2 3-2 5 0s3 2 5 0 3-2 5 0M4 15c2-2 3-2 5 0s3 2 5 0 3-2 5 0" }));
-  const SvSea = ({ p, mode }) => {
-    const d = read(p);
-    const used = ALL.filter((k) => p.tools[k].used);
-    const hitAt = new Set(d.wrecks.flatMap((x) => x.raised ? [] : x.hits));
+  const MISS = {
+    ring: /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "5" })),
+    dash: /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M7 12h10" })),
+    fill: null
+  };
+  const HIT = { share: /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M6.5 6.5l11 11M17.5 6.5l-11 11" })) };
+  const Clue = ({ v, swept, style }) => /* @__PURE__ */ React$1.createElement("span", { className: "sv-mc" + (v === void 0 ? " is-blank" : "") + (swept ? " is-swept" : ""), style }, v === void 0 ? "" : v);
+  const SvSea = ({ p, mode, hitK, missK }) => {
+    const used = ALL.filter((k) => p.tools[k]);
+    const sw = p.tools.sonar ? p.tools.sonar.line : null;
+    const clue = (axis, name) => isShown({ axis, name }) || sw && sw.axis === axis && sw.name === name ? lineCount({ axis, name }) : void 0;
+    const isSw = (axis, name) => !!sw && sw.axis === axis && sw.name === name;
+    const hits = [...p.hit].filter((s) => !p.raised.has(wreckOf(s)));
     const cov = {};
-    if (mode === "sq") used.forEach((k) => {
-      const R = reach(k, p.tools[k]);
-      for (let r = R.r0; r <= R.r1; r++) for (let c = R.c0; c <= R.c1; c++) (cov[COLS[c] + (r + 1)] = cov[COLS[c] + (r + 1)] || []).push(k);
-    });
+    used.forEach((k) => p.tools[k].squares.forEach((s) => (cov[s] = cov[s] || []).push(k)));
     const corners = {};
-    const sweep = p.tools.sonar.used ? p.tools.sonar : null;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "sv-sea", role: "img", "aria-label": "The sea: " + d.found + " of 5 wrecks raised, " + p.seq.length + " dives" }, COLS.split("").map((c, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-mc", style: { gridColumn: gc(i), gridRow: 1 } }, SHOWN_C[c] === void 0 ? "" : SHOWN_C[c]), /* @__PURE__ */ React$1.createElement("span", { className: "sv-ml", style: { gridColumn: gc(i), gridRow: 2 } }, c))), [1, 2, 3, 4, 5, 6, 7, 8].map((r) => {
-      const rc = sweep && sweep.row === r ? sweep.count : SHOWN_R[r];
-      return /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-ml", style: { gridColumn: 1, gridRow: gr(r - 1) } }, r), /* @__PURE__ */ React$1.createElement("span", { className: "sv-mc" + (sweep && sweep.row === r ? " is-swept" : ""), style: { gridColumn: 10, gridRow: gr(r - 1) } }, rc === void 0 ? "" : rc));
-    }), COLS.split("").flatMap((c, i) => [1, 2, 3, 4, 5, 6, 7, 8].map((r) => /* @__PURE__ */ React$1.createElement("span", { key: c + r, className: "sv-sq", style: { gridColumn: gc(i), gridRow: gr(r - 1) } }))), d.miss.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "sv-sq is-miss", style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)) } }, /* @__PURE__ */ React$1.createElement(SvMark, { k: "miss" }))), [...hitAt].map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "sv-sq is-hit", style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)) } }, /* @__PURE__ */ React$1.createElement(SvMark, { k: "hit" }))), d.wrecks.filter((x) => x.raised || x.unfound).map((x) => {
-      const horiz = rowOf(x.w[0]) === rowOf(x.w[x.w.length - 1]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "sv-sea m-" + missK + " h-" + hitK, role: "img", "aria-label": "The sea: " + p.raised.size + " of 5 wrecks raised, " + p.dives + " of " + DIVES + " dives" }, COLS.split("").map((c, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c }, /* @__PURE__ */ React$1.createElement(Clue, { v: clue("col", c), swept: isSw("col", c), style: { gridColumn: gc(i), gridRow: 1 } }), /* @__PURE__ */ React$1.createElement("span", { className: "sv-ml", style: { gridColumn: gc(i), gridRow: 2 } }, c))), N8.map((r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-ml", style: { gridColumn: 1, gridRow: gr(r - 1) } }, r), /* @__PURE__ */ React$1.createElement(Clue, { v: clue("row", r), swept: isSw("row", r), style: { gridColumn: 10, gridRow: gr(r - 1) } }))), COLS.split("").flatMap((c, i) => N8.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: c + r, className: "sv-sq", style: { gridColumn: gc(i), gridRow: gr(r - 1) } }))), p.miss.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "sv-sq is-miss", style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)) } }, MISS[missK])), hits.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "sv-sq is-hit", style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)) } }, HIT[hitK] || null)), WRECKS.map((w, i) => {
+      const up = p.raised.has(i);
+      if (!up && p.state !== "lost") return null;
+      const horiz = rowOf(w[0]) === rowOf(w[w.length - 1]);
       return /* @__PURE__ */ React$1.createElement(
         "span",
         {
-          key: x.w[0],
-          className: "sv-hull " + (x.raised ? "is-raised" : "is-unfound") + (horiz ? "" : " is-down"),
-          style: { gridColumn: gc(colOf(x.w[0])) + " / span " + (horiz ? x.w.length : 1), gridRow: gr(rowOf(x.w[0])) + " / span " + (horiz ? 1 : x.w.length) }
+          key: w[0],
+          className: "sv-hull " + (up ? "is-raised" : "is-unfound") + (horiz ? "" : " is-down"),
+          style: { gridColumn: gc(colOf(w[0])) + " / span " + (horiz ? w.length : 1), gridRow: gr(rowOf(w[0])) + " / span " + (horiz ? 1 : w.length) }
         }
       );
-    }), mode === "sq" && Object.keys(cov).flatMap((s) => cov[s].map((k, i) => /* @__PURE__ */ React$1.createElement("i", { key: s + k, className: "sv-ro t-" + k, style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)), "--i": i } }))), mode === "key" && used.map((k) => {
-      const R = reach(k, p.tools[k]);
-      const corner = R.c0 + "," + R.r0;
+    }), mode !== "key" && Object.keys(cov).flatMap((s) => cov[s].map((k, i) => /* @__PURE__ */ React$1.createElement("i", { key: s + k, className: (mode === "rings" ? "sv-rg" : "sv-ro") + " t-" + k, style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)), "--i": i } }))), mode === "key" && used.map((k) => {
+      const sq = p.tools[k].squares;
+      const cs = sq.map(colOf), rs = sq.map(rowOf);
+      const c0 = Math.min(...cs), c1 = Math.max(...cs), r0 = Math.min(...rs), r1 = Math.max(...rs);
+      const corner = c0 + "," + r0;
       const n = corners[corner] = (corners[corner] || 0) + 1;
-      return /* @__PURE__ */ React$1.createElement("i", { key: k, className: "sv-box t-" + k, style: { gridColumn: gc(R.c0) + " / " + (gc(R.c1) + 1), gridRow: gr(R.r0) + " / " + (gr(R.r1) + 1), "--n": n - 1 } }, /* @__PURE__ */ React$1.createElement("b", { className: "sv-tag" }, reachResult(k, p.tools[k])));
+      return /* @__PURE__ */ React$1.createElement("i", { key: k, className: "sv-box t-" + k, style: { gridColumn: gc(c0) + " / " + (gc(c1) + 1), gridRow: gr(r0) + " / " + (gr(r1) + 1), "--n": n - 1 } }, /* @__PURE__ */ React$1.createElement("b", { className: "sv-tag" }, toolTag(k, p.tools[k])));
     }));
   };
-  const SvKey = () => /* @__PURE__ */ React$1.createElement("div", { className: "sv-key", "aria-hidden": "true" }, ALL.map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, /* @__PURE__ */ React$1.createElement("i", { className: "t-" + k }), TOOLS[k])));
-  const SvCounts = ({ p }) => {
-    const d = read(p);
-    const all = d.found === 5;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "sv-counts" }, /* @__PURE__ */ React$1.createElement("div", { className: "sv-fig", role: "img", "aria-label": p.seq.length + " of " + DIVES + " dives" }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-fig-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, p.seq.length), /* @__PURE__ */ React$1.createElement("small", null, "/", DIVES)), /* @__PURE__ */ React$1.createElement("span", { className: "sv-cap", "aria-hidden": "true" }, "dives")), /* @__PURE__ */ React$1.createElement("div", { className: "sv-fig" + (all ? " is-all" : ""), role: "img", "aria-label": d.found + " of 5 wrecks" }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-fig-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, d.found), /* @__PURE__ */ React$1.createElement("small", null, "/5")), /* @__PURE__ */ React$1.createElement("span", { className: "sv-pips", "aria-hidden": "true" }, d.wrecks.map((x, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: x.raised ? "is-on" : "", style: { "--len": x.w.length } }))), /* @__PURE__ */ React$1.createElement("span", { className: "sv-cap", "aria-hidden": "true" }, "wrecks")));
-  };
-  const KIT = {
-    cards: ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-kit sv-k-cards" }, ALL.map((k) => {
-      const u = p.tools[k].used;
-      return /* @__PURE__ */ React$1.createElement("div", { key: k, className: "sv-kc" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: 28 }), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), /* @__PURE__ */ React$1.createElement("small", null, u ? "Used" : "Not used"));
-    })),
-    cells: ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-kit dv7-cells sv-k-cells" }, ALL.map((k) => {
-      const u = p.tools[k].used;
-      return /* @__PURE__ */ React$1.createElement("div", { key: k, className: "dv7-cell" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-fig" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv4-g" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: 22 }))), /* @__PURE__ */ React$1.createElement("span", { className: "dv7-lb" }, TOOLS[k]), /* @__PURE__ */ React$1.createElement("span", { className: "sv-st" }, u ? "Used" : "Not used"));
-    })),
-    icons: ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-kit sv-k-icons" }, ALL.map((k) => {
-      const u = p.tools[k].used;
-      return /* @__PURE__ */ React$1.createElement("div", { key: k, className: "sv-ki" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-ki-fig" }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: u ? 36 : 60 })), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), /* @__PURE__ */ React$1.createElement("small", null, u ? "Used" : "Not used"));
-    })),
-    rows: ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "sv-kit sv-k-rows" }, ALL.map((k) => {
-      const u = p.tools[k].used;
-      return /* @__PURE__ */ React$1.createElement("li", { key: k, className: u ? "is-used" : "" }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-kr-i dv4-g" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: 20 })), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), /* @__PURE__ */ React$1.createElement("small", null, u ? "Used" : "Not used"));
-    }))
-  };
+  const SvKey = ({ p, mode }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-key r-" + mode }, ALL.filter((k) => p.tools[k]).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, /* @__PURE__ */ React$1.createElement("i", { className: "t-" + k }), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), " ", toolResult(k, p.tools[k]))));
+  const Fig = ({ n, of, cap }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-fig", role: "img", "aria-label": n + " of " + of + " " + cap }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, n), /* @__PURE__ */ React$1.createElement("small", null, "/", of)), /* @__PURE__ */ React$1.createElement("span", { className: "sv-fig-cap", "aria-hidden": "true" }, cap));
+  const SvCounts = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-counts" }, /* @__PURE__ */ React$1.createElement(Fig, { n: p.dives, of: DIVES, cap: "dives" }), /* @__PURE__ */ React$1.createElement(Fig, { n: p.raised.size, of: 5, cap: "wrecks" }));
+  const WORD = { haul: "Haul", tally: "Tally", score: "Score" };
   const SalvageBody = ({ s }) => {
-    const kit = usePgSetting("kit") || "cards";
-    const st = usePgSetting("play") || "won";
-    const reachMode = usePgSetting("reach") || "sq";
+    const g = (k, d) => usePgSetting(k) || d;
+    const dir = g("kit", "line");
+    const st = g("play", "won");
+    const reachMode = g("reach", "sq");
+    const hitK = g("hit", "hull");
+    const missK = g("miss", "ring");
+    const axes = g("margins", "chip");
+    const word = g("word", "haul");
     const p = PLAYS[st];
-    const Kit = KIT[kit];
+    const R = RESULT[st];
+    const r = { tone: R.tone, word: R.ph ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, R.word, /* @__PURE__ */ React$1.createElement("span", { className: "sv-ph", title: "A placeholder word, not yet chosen" }, "Placeholder")) : R.word };
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
-        r: RESULT[st],
-        className: "sv-card sv-kit-" + kit,
-        board: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(SvSea, { p, mode: reachMode }), /* @__PURE__ */ React$1.createElement(SvKey, null)),
-        rows: [["Found", /* @__PURE__ */ React$1.createElement(SvCounts, { p })], ["Tools", /* @__PURE__ */ React$1.createElement(Kit, { p })]]
+        r,
+        className: "sv-card ax-" + axes,
+        board: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(SvSea, { p, mode: reachMode, hitK, missK }), /* @__PURE__ */ React$1.createElement(SvKey, { p, mode: reachMode })),
+        rows: [[WORD[word], /* @__PURE__ */ React$1.createElement(SvCounts, { p })], ["Kit", /* @__PURE__ */ React$1.createElement(SvKit, { p, dir })]]
       }
-    ), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    ), /* @__PURE__ */ React$1.createElement(GsMoves, { s: { ...s, lines: p.lines } }));
   };
+  const opts = (o) => Object.keys(o).map((value) => ({ value, label: o[value] }));
   const initPlaygroundSalvageSession = () => {
     pgRegister("salvage-session", { title: "Salvage session", settings: [
-      { key: "kit", kind: "concept", label: "Kit", options: [{ value: "cards", label: "1 Light cards" }, { value: "cells", label: "2 Delve cells" }, { value: "icons", label: "3 Icon size" }, { value: "rows", label: "4 Rows" }] },
+      { key: "kit", kind: "concept", label: "Kit icons", options: opts({ line: "A Line", solid: "B Solid", reach: "C Reach shape" }) },
       { key: "play", label: "State", options: ["won", "lost", "live"].map((v) => ({ value: v, label: { won: "Won", lost: "Lost", live: "In progress" }[v], state: "session-puzzle", go: (gs) => gs.go("session", { id: PGS[v] }) })) },
-      { key: "reach", label: "Reach", options: [{ value: "sq", label: "Squares" }, { value: "key", label: "Reach key" }] }
+      { key: "reach", label: "Reach", options: opts({ sq: "Squares", key: "Reach key", rings: "Rings" }) },
+      { key: "hit", label: "Wreck mark", options: opts({ hull: "Hull", share: "Share marks", hatch: "Hatch" }) },
+      { key: "miss", label: "Miss mark", options: opts({ ring: "Ring", dash: "Dash", fill: "Fill" }) },
+      { key: "margins", label: "Margins", options: opts({ chip: "Chips", box: "Boxes", size: "Size" }) },
+      { key: "word", label: "Counts word", options: opts(WORD) }
     ] });
     if (pgActive()) GS_SESSION_BODY.salvage = SalvageBody;
   };
@@ -10770,9 +10837,9 @@
       setRoute(r);
       setTimeout(gsScrollTop, 0);
     };
-    const setReview = (patch) => setReviewState((r) => ({ ...r, ...patch }));
-    const setSub = (patch) => setSubState((s) => ({ ...s, ...patch }));
-    const setUser = (patch) => setUserState((u) => ({ ...u, ...patch }));
+    const setReview = (patch2) => setReviewState((r) => ({ ...r, ...patch2 }));
+    const setSub = (patch2) => setSubState((s) => ({ ...s, ...patch2 }));
+    const setUser = (patch2) => setUserState((u) => ({ ...u, ...patch2 }));
     const setView = (v) => {
       if (v === "out") {
         setSignedIn(false);
@@ -10814,9 +10881,9 @@
       setProvider,
       setChoice,
       // keep: write a page's own state into its history entry, so browser Back returns it as it was left.
-      keep: (patch) => {
+      keep: (patch2) => {
         const i = idx.current;
-        stack.current[i] = { ...stack.current[i], ...patch };
+        stack.current[i] = { ...stack.current[i], ...patch2 };
       },
       // The preview frame can swallow history.back() with no popstate; if nothing moved, step the stack ourselves.
       back: () => {

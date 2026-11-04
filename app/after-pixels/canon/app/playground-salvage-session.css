@@ -1,87 +1,120 @@
 /* PLAYGROUND, not canon: Salvage's session body at hi fi (app/playground-salvage-session.jsx). Imported last by canon.css, after
-   gs-sess-card.css (the card it is built on) and gs-delve.css (the result word and Delve's icon box and cells). */
-.sv-card { --sg: 3px; }
+   gs-sess-card.css (the card it is built on) and gs-delve.css (the result word). Type is on the design system's scale only:
+   24 (figures), 16, 13 (small), 11 (2xs). */
+.sv-card { --sg: 3px; gap: 16px; }
 .sv-card .gs-sc-board { gap: 12px; }
+.sv-card .gs-sc-cap { font-size: var(--size-2xs); }
+.sv-card .gs-sc-duo { gap: 16px; }
+.sv-card .gs-sc-row { gap: 8px; }
 
-/* ---- The sea. KEEP: the square size is one custom property: 44px, shrinking with the card to 26px at the least, so the sea fits a
-   phone with its labels and counts (16px + 26px) and never scrolls sideways. ---- */
-.sv-sea { --c: clamp(26px, calc((100cqi - 32px - 42px - 7 * var(--sg)) / 8), 44px); position: relative; display: grid;
-  grid-template-columns: 16px repeat(8, var(--c)) 26px; grid-template-rows: 20px 16px repeat(8, var(--c)); gap: var(--sg); }
-.sv-mc, .sv-ml { display: grid; place-items: center; font: 600 12px/1 var(--font-text); font-variant-numeric: tabular-nums; }
-.sv-mc { color: var(--text); font-weight: 700; } .sv-mc.is-swept { text-decoration: underline; text-underline-offset: 3px; }
-.sv-ml { color: var(--muted); font-size: 11px; }
+/* Completed and Failed are placeholders: a small outlined label after the word says so, in the muted tone. */
+.sv-ph { display: inline-block; vertical-align: middle; margin: -4px 0 0 12px; padding: 4px 6px; font: 600 var(--size-2xs)/1 var(--font-text);
+  letter-spacing: .06em; text-transform: uppercase; color: var(--muted); box-shadow: inset 0 0 0 1px var(--control-edge); }
+
+/* ---- The sea. KEEP: the square size is one custom property: 44px on a desktop card, shrinking with the card to 26px at the least
+   so the sea never scrolls sideways; under a 672px card (a phone) it stops at 30px, so the card fits about one phone screen. ---- */
+.sv-sea { --c: clamp(26px, calc((100cqi - 16px - 24px - 9 * var(--sg)) / 8), 44px); position: relative; display: grid;
+  grid-template-columns: 16px repeat(8, var(--c)) 24px; grid-template-rows: 20px 14px repeat(8, var(--c)); gap: var(--sg); }
+@container dv2 (max-width: 671.98px) { .sv-sea { --c: clamp(26px, calc((100cqi - 16px - 24px - 9 * var(--sg)) / 8), 30px); } }
+.sv-ml { display: grid; place-items: center; font: 600 var(--size-2xs)/1 var(--font-text); color: var(--muted); }
+.sv-mc { display: grid; place-items: center; place-self: center; width: 20px; height: 20px; font: 700 var(--size-small)/1 var(--font-text);
+  font-variant-numeric: tabular-nums; color: var(--text); }
+/* Margins, three treatments, so a clue count never reads as a row number or column letter. The letters and numbers are always the
+   small muted face. Chips: a count on the neutral tag ground. Boxes: every margin slot is a box, a count in a solid-edged one and a
+   count not shown in a faint empty one. Size: a count is the heading face at 16px, three steps above the labels. */
+.ax-chip .sv-mc:not(.is-blank) { background: var(--tag-neutral-bg); }
+.ax-box .sv-mc { box-shadow: inset 0 0 0 1px var(--control-edge); }
+.ax-box .sv-mc.is-blank { box-shadow: inset 0 0 0 1px var(--line); }
+.ax-size .sv-mc { font: 700 var(--size-body)/1 var(--font-heading); }
+/* A count the sonar swept: ringed in the sonar's reach colour, as the key's sonar swatch is, in every treatment. */
+.sv-sea .sv-mc.is-swept { box-shadow: inset 0 0 0 2px var(--cover-teal); }
+
 .sv-sq { display: grid; place-items: center; background: var(--page); box-shadow: inset 0 0 0 1px var(--line); }
-.sv-sq svg { width: 62%; height: 62%; fill: none; stroke-width: 1.75; stroke-linecap: square; stroke-linejoin: miter; }
-/* A miss: water, two ripples in the muted tone. A hit: an orange square (the cover's hit colour) with a cross. */
-.sv-sq.is-miss { background: var(--card); box-shadow: inset 0 0 0 1px var(--line); }
-.sv-sq.is-miss svg { stroke: var(--muted); }
-.sv-sq.is-hit { background: var(--cover-orange); box-shadow: none; }
-.sv-sq.is-hit svg { stroke: var(--page); stroke-width: 2.25; }
-/* A raised wreck: one hull, off-white across its squares, a keel line down the middle. A wreck not found (a lost play): the same
-   hull outlined in the warning colour, dashed with four gradients (a dashed border drops its sides on iPhone Safari). */
+.sv-sq svg { width: 62%; height: 62%; fill: none; stroke-linecap: square; stroke-linejoin: miter; }
+
+/* Misses, three marks. Ring: a small open circle, the chat board's miss mark. Dash: one short muted stroke. Fill: the square greyed
+   to the card's line colour, nothing drawn on it. */
+.m-ring .sv-sq.is-miss svg { stroke: var(--muted); stroke-width: 1.75; width: 70%; height: 70%; }
+.m-dash .sv-sq.is-miss svg { stroke: var(--muted); stroke-width: 2.25; }
+.m-fill .sv-sq.is-miss { background: var(--line); box-shadow: none; }
+
+/* Hits and raised wrecks, three marks, all in the cover's orange. Hull: a hit fills its square; a raised wreck is one ship seen from
+   above, square stern and pointed bow, across its squares. Share marks: the share text's own marks, a hit an orange cross, a
+   raised wreck one solid bar. Hatch: a hit is hatched (part found); a raised wreck one rounded solid hull. */
 .sv-hull { position: relative; z-index: 1; pointer-events: none; }
-.sv-hull.is-raised { background: var(--off-white); }
-.sv-hull.is-raised::after { content: ''; position: absolute; left: 10%; right: 10%; top: calc(50% - 1px); height: 2px; background: var(--page); opacity: .35; }
-.sv-hull.is-raised.is-down::after { left: calc(50% - 1px); right: auto; width: 2px; top: 10%; bottom: 10%; height: auto; }
-.sv-hull.is-unfound { --d: var(--warning);
+.h-hull .sv-sq.is-hit { background: var(--cover-orange); box-shadow: none; }
+.h-hull .sv-hull.is-raised { background: var(--cover-orange);
+  clip-path: polygon(0 22%, calc(100% - var(--c) * .6) 22%, 100% 50%, calc(100% - var(--c) * .6) 78%, 0 78%); }
+.h-hull .sv-hull.is-raised.is-down { clip-path: polygon(22% 0, 78% 0, 78% calc(100% - var(--c) * .6), 50% 100%, 22% calc(100% - var(--c) * .6)); }
+.h-share .sv-sq.is-hit svg { stroke: var(--cover-orange); stroke-width: 2.5; }
+.h-share .sv-hull.is-raised { background: var(--cover-orange); }
+.h-hatch .sv-sq.is-hit { background: repeating-linear-gradient(45deg, var(--cover-orange) 0 2.5px, transparent 2.5px 6px), var(--page);
+  box-shadow: inset 0 0 0 1.5px var(--cover-orange); }
+.h-hatch .sv-hull.is-raised { margin: 3px; border-radius: 999px; background: var(--cover-orange); }
+/* A wreck not found (a lost play): its squares outlined in the warning colour, dashed with four gradients (a dashed border drops
+   its sides on iPhone Safari). Any hit on it shows inside. */
+.sv-hull.is-unfound { z-index: 4; --d: var(--warning);
   background: linear-gradient(90deg, var(--d) 60%, transparent 0) 0 0 / 8px 2px repeat-x, linear-gradient(90deg, var(--d) 60%, transparent 0) 0 100% / 8px 2px repeat-x,
     linear-gradient(0deg, var(--d) 60%, transparent 0) 0 0 / 2px 8px repeat-y, linear-gradient(0deg, var(--d) 60%, transparent 0) 100% 0 / 2px 8px repeat-y; }
-/* Tool reach. Each tool has a colour from the covers (teal, lilac, amber: orange is the hit's). Squares: an outline per reached
-   square, a tool's inset a further 3px, so squares two or three tools reached show every outline. */
-.sv-sea .t-sonar, .sv-key .t-sonar { --tc: var(--cover-teal); } .sv-sea .t-detector, .sv-key .t-detector { --tc: var(--cover-lilac); } .sv-sea .t-net, .sv-key .t-net { --tc: var(--cover-amber); }
+
+/* ---- Tool reach. Each tool has a colour from the covers (teal, lilac, amber; orange is the hit's). ---- */
+.sv-card .t-sonar { --tc: var(--cover-teal); } .sv-card .t-detector { --tc: var(--cover-lilac); } .sv-card .t-net { --tc: var(--cover-amber); }
+/* Squares: an outline per reached square, each further tool inset 3px more, so a square two or three tools reached shows each. */
 .sv-ro { z-index: 2; pointer-events: none; margin: calc(var(--i) * 3px); box-shadow: inset 0 0 0 2px var(--tc); }
-/* Reach key: one box round each tool's whole reach, tagged with what it found. KEEP: the tag sits inside the box's top-left corner,
-   so it covers a corner of its first square and never the axis letters or numbers; two boxes sharing that corner stagger their tags
-   22px apart. On the smallest squares (26px) it can touch the edge of a mark in that square. */
-.sv-box { z-index: 3; pointer-events: none; position: relative; box-shadow: inset 0 0 0 2px var(--tc); margin: -1px; }
-.sv-tag { position: absolute; top: 3px; left: calc(3px + var(--n) * 22px); min-width: 16px; padding: 0 3px; box-sizing: border-box; height: 16px; display: grid; place-items: center;
-  background: var(--tc); color: var(--page); font: 700 10px/1 var(--font-text); font-variant-numeric: tabular-nums; }
-.sv-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; font: 600 12px/1.2 var(--font-text); color: var(--muted); }
-.sv-key span { display: inline-flex; align-items: center; gap: 6px; } .sv-key i { width: 14px; height: 14px; box-shadow: inset 0 0 0 2px var(--tc); }
+/* Rings: a ring per tool in each reached square, each further tool 4px smaller, so overlaps nest. */
+.sv-rg { z-index: 2; pointer-events: none; margin: calc(2px + var(--i) * 4px); border-radius: 50%; box-shadow: inset 0 0 0 2px var(--tc); }
+/* Reach key: one 3px box round each tool's whole reach, tagged with what it found. The tag is the page's dark ground with the
+   text colour, edged in the tool's colour, so its text passes AA (a tag filled with the tool colour does not, on teal).
+   KEEP: the tag sits inside the box's top-left corner, so it covers a corner of its first square and never the axis letters or
+   numbers; two boxes sharing that corner stagger their tags 24px apart. On the smallest squares it can touch a mark in that square. */
+.sv-box { z-index: 3; pointer-events: none; position: relative; box-shadow: inset 0 0 0 3px var(--tc); margin: -1px; }
+.sv-tag { position: absolute; top: 4px; left: calc(4px + var(--n) * 24px); min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; display: grid; place-items: center;
+  background: var(--page); color: var(--text); box-shadow: inset 0 0 0 2px var(--tc); font: 700 var(--size-2xs)/1 var(--font-text); font-variant-numeric: tabular-nums; }
 
-/* ---- Counts and Kit. Figures in the heading face; the caption under each as canon's panel captions. ---- */
-.sv-cap { font: 600 12px/1.2 var(--font-text); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-.sv-counts { display: flex; justify-content: center; align-items: flex-start; gap: 32px; }
-.sv-fig { display: grid; justify-items: center; gap: 8px; padding: 6px 10px; border: 2px solid transparent; }
-.sv-fig-n { display: flex; align-items: baseline; gap: 2px; font-variant-numeric: tabular-nums; }
-.sv-fig-n b { font: 700 36px/1 var(--font-heading); color: var(--text); } .sv-fig-n small { font: 600 16px/1 var(--font-text); color: var(--muted); }
-.sv-pips { display: flex; gap: 3px; } .sv-pips i { width: calc(var(--len) * 5px); height: 6px; box-shadow: inset 0 0 0 1px var(--control-edge); }
-.sv-pips i.is-on { background: var(--off-white); box-shadow: none; }
-.sv-fig.is-all { border-color: var(--off-white); }
+/* The key under the sea: a swatch drawn as the reach mode draws, the tool's name, then what it found. */
+.sv-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; max-width: 100%; font: 400 var(--size-small)/1.3 var(--font-text); color: var(--muted); }
+.sv-key span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.sv-key b { font-weight: 600; color: var(--text); }
+.sv-key i { width: 13px; height: 13px; box-shadow: inset 0 0 0 2px var(--tc); }
+.sv-key.r-rings i { border-radius: 50%; }
+.sv-key.r-key i { box-shadow: inset 0 0 0 3px var(--tc); }
 
-.sv-kit b { font: 600 13px/1.2 var(--font-text); color: var(--text); } .sv-kit small, .sv-st { font: 600 12px/1.2 var(--font-text); color: var(--muted); }
-.sv-ic { display: block; flex: none; }
-.is-used > .sv-ic, .is-used .sv-ic { color: var(--muted); }
-/* 1 Light cards: a hairline cell per tool, icon over name over state; a used tool's edge drops to the card's line. */
-.sv-k-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.sv-kc { display: grid; justify-items: center; align-content: start; gap: 4px; padding: 10px 6px; box-shadow: inset 0 0 0 1.5px var(--control-edge); text-align: center; min-width: 0; position: relative; }
-.sv-kc.is-used { box-shadow: inset 0 0 0 1px var(--line); } .sv-kc.is-used b { color: var(--muted); }
-.sv-kc .sv-ic { margin-bottom: 2px; }
-.sv-kc.is-used::after, .sv-ki.is-used .sv-ki-fig::after { content: ''; position: absolute; left: 4px; right: 4px; top: 50%; height: 1.5px; background: var(--muted); transform: rotate(-45deg); pointer-events: none; }
-.sv-kc.is-used::after { display: none; }
-.sv-kc.is-used .sv-ic { opacity: .75; }
-/* 2 Delve cells: Delve's own cell and boxed glyph (gs-delve.css), a third line for the state. Its box is already struck when used. */
-.sv-k-cells { grid-template-columns: repeat(3, minmax(88px, 1fr)); }
-.sv-k-cells .dv7-cell { grid-template-rows: 36px auto auto; }
-/* 3 Icon size: no boxes; ready tools stand at 60px, a used one shrinks to 36px, dimmed and struck, on one baseline so nothing shifts. */
-.sv-k-icons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 12px; align-items: end; }
-.sv-ki { display: grid; justify-items: center; align-content: end; gap: 4px; text-align: center; min-width: 0; }
-.sv-ki-fig { position: relative; display: grid; place-items: end center; height: 60px; width: 60px; }
-.sv-ki.is-used b { color: var(--muted); }
-.sv-ki.is-used .sv-ki-fig::after { left: 8px; right: 8px; top: auto; bottom: 14px; }
-/* 4 Rows: one line per tool, Delve's boxed glyph, the name, the state at the end. */
-.sv-k-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 240px; }
-.sv-k-rows li { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 12px; }
-.sv-k-rows li.is-used b { color: var(--muted); }
+/* ---- Counts: two figures alike, the number in the heading face at 24px (below the 28px result word), its total and caption beside
+   it on one line, so the row stays one line high. ---- */
+.sv-counts { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 28px; }
+.sv-fig { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
+.sv-fig b { font: 700 var(--size-section-title)/1 var(--font-heading); color: var(--text); }
+.sv-fig small { font: 600 var(--size-body)/1 var(--font-text); color: var(--muted); }
+.sv-fig-cap { font: 600 var(--size-small)/1 var(--font-text); color: var(--muted); }
 
-/* ---- Arrangement. Counts above Kit in one column. From 880px: Sea left, the column centred against it (canon's panel rises past the
-   result band to centre on the card; here it centres on the Sea). Under 880px (a phone and a tablet): Result, Sea, Counts, Kit, stacked. ---- */
-.sv-card .gs-sc-panel { grid-template-columns: minmax(0, 1fr); row-gap: 28px; }
+/* ---- Kit: three light cards, icon over name over status. The name is always the text colour; the status is small capitals in
+   the muted tone, ticked when used. ---- */
+.sv-kit { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+.sv-kc { display: grid; justify-items: center; align-content: start; gap: 3px; min-width: 0; padding: 6px 4px 8px; text-align: center; box-shadow: inset 0 0 0 1px var(--line); }
+.sv-kc b { font: 600 var(--size-small)/1.2 var(--font-text); color: var(--text); }
+.sv-kc small { display: inline-flex; align-items: center; gap: 3px; font: 600 var(--size-2xs)/1.2 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sv-kc-fig { display: grid; place-items: center; height: 32px; }
+.sv-ic { display: block; flex: none; color: var(--text); }
+/* A Line: Delve's 32px glyph box; used, the box drops to the line colour and the icon to muted. */
+.sv-kbox { display: grid; place-items: center; width: 32px; height: 32px; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
+.sv-kbox.is-used { box-shadow: inset 0 0 0 1px var(--line); }
+.sv-kbox.is-used .sv-ic { color: var(--muted); }
+/* C Reach shape: the tool's reach colour once used; not used, muted outlines and no fill. */
+.is-reach .sv-ic { color: var(--muted); }
+.is-reach .sv-rk { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.is-reach .is-used .sv-ic { color: var(--tc); }
+.is-reach .is-used .sv-rk { fill: currentColor; stroke: none; }
+.sv-kit .t-sonar { --tc: var(--cover-teal); } .sv-kit .t-detector { --tc: var(--cover-lilac); } .sv-kit .t-net { --tc: var(--cover-amber); }
+
+/* ---- Arrangement. Counts above Kit in one column. From 880px of card: Sea left, the column centred against it (canon's panel rises
+   past the result band to centre on the card; here it centres on the Sea). Under 880px (a phone and a tablet): Result, Sea, Counts,
+   Kit, stacked. ---- */
+.sv-card .gs-sc-panel { grid-template-columns: minmax(0, 1fr); row-gap: 16px; padding-top: 16px; }
 @container dv2 (min-width: 672px) {
   .sv-card .gs-sc-duo { grid-template-columns: minmax(0, 1fr); justify-content: stretch; column-gap: 0; }
-  .sv-card .gs-sc-panel { align-self: auto; align-content: start; margin-top: 0; width: 100%; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  .sv-card .gs-sc-panel { align-self: auto; align-content: start; margin-top: 0; width: 100%; padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--line); }
 }
 @container dv2 (min-width: 880px) {
   .sv-card .gs-sc-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 56px; }
-  .sv-card .gs-sc-panel { align-self: center; align-content: center; width: auto; padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--line); }
+  .sv-card .gs-sc-panel { align-self: center; align-content: center; row-gap: 28px; width: auto; min-width: 300px; padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--line); }
 }
