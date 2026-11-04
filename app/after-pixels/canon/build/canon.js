@@ -10262,7 +10262,7 @@
   const WRECKS = [["A5", "B5", "C5", "D5"], ["E3", "F3", "G3"], ["F6", "G6", "H6"], ["G8", "H8"], ["C1", "C2"]];
   const SHOWN_R = { 3: 3, 5: 4, 6: 3, 7: 0 };
   const SHOWN_C = { C: 3, E: 1, F: 2, H: 2 };
-  const DIVES = 30;
+  const DIVES = 20;
   const TOOLS = { sonar: "Sonar", detector: "Metal detector", net: "Dragnet" };
   const ALL = Object.keys(TOOLS);
   const split = (s) => s.split(" ");
@@ -10273,10 +10273,10 @@
       netHit: "G6",
       tools: { sonar: { used: true, row: 3, count: 3 }, detector: { used: true, sq: "F4", count: 3 }, net: { used: true, col: "G", snag: "G6" } }
     },
-    // A lost play spends all 30 dives (the low fi's fixture stopped at 20).
+    // A lost play spends all 20 dives (spec and deployed Salvage give 20; canon's 30 is stale).
     lost: {
       state: "lost",
-      seq: split("A1 B1 C1 C2 D1 D3 E3 F3 G3 H3 A5 B5 C5 D5 H4 B7 D7 E8 F8 A8 A2 B2 A3 B3 A4 B4 E1 F1 G1 H1"),
+      seq: split("A1 B1 C1 C2 D1 D3 E3 F3 G3 H3 A5 B5 C5 D5 H4 B7 D7 E8 F8 A8"),
       netHit: null,
       tools: { sonar: { used: true, row: 6, count: 3 }, detector: { used: true, sq: "G5", count: 2 }, net: { used: false } }
     },
