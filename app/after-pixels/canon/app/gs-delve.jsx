@@ -91,9 +91,9 @@ const DlDieBtn = ({ r, size, act, on }) => (
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
-const dlWord = (m) => ({ live: 'In progress', ended: 'Unfinished', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
+const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
 const dlTone = (m) => (m.end === 'won' ? 'ok' : m.end === 'live' ? 'live' : 'bad');
-const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : m.end === 'ended' ? 'The week ended first' : s.result;
+const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result;
   return (<div className="dv7r-band"><h2 className={'dv7r-word is-' + dlTone(m)}>{dlWord(m)}</h2>{line && <p className="dv7r-line">{line}</p>}</div>); };
 
 // ---- The held roll: the die large, its kicker, then a labelled row per fact. The two-dice row is left out: the die shows both. ----
@@ -134,7 +134,7 @@ const DlRoute = ({ m, act, on }) => { const sel = act ? m.rolls[act - 1].stop : 
 const DlCard = ({ s, m, roll }) => {
   const [sel, setSel] = React.useState(() => (roll && m.rolls[roll - 1] ? roll : m.rolls.length ? m.rolls.length : null)); const [hov, setHov] = React.useState(null);
   const act = hov || sel;
-  return (<section className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} /><DlRoute m={m} act={act} on={{ sel: setSel, hov: setHov }} /></section>);
+  return (<section className="dv2 dv7r is-3" aria-label="How the run went">{m.end !== 'ended' && <DlResult s={s} m={m} />}<DlRoute m={m} act={act} on={{ sel: setSel, hov: setHov }} /></section>);
 };
 
 // ---- The character sheet, read from the hero's sheet and the record's lines: gear taken, used, or a key that opened its lock. ----

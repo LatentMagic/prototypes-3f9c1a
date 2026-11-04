@@ -45,7 +45,7 @@ const esBuild = (s) => {
   const at = live ? GS_SESSIONS['escape-week'].esTimes.opened : t.opened;
   locks.forEach((lk, i) => { lk.minute = at[i]; });
   const par = GS_ES1_PAR; const min = live ? null : t.min;
-  return { live, min, par, over: !live && min > par, locks, moves, wrong, hints: locks.reduce((a, l) => a + l.hints, 0),
+  return { live, ended: !!s.unfinished, min, par, over: !live && min > par, locks, moves, wrong, hints: locks.reduce((a, l) => a + l.hints, 0),
     end: live ? (locks.length ? locks[locks.length - 1].minute : 0) : min };
 };
 const esFacts = (l) => [l.tries <= 1 ? 'First try' : l.tries + ' tries', l.hints ? esPlural(l.hints, 'hint', 'hints') : null, l.exit && l.closed ? l.closed + ' closed' : null].filter(Boolean).join(' · ');
@@ -111,7 +111,7 @@ const EsLine = ({ m, sel, onSel, card }) => {
   const ls = labs.slice().sort((a, b) => a.l - b.l); esRows(ls).forEach((r, i) => { ls[i].r = r; });
   const nRows = labs.length ? Math.max(...labs.map((b) => b.r)) + 1 : 1;
   const labT = barB + OH + 8; const H = labT + nRows * ROW;
-  const label = m.live ? 'In progress. ' + esPlural(m.locks.length, 'lock', 'locks') + ' open.' : 'Out at minute ' + m.min + ', par ' + m.par + '.';
+  const label = m.ended ? esPlural(m.locks.length, 'lock', 'locks') + ' open.' : m.live ? 'In progress. ' + esPlural(m.locks.length, 'lock', 'locks') + ' open.' : 'Out at minute ' + m.min + ', par ' + m.par + '.';
   return (
     <div className={'es-line' + (card ? ' is-card' : '')} ref={ref} style={{ height: H }} aria-label={label} role="group">
       {W > 0 && <>
@@ -187,7 +187,7 @@ const EsBody = ({ s, sid }) => {
   return <div className="dv4-lay">
     <EsSheet sid={sid} />
     <section className="es-card" aria-label="How you got out">
-      <EsResult m={m} />
+      {!m.ended && <EsResult m={m} />}
       <EsLine m={m} sel={sel} onSel={setSel} />
       {m.locks.length > 0 && <div className="es-detail" aria-label="The locks"><EsLanes m={m} sel={sel} onSel={setSel} /></div>}
     </section>

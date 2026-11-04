@@ -21,7 +21,7 @@ const chnRead = (s) => {
     else { x.shown += 1; res = x.shown >= x.word.length ? 'given' : near ? 'near' : 'wrong'; if (res === 'given') { x.state = 'given'; x.shown = x.word.length; } }
     return { n: j + 1, res };
   });
-  const r = s.live ? { tone: 'live', word: 'In progress' } : w.some((x) => x.state === 'given') ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' };
+  const r = s.unfinished ? null : s.live ? { tone: 'live', word: 'In progress' } : w.some((x) => x.state === 'given') ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' };
   return { w, g, r, long: Math.max(...w.map((x) => (x.state === 'hidden' ? x.shown + 1 : x.word.length))) };
 };
 

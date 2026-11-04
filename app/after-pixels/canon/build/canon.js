@@ -3229,6 +3229,7 @@
     const min = live ? null : t.min;
     return {
       live,
+      ended: !!s.unfinished,
       min,
       par,
       over: !live && min > par,
@@ -3326,7 +3327,7 @@
     const nRows = labs.length ? Math.max(...labs.map((b) => b.r)) + 1 : 1;
     const labT = barB + OH + 8;
     const H = labT + nRows * ROW;
-    const label = m.live ? "In progress. " + esPlural(m.locks.length, "lock", "locks") + " open." : "Out at minute " + m.min + ", par " + m.par + ".";
+    const label = m.ended ? esPlural(m.locks.length, "lock", "locks") + " open." : m.live ? "In progress. " + esPlural(m.locks.length, "lock", "locks") + " open." : "Out at minute " + m.min + ", par " + m.par + ".";
     return /* @__PURE__ */ React$1.createElement("div", { className: "es-line" + (card ? " is-card" : ""), ref, style: { height: H }, "aria-label": label, role: "group" }, W > 0 && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "es-ptxt", style: { left: Math.round(parX - parW / 2), top: 0 } }, parText), /* @__PURE__ */ React$1.createElement("span", { className: "es-ptk", style: { left: parX - 1, top: TOP, height: onPar ? Math.max(2, barT - OH - TOP - 10) : barT - TOP - 2 } }), !onPar && /* @__PURE__ */ React$1.createElement("span", { className: "es-ptk", style: { left: parX - 1, top: barB + 2, height: OH + 2 } }), /* @__PURE__ */ React$1.createElement("span", { className: "es-track", style: { top: barT, height: BAR, width: inner } }), /* @__PURE__ */ React$1.createElement("span", { className: "es-fill", style: { top: barT, height: BAR, width: m.over ? parX : endX } }), m.over && /* @__PURE__ */ React$1.createElement("span", { className: "es-fill is-over", style: { top: barT, height: BAR, left: parX, width: endX - parX } }), m.live && /* @__PURE__ */ React$1.createElement("span", { className: "es-edge", style: { top: barT - 4, height: BAR + 8, left: endX - 1 } }), m.locks.map((lk, i) => {
       const out = lk.exit && !m.live;
       return /* @__PURE__ */ React$1.createElement(
@@ -3368,7 +3369,7 @@
     const m = React$1.useMemo(() => esBuild(s), [s]);
     const def = (m.locks.find((l) => l.exit) || m.locks[m.locks.length - 1] || {}).key;
     const [sel, setSel] = React$1.useState(() => m.locks.some((l) => l.key === gs.route.lock) ? gs.route.lock : def);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(EsSheet, { sid }), /* @__PURE__ */ React$1.createElement("section", { className: "es-card", "aria-label": "How you got out" }, /* @__PURE__ */ React$1.createElement(EsResult, { m }), /* @__PURE__ */ React$1.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React$1.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(EsSheet, { sid }), /* @__PURE__ */ React$1.createElement("section", { className: "es-card", "aria-label": "How you got out" }, !m.ended && /* @__PURE__ */ React$1.createElement(EsResult, { m }), /* @__PURE__ */ React$1.createElement(EsLine, { m, sel, onSel: setSel }), m.locks.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "es-detail", "aria-label": "The locks" }, /* @__PURE__ */ React$1.createElement(EsLanes, { m, sel, onSel: setSel }))), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const EsSessBody = (props) => /* @__PURE__ */ React$1.createElement(EsBody, { key: props.sid, ...props });
   const EsNow = ({ label, title, next, pass, first }) => {
@@ -3425,7 +3426,7 @@
   const wdPlay = (s) => {
     const ev = wdRead(s).events;
     const guesses = ev.filter((e) => e.kind === "guess");
-    return { n: guesses.length, hint: ev.find((e) => e.kind === "hint") || null, won: !s.live && !s.loss };
+    return { n: guesses.length, hint: ev.find((e) => e.kind === "hint") || null, won: !s.live && !s.loss && !s.unfinished };
   };
   const WD_RING_R = 52;
   const WD_RING_C = 2 * Math.PI * WD_RING_R;
@@ -3453,7 +3454,7 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
-        r: wdResult(s),
+        r: s.unfinished ? null : wdResult(s),
         board: /* @__PURE__ */ React$1.createElement(WdBoard, { s, guessesOnly: true }),
         rows: [["Guesses", /* @__PURE__ */ React$1.createElement(WdRing, { s, p })], ["Hint", /* @__PURE__ */ React$1.createElement(WdPlaces, { s, p })]],
         last: /* @__PURE__ */ React$1.createElement(WdAnswer, { s })
@@ -3612,10 +3613,10 @@
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
   const DlDie = ({ r, size = 36, sel }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-die is-" + r.tier + (r.crit ? " is-crit" : "") + (r.fumble ? " is-fumble" : "") + (sel ? " is-sel" : ""), viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, r.two && size < 64 && !sel && /* @__PURE__ */ React$1.createElement("polygon", { className: "gh", points: DL_HEX, transform: r.crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), r.crit && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM }), /* @__PURE__ */ React$1.createElement("text", { className: "nm", x: "18", y: "20.5" }, r.kept), r.two && size >= 64 && /* @__PURE__ */ React$1.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, r.other)), /* @__PURE__ */ React$1.createElement("polygon", { className: "sl", points: DL_RIM }));
   const DlDieBtn = ({ r, size, act, on }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.n, "aria-label": dlSay(r), onClick: () => on.sel(r.n), onMouseEnter: () => on.hov(r.n), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.n }));
-  const dlWord = (m) => ({ live: "In progress", ended: "Unfinished", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
+  const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
-    const line = m.end === "live" ? null : m.end === "ended" ? "The week ended first" : s.result;
+    const line = m.end === "live" ? null : s.result;
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
   };
   const DlHeld = ({ m, act }) => {
@@ -3635,7 +3636,7 @@
     const [sel, setSel] = React$1.useState(() => roll && m.rolls[roll - 1] ? roll : m.rolls.length ? m.rolls.length : null);
     const [hov, setHov] = React$1.useState(null);
     const act = hov || sel;
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlRoute, { m, act, on: { sel: setSel, hov: setHov } }));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, m.end !== "ended" && /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlRoute, { m, act, on: { sel: setSel, hov: setHov } }));
   };
   const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
   const dlSheet = (s, m) => {
@@ -5621,7 +5622,7 @@
   let PH_UNF_EDS;
   const phUnf = (gs, key) => {
     const u = PH_UNF_EDS[key];
-    return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === "pass");
+    return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === "pass") && !(u.more && phMoreOn(gs));
   };
   const phNorm = (q) => (q || "").trim().toLowerCase().replace(/^#/, "");
   const phWords = (s) => s.toLowerCase().replace(/(\d),(?=\d)/g, "$1").replace(/[’'‘]/g, "").split(/[^a-z0-9]+/).filter(Boolean);
@@ -5661,9 +5662,10 @@
   const phMoreOn = (gs) => !!(gs && gs.review && gs.review.several) && gs.view === "pass";
   let PH_MORE_PLAYS;
   const edMore = (gs, gid, list) => {
-    const m = phMoreOn(gs) && PH_MORE[gid];
-    if (!m) return list;
-    return list.map((e) => ({ ...e, n: e.n + 1 })).concat([{ key: m.id, gid, n: 1, title: m.title, date: lbDate(m.d), month: lbMonth(m.d), free: false, now: false, status: PH_LIVE, open: () => gs.go("session", { id: m.sid }) }]);
+    const m = PH_MORE[gid];
+    const live = phMoreOn(gs);
+    if (!m || !(live || phUnf(gs, m.id))) return list;
+    return list.map((e) => ({ ...e, n: e.n + 1 })).concat([{ key: m.id, gid, n: 1, title: m.title, date: lbDate(m.d), month: lbMonth(m.d), free: false, now: false, status: live ? PH_LIVE : PH_UNF, open: () => gs.go("session", { id: live ? m.sid : PH_UNF_EDS[m.id].sid }) }]);
   };
   let PH_ALL;
   let PH_BROKEN;
@@ -5886,6 +5888,13 @@
     ED_NONE = { kind: "none", label: "Not played" };
     PH_UNF = { kind: "none", label: "Not finished" };
     PH_UNF_EDS = (() => {
+      const out = {};
+      const add = (gid, x, s, extra) => {
+        const at = phAt(x.d, 21, 40);
+        const sid = gid + "-unfinished";
+        GS_SESSIONS[sid] = { ...s, live: false, unfinished: true, edKey: x.id, result: null, figures: void 0, share: null, shareLines: null, date: pzLong(at) + ", 21:40", ...extra };
+        out[x.id] = { gid, x, sid, at };
+      };
       const g = PZ.groups.all.filter((x) => x.i > 0 && !x.played)[1];
       const gAt = phAt(g.d, 21, 40);
       GS_SESSIONS["groups-unfinished"] = {
@@ -5900,8 +5909,13 @@
         share: null,
         lines: [["Try 1", "OAK · ASH · ELM · YEW", "Found: trees"], ["Try 2", "BASS · CHORD · SCALE · PIKE", "One away"]]
       };
-      GS_SESSIONS["delve-unfinished"] = GS_SESSIONS["delve-live"];
-      return { [g.id]: { gid: "groups", x: g, sid: "groups-unfinished", at: gAt } };
+      out[g.id] = { gid: "groups", x: g, sid: "groups-unfinished", at: gAt };
+      const NO = { word: 212, mystery: 64, where: 21, chain: 21, salvage: 21 };
+      ["word", "mystery", "escape", "where", "chain", "salvage"].forEach((gid) => {
+        const x = PZ[gid].all.filter((y) => y.i > 0 && !y.played)[0];
+        add(gid, x, GS_SESSIONS[gid + "-live"], NO[gid] ? { number: NO[gid] - x.i } : {});
+      });
+      return out;
     })();
     PH_META = null;
     PH_EDS = {};
@@ -5933,6 +5947,8 @@
       shareLines: null,
       lines: [["Room", "Entered the flooded nave"], ["Dexterity", "Cross the sunken pews", "Success", "Rolled 14 + 2 = 16 against DC 12"], ["Room", "Entered the bell loft"]]
     };
+    GS_SESSIONS["delve-unfinished"] = { ...GS_SESSIONS["delve-r0-live"], live: false, unfinished: true, edKey: PH_MORE.delve.id, result: null, figures: void 0, share: null, date: pzLong(PH_MORE.delve.at) + ", " + phTime(PH_MORE.delve.at) };
+    PH_UNF_EDS[PH_MORE.delve.id] = { gid: "delve", x: { title: PH_MORE.delve.title, d: PH_MORE.delve.d }, sid: "delve-unfinished", at: PH_MORE.delve.at, more: true };
     PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + "-0", at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
     Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
       if (!x.played) return;
@@ -5975,7 +5991,7 @@
       const c = PZ.word;
       return [{ ...f, pid: "word1-broken-0", status: { kind: "bad", label: c.bad }, open: phSess("word-broken-first") }];
     })();
-    PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, pid: ed + "-unf", at: u.at, status: PH_UNF, open: phSess(u.sid) }));
+    PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, pid: ed + "-unf", at: u.at, status: PH_UNF, src: {}, open: phSess(u.sid) }));
     PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: "bw1" };
     PH_FIRST_LIVE = { delve: phSess("delve-first-live"), escape: phSess("escape-first-live") };
     PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
@@ -6421,7 +6437,7 @@
       /* @__PURE__ */ React$1.createElement(GsShareText, { lines })
     );
   };
-  const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap), fig)), last)));
+  const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, r && /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap), fig)), last)));
   const GsMoves = ({ s }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React$1.createElement(DS.Disclosure, { title: "Every move (" + s.lines.length + ")" }, /* @__PURE__ */ React$1.createElement(DS.MoveList, { label: "Every move" }, s.lines.map((l, i) => /* @__PURE__ */ React$1.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
   const gsHeadGame = (s) => s.gid === "word" ? "Guess" : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
@@ -8506,13 +8522,32 @@
         c.setReview({ unfinished: true });
         c.go("session", { id: "groups-unfinished" });
       } },
-      { group: "Ended unfinished", id: "session-delve-unfinished", label: "Session page, Delve run 1 in progress (Wren; no Delve week has ended yet)", stage: (c) => {
-        c.setView("pass");
-        c.setConnected(true);
-        c.setReview({ week: "live" });
-        c.go("session", { id: "delve-live" });
-      } },
-      { group: "Ended unfinished", id: "history-unfinished", label: "History, with a Daily Groups day that ended unfinished", stage: (c) => {
+      // Every daily and weekly game but Common: its session page (the earlier edition the seed leaves unplayed, ended unfinished), its library game page
+      // (the now card is today's, never the ended day), and its editions list (the ended day reads Not finished).
+      ...["word", "mystery", "escape", "delve", "where", "chain", "salvage"].flatMap((gid) => {
+        const name = GS_GAMES[gid].name;
+        const free = GS_GAMES[gid].free;
+        const on = (c) => {
+          c.setView(free ? "free" : "pass");
+          c.setConnected(true);
+          c.setReview(free ? { unfinished: true, today: "none" } : { unfinished: true });
+        };
+        return [
+          { group: "Ended unfinished", id: "session-" + gid + "-unfinished", label: "Session page, a " + name + " " + (gid === "escape" || gid === "delve" ? "week" : "day") + " that ended unfinished", stage: (c) => {
+            on(c);
+            c.go("session", { id: gid + "-unfinished" });
+          } },
+          { group: "Ended unfinished", id: "library-" + gid + "-unfinished", label: name + " in your library, an earlier " + (gid === "escape" || gid === "delve" ? "week" : "day") + " ended unfinished", stage: (c) => {
+            on(c);
+            c.go(gid, { page: "record" });
+          } },
+          { group: "Ended unfinished", id: "editions-" + gid + "-unfinished", label: name + ": every " + GS_GAMES[gid].ed[0] + ", an earlier " + (gid === "escape" || gid === "delve" ? "week" : "day") + " ended unfinished (the editions list)", stage: (c) => {
+            on(c);
+            c.go(gid, { page: "record", list: true });
+          } }
+        ];
+      }),
+      { group: "Ended unfinished", id: "history-unfinished", label: "History, with each game’s earlier day (week) that ended unfinished", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ unfinished: true });
@@ -8531,7 +8566,7 @@
     ];
     KIT_STATE_GROUP_NOTES = {
       "Ended unfinished": [
-        "Or set Config “Ended unfinished” to A day: the Daily Groups day shows as Not finished in History and on its library game page. Delve has one run so far, this week’s, so no Delve week can have ended unfinished; its state opens run 1 in progress."
+        "Or set Config “Ended unfinished” to A day: each game’s earlier day (week for Escape and Delve) shows as Not finished in History, in its editions list and among its plays on its library game page. Delve’s is the week before run 1, added to its list as run 1 is with two in progress; Config → Several in progress takes it back to in progress. Common is not staged."
       ],
       "Username": [
         "Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.",
@@ -10190,8 +10225,8 @@
       } else if (l[0] === "Answer") answer = l[1];
     });
     const live = !!s.live;
-    const lost = !live && answer !== null;
-    const r = live ? { tone: "live", word: "In progress" } : lost ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
+    const lost = !live && !s.unfinished && answer !== null;
+    const r = s.unfinished ? null : live ? { tone: "live", word: "In progress" } : lost ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
     return { g, hint, answer: lost ? answer : g.length ? g[g.length - 1].c : null, live, lost, r };
   };
   const whSay = (p) => p.hint ? p.hint.dir[0].toUpperCase() + p.hint.dir.slice(1) + " of " + p.hint.from : p.live ? "Not used yet" : "No hint";
@@ -10263,7 +10298,7 @@
       }
       return { n: j + 1, res };
     });
-    const r = s.live ? { tone: "live", word: "In progress" } : w.some((x) => x.state === "given") ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
+    const r = s.unfinished ? null : s.live ? { tone: "live", word: "In progress" } : w.some((x) => x.state === "given") ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
     return { w, g, r, long: Math.max(...w.map((x) => x.state === "hidden" ? x.shown + 1 : x.word.length)) };
   };
   const ChnTiles = ({ x }) => x.state === "hidden" ? /* @__PURE__ */ React$1.createElement("div", { className: "chn-row", role: "img", "aria-label": "Starts " + x.word.slice(0, x.shown) }, x.word.slice(0, x.shown).split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t chn-t is-shown", "aria-hidden": "true" }, ch)), /* @__PURE__ */ React$1.createElement("span", { className: "wd-t chn-t is-more", "aria-hidden": "true" })) : /* @__PURE__ */ React$1.createElement("div", { className: "chn-row", role: "img", "aria-label": x.word + (x.state === "given" ? ", given away" : "") }, x.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement(

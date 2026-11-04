@@ -63,7 +63,7 @@ export const wdResult = (s) => (s.live ? { tone: 'live', word: 'In progress' } :
 // last row, never on the left. Every guess is the store's plain list, collapsed. ----
 const wdPlay = (s) => {
   const ev = wdRead(s).events; const guesses = ev.filter((e) => e.kind === 'guess');
-  return { n: guesses.length, hint: ev.find((e) => e.kind === 'hint') || null, won: !s.live && !s.loss };
+  return { n: guesses.length, hint: ev.find((e) => e.kind === 'hint') || null, won: !s.live && !s.loss && !s.unfinished };
 };
 // The ring: six segments, one per guess: green for the guess that solved it, amber when all six were spent, grey for one used,
 // the card's line for one not reached (in progress too: no mark for the next guess, Joe). The panel names it, so it holds the number alone.
@@ -95,7 +95,7 @@ const WdAnswer = ({ s }) => (s.loss && s.answer ? (
     <div className="wd-ans-row" aria-hidden="true">{s.answer.split('').map((ch, i) => <span key={i} className="wd-t wd-ans-t">{ch}</span>)}</div>
   </div>) : null);
 export const WdSessBody = ({ s }) => { const p = wdPlay(s); return <>
-  <GsSessCard r={wdResult(s)} board={<WdBoard s={s} guessesOnly />}
+  <GsSessCard r={s.unfinished ? null : wdResult(s)} board={<WdBoard s={s} guessesOnly />}
     rows={[['Guesses', <WdRing s={s} p={p} />], ['Hint', <WdPlaces s={s} p={p} />]]} last={<WdAnswer s={s} />} />
   <GsMoves s={s} />
 </>; };

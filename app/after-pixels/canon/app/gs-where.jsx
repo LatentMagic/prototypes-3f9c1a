@@ -27,8 +27,8 @@ export const whRead = (s) => {
     else if (l[0] === 'Hint') { const m = /lies (\S+) of (.+)$/.exec(l[1]); if (m) hint = { dir: m[1], from: m[2], after: g.length }; }
     else if (l[0] === 'Answer') answer = l[1];
   });
-  const live = !!s.live; const lost = !live && answer !== null;
-  const r = live ? { tone: 'live', word: 'In progress' } : lost ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' };
+  const live = !!s.live; const lost = !live && !s.unfinished && answer !== null;
+  const r = s.unfinished ? null : live ? { tone: 'live', word: 'In progress' } : lost ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' };
   return { g, hint, answer: lost ? answer : g.length ? g[g.length - 1].c : null, live, lost, r };
 };
 const whSay = (p) => (p.hint ? p.hint.dir[0].toUpperCase() + p.hint.dir.slice(1) + ' of ' + p.hint.from : p.live ? 'Not used yet' : 'No hint');
