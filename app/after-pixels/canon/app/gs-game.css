@@ -23,8 +23,8 @@
   .gs-pz-item:active { transform: none; }
 }
 
-/* KEEP: product page: the cover takes the play box's height, so the two always end level (the art is sliced, never stretched) */
-@container gs (min-width: 900px) {
+/* KEEP: product page from 720px: the cover takes the play box's height, so the two always end level (the art is shown whole, its ground extended to fill, never stretched or cropped) */
+@container gs (min-width: 720px) {
   .gs-head-split { align-items: stretch; }
   .gs-hero-cover { min-height: 320px; }
   .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }

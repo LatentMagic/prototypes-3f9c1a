@@ -118,8 +118,11 @@
   .gs-wide-only { display: flex; }
   .gs-narrow-only { display: none; }
 }
-@container gs (min-width: 900px) {
+/* KEEP: product page head: two columns (2fr art, 1fr play box) from 720px, so the cover is never the full-width 4:3 hero above the play box on a tablet */
+@container gs (min-width: 720px) {
   .gs-head-split { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+}
+@container gs (min-width: 900px) {
   .gs-hero2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: stretch; padding-top: 36px; }
   .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
 }
