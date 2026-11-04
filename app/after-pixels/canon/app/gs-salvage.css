@@ -58,4 +58,6 @@
 @container dv2 (min-width: 672px) {
   .slv-sea { --c: clamp(24px, calc((100cqi - 16px - 24px - 129px - 252px) / 8), 44px); }
   .slv-big b { font-size: 44px; }
+  /* The panel centres on the Sea, not on the whole card: no rise past the Result row (the shared rule's margin-top). */
+  .slv-card .gs-sc-panel { margin-top: 0; align-self: center; }
 }
