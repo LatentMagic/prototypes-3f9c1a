@@ -3089,7 +3089,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .slv-dot.is-hit { width: calc(var(--c) * .42); height: calc(var(--c) * .42); background: var(--off-white); }
 /* A raised wreck is a pill across its squares; a wreck not found (a lost play) is outlined, dashed with four gradients because a dashed
    border drops its sides on iPhone Safari. */
-.slv-hull { pointer-events: none; margin: calc(var(--c) / 9); }
+/* KEEP: a raised or unfound wreck sits above the tool-coverage corners; the corners use clip-path, which paints them above unpositioned siblings, so the hull needs its own layer. */
+.slv-hull { pointer-events: none; margin: calc(var(--c) / 9); position: relative; z-index: 1; }
 .slv-hull.is-raised { border-radius: 999px; background: var(--off-white); }
 .slv-hull.is-unfound { --d: var(--muted);
   background: linear-gradient(90deg, var(--d) 60%, transparent 0) 0 0 / 8px 2px repeat-x, linear-gradient(90deg, var(--d) 60%, transparent 0) 0 100% / 8px 2px repeat-x,
