@@ -198,6 +198,7 @@ KIT_STATE_REGISTER = [
   { group: 'Screens', id: 'session-word-failed', label: '7. Session page: Daily Word, failed (six guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'word-failed' }); } },
   { group: 'Screens', id: 'session-barrow', label: '7. Session page: The Barrow, chapter 1 finished (Play again)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'gs-pu-barrow-ch1' }); gsPassSet({ bwDone: true }); } },
   { group: 'Screens', id: 'session-kept-pass-ended', label: '7. Session page: Pass ended, a Common day in progress (kept, no Play)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.setReview({ pastDay: 'live' }); c.go('session', { id: 'common-past' }); } },
+  { group: 'Screens', id: 'session-kept-pass-ended-hunter', label: '7. Session page: Pass ended, a restarted 36,000 Summers Ago day (kept, no Play)', stage: (c) => { c.setView('free'); c.setConnected(true); c.setSub({ hadPass: true }); c.go('session', { id: 'hunter-hg8' }); } },
   { group: 'Screens', id: 'session-casebook', aliases: ['library-casebook-case'], label: '7. Session page: Casebook', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('casebook', { page: 'record', sid: CB_ID }); } },
   { group: 'Screens', id: 'session-hunter', label: '7. Session page: 36,000 Summers Ago', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'hunter-hg0' }); } },
   { group: 'Screens', id: 'session-word-in-progress', label: '7. Session page: Daily Word in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('session', { id: 'word-live' }); } },
@@ -365,7 +366,7 @@ KIT_STATE_REGISTER = [
 // palette, and readable off window.KIT_STATE_NOTES.
 KIT_STATE_GROUP_NOTES = {
   'Past day': [
-    'Or set Config “Past day”: In progress adds a Common day (Pass) and a Daily Word day from before today, each started on its day; Finished late adds a Daily Word day finished the morning after. The Common day is the first unplayed one back from today (Fri 2 Oct, No. 3), the Daily Word day Thu 1 Oct.',
+    'Or set Config “Past day”: In progress adds a Common day (Pass) and a Daily Word day from before today, each started on its day; Finished late adds a Daily Word day finished the morning after. Each is the first unplayed earlier day of its game.',
   ],
   'Username': [
     'Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.',

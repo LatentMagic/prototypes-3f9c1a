@@ -5906,8 +5906,8 @@
       const w = day("word");
       const wAt = phAt(w.d, 21, 40);
       const wEnd = phAt(w.d, 8, 15, 1);
-      GS_SESSIONS["word-past"] = { ...GS_SESSIONS["word-live"], number: 212 - w.i, edKey: w.id, date: pzLong(wAt) + ", 21:40" };
       const late = pzSession("word", PZ.word, { ...w, ok: true, line: PZ.word.ok(w.i) });
+      GS_SESSIONS["word-past"] = { ...GS_SESSIONS["word-live"], number: GS_SESSIONS[late].number, edKey: w.id, date: pzLong(wAt) + ", 21:40" };
       GS_SESSIONS["word-past-late"] = { ...GS_SESSIONS[late], edKey: w.id, date: pzLong(wEnd) + ", 08:15" };
       delete GS_SESSIONS[late];
       return {
@@ -7788,6 +7788,12 @@
         c.setReview({ pastDay: "live" });
         c.go("session", { id: "common-past" });
       } },
+      { group: "Screens", id: "session-kept-pass-ended-hunter", label: "7. Session page: Pass ended, a restarted 36,000 Summers Ago day (kept, no Play)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setSub({ hadPass: true });
+        c.go("session", { id: "hunter-hg8" });
+      } },
       { group: "Screens", id: "session-casebook", aliases: ["library-casebook-case"], label: "7. Session page: Casebook", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -8599,7 +8605,7 @@
     ];
     KIT_STATE_GROUP_NOTES = {
       "Past day": [
-        "Or set Config “Past day”: In progress adds a Common day (Pass) and a Daily Word day from before today, each started on its day; Finished late adds a Daily Word day finished the morning after. The Common day is the first unplayed one back from today (Fri 2 Oct, No. 3), the Daily Word day Thu 1 Oct."
+        "Or set Config “Past day”: In progress adds a Common day (Pass) and a Daily Word day from before today, each started on its day; Finished late adds a Daily Word day finished the morning after. Each is the first unplayed earlier day of its game."
       ],
       "Username": [
         "Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.",
@@ -9049,8 +9055,6 @@
       "edition-word-done",
       "edition-mystery-done",
       "edition-casebook-done",
-      "past-day-common-history",
-      "past-day-word-editions",
       "library-hunter-pass-ended",
       "library-hunter-pass-ended-today",
       "fp-hunter-library-lapsed",

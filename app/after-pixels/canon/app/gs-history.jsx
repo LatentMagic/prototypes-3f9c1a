@@ -360,8 +360,8 @@ PH_PAST = (() => {
   const g = day('common'); const gAt = phAt(g.d, 21, 40);
   GS_SESSIONS['common-past'] = { kind: 'puzzle', gid: 'common', game: 'Common', art: 'common', edKey: g.id, live: true, result: 'In progress', date: pzLong(gAt) + ', 21:40', share: null, ...cmPartway(g) };
   const w = day('word'); const wAt = phAt(w.d, 21, 40); const wEnd = phAt(w.d, 8, 15, 1);
-  GS_SESSIONS['word-past'] = { ...GS_SESSIONS['word-live'], number: 212 - w.i, edKey: w.id, date: pzLong(wAt) + ', 21:40' };
   const late = pzSession('word', PZ.word, { ...w, ok: true, line: PZ.word.ok(w.i) });
+  GS_SESSIONS['word-past'] = { ...GS_SESSIONS['word-live'], number: GS_SESSIONS[late].number, edKey: w.id, date: pzLong(wAt) + ', 21:40' };
   GS_SESSIONS['word-past-late'] = { ...GS_SESSIONS[late], edKey: w.id, date: pzLong(wEnd) + ', 08:15' }; delete GS_SESSIONS[late];
   return {
     [g.id]: { gid: 'common', live: play('common', g, 'common-past', gAt, PH_LIVE) },
