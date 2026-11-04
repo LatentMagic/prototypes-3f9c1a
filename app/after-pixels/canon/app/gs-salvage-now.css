@@ -9,7 +9,9 @@
    one row and the second row's tools and number scale with it instead of shrinking to nothing. */
 .svn-pic { --c: clamp(12px, calc((100cqi - 16px) / 15.5), 24px); --g: calc(var(--c) * .6); align-self: center; justify-self: stretch; display: grid; justify-items: center; gap: calc(var(--c) * .9); min-width: 0; }
 .svn-fleet { display: flex; align-items: center; justify-content: center; gap: var(--g); }
-.svn-hull { display: block; flex: none; width: calc(var(--c) * (var(--n) - 2 / 9)); height: calc(var(--c) * 11 / 9); overflow: visible; }
+.svn-hull { display: block; flex: none; width: calc(var(--c) * (var(--n) - 2 / 9)); height: calc(var(--c) * 7 / 9); overflow: visible; }
+.svn-ship { position: relative; display: grid; grid-template-columns: repeat(var(--n), var(--c)); grid-auto-rows: var(--c); flex: none; }
+.svn-ship > .svn-hull { position: absolute; left: calc(var(--c) / 9); top: calc(var(--c) / 9); width: calc(100% - var(--c) * 2 / 9); height: calc(100% - var(--c) * 2 / 9); }
 .svn-hull.is-raised rect { fill: var(--off-white); }
 .svn-hull .svn-dash { fill: none; stroke: var(--muted); stroke-width: .5; }
 .svn-hull circle { fill: var(--off-white); }

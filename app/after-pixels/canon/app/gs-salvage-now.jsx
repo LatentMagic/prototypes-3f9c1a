@@ -12,11 +12,13 @@ import { SLV_WRECKS, SLV_DIVES, SLV_ALL, SLV_PLAYS, SLV_RESULT, SLV_ST, ICON } f
 
 // A hull in ninths of a square, as the session page draws one (the pill inset 1/9 each side), so it is never stretched: raised solid,
 // otherwise dashed with a disc for each square already hit, filled from the left.
-// KEEP: the card's hulls are deeper than the session page's pills (11/9 of a square, not 7/9), so at this size they read as ships, not lines.
-const SVN_H = 11;
+// KEEP: each hull sits on its own run of Sea squares (the session page's square look), so it reads as a wreck on the water, not a control;
+// the pill is the session page's (7/9 of a square deep, inset 1/9).
+const SVN_H = 7;
 const SvnHull = ({ w, p }) => {
   const up = w.every((s) => p.hit.has(s)); const n = w.length; const L = 9 * n - 2;
   return (
+    <span className="svn-ship" style={{ '--n': n }}>{Array.from({ length: n }, (_, i) => <i key={i} className="slv-sq" />)}
     <svg className={'svn-hull ' + (up ? 'is-raised' : 'is-open')} style={{ '--n': n }} viewBox={'0 0 ' + L + ' ' + SVN_H} aria-hidden="true">
       {up
         ? <rect x="0" y="0" width={L} height={SVN_H} rx={SVN_H / 2} />
@@ -25,7 +27,7 @@ const SvnHull = ({ w, p }) => {
           {/* KEEP: hits fill from the left as a count, not at the square that was hit (the card says how much of a wreck is found, not where). */}
           {w.filter((s) => p.hit.has(s)).map((s, i) => <circle key={s} cx={9 * i + SVN_H / 2} cy={SVN_H / 2} r={SVN_H * .34} />)}
         </>}
-    </svg>);
+    </svg></span>);
 };
 
 const SvnTools = ({ p }) => (
