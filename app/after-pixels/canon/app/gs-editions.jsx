@@ -1,10 +1,10 @@
 import React from 'react';
-import { gsRhythm, GS_GAMES, gsStartsOver, GS_ONCE_LINE, gsScrollTop, useGs, DS } from './gs-data.jsx';
+import { gsForms, gsRhythm, GS_GAMES, gsStartsOver, GS_ONCE_LINE, gsScrollTop, useGs, DS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsNeedsPass } from './gs-session.jsx';
 import { lbShort, LbBack, LbTools, LbChoice, LbResult } from './gs-library.jsx';
 import { gsPromptText, GsCopyPrompt, GsHowLink, GsPrompt } from './gs-connect.jsx';
-import { edList, edName, edNeedsPass, phHay, phParse, phNorm, phMatch, PhPages, edLabel } from './gs-history.jsx';
+import { PH_UNF, edList, edName, edNeedsPass, phHay, phParse, phNorm, phMatch, PhPages, edLabel } from './gs-history.jsx';
 import { GS_PAGES } from './gs-game.jsx';
 
 const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
@@ -69,7 +69,7 @@ export const PgeListPage = ({ gid }) => {
         {!f.wait && !f.rows.length ? <PgeEmpty f={f} /> : <div ref={f.box} className="lb-box lb-results ed-results" style={{ maxWidth: 960, minWidth: 0 }}>
           {f.wait ? <GsPart label="Loading" /> : <>
             {<DS.RowList label={title}>{f.rows.map((e) => (
-              <DS.ListRow key={e.key} title={pgeRowTitle(gid, e)} when={e.when} result={e.played ? 'Played' : undefined} onClick={() => f.set('open', e.key)} />
+              <DS.ListRow key={e.key} title={pgeRowTitle(gid, e)} when={e.when} result={e.status === PH_UNF ? gsForms(PH_UNF.label) : e.played ? 'Played' : undefined} tone={e.status === PH_UNF ? 'none' : undefined} onClick={() => f.set('open', e.key)} />
             ))}</DS.RowList>}
             <PhPages pg={f.pg} pages={f.pages} go={f.go} />
           </>}

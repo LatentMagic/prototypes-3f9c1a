@@ -97,7 +97,7 @@ export const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
 // answer on a loss). Phone: the result, the board, then the figures side by side under a rule. Styles: app/gs-sess-card.css.
 // r: the result band, or null where the play has no result to state (a day that ended unfinished): the card is then the board and panel alone.
 export const GsSessCard = ({ r, board, rows, last, className = '', style }) => (
-  <section className={'dv2 gs-sc ' + className} style={style} aria-label="How it went">
+  <section className={'dv2 gs-sc ' + (r ? '' : 'gs-sc-nr ') + className} style={style} aria-label="How it went">
     {r && <div className="dv7r-band"><h2 className={'dv7r-word is-' + r.tone}>{r.word}</h2></div>}
     <div className="gs-sc-duo">
       <div className="gs-sc-board">{board}</div>

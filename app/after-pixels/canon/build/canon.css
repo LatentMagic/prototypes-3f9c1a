@@ -994,6 +994,8 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
   .gs-sc-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 64px; }
   .gs-sc-panel { grid-template-columns: auto; align-self: stretch; align-content: center; column-gap: 32px; width: auto; margin-top: calc(-1 * (29px + 24px)); padding: 0 0 0 64px; border-top: 0; border-left: 1px solid var(--line); }
 }
+/* No result band (a day that ended unfinished): there is nothing to rise past, so the panel keeps its place beside the board. */
+@container dv2 (min-width: 672px) { .gs-sc-nr .gs-sc-panel { margin-top: 0; } }
 /* Prototype aids and kit scaffolding: base reset, focus rings, placeholder screen, Config pill and modal, States and QA palettes, phone frame, app posture.
    Imported by canon.css in the order listed there; later files win ties. */
 
