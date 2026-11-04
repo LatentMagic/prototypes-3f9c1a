@@ -10072,6 +10072,9 @@
   };
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10087,6 +10090,17 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
+  };
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -10413,6 +10427,65 @@
   const initGsCommon = () => {
     GS_SESSION_BODY.common = CmSessBody;
     GS_NOW.common = CmNow;
+  };
+  const PGCT_ITEMS = ["ZEBRA", "BARCODE", "CANDY CANE", "A TIGER", "HEDGEHOG", "CACTUS", "BOOK", "YOUR BACK", "A SWORD", "A GUN", "CURTAINS", "A PICTURE", "JEANS", "AN APRON", "A BACKPACK", "A POOL TABLE", "A POLICE STATION", "A PRISON", "A HONEYCOMB", "YOUR BODY", "A BATH", "A TEMPERATURE", "A SHOP", "A MARATHON", "A SUNFLOWER", "A WATERMELON", "A STRAWBERRY", "A POMEGRANATE", "A MATTRESS", "A BUNK BED", "A PHOTOCOPIER", "A HOMEMADE GHOST COSTUME", "A SEAT", "A PENALTY", "A DOCUMENT", "THE DAY", "CHOCOLATE", "AN ICE CUBE", "BUTTER", "A SNOWMAN", "A NAIL", "A HAMMER", "A CABBAGE", "THE TOP OF YOUR BODY", "A POSE", "A DEAL", "OIL", "A MATCH", "A CORK", "AN ICEBERG", "A LILY PAD", "A LIFE JACKET", "A POSTCARD", "AN ENVELOPE", "AN ANGRY FOOT", "AN INK PAD", "A NAP", "A DEEP BREATH", "A TAXI", "A PHOTO", "A NETTLE", "A JELLYFISH", "A SCORPION", "A WASP", "A BOTTLE", "A VASE", "A SWAN", "A GIRAFFE", "A PAGE", "A CORNER", "A CARTWHEEL", "A STEERING WHEEL", "A KITE", "A RAINBOW", "A CLOUD", "THE MOON", "YOUR HEART", "A DRUM", "A STRAY DOG", "BRITISH MONEY", "YOUR ARMS", "YOUR LEGS", "THE ROAD", "THE FINISH LINE", "A BLACK HOLE", "A SATELLITE", "A COMET", "AN ASTRONAUT", "TEA", "SPINACH", "THE CANADIAN FLAG", "A LUCKY CLOVER", "YOUR THROAT", "A DRAIN", "A HURDLE", "THE DINNER TABLE", "A SINK", "A FRIDGE", "A DISHWASHER", "A TOASTER", "A CAVEMAN", "A GOLFER", "A PACK OF CARDS", "AN AFTER-SCHOOL GROUP", "AN IDEA", "A CLUE", "A FLAG ON THE MOON", "A ROSE BUSH", "A UNIFORM", "A LOCKER", "A WHITEBOARD", "A TEACHER", "A WEED", "A TURNIP", "A MOLAR", "THE UNDERGROUND PART OF A TREE", "AN ALARM", "A TRAP", "AN EXAMPLE", "A WORLD RECORD", "AN X-RAY", "A NURSE", "A STRETCHER", "A SURGEON", "A DOORBELL", "A TELEPHONE", "SATURN", "A BRIDE", "GERMS", "THE NEWS", "YOUR WINGS", "JAM ON TOAST", "A PENGUIN", "A JUMBO JET", "A BUTTERFLY", "A FAIRY", "SEAL", "DOG", "TREE", "A DRILL SERGEANT", "A SHADOW", "A SPELL", "A VOTE", "A FISHING LINE", "A SCARECROW", "A TRACTOR", "A HAYSTACK", "A SHEEPDOG", "A HURRICANE", "A CYCLONE", "A POTATO", "A CYCLOPS", "A GLANCE", "A KISS", "THE SHOW", "A WALLET", "A CLOWN", "A TRAPEZE", "A TIGHTROPE WALKER", "A RINGMASTER", "A PIANIST", "A SINGER", "A SALMON", "A SNAKE", "THE SALT", "A NOTE IN CLASS", "THE TIME", "A DRIVING TEST", "A PASSPORT", "A RUNWAY", "A BOARDING PASS", "A CONTROL TOWER", "A PIG", "A SHEEP", "AN AUTHOR", "AN INK CARTRIDGE", "ATTENTION", "A COMPLIMENT", "A VISIT", "THE BILL", "A MENU", "A WAITER", "A CHEF", "A TABLE FOR TWO", "A WIZARD'S HAT", "A PARTY HAT", "A FIR TREE", "A SCOOP OF VANILLA", "BEES", "CHICKENS", "A SECRET", "A STRAIGHT FACE", "A SLEEPING BAG", "A LANTERN", "A TENT", "TOASTED MARSHMALLOWS", "A STREAM", "A RIVER", "A SAVINGS ACCOUNT", "A CASH MACHINE", "A LOCK", "A FIGHT", "AN APPLE", "A CARD", "A HARMONICA", "A BALLOON", "BUBBLES", "BIRTHDAY CANDLES", "A MUSHROOM", "A TOADSTOOL", "A KNEE", "A BASEBALL TEAM", "DINNER", "A CUSTOMER", "YOUR COUNTRY", "A TENNIS BALL", "A BASKETBALL", "A TRAMPOLINE", "A POGO STICK", "A KANGAROO", "A DUCK", "A FROG", "A SEARCH ENGINE", "A SPIDER'S SILK TRAP", "A LESSON", "A SONG", "A STONE ACROSS A POND", "AN AD", "A WASHING MACHINE", "A WIND TURBINE", "A BALLERINA", "A PROPELLER", "YOUR NOSE", "A PAIR OF GLASSES", "A SHIP", "THE GOLDEN GATE", "A FRIEND", "A PET", "THE TARGET", "THE LAST TRAIN", "A SLICE OF PIZZA", "A COAT HANGER", "A SAIL", "A SANDWICH CUT CORNER TO CORNER", "A SHARK", "A DOLPHIN", "A ROCKET", "A SURFBOARD", "YOUR VOICE", "YOUR TEMPER", "WEIGHT", "YOUR KEYS", "A CANARY", "A LEMON", "MUSTARD", "A RUBBER DUCK", "A NECKLACE", "A TIARA", "A BASEBALL FIELD", "THE HARDEST NATURAL SUBSTANCE", "A MUSIC VIDEO", "A TV SHOW", "A WATER PISTOL", "AN ARROW", "A SAW", "A COMB", "A RAKE", "A CROCODILE", "KING", "QUEEN", "THE STATUE OF LIBERTY", "THE TOP OF YOUR HEAD", "A RECORD", "A PROMISE", "THE SILENCE", "THE ICE", "A TOMATO", "A RUBY", "MARS", "A STOP SIGN", "A SURFER", "A SAILOR", "A STADIUM CROWD", "A FRIEND SAYING GOODBYE", "A MUSCLE", "A BAD TOOTH", "A PRANK", "A HEAVY CART", "OLIVES", "PEPPERONI", "MOZZARELLA", "PINEAPPLE", "A SCUBA DIVER", "A TROPICAL FISH", "A MOTORBIKE", "AN ARMY", "A TWIG", "A BREADSTICK", "A SELFIE", "YOUR FINGERS", "TOAST", "BACON", "WAFFLES", "CEREAL", "A UNICYCLE", "A BICYCLE", "A HORSE", "A COWBOY", "A HIGH NOTE", "THE SNOOZE BUTTON", "THE BRAKES", "A HOME RUN", "A STICKER", "A BANANA", "A CARROT", "AN ORANGE", "A HILL", "A STAIRCASE", "TWELVE INCHES", "A SOCK", "THE SEA", "A LAKE", "A FLOWER GARDEN", "A HOTEL ROOM", "A NAPKIN", "A MAP", "AN IRONING BOARD", "ORIGAMI", "A WIND-UP TOY", "A MECHANICAL WATCH", "BOTTLED WATER", "THE SEASON AFTER WINTER", "A PENCIL CASE", "A GEOMETRY LESSON", "A KINGDOM", "AN EMPIRE", "A LADDER", "A MOUNTAIN", "A ROPE", "A BEANSTALK", "A BEETLE", "A CATERPILLAR", "A COMPUTER PROGRAM", "A HIDDEN SPY MICROPHONE", "A VILLAIN", "A NOVEL", "A GARDENER", "A MOVIE", "A JAR", "A SAUCEPAN", "A TEAPOT", "A SHOEBOX", "A SOFA", "A THRONE", "A STARFISH", "A SLEEVE", "A COUGH", "A CAKE", "A TOWEL", "A DESERT", "A DOOR", "A MUG", "A BUCKET", "A FRYING PAN", "A CLOCK", "A SUNDIAL", "A CUBE", "A MAKE-UP ARTIST", "A SOFT DRINK", "A CHOIR", "A BEACH BALL", "A SHEET OF PAPER", "AN ANCHOR", "A MAST", "A PORTHOLE", "A RUDDER", "A PLUM", "A SAUSAGE", "A BONGO", "A SUNBURN", "A STUDENT", "A FUTURE", "A NEON SIGN", "A SUNNY MORNING", "A SHED", "A LAWNMOWER", "A WATERING CAN", "A GNOME", "A PARASOL", "A PAIR OF SUNGLASSES", "A PAINT CHART", "A COOL SPOT UNDER A TREE", "A CODE", "A PASSWORD", "A JOKE", "YOUR KNUCKLES", "A PIANO", "A TYPEWRITER", "A LAPTOP", "A LOCKSMITH", "A BOXER", "A SWIMMER", "AN OAK TREE", "AN ELEPHANT", "YOUR BREATH", "A COLD", "A BUS", "A BALL", "A CYCLIST", "A BUILDER", "A KNIGHT", "A RACING DRIVER", "A DENTIST", "A ROAD WORKER", "A FIRE ALARM AT SCHOOL", "A POWER TOOL FOR MAKING HOLES", "A TABLET", "AN ELECTRIC CAR", "A PLUMBER", "AN ANGRY BULL", "A REFEREE", "A LIFEGUARD", "A SHEPHERD", "A KETTLE", "A BATHTUB", "A WASHBASIN", "A TELEVISION", "AN ELECTRIC SOCKET", "A TRUCE", "A MEETING", "A DOCTOR", "HEADS OR TAILS", "A FISHING BOAT", "A TENNIS COURT", "A BUTTERFLY COLLECTOR", "A GOAL", "A DIARY", "A SAFE", "A CANAL", "A KEYHOLE", "A TRICK", "THE FOOL", "THE HERO", "THE TRUMPET", "A DIVING BOARD", "WATER POLO", "BACKSTROKE", "GOGGLES", "A SPRINTER", "A RACING CAR", "AN ALBUM", "FOOTPRINTS IN THE SNOW", "A GOLF BALL", "A STAKE", "CATTLE", "A TRUCK", "A DART", "A BOOMERANG", "A JAVELIN", "A SNOWBALL", "A POP STAR", "A SPORTS TEAM", "A HOT SUMMER'S DAY", "SPINNING BLADES THAT COOL YOU", "GRAPES", "FLOWERS", "A SUIT", "A BUTTON", "A PAWN", "A ROOK", "A STALEMATE", "CHECKMATE", "A COAT", "A SHIRT", "A REMOTE CONTROL", "YOUR BELLY", "A SMILE", "A FROWN", "PERFUME", "A HAT", "ARMS ON AN OCTOPUS", "PLANETS IN THE SOLAR SYSTEM", "LEGS ON A TARANTULA", "SIDES ON AN OCTAGON", "A TULIP", "A DAFFODIL", "AN ONION", "A BEDSIDE LAMP", "A TIP", "A MESSAGE", "A STAIN", "A FOOTPRINT", "THE SPHINX", "A PHARAOH", "HIEROGLYPHICS", "A PYRAMID", "A CRAYON", "A CANDLE", "A SNOWBOARD", "A BEEHIVE", "A SPEECH", "A BABY", "A NEWSPAPER", "A PIZZA", "PASTA", "A GONDOLA", "THE COLOSSEUM", "THE LEANING TOWER OF PISA", "A DRONE", "A HELICOPTER", "AN ICE SKATE", "A RAZOR", "A PLAN", "A DRAGON", "A TURTLE", "A CHICK", "A BERET", "A BAGUETTE", "A CROISSANT", "THE EIFFEL TOWER", "A CRAB", "A LOBSTER", "AN ARCADE PRIZE MACHINE", "A SCRATCHING CAT", "YOUR ELBOW", "YOUR WRIST", "THE RULES", "A DRINKING STRAW", "A SUITCASE", "A SKATEBOARD", "A TRAIN", "A TRICYCLE", "A COMPASS", "A SPEEDOMETER", "A PINE TREE", "A SEWING KIT", "AN EYEBROW", "A FLAG", "MONEY", "A HAND IN CLASS", "SUSHI", "A KIMONO", "A SAMURAI", "MOUNT FUJI", "A CROSSROADS", "A SHOP FRONT", "THE ZODIAC", "A FOR SALE BOARD", "A LIFEBOAT", "A CANOE", "A WEBSITE", "A SPACE SHUTTLE", "THE THAMES", "THE MISSISSIPPI", "THE DANUBE", "THE NILE", "A FEATHER", "A SNOWFLAKE", "A FIREFLY", "A CHANDELIER", "DOUGH", "A HOT AIR BALLOON", "THE TIDE", "PRICES", "IRON", "COPPER", "GOLD", "TIN", "A FREEZER", "AN ICE RINK", "A RUNNY NOSE", "THE NORTH POLE", "ASLEEP", "ILL", "IN LOVE", "OFF A LADDER", "DRIZZLE", "HAIL", "FOG", "THUNDER", "THE AMERICAN FLAG", "A SHERIFF", "A HOTEL RATING", "THE NIGHT SKY", "THE ENDING", "A SURPRISE", "A GRANDCHILD", "YOUR APPETITE", "A CALF", "A FOAL", "A CUB", "A PUPPY", "A DALMATIAN", "A LEOPARD", "A DOMINO", "CHICKENPOX", "A RIDDLE", "A LETTER", "THE FRONT DOOR", "THE PHONE", "A FLOCK", "A HERD", "A SWARM", "A PACK", "A DRUMMER", "A BASS PLAYER", "A PONYTAIL", "A STRETCHY RUBBER LOOP", "A POP SONG", "A NEWS STORY", "A LONG DISTANCE", "A SNEEZE", "HISS", "ROAR", "HOWL", "NEIGH", "GLUE", "TAPE", "A HOCKEY PLAYER", "A FALLEN BRANCH", "YOUR FEET", "A PLAYLIST", "SOME PAPERS", "A DECK OF CARDS", "POP", "ROCK", "JAZZ", "HIP-HOP", "A PIRATE", "A TREASURE HUNTER", "A SET OF DRAWERS", "YOUR RIBS", "YOUR ANKLE", "THE TRUTH", "A BALLOON ANIMAL", "A BOTTLE TOP", "SALSA", "TANGO", "WALTZ", "BALLET", "A WITCH", "A WIZARD", "A DICTIONARY", "A WEEKLY WORD TEST", "A HAND", "AN EAR", "A BIKE", "SOME CASH", "A RADIATOR", "A VOLCANO", "A SAUNA", "THE SUN", "A LOAF", "A PIE", "THE EARTH", "THE EDGE OF A SLICE OF BREAD", "A SHOP WINDOW", "A WOUND", "A CAESAR SALAD", "A DOLL", "SEAWEED", "A SANDCASTLE", "A SEASHELL", "A SUNBATHER", "A DESERT ISLAND", "AN OASIS", "A FORTUNE TELLER", "THE INSIDE OF YOUR HAND", "A PARTY", "A CONCERT", "A GRUDGE", "AN UMBRELLA", "A WINDOW", "A LIGHT BULB", "A MIRROR", "A FISH TANK", "A JUDGE", "A LAWYER", "A ROYAL JESTER", "A BADMINTON PLAYER", "A SALAD", "A PANCAKE", "YOUR HAIR", "A BEANBAG", "A PENCIL", "A ROLLING PIN", "A TOOTHPICK", "A LOG CABIN", "A DETECTIVE", "A SECRET AGENT", "A NAIL SALON", "A COMPUTER", "A RECIPE", "A KNITTING PATTERN", "A CELEBRITY ONLINE", "A TRAIL", "CUSTARD", "CHEESE", "ICE CREAM", "A LATTE", "A TADPOLE", "A MONKEY", "A COIN", "A MERMAID", "A TUNE", "A CONVERSATION", "A SPARE KEY", "A HEAVY SHOPPING BAG", "A HEDGE", "GRASS", "FINGERNAILS", "A WEDDING CAKE", "A CRICKETER", "A BASEBALL PLAYER", "A CAVE", "A VAMPIRE", "A RATTLE", "A TAMBOURINE", "YOUR HEAD", "A SNOW GLOBE", "A TENNIS RACKET", "A GUITAR", "A YO-YO", "A HARP", "A PRINTER", "A STAPLER", "RUSH HOUR", "RASPBERRIES AND SUGAR", "A DEADLINE", "THE TRAFFIC", "A DUSTY RUG", "THE OTHER TEAM", "A TABLE", "A SPIDER", "A PAIR OF TROUSERS", "A TRIPOD", "A SHOE", "A BOOT", "A CHAMELEON", "YOUR MOUTH", "A HINT", "A SUBJECT", "A HOT POTATO", "A WET PLATE", "A BULL", "A RHINO", "A CAR", "A UNICORN", "A BIRTHDAY PRESENT", "A SHOELACE", "A VIOLIN", "AN ARCHER", "YOUR EYES", "YOUR TONGUE", "A CARPET", "DICE"];
+  const PGCT_LONG = [
+    { items: ["A SANDWICH CUT CORNER TO CORNER", "THE UNDERGROUND PART OF A TREE", "SPINNING BLADES THAT COOL YOU", "A POWER TOOL FOR MAKING HOLES"], link: "Things shaped like a triangle" },
+    { items: ["HIEROGLYPHICS", "TOASTED MARSHMALLOWS", "AN AFTER-SCHOOL GROUP", "A CONVERSATION"], link: "Things with stripes" },
+    { items: ["A FOOTBALL SHIRT", "A TIGHTROPE WALKER", "THE MISSISSIPPI", "RASPBERRIES AND SUGAR"], link: "Things at the circus" }
+  ];
+  const PgctText = ({ text }) => {
+    const words = cmSentence(text).split(" ");
+    return /* @__PURE__ */ React$1.createElement("span", { className: "pgct-tx", lang: "en" }, words.map((w, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, i ? " " : "", /* @__PURE__ */ React$1.createElement("span", { className: "pgct-w" }, w))));
+  };
+  const PgctRow = ({ x, all }) => /* @__PURE__ */ React$1.createElement("div", { className: "cm-row is-" + x.state + " th-" + x.k }, /* @__PURE__ */ React$1.createElement("div", { className: "cm-tiles" }, [0, 1, 2, 3].map((i) => {
+    const st = cmItem(x, i);
+    return /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cm-t is-" + st + (i === 0 && st === "seen" && !all ? " is-first" : "") }, st === "hidden" ? "" : /* @__PURE__ */ React$1.createElement(PgctText, { text: x.items[i] }));
+  })), /* @__PURE__ */ React$1.createElement("span", { className: "cm-pts" }, cmClosed(x) && !all ? x.pts : ""), !all && /* @__PURE__ */ React$1.createElement("p", { className: "cm-conn" }, cmClosed(x) ? /* @__PURE__ */ React$1.createElement("b", null, x.link) : /* @__PURE__ */ React$1.createElement("span", { className: "cm-say" }, CM_SAY[x.state])));
+  const pgctContent = (play, items) => items === "today" ? play.c : PGCT_LONG.map((t, k) => ({ ...play.c[k], ...t }));
+  const pgctAll = () => Array.from({ length: Math.ceil(PGCT_ITEMS.length / 4) }, (_, r) => ({ k: r % 3, items: PGCT_ITEMS.slice(r * 4, r * 4 + 4), state: "found", shown: 4, pts: 0, link: "" }));
+  const PgctBody = ({ s }) => {
+    const dir = usePgSetting("dir");
+    const items = usePgSetting("items");
+    if (!s.play) return s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
+    const p = cmPlay({ c: pgctContent(s.play, items), m: s.play.m }, s.live);
+    const r = s.unfinished ? { tone: "none", word: "Not finished" } : s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" };
+    const board = items === "all" ? /* @__PURE__ */ React$1.createElement("div", { className: "cm-board pgct pgct-d" + dir }, pgctAll().map((x, i) => /* @__PURE__ */ React$1.createElement(PgctRow, { key: i, x, all: true }))) : /* @__PURE__ */ React$1.createElement("div", { className: "cm-board pgct pgct-d" + dir }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(PgctRow, { key: x.k, x })));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsSessCard, { r, className: "cm-card pgct-card", board, rows: [["Score", /* @__PURE__ */ React$1.createElement(CmScore, { p })], ["Guesses", /* @__PURE__ */ React$1.createElement(CmPool, { p })]] }), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const PgctNow = (props) => {
+    const view = usePgSetting("view");
+    if (view !== "now-unfinished") return /* @__PURE__ */ React$1.createElement(CmNow, { ...props });
+    const s = GS_SESSIONS["pgct-unfinished"];
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "common", title: "#" + s.number, result: { kind: "over", label: "Not finished" }, open: () => window.gsApi.go("session", { id: "pgct-unfinished" }), next: props.c.next, className: "cmn pgct-now-unf" }, /* @__PURE__ */ React$1.createElement(CmNowPic, { p: cmPlay(s.play, false) }));
+  };
+  const initPlaygroundCommonTiles = () => {
+    GS_SESSIONS["pgct-unfinished"] = { ...GS_SESSIONS["common-live"], live: false, unfinished: true, result: "Not finished", figures: [] };
+    const toUnf = (gs) => gs.go("session", { id: "pgct-unfinished" });
+    pgRegister("common-tiles", { title: "Common tiles", settings: [
+      { key: "dir", kind: "concept", label: "Direction", options: [
+        { value: "1", label: "1 Word per line" },
+        { value: "2", label: "2 Two by two" },
+        { value: "3", label: "3 List" }
+      ] },
+      { key: "view", label: "Page and state", options: [
+        { value: "session-finished", label: "Session page · finished", state: "session-common" },
+        { value: "session-live", label: "Session page · in progress", state: "session-common-in-progress" },
+        { value: "session-unfinished", label: "Session page · not finished", state: "session-common", go: toUnf },
+        { value: "now-finished", label: "Now card · finished", state: "library-common" },
+        { value: "now-live", label: "Now card · in progress", state: "library-common-in-progress" },
+        { value: "now-unfinished", label: "Now card · not finished", state: "library-common" }
+      ] },
+      { key: "items", label: "Items", options: [
+        { value: "long", label: "Longest real items" },
+        { value: "today", label: "Today (No. 7)" },
+        { value: "all", label: "Every real item (756)" }
+      ] }
+    ] });
+    if (pgActive()) {
+      GS_SESSION_BODY.common = PgctBody;
+      GS_NOW.common = PgctNow;
+    }
   };
   const { useState, useEffect, useRef } = React$1;
   let GS_REVIEW_DEFAULT;
@@ -10866,4 +10939,5 @@
   initMain();
   initGsWhere();
   initGsCommon();
+  initPlaygroundCommonTiles();
 })(React, ReactDOM);

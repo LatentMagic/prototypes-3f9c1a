@@ -93,6 +93,7 @@ import { FitView, isFramed, useFit } from './fit.jsx';
 import { initGsWhere } from './gs-where.jsx';
 import { initGsChain } from './gs-chain.jsx';
 import { initGsCommon } from './gs-common.jsx';
+import { initPlaygroundCommonTiles } from './playground-common-tiles.jsx';
 
 const { useState, useEffect, useRef } = React;
 
@@ -496,3 +497,4 @@ initGsDelve();
 initMain();
 initGsWhere();
 initGsCommon();
+initPlaygroundCommonTiles();

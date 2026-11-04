@@ -3057,3 +3057,33 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .cmn-sum { grid-auto-flow: column; align-items: center; gap: 28px; --q: 22px; }
   .cmn-score b { font-size: 40px; }
 }
+/* The common-tiles playground (app/playground-common-tiles.jsx): three directions for Common's item tiles, plain text flow, no resizing.
+   Builds on Common's own styles (gs-common.css); everything here is scoped to .pgct (the board) or the playground's card classes. */
+
+/* Every direction: the text is never resized or clipped. A tile keeps its picked height as a floor and grows if its words need more;
+   the tiles of one row share the tallest one's height. */
+.pgct .cm-t { height: auto; min-height: 72px; overflow: visible; }
+@container dv2 (min-width: 520px) { .pgct .cm-t { min-height: 64px; } }
+.pgct-tx { display: block; max-width: 100%; text-wrap: balance; }
+
+/* 1 Word per line. Phone (card under 520px): each word on its own line; a word longer than the tile hyphenates. */
+@container dv2 (max-width: 519.98px) {
+  .pgct-d1 .pgct-w { display: block; }
+  .pgct-d1 .pgct-tx { hyphens: auto; }
+}
+
+/* 2 Two by two. Phone: a thread's four tiles two by two, each twice as wide. */
+@container dv2 (max-width: 519.98px) {
+  .pgct-d2 .cm-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pgct-d2 .cm-t { min-height: 48px; padding: 4px 8px; }
+}
+
+/* 3 List. Phone: a thread's four items as full-width bars, one under another, text from the left. */
+@container dv2 (max-width: 519.98px) {
+  .pgct-d3 .cm-tiles { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .pgct-d3 .cm-t { min-height: 36px; padding: 8px 12px; place-items: center start; text-align: left; }
+}
+
+/* Not finished: grey, on the session page's result line and the now card's. */
+.pgct-card .dv7r-word.is-none { color: var(--muted); }
+.pgct-now-unf .gs-vd { color: var(--muted); }

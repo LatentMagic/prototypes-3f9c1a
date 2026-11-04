@@ -17,10 +17,10 @@ import { cmPlay } from './gs-where-chain-salvage.jsx';
 import { GS_SESSION_BODY, GS_NOW } from './registry.js';
 
 // ---- An item: seen (shown in play), unseen (never shown, revealed once its thread closed) or hidden (its thread still open or not reached). ----
-const cmClosed = (x) => x.state === 'found' || x.state === 'passed' || x.state === 'lost';
-const cmItem = (x, i) => (i < x.shown ? 'seen' : cmClosed(x) ? 'unseen' : 'hidden');
+export const cmClosed = (x) => x.state === 'found' || x.state === 'passed' || x.state === 'lost';
+export const cmItem = (x, i) => (i < x.shown ? 'seen' : cmClosed(x) ? 'unseen' : 'hidden');
 const cmTotal = (p) => p.t.reduce((a, x) => a + x.pts, 0);
-const cmSentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
+export const cmSentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
 const cmPoolLabel = (p) => p.pool.length + ' of 5 guesses used' + (p.pool.length ? ': ' + p.pool.map((g) => 'thread ' + (g.k + 1) + (g.right ? ' right' : ' wrong')).join(', ') : '');
 
 // ---- An item's words inside its fixed tile. KEEP: an item never ends on a lone word: it sits on one line, or wraps into lines whose
@@ -52,7 +52,7 @@ const CmFit = ({ text }) => {
 
 // ---- The guesses: five squares in the order spent. A right guess fills with the colour of the thread it named, with a tick; a wrong one
 // is grey with a cross; one not spent is an outline. ----
-const CmPool = ({ p }) => (
+export const CmPool = ({ p }) => (
   <div className="cm-pool" role="img" aria-label={cmPoolLabel(p)}>
     {[0, 1, 2, 3, 4].map((j) => { const g = p.pool[j];
       return <span key={j} aria-hidden="true" className={'cm-q ' + (g ? (g.right ? 'is-right th-' + g.k : 'is-wrong') : 'is-spare')}>{g ? (g.right ? '✓' : '×') : ''}</span>; })}
@@ -62,7 +62,7 @@ const CmPool = ({ p }) => (
 // 520px): the tiles across the card, then the connection and the points on the line under them. A row still open says so.
 // KEEP: the four tiles are equal columns (minmax(0, 1fr)) of one fixed height in one grid at every width; a long item wraps inside its
 // tile and never widens it. ----
-const CM_SAY = { open: 'Open', waiting: 'Not reached' };
+export const CM_SAY = { open: 'Open', waiting: 'Not reached' };
 const CmRow = ({ x }) => (
   <div className={'cm-row is-' + x.state + ' th-' + x.k}>
     <div className="cm-tiles">{[0, 1, 2, 3].map((i) => { const st = cmItem(x, i);
@@ -70,7 +70,7 @@ const CmRow = ({ x }) => (
     <span className="cm-pts">{cmClosed(x) ? x.pts : ''}</span>
     <p className="cm-conn">{cmClosed(x) ? <b>{x.link}</b> : <span className="cm-say">{CM_SAY[x.state]}</span>}</p>
   </div>);
-const CmScore = ({ p }) => (
+export const CmScore = ({ p }) => (
   <div className="cm-score" role="img" aria-label={cmTotal(p) + ' of 15 points'}><b aria-hidden="true">{cmTotal(p)}</b><span aria-hidden="true">of 15</span></div>);
 export const CmSessBody = ({ s }) => {
   if (!s.play) return s.lines.length ? <GsMoves s={s} /> : null;
@@ -92,7 +92,7 @@ const CmMini = ({ x }) => (
   </div>);
 const cmBoardLabel = (p) => p.t.map((x) => 'thread ' + (x.k + 1) + ': ' + (x.state === 'found' ? 'named, ' + x.pts + (x.pts === 1 ? ' point' : ' points')
   : x.state === 'passed' ? 'passed' : x.state === 'lost' ? 'out of guesses' : x.state === 'open' ? 'open' : 'not reached')).join('; ');
-const CmNowPic = ({ p }) => (
+export const CmNowPic = ({ p }) => (
   <div className="cmn-pic">
     <div className="cmn-board" role="img" aria-label={cmBoardLabel(p)}>{p.t.map((x) => <CmMini key={x.k} x={x} />)}</div>
     <div className="cmn-sum">
