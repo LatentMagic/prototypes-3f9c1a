@@ -10,6 +10,7 @@ import React from 'react';
 import { GsMoves, GsSessCard } from './gs-session.jsx';
 import { pgRegister, pgActive, usePgSetting } from './playground.jsx';
 import { GS_SESSION_BODY } from './registry.js';
+import { GS_SESSIONS } from './gs-data.jsx';
 
 // ---- Edition No. 21: five wrecks (4, 3, 3, 2, 2) and the four rows and four columns whose counts it shows. ----
 const COLS = 'ABCDEFGH';
@@ -41,7 +42,7 @@ const patch = (sq) => { const c = colOf(sq), r = rowOf(sq); const out = [];
 // and a square not yet found becomes a hit. Won when all five are raised; lost when the 20th dive is spent first.
 // The Every move lines are the deployed record's words. ----
 const runPlay = (moves) => {
-  const hit = new Set(); const raised = new Set(); const lines = []; const tools = {}; const miss = []; let dives = 0;
+  const hit = new Set(); const raised = new Set(); const lines = []; const tools = {}; const miss = []; const marks = []; let dives = 0;
   const strike = (sq) => { hit.add(sq); const w = wreckOf(sq); if (WRECKS[w].every((s) => hit.has(s)) && !raised.has(w)) { raised.add(w); return WRECKS[w].length; } return 0; };
   moves.forEach((m) => {
     if (m.dive) {
@@ -49,13 +50,16 @@ const runPlay = (moves) => {
       dives += 1; const w = wreckOf(m.dive);
       let res = 'miss';
       if (w < 0) miss.push(m.dive); else { const sunk = strike(m.dive); res = sunk ? 'raised: the wreck of ' + sunk : 'hit'; }
+      marks.push(res === 'miss' ? '○' : res === 'hit' ? '✕' : '■');
       lines.push(['Dive ' + dives, m.dive, res]);
     } else if (m.sonar) {
       if (isShown(m.sonar)) console.error('Salvage playground: sonar on a shown line', m.sonar);
       const count = lineCount(m.sonar); tools.sonar = { line: m.sonar, count, squares: lineSquares(m.sonar) };
+      marks.push('📡');
       lines.push(['Hint', lineWords(m.sonar) + ': ' + countWords(count)]);
     } else if (m.detector) {
       const sq = patch(m.detector); const count = sq.filter((s) => wreckOf(s) > -1).length; tools.detector = { at: m.detector, count, squares: sq };
+      marks.push('🧲');
       lines.push(['Metal detector', m.detector + ' and around it: ' + countWords(count)]);
     } else if (m.net) {
       const run = lineSquares(m.net, m.net.from); const i = run.findIndex((s) => wreckOf(s) > -1);
@@ -64,13 +68,20 @@ const runPlay = (moves) => {
       if (snag && hit.has(snag)) say = head + ': the dragnet snags at ' + snag + ', already found.';
       else if (snag) { const sunk = strike(snag); say = head + ': the dragnet snags at ' + snag + (sunk ? ' and raises the wreck of ' + sunk + '.' : ', a hit.'); }
       tools.net = { line: m.net, snag, squares: snag ? run.slice(0, i + 1) : run };
+      marks.push('🕸️');
       lines.push(['Dragnet', say]);
     }
   });
   const state = raised.size === 5 ? 'won' : dives >= DIVES ? 'lost' : 'live';
   if (state === 'lost') WRECKS.forEach((w) => lines.push(['Wreck', 'The wreck of ' + w.length + ': ' + w[0] + ' to ' + w[w.length - 1]]));
-  return { state, dives, hit, raised, miss, tools, lines };
+  return { state, dives, hit, raised, miss, tools, lines, marks };
 };
+// The share text as the deployed Salvage builds it (salvage player-view.ts toShareGrid, shareHeadline in the shared engine's
+// share-card.ts): "Salvage No. 21 · <wrecks> · <n> of 20 dives", a blank line, then one mark per move, ten to a line: ■ a wreck
+// raised, ✕ a hit, ○ a miss, 📡 sonar, 🧲 metal detector, 🕸️ dragnet. Only a finished play has one.
+const shareLinesOf = (p) => { const wrecks = p.raised.size === 5 ? 'all 5 wrecks' : p.raised.size + ' of 5 wrecks';
+  const rows = []; for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(' '));
+  return ['Salvage No. 21 · ' + wrecks + ' · ' + p.dives + ' of ' + DIVES + ' dives', '', ...rows]; };
 const dive = (s) => s.split(' ').map((d) => ({ dive: d }));
 const PLAYS = {
   // Won in 16 of 20 dives, all three tools used.
@@ -203,5 +214,12 @@ export const initPlaygroundSalvageSession = () => {
     { key: 'margins', label: 'Margins', options: opts({ chip: 'Chips', box: 'Boxes', size: 'Size' }) },
     { key: 'word', label: 'Counts word', options: opts(WORD) },
   ] });
-  if (pgActive()) GS_SESSION_BODY.salvage = SalvageBody;
+  if (pgActive()) {
+    GS_SESSION_BODY.salvage = SalvageBody;
+    // KEEP: the Share pop-up shows the open play's own share text. Canon's session page reads one seed session for every Salvage play
+    // of today's edition, so its share lines follow the State setting (the play in the URL) instead of being fixed. The deployed page
+    // offers no share until a play ends; the in-progress text here is the same builder run on the moves so far.
+    const open = () => PLAYS[new URLSearchParams(window.location.search).get('play')] || PLAYS.won;
+    Object.values(PGS).forEach((id) => Object.defineProperty(GS_SESSIONS[id], 'shareLines', { configurable: true, get: () => shareLinesOf(open()) }));
+  }
 };

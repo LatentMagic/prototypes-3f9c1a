@@ -10289,6 +10289,7 @@
     const lines = [];
     const tools = {};
     const miss = [];
+    const marks = [];
     let dives = 0;
     const strike = (sq) => {
       hit.add(sq);
@@ -10310,16 +10311,19 @@
           const sunk = strike(m.dive);
           res = sunk ? "raised: the wreck of " + sunk : "hit";
         }
+        marks.push(res === "miss" ? "○" : res === "hit" ? "✕" : "■");
         lines.push(["Dive " + dives, m.dive, res]);
       } else if (m.sonar) {
         if (isShown(m.sonar)) console.error("Salvage playground: sonar on a shown line", m.sonar);
         const count = lineCount(m.sonar);
         tools.sonar = { line: m.sonar, count, squares: lineSquares(m.sonar) };
+        marks.push("📡");
         lines.push(["Hint", lineWords(m.sonar) + ": " + countWords(count)]);
       } else if (m.detector) {
         const sq = patch(m.detector);
         const count = sq.filter((s) => wreckOf(s) > -1).length;
         tools.detector = { at: m.detector, count, squares: sq };
+        marks.push("🧲");
         lines.push(["Metal detector", m.detector + " and around it: " + countWords(count)]);
       } else if (m.net) {
         const run = lineSquares(m.net, m.net.from);
@@ -10333,12 +10337,19 @@
           say = head + ": the dragnet snags at " + snag + (sunk ? " and raises the wreck of " + sunk + "." : ", a hit.");
         }
         tools.net = { line: m.net, snag, squares: snag ? run.slice(0, i + 1) : run };
+        marks.push("🕸️");
         lines.push(["Dragnet", say]);
       }
     });
     const state = raised.size === 5 ? "won" : dives >= DIVES ? "lost" : "live";
     if (state === "lost") WRECKS.forEach((w) => lines.push(["Wreck", "The wreck of " + w.length + ": " + w[0] + " to " + w[w.length - 1]]));
-    return { state, dives, hit, raised, miss, tools, lines };
+    return { state, dives, hit, raised, miss, tools, lines, marks };
+  };
+  const shareLinesOf = (p) => {
+    const wrecks = p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks";
+    const rows = [];
+    for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(" "));
+    return ["Salvage No. 21 · " + wrecks + " · " + p.dives + " of " + DIVES + " dives", "", ...rows];
   };
   const dive = (s) => s.split(" ").map((d) => ({ dive: d }));
   const PLAYS = {
@@ -10465,7 +10476,11 @@
       { key: "margins", label: "Margins", options: opts({ chip: "Chips", box: "Boxes", size: "Size" }) },
       { key: "word", label: "Counts word", options: opts(WORD) }
     ] });
-    if (pgActive()) GS_SESSION_BODY.salvage = SalvageBody;
+    if (pgActive()) {
+      GS_SESSION_BODY.salvage = SalvageBody;
+      const open = () => PLAYS[new URLSearchParams(window.location.search).get("play")] || PLAYS.won;
+      Object.values(PGS).forEach((id) => Object.defineProperty(GS_SESSIONS[id], "shareLines", { configurable: true, get: () => shareLinesOf(open()) }));
+    }
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
