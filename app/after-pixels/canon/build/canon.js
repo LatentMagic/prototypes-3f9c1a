@@ -4080,12 +4080,12 @@
       });
     });
   };
-  const SVN_H = 7;
+  const SVN_H = 11;
   const SvnHull = ({ w, p }) => {
     const up = w.every((s) => p.hit.has(s));
     const n = w.length;
     const L = 9 * n - 2;
-    return /* @__PURE__ */ React$1.createElement("span", { className: "svn-ship", style: { "--n": n } }, Array.from({ length: n }, (_, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: "slv-sq" })), /* @__PURE__ */ React$1.createElement("svg", { className: "svn-hull " + (up ? "is-raised" : "is-open"), style: { "--n": n }, viewBox: "0 0 " + L + " " + SVN_H, "aria-hidden": "true" }, up ? /* @__PURE__ */ React$1.createElement("rect", { x: "0", y: "0", width: L, height: SVN_H, rx: SVN_H / 2 }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { className: "svn-dash", x: ".3", y: ".3", width: L - 0.6, height: SVN_H - 0.6, rx: SVN_H / 2 - 0.3, strokeDasharray: "1.1 .9" }), w.filter((s) => p.hit.has(s)).map((s, i) => /* @__PURE__ */ React$1.createElement("circle", { key: s, cx: 9 * i + SVN_H / 2, cy: SVN_H / 2, r: SVN_H * 0.34 })))));
+    return /* @__PURE__ */ React$1.createElement("svg", { className: "svn-hull " + (up ? "is-raised" : "is-open"), style: { "--n": n }, viewBox: "0 0 " + L + " " + SVN_H, "aria-hidden": "true" }, up ? /* @__PURE__ */ React$1.createElement("rect", { x: "0", y: "0", width: L, height: SVN_H, rx: SVN_H / 2 }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { className: "svn-dash", x: ".3", y: ".3", width: L - 0.6, height: SVN_H - 0.6, rx: SVN_H / 2 - 0.3, strokeDasharray: "1.1 .9" }), w.filter((s) => p.hit.has(s)).map((s, i) => /* @__PURE__ */ React$1.createElement("circle", { key: s, cx: 9 * i + SVN_H / 2, cy: SVN_H / 2, r: SVN_H * 0.34 }))));
   };
   const SvnTools = ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "svn-tools", "aria-hidden": "true" }, SLV_ALL.map((k) => /* @__PURE__ */ React$1.createElement("li", { key: k, className: "slv-tool t-" + k + (p.tools[k] ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-bx" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", ...SLV_ST }, ICON[k])))));
   const SvnPic = ({ p }) => {
