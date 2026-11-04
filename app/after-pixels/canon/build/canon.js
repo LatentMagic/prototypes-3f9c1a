@@ -3910,6 +3910,199 @@
     const p = cnRead(s.play, !done);
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "chain", title, result: p.r, open: () => gs.go("session", { id: sid }), next: c.next, className: "cn" }, /* @__PURE__ */ React$1.createElement(CnPic, { p }));
   };
+  const SLV_COLS = "ABCDEFGH";
+  const SLV_N8 = [1, 2, 3, 4, 5, 6, 7, 8];
+  const SLV_WRECKS = [["A5", "B5", "C5", "D5"], ["E3", "F3", "G3"], ["F6", "G6", "H6"], ["G8", "H8"], ["C1", "C2"]];
+  const SLV_SHOWN = { row: [3, 5, 6, 7], col: ["C", "E", "F", "H"] };
+  const SLV_DIVES = 20;
+  const SLV_TOOLS = { sonar: "Sonar", detector: "Metal detector", net: "Dragnet" };
+  const SLV_ALL = Object.keys(SLV_TOOLS);
+  const slvColOf = (sq) => SLV_COLS.indexOf(sq[0]);
+  const slvRowOf = (sq) => +sq.slice(1) - 1;
+  const slvAt = (c, r) => SLV_COLS[c] + (r + 1);
+  const slvWreckOf = (sq) => SLV_WRECKS.findIndex((w) => w.includes(sq));
+  const slvLineSquares = ({ axis, name }, from) => {
+    const sq = SLV_N8.map((_, i) => axis === "row" ? slvAt(i, +name - 1) : slvAt(SLV_COLS.indexOf(name), i));
+    return from === "right" || from === "bottom" ? sq.reverse() : sq;
+  };
+  const slvLineCount = (line) => slvLineSquares(line).filter((s) => slvWreckOf(s) > -1).length;
+  const slvLineWords = ({ axis, name }) => (axis === "row" ? "Row " : "Column ") + name;
+  const slvIsShown = ({ axis, name }) => SLV_SHOWN[axis].includes(name);
+  const slvCountWords = (n) => n === 0 ? "no wreck squares." : n + (n === 1 ? " wreck square" : " wreck squares") + ", found or not.";
+  const slvPatch = (sq) => {
+    const c = slvColOf(sq), r = slvRowOf(sq);
+    const out = [];
+    for (let y = Math.max(0, r - 1); y <= Math.min(7, r + 1); y++) for (let x = Math.max(0, c - 1); x <= Math.min(7, c + 1); x++) out.push(slvAt(x, y));
+    return out;
+  };
+  const slvRunPlay = (moves) => {
+    const hit = /* @__PURE__ */ new Set();
+    const raised = /* @__PURE__ */ new Set();
+    const lines = [];
+    const tools = {};
+    const miss = [];
+    const marks = [];
+    let dives = 0;
+    const strike = (sq) => {
+      hit.add(sq);
+      const w = slvWreckOf(sq);
+      if (SLV_WRECKS[w].every((s) => hit.has(s)) && !raised.has(w)) {
+        raised.add(w);
+        return SLV_WRECKS[w].length;
+      }
+      return 0;
+    };
+    moves.forEach((m) => {
+      if (m.dive) {
+        if (hit.has(m.dive)) return;
+        dives += 1;
+        const w = slvWreckOf(m.dive);
+        let res = "miss";
+        if (w < 0) miss.push(m.dive);
+        else {
+          const sunk = strike(m.dive);
+          res = sunk ? "raised: the wreck of " + sunk : "hit";
+        }
+        marks.push(res === "miss" ? "○" : res === "hit" ? "✕" : "■");
+        lines.push(["Dive " + dives, m.dive, res]);
+      } else if (m.sonar) {
+        const count = slvLineCount(m.sonar);
+        tools.sonar = { line: m.sonar, squares: slvLineSquares(m.sonar) };
+        marks.push("📡");
+        lines.push(["Hint", slvLineWords(m.sonar) + ": " + slvCountWords(count)]);
+      } else if (m.detector) {
+        const sq = slvPatch(m.detector);
+        const count = sq.filter((s) => slvWreckOf(s) > -1).length;
+        tools.detector = { squares: sq };
+        marks.push("🧲");
+        lines.push(["Metal detector", m.detector + " and around it: " + slvCountWords(count)]);
+      } else if (m.net) {
+        const run = slvLineSquares(m.net, m.net.from);
+        const i = run.findIndex((s) => slvWreckOf(s) > -1);
+        const snag = i < 0 ? null : run[i];
+        const head = slvLineWords(m.net) + " from the " + m.net.from;
+        let say = head + ": no wreck squares.";
+        if (snag && hit.has(snag)) say = head + ": the dragnet snags at " + snag + ", already found.";
+        else if (snag) {
+          const sunk = strike(snag);
+          say = head + ": the dragnet snags at " + snag + (sunk ? " and raises the wreck of " + sunk + "." : ", a hit.");
+        }
+        tools.net = { squares: snag ? run.slice(0, i + 1) : run };
+        marks.push("🕸️");
+        lines.push(["Dragnet", say]);
+      }
+    });
+    const state = raised.size === 5 ? "won" : dives >= SLV_DIVES ? "lost" : "live";
+    if (state === "lost") SLV_WRECKS.forEach((w) => lines.push(["Wreck", "The wreck of " + w.length + ": " + w[0] + " to " + w[w.length - 1]]));
+    return { state, dives, hit, raised, miss, tools, lines, marks, sweep: tools.sonar ? tools.sonar.line : null };
+  };
+  const slvDive = (s) => s.split(" ").map((d) => ({ dive: d }));
+  const SLV_PLAYS = {
+    // Won in 16 of 20 dives, all three tools used.
+    won: slvRunPlay([
+      { sonar: { axis: "col", name: "G" } },
+      ...slvDive("A5 B5 C5 D5"),
+      { detector: "F4" },
+      ...slvDive("D3 E3 F3 G3"),
+      { net: { axis: "row", name: 6, from: "left" } },
+      ...slvDive("G6 H6 G7 G8 H8 C3 C2 C1")
+    ]),
+    // Lost: all 20 dives spent with two wrecks not raised; the dragnet not used.
+    lost: slvRunPlay([...slvDive("A1 B1 C1 C2 D3 E3 F3 G3 A5 B5 C5 D5"), { sonar: { axis: "row", name: 8 } }, { detector: "G5" }, ...slvDive("H4 F5 G6 G7 E8 F8 A8 B8")]),
+    // In progress: 9 dives, sonar and detector used, a hit on the wreck in column C.
+    live: slvRunPlay([{ sonar: { axis: "col", name: "A" } }, ...slvDive("A5 B5 C5 D5"), { detector: "E4" }, ...slvDive("D3 E3 F3 G3 C1")])
+  };
+  const slvShareLinesOf = (p) => {
+    const wrecks = p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks";
+    const rows = [];
+    for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(" "));
+    return ["Salvage No. 21 · " + wrecks + " · " + p.dives + " of " + SLV_DIVES + " dives", "", ...rows];
+  };
+  const SLV_RESULT = { won: { tone: "ok", word: "Completed" }, lost: { tone: "bad", word: "Failed" }, live: { tone: "live", word: "In progress" } };
+  const slvGc = (i) => i + 2;
+  const slvGr = (i) => i + 3;
+  const cell = (s) => ({ gridColumn: slvGc(slvColOf(s)), gridRow: slvGr(slvRowOf(s)) });
+  const SlvClue = ({ v, swept, style }) => v === void 0 ? null : /* @__PURE__ */ React$1.createElement("span", { className: "slv-chip" + (swept ? " is-swept" : ""), style, "aria-hidden": "true" }, v);
+  const SlvSea = ({ p }) => {
+    const sw = p.sweep;
+    const isSw = (axis, name) => !!sw && sw.axis === axis && sw.name === name;
+    const clue = (axis, name) => slvIsShown({ axis, name }) || isSw(axis, name) ? slvLineCount({ axis, name }) : void 0;
+    const dots = [...p.hit].filter((s) => !p.raised.has(slvWreckOf(s)));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "slv-sea", role: "img", "aria-label": "The sea: " + p.raised.size + " of 5 wrecks raised, " + p.dives + " of " + SLV_DIVES + " dives" }, SLV_COLS.split("").map((c, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c }, /* @__PURE__ */ React$1.createElement(SlvClue, { v: clue("col", c), swept: isSw("col", c), style: { gridColumn: slvGc(i), gridRow: 1 } }), /* @__PURE__ */ React$1.createElement("span", { className: "slv-ml", style: { gridColumn: slvGc(i), gridRow: 2 }, "aria-hidden": "true" }, c))), SLV_N8.map((r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-ml", style: { gridColumn: 1, gridRow: slvGr(r - 1) }, "aria-hidden": "true" }, r), /* @__PURE__ */ React$1.createElement(SlvClue, { v: clue("row", r), swept: isSw("row", r), style: { gridColumn: 10, gridRow: slvGr(r - 1) } }))), SLV_COLS.split("").flatMap((c, i) => SLV_N8.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: c + r, className: "slv-sq", style: { gridColumn: slvGc(i), gridRow: slvGr(r - 1) } }))), SLV_ALL.filter((k) => p.tools[k]).flatMap((k) => p.tools[k].squares.map((s) => /* @__PURE__ */ React$1.createElement("i", { key: k + s, className: "slv-cv t-" + k, style: cell(s) }))), p.miss.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "slv-mk", style: cell(s) }, /* @__PURE__ */ React$1.createElement("i", { className: "slv-dot is-miss" }))), dots.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "slv-mk", style: cell(s) }, /* @__PURE__ */ React$1.createElement("i", { className: "slv-dot is-hit" }))), SLV_WRECKS.map((w, i) => {
+      const up = p.raised.has(i);
+      if (!up && p.state !== "lost") return null;
+      const across = slvRowOf(w[0]) === slvRowOf(w[w.length - 1]);
+      const L = 9 * w.length - 2, vw = across ? L : 7, vh = across ? 7 : L;
+      return /* @__PURE__ */ React$1.createElement(
+        "span",
+        {
+          key: w[0],
+          className: "slv-hull " + (up ? "is-raised" : "is-unfound"),
+          style: { gridColumn: slvGc(slvColOf(w[0])) + " / span " + (across ? w.length : 1), gridRow: slvGr(slvRowOf(w[0])) + " / span " + (across ? 1 : w.length) }
+        },
+        up ? null : /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 " + vw + " " + vh, width: "100%", height: "100%", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: ".3", y: ".3", width: vw - 0.6, height: vh - 0.6, rx: 3.2, fill: "none", stroke: "currentColor", strokeWidth: ".5", strokeDasharray: "1.1 .9" }))
+      );
+    }));
+  };
+  const Big = ({ n, of, cap }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-big", role: "img", "aria-label": n + " of " + of + " " + cap }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, n), /* @__PURE__ */ React$1.createElement("small", { "aria-hidden": "true" }, "/", of, " ", cap));
+  const SlvHaul = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-haul" }, /* @__PURE__ */ React$1.createElement(Big, { n: p.dives, of: SLV_DIVES, cap: "dives" }), /* @__PURE__ */ React$1.createElement(Big, { n: p.raised.size, of: 5, cap: "wrecks" }));
+  const SLV_ST = { fill: "none", stroke: "currentColor", strokeWidth: 1.75, strokeLinecap: "square", strokeLinejoin: "miter" };
+  const ICON = {
+    sonar: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "5", cy: "12", r: "1.6", fill: "currentColor" }), /* @__PURE__ */ React$1.createElement("path", { d: "M9 8.5a5 5 0 0 1 0 7M12.5 5.5a9.5 9.5 0 0 1 0 13M16 3a13 13 0 0 1 0 18" })),
+    detector: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "M5 3l7 12" }), /* @__PURE__ */ React$1.createElement("ellipse", { cx: "15", cy: "18", rx: "6", ry: "3" })),
+    net: /* @__PURE__ */ React$1.createElement("path", { d: "M3 4h18l-3 16H6z M8 4l1.5 16 M16 4l-1.5 16 M4 10h16 M5 15h14" })
+  };
+  const SlvKit = ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "slv-kit" }, SLV_ALL.map((k) => {
+    const u = !!p.tools[k];
+    return /* @__PURE__ */ React$1.createElement("li", { key: k, className: "slv-tool t-" + k + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-bx" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "22", height: "22", "aria-hidden": "true", ...SLV_ST }, ICON[k])), /* @__PURE__ */ React$1.createElement("span", { className: "slv-nm" }, SLV_TOOLS[k], /* @__PURE__ */ React$1.createElement("span", { className: "slv-sr" }, u ? ", used" : ", not used")));
+  }));
+  const SlvSessBody = ({ s }) => {
+    const p = SLV_PLAYS[s.fx];
+    if (!p) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsSessResult, { s }), s.lines.length > 0 && /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsSessCard, { r: SLV_RESULT[p.state], className: "slv-card", board: /* @__PURE__ */ React$1.createElement(SlvSea, { p }), rows: [["Haul", /* @__PURE__ */ React$1.createElement(SlvHaul, { p })], ["Kit", /* @__PURE__ */ React$1.createElement(SlvKit, { p })]] }), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const FIXTURES = { "salvage-today": "won", "salvage-today-failed": "lost", "salvage-live": "live" };
+  const initGsSalvage = () => {
+    GS_SESSION_BODY.salvage = SlvSessBody;
+    Object.keys(FIXTURES).forEach((sid) => {
+      const fx = FIXTURES[sid];
+      const p = SLV_PLAYS[fx];
+      const done = fx !== "live";
+      const result = done ? SLV_RESULT[fx].word + ": " + (p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks") + " in " + p.dives + " of " + SLV_DIVES + " dives" : "In progress";
+      Object.assign(GS_SESSIONS[sid], {
+        fx,
+        loss: fx === "lost",
+        result,
+        lines: p.lines,
+        figures: [p.raised.size + " of 5 wrecks", p.dives + " of " + SLV_DIVES + " dives"],
+        share: done ? result : null,
+        shareLines: done ? slvShareLinesOf(p) : void 0
+      });
+    });
+  };
+  const SvnHull = ({ w, p }) => {
+    const up = w.every((s) => p.hit.has(s));
+    const n = w.length;
+    const L = 9 * n - 2;
+    return /* @__PURE__ */ React$1.createElement("svg", { className: "svn-hull " + (up ? "is-raised" : "is-open"), style: { "--n": n }, viewBox: "0 0 " + L + " 7", "aria-hidden": "true" }, up ? /* @__PURE__ */ React$1.createElement("rect", { x: "0", y: "0", width: L, height: "7", rx: "3.5" }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { className: "svn-dash", x: ".3", y: ".3", width: L - 0.6, height: "6.4", rx: "3.2", strokeDasharray: "1.1 .9" }), w.map((s, i) => p.hit.has(s) && /* @__PURE__ */ React$1.createElement("circle", { key: s, cx: 9 * i + 3.5, cy: "3.5", r: "2.4" }))));
+  };
+  const SvnTools = ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "svn-tools", "aria-hidden": "true" }, SLV_ALL.map((k) => /* @__PURE__ */ React$1.createElement("li", { key: k, className: "slv-tool t-" + k + (p.tools[k] ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-bx" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", ...SLV_ST }, ICON[k])))));
+  const SvnPic = ({ p }) => {
+    const raised = SLV_WRECKS.filter((w) => w.every((s) => p.hit.has(s))).length;
+    const used = SLV_ALL.filter((k) => p.tools[k]).length;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "svn-pic", role: "img", "aria-label": raised + " of 5 wrecks raised, " + p.dives + " of " + SLV_DIVES + " dives, " + used + " of 3 tools used" }, /* @__PURE__ */ React$1.createElement("div", { className: "svn-fleet" }, SLV_WRECKS.map((w) => /* @__PURE__ */ React$1.createElement(SvnHull, { key: w[0], w, p }))), /* @__PURE__ */ React$1.createElement("div", { className: "svn-line" }, /* @__PURE__ */ React$1.createElement("span", { className: "svn-dives", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, p.dives), "/" + SLV_DIVES + " dives"), /* @__PURE__ */ React$1.createElement(SvnTools, { p })));
+  };
+  const SVN_FRESH = { hit: /* @__PURE__ */ new Set(), tools: {}, dives: 0 };
+  const SvNow = ({ c, done, none }) => {
+    const gs = useGs();
+    const title = "#" + GS_SESSIONS[c.today].number;
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "salvage", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "salvage")[0] }), next: c.next, className: "svn" }, /* @__PURE__ */ React$1.createElement(SvnPic, { p: SVN_FRESH }));
+    const sid = done ? c.today : c.liveSid;
+    const s = GS_SESSIONS[sid];
+    const p = SLV_PLAYS[s.fx];
+    const r = SLV_RESULT[p.state];
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "salvage", title, result: { kind: r.tone, label: r.word }, open: () => gs.go("session", { id: sid }), next: c.next, className: "svn" }, /* @__PURE__ */ React$1.createElement(SvnPic, { p }));
+  };
   const CPR_SHIP_LIB = {};
   const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
   let CPR_FIRST;
@@ -4110,7 +4303,7 @@
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "casebook", title: c.title, result: !c.live && cbStatus(c), tag: true, open: () => cbGo(gs, c.id), span: true }, /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }));
   };
   const PzNow = (props) => {
-    const own = props.id === "word" ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done, none: props.none }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : props.id === "chain" ? /* @__PURE__ */ React$1.createElement(ChNow, { c: props.c, done: props.done, none: props.none }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
+    const own = props.id === "word" ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done, none: props.none }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : props.id === "chain" ? /* @__PURE__ */ React$1.createElement(ChNow, { c: props.c, done: props.done, none: props.none }) : props.id === "salvage" ? /* @__PURE__ */ React$1.createElement(SvNow, { c: props.c, done: props.done, none: props.none }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
     const Pg = GS_NOW[props.id];
     return Pg ? /* @__PURE__ */ React$1.createElement(Pg, { ...props }, own) : own;
   };
@@ -5425,6 +5618,14 @@
             c.setView("pass");
             c.setConnected(true);
             c.setReview({ ed: "hard" });
+            c.go(k, { page: "record" });
+          } }
+        ] : [],
+        ...k === "salvage" ? [
+          { group: g, id: "library-salvage-failed", label: "Salvage in your library, today failed (two wrecks not raised)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "failed" });
             c.go(k, { page: "record" });
           } }
         ] : [],
@@ -10258,176 +10459,6 @@
     const concept = shown.find((s) => s.kind === "concept");
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
-  };
-  const SLV_COLS = "ABCDEFGH";
-  const SLV_N8 = [1, 2, 3, 4, 5, 6, 7, 8];
-  const SLV_WRECKS = [["A5", "B5", "C5", "D5"], ["E3", "F3", "G3"], ["F6", "G6", "H6"], ["G8", "H8"], ["C1", "C2"]];
-  const SLV_SHOWN = { row: [3, 5, 6, 7], col: ["C", "E", "F", "H"] };
-  const SLV_DIVES = 20;
-  const SLV_TOOLS = { sonar: "Sonar", detector: "Metal detector", net: "Dragnet" };
-  const SLV_ALL = Object.keys(SLV_TOOLS);
-  const slvColOf = (sq) => SLV_COLS.indexOf(sq[0]);
-  const slvRowOf = (sq) => +sq.slice(1) - 1;
-  const slvAt = (c, r) => SLV_COLS[c] + (r + 1);
-  const slvWreckOf = (sq) => SLV_WRECKS.findIndex((w) => w.includes(sq));
-  const slvLineSquares = ({ axis, name }, from) => {
-    const sq = SLV_N8.map((_, i) => axis === "row" ? slvAt(i, +name - 1) : slvAt(SLV_COLS.indexOf(name), i));
-    return from === "right" || from === "bottom" ? sq.reverse() : sq;
-  };
-  const slvLineCount = (line) => slvLineSquares(line).filter((s) => slvWreckOf(s) > -1).length;
-  const slvLineWords = ({ axis, name }) => (axis === "row" ? "Row " : "Column ") + name;
-  const slvIsShown = ({ axis, name }) => SLV_SHOWN[axis].includes(name);
-  const slvCountWords = (n) => n === 0 ? "no wreck squares." : n + (n === 1 ? " wreck square" : " wreck squares") + ", found or not.";
-  const slvPatch = (sq) => {
-    const c = slvColOf(sq), r = slvRowOf(sq);
-    const out = [];
-    for (let y = Math.max(0, r - 1); y <= Math.min(7, r + 1); y++) for (let x = Math.max(0, c - 1); x <= Math.min(7, c + 1); x++) out.push(slvAt(x, y));
-    return out;
-  };
-  const slvRunPlay = (moves) => {
-    const hit = /* @__PURE__ */ new Set();
-    const raised = /* @__PURE__ */ new Set();
-    const lines = [];
-    const tools = {};
-    const miss = [];
-    const marks = [];
-    let dives = 0;
-    const strike = (sq) => {
-      hit.add(sq);
-      const w = slvWreckOf(sq);
-      if (SLV_WRECKS[w].every((s) => hit.has(s)) && !raised.has(w)) {
-        raised.add(w);
-        return SLV_WRECKS[w].length;
-      }
-      return 0;
-    };
-    moves.forEach((m) => {
-      if (m.dive) {
-        if (hit.has(m.dive)) return;
-        dives += 1;
-        const w = slvWreckOf(m.dive);
-        let res = "miss";
-        if (w < 0) miss.push(m.dive);
-        else {
-          const sunk = strike(m.dive);
-          res = sunk ? "raised: the wreck of " + sunk : "hit";
-        }
-        marks.push(res === "miss" ? "○" : res === "hit" ? "✕" : "■");
-        lines.push(["Dive " + dives, m.dive, res]);
-      } else if (m.sonar) {
-        const count = slvLineCount(m.sonar);
-        tools.sonar = { line: m.sonar, squares: slvLineSquares(m.sonar) };
-        marks.push("📡");
-        lines.push(["Hint", slvLineWords(m.sonar) + ": " + slvCountWords(count)]);
-      } else if (m.detector) {
-        const sq = slvPatch(m.detector);
-        const count = sq.filter((s) => slvWreckOf(s) > -1).length;
-        tools.detector = { squares: sq };
-        marks.push("🧲");
-        lines.push(["Metal detector", m.detector + " and around it: " + slvCountWords(count)]);
-      } else if (m.net) {
-        const run = slvLineSquares(m.net, m.net.from);
-        const i = run.findIndex((s) => slvWreckOf(s) > -1);
-        const snag = i < 0 ? null : run[i];
-        const head = slvLineWords(m.net) + " from the " + m.net.from;
-        let say = head + ": no wreck squares.";
-        if (snag && hit.has(snag)) say = head + ": the dragnet snags at " + snag + ", already found.";
-        else if (snag) {
-          const sunk = strike(snag);
-          say = head + ": the dragnet snags at " + snag + (sunk ? " and raises the wreck of " + sunk + "." : ", a hit.");
-        }
-        tools.net = { squares: snag ? run.slice(0, i + 1) : run };
-        marks.push("🕸️");
-        lines.push(["Dragnet", say]);
-      }
-    });
-    const state = raised.size === 5 ? "won" : dives >= SLV_DIVES ? "lost" : "live";
-    if (state === "lost") SLV_WRECKS.forEach((w) => lines.push(["Wreck", "The wreck of " + w.length + ": " + w[0] + " to " + w[w.length - 1]]));
-    return { state, dives, hit, raised, miss, tools, lines, marks, sweep: tools.sonar ? tools.sonar.line : null };
-  };
-  const slvDive = (s) => s.split(" ").map((d) => ({ dive: d }));
-  const SLV_PLAYS = {
-    // Won in 16 of 20 dives, all three tools used.
-    won: slvRunPlay([
-      { sonar: { axis: "col", name: "G" } },
-      ...slvDive("A5 B5 C5 D5"),
-      { detector: "F4" },
-      ...slvDive("D3 E3 F3 G3"),
-      { net: { axis: "row", name: 6, from: "left" } },
-      ...slvDive("G6 H6 G7 G8 H8 C3 C2 C1")
-    ]),
-    // Lost: all 20 dives spent with two wrecks not raised; the dragnet not used.
-    lost: slvRunPlay([...slvDive("A1 B1 C1 C2 D3 E3 F3 G3 A5 B5 C5 D5"), { sonar: { axis: "row", name: 8 } }, { detector: "G5" }, ...slvDive("H4 F5 G6 G7 E8 F8 A8 B8")]),
-    // In progress: 9 dives, sonar and detector used, a hit on the wreck in column C.
-    live: slvRunPlay([{ sonar: { axis: "col", name: "A" } }, ...slvDive("A5 B5 C5 D5"), { detector: "E4" }, ...slvDive("D3 E3 F3 G3 C1")])
-  };
-  const slvShareLinesOf = (p) => {
-    const wrecks = p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks";
-    const rows = [];
-    for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(" "));
-    return ["Salvage No. 21 · " + wrecks + " · " + p.dives + " of " + SLV_DIVES + " dives", "", ...rows];
-  };
-  const SLV_RESULT = { won: { tone: "ok", word: "Completed" }, lost: { tone: "bad", word: "Failed" }, live: { tone: "live", word: "In progress" } };
-  const slvGc = (i) => i + 2;
-  const slvGr = (i) => i + 3;
-  const cell = (s) => ({ gridColumn: slvGc(slvColOf(s)), gridRow: slvGr(slvRowOf(s)) });
-  const SlvClue = ({ v, swept, style }) => v === void 0 ? null : /* @__PURE__ */ React$1.createElement("span", { className: "slv-chip" + (swept ? " is-swept" : ""), style, "aria-hidden": "true" }, v);
-  const SlvSea = ({ p }) => {
-    const sw = p.sweep;
-    const isSw = (axis, name) => !!sw && sw.axis === axis && sw.name === name;
-    const clue = (axis, name) => slvIsShown({ axis, name }) || isSw(axis, name) ? slvLineCount({ axis, name }) : void 0;
-    const dots = [...p.hit].filter((s) => !p.raised.has(slvWreckOf(s)));
-    return /* @__PURE__ */ React$1.createElement("div", { className: "slv-sea", role: "img", "aria-label": "The sea: " + p.raised.size + " of 5 wrecks raised, " + p.dives + " of " + SLV_DIVES + " dives" }, SLV_COLS.split("").map((c, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c }, /* @__PURE__ */ React$1.createElement(SlvClue, { v: clue("col", c), swept: isSw("col", c), style: { gridColumn: slvGc(i), gridRow: 1 } }), /* @__PURE__ */ React$1.createElement("span", { className: "slv-ml", style: { gridColumn: slvGc(i), gridRow: 2 }, "aria-hidden": "true" }, c))), SLV_N8.map((r) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-ml", style: { gridColumn: 1, gridRow: slvGr(r - 1) }, "aria-hidden": "true" }, r), /* @__PURE__ */ React$1.createElement(SlvClue, { v: clue("row", r), swept: isSw("row", r), style: { gridColumn: 10, gridRow: slvGr(r - 1) } }))), SLV_COLS.split("").flatMap((c, i) => SLV_N8.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: c + r, className: "slv-sq", style: { gridColumn: slvGc(i), gridRow: slvGr(r - 1) } }))), SLV_ALL.filter((k) => p.tools[k]).flatMap((k) => p.tools[k].squares.map((s) => /* @__PURE__ */ React$1.createElement("i", { key: k + s, className: "slv-cv t-" + k, style: cell(s) }))), p.miss.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "slv-mk", style: cell(s) }, /* @__PURE__ */ React$1.createElement("i", { className: "slv-dot is-miss" }))), dots.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "slv-mk", style: cell(s) }, /* @__PURE__ */ React$1.createElement("i", { className: "slv-dot is-hit" }))), SLV_WRECKS.map((w, i) => {
-      const up = p.raised.has(i);
-      if (!up && p.state !== "lost") return null;
-      const across = slvRowOf(w[0]) === slvRowOf(w[w.length - 1]);
-      const L = 9 * w.length - 2, vw = across ? L : 7, vh = across ? 7 : L;
-      return /* @__PURE__ */ React$1.createElement(
-        "span",
-        {
-          key: w[0],
-          className: "slv-hull " + (up ? "is-raised" : "is-unfound"),
-          style: { gridColumn: slvGc(slvColOf(w[0])) + " / span " + (across ? w.length : 1), gridRow: slvGr(slvRowOf(w[0])) + " / span " + (across ? 1 : w.length) }
-        },
-        up ? null : /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 " + vw + " " + vh, width: "100%", height: "100%", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: ".3", y: ".3", width: vw - 0.6, height: vh - 0.6, rx: 3.2, fill: "none", stroke: "currentColor", strokeWidth: ".5", strokeDasharray: "1.1 .9" }))
-      );
-    }));
-  };
-  const Big = ({ n, of, cap }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-big", role: "img", "aria-label": n + " of " + of + " " + cap }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, n), /* @__PURE__ */ React$1.createElement("small", { "aria-hidden": "true" }, "/", of, " ", cap));
-  const SlvHaul = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-haul" }, /* @__PURE__ */ React$1.createElement(Big, { n: p.dives, of: SLV_DIVES, cap: "dives" }), /* @__PURE__ */ React$1.createElement(Big, { n: p.raised.size, of: 5, cap: "wrecks" }));
-  const SLV_ST = { fill: "none", stroke: "currentColor", strokeWidth: 1.75, strokeLinecap: "square", strokeLinejoin: "miter" };
-  const ICON = {
-    sonar: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "5", cy: "12", r: "1.6", fill: "currentColor" }), /* @__PURE__ */ React$1.createElement("path", { d: "M9 8.5a5 5 0 0 1 0 7M12.5 5.5a9.5 9.5 0 0 1 0 13M16 3a13 13 0 0 1 0 18" })),
-    detector: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("path", { d: "M5 3l7 12" }), /* @__PURE__ */ React$1.createElement("ellipse", { cx: "15", cy: "18", rx: "6", ry: "3" })),
-    net: /* @__PURE__ */ React$1.createElement("path", { d: "M3 4h18l-3 16H6z M8 4l1.5 16 M16 4l-1.5 16 M4 10h16 M5 15h14" })
-  };
-  const SlvKit = ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "slv-kit" }, SLV_ALL.map((k) => {
-    const u = !!p.tools[k];
-    return /* @__PURE__ */ React$1.createElement("li", { key: k, className: "slv-tool t-" + k + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-bx" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "22", height: "22", "aria-hidden": "true", ...SLV_ST }, ICON[k])), /* @__PURE__ */ React$1.createElement("span", { className: "slv-nm" }, SLV_TOOLS[k], /* @__PURE__ */ React$1.createElement("span", { className: "slv-sr" }, u ? ", used" : ", not used")));
-  }));
-  const SlvSessBody = ({ s }) => {
-    const p = SLV_PLAYS[s.fx];
-    if (!p) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsSessResult, { s }), s.lines.length > 0 && /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsSessCard, { r: SLV_RESULT[p.state], className: "slv-card", board: /* @__PURE__ */ React$1.createElement(SlvSea, { p }), rows: [["Haul", /* @__PURE__ */ React$1.createElement(SlvHaul, { p })], ["Kit", /* @__PURE__ */ React$1.createElement(SlvKit, { p })]] }), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
-  };
-  const FIXTURES = { "salvage-today": "won", "salvage-today-failed": "lost", "salvage-live": "live" };
-  const initGsSalvage = () => {
-    GS_SESSION_BODY.salvage = SlvSessBody;
-    Object.keys(FIXTURES).forEach((sid) => {
-      const fx = FIXTURES[sid];
-      const p = SLV_PLAYS[fx];
-      const done = fx !== "live";
-      const result = done ? SLV_RESULT[fx].word + ": " + (p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks") + " in " + p.dives + " of " + SLV_DIVES + " dives" : "In progress";
-      Object.assign(GS_SESSIONS[sid], {
-        fx,
-        loss: fx === "lost",
-        result,
-        lines: p.lines,
-        figures: [p.raised.size + " of 5 wrecks", p.dives + " of " + SLV_DIVES + " dives"],
-        share: done ? result : null,
-        shareLines: done ? slvShareLinesOf(p) : void 0
-      });
-    });
   };
   const COLS = "ABCDEFGH";
   const N8 = [1, 2, 3, 4, 5, 6, 7, 8];

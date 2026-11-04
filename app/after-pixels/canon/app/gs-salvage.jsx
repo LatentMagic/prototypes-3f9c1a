@@ -14,15 +14,15 @@ import { GS_SESSION_BODY } from './registry.js';
 // ---- Edition No. 21: five wrecks (4, 3, 3, 2, 2) and the four rows and four columns whose counts the sea shows. ----
 const SLV_COLS = 'ABCDEFGH';
 const SLV_N8 = [1, 2, 3, 4, 5, 6, 7, 8];
-const SLV_WRECKS = [['A5', 'B5', 'C5', 'D5'], ['E3', 'F3', 'G3'], ['F6', 'G6', 'H6'], ['G8', 'H8'], ['C1', 'C2']];
+export const SLV_WRECKS = [['A5', 'B5', 'C5', 'D5'], ['E3', 'F3', 'G3'], ['F6', 'G6', 'H6'], ['G8', 'H8'], ['C1', 'C2']];
 const SLV_SHOWN = { row: [3, 5, 6, 7], col: ['C', 'E', 'F', 'H'] };
-const SLV_DIVES = 20;
+export const SLV_DIVES = 20;
 const SLV_TOOLS = { sonar: 'Sonar', detector: 'Metal detector', net: 'Dragnet' };
-const SLV_ALL = Object.keys(SLV_TOOLS);
+export const SLV_ALL = Object.keys(SLV_TOOLS);
 
 const slvColOf = (sq) => SLV_COLS.indexOf(sq[0]); const slvRowOf = (sq) => +sq.slice(1) - 1;
 const slvAt = (c, r) => SLV_COLS[c] + (r + 1);
-const slvWreckOf = (sq) => SLV_WRECKS.findIndex((w) => w.includes(sq));
+export const slvWreckOf = (sq) => SLV_WRECKS.findIndex((w) => w.includes(sq));
 // A line is { axis: 'row' | 'col', name: 3 | 'G' }; its squares in order from the given end.
 const slvLineSquares = ({ axis, name }, from) => {
   const sq = SLV_N8.map((_, i) => (axis === 'row' ? slvAt(i, +name - 1) : slvAt(SLV_COLS.indexOf(name), i)));
@@ -75,7 +75,7 @@ const slvRunPlay = (moves) => {
   return { state, dives, hit, raised, miss, tools, lines, marks, sweep: tools.sonar ? tools.sonar.line : null };
 };
 const slvDive = (s) => s.split(' ').map((d) => ({ dive: d }));
-const SLV_PLAYS = {
+export const SLV_PLAYS = {
   // Won in 16 of 20 dives, all three tools used.
   won: slvRunPlay([{ sonar: { axis: 'col', name: 'G' } }, ...slvDive('A5 B5 C5 D5'), { detector: 'F4' }, ...slvDive('D3 E3 F3 G3'),
     { net: { axis: 'row', name: 6, from: 'left' } }, ...slvDive('G6 H6 G7 G8 H8 C3 C2 C1')]),
@@ -90,7 +90,7 @@ const slvShareLinesOf = (p) => { const wrecks = p.raised.size === 5 ? 'all 5 wre
   const rows = []; for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(' '));
   return ['Salvage No. 21 · ' + wrecks + ' · ' + p.dives + ' of ' + SLV_DIVES + ' dives', '', ...rows]; };
 // Completed and Failed are working words, not yet ruled; In progress is the deployed headline.
-const SLV_RESULT = { won: { tone: 'ok', word: 'Completed' }, lost: { tone: 'bad', word: 'Failed' }, live: { tone: 'live', word: 'In progress' } };
+export const SLV_RESULT = { won: { tone: 'ok', word: 'Completed' }, lost: { tone: 'bad', word: 'Failed' }, live: { tone: 'live', word: 'In progress' } };
 
 // ---- The Sea: one grid of a label column, eight squares and a clue column, under a row of clues and a row of letters. ----
 const slvGc = (i) => i + 2; const slvGr = (i) => i + 3;
@@ -129,8 +129,8 @@ const Big = ({ n, of, cap }) => (<div className="slv-big" role="img" aria-label=
 const SlvHaul = ({ p }) => (<div className="slv-haul"><Big n={p.dives} of={SLV_DIVES} cap="dives" /><Big n={p.raised.size} of={5} cap="wrecks" /></div>);
 
 // ---- Kit: the three tools, each an icon in its colour. A used tool is faded and struck corner to corner, bottom left to top right. ----
-const SLV_ST = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.75, strokeLinecap: 'square', strokeLinejoin: 'miter' };
-const ICON = {
+export const SLV_ST = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.75, strokeLinecap: 'square', strokeLinejoin: 'miter' };
+export const ICON = {
   sonar: <><circle cx="5" cy="12" r="1.6" fill="currentColor" /><path d="M9 8.5a5 5 0 0 1 0 7M12.5 5.5a9.5 9.5 0 0 1 0 13M16 3a13 13 0 0 1 0 18" /></>,
   detector: <><path d="M5 3l7 12" /><ellipse cx="15" cy="18" rx="6" ry="3" /></>,
   net: <path d="M3 4h18l-3 16H6z M8 4l1.5 16 M16 4l-1.5 16 M4 10h16 M5 15h14" />,
