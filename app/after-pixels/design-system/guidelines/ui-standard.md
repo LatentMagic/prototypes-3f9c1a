@@ -1,6 +1,6 @@
 # Cross-app UI standard: what this system adopts
 
-Source: [`specs/governance/standards/ui-design.md`](https://github.com/LatentMagic/monorepo/blob/main/specs/governance/standards/ui-design.md) (LatentMagic/monorepo, main, re-read 2026-10-08). Full copy: `guidelines/source/ui-design.md`. Circlists precedents: `guidelines/source/circlists-reuse.md`.
+Source: [`specs/governance/standards/ui-design.md`](https://github.com/LatentMagic/monorepo/blob/main/specs/governance/standards/ui-design.md) (LatentMagic/monorepo, main). Always read it there; this file only maps its rules to components. Circlists precedents: `guidelines/source/circlists-reuse.md`.
 
 ## Built into components
 | Rule | Where |
