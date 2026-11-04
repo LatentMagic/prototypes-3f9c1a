@@ -605,16 +605,16 @@
       React2.useLayoutEffect(() => {
         const el = ref.current;
         if (!el) return void 0;
-        const read = () => {
+        const read2 = () => {
           const over2 = el.scrollWidth > el.clientWidth + 1, start = el.scrollLeft <= 1, end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
           setAt((a) => a.over === over2 && a.start === start && a.end === end ? a : { over: over2, start, end });
         };
-        read();
-        el.addEventListener("scroll", read, { passive: true });
-        const ro = window.ResizeObserver ? new ResizeObserver(read) : null;
+        read2();
+        el.addEventListener("scroll", read2, { passive: true });
+        const ro = window.ResizeObserver ? new ResizeObserver(read2) : null;
         if (ro) ro.observe(el);
         return () => {
-          el.removeEventListener("scroll", read);
+          el.removeEventListener("scroll", read2);
           if (ro) ro.disconnect();
         };
       }, []);
@@ -849,8 +849,8 @@
       const c = needsPassCopy({ game, word, words, record, total });
       return /* @__PURE__ */ React2.createElement("section", { className: ("mcp-npass " + className).trim(), style, "aria-label": c.heading }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label", "aria-hidden": c.label ? void 0 : true }, c.label || " "), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-sec" }, c.heading), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, c.foot && /* @__PURE__ */ React2.createElement("p", { className: "mcp-npass-note" }, c.foot))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label" }, c.rightLabel), c.lines.map((l, i) => /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-npass-line" }, l)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, /* @__PURE__ */ React2.createElement(Button, { variant: "secondary", onClick: onGet }, c.action))));
     }
-    function PageGrid({ children, split = "main", className = "", style }) {
-      return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split + " " + className).trim(), style }, children));
+    function PageGrid({ children, split: split2 = "main", className = "", style }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split2 + " " + className).trim(), style }, children));
     }
     function useWide(ref, bp) {
       const [w, setW] = React2.useState(() => typeof window !== "undefined" ? window.innerWidth >= bp : true);
@@ -3109,9 +3109,9 @@
   const EsxStill = ({ it }) => /* @__PURE__ */ React$1.createElement("div", { className: "esx-still esx-chip " + (it.kind === "thing" ? "is-unread" : "is-used"), "aria-label": it.name + ", " + (it.kind === "thing" ? "not looked at" : it.use.toLowerCase()) }, /* @__PURE__ */ React$1.createElement(EsxMark, { it }), /* @__PURE__ */ React$1.createElement("span", { className: "esx-rn" }, esxShortName(it)));
   const EsxChip = ({ it, sel, pick }) => esxOpens(it) ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "esx-chip", "aria-expanded": sel === it.id, onClick: () => pick(it.id) }, /* @__PURE__ */ React$1.createElement(EsxMark, { it }), /* @__PURE__ */ React$1.createElement("b", null, esxShortName(it))) : /* @__PURE__ */ React$1.createElement(EsxStill, { it });
   const EsxReader = ({ it }) => {
-    const read = React$1.useRef(null);
-    useEsxReveal(read, it && it.id);
-    return /* @__PURE__ */ React$1.createElement("div", { ref: read }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement(EsxRead, { it })));
+    const read2 = React$1.useRef(null);
+    useEsxReveal(read2, it && it.id);
+    return /* @__PURE__ */ React$1.createElement("div", { ref: read2 }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement(EsxRead, { it })));
   };
   const EsxChips = ({ grp, sel, pick }) => /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "esx-chips esx-in", role: "group", "aria-label": grp.head }, grp.items.map((it) => /* @__PURE__ */ React$1.createElement(EsxChip, { key: it.id, it, sel, pick })));
   const esxLastLine = (sid) => GS_SESSIONS[sid].lines.filter(([label]) => /^(Move \d+|Hint|Item)$/.test(label)).pop();
@@ -3708,12 +3708,12 @@
     React$1.useLayoutEffect(() => {
       const el = ref.current;
       if (!el) return;
-      const read = () => {
+      const read2 = () => {
         const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
         setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
       };
-      read();
-      const ro = new ResizeObserver(read);
+      read2();
+      const ro = new ResizeObserver(read2);
       ro.observe(el);
       return () => ro.disconnect();
     }, [n]);
@@ -9390,9 +9390,9 @@
     const [src] = React$1.useState(fitFrameUrl);
     React$1.useEffect(() => {
       const el = box.current;
-      const read = () => setSize({ w: el.clientWidth, h: el.clientHeight });
-      read();
-      const ro = new ResizeObserver(read);
+      const read2 = () => setSize({ w: el.clientWidth, h: el.clientHeight });
+      read2();
+      const ro = new ResizeObserver(read2);
       ro.observe(el);
       return () => ro.disconnect();
     }, []);
@@ -10144,6 +10144,9 @@
   };
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10159,6 +10162,17 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
+  };
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -10243,6 +10257,148 @@
     const concept = shown.find((s) => s.kind === "concept");
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
+  };
+  const COLS = "ABCDEFGH";
+  const WRECKS = [["A5", "B5", "C5", "D5"], ["E3", "F3", "G3"], ["F6", "G6", "H6"], ["G8", "H8"], ["C1", "C2"]];
+  const SHOWN_R = { 3: 3, 5: 4, 6: 3, 7: 0 };
+  const SHOWN_C = { C: 3, E: 1, F: 2, H: 2 };
+  const DIVES = 30;
+  const TOOLS = { sonar: "Sonar", detector: "Metal detector", net: "Dragnet" };
+  const ALL = Object.keys(TOOLS);
+  const split = (s) => s.split(" ");
+  const PLAYS = {
+    won: {
+      state: "won",
+      seq: split("A4 A5 B5 C5 D5 D3 E3 F3 G3 H3 C1 C2 F6 H6 E6 H7 G8 H8"),
+      netHit: "G6",
+      tools: { sonar: { used: true, row: 3, count: 3 }, detector: { used: true, sq: "F4", count: 3 }, net: { used: true, col: "G", snag: "G6" } }
+    },
+    // A lost play spends all 30 dives (the low fi's fixture stopped at 20).
+    lost: {
+      state: "lost",
+      seq: split("A1 B1 C1 C2 D1 D3 E3 F3 G3 H3 A5 B5 C5 D5 H4 B7 D7 E8 F8 A8 A2 B2 A3 B3 A4 B4 E1 F1 G1 H1"),
+      netHit: null,
+      tools: { sonar: { used: true, row: 6, count: 3 }, detector: { used: true, sq: "G5", count: 2 }, net: { used: false } }
+    },
+    live: {
+      state: "live",
+      seq: split("A5 B5 C5 D5 D3 E3 F3 G3 C1"),
+      netHit: null,
+      tools: { sonar: { used: true, row: 3, count: 3 }, detector: { used: true, sq: "E4", count: 2 }, net: { used: false } }
+    }
+  };
+  const RESULT = { won: { tone: "ok", word: "Completed" }, lost: { tone: "bad", word: "Failed" }, live: { tone: "live", word: "In progress" } };
+  const PGS = { won: "salvage-today", lost: "salvage-today-failed", live: "salvage-live" };
+  const wreckOf = (sq) => WRECKS.findIndex((w) => w.includes(sq));
+  const read = (p) => {
+    const hit = /* @__PURE__ */ new Set();
+    const miss = /* @__PURE__ */ new Set();
+    p.seq.forEach((s) => (wreckOf(s) > -1 ? hit : miss).add(s));
+    if (p.netHit) hit.add(p.netHit);
+    const wrecks = WRECKS.map((w) => {
+      const raised = w.every((s) => hit.has(s));
+      return { w, raised, unfound: !raised && p.state === "lost", hits: w.filter((s) => hit.has(s)) };
+    });
+    return { wrecks, miss: [...miss], found: wrecks.filter((x) => x.raised).length };
+  };
+  const colOf = (sq) => COLS.indexOf(sq[0]);
+  const rowOf = (sq) => +sq.slice(1) - 1;
+  const reach = (k, t) => {
+    if (k === "sonar") return { c0: 0, c1: 7, r0: t.row - 1, r1: t.row - 1 };
+    if (k === "detector") {
+      const c = colOf(t.sq), r = rowOf(t.sq);
+      return { c0: Math.max(0, c - 1), c1: Math.min(7, c + 1), r0: Math.max(0, r - 1), r1: Math.min(7, r + 1) };
+    }
+    return { c0: COLS.indexOf(t.col), c1: COLS.indexOf(t.col), r0: 0, r1: rowOf(t.snag) };
+  };
+  const reachResult = (k, t) => k === "net" ? t.snag : String(t.count);
+  const IC = {
+    sonar: "M12 20h.01M8.5 16.5a5 5 0 0 1 7 0M5.5 13.5a9 9 0 0 1 13 0M2.5 10.5a13 13 0 0 1 19 0",
+    detector: "M19 3L10.5 16.5M15.5 3H20v4.5M3 19.5a5 2.5 0 1 0 10 0a5 2.5 0 1 0-10 0",
+    net: "M4 4h16l-3 16H7zM9.3 4l.9 16M14.7 4l-.9 16M5.4 10.5h13.2M6.3 15.5h11.4"
+  };
+  const SvIcon = ({ k, size }) => /* @__PURE__ */ React$1.createElement("svg", { className: "sv-ic", viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: IC[k] }));
+  const gc = (i) => i + 2;
+  const gr = (i) => i + 3;
+  const SvMark = ({ k }) => k === "hit" ? /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M6 6l12 12M18 6L6 18" })) : /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4 10c2-2 3-2 5 0s3 2 5 0 3-2 5 0M4 15c2-2 3-2 5 0s3 2 5 0 3-2 5 0" }));
+  const SvSea = ({ p, mode }) => {
+    const d = read(p);
+    const used = ALL.filter((k) => p.tools[k].used);
+    const hitAt = new Set(d.wrecks.flatMap((x) => x.raised ? [] : x.hits));
+    const cov = {};
+    if (mode === "sq") used.forEach((k) => {
+      const R = reach(k, p.tools[k]);
+      for (let r = R.r0; r <= R.r1; r++) for (let c = R.c0; c <= R.c1; c++) (cov[COLS[c] + (r + 1)] = cov[COLS[c] + (r + 1)] || []).push(k);
+    });
+    const corners = {};
+    const sweep = p.tools.sonar.used ? p.tools.sonar : null;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "sv-sea", role: "img", "aria-label": "The sea: " + d.found + " of 5 wrecks raised, " + p.seq.length + " dives" }, COLS.split("").map((c, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-mc", style: { gridColumn: gc(i), gridRow: 1 } }, SHOWN_C[c] === void 0 ? "" : SHOWN_C[c]), /* @__PURE__ */ React$1.createElement("span", { className: "sv-ml", style: { gridColumn: gc(i), gridRow: 2 } }, c))), [1, 2, 3, 4, 5, 6, 7, 8].map((r) => {
+      const rc = sweep && sweep.row === r ? sweep.count : SHOWN_R[r];
+      return /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: r }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-ml", style: { gridColumn: 1, gridRow: gr(r - 1) } }, r), /* @__PURE__ */ React$1.createElement("span", { className: "sv-mc" + (sweep && sweep.row === r ? " is-swept" : ""), style: { gridColumn: 10, gridRow: gr(r - 1) } }, rc === void 0 ? "" : rc));
+    }), COLS.split("").flatMap((c, i) => [1, 2, 3, 4, 5, 6, 7, 8].map((r) => /* @__PURE__ */ React$1.createElement("span", { key: c + r, className: "sv-sq", style: { gridColumn: gc(i), gridRow: gr(r - 1) } }))), d.miss.map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "sv-sq is-miss", style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)) } }, /* @__PURE__ */ React$1.createElement(SvMark, { k: "miss" }))), [...hitAt].map((s) => /* @__PURE__ */ React$1.createElement("span", { key: s, className: "sv-sq is-hit", style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)) } }, /* @__PURE__ */ React$1.createElement(SvMark, { k: "hit" }))), d.wrecks.filter((x) => x.raised || x.unfound).map((x) => {
+      const horiz = rowOf(x.w[0]) === rowOf(x.w[x.w.length - 1]);
+      return /* @__PURE__ */ React$1.createElement(
+        "span",
+        {
+          key: x.w[0],
+          className: "sv-hull " + (x.raised ? "is-raised" : "is-unfound") + (horiz ? "" : " is-down"),
+          style: { gridColumn: gc(colOf(x.w[0])) + " / span " + (horiz ? x.w.length : 1), gridRow: gr(rowOf(x.w[0])) + " / span " + (horiz ? 1 : x.w.length) }
+        }
+      );
+    }), mode === "sq" && Object.keys(cov).flatMap((s) => cov[s].map((k, i) => /* @__PURE__ */ React$1.createElement("i", { key: s + k, className: "sv-ro t-" + k, style: { gridColumn: gc(colOf(s)), gridRow: gr(rowOf(s)), "--i": i } }))), mode === "key" && used.map((k) => {
+      const R = reach(k, p.tools[k]);
+      const corner = R.c0 + "," + R.r0;
+      const n = corners[corner] = (corners[corner] || 0) + 1;
+      return /* @__PURE__ */ React$1.createElement("i", { key: k, className: "sv-box t-" + k, style: { gridColumn: gc(R.c0) + " / " + (gc(R.c1) + 1), gridRow: gr(R.r0) + " / " + (gr(R.r1) + 1), "--n": n - 1 } }, /* @__PURE__ */ React$1.createElement("b", { className: "sv-tag" }, reachResult(k, p.tools[k])));
+    }));
+  };
+  const SvKey = () => /* @__PURE__ */ React$1.createElement("div", { className: "sv-key", "aria-hidden": "true" }, ALL.map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, /* @__PURE__ */ React$1.createElement("i", { className: "t-" + k }), TOOLS[k])));
+  const SvCounts = ({ p }) => {
+    const d = read(p);
+    const all = d.found === 5;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "sv-counts" }, /* @__PURE__ */ React$1.createElement("div", { className: "sv-fig", role: "img", "aria-label": p.seq.length + " of " + DIVES + " dives" }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-fig-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, p.seq.length), /* @__PURE__ */ React$1.createElement("small", null, "/", DIVES)), /* @__PURE__ */ React$1.createElement("span", { className: "sv-cap", "aria-hidden": "true" }, "dives")), /* @__PURE__ */ React$1.createElement("div", { className: "sv-fig" + (all ? " is-all" : ""), role: "img", "aria-label": d.found + " of 5 wrecks" }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-fig-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, d.found), /* @__PURE__ */ React$1.createElement("small", null, "/5")), /* @__PURE__ */ React$1.createElement("span", { className: "sv-pips", "aria-hidden": "true" }, d.wrecks.map((x, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: x.raised ? "is-on" : "", style: { "--len": x.w.length } }))), /* @__PURE__ */ React$1.createElement("span", { className: "sv-cap", "aria-hidden": "true" }, "wrecks")));
+  };
+  const KIT = {
+    cards: ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-kit sv-k-cards" }, ALL.map((k) => {
+      const u = p.tools[k].used;
+      return /* @__PURE__ */ React$1.createElement("div", { key: k, className: "sv-kc" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: 28 }), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), /* @__PURE__ */ React$1.createElement("small", null, u ? "Used" : "Not used"));
+    })),
+    cells: ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-kit dv7-cells sv-k-cells" }, ALL.map((k) => {
+      const u = p.tools[k].used;
+      return /* @__PURE__ */ React$1.createElement("div", { key: k, className: "dv7-cell" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-fig" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv4-g" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: 22 }))), /* @__PURE__ */ React$1.createElement("span", { className: "dv7-lb" }, TOOLS[k]), /* @__PURE__ */ React$1.createElement("span", { className: "sv-st" }, u ? "Used" : "Not used"));
+    })),
+    icons: ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "sv-kit sv-k-icons" }, ALL.map((k) => {
+      const u = p.tools[k].used;
+      return /* @__PURE__ */ React$1.createElement("div", { key: k, className: "sv-ki" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-ki-fig" }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: u ? 36 : 60 })), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), /* @__PURE__ */ React$1.createElement("small", null, u ? "Used" : "Not used"));
+    })),
+    rows: ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "sv-kit sv-k-rows" }, ALL.map((k) => {
+      const u = p.tools[k].used;
+      return /* @__PURE__ */ React$1.createElement("li", { key: k, className: u ? "is-used" : "" }, /* @__PURE__ */ React$1.createElement("span", { className: "sv-kr-i dv4-g" + (u ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement(SvIcon, { k, size: 20 })), /* @__PURE__ */ React$1.createElement("b", null, TOOLS[k]), /* @__PURE__ */ React$1.createElement("small", null, u ? "Used" : "Not used"));
+    }))
+  };
+  const SalvageBody = ({ s }) => {
+    const kit = usePgSetting("kit") || "cards";
+    const st = usePgSetting("play") || "won";
+    const reachMode = usePgSetting("reach") || "sq";
+    const p = PLAYS[st];
+    const Kit = KIT[kit];
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
+      GsSessCard,
+      {
+        r: RESULT[st],
+        className: "sv-card sv-kit-" + kit,
+        board: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(SvSea, { p, mode: reachMode }), /* @__PURE__ */ React$1.createElement(SvKey, null)),
+        rows: [["Found", /* @__PURE__ */ React$1.createElement(SvCounts, { p })], ["Tools", /* @__PURE__ */ React$1.createElement(Kit, { p })]]
+      }
+    ), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const initPlaygroundSalvageSession = () => {
+    pgRegister("salvage-session", { title: "Salvage session", settings: [
+      { key: "kit", kind: "concept", label: "Kit", options: [{ value: "cards", label: "1 Light cards" }, { value: "cells", label: "2 Delve cells" }, { value: "icons", label: "3 Icon size" }, { value: "rows", label: "4 Rows" }] },
+      { key: "play", label: "State", options: ["won", "lost", "live"].map((v) => ({ value: v, label: { won: "Won", lost: "Lost", live: "In progress" }[v], state: "session-puzzle", go: (gs) => gs.go("session", { id: PGS[v] }) })) },
+      { key: "reach", label: "Reach", options: [{ value: "sq", label: "Squares" }, { value: "key", label: "Reach key" }] }
+    ] });
+    if (pgActive()) GS_SESSION_BODY.salvage = SalvageBody;
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
@@ -10895,4 +11051,5 @@
   initMain();
   initGsWhere();
   initGsCommon();
+  initPlaygroundSalvageSession();
 })(React, ReactDOM);
