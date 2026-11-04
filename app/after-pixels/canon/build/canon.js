@@ -1592,7 +1592,7 @@
     casebook: (r) => r.ok ? "Solved" : "Wrong accusation",
     // The setting's own ending words (The Goblin Warren beneath Ashford Mill).
     delve: (r) => ({ won: "Elsie rescued", ritual: "Too late: the ritual was completed", fell: "Fell in the warren" })[r.end],
-    // A day that ended without an ending reads as the app's unfinished status.
+    // A restarted day (no ending) reads Not finished.
     hunter: (r) => r.restarted ? "Not finished" : "Finished"
   };
   const GS_ES1_PAR = 30;
@@ -3546,7 +3546,7 @@
     const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
     return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, action: DL_GRADE.test(parts[0]) ? "" : parts[0] };
   };
-  const DL_END = { won: "The winning blow", fallen: "The last blow", overrun: "The last roll", live: "Latest roll", ended: "Last roll played" };
+  const DL_END = { won: "The winning blow", fallen: "The last blow", overrun: "The last roll", live: "Latest roll" };
   const dlMoments = (R, end) => {
     if (!R.length) return [];
     const last = R[R.length - 1];
@@ -3603,7 +3603,7 @@
     rolls.forEach((r) => {
       run = r.tier === "strong" ? run + 1 : 0;
     });
-    const end = s.unfinished ? "ended" : s.live ? "live" : s.end;
+    const end = s.live ? "live" : s.end;
     const moments = dlMoments(rolls, end);
     return { stops, rolls, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
   };
@@ -3612,10 +3612,10 @@
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
   const DlDie = ({ r, size = 36, sel }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-die is-" + r.tier + (r.crit ? " is-crit" : "") + (r.fumble ? " is-fumble" : "") + (sel ? " is-sel" : ""), viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, r.two && size < 64 && !sel && /* @__PURE__ */ React$1.createElement("polygon", { className: "gh", points: DL_HEX, transform: r.crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), r.crit && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM }), /* @__PURE__ */ React$1.createElement("text", { className: "nm", x: "18", y: "20.5" }, r.kept), r.two && size >= 64 && /* @__PURE__ */ React$1.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, r.other)), /* @__PURE__ */ React$1.createElement("polygon", { className: "sl", points: DL_RIM }));
   const DlDieBtn = ({ r, size, act, on }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.n, "aria-label": dlSay(r), onClick: () => on.sel(r.n), onMouseEnter: () => on.hov(r.n), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.n }));
-  const dlWord = (m) => ({ live: "In progress", ended: "Unfinished", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
+  const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
-    const line = m.end === "live" ? null : m.end === "ended" ? "The week ended first" : s.result;
+    const line = m.end === "live" ? null : s.result;
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
   };
   const DlHeld = ({ m, act }) => {
@@ -4232,7 +4232,7 @@
     });
     return PZ[id].all.map((x) => {
       const p = by[x.id];
-      const k = p ? p.status.kind : "none";
+      const k = p && !p.late ? p.status.kind : "none";
       return { ...x, played: !!p, done: k === "ok", failed: k === "bad" };
     });
   };
@@ -4772,9 +4772,9 @@
     [0, "Triangles.", true],
     [1, "Things that swim.", false]
   ] };
-  const CM_UNFINISHED = { c: CM_CB, m: [[0, "Pointy things.", false], [0, "Triangles.", true], [1, "more"]] };
-  const cmUnfinished = (x) => {
-    const { number, play, lines } = cmSess(CM_NO - x.i, CM_UNFINISHED);
+  const CM_PARTWAY = { c: CM_CB, m: [[0, "Pointy things.", false], [0, "Triangles.", true], [1, "more"]] };
+  const cmPartway = (x) => {
+    const { number, play, lines } = cmSess(CM_NO - x.i, CM_PARTWAY);
     return { number, play, lines };
   };
   const CM_FAIL_TODAY = { c: CM_C7, m: [
@@ -5512,6 +5512,7 @@
         kind: "day",
         gid: "hunter",
         noEd: true,
+        restarted: x.restarted,
         game: GS_NAME.hunter,
         art: "hunter",
         title: x.title,
@@ -5571,18 +5572,21 @@
     const now = signed ? lbNow(gs, gid) : null;
     const c = PZ[gid];
     const fe = (x) => !!phFirstSt(gs, gid) && PH_FIRST[gid] === x.id;
-    return c.all.map((x) => ({
-      key: x.id,
-      gid,
-      n: c.weekly ? c.all.length - x.i : +c.no(x.i).split("#")[1],
-      title: c.weekly ? x.title : null,
-      date: x.date,
-      month: x.month,
-      free: true,
-      now: x.i === 0,
-      status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? now ? now.status : ED_NONE : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
-      open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs)) : x.i === 0 ? now ? now.open : null : x.sid ? () => gs.go("session", { id: x.sid }) : null
-    }));
+    return c.all.map((x) => {
+      const past = signed ? phPast(gs, x.id) : null;
+      return {
+        key: x.id,
+        gid,
+        n: c.weekly ? c.all.length - x.i : +c.no(x.i).split("#")[1],
+        title: c.weekly ? x.title : null,
+        date: x.date,
+        month: x.month,
+        free: true,
+        now: x.i === 0,
+        status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? now ? now.status : ED_NONE : gsFresh(gs) ? ED_NONE : past ? past.status : pzStatus(c, x),
+        open: !signed || gsFresh(gs) ? null : past ? past.open : fe(x) ? phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs)) : x.i === 0 ? now ? now.open : null : x.sid ? () => gs.go("session", { id: x.sid }) : null
+      };
+    });
   };
   const edRuns = (gs, gid, src) => {
     const pass = gs.view === "pass";
@@ -5595,9 +5599,8 @@
     const mine = (x) => !fresh && x.played && (pass || x === first && !!PH_FIRST[gid] || lapsed && lbOld(x.week || x.date, gs));
     return all.map((x, i) => {
       const curOld = i === 0 && !now && signed && lapsed && mine(x);
-      const unf = signed && i > 0 && phUnf(gs, x.id);
       const played = i === 0 ? !!now || curOld : signed && mine(x);
-      let st = !signed ? null : unf ? PH_UNF : i === 0 ? now ? now.status : curOld ? src.doneStatus ? src.doneStatus(gs) : src.status(src.done) : ED_NONE : played ? src.status(x) : ED_NONE;
+      let st = !signed ? null : i === 0 ? now ? now.status : curOld ? src.doneStatus ? src.doneStatus(gs) : src.status(src.done) : ED_NONE : played ? src.status(x) : ED_NONE;
       const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
       if (fr && !fresh) {
         st = fr.status;
@@ -5613,7 +5616,7 @@
         free: x === first && !!PH_FIRST[gid],
         now: i === 0,
         status: st,
-        open: unf ? () => gs.go("session", { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? now ? now.open : () => src.openCur(gs, x) : () => src.open(gs, x)
+        open: !played ? null : i === 0 ? now ? now.open : () => src.openCur(gs, x) : () => src.open(gs, x)
       };
     });
   };
@@ -5623,11 +5626,11 @@
     return { key: gid + "-" + n, gid, n, title, date, month: PH_MON[d.getMonth()], free: false, now: i === 0, status: gs.view === "out" ? null : ED_NONE, open: null };
   });
   const edNeedsPass = (gs, e) => gs.view !== "pass" && (GS_GAMES[e.gid].free ? !e.now : !e.free);
-  let PH_UNF;
-  let PH_UNF_EDS;
-  const phUnf = (gs, key) => {
-    const u = PH_UNF_EDS[key];
-    return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === "pass");
+  const phPast = (gs, key) => {
+    const e = PH_PAST[key];
+    const m = gs && gs.review && gs.review.pastDay;
+    const p = e && m && e[m];
+    return p && !gsFresh(gs) && (GS_GAMES[e.gid].free || gs.view === "pass") ? p : null;
   };
   const phNorm = (q) => (q || "").trim().toLowerCase().replace(/^#/, "");
   const phWords = (s) => s.toLowerCase().replace(/(\d),(?=\d)/g, "$1").replace(/[’'‘]/g, "").split(/[^a-z0-9]+/).filter(Boolean);
@@ -5662,6 +5665,7 @@
   };
   const phSess = (id) => (gs) => gs.go("session", { id });
   let PH_LIVE;
+  let PH_PAST;
   let PH_LIVE_SID;
   let PH_MORE;
   const phMoreOn = (gs) => !!(gs && gs.review && gs.review.several) && gs.view === "pass";
@@ -5673,7 +5677,6 @@
   };
   let PH_ALL;
   let PH_BROKEN;
-  let PH_UNF_PLAYS;
   const phCur = (p, gs) => {
     if (p.pick) return { ...p, ...p.pick(gs) };
     if (!p.cur) return p;
@@ -5683,7 +5686,7 @@
   };
   const phLog = (gs) => {
     const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== "word1").concat(PH_BROKEN) : PH_ALL).map((p) => phCur(p, gs));
-    const u = gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l;
+    const u = l.concat(Object.keys(PH_PAST).map((k) => phPast(gs, k)).filter(Boolean));
     return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
   };
   let PH_FIRST;
@@ -5890,18 +5893,28 @@
   };
   function initGsHistory() {
     ED_NONE = { kind: "none", label: "Not played" };
-    PH_UNF = { kind: "none", label: "Not finished" };
-    PH_UNF_EDS = (() => {
-      const g = PZ.common.all.filter((x) => x.i > 0 && !x.played)[0];
-      const gAt = phAt(g.d, 21, 40);
-      GS_SESSIONS["common-unfinished"] = { kind: "puzzle", gid: "common", game: "Common", art: "common", unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ", 21:40", share: null, ...cmUnfinished(g) };
-      GS_SESSIONS["delve-unfinished"] = GS_SESSIONS["delve-live"];
-      return { [g.id]: { gid: "common", x: g, sid: "common-unfinished", at: gAt } };
-    })();
     PH_META = null;
     PH_EDS = {};
     PH_PLAYS = [];
     PH_LIVE = { kind: "live", label: "In progress" };
+    PH_PAST = (() => {
+      const day = (id) => PZ[id].all.filter((x) => x.i > 0 && !x.played)[0];
+      const play = (gid, x, sid, at, status, late2) => ({ gid, ed: x.id, edTitle: x.title, edDate: x.d, n: 0, cur: false, pid: x.id + "-past", at, status, open: phSess(sid), sid, ...late2 ? { late: true } : {} });
+      const g = day("common");
+      const gAt = phAt(g.d, 21, 40);
+      GS_SESSIONS["common-past"] = { kind: "puzzle", gid: "common", game: "Common", art: "common", edKey: g.id, live: true, result: "In progress", date: pzLong(gAt) + ", 21:40", share: null, ...cmPartway(g) };
+      const w = day("word");
+      const wAt = phAt(w.d, 21, 40);
+      const wEnd = phAt(w.d, 8, 15, 1);
+      GS_SESSIONS["word-past"] = { ...GS_SESSIONS["word-live"], number: 212 - w.i, edKey: w.id, date: pzLong(wAt) + ", 21:40" };
+      const late = pzSession("word", PZ.word, { ...w, ok: true, line: PZ.word.ok(w.i) });
+      GS_SESSIONS["word-past-late"] = { ...GS_SESSIONS[late], edKey: w.id, date: pzLong(wEnd) + ", 08:15" };
+      delete GS_SESSIONS[late];
+      return {
+        [g.id]: { gid: "common", live: play("common", g, "common-past", gAt, PH_LIVE) },
+        [w.id]: { gid: "word", live: play("word", w, "word-past", wAt, PH_LIVE), late: play("word", w, "word-past-late", wEnd, gsSessStatus(GS_SESSIONS["word-past-late"]), true) }
+      };
+    })();
     PH_LIVE_SID = { word: "word-live", groups: "groups-live", mystery: "mystery-live", escape: "escape-live", ...Object.fromEntries(DP_IDS.map((k) => [k, k + "-live"])) };
     PH_MORE = {
       escape: { id: "escape-r0", gid: "escape", d: new Date(2026, 8, 28), title: "The Lighthouse Keeper’s Log", sid: "escape-r0-live", at: phAt(new Date(2026, 9, 3), 20, 15) },
@@ -5970,7 +5983,6 @@
       const c = PZ.word;
       return [{ ...f, pid: "word1-broken-0", status: { kind: "bad", label: c.bad }, open: phSess("word-broken-first") }];
     })();
-    PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, pid: ed + "-unf", at: u.at, status: PH_UNF, open: phSess(u.sid) }));
     PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: "bw1" };
     PH_FIRST_LIVE = { delve: phSess("delve-first-live"), escape: phSess("escape-first-live") };
     PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
@@ -6469,7 +6481,7 @@
     const ed = gsSessEd ? gsSessEd(gs, sid) : null;
     const over = !!s.gid && gsStartsOver(s.gid);
     const canPlay = !s.gid || gs.view === "pass" || GS_GAMES[s.gid].free || !!PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey);
-    const kept = !canPlay && (s.live || over && s.result === PH_UNF.label);
+    const kept = !canPlay && (s.live || over && s.restarted);
     const again = over && canPlay ? /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.play(s.game, sid) }, "Play again") : null;
     const back = s.gid && /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap gs-backbar", style: { paddingTop: 24 } }, /* @__PURE__ */ React$1.createElement(LbBackTo, { gid: s.gid }));
     const list = s.lines.length > 0 ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
@@ -6478,7 +6490,6 @@
     const title = gsHeadTitle(s, ed);
     const label = gsHeadGame(s) + " · " + gsHeadDay(gsSessDate(s));
     const art = s.art;
-    if (s.unfinished) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title }), body));
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
   };
   const GsSessionGone = ({ gid }) => {
@@ -7770,11 +7781,12 @@
         c.go("session", { id: "gs-pu-barrow-ch1" });
         gsPassSet({ bwDone: true });
       } },
-      { group: "Screens", id: "session-kept-pass-ended", label: "7. Session page: Pass ended, an unfinished 36,000 Summers Ago day (kept, no Play)", stage: (c) => {
+      { group: "Screens", id: "session-kept-pass-ended", label: "7. Session page: Pass ended, a Common day in progress (kept, no Play)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setSub({ hadPass: true });
-        c.go("session", { id: "hunter-hg8" });
+        c.setReview({ pastDay: "live" });
+        c.go("session", { id: "common-past" });
       } },
       { group: "Screens", id: "session-casebook", aliases: ["library-casebook-case"], label: "7. Session page: Casebook", stage: (c) => {
         c.setView("pass");
@@ -8495,23 +8507,84 @@
         c.setUser({ username: "NewPlayer", fresh: true, locked: true, since: GS_DAY0.getTime() });
         c.go("casebook", { page: "record" });
       } },
-      { group: "Ended unfinished", id: "session-common-unfinished", label: "Session page, a Common day that ended unfinished", stage: (c) => {
+      { group: "Past day", id: "past-day-common-session", label: "3a. Session page, Common, a past day, in progress (Pass)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
-        c.setReview({ unfinished: true });
-        c.go("session", { id: "common-unfinished" });
+        c.setReview({ pastDay: "live" });
+        c.go("session", { id: "common-past" });
       } },
-      { group: "Ended unfinished", id: "session-delve-unfinished", label: "Session page, Delve run 1 in progress (Wren; no Delve week has ended yet)", stage: (c) => {
+      { group: "Past day", id: "past-day-common-history", label: "3a. History, Common, a past day, in progress (Pass)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
-        c.setReview({ week: "live" });
-        c.go("session", { id: "delve-live" });
+        c.setReview({ pastDay: "live" });
+        c.go("history", { game: "common" });
       } },
-      { group: "Ended unfinished", id: "history-unfinished", label: "History, with a Common day that ended unfinished", stage: (c) => {
+      { group: "Past day", id: "past-day-common-editions", label: "3a. Every Common day, Common, a past day, in progress (Pass)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
-        c.setReview({ unfinished: true });
-        c.go("history");
+        c.setReview({ pastDay: "live" });
+        c.go("common", { page: "record", list: true });
+      } },
+      { group: "Past day", id: "past-day-common-library", label: "3a. Common in your library, Common, a past day, in progress (Pass): streak strip and Now card", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ pastDay: "live" });
+        c.go("common", { page: "record" });
+      } },
+      { group: "Past day", id: "past-day-word-session", label: "3b. Session page, Daily Word, a past day, in progress (free account)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "live" });
+        c.go("session", { id: "word-past" });
+      } },
+      { group: "Past day", id: "past-day-word-history", label: "3b. History, Daily Word, a past day, in progress (free account)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "live" });
+        c.go("history", { game: "word" });
+      } },
+      { group: "Past day", id: "past-day-word-editions", label: "3b. Every word, Daily Word, a past day, in progress (free account)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "live" });
+        c.go("word", { page: "record", list: true });
+      } },
+      { group: "Past day", id: "past-day-word-library", label: "3b. Daily Word in your library, Daily Word, a past day, in progress (free account): streak strip and Now card", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "live" });
+        c.go("word", { page: "record" });
+      } },
+      { group: "Past day", id: "past-day-word-late-session", label: "3c. Session page, Daily Word, a past day, finished late (free account)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "late" });
+        c.go("session", { id: "word-past-late" });
+      } },
+      { group: "Past day", id: "past-day-word-late-history", label: "3c. History, Daily Word, a past day, finished late (free account)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "late" });
+        c.go("history", { game: "word" });
+      } },
+      { group: "Past day", id: "past-day-word-late-editions", label: "3c. Every word, Daily Word, a past day, finished late (free account)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "late" });
+        c.go("word", { page: "record", list: true });
+      } },
+      { group: "Past day", id: "past-day-word-late-library", label: '3c. Daily Word in your library, Daily Word, a past day, finished late (free account): streak strip "Not played"', stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ pastDay: "late" });
+        c.go("word", { page: "record" });
+      } },
+      { group: "Past day", id: "past-day-common-kept", label: "3a. Session page, Common, a past day in progress, Pass ended (kept, no Play)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setSub({ hadPass: true });
+        c.setReview({ pastDay: "live" });
+        c.go("session", { id: "common-past" });
       } },
       { group: "Site", id: "sign-in-return-library", label: "Signed out, opened the Library: Sign in, then the Library", stage: (c) => c.go("signin", { next: { name: "library" } }) },
       { group: "Site", id: "session-unknown", label: "A session address that doesn’t exist (not found)", stage: (c) => {
@@ -8525,8 +8598,8 @@
       ...DL_STATES || []
     ];
     KIT_STATE_GROUP_NOTES = {
-      "Ended unfinished": [
-        "Or set Config “Ended unfinished” to A day: the Common day shows as Not finished in History and on its library game page. Delve has one run so far, this week’s, so no Delve week can have ended unfinished; its state opens run 1 in progress."
+      "Past day": [
+        "Or set Config “Past day”: In progress adds a Common day (Pass) and a Daily Word day from before today, each started on its day; Finished late adds a Daily Word day finished the morning after. The Common day is the first unplayed one back from today (Fri 2 Oct, No. 3), the Daily Word day Thu 1 Oct."
       ],
       "Username": [
         "Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.",
@@ -8939,9 +9012,9 @@
       "sign-up",
       "account-email",
       "account-username-wait",
-      "session-common-unfinished",
-      "session-delve-unfinished",
-      "history-unfinished",
+      "past-day-common-session",
+      "past-day-word-session",
+      "past-day-word-late-session",
       "sign-in-return-library",
       "session-unknown",
       "library",
@@ -8976,8 +9049,8 @@
       "edition-word-done",
       "edition-mystery-done",
       "edition-casebook-done",
-      "session-common-unfinished",
-      "session-delve-unfinished",
+      "past-day-common-history",
+      "past-day-word-editions",
       "library-hunter-pass-ended",
       "library-hunter-pass-ended-today",
       "fp-hunter-library-lapsed",
@@ -9195,11 +9268,11 @@
       o([["none", "Not played"], ["live", "In progress"], ["average", "Average"], ["hard", "Hard"], ["failed", "Failed"]]),
       edHint
     ), edNote ? /* @__PURE__ */ React$1.createElement("p", { className: "kit-config-edwarn", role: "status" }, edNote) : null, R(
-      "Ended unfinished",
-      r.unfinished ? "on" : "off",
-      (v) => set(() => api.setReview({ unfinished: v === "on" })),
-      o([["off", "None"], ["on", "A day"]]),
-      "Adds a Common day and a Delve week that ended before you finished."
+      "Past day",
+      r.pastDay || "none",
+      (v) => set(() => api.setReview({ pastDay: v })),
+      o([["none", "None"], ["live", "In progress"], ["late", "Finished late"]]),
+      "Adds a Common day (Pass) and a Daily Word day from before today, each started on its day."
     )), /* @__PURE__ */ React$1.createElement(Group, { title: "Escape" }, R(
       "This week’s room, finished",
       r.escape === "par" || r.escape === "over" ? r.escape : "under",
@@ -10336,8 +10409,8 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
-        r: s.unfinished ? null : s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
-        className: s.unfinished ? "cm-card cm-bare" : "cm-card",
+        r: s.live ? { tone: "live", word: "In progress" } : { tone: "ok", word: "Completed" },
+        className: "cm-card",
         board: /* @__PURE__ */ React$1.createElement("div", { className: "cm-board" }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(CmRow, { key: x.k, x }))),
         rows: [["Score", /* @__PURE__ */ React$1.createElement(CmScore, { p })], ["Guesses", /* @__PURE__ */ React$1.createElement(CmPool, { p })]]
       }
@@ -10748,7 +10821,7 @@
     registerEscape();
     registerWord();
     registerDelve();
-    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", today: "played", unfinished: false, several: false, escape: "under", ed: null };
+    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", today: "played", pastDay: "none", several: false, escape: "under", ed: null };
     GS_USER_DEFAULT = { username: "MonaLaser", first: "Mona", last: "Lasker", locked: false, since: null, fresh: false, email: "you@example.com" };
     GS_SUB_DEFAULT = { status: "none", plan: "monthly", hadPass: false, pending: null, renew: null };
     GS_BARE = ["signup", "signin", "verify", "username", "recover", "returning", "checkout", "update-card", "loading", "offline", "directory-claude", "directory-chatgpt", ...GS_MORE_IDS || []];

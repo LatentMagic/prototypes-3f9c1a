@@ -40,7 +40,7 @@ const dlRoll = (l) => {
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
   return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, action: DL_GRADE.test(parts[0]) ? '' : parts[0] };
 };
-const DL_END = { won: 'The winning blow', fallen: 'The last blow', overrun: 'The last roll', live: 'Latest roll', ended: 'Last roll played' };
+const DL_END = { won: 'The winning blow', fallen: 'The last blow', overrun: 'The last roll', live: 'Latest roll' };
 // The key moments: the best roll, the closest call, the worst roll, and the roll the run ended on.
 const dlMoments = (R, end) => {
   if (!R.length) return [];
@@ -66,7 +66,7 @@ const dlBuild = (s) => {
     rolls.push(r); cur.rolls.push(r);
   });
   let run = 0; rolls.forEach((r) => { run = r.tier === 'strong' ? run + 1 : 0; });
-  const end = s.unfinished ? 'ended' : s.live ? 'live' : s.end;
+  const end = s.live ? 'live' : s.end;
   const moments = dlMoments(rolls, end);
   return { stops, rolls, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
 };
@@ -91,9 +91,9 @@ const DlDieBtn = ({ r, size, act, on }) => (
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
-const dlWord = (m) => ({ live: 'In progress', ended: 'Unfinished', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
+const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
 const dlTone = (m) => (m.end === 'won' ? 'ok' : m.end === 'live' ? 'live' : 'bad');
-const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : m.end === 'ended' ? 'The week ended first' : s.result;
+const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result;
   return (<div className="dv7r-band"><h2 className={'dv7r-word is-' + dlTone(m)}>{dlWord(m)}</h2>{line && <p className="dv7r-line">{line}</p>}</div>); };
 
 // ---- The held roll: the die large, its kicker, then a labelled row per fact. The two-dice row is left out: the die shows both. ----

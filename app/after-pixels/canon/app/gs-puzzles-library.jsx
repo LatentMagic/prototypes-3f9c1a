@@ -19,7 +19,7 @@ const pzQn = (q) => (q === 0 ? 'No questions' : q === 1 ? '1 question' : q + ' q
 const pzAcc = (s, w, r) => s + ', with the ' + w + ', in the ' + r;
 let PZ_MOVES;
 export const pzLong = (d) => d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + lbDate(d);
-const pzSession = (id, c, x) => {
+export const pzSession = (id, c, x) => {
   const i = x.i; const sid = id + '-e' + i; const base = { kind: 'puzzle', gid: id, game: GS_GAMES[id].name, art: GS_GAMES[id].art, date: pzLong(x.d), result: x.line, loss: !x.ok };
   let s;
   if (DP_PZ[id]) s = dpSession(id, c, x, base);
@@ -59,7 +59,8 @@ export const pzStatus = (c, x) => (!x.played ? { kind: 'none', label: 'Not playe
 // The run, from the record: each edition as this player's play of it stands (completed, failed, in progress or not played).
 export const pzRun = (gs, id) => {
   const by = {}; phVisible(gs).forEach((p) => { if (p.gid === id && !by[p.ed]) by[p.ed] = p; });
-  return PZ[id].all.map((x) => { const p = by[x.id]; const k = p ? p.status.kind : 'none'; return { ...x, played: !!p, done: k === 'ok', failed: k === 'bad' }; });
+  // A play finished after its day is not a mark on the strip.
+  return PZ[id].all.map((x) => { const p = by[x.id]; const k = p && !p.late ? p.status.kind : 'none'; return { ...x, played: !!p, done: k === 'ok', failed: k === 'bad' }; });
 };
 const pzLibrary = (id) => () => {
   const gs = useGs(); const c = PZ[id]; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gs.review.today || '');

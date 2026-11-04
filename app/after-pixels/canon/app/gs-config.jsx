@@ -93,8 +93,8 @@ export const ConfigExtraBase = () => {
         {R('This edition', edVal, setEd, o([['none', 'Not played'], ['live', 'In progress'], ['average', 'Average'], ['hard', 'Hard'], ['failed', 'Failed']]),
           edHint)}
         {edNote ? <p className="kit-config-edwarn" role="status">{edNote}</p> : null}
-        {R('Ended unfinished', r.unfinished ? 'on' : 'off', (v) => set(() => api.setReview({ unfinished: v === 'on' })), o([['off', 'None'], ['on', 'A day']]),
-          'Adds a Common day and a Delve week that ended before you finished.')}
+        {R('Past day', r.pastDay || 'none', (v) => set(() => api.setReview({ pastDay: v })), o([['none', 'None'], ['live', 'In progress'], ['late', 'Finished late']]),
+          'Adds a Common day (Pass) and a Daily Word day from before today, each started on its day.')}
       </Group>
 
       <Group title="Escape">

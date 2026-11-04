@@ -3020,10 +3020,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cm-score b { font: 700 48px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
 .cm-score span { font: 600 16px/1 var(--font-text); color: var(--muted); }
 .cm-card { --q: 36px; }
-/* KEEP: a card with no result statement (an unfinished day) draws its panel and rule level with the board, inside the card's padding, so the
-   rule never runs above the card's top edge. The shared card lifts the panel past the result band; with no band there is nothing to lift past. */
-@container dv2 (min-width: 840px) { .cm-card.cm-bare .gs-sc-panel { margin-top: 0; } }
-
 /* KEEP: the panel sits beside the board only from an 840px card. The shared card puts it beside from 672px, but the board (560px) and
    the panel with its five 36px guesses need about 830px; narrower, the panel's figures were cut off. Between 672px and 840px it goes
    under the board, as on a phone. */

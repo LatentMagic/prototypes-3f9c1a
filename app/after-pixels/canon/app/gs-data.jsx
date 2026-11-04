@@ -394,7 +394,7 @@ export const GS_RESULT = {
   casebook: (r) => (r.ok ? 'Solved' : 'Wrong accusation'),
   // The setting's own ending words (The Goblin Warren beneath Ashford Mill).
   delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the ritual was completed', fell: 'Fell in the warren' })[r.end],
-  // A day that ended without an ending reads as the app's unfinished status.
+  // A restarted day (no ending) reads Not finished.
   hunter: (r) => (r.restarted ? 'Not finished' : 'Finished'),
 };
 

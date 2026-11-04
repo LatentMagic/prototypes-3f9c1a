@@ -11,11 +11,11 @@ import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, LbChoice } from './gs-library.jsx';
-import { DP_IDS, cmUnfinished } from './gs-where-chain-salvage.jsx';
+import { DP_IDS, cmPartway } from './gs-where-chain-salvage.jsx';
 import { CB_ALL, CB_DONE, CB_LIVE, cbDone } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
 import { DV_ALL, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
-import { PZ, pzStatus, pzLong } from './gs-puzzles-library.jsx';
+import { PZ, pzStatus, pzLong, pzSession } from './gs-puzzles-library.jsx';
 import { HG_DAYS, hgStatus, hgSid } from './gs-hunter-library.jsx';
 import { BW_T1, BW_REC1 } from './gs-barrow-library.jsx';
 import { gsKinds, gsKind } from './gs-discover.jsx';
@@ -46,9 +46,9 @@ export const edPuzzle = (gs, gid) => {
   const signed = gs.view !== 'out'; const now = signed ? lbNow(gs, gid) : null; const c = PZ[gid];
   // The free first edition reads its one record, even when it is also the current one.
   const fe = (x) => !!phFirstSt(gs, gid) && PH_FIRST[gid] === x.id;
-  return c.all.map((x) => ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
-    status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? (now ? now.status : ED_NONE) : gsFresh(gs) ? ED_NONE : phUnf(gs, x.id) ? PH_UNF : pzStatus(c, x),
-    open: !signed || gsFresh(gs) ? null : phUnf(gs, x.id) ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : fe(x) ? (phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs))) : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null }));
+  return c.all.map((x) => { const past = signed ? phPast(gs, x.id) : null; return ({ key: x.id, gid, n: c.weekly ? c.all.length - x.i : +c.no(x.i).split('#')[1], title: c.weekly ? x.title : null, date: x.date, month: x.month, free: true, now: x.i === 0,
+    status: !signed ? null : fe(x) ? phFirstRec(gs, gid).status : x.i === 0 ? (now ? now.status : ED_NONE) : gsFresh(gs) ? ED_NONE : past ? past.status : pzStatus(c, x),
+    open: !signed || gsFresh(gs) ? null : past ? past.open : fe(x) ? (phFirstRec(gs, gid).open && (() => phFirstRec(gs, gid).open(gs))) : x.i === 0 ? (now ? now.open : null) : x.sid ? () => gs.go('session', { id: x.sid }) : null }); });
 };
 // Casebook's cases and Delve's runs: one list each, newest first. src: { all, done, status(x), openCur(gs, x), open(gs, x) };
 // done is this edition's finished play (doneStatus(gs): its status as Config → This edition picks it), openCur opens this edition's play when lbNow has none.
@@ -59,14 +59,13 @@ export const edRuns = (gs, gid, src) => {
   return all.map((x, i) => {
     // This week's play counts as played before the Pass ended when it ended today.
     const curOld = i === 0 && !now && signed && lapsed && mine(x);
-    const unf = signed && i > 0 && phUnf(gs, x.id);
     const played = i === 0 ? !!now || curOld : signed && mine(x);
-    let st = !signed ? null : unf ? PH_UNF : i === 0 ? (now ? now.status : curOld ? (src.doneStatus ? src.doneStatus(gs) : src.status(src.done)) : ED_NONE) : played ? src.status(x) : ED_NONE;
+    let st = !signed ? null : i === 0 ? (now ? now.status : curOld ? (src.doneStatus ? src.doneStatus(gs) : src.status(src.done)) : ED_NONE) : played ? src.status(x) : ED_NONE;
     // The free first edition reads its one record.
     const fr = x === first && phFirstSt(gs, gid) ? phFirstRec(gs, gid) : null;
     if (fr && !fresh) { st = fr.status; return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: true, now: false, status: st, open: fr.open && (() => fr.open(gs)) }; }
     return { key: x.id, gid, n: all.length - i, title: x.title, date: x.week || x.date, month: x.month, free: x === first && !!PH_FIRST[gid], now: i === 0, status: st,
-      open: unf ? () => gs.go('session', { id: PH_UNF_EDS[x.id].sid }) : !played ? null : i === 0 ? (now ? now.open : () => src.openCur(gs, x)) : () => src.open(gs, x) };
+      open: !played ? null : i === 0 ? (now ? now.open : () => src.openCur(gs, x)) : () => src.open(gs, x) };
   });
 };
 // A stub's SAMPLE editions, nobody has played them: list is [[title, date], …] newest first; a null title numbers the edition ("#3").
@@ -77,9 +76,9 @@ export const edSample = (gs, gid, list) => list.map(([title, date], i) => {
 });
 // Whether this player needs the Pass for an edition. Every edition can be played; a free game's current one is free, another game's first one is.
 export const edNeedsPass = (gs, e) => gs.view !== 'pass' && (GS_GAMES[e.gid].free ? !e.now : !e.free);
-export let PH_UNF;
-let PH_UNF_EDS;
-const phUnf = (gs, key) => { const u = PH_UNF_EDS[key]; return !!u && !!(gs && gs.review && gs.review.unfinished) && !gsFresh(gs) && (GS_GAMES[u.gid].free || gs.view === 'pass'); };
+// The past day's play for an edition, as Config → Past day sets it (in progress, or finished late), or null. A Pass game's is the Pass holder's.
+const phPast = (gs, key) => { const e = PH_PAST[key]; const m = gs && gs.review && gs.review.pastDay; const p = e && m && e[m];
+  return p && !gsFresh(gs) && (GS_GAMES[e.gid].free || gs.view === 'pass') ? p : null; };
 // Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Daily Mystery #64"), its title, and its date.
 // Every word typed must start a word of the row; a number must be a whole number (84 finds #84, not #184).
 // A keyboard apostrophe matches the curly one. A query naming a month is a date and matches as before (substring).
@@ -106,6 +105,7 @@ const phEd = (gid, ed, edTitle, edDate, plays, cur) => {
 };
 const phSess = (id) => (gs) => gs.go('session', { id });
 let PH_LIVE;
+let PH_PAST;
 let PH_LIVE_SID;
 let PH_MORE;
 
@@ -122,7 +122,6 @@ const edMore = (gs, gid, list) => { const m = phMoreOn(gs) && PH_MORE[gid]; if (
 
 let PH_ALL;
 let PH_BROKEN;
-let PH_UNF_PLAYS;
 // KEEP: This edition's finished play, as Config → This edition picks it: the current edition's only; a free player's first Escape room is an older edition and keeps
 // its own play. A play with `pick` reads its pick itself (Casebook's case);
 // the others read c.today (PZ) or gsEdPick, and a pick the game does not have leaves the seeded play.
@@ -135,7 +134,7 @@ const phCur = (p, gs) => {
 };
 const phLog = (gs) => {
   const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL).map((p) => phCur(p, gs));
-  const u = gs.review && gs.review.unfinished ? l.concat(PH_UNF_PLAYS.filter((p) => phUnf(gs, p.ed))) : l;
+  const u = l.concat(Object.keys(PH_PAST).map((k) => phPast(gs, k)).filter(Boolean));
   return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
 };
 export let PH_FIRST;
@@ -346,23 +345,28 @@ export function initGsHistory() {
 // A game's editions, newest first: { key, gid, n, title, date, month, free, now, status, open }
 // Results agree with the library game page: this edition from lbNow; a free player has played the first edition; a lapsed one, everything played before the Pass ended.
 ED_NONE = { kind: 'none', label: 'Not played' };
-// Sessions whose day or week ended before the player finished (Config: Ended unfinished). One Common day, an edition the seed leaves unplayed.
-// Delve has one run so far, this week's, so no Delve week can have ended unfinished: 'delve-unfinished' reads run 1 in progress.
-PH_UNF = { kind: 'none', label: 'Not finished' };
-PH_UNF_EDS = (() => {
-  // The first unplayed earlier day of Common.
-  const g = PZ.common.all.filter((x) => x.i > 0 && !x.played)[0];
-  const gAt = phAt(g.d, 21, 40);
-  GS_SESSIONS['common-unfinished'] = { kind: 'puzzle', gid: 'common', game: 'Common', art: 'common', unfinished: true, edKey: g.id, result: null, date: pzLong(gAt) + ', 21:40', share: null, ...cmUnfinished(g) };
-  GS_SESSIONS['delve-unfinished'] = GS_SESSIONS['delve-live'];
-  return { [g.id]: { gid: 'common', x: g, sid: 'common-unfinished', at: gAt } };
-})();
 PH_META = null;
 // ---- The play log. An edition holds its one play. ----
 // A play: { at, status, open(gs), cur (this edition), now? (the in-progress form of this edition's play) }
 PH_EDS = {};
 PH_PLAYS = [];
 PH_LIVE = { kind: 'live', label: 'In progress' };
+// Past-day plays (Config → Past day): one Common day and one Daily Word day, editions the seed leaves unplayed, each started on its day.
+// In progress, the play is an ordinary session page with Play. Finished late, the play is a Daily Word finished the morning after: the session page and
+// History show the result, and the streak strip does not mark the day (pzRun skips a late play).
+PH_PAST = (() => {
+  const day = (id) => PZ[id].all.filter((x) => x.i > 0 && !x.played)[0];
+  const play = (gid, x, sid, at, status, late) => ({ gid, ed: x.id, edTitle: x.title, edDate: x.d, n: 0, cur: false, pid: x.id + '-past', at, status, open: phSess(sid), sid, ...(late ? { late: true } : {}) });
+  const g = day('common'); const gAt = phAt(g.d, 21, 40);
+  GS_SESSIONS['common-past'] = { kind: 'puzzle', gid: 'common', game: 'Common', art: 'common', edKey: g.id, live: true, result: 'In progress', date: pzLong(gAt) + ', 21:40', share: null, ...cmPartway(g) };
+  const w = day('word'); const wAt = phAt(w.d, 21, 40); const wEnd = phAt(w.d, 8, 15, 1);
+  GS_SESSIONS['word-past'] = { ...GS_SESSIONS['word-live'], number: 212 - w.i, edKey: w.id, date: pzLong(wAt) + ', 21:40' };
+  const late = pzSession('word', PZ.word, { ...w, ok: true, line: PZ.word.ok(w.i) });
+  GS_SESSIONS['word-past-late'] = { ...GS_SESSIONS[late], edKey: w.id, date: pzLong(wEnd) + ', 08:15' }; delete GS_SESSIONS[late];
+  return {
+    [g.id]: { gid: 'common', live: play('common', g, 'common-past', gAt, PH_LIVE) },
+    [w.id]: { gid: 'word', live: play('word', w, 'word-past', wAt, PH_LIVE), late: play('word', w, 'word-past-late', wEnd, gsSessStatus(GS_SESSIONS['word-past-late']), true) } };
+})();
 PH_LIVE_SID = { word: 'word-live', groups: 'groups-live', mystery: 'mystery-live', escape: 'escape-live', ...Object.fromEntries(DP_IDS.map((k) => [k, k + '-live'])) };
 // ---- Several editions in progress (Escape and Delve only). SAMPLE data: one earlier room and one earlier run,
 // each in progress. They exist only while review.several is on (the two-in-progress states), so everywhere else the game's first
@@ -417,7 +421,6 @@ PH_BROKEN = (() => {
   const f = e.plays[0]; const c = PZ.word;
   return [{ ...f, pid: 'word1-broken-0', status: { kind: 'bad', label: c.bad }, open: phSess('word-broken-first') }];
 })();
-PH_UNF_PLAYS = Object.entries(PH_UNF_EDS).map(([ed, u]) => ({ gid: u.gid, ed, edTitle: u.x.title, edDate: u.x.d, n: 0, cur: false, pid: ed + '-unf', at: u.at, status: PH_UNF, open: phSess(u.sid) }));
 // Who sees what. A player keeps History for everything they played.
 // Free: Daily Word and Daily Mystery in full, and the first edition of Escape, Delve and the Barrow. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
 // ---- The free first edition's one play record (a free first run or room, or chapter). Every surface reads it: the game page's head

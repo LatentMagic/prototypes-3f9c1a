@@ -19,7 +19,7 @@ const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || '', len: GS_PAGES[e.gi
 const pgeDated = (gid) => !!gsRhythm(gid);
 
 // ---- One game's editions, newest first, each once. No result: those are History's. ----
-// Played: a finished play. Not played, in progress and not finished carry no mark.
+// Played: a finished play. Not played and in progress carry no mark.
 const pgePlayed = (e) => !!e.status && e.status.kind !== 'none' && e.status.kind !== 'live';
 const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({ ...e, name: edName(e), when: pgeDated(gid) && e.date ? lbShort(e.date) : undefined, played: pgePlayed(e), live: !!e.status && e.status.kind === 'live', held: edNeedsPass(gs, e), info: pgeInfo(e),
   hay: phHay(gid, e.key, e.title, pgeDated(gid) && e.date ? phParse(e.date) : null) + ' ' + pgeRowTitle(gid, { ...e, name: edName(e) }).toLowerCase() }));

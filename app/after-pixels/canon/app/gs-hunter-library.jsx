@@ -12,7 +12,7 @@ import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
 const HG_ENDS = ['Home by the fire', 'Slept at the springs', 'Slept in the cave mouth', 'Home with full hands', 'Slept out on the plain'];
 // Each day keeps how it ended, what happened in it and what it earned (earns). Day 18 (5 October) is the latest.
-// A day that ended without an ending (end: null) is not finished.
+// A restarted day has no ending (end: null) and reads Not finished.
 const HG_POOL = {
   Slept: ['At the fire, by Aunt', 'At the springs', 'In the cave mouth', 'At the fire, with the band', 'Out on the plain'],
   Joined: ['The ibex hunt, and the meeting of the bands', 'The walk to the springs', 'Digging roots with Aunt', 'The reindeer watch', 'Painting at the wall'],
@@ -110,7 +110,7 @@ HG_LATEST = HG_DAYS[0];
 // A session page for every day: the result matches its row; the record is what happened in the day. Share carries the product page link only (MCPG-030 AF-04).
 // noEd: a day names no summer, so its page and its Play name the day, not an edition (which summer a day falls in is not decided).
 HG_DAYS.forEach((x) => {
-  GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', noEd: true, game: GS_NAME.hunter, art: 'hunter', title: x.title, result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
+  GS_SESSIONS[hgSid(x)] = { kind: 'day', gid: 'hunter', noEd: true, restarted: x.restarted, game: GS_NAME.hunter, art: 'hunter', title: x.title, result: hgStatus(x).label, date: x.d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + x.date,
     figures: x.end ? [x.title, x.end] : [x.title], share: null, lines: x.facts };
 });
 GS_SESSIONS.hunter = GS_SESSIONS[hgSid(HG_LATEST)];

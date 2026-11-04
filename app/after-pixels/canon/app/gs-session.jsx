@@ -17,7 +17,7 @@ import { GsGap, gsOr } from './gs-game.jsx';
 import { lbCopy, LbBackTo } from './gs-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 import { gsSessEd } from './gs-connect.jsx';
-import { PH_FIRST, PH_UNF } from './gs-history.jsx';
+import { PH_FIRST } from './gs-history.jsx';
 import { cprFirstState } from './gs-pass-store.jsx';
 import { ES_SIDS } from './gs-escape.jsx';
 import { GS_SESSION_BODY } from './registry.js';
@@ -193,9 +193,9 @@ const GsSessionRecord = () => {
   const ed = gsSessEd ? gsSessEd(gs, sid) : null;
   const over = !!s.gid && gsStartsOver(s.gid);
   // Controls only where they work: a player without the Pass can carry on or start over only a free game or its free first edition.
-  // A Pass-ended player's unfinished Pass-only session is kept: it says so, with the Pass page, and no Play.
+  // A Pass-ended player's Pass-only session in progress is kept: it says so, with the Pass page, and no Play. A restarted 36,000 Summers Ago day is kept the same way.
   const canPlay = !s.gid || gs.view === 'pass' || GS_GAMES[s.gid].free || (!!PH_FIRST && PH_FIRST[s.gid] === (s.phEd || s.edKey));
-  const kept = !canPlay && (s.live || (over && s.result === PH_UNF.label));
+  const kept = !canPlay && (s.live || (over && s.restarted));
   const again = over && canPlay ? <DS.Button variant="secondary" onClick={() => gs.play(s.game, sid)}>Play again</DS.Button> : null;
   const back = s.gid && <div className="gs-wrap gs-backbar" style={{ paddingTop: 24 }}><LbBackTo gid={s.gid} /></div>;
   // A game's own session body: GS_SESSION_BODY[gid] draws its part under the shared head (Escape's: app/gs-escape.jsx), result included.
@@ -206,15 +206,6 @@ const GsSessionRecord = () => {
   const title = gsHeadTitle(s, ed);
   const label = gsHeadGame(s) + ' · ' + gsHeadDay(gsSessDate(s, gs));
   const art = s.art;
-  // A day or week that ended before the player finished: no result, no score line, no play control, and no line explaining it
-  // (the owner, 2026-11-04). What was played stays.
-  if (s.unfinished) return (<>
-    {back}
-    <main className="gs-wrap gs-main">
-      <GsSessHead art={art} label={label} title={title} />
-      {body}
-    </main>
-  </>);
   return (<>
     {back}
     <main className="gs-wrap gs-main">
