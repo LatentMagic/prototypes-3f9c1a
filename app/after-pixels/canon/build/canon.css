@@ -3277,6 +3277,18 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .acn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max-content; pointer-events: none; }
   .acn-pair { grid-template-columns: auto 240px; column-gap: 16px; }
 }
+
+/* KEEP (Joe, 2026-11-05: the card was too tall): the session page's two cards drawn smaller on the now card, captions kept (shallower
+   canvas option 1, accuse-hifi-canvas/now4.html): a 36px count, a tighter case card, a 17px name and shorter blank lines. */
+.acn .acn-col { row-gap: 6px; }
+.acn .acc-hc { min-width: 0; padding: 10px 14px; }
+.acn .acc-hc .slv-big b { font-size: 36px; }
+.acn .acc-case { padding: 9px 12px; }
+.acn .acc-tag { margin-bottom: 5px; padding: 4px 7px; }
+.acn .acc-name { font-size: 17px; }
+.acn .acc-sent { font-size: 13px; line-height: 1.35; }
+.acn .acc-blank { height: 16px; margin-top: 4px; }
+.acn .acc-blank.is-s { height: 10px; }
 /* PLAYGROUND, not canon (branch candidate/accuse-session-hifi): Accuse's session page at hi fi (app/playground-accuse-session.jsx).
    The notebook is Escape's sheet (.dv4 .esx-sheet, gs-escape-sheet.css) and the card is the session card (.gs-sc, gs-sess-card.css),
    so this file is imported after both. Direction 1's rules come first and every direction shares them; 2's and 3's follow, each
