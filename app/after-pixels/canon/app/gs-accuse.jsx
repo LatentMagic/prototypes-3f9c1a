@@ -29,7 +29,7 @@ const ACC_CASE = {
     ['Cellar bar', 'Low, warm and full of pipe smoke.']],
   clues: ['Whoever carried the snow shovel was not in the games room.', 'The killer was in the cable car hut.', 'Anneliese Berger was not in the great hall.',
     'Anneliese Berger carried the snow shovel.', 'Rick Dawson was in the cellar bar.'],
-  hints: ['Rick Dawson was not the killer.', 'Anneliese Berger was in the cable car hut.'],
+  hints: ['Anneliese Berger was not in the games room.', 'Whoever carried the snow shovel was not in the great hall.'],
   truth: ['Anneliese Berger', 'Snow shovel', 'Cable car hut'],
 };
 export const ACC_TRUTH = ACC_CASE.truth;

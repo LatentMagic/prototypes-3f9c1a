@@ -4074,7 +4074,7 @@
       "Anneliese Berger carried the snow shovel.",
       "Rick Dawson was in the cellar bar."
     ],
-    hints: ["Rick Dawson was not the killer.", "Anneliese Berger was in the cable car hut."],
+    hints: ["Anneliese Berger was not in the games room.", "Whoever carried the snow shovel was not in the great hall."],
     truth: ["Anneliese Berger", "Snow shovel", "Cable car hut"]
   };
   const ACC_TRUTH = ACC_CASE.truth;
