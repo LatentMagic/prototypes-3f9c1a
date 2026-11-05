@@ -27,7 +27,7 @@
 .cm-row:last-child { padding-bottom: 0; }
 @container dv2 (min-width: 520px) { .cm-row { grid-template-columns: minmax(0, 1fr) 48px; grid-template-areas: "b p" "c ."; column-gap: 12px; } }
 
-/* KEEP: four tiles across from a 520px card, two by two under it; a tile is at least 72px tall (64px from a 520px card) and grows if
+/* KEEP: four tiles across from a 520px card, two by two under it; a tile is at least 48px tall under a 520px card and 64px from it and grows if
    its words need more, so the tiles of a row end level. A long item wraps inside its tile (balanced) and never widens it. Items show
    as stored, in capitals. */
 .cm-tiles { --g: 6px; grid-area: b; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--g); }
@@ -35,6 +35,7 @@
 .cm-t { box-sizing: border-box; display: grid; place-items: center; min-height: 72px; padding: 4px 8px; text-align: center;
   font: 700 12px/15px var(--font-text); overflow-wrap: break-word; text-wrap: balance; }
 @container dv2 (min-width: 520px) { .cm-t { min-height: 64px; padding: 4px 2px; font-size: 13px; line-height: 16px; } }
+@container dv2 (max-width: 519.98px) { .cm-t { min-height: 48px; } }
 
 /* Grey until named: every item shown is filled alike, the ones never shown outlined. Named: every shown tile takes the
    thread's colour, and its never-shown tiles a thin outline in it. */
@@ -68,7 +69,7 @@
    never pulls the pair off centre; the squares shrink with the card (24px to 36px) and centre on the 48px score figure. */
 @container dv2 (max-width: 839.98px) {
   .cm-card .gs-sc-panel { grid-template-columns: auto auto; justify-content: center; column-gap: clamp(32px, 10cqi, 72px); }
-  .cm-card { --q: clamp(24px, 7cqi, 36px); }
+  .cm-card .gs-sc-duo { --q: clamp(24px, 7cqi, 36px); }
   .cm-card .cm-pool { align-self: start; margin-top: calc((48px - var(--q)) / 2); }
 }
 
