@@ -1,6 +1,7 @@
 /* PLAYGROUND, not canon (branch candidate/accuse-session-hifi): Accuse's session page at hi fi (app/playground-accuse-session.jsx).
    The notebook is Escape's sheet (.dv4 .esx-sheet, gs-escape-sheet.css) and the card is the session card (.gs-sc, gs-sess-card.css),
-   so this file is imported after both. */
+   so this file is imported after both. Direction 1's rules come first and every direction shares them; 2's and 3's follow, each
+   scoped to its own class (2: .is-side, .pga-ledger; 3: .is-grow, .pga-pair, .pga-desk). */
 .pga-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---- Notebook: folder tabs. KEEP: the open tab is the folder's own colour and runs into it (no rule between), so the tab and the
@@ -65,3 +66,64 @@
 .pga-sent { max-width: 220px; font: 400 14px/1.45 var(--font-text); color: var(--muted); text-wrap: balance; }
 .pga-blank { display: block; width: 160px; height: 22px; margin-top: 6px; border-bottom: 1.5px solid var(--control-edge); }
 .pga-blank.is-s { width: 190px; height: 14px; margin-top: 4px; border-bottom-color: var(--line); }
+
+/* ==== 2 Side tabs: the tabs run down the folder's left side; the card hangs off one left edge, the panel as a ledger. ==== */
+/* KEEP: the spine sets the folder's height (six tabs, about 260px on a phone and 290px on a desktop), so an opened reader fills
+   the space beside the spine before it lengthens the page. The open tab is cut on its left corners and runs into the folder on its
+   right, covering the folder's edge, as the top tabs do in 1. */
+.pga-nb.is-side { grid-template-columns: auto minmax(0, 1fr); }
+.pga-nb.is-side > .gs-sc-cap { grid-column: 1 / -1; margin-bottom: 8px; }
+.is-side .pga-tabs { grid-template-columns: 1fr; align-content: start; align-items: stretch; gap: 4px; margin-top: 0; padding-top: 8px; }
+.is-side .pga-tab { --cut: polygon(100% 0, 8px 0, 0 8px, 0 calc(100% - 8px), 8px 100%, 100% 100%);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 176px; padding: 10px 12px; }
+.is-side .pga-tab::before { inset: 1px 0 1px 1px; clip-path: polygon(100% 0, 7.6px 0, 0 7.6px, 0 calc(100% - 7.6px), 7.6px 100%, 100% 100%); }
+.is-side .pga-tab.is-open { padding-bottom: 10px; margin: 0 -1px 0 0; }
+.is-side .pga-tab .esx-num { font-size: 18px; }
+.is-side .pga-folder { padding-top: 4px; }
+@container dv4 (max-width: 560px) {
+  .is-side .pga-tabs { gap: 3px; }
+  .is-side .pga-tab { justify-content: center; gap: 6px; width: 56px; padding: 10px 6px; }
+  .is-side .pga-tab.is-open { padding-bottom: 10px; }
+  .is-side .pga-fh { padding-top: 8px; }
+}
+/* The card: result, board and panel start at one left edge. Phone: the board, then the panel as ledger rows ruled like the board,
+   Hints' caption on the left and its count on the right, The culprit's card full width beneath its caption. */
+.pga-ledger .gs-sc-panel { row-gap: 0; padding-top: 0; border-top: 0; }
+.pga-ledger .gs-sc-row { justify-items: stretch; gap: 12px; padding: 16px 0; border-top: 1px solid var(--line); }
+.pga-ledger .gs-sc-row:first-child { grid-template-columns: 1fr auto; align-items: center; }
+.pga-ledger .pga-case { justify-items: start; width: 100%; text-align: left; }
+.pga-ledger .pga-sent { max-width: none; }
+/* Desktop: the board fills its side from the left; the panel is a 260px column to its right, from the card's top line. */
+@container dv2 (min-width: 672px) {
+  .pga-ledger .gs-sc-duo { grid-template-columns: minmax(0, 1fr) 260px; justify-content: stretch; align-items: start; column-gap: 40px; }
+  .pga-ledger .gs-sc-board { justify-items: start; }
+  .pga-ledger .pga-bd { width: 100%; }
+  .pga-ledger .gs-sc-panel { align-content: start; padding-left: 40px; }
+  .pga-ledger .gs-sc-row:first-child { padding-top: 0; border-top: 0; }
+}
+
+/* ==== 3 Open tab grows: the six tabs stay on top; only the open one is named. On a desktop the notebook and card sit side by side. ==== */
+/* KEEP: at every width the open tab takes the width its name needs and the five closed tabs share what is left, each showing its
+   icon over its count (at least 24px wide), so six tabs fit across a 254px sheet (320px window) with the open name whole. */
+.is-grow .pga-tabs { display: flex; gap: 3px; }
+.is-grow .pga-tab { flex: 1 1 0; justify-items: center; padding: 8px 4px; }
+.is-grow .pga-tab.is-open { flex: 0 0 auto; justify-items: start; padding: 8px 12px 12px; }
+.is-grow .pga-tn { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.is-grow .pga-tab.is-open .pga-tn { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+.is-grow .pga-fh { display: none; }
+@container dv4 (max-width: 560px) { .is-grow .pga-tab.is-open { padding: 8px 10px 12px; } }
+/* The card stacks (as on a phone, so also in the desktop's narrower column): the board, centred up to 520px, then Hints and
+   The culprit side by side under the rule, the pair centred. From a 672px card (a tablet) the shared side-by-side card applies. */
+@container dv2 (max-width: 671px) {
+  .pga-pair .pga-bd { max-width: 520px; justify-self: center; }
+  .pga-pair .gs-sc-panel { grid-template-columns: auto minmax(0, 240px); justify-content: center; column-gap: 24px; }
+  .pga-pair .pga-case { width: 100%; }
+  .pga-pair .pga-blank { width: min(160px, 75%); }
+  .pga-pair .pga-blank.is-s { width: min(190px, 90%); }
+}
+/* KEEP: from a 1024px window the notebook (5 parts) and the card (7 parts) share one row, tops aligned, Every move across both;
+   the card's column stays under 672px, so the card keeps its stacked arrangement there. */
+@container gs (min-width: 1024px) {
+  .pga-desk { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; }
+  .pga-desk > .gs-moves { grid-column: 1 / -1; }
+}

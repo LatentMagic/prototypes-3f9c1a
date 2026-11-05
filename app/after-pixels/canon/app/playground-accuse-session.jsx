@@ -1,6 +1,7 @@
 // ============================================================================
 // PLAYGROUND, not canon (branch candidate/accuse-session-hifi): Accuse's session page at hi fi, built from the picks made on the
-// hi-fi canvases (one per element). Every direction shares the fundamentals; directions differ only in how they resolve space.
+// hi-fi canvases (one per element). Every direction shares the fundamentals and the parts below (PgaPage draws the page from them);
+// directions differ only in how they resolve space: where the six tabs go, how the board and panel align. Each has a note at its head.
 //   Notebook: Escape's sheet as a case folder. Tabs Scene, Suspects, Weapons, Places, Clues, Hints; the open tab joins the folder,
 //     which holds its chips and one reader. Hints is greyed out at 0.
 //   Board: the case's cards in three ruled columns, marked in pen once played. A ring only ever means the player's pick: green when
@@ -76,13 +77,14 @@ const PgaIcon = ({ k }) => (k === 'clues'
   : <span className="esx-mk pga-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="square" strokeLinejoin="miter"><path d={PGA_IC[k]} /></svg></span>);
 
 // KEEP: one tab is always open, so the folder always shows: a tap on another tab swaps the folder's contents and shuts the reader; a
-// tab with nothing in it (Hints at 0) is greyed out and does nothing. On a phone (sheet 560px or less) each tab shows its icon and
-// count only, and the open tab's name heads the folder, so six tabs fit across 358px without clipping a word.
-const PgaNotebook1 = ({ p }) => {
+// tab with nothing in it (Hints at 0) is greyed out and does nothing. How the six tabs fit is each direction's own (`lay`, a class
+// on the sheet; the CSS says how): direction 1 on a phone (sheet 560px or less) shows each tab's icon and count only, and the open
+// tab's name heads the folder, so six tabs fit across 358px without clipping a word.
+const PgaNotebook = ({ p, lay = '' }) => {
   const g = React.useMemo(() => pgaGroups(p), [p]);
   const [open, setOpen] = React.useState('scene'); const [sel, setSel] = React.useState(null);
   const grp = g.find((x) => x.key === open); const it = sel && grp.items.find((x) => x.id === sel);
-  return <section className="dv4 esx-sheet pga-nb" aria-label="Notebook">
+  return <section className={'dv4 esx-sheet pga-nb' + (lay ? ' ' + lay : '')} aria-label="Notebook">
     <span className="gs-sc-cap">Notebook</span>
     <div className="pga-tabs" role="tablist">{g.map((x) => (
       <button key={x.key} type="button" role="tab" aria-selected={open === x.key} disabled={!x.items.length}
@@ -164,15 +166,35 @@ const PgaCulprit = ({ p }) => (p.live
 // ============================================================================
 // 1 Tab per kind: the six tabs across, icons and counts only on a phone.
 // ============================================================================
-const Pga1 = ({ s }) => { const p = s.pga;
-  return <div className="dv4-lay">
-    <PgaNotebook1 p={p} />
-    <GsSessCard r={p.live ? { tone: 'live', word: 'In progress' } : p.right ? { tone: 'ok', word: 'Solved' } : { tone: 'bad', word: 'Failed' }}
-      className="pga-card" board={<PgaBoard p={p} />} rows={[['Hints', <PgaHints n={p.hints} />], ['The culprit', <PgaCulprit p={p} />]]} />
+// The session card every direction shares; `card` is the direction's class on it, `lay` the notebook's, `wrap` the page's.
+const pgaResult = (p) => (p.live ? { tone: 'live', word: 'In progress' } : p.right ? { tone: 'ok', word: 'Solved' } : { tone: 'bad', word: 'Failed' });
+const PgaPage = ({ s, lay, card = '', wrap = '' }) => { const p = s.pga;
+  return <div className={'dv4-lay' + (wrap ? ' ' + wrap : '')}>
+    <PgaNotebook p={p} lay={lay} />
+    <GsSessCard r={pgaResult(p)} className={'pga-card' + (card ? ' ' + card : '')} board={<PgaBoard p={p} />}
+      rows={[['Hints', <PgaHints n={p.hints} />], ['The culprit', <PgaCulprit p={p} />]]} />
     {s.lines.length > 0 && <GsMoves s={s} />}
   </div>; };
+const Pga1 = ({ s }) => <PgaPage s={s} />;
 
-const PGA_DIRS = { 1: Pga1 };
+// ============================================================================
+// 2 Side tabs: the tabs leave the folder's top edge and run down its left side, like a binder's index, at every width. On a phone the
+// spine is narrow (icon and count, the open tab's name heading the folder, as in 1); on a desktop each tab carries its name and count
+// on one line. The spine sets the folder's height, so an opened reader fills the space beside it rather than lengthening the page.
+// The card hangs everything off one left edge: result, board and panel start at the same line; on a desktop the board fills its side
+// and the panel sits to its right, from the top; the panel reads as a ledger, each caption on the left and Hints' count on the right.
+// ============================================================================
+const Pga2 = ({ s }) => <PgaPage s={s} lay="is-side" card="pga-ledger" />;
+
+// ============================================================================
+// 3 Open tab grows: the six tabs stay on the folder's top edge, but only the open one carries its name; the rest shrink to icon and
+// count, at every width, so the folder needs no heading. On a desktop the notebook and the card sit side by side (the notebook on the
+// left, in reading order) with Every move across both, so the whole case shows without scrolling; the card in its narrower column
+// stacks the board over the panel, and the panel puts Hints and The culprit side by side, centred under the board.
+// ============================================================================
+const Pga3 = ({ s }) => <PgaPage s={s} lay="is-grow" card="pga-pair" wrap="pga-desk" />;
+
+const PGA_DIRS = { 1: Pga1, 2: Pga2, 3: Pga3 };
 const PgaBody = ({ s, sid }) => {
   const dir = usePgSetting('dir');
   if (!s.pga) return s.lines && s.lines.length ? <GsMoves s={s} /> : null;
@@ -184,7 +206,8 @@ const PgaBody = ({ s, sid }) => {
 const pgaOpen = (key) => ({ state: 'session-mystery', go: (gs) => gs.go('session', { id: 'pga-' + key }) });
 export const initPlaygroundAccuseSession = () => {
   pgRegister('accuse-session', { title: 'Accuse session', settings: [
-    { key: 'dir', kind: 'concept', label: 'Direction', options: [{ value: '1', label: '1 Tab per kind' }] },
+    { key: 'dir', kind: 'concept', label: 'Direction', options: [
+      { value: '1', label: '1 Tab per kind' }, { value: '2', label: '2 Side tabs' }, { value: '3', label: '3 Open tab grows' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'solved', label: 'Solved · no hints', ...pgaOpen('solved') },
       { value: 'failed', label: 'Failed · 2 hints', ...pgaOpen('failed') },

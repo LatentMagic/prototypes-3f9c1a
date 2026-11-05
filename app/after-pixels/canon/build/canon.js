@@ -10576,13 +10576,13 @@
     ];
   };
   const PgaIcon = ({ k }) => k === "clues" ? /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-slip" })) : /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk pga-ic", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: PGA_IC[k] })));
-  const PgaNotebook1 = ({ p }) => {
+  const PgaNotebook = ({ p, lay = "" }) => {
     const g = React$1.useMemo(() => pgaGroups(p), [p]);
     const [open, setOpen] = React$1.useState("scene");
     const [sel, setSel] = React$1.useState(null);
     const grp = g.find((x) => x.key === open);
     const it = sel && grp.items.find((x) => x.id === sel);
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet pga-nb", "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "pga-tabs", role: "tablist" }, g.map((x) => /* @__PURE__ */ React$1.createElement(
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet pga-nb" + (lay ? " " + lay : ""), "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "pga-tabs", role: "tablist" }, g.map((x) => /* @__PURE__ */ React$1.createElement(
       "button",
       {
         key: x.key,
@@ -10704,19 +10704,23 @@
   };
   const PgaHints = ({ n }) => /* @__PURE__ */ React$1.createElement("div", { className: "pga-big", role: "img", "aria-label": n + " of 2 hints" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, n), /* @__PURE__ */ React$1.createElement("small", { "aria-hidden": "true" }, "/2"));
   const PgaCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "pga-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "pga-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "pga-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "pga-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "pga-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "pga-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "pga-name" }, PGA_CASE.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "pga-sent" }, "with the " + pgaLow(PGA_CASE.truth[1]) + ", in the " + pgaLow(PGA_CASE.truth[2]) + "."));
-  const Pga1 = ({ s }) => {
+  const pgaResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
+  const PgaPage = ({ s, lay, card = "", wrap = "" }) => {
     const p = s.pga;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(PgaNotebook1, { p }), /* @__PURE__ */ React$1.createElement(
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" + (wrap ? " " + wrap : "") }, /* @__PURE__ */ React$1.createElement(PgaNotebook, { p, lay }), /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
-        r: p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" },
-        className: "pga-card",
+        r: pgaResult(p),
+        className: "pga-card" + (card ? " " + card : ""),
         board: /* @__PURE__ */ React$1.createElement(PgaBoard, { p }),
         rows: [["Hints", /* @__PURE__ */ React$1.createElement(PgaHints, { n: p.hints })], ["The culprit", /* @__PURE__ */ React$1.createElement(PgaCulprit, { p })]]
       }
     ), s.lines.length > 0 && /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
-  const PGA_DIRS = { 1: Pga1 };
+  const Pga1 = ({ s }) => /* @__PURE__ */ React$1.createElement(PgaPage, { s });
+  const Pga2 = ({ s }) => /* @__PURE__ */ React$1.createElement(PgaPage, { s, lay: "is-side", card: "pga-ledger" });
+  const Pga3 = ({ s }) => /* @__PURE__ */ React$1.createElement(PgaPage, { s, lay: "is-grow", card: "pga-pair", wrap: "pga-desk" });
+  const PGA_DIRS = { 1: Pga1, 2: Pga2, 3: Pga3 };
   const PgaBody = ({ s, sid }) => {
     const dir = usePgSetting("dir");
     if (!s.pga) return s.lines && s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
@@ -10726,7 +10730,11 @@
   const pgaOpen = (key) => ({ state: "session-mystery", go: (gs) => gs.go("session", { id: "pga-" + key }) });
   const initPlaygroundAccuseSession = () => {
     pgRegister("accuse-session", { title: "Accuse session", settings: [
-      { key: "dir", kind: "concept", label: "Direction", options: [{ value: "1", label: "1 Tab per kind" }] },
+      { key: "dir", kind: "concept", label: "Direction", options: [
+        { value: "1", label: "1 Tab per kind" },
+        { value: "2", label: "2 Side tabs" },
+        { value: "3", label: "3 Open tab grows" }
+      ] },
       { key: "play", label: "Play", options: [
         { value: "solved", label: "Solved · no hints", ...pgaOpen("solved") },
         { value: "failed", label: "Failed · 2 hints", ...pgaOpen("failed") },
