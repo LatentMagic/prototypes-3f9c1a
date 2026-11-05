@@ -59,7 +59,7 @@ GS_CHATS = {
     { cap: 'Afterwards, your AI explains the groups.', turns: [gscU('Rail, gate, post, panel.'),
       gscAi('daily-groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }, { label: 'Weather', words: ['FROST', 'MIST', 'HAIL', 'SLEET'] }, { label: 'Music', words: ['BASS', 'CHORD', 'SCALE', 'NOTE'] }, { label: 'Parts of a fence', words: ['RAIL', 'GATE', 'POST', 'PANEL'] }], words: [] }])] },
   ],
-  // Accuse as the deployed game plays it: the case once, then only what changes. There is no notebook in chat.
+  // Accuse as the logic case, with the approved chat change (not yet deployed): the case once, then only what changes; no notebook in chat.
   mystery: [
     { cap: 'The case once: suspects, weapons, places and every clue.', turns: [gscU('I want to play Accuse.'),
       gscAi('accuse', ['Accuse No. 64. A storm-bound weekend at Hollowmere House. Sir Edmund Hale, the host, is dead.',
