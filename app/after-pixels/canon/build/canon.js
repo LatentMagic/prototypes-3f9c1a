@@ -10705,15 +10705,18 @@
   };
   const PgaCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "pga-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "pga-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "pga-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "pga-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "pga-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "pga-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "pga-name" }, PGA_CASE.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "pga-sent" }, "with the " + pgaLow(PGA_CASE.truth[1]) + ", in the " + pgaLow(PGA_CASE.truth[2]) + "."));
   const pgaResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
+  const PgaHintsCard = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "pga-hc" + (p.live ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 }));
   const PgaPage = ({ s, lay, card = "", wrap = "" }) => {
     const p = s.pga;
+    const pn = usePgSetting("panel") || "side";
+    const two = pn !== "now";
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" + (wrap ? " " + wrap : "") }, /* @__PURE__ */ React$1.createElement(PgaNotebook, { p, lay }), /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
         r: pgaResult(p),
-        className: "pga-card" + (card ? " " + card : ""),
+        className: "pga-card" + (card ? " " + card : "") + (two ? " pga-2c is-" + pn : ""),
         board: /* @__PURE__ */ React$1.createElement(PgaBoard, { p }),
-        rows: [["Hints", /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 })], ["The culprit", /* @__PURE__ */ React$1.createElement(PgaCulprit, { p })]]
+        rows: [["Hints", two ? /* @__PURE__ */ React$1.createElement(PgaHintsCard, { p }) : /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 })], ["The culprit", /* @__PURE__ */ React$1.createElement(PgaCulprit, { p })]]
       }
     ), s.lines.length > 0 && /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
@@ -10734,6 +10737,11 @@
         { value: "1", label: "1 Tab per kind" },
         { value: "2", label: "2 Side tabs" },
         { value: "3", label: "3 Two rows" }
+      ] },
+      { key: "panel", kind: "concept", label: "Panel", options: [
+        { value: "side", label: "Two cards, side by side" },
+        { value: "stack", label: "Two cards, stacked" },
+        { value: "now", label: "As before" }
       ] },
       { key: "play", label: "Play", options: [
         { value: "solved", label: "Solved · no hints", ...pgaOpen("solved") },

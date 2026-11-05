@@ -169,11 +169,15 @@ const PgaCulprit = ({ p }) => (p.live
 // ============================================================================
 // The session card every direction shares; `card` is the direction's class on it, `lay` the notebook's, `wrap` the page's.
 const pgaResult = (p) => (p.live ? { tone: 'live', word: 'In progress' } : p.right ? { tone: 'ok', word: 'Solved' } : { tone: 'bad', word: 'Failed' });
-const PgaPage = ({ s, lay, card = '', wrap = '' }) => { const p = s.pga;
+// The panel setting: 'now' (Hints as a bare count), or Two cards (Hints in a card of its own, the culprit card's edge and height),
+// side by side ('side') or one above the other ('stack').
+const PgaHintsCard = ({ p }) => <div className={'pga-hc' + (p.live ? ' is-open' : '')}><Big n={p.hints} of={2} /></div>;
+const PgaPage = ({ s, lay, card = '', wrap = '' }) => { const p = s.pga; const pn = usePgSetting('panel') || 'side';
+  const two = pn !== 'now';
   return <div className={'dv4-lay' + (wrap ? ' ' + wrap : '')}>
     <PgaNotebook p={p} lay={lay} />
-    <GsSessCard r={pgaResult(p)} className={'pga-card' + (card ? ' ' + card : '')} board={<PgaBoard p={p} />}
-      rows={[['Hints', <Big n={p.hints} of={2} />], ['The culprit', <PgaCulprit p={p} />]]} />
+    <GsSessCard r={pgaResult(p)} className={'pga-card' + (card ? ' ' + card : '') + (two ? ' pga-2c is-' + pn : '')} board={<PgaBoard p={p} />}
+      rows={[['Hints', two ? <PgaHintsCard p={p} /> : <Big n={p.hints} of={2} />], ['The culprit', <PgaCulprit p={p} />]]} />
     {s.lines.length > 0 && <GsMoves s={s} />}
   </div>; };
 const Pga1 = ({ s }) => <PgaPage s={s} />;
@@ -210,6 +214,8 @@ export const initPlaygroundAccuseSession = () => {
   pgRegister('accuse-session', { title: 'Accuse session', settings: [
     { key: 'dir', kind: 'concept', label: 'Direction', options: [
       { value: '1', label: '1 Tab per kind' }, { value: '2', label: '2 Side tabs' }, { value: '3', label: '3 Two rows' }] },
+    { key: 'panel', kind: 'concept', label: 'Panel', options: [
+      { value: 'side', label: 'Two cards, side by side' }, { value: 'stack', label: 'Two cards, stacked' }, { value: 'now', label: 'As before' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'solved', label: 'Solved · no hints', ...pgaOpen('solved') },
       { value: 'failed', label: 'Failed · 2 hints', ...pgaOpen('failed') },

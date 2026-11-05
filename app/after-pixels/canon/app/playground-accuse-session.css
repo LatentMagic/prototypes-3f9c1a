@@ -41,19 +41,19 @@
 
 /* ---- Board: the case's cards as three ruled columns, pen marks drawn over them. ---- */
 .pga-card .gs-sc-board { justify-items: stretch; width: 100%; }
-.pga-bd { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; width: 100%; }
-@container dv2 (min-width: 672px) { .pga-bd { width: 460px; } }
-/* KEEP: the board (460px) and the panel (culprit card 240px plus its 64px rule) sit side by side only from an 880px card; below it,
-   down to 672px, they stack as on a phone, or the panel runs past the card's right edge (tablet widths, 2026-11-05). */
-@container dv2 (min-width: 672px) and (max-width: 879px) {
+.pga-bd { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; width: 100%; }
+@container dv2 (min-width: 672px) { .pga-bd { width: 580px; } }
+/* KEEP: the board (580px, Joe's pick of room over a narrower board) and the panel (culprit card 240px plus its 64px rule) sit side
+   by side only from a 948px card; below it, down to 672px, they stack as on a phone, or the panel runs past the card's right edge. */
+@container dv2 (min-width: 672px) and (max-width: 947px) {
   .pga-card .gs-sc-duo { grid-template-columns: none; }
   .pga-card .gs-sc-panel { align-self: auto; width: 100%; margin-top: 0; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .pga-bd { width: 100%; }
 }
 .pga-bd ul { list-style: none; margin: 8px 0 0; padding: 0; }
-.pga-bd li { padding: 8px 2px; border-bottom: 1px solid var(--line); font: 400 15px/1.3 var(--font-text); color: var(--text); }
+.pga-bd li { padding: 12px 2px; border-bottom: 1px solid var(--line); font: 400 16px/1.3 var(--font-text); color: var(--text); }
 .pga-bd li:first-child { border-top: 1px solid var(--line); }
-@container dv2 (max-width: 460px) { .pga-bd { gap: 0 10px; } .pga-bd li { font-size: 13px; padding: 7px 1px; } }
+@container dv2 (max-width: 460px) { .pga-bd { gap: 0 16px; } .pga-bd li { font-size: 14px; padding: 10px 1px; } }
 .pga-m { font-weight: 600; }
 .pga-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .pga-ov path { fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
@@ -142,4 +142,27 @@
 @container gs (min-width: 1024px) {
   .pga-desk { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; }
   .pga-desk > .gs-moves { grid-column: 1 / -1; }
+}
+
+/* ==== Panel setting: Two cards. Hints gets a card of its own with the culprit card's edge, corner and height; its count larger. ==== */
+.pga-hc { position: relative; display: grid; place-items: center; box-sizing: border-box; min-width: 104px; padding: 14px 16px;
+  border: 1px solid var(--control-edge); background: var(--card); }
+.pga-hc::after { content: ''; position: absolute; top: -1px; right: -1px; width: 14px; height: 14px;
+  background: linear-gradient(225deg, var(--page) 50%, var(--control-edge) 50% calc(50% + 1px), var(--popup) calc(50% + 1px)); }
+.pga-hc.is-open { border-color: var(--line); }
+.pga-hc .slv-big b { font-size: 48px; }
+/* Side by side: KEEP: both captions on one line and both cards one height, at every width; the Hints card as narrow as its count. */
+.pga-2c.is-side .gs-sc-panel { grid-template-columns: auto auto; justify-content: center; column-gap: 12px; }
+.pga-2c.is-side .gs-sc-row { grid-template-rows: auto 1fr; justify-items: stretch; }
+.pga-2c.is-side .gs-sc-row > .gs-sc-cap { justify-self: center; }
+.pga-2c.is-side .pga-hc, .pga-2c.is-side .pga-case { height: 100%; align-content: center; }
+@container dv2 (max-width: 400px) { .pga-2c.is-side .gs-sc-panel { grid-template-columns: auto minmax(0, 1fr); } .pga-2c.is-side .pga-case { width: 100%; } }
+/* Stacked: the Hints card as wide as the culprit card. */
+.pga-2c.is-stack .pga-hc { width: 240px; max-width: 100%; }
+/* KEEP: side by side, the panel is wider (64px rule + 104px + 12px + 240px), so board and panel sit side by side only from a 1070px
+   card; below it they stack. */
+@container dv2 (min-width: 948px) and (max-width: 1069px) {
+  .pga-2c.is-side .gs-sc-duo { grid-template-columns: none; }
+  .pga-2c.is-side .gs-sc-panel { align-self: auto; width: 100%; margin-top: 0; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  .pga-2c.is-side .pga-bd { width: 100%; }
 }
