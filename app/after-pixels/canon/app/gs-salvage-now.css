@@ -1,0 +1,33 @@
+/* Salvage's now card on its library game page (app/gs-salvage-now.jsx): the five hulls in a row, the dives and the three tools on
+   one line under them. Hulls and tools are the session page's (gs-salvage.css .slv-bx, .slv-tool). */
+.svn { container: svn / inline-size; position: relative; --slv-sonar: #2563eb; --slv-detector: #7c3aed; --slv-net: #db2777; --slv-ink: #fff; }
+.svn .t-sonar { --tc: var(--slv-sonar); } .svn .t-detector { --tc: var(--slv-detector); } .svn .t-net { --tc: var(--slv-net); }
+.svn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
+.svn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
+
+/* KEEP: the hull square (--c) follows the card's width, 24px at most, so the five hulls (about 15.5 squares with their gaps) fit a phone in
+   one row and the second row's tools and number scale with it instead of shrinking to nothing. */
+.svn-pic { --c: clamp(12px, calc((100cqi - 16px) / 15.5), 24px); --g: calc(var(--c) * .6); align-self: center; justify-self: stretch; display: grid; justify-items: center; gap: calc(var(--c) * .9); min-width: 0; }
+.svn-fleet { display: flex; align-items: center; justify-content: center; gap: var(--g); }
+.svn-hull { display: block; flex: none; width: calc(var(--c) * (var(--n) - 2 / 9)); height: calc(var(--c) * 11 / 9); overflow: visible; }
+.svn-hull.is-raised rect { fill: color-mix(in srgb, var(--off-white) 15%, transparent); stroke: var(--off-white); stroke-width: .6; }
+.svn-hull .svn-dash { fill: none; stroke: var(--muted); stroke-width: .5; }
+.svn-hull circle { fill: var(--off-white); }
+/* A lost play's unfound hulls take the Failed colour (the result statement's, gs-delve.css .dv7r-word.is-bad). */
+.svn-hull.is-lost .svn-dash { stroke: var(--warning); }
+.svn-hull.is-lost circle { fill: var(--warning); }
+
+.svn-line { display: flex; align-items: center; justify-content: center; gap: calc(var(--c) * 1.4); }
+.svn-dives { display: flex; align-items: baseline; gap: 2px; font: var(--type-small); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.svn-dives b { font: 700 calc(var(--c) * 1.8)/1 var(--font-heading); color: var(--text); margin-right: 2px; }
+.svn-tools { list-style: none; margin: 0; padding: 0; display: flex; gap: calc(var(--c) * .5); }
+.svn-tools .slv-tool { display: block; }
+.svn-tools .slv-bx { width: calc(var(--c) * 1.5); height: calc(var(--c) * 1.5); }
+.svn-tools .slv-bx svg { width: 62%; height: 62%; }
+
+/* On a page from 640px: the picture sits at the centre of the whole card, head and action row included, as Guess's, Where's and
+   Daily Word's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
+@container gs (min-width: 640px) {
+  .svn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
+  .svn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+}

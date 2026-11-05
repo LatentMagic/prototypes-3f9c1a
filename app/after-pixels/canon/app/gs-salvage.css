@@ -1,0 +1,66 @@
+/* Salvage's session card (app/gs-salvage.jsx). The card is the shared one (gs-sess-card.css, from a 672px card the Sea left and
+   the panel ruled off beside it), and this file is imported after it. */
+
+/* KEEP: each tool keeps one colour wherever it shows (its corner on the sea, its icon in the kit); the design system has no tool
+   colours yet, so they are named here. The ink is the icon on a tool's solid ground. */
+.slv-card { --slv-sonar: #2563eb; --slv-detector: #7c3aed; --slv-net: #db2777; --slv-ink: #fff; }
+.slv-card .t-sonar { --tc: var(--slv-sonar); } .slv-card .t-detector { --tc: var(--slv-detector); } .slv-card .t-net { --tc: var(--slv-net); }
+
+/* ---- The sea. KEEP: the square is one size, --c: 36px at the most on a phone and 44px from a 672px card, shrinking with the card
+   to 26px (24px just past the breakpoint) so the sea never scrolls sideways. ---- */
+.slv-sea { --c: clamp(26px, calc((100cqi - 16px - 24px) / 8), 36px); position: relative; display: grid;
+  grid-template-columns: 16px repeat(8, var(--c)) 24px; grid-template-rows: 20px 14px repeat(8, var(--c)); }
+.slv-ml { display: grid; place-items: center; font: 600 var(--size-2xs)/1 var(--font-text); color: var(--muted); }
+.slv-sq { background: color-mix(in srgb, var(--text) 5%, var(--card)); box-shadow: inset 0 0 0 1px var(--line); }
+/* A clue number is a round chip; the sonar's swept line's chip is filled in the sonar's colour. */
+.slv-chip { place-self: center; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; text-align: center;
+  background: var(--tag-neutral-bg); color: var(--muted); font: 600 var(--size-2xs)/18px var(--font-text); font-variant-numeric: tabular-nums; }
+.slv-chip.is-swept { background: var(--slv-sonar); color: var(--slv-ink); }
+/* Coverage: a tool's corner of each square it reached, a 40% triangle (sonar top left, metal detector top right, dragnet bottom left). */
+.slv-cv { pointer-events: none; background: var(--tc); }
+.slv-cv.t-sonar { clip-path: polygon(0 0, 40% 0, 0 40%); }
+.slv-cv.t-detector { clip-path: polygon(100% 0, 60% 0, 100% 40%); }
+.slv-cv.t-net { clip-path: polygon(0 100%, 0 60%, 40% 100%); }
+.slv-mk { display: grid; place-items: center; pointer-events: none; }
+.slv-dot { display: block; border-radius: 50%; }
+.slv-dot.is-miss { width: 7px; height: 7px; background: var(--muted); opacity: .7; }
+.slv-dot.is-hit { width: calc(var(--c) * .42); height: calc(var(--c) * .42); background: var(--off-white); }
+/* A raised wreck is a faint pill outlined in off-white across its squares, its hit dots showing inside; a wreck not found (a lost play)
+   is the same pill, dashed (SVG, in gs-salvage.jsx). */
+/* KEEP: a raised or unfound wreck sits above the tool-coverage corners; the corners use clip-path, which paints them above unpositioned siblings, so the hull needs its own layer. */
+.slv-hull { pointer-events: none; margin: calc(var(--c) / 9); position: relative; z-index: 1; }
+.slv-hull.is-raised { border-radius: 999px; background: color-mix(in srgb, var(--off-white) 15%, transparent); box-shadow: inset 0 0 0 1.5px var(--off-white); }
+/* KEEP: hit dots sit above the hull, so a raised wreck shows its dots, not a tint over them. */
+.slv-mk.is-hit { position: relative; z-index: 2; }
+.slv-hull.is-unfound { color: var(--muted); }
+.slv-hull.is-unfound svg { display: block; }
+
+/* ---- Haul: the number as large as Daily Word's guesses figure in its ring (36px, 44px from a 672px card: gs-word.css .wd-ring-n b). ---- */
+.slv-haul { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 28px; }
+.slv-big { display: flex; align-items: baseline; gap: 2px; font-variant-numeric: tabular-nums; }
+.slv-big b { font: 700 36px/1 var(--font-heading); color: var(--text); }
+.slv-big small { font: var(--type-small); color: var(--muted); margin-left: 2px; }
+
+/* ---- Kit: the icons on one row, the names under them; a name that wraps never moves an icon. ---- */
+.slv-kit { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 76px); justify-content: center; gap: 8px 12px; }
+.slv-tool { display: grid; grid-template-rows: 40px auto; justify-items: center; gap: 8px; }
+.slv-bx { position: relative; width: 40px; height: 40px; display: grid; place-items: center; background: var(--tc); color: var(--slv-ink); }
+.slv-nm { font: var(--type-small); color: var(--text); text-align: center; text-wrap: balance; }
+/* Used: the square fades to a tint with a coloured icon, and a line runs corner to corner, bottom left to top right (a gradient from
+   top left to bottom right draws its 50% band along that diagonal). The name stays readable; no word says Used. */
+.slv-tool.is-used .slv-bx { opacity: .6; background: color-mix(in srgb, var(--tc) 16%, transparent); color: var(--tc); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tc) 50%, transparent); }
+.slv-tool.is-used .slv-bx::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom right, transparent calc(50% - 1.25px), var(--off-white) calc(50% - 1.25px), var(--off-white) calc(50% + 1.25px), transparent calc(50% + 1.25px)); }
+.slv-tool.is-used .slv-nm { color: var(--muted); }
+.slv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---- Arrangement. Phone: Result, Sea, Haul, Kit, stacked, each centred. KEEP: the panel's two rows stack on a phone (the shared
+   card puts them side by side, and the kit needs the full width). From 672px: the shared card's rule (gs-sess-card.css). ---- */
+.slv-card .gs-sc-panel { grid-template-columns: minmax(0, 1fr); }
+@container dv2 (min-width: 672px) {
+  .slv-sea { --c: clamp(24px, calc((100cqi - 16px - 24px - 129px - 252px) / 8), 44px); }
+  .slv-big b { font-size: 44px; }
+  /* KEEP: the divider runs the card's full height, as on Daily Word (the shared rule rises past the Result row), while Haul and Kit
+     centre on the Sea: the panel's top padding takes back that rise (29px Result row + 24px gap). */
+  .slv-card .gs-sc-panel { padding-top: calc(29px + 24px); }
+}
