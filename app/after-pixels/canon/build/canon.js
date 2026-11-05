@@ -4134,7 +4134,7 @@
     const [sel, setSel] = React$1.useState(null);
     const grp = g.find((x) => x.key === open);
     const it = sel && grp && grp.items.find((x) => x.id === sel);
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet acc-nb", "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "acc-tabs", role: "tablist", "data-row": g.findIndex((x) => x.key === open) < 3 ? 0 : 1, "data-open": grp ? "y" : "n" }, g.map((x) => /* @__PURE__ */ React$1.createElement(
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet acc-nb", "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "acc-tabs", role: "tablist", "data-open": grp ? "y" : "n" }, g.map((x) => /* @__PURE__ */ React$1.createElement(
       "button",
       {
         key: x.key,

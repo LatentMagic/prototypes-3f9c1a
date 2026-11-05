@@ -88,7 +88,7 @@ const AccNotebook = ({ p }) => {
   const grp = g.find((x) => x.key === open); const it = sel && grp && grp.items.find((x) => x.id === sel);
   return <section className="dv4 esx-sheet acc-nb" aria-label="Notebook">
     <span className="gs-sc-cap">Notebook</span>
-    <div className="acc-tabs" role="tablist" data-row={g.findIndex((x) => x.key === open) < 3 ? 0 : 1} data-open={grp ? 'y' : 'n'}>{g.map((x) => (
+    <div className="acc-tabs" role="tablist" data-open={grp ? 'y' : 'n'}>{g.map((x) => (
       <button key={x.key} type="button" role="tab" aria-selected={open === x.key} aria-expanded={open === x.key} disabled={!x.items.length}
         aria-label={x.head + (x.count === null ? '' : ' ' + x.items.length)} className={'acc-tab' + (open === x.key ? ' is-open' : '')}
         onClick={() => { setOpen(open === x.key ? null : x.key); setSel(null); }}>
