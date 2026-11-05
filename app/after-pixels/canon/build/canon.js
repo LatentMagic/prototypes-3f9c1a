@@ -10710,30 +10710,20 @@
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
+  const PGC_DELVE = {
+    h: "A new villain every week, and every one is afraid of something.",
+    blurb: "h",
+    ps: ["Creep past bone chimes in a goblin warren while the goblins snore. Wake years too early on a drifting colony ship, with something in the vents. Slip into a 1925 bank vault and find your inside man waiting, not smiling. Each week brings a new world, a new villain, three heroes dressed for it, and a run that fits in half an hour.", "Every villain hides a weakness. The witch who was never invited fears the one invitation never sent; the dead captain locked his beating heart in a chest in the hold. Find the clue and the last fight turns. Each miss brings the alarm, the ritual or the briars closer, so you’ll weigh every swing: the big one, or the sure blow you saved for the end."],
+    caps: ["Three heroes, dressed for this week’s world: one takes the hits, one slips them, one hits hardest and falls fastest.", "Call your heavy blow by name. A 20 lands it twice as hard; a 1 brings the end two steps closer.", "Win or lose, the run ends in a scene of its own, and a row of your rolls to post: 20s sparkle, 1s are skulls."],
+    tags: ["Tabletop RPG", "Boss fights"],
+    ai: "Tells the story as your dungeon master, voices everyone you meet, and never makes a choice for you.",
+    server: "Rolls every die and keeps every secret, from the rooms ahead to what the villain fears."
+  };
   const PGC_COPY = {
-    // Delve: the golden sample (advisor-delve-golden-sample.md, then the Opus and Gemini reviews beside it, in business-ops).
-    // Same pitch, captions, roles and tags under both rules; only the heading and card line differ. "One sure blow" and the
-    // ending told as a scene depend on open PR #1410.
-    delve: {
-      job: {
-        h: "Pick a hero and fight your way to this week’s final foe, on dice your AI can’t touch.",
-        blurb: "h",
-        ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go room by room, never sure what waits behind the next door. Your AI runs it like a tabletop game master: it sets each scene and plays everyone you meet, and what your hero does is always yours to say.", "The game, not your AI, rolls every die and keeps the map’s secrets, so a bad roll stays bad and every miss lets the danger close in. Read the clues, find what the final foe fears, and choose when to spend your one sure blow. Win, and you earned it."],
-        caps: ["Your hero’s first room: what you see, the ways on, and your call where to go.", "The game rolls in plain sight. Your AI tells you what happened, but can’t change the roll.", "Win or fall, your ending is told as its own scene, and every roll is saved to your session page."],
-        tags: ["Solo RPG", "One run a week"],
-        ai: "Tells the story in each world’s own voice and plays everyone you meet. It asks what you do, and acts only on what you say.",
-        server: "Hides each room until you walk in and each foe’s weakness until you find its clue. Rolls every die, and records every roll."
-      },
-      situation: {
-        h: "Your AI tells the story. It can’t touch the dice.",
-        blurb: "A new half-hour adventure each week. Pick a hero and fight to the final foe.",
-        ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go room by room, never sure what waits behind the next door. Your AI runs it like a tabletop game master: it sets each scene and plays everyone you meet, and what your hero does is always yours to say.", "The game, not your AI, rolls every die and keeps the map’s secrets, so a bad roll stays bad and every miss lets the danger close in. Read the clues, find what the final foe fears, and choose when to spend your one sure blow. Win, and you earned it."],
-        caps: ["Your hero’s first room: what you see, the ways on, and your call where to go.", "The game rolls in plain sight. Your AI tells you what happened, but can’t change the roll.", "Win or fall, your ending is told as its own scene, and every roll is saved to your session page."],
-        tags: ["Solo RPG", "One run a week"],
-        ai: "Tells the story in each world’s own voice and plays everyone you meet. It asks what you do, and acts only on what you say.",
-        server: "Hides each room until you walk in and each foe’s weakness until you find its clue. Rolls every die, and records every roll."
-      }
-    },
+    // Delve: the golden sample, from two copywriter drafts (Opus, GPT) finished by an Opus editor: judge-delve-final.md in
+    // business-ops. One version under both rules for now. PR #1410-only lines: "the sure blow you saved", captions 1–3's
+    // heroes, heavy blow and ending scene, and "dungeon master".
+    delve: { job: PGC_DELVE, situation: PGC_DELVE },
     mystery: {
       job: {
         h: "Work out who did it. You get one accusation.",
