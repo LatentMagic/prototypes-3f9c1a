@@ -16,10 +16,10 @@ import { pgRegister, usePgSetting } from './playground.jsx';
 // ---- The copy, as the proposal file lists it. A line left out (null, or no entry) stays canon's. `blurb: 'h'` means the
 // card line is the pitch heading. A `ps` shorter than canon's drops the paragraphs past its length. ----
 const PGC_DELVE = {
-  h: 'A new villain every week, and every one is afraid of something.', blurb: 'h',
-  ps: ["A goblin warren one week, a ship adrift in deep space the next, then a neon tower or a maze out of Greek myth. Each world brings its own villain and three heroes dressed for it. Pick the one who fights your way; a run takes about half an hour.", "Every villain hides a weakness, and its clue waits somewhere in the rooms ahead. Find it and the last fight turns your way. But every miss brings the danger closer, so each room asks the same thing: search a little longer, or push on while you still can."],
-  caps: ["Three heroes, dressed for this week’s world: one takes the hits, one slips them, one hits hardest and falls fastest.", "Name your big swing and let the die decide. A 20 gets told like legend; a 1 wakes whatever is listening.", "Win or lose, the run ends in a scene of its own, and a row of your rolls to post: 20s sparkle, 1s are skulls."],
-  tags: ['Tabletop RPG', 'Boss fights'], ai: "Tells the story as your dungeon master, voices everyone you meet, and never makes a choice for you.", server: "Rolls every die and keeps every secret, from the rooms ahead to what the villain fears." };
+  h: 'A new villain every week. Find its weak spot before it finds you.', blurb: 'h',
+  ps: ["A goblin warren one week, a ship adrift in deep space the next, then a neon tower or a maze out of Greek myth. Each world brings its own villain and three heroes dressed for it. Pick the one who fights your way; a run takes about half an hour.", "Every villain hides a weakness, and its clue waits somewhere in the rooms ahead. Find it and the last fight turns your way. But every search and every miss brings the danger closer, so each room asks the same thing: search a little longer, or push on while you still can."],
+  caps: ["Three heroes for this week’s world: one wades in, one slips past, one burns bright and breaks easily.", "Say what you try and the die decides. A 20 lands like a legend; a 1 costs you dearly.", "Win or lose, the run ends in a scene of its own, and a row of your rolls to post: 20s sparkle, 1s are skulls."],
+  tags: ['Tabletop RPG', 'Boss fights'], ai: "Tells the story as your dungeon master, voices everyone you meet, and never makes a choice for you.", server: "Rolls every die and keeps every secret, from the rooms ahead to each villain’s weak spot." };
 const PGC_COPY = {
   // Delve: the golden sample, from two copywriter drafts (Opus, GPT) finished by an Opus editor: judge-delve-final.md, then
   // copywriter-delve-rewrite.md (voice-draft.md), in business-ops. One version under both rules for now. PR #1410-only:

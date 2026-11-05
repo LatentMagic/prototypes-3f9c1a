@@ -10711,13 +10711,13 @@
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
   const PGC_DELVE = {
-    h: "A new villain every week, and every one is afraid of something.",
+    h: "A new villain every week. Find its weak spot before it finds you.",
     blurb: "h",
-    ps: ["A goblin warren one week, a ship adrift in deep space the next, then a neon tower or a maze out of Greek myth. Each world brings its own villain and three heroes dressed for it. Pick the one who fights your way; a run takes about half an hour.", "Every villain hides a weakness, and its clue waits somewhere in the rooms ahead. Find it and the last fight turns your way. But every miss brings the danger closer, so each room asks the same thing: search a little longer, or push on while you still can."],
-    caps: ["Three heroes, dressed for this week’s world: one takes the hits, one slips them, one hits hardest and falls fastest.", "Name your big swing and let the die decide. A 20 gets told like legend; a 1 wakes whatever is listening.", "Win or lose, the run ends in a scene of its own, and a row of your rolls to post: 20s sparkle, 1s are skulls."],
+    ps: ["A goblin warren one week, a ship adrift in deep space the next, then a neon tower or a maze out of Greek myth. Each world brings its own villain and three heroes dressed for it. Pick the one who fights your way; a run takes about half an hour.", "Every villain hides a weakness, and its clue waits somewhere in the rooms ahead. Find it and the last fight turns your way. But every search and every miss brings the danger closer, so each room asks the same thing: search a little longer, or push on while you still can."],
+    caps: ["Three heroes for this week’s world: one wades in, one slips past, one burns bright and breaks easily.", "Say what you try and the die decides. A 20 lands like a legend; a 1 costs you dearly.", "Win or lose, the run ends in a scene of its own, and a row of your rolls to post: 20s sparkle, 1s are skulls."],
     tags: ["Tabletop RPG", "Boss fights"],
     ai: "Tells the story as your dungeon master, voices everyone you meet, and never makes a choice for you.",
-    server: "Rolls every die and keeps every secret, from the rooms ahead to what the villain fears."
+    server: "Rolls every die and keeps every secret, from the rooms ahead to each villain’s weak spot."
   };
   const PGC_COPY = {
     // Delve: the golden sample, from two copywriter drafts (Opus, GPT) finished by an Opus editor: judge-delve-final.md, then
