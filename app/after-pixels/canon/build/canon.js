@@ -4082,12 +4082,13 @@
   const accSentence = ([s, w, p]) => s + ", with the " + accLow(w) + ", in the " + accLow(p);
   const accTrace = () => "with the " + accLow(ACC_TRUTH[1]) + ", in the " + accLow(ACC_TRUTH[2]) + ".";
   const accWrong = (part) => ACC_TRUTH.map((t, k) => k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t);
+  const accResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
   const accSession = ({ no, date, hints, pick }) => {
     const live = !pick;
     const right = !live && pick.every((x, i) => x === ACC_TRUTH[i]);
     const hintLines = ACC_CASE.hints.slice(0, hints).map((h, i) => ["Hint " + (i + 1), h]);
     const lines = live ? hintLines : [...hintLines, ["Accusation", accSentence(pick), right ? "Right" : "Wrong"]];
-    const result = live ? "In progress" : right ? "Solved" : "Failed";
+    const result = accResult({ live, right }).word;
     const shareLines = live ? null : [
       "Accuse No. " + no + " · " + result.toLowerCase() + (hints ? " · " + hints + (hints === 1 ? " hint " : " hints ") + "💡".repeat(hints) : ""),
       ...right ? [] : [["suspect", "weapon", "place"].map((k, i) => k + " " + (pick[i] === ACC_TRUTH[i] ? "✓" : "✗")).join(" · ")]
@@ -4257,7 +4258,6 @@
   };
   const AccCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "acc-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "acc-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-name" }, ACC_CASE.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "acc-sent" }, accTrace()));
   const AccHintsCard = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "acc-hc" + (p.live ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 }));
-  const accResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
   const AccPage = ({ s }) => {
     const p = s.acc;
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(AccNotebook, { p }), /* @__PURE__ */ React$1.createElement(
@@ -4286,7 +4286,7 @@
     {
       className: "acn-pic",
       role: "img",
-      "aria-label": "Case " + no + ", " + (p.live ? "in progress" : p.right ? "solved" : "failed") + ", " + p.hints + " of 2 hints." + (p.live ? "" : " The culprit: " + ACC_TRUTH[0] + ", " + accTrace())
+      "aria-label": "Case " + no + ", " + accResult(p).word.toLowerCase() + ", " + p.hints + " of 2 hints." + (p.live ? "" : " The culprit: " + ACC_TRUTH[0] + ", " + accTrace())
     },
     /* @__PURE__ */ React$1.createElement("div", { className: "acn-pair", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Hints"), /* @__PURE__ */ React$1.createElement(AccHintsCard, { p })), /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "The culprit"), /* @__PURE__ */ React$1.createElement(AccCulprit, { p })))
   );
@@ -4299,7 +4299,8 @@
     const sid = done ? c.today : c.liveSid;
     const s = GS_SESSIONS[sid];
     const p = s.acc;
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "mystery", title, result: { kind: p.live ? "live" : p.right ? "ok" : "bad", label: s.result }, open: () => gs.go("session", { id: sid }), next: c.next, className: "acn" }, /* @__PURE__ */ React$1.createElement(AcnPic, { no, p }));
+    const r = accResult(p);
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "mystery", title, result: { kind: r.tone, label: r.word }, open: () => gs.go("session", { id: sid }), next: c.next, className: "acn" }, /* @__PURE__ */ React$1.createElement(AcnPic, { no, p }));
   };
   const CPR_SHIP_LIB = {};
   const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];

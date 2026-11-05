@@ -39,12 +39,14 @@ const accSentence = ([s, w, p]) => s + ', with the ' + accLow(w) + ', in the ' +
 export const accTrace = () => 'with the ' + accLow(ACC_TRUTH[1]) + ', in the ' + accLow(ACC_TRUTH[2]) + '.';
 // A wrong accusation gets one part wrong: part 0 the suspect, 1 the weapon, 2 the place.
 export const accWrong = (part) => ACC_TRUTH.map((t, k) => (k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t));
+// The one place the three-way result (in progress, solved, failed) is decided: the tone and the word.
+export const accResult = (p) => (p.live ? { tone: 'live', word: 'In progress' } : p.right ? { tone: 'ok', word: 'Solved' } : { tone: 'bad', word: 'Failed' });
 // A play of the case: the hints taken (0 to 2) and the accusation (suspect, weapon, place), or none while the case is open.
 export const accSession = ({ no, date, hints, pick }) => {
   const live = !pick; const right = !live && pick.every((x, i) => x === ACC_TRUTH[i]);
   const hintLines = ACC_CASE.hints.slice(0, hints).map((h, i) => ['Hint ' + (i + 1), h]);
   const lines = live ? hintLines : [...hintLines, ['Accusation', accSentence(pick), right ? 'Right' : 'Wrong']];
-  const result = live ? 'In progress' : right ? 'Solved' : 'Failed';
+  const result = accResult({ live, right }).word;
   // Share text as the game spec gives it: the verdict and the hints taken; a failed case adds a line marking each part, never naming a card.
   const shareLines = live ? null : [
     'Accuse No. ' + no + ' · ' + result.toLowerCase() + (hints ? ' · ' + hints + (hints === 1 ? ' hint ' : ' hints ') + '💡'.repeat(hints) : ''),
@@ -168,7 +170,6 @@ export const AccCulprit = ({ p }) => (p.live
 // Hints taken, as Salvage's count (Big) in a card of its own, with the case card's edge and corner. Open while the case is.
 export const AccHintsCard = ({ p }) => <div className={'acc-hc' + (p.live ? ' is-open' : '')}><Big n={p.hints} of={2} /></div>;
 
-const accResult = (p) => (p.live ? { tone: 'live', word: 'In progress' } : p.right ? { tone: 'ok', word: 'Solved' } : { tone: 'bad', word: 'Failed' });
 const AccPage = ({ s }) => { const p = s.acc;
   return <div className="dv4-lay">
     <AccNotebook p={p} />

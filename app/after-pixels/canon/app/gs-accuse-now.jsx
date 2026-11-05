@@ -8,11 +8,11 @@ import React from 'react';
 import { useGs, GS_SESSIONS } from './gs-data.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { edList } from './gs-history.jsx';
-import { AccHintsCard, AccCulprit, ACC_TRUTH, accTrace } from './gs-accuse.jsx';
+import { AccHintsCard, AccCulprit, ACC_TRUTH, accTrace, accResult } from './gs-accuse.jsx';
 
 const AcnPic = ({ no, p }) => (
   <div className="acn-pic" role="img"
-    aria-label={'Case ' + no + ', ' + (p.live ? 'in progress' : p.right ? 'solved' : 'failed') + ', ' + p.hints + ' of 2 hints.' + (p.live ? '' : ' The culprit: ' + ACC_TRUTH[0] + ', ' + accTrace())}>
+    aria-label={'Case ' + no + ', ' + accResult(p).word.toLowerCase() + ', ' + p.hints + ' of 2 hints.' + (p.live ? '' : ' The culprit: ' + ACC_TRUTH[0] + ', ' + accTrace())}>
     <div className="acn-pair" aria-hidden="true">
       <div className="acn-col"><span className="gs-sc-cap">Hints</span><AccHintsCard p={p} /></div>
       <div className="acn-col"><span className="gs-sc-cap">The culprit</span><AccCulprit p={p} /></div>
@@ -30,9 +30,9 @@ export const AcNow = ({ c, done, none }) => {
       <AcnPic no={no} p={ACN_FRESH} />
     </LbNowCard>);
   const sid = done ? c.today : c.liveSid;
-  const s = GS_SESSIONS[sid]; const p = s.acc;
+  const s = GS_SESSIONS[sid]; const p = s.acc; const r = accResult(p);
   return (
-    <LbNowCard gid="mystery" title={title} result={{ kind: p.live ? 'live' : p.right ? 'ok' : 'bad', label: s.result }} open={() => gs.go('session', { id: sid })} next={c.next} className="acn">
+    <LbNowCard gid="mystery" title={title} result={{ kind: r.tone, label: r.word }} open={() => gs.go('session', { id: sid })} next={c.next} className="acn">
       <AcnPic no={no} p={p} />
     </LbNowCard>);
 };
