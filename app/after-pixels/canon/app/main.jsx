@@ -93,7 +93,6 @@ import { initGsSalvage } from './gs-salvage.jsx';
 import { initGsAccuse } from './gs-accuse.jsx';
 import { FitView, isFramed, useFit } from './fit.jsx';
 import { initGsWhere } from './gs-where.jsx';
-import { initPlaygroundAccuseSession } from './playground-accuse-session.jsx';
 import { initGsChain } from './gs-chain.jsx';
 import { initGsCommon } from './gs-common.jsx';
 
@@ -501,4 +500,3 @@ initMain();
 initGsWhere();
 initGsCommon();
 initGsSalvage();
-initPlaygroundAccuseSession();
