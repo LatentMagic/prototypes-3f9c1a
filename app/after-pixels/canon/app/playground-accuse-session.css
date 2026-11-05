@@ -25,9 +25,9 @@
 .pga-ic svg { width: 14px; height: 14px; color: var(--text); }
 .pga-tab:disabled .pga-ic svg, .pga-tab:disabled .esx-num { color: var(--muted); }
 .pga-tab .esx-num { font: 700 20px/22px var(--font-heading); height: 22px; }
-/* KEEP: with every tab shut, an off-white rule closes the row of tabs off along their feet, so the tabs don't read as open-bottomed boxes. */
+/* KEEP: with every tab shut, a rule in the tabs' own edge colour closes the row off along their feet, so the tabs don't read as open-bottomed boxes. */
 .pga-tabs { position: relative; }
-.pga-tabs[data-open="n"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--off-white); z-index: 2; }
+.pga-tabs[data-open="n"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--control-edge); z-index: 2; }
 .pga-folder { background: var(--page); border: 1px solid var(--control-edge); padding: 0 12px 12px; }
 .pga-folder .esx-read { background: var(--card); }
 .pga-fh { display: none; }
