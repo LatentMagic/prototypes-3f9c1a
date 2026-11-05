@@ -4079,15 +4079,15 @@
   };
   const ACC_TRUTH = ACC_CASE.truth;
   const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
-  const accSentence = ([s, w, p]) => s + ", with the " + accLow(w) + ", in the " + accLow(p);
   const accWithWhere = () => "with the " + accLow(ACC_TRUTH[1]) + ", in the " + accLow(ACC_TRUTH[2]) + ".";
   const accWrong = (part) => ACC_TRUTH.map((t, k) => k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t);
   const accResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
   const accSession = ({ no, date, hints, pick }) => {
     const live = !pick;
     const right = !live && pick.every((x, i) => x === ACC_TRUTH[i]);
-    const hintLines = ACC_CASE.hints.slice(0, hints).map((h, i) => ["Hint " + (i + 1), h]);
-    const lines = live ? hintLines : [...hintLines, ["Accusation", accSentence(pick), right ? "Right" : "Wrong"]];
+    const hintLines = ACC_CASE.hints.slice(0, hints).map((h) => ["Hint", h]);
+    const accPart = (x, k) => (k ? "the " + accLow(x) : x) + ": " + (x === ACC_TRUTH[k] ? "Right" : "Wrong");
+    const lines = live ? hintLines : [...hintLines, ["Accusation", ...pick.map(accPart)]];
     const result = accResult({ live, right }).word;
     const shareLines = live ? null : [
       "Accuse No. " + no + " · " + result.toLowerCase() + (hints ? " · " + hints + (hints === 1 ? " hint " : " hints ") + "💡".repeat(hints) : ""),

@@ -34,7 +34,6 @@ const ACC_CASE = {
 };
 export const ACC_TRUTH = ACC_CASE.truth;
 const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
-const accSentence = ([s, w, p]) => s + ', with the ' + accLow(w) + ', in the ' + accLow(p);
 // The culprit's weapon and place, "with the X, in the Y.", the case card's last line.
 export const accWithWhere = () => 'with the ' + accLow(ACC_TRUTH[1]) + ', in the ' + accLow(ACC_TRUTH[2]) + '.';
 // A wrong accusation gets one part wrong: part 0 the suspect, 1 the weapon, 2 the place.
@@ -44,8 +43,10 @@ export const accResult = (p) => (p.live ? { tone: 'live', word: 'In progress' } 
 // A play of the case: the hints taken (0 to 2) and the accusation (suspect, weapon, place), or none while the case is open.
 export const accSession = ({ no, date, hints, pick }) => {
   const live = !pick; const right = !live && pick.every((x, i) => x === ACC_TRUTH[i]);
-  const hintLines = ACC_CASE.hints.slice(0, hints).map((h, i) => ['Hint ' + (i + 1), h]);
-  const lines = live ? hintLines : [...hintLines, ['Accusation', accSentence(pick), right ? 'Right' : 'Wrong']];
+  // As the deployed record writes them: each hint labelled "Hint", and the accusation as one marked part per card, "Rick Dawson: Wrong".
+  const hintLines = ACC_CASE.hints.slice(0, hints).map((h) => ['Hint', h]);
+  const accPart = (x, k) => (k ? 'the ' + accLow(x) : x) + ': ' + (x === ACC_TRUTH[k] ? 'Right' : 'Wrong');
+  const lines = live ? hintLines : [...hintLines, ['Accusation', ...pick.map(accPart)]];
   const result = accResult({ live, right }).word;
   // Share text as the game spec gives it: the verdict and the hints taken; a failed case adds a line marking each part, never naming a card.
   const shareLines = live ? null : [
