@@ -11,7 +11,7 @@ import { GS_ART_LOCAL, I } from './gs-parts.jsx';
 import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
 import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
-import { SLV_DIVES } from './gs-salvage.jsx';
+import { SLV_DIVES, SLV_PLAYS, SLV_WRECKS, slvPlayAt, slvShareLinesOf, slvWreckOf } from './gs-salvage.jsx';
 
 export const DP_IDS = ['where', 'chain', 'salvage', 'common'];
 const DP_NO = 21; // today's edition of Where, Chain and Salvage: the three games are three weeks old in the seed
@@ -78,30 +78,21 @@ export let CH_HARD;
 let SV_COLS;
 const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
 const svAt = (ships) => { const at = {}; ships.forEach((s, i) => s.forEach(([x, y]) => { at[x + ',' + y] = i; })); return at; };
-// A play replayed from its dives: [[cell, 'miss' | 'hit' | 'sunk', length]].
-const svReplay = (ships, order) => {
-  const at = svAt(ships); const hits = ships.map(() => 0);
-  return order.map((c) => { const i = at[c[0] + ',' + c[1]]; if (i == null) return [c, 'miss']; hits[i] += 1; return hits[i] === ships[i].length ? [c, 'sunk', ships[i].length] : [c, 'hit']; });
-};
-const svLines = (log, hint) => {
-  const lines = log.map(([c, r, n], k) => ['Dive ' + (k + 1), svCell(c), r === 'miss' ? 'Miss' : r === 'hit' ? 'Hit' : 'Sunk: the wreck of ' + n]);
-  if (hint) lines.splice(hint.at, 0, ['Hint', hint.what, hint.said]);
-  return lines;
-};
+const svLines = (log) => log.map(([c, r, n], k) => ['Dive ' + (k + 1), svCell(c), r === 'miss' ? 'Miss' : r === 'hit' ? 'Hit' : 'Sunk: the wreck of ' + n]);
 // Share marks, one per dive in order, ten to a line: miss ○, hit ✕, the dive that sinks a wreck ■. No square is named.
 const svMarks = (log) => { const m = log.map(([, r]) => (r === 'miss' ? '○' : r === 'hit' ? '✕' : '■')).join(''); const out = []; for (let k = 0; k < m.length; k += 10) out.push(m.slice(k, k + 10)); return out; };
-// The board as the AI redraws it after every dive: not dived ·, miss ○, hit ✕, a sunk wreck ■.
-const svBoard = (ships, log) => {
-  const at = svAt(ships); const mark = {}; const sunk = new Set();
-  log.forEach(([[x, y], r]) => { mark[x + ',' + y] = r === 'miss' ? '○' : '✕'; if (r === 'sunk') sunk.add(at[x + ',' + y]); });
-  ships.forEach((s, i) => { if (sunk.has(i)) s.forEach(([x, y]) => { mark[x + ',' + y] = '■'; }); });
-  return ['  A B C D E F G H', ...[0, 1, 2, 3, 4, 5, 6, 7].map((y) => (y + 1) + ' ' + [0, 1, 2, 3, 4, 5, 6, 7].map((x) => mark[x + ',' + y] || '·').join(' '))].join('\n');
+// The board as the AI redraws it after every dive of a play: not dived ·, miss ○, hit ✕, a raised wreck ■.
+const svBoard = (p) => {
+  const mark = {}; p.miss.forEach((sq) => { mark[sq] = '○'; }); p.hit.forEach((sq) => { mark[sq] = p.raised.has(slvWreckOf(sq)) ? '■' : '✕'; });
+  return ['  ' + SV_COLS.split('').join(' '), ...[1, 2, 3, 4, 5, 6, 7, 8].map((r) => r + ' ' + SV_COLS.split('').map((c) => mark[c + r] || '·').join(' '))].join('\n');
 };
+// What the AI says to dive n of a play: its square, and the answer with the dives left.
+const svDive = (fx, n, board) => { const [, sq, res] = SLV_PLAYS[fx].lines.filter((l) => /^Dive /.test(l[0]))[n - 1];
+  return [gscU(sq + '.'), gscAi('salvage', (res.startsWith('raised') ? 'Sunk' + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + '. ' + (SLV_DIVES - n) + ' dives left.', null, board && [dpMono(board)])]; };
 const svSunk = (log) => log.filter((l) => l[1] === 'sunk').length;
 const dpSvHead = (n, log, hint) => 'Salvage #' + n + ' · ' + (svSunk(log) === 5 ? 'all 5 wrecks' : svSunk(log) + ' of 5 wrecks') + ' · ' + log.length + ' of ' + SLV_DIVES + ' dives' + (hint ? ' · 1 hint' : '');
-let SV_TODAY;
-let SV_TODAY_DIVES;
-let SV_TODAY_HINT;
+// Today's sea, as the earlier seas' [x, y] squares: the sea of SLV_PLAYS (gs-salvage.jsx), the only one.
+const svSea = () => SLV_WRECKS.map((w) => w.map((sq) => [SV_COLS.indexOf(sq[0]), +sq.slice(1) - 1]));
 // Earlier seas: a seeded layout and a seeded player (checkerboard search, then along each hit), so every record agrees with its rules.
 const svRng = (seed) => { let s = seed * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
 const svLayout = (seed) => {
@@ -121,7 +112,7 @@ const svLayout = (seed) => {
     }
     if (ok) return ships;
   }
-  return SV_TODAY;
+  return svSea();
 };
 const svPlay = (ships, seed) => {
   const r = svRng(seed + 77); const at = svAt(ships); const tried = new Set(); const clear = new Set(); const hits = ships.map(() => []);
@@ -155,7 +146,7 @@ const svPlay = (ships, seed) => {
 let dpSvDay;
 
 let dpWhT; let dpChT; let dpCmToday;
-let dpChL; let dpSvL;
+let dpChL;
 
 
 
@@ -357,22 +348,21 @@ CH_FAIL = { w: CH_TODAY.w, p: [['BELL', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2
 // never touching, not even at a corner. 20 dives, each a hit, a miss or sunk ("Sunk: the wreck of 3" names its length). One hint, which
 // costs no dive: sonar on a row or a column says how many wreck squares it holds. Complete: every wreck found within the dives. ----
 SV_COLS = 'ABCDEFGH';
-// Today's sea: B2 to E2, G1 to G3, A5 to A7, D5 to E5, G7 to H7.
-SV_TODAY = [[[1, 1], [2, 1], [3, 1], [4, 1]], [[6, 0], [6, 1], [6, 2]], [[0, 4], [0, 5], [0, 6]], [[3, 4], [4, 4]], [[6, 6], [7, 6]]];
-SV_TODAY_DIVES = svReplay(SV_TODAY, ['D4', 'E2', 'E3', 'E1', 'F2', 'D2', 'C2', 'B2', 'G2', 'G3', 'G1', 'A6', 'A5', 'A7', 'E6', 'E5', 'D5', 'H8', 'G7', 'H7']
-  .map((s) => [SV_COLS.indexOf(s[0]), +s.slice(1) - 1]));
-SV_TODAY_HINT = { at: 11, what: 'Sonar on column A', said: '3 wreck squares' };
 // Day i's sea: completed days find every wreck within the dive budget; failed days end with 3 found.
 dpSvDay = (() => { const memo = {}; return (i, ok) => {
   const k = i + (ok ? 'y' : 'n'); if (memo[k]) return memo[k];
   for (let s = i * 13 + 1; s < i * 13 + 3000; s++) { const ships = svLayout(s); const log = svPlay(ships, s); if (svSunk(log) === (ok ? 5 : 3)) return (memo[k] = { ships, log }); }
-  return (memo[k] = { ships: SV_TODAY, log: SV_TODAY_DIVES });
+  return (memo[k] = { ships: svSea(), log: svPlay(svSea(), i) });
 }; })();
 // ---- Today's plays, and their in-progress forms (Config: today in progress). ----
 dpWhT = dpWhere(WH_TODAY, true); dpCmToday = cmSess(CM_NO, CM_TODAY);
 dpChT = dpChain(CH_TODAY);
+// Salvage's plays are held once, in SLV_PLAYS (gs-salvage.jsx); each session of today's edition is that play's record. The result is the deployed headline.
+const svSession = (fx) => { const p = SLV_PLAYS[fx]; const done = fx !== 'live'; const found = p.raised.size;
+  const result = done ? GS_RESULT.salvage({ found, dives: p.dives }) : 'In progress';
+  return { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, fx, date: GS.today, ...(done ? { hints: 1 } : { live: true }),
+    loss: p.state === 'lost', result, figures: [found + ' of 5 wrecks', p.dives + ' of ' + SLV_DIVES + ' dives'], share: done ? result : null, shareLines: done ? slvShareLinesOf(p) : undefined, lines: p.lines }; };
 dpChL = dpChain({ ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) });
-dpSvL = SV_TODAY_DIVES.slice(0, 11);
 Object.assign(GS_SESSIONS, {
   'where-today': { kind: 'puzzle', gid: 'where', game: GS_NAME.where, art: 'where', number: DP_NO, hints: 1, result: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), date: GS.today,
     figures: [dpWhT.guesses + ' of 6 guesses', '1 hint'], share: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), shareLines: [dpWhHead(DP_NO, dpWhT, true), dpWhT.marks], lines: dpWhT.lines },
@@ -382,11 +372,7 @@ Object.assign(GS_SESSIONS, {
     figures: [dpChT.words + ' words', dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())], share: dpChResult(dpChT), shareLines: [dpChHead(DP_NO, dpChT), dpChT.marks], lines: dpChT.lines },
   'chain-live': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: { ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) }, live: true, result: 'In progress', date: GS.today,
     figures: [dpChL.found + ' of ' + dpChL.hidden + ' words', dpWrong(dpChL.wrong).replace(/^./, (c) => c.toUpperCase())], share: null, lines: dpChL.lines },
-  'salvage-today': { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, hints: 1, result: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }), date: GS.today,
-    figures: ['5 of 5 wrecks', SV_TODAY_DIVES.length + ' of ' + SLV_DIVES + ' dives', '1 hint'], share: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }), shareLines: [dpSvHead(DP_NO, SV_TODAY_DIVES, true), ...svMarks(SV_TODAY_DIVES)],
-    lines: svLines(SV_TODAY_DIVES, SV_TODAY_HINT) },
-  'salvage-live': { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, live: true, result: 'In progress', date: GS.today,
-    figures: [svSunk(dpSvL) + ' of 5 wrecks', dpSvL.length + ' of ' + SLV_DIVES + ' dives'], share: null, lines: svLines(dpSvL) },
+  'salvage-today': svSession('won'), 'salvage-live': svSession('live'),
   'common-today': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', date: GS.today, ...dpCmToday, share: dpCmToday.result, recovered: true },
   'common-live': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', number: CM_NO, play: CM_LIVE, live: true, result: 'In progress', date: GS.today,
     figures: ['Thread 1 of 3', '0 points so far'], share: null, lines: cmPlay(CM_LIVE, true).lines },
@@ -405,12 +391,6 @@ const dpPickCh = (play) => {
   const r = dpChain(play); const res = dpChResult(r);
   return { ...GS_SESSIONS['chain-today'], loss: r.given > 0, play, result: res, share: res, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (c) => c.toUpperCase())], shareLines: [dpChHead(DP_NO, r), r.marks], lines: r.lines };
 };
-const dpDives = SV_TODAY_DIVES.map((d) => d[0]);
-const dpCells = (list) => list.map((c) => [SV_COLS.indexOf(c[0]), +c.slice(1) - 1]);
-const dpPickSv = (extra, upTo, now) => {
-  const log = svReplay(SV_TODAY, [...dpDives.slice(0, upTo), ...dpCells(extra), ...dpDives.slice(upTo)].slice(0, SLV_DIVES)); const sunk = svSunk(log); const res = GS_RESULT.salvage({ found: sunk, dives: log.length });
-  return { ...GS_SESSIONS['salvage-today'], loss: sunk < 5, result: res, share: res, figures: [sunk + ' of 5 wrecks', log.length + ' of ' + SLV_DIVES + ' dives', '1 hint'], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
-};
 const dpPickCm = (play, recovered, now) => {
   const { day, ...own } = cmSess(CM_NO, play);
   return { ...GS_SESSIONS['common-today'], loss: false, recovered, ...own, share: own.result, now };
@@ -418,10 +398,8 @@ const dpPickCm = (play, recovered, now) => {
 Object.assign(GS_SESSIONS, {
   'where-today-hard': dpPickWh(true), 'where-today-failed': dpPickWh(false),
   'chain-today-hard': dpPickCh(CH_HARD), 'chain-today-failed': dpPickCh(CH_FAIL),
-  'salvage-today-hard': dpPickSv(['A1', 'H1', 'H2', 'A8', 'C7', 'F7', 'B4', 'F8'], 14,
-    { line: 'You found all five wrecks on your last dive, with one hint.', bar: [SLV_DIVES + ' of ' + SLV_DIVES + ' dives', SLV_DIVES, SLV_DIVES] }),
-  'salvage-today-failed': dpPickSv(['A1', 'H1', 'H2', 'A8', 'C7', 'F7', 'B4', 'F8', 'C4', 'B6', 'H4', 'H5', 'D7', 'E8', 'C1', 'D8'], 14,
-    { line: 'You used all ' + SLV_DIVES + ' dives and found 3 of the 5 wrecks.', bar: [SLV_DIVES + ' of ' + SLV_DIVES + ' dives', SLV_DIVES, SLV_DIVES] }),
+  'salvage-today-hard': { ...svSession('hard'), now: { line: 'You found all five wrecks on your last dive.', bar: [SLV_PLAYS.hard.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.hard.dives, SLV_DIVES] } },
+  'salvage-today-failed': { ...svSession('lost'), now: { line: 'You used all ' + SLV_PLAYS.lost.dives + ' dives and found ' + SLV_PLAYS.lost.raised.size + ' of the 5 wrecks.', bar: [SLV_PLAYS.lost.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.lost.dives, SLV_DIVES] } },
   'common-today-hard': dpPickCm(CM_HARD, false, { line: 'You found all three connections and scored 3 of 15.', bar: ['3 of 15', 3, 15] }),
   'common-today-failed': dpPickCm(CM_FAIL_TODAY, true, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
 });
@@ -455,8 +433,8 @@ DP_PZ = {
     ok: (i) => GS_RESULT.salvage({ found: 5, dives: dpSvDay(i, true).log.length }), bad: GS_RESULT.salvage({ found: 3 }),
     // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
     title: 'Today’s sea', next: 'Next dive: tomorrow', tag: true,
-    live: { line: 'You’ve found ' + svSunk(dpSvL) + ' of the 5 wrecks in ' + dpSvL.length + ' dives.', bar: [dpSvL.length + ' of ' + SLV_DIVES + ' dives', dpSvL.length, SLV_DIVES] },
-    done: { st: { kind: 'ok', label: GS_SESSIONS['salvage-today'].result }, line: 'You found all five wrecks with ' + (SLV_DIVES - SV_TODAY_DIVES.length) + ' dives to spare, and one hint.', bar: [SV_TODAY_DIVES.length + ' of ' + SLV_DIVES + ' dives', SV_TODAY_DIVES.length, SLV_DIVES] },
+    live: { line: 'You’ve found ' + SLV_PLAYS.live.raised.size + ' of the 5 wrecks in ' + SLV_PLAYS.live.dives + ' dives.', bar: [SLV_PLAYS.live.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.live.dives, SLV_DIVES] },
+    done: { st: { kind: 'ok', label: GS_SESSIONS['salvage-today'].result }, line: 'You found all five wrecks with ' + (SLV_DIVES - SLV_PLAYS.won.dives) + ' dives to spare.', bar: [SLV_PLAYS.won.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.won.dives, SLV_DIVES] },
     recent: 'Your seas',
     ach: [{ k: 'sv1', n: 'Every wreck found', how: 'Find all five wrecks in a Salvage.', by: (p) => p.status.kind === 'ok' },
       // KEEP: a deployed achievement (monorepo play-records.ts, "Last Dive"); the platform has nine, the library shows three.
@@ -547,11 +525,9 @@ Object.assign(GS_CHATS, {
   ],
   salvage: [
     { cap: 'Five wrecks lie somewhere under an eight-by-eight sea.', turns: [gscU('I want to play Salvage.'),
-      gscAi('salvage', ['Salvage #' + DP_NO + '. Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.', 'You have ' + SLV_DIVES + ' dives. Call your first square.'], null, [dpMono(svBoard(SV_TODAY, []))])] },
-    { cap: 'Each dive comes back as a hit, a miss or sunk.', turns: [gscU('E2.'), gscAi('salvage', 'Hit. ' + (SLV_DIVES - 1) + ' dives left.'),
-      gscU('E3.'), gscAi('salvage', 'Miss. ' + (SLV_DIVES - 2) + ' dives left.')] },
-    { cap: 'The board is redrawn after every dive, so your AI can read it aloud.', turns: [gscU('B2.'),
-      gscAi('salvage', 'Sunk: the wreck of 4. ' + (SLV_DIVES - 8) + ' dives left.', null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])] },
+      gscAi('salvage', ['Salvage #' + DP_NO + '. Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.', 'You have ' + SLV_DIVES + ' dives. Call your first square.'], null, [dpMono(svBoard(slvPlayAt('won', 0)))])] },
+    { cap: 'Each dive comes back as a hit, a miss or sunk.', turns: [...svDive('won', 1), ...svDive('won', 2)] },
+    { cap: 'The board is redrawn after every dive, so your AI can read it aloud.', turns: svDive('won', 4, svBoard(slvPlayAt('won', 4))) },
   ],
   common: [
     { cap: 'The game shows one item at a time.', turns: [gscU('I want to play Common.'),

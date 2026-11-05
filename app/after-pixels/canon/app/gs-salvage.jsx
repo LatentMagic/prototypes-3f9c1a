@@ -2,13 +2,13 @@
 // After Pixels — Salvage's session page body, under the shared head: one card on the shared session card (GsSessCard,
 // gs-session.jsx), as Daily Word's, Where's and Chain's are. Result top left (Completed, Failed or In progress); the Sea (an 8 by 8
 // grid) left; Haul (dives and wrecks) above Kit (three tools) in the panel beside it, ruled off at its left; on a phone, stacked.
-// The three plays on the invented edition 21 are fixtures run by the game's rules below, so every count, mark and reach is worked
-// out from the moves: won (salvage-today), lost (salvage-today-failed), in progress (salvage-live). An earlier edition's session
-// carries no fixture and keeps the plain result and list. Styles: app/gs-salvage.css.
+// The plays on the invented edition 21 are held here once, run by the game's rules below, so every count, mark and reach is worked
+// out from the moves: won (salvage-today), hard (salvage-today-hard), lost (salvage-today-failed), in progress (salvage-live).
+// gs-where-chain-salvage.jsx builds those four sessions, the now card, the history and the chat from them. An earlier edition's
+// session carries no play and keeps the plain result and list. Styles: app/gs-salvage.css.
 // ============================================================================
 import React from 'react';
 import { GsMoves, GsSessCard, GsSessResult } from './gs-session.jsx';
-import { GS_SESSIONS } from './gs-data.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
 // ---- An invented sea, numbered edition 21 (not the deployed edition 21): five wrecks (4, 3, 3, 2, 2) and the four rows and four columns
@@ -45,7 +45,7 @@ const slvPatch = (sq) => { const c = slvColOf(sq), r = slvRowOf(sq); const out =
 // square in the 3x3 slvPatch round a square, cut at the edge; the dragnet snags on the first wreck square from its end, and a square not
 // yet found becomes a hit. Won when all five are raised; lost when the 20th dive is spent first. The Every move lines are the deployed
 // record's words. ----
-const slvRunPlay = (moves) => {
+export const slvRunPlay = (moves) => {
   const hit = new Set(); const raised = new Set(); const lines = []; const tools = {}; const miss = []; const marks = []; let dives = 0;
   const strike = (sq) => { hit.add(sq); const w = slvWreckOf(sq); if (SLV_WRECKS[w].every((s) => hit.has(s)) && !raised.has(w)) { raised.add(w); return SLV_WRECKS[w].length; } return 0; };
   moves.forEach((m) => {
@@ -80,22 +80,27 @@ const slvRunPlay = (moves) => {
   return { state, dives, hit, raised, miss, tools, lines, marks, sweep: tools.sonar ? tools.sonar.line : null };
 };
 const slvDive = (s) => s.split(' ').map((d) => ({ dive: d }));
-export const SLV_PLAYS = {
-  // Won in 16 of 20 dives, all three tools used.
-  won: slvRunPlay([{ sonar: { axis: 'col', name: 'G' } }, ...slvDive('A5 B5 C5 D5'), { detector: 'F4' }, ...slvDive('D3 E3 F3 G3'),
-    { net: { axis: 'row', name: 6, from: 'left' } }, ...slvDive('G6 H6 G7 G8 H8 C3 C2 C1')]),
+// Won in 16 of 20 dives, all three tools used. Hard: the same won play with four more misses before its last wreck, so the win comes on the 20th dive.
+const SLV_WON_HEAD = [{ sonar: { axis: 'col', name: 'G' } }, ...slvDive('A5 B5 C5 D5'), { detector: 'F4' }, ...slvDive('D3 E3 F3 G3'),
+  { net: { axis: 'row', name: 6, from: 'left' } }, ...slvDive('G6 H6 G7 G8 H8')];
+export const SLV_MOVES = {
+  won: [...SLV_WON_HEAD, ...slvDive('C3 C2 C1')],
+  hard: [...SLV_WON_HEAD, ...slvDive('A1 H1 H2 A8 C3 C2 C1')],
   // Lost: all 20 dives spent with two wrecks not raised; the dragnet not used.
-  lost: slvRunPlay([...slvDive('A1 B1 C1 C2 D3 E3 F3 G3 A5 B5 C5 D5'), { sonar: { axis: 'row', name: 8 } }, { detector: 'G5' }, ...slvDive('H4 F5 G6 G7 E8 F8 A8 B8')]),
+  lost: [...slvDive('A1 B1 C1 C2 D3 E3 F3 G3 A5 B5 C5 D5'), { sonar: { axis: 'row', name: 8 } }, { detector: 'G5' }, ...slvDive('H4 F5 G6 G7 E8 F8 A8 B8')],
   // In progress: 9 dives, sonar and detector used, a hit on the wreck in column C.
-  live: slvRunPlay([{ sonar: { axis: 'col', name: 'A' } }, ...slvDive('A5 B5 C5 D5'), { detector: 'E4' }, ...slvDive('D3 E3 F3 G3 C1')]),
+  live: [{ sonar: { axis: 'col', name: 'A' } }, ...slvDive('A5 B5 C5 D5'), { detector: 'E4' }, ...slvDive('D3 E3 F3 G3 C1')],
 };
+export const SLV_PLAYS = Object.fromEntries(Object.entries(SLV_MOVES).map(([fx, moves]) => [fx, slvRunPlay(moves)]));
+// A play as it stood after its nth dive (the tools used before it included).
+export const slvPlayAt = (fx, n) => { let c = 0; const at = SLV_MOVES[fx].findIndex((m) => m.dive && ++c === n); return slvRunPlay(SLV_MOVES[fx].slice(0, at + 1)); };
 // The share text as the deployed Salvage builds it: "Salvage No. 21 · <wrecks> · <n> of 20 dives", a blank line, then one mark per
 // move, ten to a line: ■ a wreck raised, ✕ a hit, ○ a miss, 📡 sonar, 🧲 metal detector, 🕸️ dragnet. Only a finished play has one.
-const slvShareLinesOf = (p) => { const wrecks = p.raised.size === 5 ? 'all 5 wrecks' : p.raised.size + ' of 5 wrecks';
+export const slvShareLinesOf = (p) => { const wrecks = p.raised.size === 5 ? 'all 5 wrecks' : p.raised.size + ' of 5 wrecks';
   const rows = []; for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(' '));
   return ['Salvage No. 21 · ' + wrecks + ' · ' + p.dives + ' of ' + SLV_DIVES + ' dives', '', ...rows]; };
 // Completed and Failed are working words for the result statement, not yet ruled. The result line and the share text use the deployed
-// headline (session-record.ts headlineOf): "All 5 wrecks in N of 20 dives", "N of 5 wrecks found", "In progress".
+// headline (session-record.ts headlineOf), which GS_RESULT.salvage (gs-where-chain-salvage.jsx) words.
 export const SLV_RESULT = { won: { tone: 'ok', word: 'Completed' }, lost: { tone: 'bad', word: 'Failed' }, live: { tone: 'live', word: 'In progress' } };
 
 // ---- The Sea: one grid of a label column, eight squares and a clue column, under a row of clues and a row of letters. ----
@@ -157,15 +162,4 @@ const SlvSessBody = ({ s }) => {
   </>;
 };
 
-// The three fixtures replace what the seed drew for today's edition (30 dives, another sea) on its three sessions; sessions of earlier
-// editions keep theirs. Called after initGsWhereChainSalvage, which seeds them.
-const FIXTURES = { 'salvage-today': 'won', 'salvage-today-failed': 'lost', 'salvage-live': 'live' };
-export const initGsSalvage = () => {
-  GS_SESSION_BODY.salvage = SlvSessBody;
-  Object.keys(FIXTURES).forEach((sid) => {
-    const fx = FIXTURES[sid]; const p = SLV_PLAYS[fx]; const done = fx !== 'live';
-    const result = !done ? 'In progress' : p.raised.size === 5 ? 'All 5 wrecks in ' + p.dives + ' of ' + SLV_DIVES + ' dives' : p.raised.size + ' of 5 wrecks found';
-    Object.assign(GS_SESSIONS[sid], { fx, loss: fx === 'lost', result, lines: p.lines,
-      figures: [p.raised.size + ' of 5 wrecks', p.dives + ' of ' + SLV_DIVES + ' dives'], share: done ? result : null, shareLines: done ? slvShareLinesOf(p) : undefined });
-  });
-};
+export const initGsSalvage = () => { GS_SESSION_BODY.salvage = SlvSessBody; };
