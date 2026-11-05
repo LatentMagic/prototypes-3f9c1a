@@ -323,7 +323,7 @@ Object.assign(GS_ART_LOCAL, {
 Object.assign(GS_RESULT, {
   where: (r) => (r.ok ? 'Found in ' + r.guesses + ' of 6' : 'Not found'),
   chain: (r) => (r.given ? r.found + ' of ' + r.of + ' words found' : 'Solved, ' + dpWrong(r.wrong)),
-  salvage: (r) => (r.found === 5 ? 'All 5 wrecks, ' + r.dives + ' of ' + SLV_DIVES + ' dives' : r.found + ' of 5 wrecks found'),
+  salvage: (r) => (r.found === 5 ? 'All 5 wrecks in ' + r.dives + ' of ' + SLV_DIVES + ' dives' : r.found + ' of 5 wrecks found'),
   common: (r) => 'Completed · ' + r.score + ' of 15',
 });
 WH_TODAY = { a: 'Hungary', g: [['Spain', 1110], ['Poland', 80]], hint: 'From Poland, the country lies south' };
