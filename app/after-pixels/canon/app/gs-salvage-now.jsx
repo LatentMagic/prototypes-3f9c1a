@@ -1,6 +1,6 @@
 // ============================================================================
 // After Pixels — Salvage's now card on its library game page, on the shared frame (LbNowCard) as Guess's, Where's and Chain's are.
-// The picture: the five wrecks as hulls in a row (a raised wreck a solid pill, a wreck not yet raised a dashed one that fills as
+// The picture: the five wrecks as hulls in a row (a raised wreck a faint outlined pill with a dot per square, a wreck not yet raised a dashed one that fills as
 // its squares are hit), under them one line of the dives used and the three tools. Drawn from the same plays as the session page
 // (gs-salvage.jsx). PzNow (gs-pass-library.jsx) shows it for Salvage. Styles: app/gs-salvage-now.css.
 // ============================================================================
