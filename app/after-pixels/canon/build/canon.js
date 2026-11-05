@@ -10568,9 +10568,9 @@
     const named = (k, list) => list.map(([name, text]) => ({ id: k + ":" + name, name, text }));
     return [
       { key: "scene", head: "Scene", items: PGA_CASE.scene, count: null },
-      { key: "suspects", head: "Suspects", items: named("s", PGA_CASE.suspects) },
-      { key: "weapons", head: "Weapons", items: named("w", PGA_CASE.weapons) },
-      { key: "places", head: "Places", items: named("p", PGA_CASE.places) },
+      { key: "suspects", head: "Suspects", items: named("s", PGA_CASE.suspects), count: null },
+      { key: "weapons", head: "Weapons", items: named("w", PGA_CASE.weapons), count: null },
+      { key: "places", head: "Places", items: named("p", PGA_CASE.places), count: null },
       { key: "clues", head: "Clues", items: PGA_CASE.clues.map((text, i) => ({ id: "c" + i, name: "Clue " + (i + 1), text })) },
       { key: "hints", head: "Hints", items: PGA_CASE.hints.slice(0, p.hints).map((text, i) => ({ id: "h" + i, name: "Hint " + (i + 1), text })) }
     ];
