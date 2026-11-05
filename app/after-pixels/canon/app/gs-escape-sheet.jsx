@@ -103,7 +103,7 @@ const EsxMark = ({ it }) => {
 const ESX_GMARK = { room: { kind: 'room' }, notes: { kind: 'note' }, pockets: { kind: 'item', used: false } };
 
 // Height open and shut by grid rows (0fr to 1fr), the system's dropdown motion; it keeps its last content while it shuts.
-const EsxFold = ({ open, children }) => {
+export const EsxFold = ({ open, children }) => {
   const kept = React.useRef(null); if (open) kept.current = children;
   return <div className={'esx-fold' + (open ? ' is-open' : '')}><div>{open ? children : kept.current}</div></div>;
 };

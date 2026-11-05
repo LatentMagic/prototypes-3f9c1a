@@ -92,6 +92,7 @@ import { PgBar, pgActive, pgTabName, pgSubscribe } from './playground.jsx';
 import { initGsSalvage } from './gs-salvage.jsx';
 import { FitView, isFramed, useFit } from './fit.jsx';
 import { initGsWhere } from './gs-where.jsx';
+import { initPlaygroundAccuseSession } from './playground-accuse-session.jsx';
 import { initGsChain } from './gs-chain.jsx';
 import { initGsCommon } from './gs-common.jsx';
 
@@ -498,3 +499,4 @@ initMain();
 initGsWhere();
 initGsCommon();
 initGsSalvage();
+initPlaygroundAccuseSession();

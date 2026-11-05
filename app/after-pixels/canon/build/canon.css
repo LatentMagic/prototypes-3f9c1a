@@ -3162,3 +3162,70 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .svn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .svn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
+/* PLAYGROUND, not canon (branch candidate/accuse-session-hifi): Accuse's session page at hi fi (app/playground-accuse-session.jsx).
+   The notebook is Escape's sheet (.dv4 .esx-sheet, gs-escape-sheet.css) and the card is the session card (.gs-sc, gs-sess-card.css),
+   so this file is imported after both. */
+.pga-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---- Notebook: folder tabs. KEEP: the open tab is the folder's own colour and runs into it (no rule between), so the tab and the
+   folder read as one piece; the closed tabs sit behind, on the card's colour. ---- */
+.pga-nb { gap: 0; }
+.pga-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; align-items: end; margin-top: 8px; }
+/* KEEP: a tab's top corners are cut at 45 degrees (8px), its edge drawn as a 1px outer shape behind a fill inset 1px, so the edge
+   follows the cut corners unbroken (a plain border is clipped off at the corners). */
+.pga-tab { --edge: var(--control-edge); --fill: var(--card); --cut: polygon(0 100%, 0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%);
+  position: relative; display: grid; gap: 4px; justify-items: start; min-width: 0; padding: 8px 10px 10px; background: var(--edge); border: 0; clip-path: var(--cut);
+  color: var(--text); font: inherit; text-align: left; cursor: pointer; font-variant-numeric: tabular-nums; }
+.pga-tab::before { content: ''; position: absolute; inset: 1px 1px 0 1px; background: var(--fill); clip-path: polygon(0 100%, 0 7.6px, 7.6px 0, calc(100% - 7.6px) 0, 100% 7.6px, 100% 100%); }
+.pga-tab > * { position: relative; }
+@media (hover: hover) { .pga-tab:not(:disabled):not(.is-open):hover { --fill: color-mix(in srgb, var(--text) 6%, var(--card)); } }
+.pga-tab.is-open { --edge: var(--off-white); --fill: var(--page); padding-bottom: 14px; margin-bottom: -1px; z-index: 1; cursor: default; }
+.pga-tab:disabled { --edge: var(--line); color: var(--muted); cursor: default; }
+.pga-tl { display: flex; align-items: center; gap: 6px; min-width: 0; font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pga-tn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pga-ic svg { width: 14px; height: 14px; color: var(--text); }
+.pga-tab:disabled .pga-ic svg { color: var(--muted); }
+.pga-tab .esx-num { font: 700 20px/22px var(--font-heading); height: 22px; }
+.pga-folder { background: var(--page); border: 1px solid var(--control-edge); padding: 0 12px 12px; }
+.pga-folder .esx-read { background: var(--card); }
+.pga-fh { display: none; }
+@container dv4 (max-width: 560px) {
+  .pga-tabs { gap: 3px; }
+  .pga-tab { justify-items: center; padding: 8px 4px 8px; }
+  .pga-tab.is-open { padding-bottom: 12px; }
+  .pga-tn { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .pga-fh { display: block; padding-top: 12px; font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+}
+
+/* ---- Board: the case's cards as three ruled columns, pen marks drawn over them. ---- */
+.pga-card .gs-sc-board { justify-items: stretch; width: 100%; }
+.pga-bd { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; width: 100%; }
+@container dv2 (min-width: 672px) { .pga-bd { width: 460px; } }
+.pga-bd ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.pga-bd li { padding: 8px 2px; border-bottom: 1px solid var(--line); font: 400 15px/1.3 var(--font-text); color: var(--text); }
+.pga-bd li:first-child { border-top: 1px solid var(--line); }
+@container dv2 (max-width: 460px) { .pga-bd { gap: 0 10px; } .pga-bd li { font-size: 13px; padding: 7px 1px; } }
+.pga-m { font-weight: 600; }
+.pga-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.pga-ov path { fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.pga-ov .g { stroke: var(--success); }
+.pga-ov .a { stroke: var(--warning); }
+
+/* ---- Panel. Phone: Hints, then The culprit, each centred, one above the other. ---- */
+.pga-card .gs-sc-panel { grid-template-columns: 1fr; }
+.pga-big { display: flex; align-items: baseline; gap: 2px; font-variant-numeric: tabular-nums; }
+.pga-big b { font: 700 36px/1 var(--font-heading); color: var(--text); }
+.pga-big small { margin-left: 2px; font: var(--type-small); color: var(--muted); }
+/* The case card: a card with its top right corner folded. */
+.pga-case { position: relative; display: grid; gap: 2px; justify-items: center; width: 240px; max-width: 100%; box-sizing: border-box; padding: 14px 12px;
+  border: 1px solid var(--control-edge); background: var(--card); text-align: center; }
+.pga-case::after { content: ''; position: absolute; top: -1px; right: -1px; width: 14px; height: 14px;
+  background: linear-gradient(225deg, var(--page) 50%, var(--control-edge) 50% calc(50% + 1px), var(--popup) calc(50% + 1px)); }
+.pga-case.is-open { border-color: var(--line); }
+.pga-tag { margin-bottom: 8px; padding: 5px 8px; font: 600 11px/1 var(--font-text); letter-spacing: .08em; text-transform: uppercase; background: var(--tag-neutral-bg); }
+.pga-tag.is-ok { color: var(--success); }
+.pga-tag.is-bad { color: var(--warning); }
+.pga-name { font: 700 20px/1.2 var(--font-heading); color: var(--text); }
+.pga-sent { max-width: 220px; font: 400 14px/1.45 var(--font-text); color: var(--muted); text-wrap: balance; }
+.pga-blank { display: block; width: 160px; height: 22px; margin-top: 6px; border-bottom: 1.5px solid var(--control-edge); }
+.pga-blank.is-s { width: 190px; height: 14px; margin-top: 4px; border-bottom-color: var(--line); }
