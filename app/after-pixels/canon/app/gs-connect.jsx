@@ -28,8 +28,8 @@ const GsAiLogo = ({ ai, size = 20 }) => <svg viewBox="0 0 24 24" width={size} he
 
 // ---- Prompts (drafts, not ratified). A request is { kind: 'games' } | { kind: 'game', gid } | { kind: 'edition', e }. ----
 const gsEdPromptName = (e) => (e.title ? GS_GAMES[e.gid].name + ', “' + e.title + '”' : GS_GAMES[e.gid].name + ' #' + e.n + (e.title ? ', “' + e.title + '”' : ''));
-export const gsPromptText = (r) => r.kind === 'games' ? 'Play After Pixels.'
-  : 'Play ' + (r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + ' on After Pixels.';
+export const gsPromptText = (r) => r.kind === 'games' ? 'Play After Pixels'
+  : 'Play ' + (r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + ' on After Pixels';
 const gsPromptTitle = (r) => r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
 // What a play control starts: on a session's page, the edition that session belongs to; elsewhere, or for a session that names
 // no edition (noEd), the game.

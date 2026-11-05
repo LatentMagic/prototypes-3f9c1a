@@ -6227,7 +6227,7 @@
   ];
   const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: GS_AI_LOGO[ai] }));
   const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
-  const gsPromptText = (r) => r.kind === "games" ? "Play After Pixels." : "Play " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + " on After Pixels.";
+  const gsPromptText = (r) => r.kind === "games" ? "Play After Pixels" : "Play " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + " on After Pixels";
   const gsPromptTitle = (r) => r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
   const gsSessEd = (gs, sid) => {
     const s = GS_SESSIONS[sid];
