@@ -77,30 +77,31 @@ const PgaIcon = ({ k }) => (k === 'clues'
   ? <span className="esx-mk" aria-hidden="true"><i className="esx-slip" /></span>
   : <span className="esx-mk pga-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="square" strokeLinejoin="miter"><path d={PGA_IC[k]} /></svg></span>);
 
-// KEEP: one tab is always open, so the folder always shows: a tap on another tab swaps the folder's contents and shuts the reader; a
-// tab with nothing in it (Hints at 0) is greyed out and does nothing. How the six tabs fit is each direction's own (`lay`, a class
+// KEEP: as Escape's sheet, no tab is open at first and the folder is shut; a tap on a tab opens the folder on its things, a tap on
+// another swaps the contents and shuts the reader, and a tap on the open tab shuts the folder. A tab with nothing in it (Hints at 0)
+// is greyed out and does nothing. How the six tabs fit is each direction's own (`lay`, a class
 // on the sheet; the CSS says how): direction 1 on a phone (sheet 560px or less) shows each tab's icon and count only, and the open
 // tab's name heads the folder, so six tabs fit across 358px without clipping a word.
 const PgaNotebook = ({ p, lay = '' }) => {
   const g = React.useMemo(() => pgaGroups(p), [p]);
-  const [open, setOpen] = React.useState('scene'); const [sel, setSel] = React.useState(null);
-  const grp = g.find((x) => x.key === open); const it = sel && grp.items.find((x) => x.id === sel);
+  const [open, setOpen] = React.useState(null); const [sel, setSel] = React.useState(null);
+  const grp = g.find((x) => x.key === open); const it = sel && grp && grp.items.find((x) => x.id === sel);
   return <section className={'dv4 esx-sheet pga-nb' + (lay ? ' ' + lay : '')} aria-label="Notebook">
     <span className="gs-sc-cap">Notebook</span>
-    <div className="pga-tabs" role="tablist" data-row={g.findIndex((x) => x.key === open) < 3 ? 0 : 1}>{g.map((x) => (
-      <button key={x.key} type="button" role="tab" aria-selected={open === x.key} disabled={!x.items.length}
+    <div className="pga-tabs" role="tablist" data-row={g.findIndex((x) => x.key === open) < 3 ? 0 : 1} data-open={grp ? 'y' : 'n'}>{g.map((x) => (
+      <button key={x.key} type="button" role="tab" aria-selected={open === x.key} aria-expanded={open === x.key} disabled={!x.items.length}
         aria-label={x.head + (x.count === null ? '' : ' ' + x.items.length)} className={'pga-tab' + (open === x.key ? ' is-open' : '')}
-        onClick={() => { setOpen(x.key); setSel(null); }}>
+        onClick={() => { setOpen(open === x.key ? null : x.key); setSel(null); }}>
         <span className="pga-tl"><PgaIcon k={x.key} /><span className="pga-tn">{x.head}</span></span>
         <b className="esx-num">{x.count === null ? ' ' : x.items.length}</b>
       </button>))}</div>
-    <div className="pga-folder" role="tabpanel" aria-label={grp.head}>
+    <EsxFold open={!!grp}>{grp && <div className="pga-folder" role="tabpanel" aria-label={grp.head}>
       <span className="pga-fh">{grp.head}</span>
       <div key={grp.key} className="esx-chips esx-in">{grp.items.map((x) => (
         <button key={x.id} type="button" className="esx-chip" aria-expanded={sel === x.id} onClick={() => setSel(sel === x.id ? null : x.id)}>
           <b>{x.name}</b></button>))}</div>
       <EsxFold open={!!it}>{it && <div key={it.id} className="esx-read esx-in"><span className="esx-nm"><b>{it.name}</b></span><p className="esx-tx">{it.text}</p></div>}</EsxFold>
-    </div>
+    </div>}</EsxFold>
   </section>;
 };
 

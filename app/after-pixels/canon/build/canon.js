@@ -10578,28 +10578,29 @@
   const PgaIcon = ({ k }) => k === "clues" ? /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-slip" })) : /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk pga-ic", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: PGA_IC[k] })));
   const PgaNotebook = ({ p, lay = "" }) => {
     const g = React$1.useMemo(() => pgaGroups(p), [p]);
-    const [open, setOpen] = React$1.useState("scene");
+    const [open, setOpen] = React$1.useState(null);
     const [sel, setSel] = React$1.useState(null);
     const grp = g.find((x) => x.key === open);
-    const it = sel && grp.items.find((x) => x.id === sel);
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet pga-nb" + (lay ? " " + lay : ""), "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "pga-tabs", role: "tablist", "data-row": g.findIndex((x) => x.key === open) < 3 ? 0 : 1 }, g.map((x) => /* @__PURE__ */ React$1.createElement(
+    const it = sel && grp && grp.items.find((x) => x.id === sel);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet pga-nb" + (lay ? " " + lay : ""), "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "pga-tabs", role: "tablist", "data-row": g.findIndex((x) => x.key === open) < 3 ? 0 : 1, "data-open": grp ? "y" : "n" }, g.map((x) => /* @__PURE__ */ React$1.createElement(
       "button",
       {
         key: x.key,
         type: "button",
         role: "tab",
         "aria-selected": open === x.key,
+        "aria-expanded": open === x.key,
         disabled: !x.items.length,
         "aria-label": x.head + (x.count === null ? "" : " " + x.items.length),
         className: "pga-tab" + (open === x.key ? " is-open" : ""),
         onClick: () => {
-          setOpen(x.key);
+          setOpen(open === x.key ? null : x.key);
           setSel(null);
         }
       },
       /* @__PURE__ */ React$1.createElement("span", { className: "pga-tl" }, /* @__PURE__ */ React$1.createElement(PgaIcon, { k: x.key }), /* @__PURE__ */ React$1.createElement("span", { className: "pga-tn" }, x.head)),
       /* @__PURE__ */ React$1.createElement("b", { className: "esx-num" }, x.count === null ? " " : x.items.length)
-    ))), /* @__PURE__ */ React$1.createElement("div", { className: "pga-folder", role: "tabpanel", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("span", { className: "pga-fh" }, grp.head), /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "esx-chips esx-in" }, grp.items.map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "esx-chip", "aria-expanded": sel === x.id, onClick: () => setSel(sel === x.id ? null : x.id) }, /* @__PURE__ */ React$1.createElement("b", null, x.name)))), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement("div", { key: it.id, className: "esx-read esx-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-nm" }, /* @__PURE__ */ React$1.createElement("b", null, it.name)), /* @__PURE__ */ React$1.createElement("p", { className: "esx-tx" }, it.text)))));
+    ))), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && /* @__PURE__ */ React$1.createElement("div", { className: "pga-folder", role: "tabpanel", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("span", { className: "pga-fh" }, grp.head), /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "esx-chips esx-in" }, grp.items.map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "esx-chip", "aria-expanded": sel === x.id, onClick: () => setSel(sel === x.id ? null : x.id) }, /* @__PURE__ */ React$1.createElement("b", null, x.name)))), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement("div", { key: it.id, className: "esx-read esx-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-nm" }, /* @__PURE__ */ React$1.createElement("b", null, it.name)), /* @__PURE__ */ React$1.createElement("p", { className: "esx-tx" }, it.text))))));
   };
   const pgaSeed = (s) => {
     let h = 2166136261;
