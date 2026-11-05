@@ -3190,7 +3190,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acc-tab .esx-num { font: 700 20px/22px var(--font-heading); height: 22px; }
 /* KEEP: with every tab shut, a rule in the tabs' own edge colour closes the row off along their feet, so the tabs don't read as open-bottomed boxes. */
 .acc-tabs[data-open="n"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--control-edge); z-index: 2; }
-.acc-folder { background: var(--page); border: 1px solid var(--control-edge); padding: 0 12px 12px; }
+/* KEEP: the open tab and its folder share one off-white edge, the selection colour, so the pair reads as one piece. */
+.acc-folder { background: var(--page); border: 1px solid var(--off-white); padding: 0 12px 12px; }
 .acc-folder .esx-read { background: var(--card); }
 .acc-fh { display: none; }
 @container dv4 (max-width: 560px) {
