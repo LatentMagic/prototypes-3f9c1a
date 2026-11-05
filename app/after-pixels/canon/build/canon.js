@@ -10596,6 +10596,9 @@
   };
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10611,6 +10614,17 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
+  };
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -10695,6 +10709,105 @@
     const concept = shown.find((s) => s.kind === "concept");
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
+  };
+  const PGC_COPY = {
+    delve: {
+      job: {
+        h: "Pick a hero and play a new adventure each week, one risky roll at a time.",
+        blurb: "h",
+        ps: [
+          "Each week brings a new setting, new foes and a new story. You go room by room, choosing what to search, what to fight and what to carry.",
+          "Every risky move is a d20 roll the game makes, where nobody can fudge it. Run out of hit points, or let the threat fill, and the run is lost."
+        ],
+        caps: ["The run opens: the first room, its ways on, and the numbers.", "Every risky move is a roll the game makes, not your AI.", "Every run ends one of four ways, and your session keeps every roll."]
+      },
+      situation: {
+        h: "A new adventure every week. Every slip brings the end closer.",
+        blurb: "A weekly adventure game. Pick a hero and play it room by room, on real dice.",
+        ps: [
+          "Pick a fighter, a rogue or a wizard. Go room by room, choosing what to search, fight and carry.",
+          "The game rolls every die where nobody can fudge it, so a win is yours. Pick your hero."
+        ],
+        caps: ["The run opens: the first room, its ways on, and the numbers.", "A weak hit: the foe gives ground, at a cost the game draws.", "The ending, with a link back to your full session."]
+      }
+    },
+    mystery: {
+      job: {
+        h: "Work out who did it, with what and where. You get one accusation.",
+        blurb: "h",
+        ps: ["You get every clue at the start. Together they leave only one answer.", "Two hints help when you’re stuck. Then make one accusation, checked part by part."],
+        caps: ["Every suspect, weapon, place and clue, given once at the start.", "When you’re stuck, take a hint. You get two.", null]
+      },
+      situation: {
+        h: null,
+        blurb: "A daily murder mystery. Work out who did it from the clues, then accuse.",
+        caps: ["Every suspect, weapon, place and clue, given once at the start.", null, null]
+      }
+    },
+    where: {
+      job: {
+        h: "Find today’s country in six guesses.",
+        blurb: "h",
+        ps: ["Name any country. The game tells you how far it lies from today’s, border to border.", "Zero means the two touch. You get one hint: the compass direction from your last guess."]
+      },
+      situation: { h: null, blurb: "A daily geography puzzle. Find today’s country in six guesses." }
+    }
+  };
+  const PGC_GAMES = ["delve", "mystery", "where"];
+  let pgcCanon = null;
+  const pgcRead = () => {
+    if (pgcCanon) return;
+    pgcCanon = {};
+    PGC_GAMES.forEach((id) => {
+      pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb };
+    });
+  };
+  const pgcApply = (id, rule) => {
+    pgcRead();
+    PGC_GAMES.forEach((k) => {
+      const c2 = pgcCanon[k];
+      GS_PAGES[k].pitch.h = c2.h;
+      GS_PAGES[k].pitch.ps = c2.ps.slice();
+      GS_GAMES[k].blurb = c2.blurb;
+      GS_CHATS[k].forEach((x, i) => {
+        x.cap = c2.caps[i];
+      });
+    });
+    const r = PGC_COPY[id][rule];
+    if (!r) return;
+    const c = pgcCanon[id];
+    if (r.h) GS_PAGES[id].pitch.h = r.h;
+    if (r.ps) GS_PAGES[id].pitch.ps = r.ps.map((p, i) => p || c.ps[i]);
+    if (r.caps) GS_CHATS[id].forEach((x, i) => {
+      x.cap = r.caps[i] || c.caps[i];
+    });
+    if (r.blurb) GS_GAMES[id].blurb = r.blurb === "h" ? GS_PAGES[id].pitch.h : r.blurb;
+  };
+  const PgcPreview = ({ id }) => {
+    const g = GS_GAMES[id];
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev", role: "img", "aria-label": "Link preview: " + g.name + ". " + g.blurb }, /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-art" }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "wide" })), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgc-prev-site" }, "afterpixels.com"), /* @__PURE__ */ React$1.createElement("b", null, g.name), /* @__PURE__ */ React$1.createElement("span", null, g.blurb)));
+  };
+  const PgcStrip = ({ id }) => /* @__PURE__ */ React$1.createElement("section", { className: "pgc-strip", "aria-label": "Where the card line also appears" }, /* @__PURE__ */ React$1.createElement("h2", { className: "pgc-strip-h" }, "Where the card line also appears"), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-strip-row" }, /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgc-card" }, /* @__PURE__ */ React$1.createElement(GsGameCard, { id })), /* @__PURE__ */ React$1.createElement("figcaption", null, "The game card (More games, Discover)")), /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig" }, /* @__PURE__ */ React$1.createElement(PgcPreview, { id }), /* @__PURE__ */ React$1.createElement("figcaption", null, "A shared link’s preview"))));
+  const PgcScreen = () => {
+    const id = usePgSetting("game");
+    const rule = usePgSetting("rule");
+    pgcApply(id, rule);
+    return /* @__PURE__ */ React$1.createElement(GsGamePage, { key: id + rule, id, top: /* @__PURE__ */ React$1.createElement(PgcStrip, { id }) });
+  };
+  const initPlaygroundPageCopy = () => {
+    pgRegister("page-copy", { title: "Product page copy", settings: [
+      { key: "rule", kind: "concept", label: "Rule", options: [
+        { value: "current", label: "Current" },
+        { value: "job", label: "The job" },
+        { value: "situation", label: "Situation, then verbs" }
+      ] },
+      { key: "game", label: "Game", options: [
+        { value: "delve", label: "Delve" },
+        { value: "mystery", label: "Accuse" },
+        { value: "where", label: "Where" }
+      ] }
+    ] });
+    if (new URLSearchParams(window.location.search).get("pg") === "page-copy") window.KitCandidate = { Screen: PgcScreen };
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
@@ -11350,4 +11463,5 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
+  initPlaygroundPageCopy();
 })(React, ReactDOM);
