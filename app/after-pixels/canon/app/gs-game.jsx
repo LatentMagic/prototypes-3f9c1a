@@ -101,7 +101,7 @@ GS_PAGES = {
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'Six guesses to find today’s five-letter word.', ps: [
-      'Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get two hints a day.',
+      'Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get one hint a day, and it places a letter for you.',
       'Your AI runs the game but isn’t told the word until it’s over, so it can’t give it away. Solve it to keep your streak, then share your grid.'] },
     who: { ai: 'Takes your guesses and shows you how each one scored.', server: 'Holds the word, marks every guess and keeps the count.' },
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },

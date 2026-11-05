@@ -105,9 +105,13 @@ PZ = {
     title: 'Today’s word', next: 'Next word: tomorrow',
     live: { line: 'You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.', bar: ['Guess 2 of 6', 2, 6] },
     done: { st: { kind: 'ok', label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: 'You found the word on your third guess, with one hint.', bar: ['Guess 3 of 6', 3, 6] }, recent: 'Your words',
-    ach: [{ k: 'w1', n: 'Solved', how: 'Solve a word.', by: (p) => p.status.kind === 'ok' },
-      { k: 'w2', n: 'Solved in two', how: 'Solve a word in two guesses.', by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
-      { k: 'w7', n: 'Seven days in a row', how: 'Solve the word seven days running.', of: 7 }],
+    // The game's six achievements (verbatim from the platform).
+    ach: [{ k: 'w7', n: 'Week', how: 'Solve the word 7 days running.', of: 7 },
+      { k: 'w30', n: 'Month', how: 'Solve the word 30 days running.', of: 30 },
+      { k: 'w365', n: 'Year', how: 'Solve the word 365 days running.', of: 365 },
+      { k: 'w1', n: 'One Shot', how: 'Solve the word with your first guess.', by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 1 }) },
+      { k: 'w6', n: 'Just in Time', how: 'Solve the word with your sixth and last guess.', by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 6 }) },
+      { k: 'w10', n: 'Ten Wins', how: 'Solve 10 words.', of: 10, count: (ps) => ps.filter((p) => p.status.kind === 'ok') }],
   },
   groups: {
     no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', liveSid: 'groups-live',

@@ -1902,9 +1902,9 @@
           gscU("slate"),
           gscAi("guess", "S is in place. L and T are in the word. 4 guesses left.", [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xxxxx" }, { letters: "SLATE", marks: "hnxnx" }] }])
         ] },
-        { cap: "Ask for a hint and the engine gives one. Two a day.", turns: [
+        { cap: "Ask for a hint and the engine places a letter. One a day.", turns: [
           gscU("Give me a hint."),
-          gscAi("guess", "The word contains the letter I. One hint left today.")
+          gscAi("guess", "Letter 3 is I. No hints left today.")
         ] }
       ],
       groups: [
@@ -4471,10 +4471,14 @@
         live: { line: "You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.", bar: ["Guess 2 of 6", 2, 6] },
         done: { st: { kind: "ok", label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: "You found the word on your third guess, with one hint.", bar: ["Guess 3 of 6", 3, 6] },
         recent: "Your words",
+        // The game's six achievements (verbatim from the platform).
         ach: [
-          { k: "w1", n: "Solved", how: "Solve a word.", by: (p) => p.status.kind === "ok" },
-          { k: "w2", n: "Solved in two", how: "Solve a word in two guesses.", by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
-          { k: "w7", n: "Seven days in a row", how: "Solve the word seven days running.", of: 7 }
+          { k: "w7", n: "Week", how: "Solve the word 7 days running.", of: 7 },
+          { k: "w30", n: "Month", how: "Solve the word 30 days running.", of: 30 },
+          { k: "w365", n: "Year", how: "Solve the word 365 days running.", of: 365 },
+          { k: "w1", n: "One Shot", how: "Solve the word with your first guess.", by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 1 }) },
+          { k: "w6", n: "Just in Time", how: "Solve the word with your sixth and last guess.", by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 6 }) },
+          { k: "w10", n: "Ten Wins", how: "Solve 10 words.", of: 10, count: (ps) => ps.filter((p) => p.status.kind === "ok") }
         ]
       },
       groups: {
@@ -6360,7 +6364,7 @@
         facts: { long: "10 min", often: "New every day" },
         tags: [],
         pitch: { h: "Six guesses to find today’s five-letter word.", ps: [
-          "Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get two hints a day.",
+          "Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get one hint a day, and it places a letter for you.",
           "Your AI runs the game but isn’t told the word until it’s over, so it can’t give it away. Solve it to keep your streak, then share your grid."
         ] },
         who: { ai: "Takes your guesses and shows you how each one scored.", server: "Holds the word, marks every guess and keeps the count." },

@@ -48,8 +48,8 @@ GS_CHATS = {
       gscAi('guess', ['Guess No. 212 is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
     { cap: 'Green: right place. Amber: in the word, wrong place. Grey: not in it.', turns: [gscU('crane'), gscAi('guess', 'No letters in the word. 5 guesses left.'), gscU('slate'),
       gscAi('guess', 'S is in place. L and T are in the word. 4 guesses left.', [{ type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'CRANE', marks: 'xxxxx' }, { letters: 'SLATE', marks: 'hnxnx' }] }])] },
-    { cap: 'Ask for a hint and the engine gives one. Two a day.', turns: [gscU('Give me a hint.'),
-      gscAi('guess', 'The word contains the letter I. One hint left today.')] },
+    { cap: 'Ask for a hint and the engine places a letter. One a day.', turns: [gscU('Give me a hint.'),
+      gscAi('guess', 'Letter 3 is I. No hints left today.')] },
   ],
   groups: [
     { cap: 'Sixteen words hide four groups of four.', turns: [gscU('Play Daily Groups on After Pixels.'),
