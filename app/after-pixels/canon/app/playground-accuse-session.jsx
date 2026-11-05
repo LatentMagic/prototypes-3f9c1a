@@ -6,16 +6,17 @@
 //     which holds its chips and one reader. Hints is greyed out at 0.
 //   Board: the case's cards in three ruled columns, marked in pen once played. A ring only ever means the player's pick: green when
 //     right, amber when wrong. The truth the player missed is underlined once in green. No legend.
-//   Panel: Hints as Salvage's count (the number large, "/2" small), then The culprit as a case card: "Case open" over blank lines while
+//   Panel: Hints as Salvage's count, its own part (Big: the number large, "/2" small), then The culprit as a case card: "Case open" over blank lines while
 //     in progress; once played "Case closed" or "Case cold", the culprit's name, and with what and where beneath.
 // The case is invented sample data (the low-fi vision's), carried by its own fixture, so Accuse's canon data is untouched.
 // Open with ?pg=accuse-session. To remove it: delete this file and playground-accuse-session.css, their lines in main.jsx and
-// canon.css, and the export of EsxFold in gs-escape-sheet.jsx.
+// canon.css, and the exports of EsxFold in gs-escape-sheet.jsx and Big in gs-salvage.jsx.
 // ============================================================================
 import React from 'react';
 import { GS_SESSIONS } from './gs-data.jsx';
 import { GsMoves, GsSessCard } from './gs-session.jsx';
 import { EsxFold } from './gs-escape-sheet.jsx';
+import { Big } from './gs-salvage.jsx';
 import { pgRegister, pgActive, usePgSetting } from './playground.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
@@ -86,7 +87,7 @@ const PgaNotebook = ({ p, lay = '' }) => {
   const grp = g.find((x) => x.key === open); const it = sel && grp.items.find((x) => x.id === sel);
   return <section className={'dv4 esx-sheet pga-nb' + (lay ? ' ' + lay : '')} aria-label="Notebook">
     <span className="gs-sc-cap">Notebook</span>
-    <div className="pga-tabs" role="tablist">{g.map((x) => (
+    <div className="pga-tabs" role="tablist" data-row={g.findIndex((x) => x.key === open) < 3 ? 0 : 1}>{g.map((x) => (
       <button key={x.key} type="button" role="tab" aria-selected={open === x.key} disabled={!x.items.length}
         aria-label={x.head + (x.count === null ? '' : ' ' + x.items.length)} className={'pga-tab' + (open === x.key ? ' is-open' : '')}
         onClick={() => { setOpen(x.key); setSel(null); }}>
@@ -157,7 +158,6 @@ const PgaBoard = ({ p }) => {
 };
 
 // ---- Panel. ----
-const PgaHints = ({ n }) => (<div className="pga-big" role="img" aria-label={n + ' of 2 hints'}><b aria-hidden="true">{n}</b><small aria-hidden="true">/2</small></div>);
 const PgaCulprit = ({ p }) => (p.live
   ? <div className="pga-case is-open"><span className="pga-tag">Case open</span><span className="pga-blank" /><span className="pga-blank is-s" /></div>
   : <div className="pga-case"><span className={'pga-tag ' + (p.right ? 'is-ok' : 'is-bad')}>{p.right ? 'Case closed' : 'Case cold'}</span>
@@ -172,7 +172,7 @@ const PgaPage = ({ s, lay, card = '', wrap = '' }) => { const p = s.pga;
   return <div className={'dv4-lay' + (wrap ? ' ' + wrap : '')}>
     <PgaNotebook p={p} lay={lay} />
     <GsSessCard r={pgaResult(p)} className={'pga-card' + (card ? ' ' + card : '')} board={<PgaBoard p={p} />}
-      rows={[['Hints', <PgaHints n={p.hints} />], ['The culprit', <PgaCulprit p={p} />]]} />
+      rows={[['Hints', <Big n={p.hints} of={2} />], ['The culprit', <PgaCulprit p={p} />]]} />
     {s.lines.length > 0 && <GsMoves s={s} />}
   </div>; };
 const Pga1 = ({ s }) => <PgaPage s={s} />;
@@ -187,12 +187,13 @@ const Pga1 = ({ s }) => <PgaPage s={s} />;
 const Pga2 = ({ s }) => <PgaPage s={s} lay="is-side" card="pga-ledger" />;
 
 // ============================================================================
-// 3 Open tab grows: the six tabs stay on the folder's top edge, but only the open one carries its name; the rest shrink to icon and
-// count, at every width, so the folder needs no heading. On a desktop the notebook and the card sit side by side (the notebook on the
-// left, in reading order) with Every move across both, so the whole case shows without scrolling; the card in its narrower column
-// stacks the board over the panel, and the panel puts Hints and The culprit side by side, centred under the board.
+// 3 Two rows: the six tabs in two rows of three at every width, each the same width and carrying its name, its icon and its count, so
+// no tab changes width when another opens. The row holding the open tab sits on the folder and the open tab joins it; the other row
+// stands behind, as a binder's second row of tabs does. On a desktop the notebook and the card sit side by side (the notebook on
+// the left, in reading order) with Every move across both; the card in its narrower column stacks the board over the panel, and the
+// panel puts Hints and The culprit side by side, centred under the board.
 // ============================================================================
-const Pga3 = ({ s }) => <PgaPage s={s} lay="is-grow" card="pga-pair" wrap="pga-desk" />;
+const Pga3 = ({ s }) => <PgaPage s={s} lay="is-rows" card="pga-pair" wrap="pga-desk" />;
 
 const PGA_DIRS = { 1: Pga1, 2: Pga2, 3: Pga3 };
 const PgaBody = ({ s, sid }) => {
@@ -207,7 +208,7 @@ const pgaOpen = (key) => ({ state: 'session-mystery', go: (gs) => gs.go('session
 export const initPlaygroundAccuseSession = () => {
   pgRegister('accuse-session', { title: 'Accuse session', settings: [
     { key: 'dir', kind: 'concept', label: 'Direction', options: [
-      { value: '1', label: '1 Tab per kind' }, { value: '2', label: '2 Side tabs' }, { value: '3', label: '3 Open tab grows' }] },
+      { value: '1', label: '1 Tab per kind' }, { value: '2', label: '2 Side tabs' }, { value: '3', label: '3 Two rows' }] },
     { key: 'play', label: 'Play', options: [
       { value: 'solved', label: 'Solved · no hints', ...pgaOpen('solved') },
       { value: 'failed', label: 'Failed · 2 hints', ...pgaOpen('failed') },

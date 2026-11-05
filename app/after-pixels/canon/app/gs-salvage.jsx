@@ -136,7 +136,8 @@ const SlvSea = ({ p }) => {
 };
 
 // ---- Haul: dives of the 20 and wrecks of the 5. ----
-const Big = ({ n, of, cap }) => (<div className="slv-big" role="img" aria-label={n + ' of ' + of + ' ' + cap}><b aria-hidden="true">{n}</b><small aria-hidden="true">/{of} {cap}</small></div>);
+// A count as a figure: the number large, then "/of" and an optional word, small.
+export const Big = ({ n, of, cap }) => (<div className="slv-big" role="img" aria-label={n + ' of ' + of + (cap ? ' ' + cap : '')}><b aria-hidden="true">{n}</b><small aria-hidden="true">/{of}{cap ? ' ' + cap : ''}</small></div>);
 const SlvHaul = ({ p }) => (<div className="slv-haul"><Big n={p.dives} of={SLV_DIVES} cap="dives" /><Big n={p.raised.size} of={5} cap="wrecks" /></div>);
 
 // ---- Kit: the three tools, each an icon in its colour. A used tool is faded and struck corner to corner, bottom left to top right. ----
