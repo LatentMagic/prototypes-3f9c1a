@@ -16,19 +16,20 @@ import { pgRegister, usePgSetting } from './playground.jsx';
 // ---- The copy, as the proposal file lists it. A line left out (null, or no entry) stays canon's. `blurb: 'h'` means the
 // card line is the pitch heading. A `ps` shorter than canon's drops the paragraphs past its length. ----
 const PGC_COPY = {
-  // Delve: the golden sample (advisor-delve-golden-sample.md in business-ops). Same pitch, captions, roles and tags under both
-  // rules; only the heading and card line differ. "Dungeon master" depends on open PR #1410.
+  // Delve: the golden sample (advisor-delve-golden-sample.md, then the Opus and Gemini reviews beside it, in business-ops).
+  // Same pitch, captions, roles and tags under both rules; only the heading and card line differ. "One sure blow" and the
+  // ending told as a scene depend on open PR #1410.
   delve: {
     job: {
-      h: 'Be the hero of a new adventure every week.', blurb: 'h',
-      ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go in one door at a time, never sure what waits behind the next. Your AI is your dungeon master. It sets each scene and voices the people you meet, and what your hero does is always yours to say.", "Ask an AI to run an adventure and it tends to let you win. Delve doesn’t. The game rolls every die and keeps every secret where your AI can’t reach, so a bad roll stays bad and every slip brings disaster closer. Read the clues, find what the final foe fears, and get there in one piece. When you win, you earned it."],
-      caps: ["Your hero steps into the first room. What happens next is up to you.", "Every roll is shown. Your AI tells it, but it can’t change it.", "Win or fall, the ending is yours to keep, with every roll that got you there."],
-      tags: ['Adventure', 'Solo tabletop RPG'], ai: "Plays dungeon master: sets each scene, voices the people you meet and asks what you do. It never decides for you.", server: "Rolls every die and keeps every secret: the rooms ahead, each foe’s weakness, the danger rising. It decides what happens and records every roll." },
+      h: 'Pick a hero and fight your way to this week’s final foe, on dice your AI can’t touch.', blurb: 'h',
+      ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go room by room, never sure what waits behind the next door. Your AI runs it like a tabletop game master: it sets each scene and plays everyone you meet, and what your hero does is always yours to say.", "The game, not your AI, rolls every die and keeps the map’s secrets, so a bad roll stays bad and every miss lets the danger close in. Read the clues, find what the final foe fears, and choose when to spend your one sure blow. Win, and you earned it."],
+      caps: ["Your hero’s first room: what you see, the ways on, and your call where to go.", "The game rolls in plain sight. Your AI tells you what happened, but can’t change the roll.", "Win or fall, your ending is told as its own scene, and every roll is saved to your session page."],
+      tags: ['Solo RPG', 'One run a week'], ai: "Tells the story in each world’s own voice and plays everyone you meet. It asks what you do, and acts only on what you say.", server: "Hides each room until you walk in and each foe’s weakness until you find its clue. Rolls every die, and records every roll." },
     situation: {
-      h: 'Your AI tells the story. The dice decide it.', blurb: 'A weekly dice adventure. You play the hero.',
-      ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go in one door at a time, never sure what waits behind the next. Your AI is your dungeon master. It sets each scene and voices the people you meet, and what your hero does is always yours to say.", "Ask an AI to run an adventure and it tends to let you win. Delve doesn’t. The game rolls every die and keeps every secret where your AI can’t reach, so a bad roll stays bad and every slip brings disaster closer. Read the clues, find what the final foe fears, and get there in one piece. When you win, you earned it."],
-      caps: ["Your hero steps into the first room. What happens next is up to you.", "Every roll is shown. Your AI tells it, but it can’t change it.", "Win or fall, the ending is yours to keep, with every roll that got you there."],
-      tags: ['Adventure', 'Solo tabletop RPG'], ai: "Plays dungeon master: sets each scene, voices the people you meet and asks what you do. It never decides for you.", server: "Rolls every die and keeps every secret: the rooms ahead, each foe’s weakness, the danger rising. It decides what happens and records every roll." },
+      h: 'Your AI tells the story. It can’t touch the dice.', blurb: 'A new half-hour adventure each week. Pick a hero and fight to the final foe.',
+      ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go room by room, never sure what waits behind the next door. Your AI runs it like a tabletop game master: it sets each scene and plays everyone you meet, and what your hero does is always yours to say.", "The game, not your AI, rolls every die and keeps the map’s secrets, so a bad roll stays bad and every miss lets the danger close in. Read the clues, find what the final foe fears, and choose when to spend your one sure blow. Win, and you earned it."],
+      caps: ["Your hero’s first room: what you see, the ways on, and your call where to go.", "The game rolls in plain sight. Your AI tells you what happened, but can’t change the roll.", "Win or fall, your ending is told as its own scene, and every roll is saved to your session page."],
+      tags: ['Solo RPG', 'One run a week'], ai: "Tells the story in each world’s own voice and plays everyone you meet. It asks what you do, and acts only on what you say.", server: "Hides each room until you walk in and each foe’s weakness until you find its clue. Rolls every die, and records every roll." },
   },
   mystery: {
     job: {
@@ -97,7 +98,7 @@ const PgcStrip = ({ id, rule }) => (
 const PGC_WHY = {
   job: { h: 'Why the job rule (recommended)', by: 'Backed by the product advisor.', for: [
     'One line to keep true. The heading is also the card line, the link preview and what the AI reads in its library. Those must describe the game plainly, not tease it, so the heading meets that bar too, and nothing drifts.',
-    'A stranger learns what they would do. Games played in your chat are new, so “be the hero of a new adventure every week” says what you get before any story.',
+    'A stranger learns what they would do. Games played in your chat are new, so the line says what you do before any story.',
     'Agents can check it. Every line traces to the game spec, which holds every week.',
     'Guess already reads this way, and you found its page largely good.'],
     against: 'The heading must fit on a game card, story pages read flatter, and it ends the 6 October “cold open, with a dare” headings.' },
