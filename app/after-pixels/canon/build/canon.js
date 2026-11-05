@@ -10711,24 +10711,26 @@
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
   const PGC_COPY = {
-    // Delve: content from its game spec as open PR #1410 changes it (advisor-delve-content.md), not from canon's copy. Tags and the
-    // AI's line are fixed under both rules: canon's name week 1's goblins and a room count that varies by week.
+    // Delve: the golden sample (advisor-delve-golden-sample.md in business-ops). Same pitch, captions, roles and tags under both
+    // rules; only the heading and card line differ. "Dungeon master" depends on open PR #1410.
     delve: {
       job: {
-        h: "Pick a hero. Play a new adventure each week.",
+        h: "Be the hero of a new adventure every week.",
         blurb: "h",
-        ps: ["Each week brings a new setting, new foes and a new story. Pick one of three heroes, go room by room, and face the final foe at the end. About half an hour.", "Fights go back and forth: you strike, and the foe strikes back. The game rolls every die and keeps every secret, while your AI tells the story."],
-        caps: ["Pick one of three heroes, each built to fight a different way.", "You strike, then the foe rolls to strike back. The game rolls both.", "Find the final foe’s weakness, and the run ends in a scene of its own. Every roll is kept."],
-        tags: ["Adventure", "One run a week"],
-        ai: "Plays dungeon master: tells the story, voices the people you meet, and asks what you do next."
+        ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go in one door at a time, never sure what waits behind the next. Your AI is your dungeon master. It sets each scene and voices the people you meet, and what your hero does is always yours to say.", "Ask an AI to run an adventure and it tends to let you win. Delve doesn’t. The game rolls every die and keeps every secret where your AI can’t reach, so a bad roll stays bad and every slip brings disaster closer. Read the clues, find what the final foe fears, and get there in one piece. When you win, you earned it."],
+        caps: ["Your hero steps into the first room. What happens next is up to you.", "Every roll is shown. Your AI tells it, but it can’t change it.", "Win or fall, the ending is yours to keep, with every roll that got you there."],
+        tags: ["Adventure", "Solo tabletop RPG"],
+        ai: "Plays dungeon master: sets each scene, voices the people you meet and asks what you do. It never decides for you.",
+        server: "Rolls every die and keeps every secret: the rooms ahead, each foe’s weakness, the danger rising. It decides what happens and records every roll."
       },
       situation: {
-        h: "A new adventure every week, and a fight that hits back.",
-        blurb: "A weekly adventure, played on real dice.",
-        ps: ["Each week brings a new setting, new foes and a new story. Pick one of three heroes, go room by room, and face the final foe at the end. About half an hour.", "Fights go back and forth: you strike, and the foe strikes back. The game rolls every die and keeps every secret, while your AI tells the story."],
-        caps: ["Pick one of three heroes, each built to fight a different way.", "You strike, then the foe rolls to strike back. The game rolls both.", "Find the final foe’s weakness, and the run ends in a scene of its own. Every roll is kept."],
-        tags: ["Adventure", "One run a week"],
-        ai: "Plays dungeon master: tells the story, voices the people you meet, and asks what you do next."
+        h: "Your AI tells the story. The dice decide it.",
+        blurb: "A weekly dice adventure. You play the hero.",
+        ps: ["Each week, Delve sends you somewhere new: a colony ship drifting off course, a megacorp’s tower by night, the maze where the Minotaur sleeps. Pick your hero and go in one door at a time, never sure what waits behind the next. Your AI is your dungeon master. It sets each scene and voices the people you meet, and what your hero does is always yours to say.", "Ask an AI to run an adventure and it tends to let you win. Delve doesn’t. The game rolls every die and keeps every secret where your AI can’t reach, so a bad roll stays bad and every slip brings disaster closer. Read the clues, find what the final foe fears, and get there in one piece. When you win, you earned it."],
+        caps: ["Your hero steps into the first room. What happens next is up to you.", "Every roll is shown. Your AI tells it, but it can’t change it.", "Win or fall, the ending is yours to keep, with every roll that got you there."],
+        tags: ["Adventure", "Solo tabletop RPG"],
+        ai: "Plays dungeon master: sets each scene, voices the people you meet and asks what you do. It never decides for you.",
+        server: "Rolls every die and keeps every secret: the rooms ahead, each foe’s weakness, the danger rising. It decides what happens and records every roll."
       }
     },
     mystery: {
@@ -10759,7 +10761,7 @@
     if (pgcCanon) return;
     pgcCanon = {};
     PGC_GAMES.forEach((id) => {
-      pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), ai: GS_PAGES[id].who && GS_PAGES[id].who.ai };
+      pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), ai: GS_PAGES[id].who && GS_PAGES[id].who.ai, server: GS_PAGES[id].who && GS_PAGES[id].who.server };
     });
   };
   const pgcApply = (id, rule) => {
@@ -10770,7 +10772,10 @@
       GS_PAGES[k].pitch.ps = c2.ps.slice();
       GS_GAMES[k].blurb = c2.blurb;
       if (c2.tags) GS_PAGES[k].tags = c2.tags.slice();
-      if (GS_PAGES[k].who) GS_PAGES[k].who.ai = c2.ai;
+      if (GS_PAGES[k].who) {
+        GS_PAGES[k].who.ai = c2.ai;
+        GS_PAGES[k].who.server = c2.server;
+      }
       GS_CHATS[k].forEach((x, i) => {
         x.cap = c2.caps[i];
       });
@@ -10785,6 +10790,7 @@
     });
     if (r.tags) GS_PAGES[id].tags = r.tags.slice();
     if (r.ai) GS_PAGES[id].who.ai = r.ai;
+    if (r.server) GS_PAGES[id].who.server = r.server;
     if (r.blurb) GS_GAMES[id].blurb = r.blurb === "h" ? GS_PAGES[id].pitch.h : r.blurb;
   };
   const PgcPreview = ({ id }) => {
@@ -10798,7 +10804,7 @@
       by: "Backed by the product advisor.",
       for: [
         "One line to keep true. The heading is also the card line, the link preview and what the AI reads in its library. Those must describe the game plainly, not tease it, so the heading meets that bar too, and nothing drifts.",
-        "A stranger learns what they would do. Games played in your chat are new, so “pick a hero, go room by room” sells the play before any story.",
+        "A stranger learns what they would do. Games played in your chat are new, so “be the hero of a new adventure every week” says what you get before any story.",
         "Agents can check it. Every line traces to the game spec, which holds every week.",
         "Guess already reads this way, and you found its page largely good."
       ],
