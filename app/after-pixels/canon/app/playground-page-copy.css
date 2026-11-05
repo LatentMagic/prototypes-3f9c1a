@@ -3,7 +3,7 @@
 .pgc-strip-h { margin: 0; font: 600 14px/1.3 var(--font-text); color: var(--muted); }
 .pgc-strip-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
 .pgc-fig { margin: 0; display: grid; gap: 8px; width: min(320px, 100%); font: 400 13px/1.3 var(--font-text); color: var(--muted); }
-.pgc-card { min-width: 0; }
+.pgc-card { min-width: 0; width: 220px; } /* the narrowest a real game card gets (the More games grid at tablet width) */
 /* A shared link's preview: picture on top, then the site, the name and the one line. */
 .pgc-prev { display: grid; width: 100%; background: var(--card); border: 1px solid var(--control-edge); color: var(--text); }
 .pgc-prev-text { display: grid; gap: 4px; padding: 12px 14px; font: 400 14px/1.35 var(--font-text); }
