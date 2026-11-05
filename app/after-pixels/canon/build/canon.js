@@ -5028,10 +5028,10 @@
         art: "salvage",
         route: "salvage",
         ed: ["sea", "seas"],
-        edLine: "You get thirty dives to find five wrecks.",
+        edLine: "You get twenty dives to find five wrecks.",
         daily: true,
         once: true,
-        blurb: "Five wrecks lie under today’s sea. Find them in thirty dives.",
+        blurb: "Five wrecks lie under today’s sea. Find them in twenty dives.",
         tags: ["Daily", "15 min"]
       }),
       common: gsAccess({
@@ -5406,17 +5406,17 @@
           label: "ONLY WITH THE PASS",
           heading: "A new sea every day",
           button: "Play today’s sea",
-          steps: [GS_STEP_CONNECT, dpStep("Find today’s five wrecks.", " You get thirty dives."), dpSeeResult],
+          steps: [GS_STEP_CONNECT, dpStep("Find today’s five wrecks.", " You get twenty dives."), dpSeeResult],
           small: GS_NAME.salvage + " comes only with the After Pixels Pass."
         },
         facts: { long: "15 min", often: "New every day" },
         tags: [],
-        pitch: { h: "Five wrecks lie somewhere under you. Find them in thirty dives.", ps: [
+        pitch: { h: "Five wrecks lie somewhere under you. Find them in twenty dives.", ps: [
           "Call a square from A1 to H8 and dive. Each dive comes back as a hit, a miss or sunk.",
           "Your AI reads the sea back to you after every dive, row by row. The game engine holds the wrecks. Call your first square."
         ] },
         who: { ai: "Reads the sea back to you after every dive, row by row.", server: "Holds the wrecks, answers every dive and counts the dives you have left." },
-        week: { title: "Today’s sea", line: "You get thirty dives to find five wrecks.", session: "salvage-today" }
+        week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
       },
       common: {
         rhythm: "NEW EVERY DAY",
