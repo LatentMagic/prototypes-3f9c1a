@@ -132,12 +132,12 @@ const DlcFacts = ({ phone }) => {
   const made = <DlcFact label="Made by"><DlcOut>Harness Intent Ltd</DlcOut></DlcFact>;
   const cats = <DlcFact label="Categories"><div style={dlcS.chips}><span style={dlcS.chip}>Games</span><span style={dlcS.chip}>Problems &amp; puzzles</span></div></DlcFact>;
   const sign = <DlcFact label="Sign-in"><div style={dlcS.value}>Required</div></DlcFact>;
-  const url = <DlcFact label="Connector URL"><div style={dlcS.url}>https://&lt;domain&gt;/mcp</div></DlcFact>;
+  const url = <DlcFact label="Connector URL"><div style={dlcS.url}>https://play.afterpixels.com</div></DlcFact>;
   const more = (
     <DlcFact label="More info">
       <div style={dlcS.more}>
         <DlcOut title="<domain>/how-it-works">Documentation</DlcOut>
-        <DlcOut title="support@harnessintent.com">Support</DlcOut>
+        <DlcOut title="support@afterpixels.com">Support</DlcOut>
         <DlcOut title="<domain>/privacy">Privacy Policy</DlcOut>
       </div>
     </DlcFact>

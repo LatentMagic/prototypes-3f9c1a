@@ -10,7 +10,7 @@ export const useGs = () => React.useContext(GsCtx);
 
 export const GS = {
   today: 'Tuesday 6 October',
-  link: 'https://afterpixels.com/mcp',
+  link: 'https://play.afterpixels.com',
   email: 'you@example.com',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
   works: 'ChatGPT · Claude · Gemini · OpenClaw · any assistant that supports MCP connectors',

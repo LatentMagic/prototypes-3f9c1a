@@ -20,16 +20,16 @@ const GS_AI_LOGO = {
 const GS_AI_PLUGIN = { claude: ['Claude', 'https://claude.ai/settings/connectors'], chatgpt: ['ChatGPT', 'https://chatgpt.com/'] };
 // Other AIs. OpenClaw's steps are unverified placeholders.
 const GS_AI_OTHERS = [
-  ['openclaw', 'OpenClaw', ['In a terminal, run openclaw mcp add and give it the address as the URL.', 'Approve the connection, then sign in to After Pixels when OpenClaw asks.']],
-  ['gemini', 'Gemini', ['In Gemini, open Settings, then Custom apps, and add an app. Paste the address there.', 'Approve the connection, then sign in to After Pixels when Gemini asks.']],
-  ['other', 'Other', ['In your AI’s settings, find where it adds MCP connectors or custom apps. Paste the address there.', 'Approve the connection, then sign in to After Pixels when it asks.']],
+  ['openclaw', 'OpenClaw', ['In a terminal, run openclaw mcp add, name it After Pixels, and give it the address as the URL.', 'Approve the connection, then sign in to After Pixels when OpenClaw asks.']],
+  ['gemini', 'Gemini', ['In Gemini, open Settings, then Custom apps, and add an app. Name it After Pixels and paste the address.', 'Approve the connection, then sign in to After Pixels when Gemini asks.']],
+  ['other', 'Other', ['In your AI’s settings, find where it adds MCP connectors or custom apps. Name it After Pixels and paste the address.', 'Approve the connection, then sign in to After Pixels when it asks.']],
 ];
 const GsAiLogo = ({ ai, size = 20 }) => <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" focusable="false"><path d={GS_AI_LOGO[ai]} /></svg>;
 
 // ---- Prompts (drafts, not ratified). A request is { kind: 'games' } | { kind: 'game', gid } | { kind: 'edition', e }. ----
 const gsEdPromptName = (e) => (e.title ? GS_GAMES[e.gid].name + ', “' + e.title + '”' : GS_GAMES[e.gid].name + ' #' + e.n + (e.title ? ', “' + e.title + '”' : ''));
-export const gsPromptText = (r) => r.kind === 'games' ? 'Load the After Pixels games tool and show me the games it lists, with a line about each.'
-  : 'Load the After Pixels games tool and start ' + (r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + '. Run it exactly as the tool says.';
+export const gsPromptText = (r) => r.kind === 'games' ? 'Play After Pixels.'
+  : 'Play ' + (r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + ' on After Pixels.';
 const gsPromptTitle = (r) => r.kind === 'edition' ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
 // What a play control starts: on a session's page, the edition that session belongs to; elsewhere, or for a session that names
 // no edition (noEd), the game.
@@ -128,7 +128,7 @@ export const GsConnect = () => {
         </div>
       </DS.Card>
       <section className="hw-band">
-        <div className="gs-stack-sm"><h2 className="mcp-t-sec">Start playing</h2><p className="gs-muted">Paste this into your AI and it lists every game. Pick one and it starts.</p></div>
+        <div className="gs-stack-sm"><h2 className="mcp-t-sec">Start playing</h2><p className="gs-muted">Say this to your AI and it lists every game. Pick one and it starts.</p></div>
         <div className="hw-promptrow"><GsPrompt text={t} /><GsCopyPrompt text={t} /></div>
       </section>
       <div className="gs-grid2">

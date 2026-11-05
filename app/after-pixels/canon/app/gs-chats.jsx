@@ -44,7 +44,7 @@ export const GsChatRow = ({ id }) => {
 export function initGsChats() {
 GS_CHATS = {
   word: [
-    { cap: 'Say you want to play. Everyone gets the same word today.', turns: [gscU('I want to play Daily Word.'),
+    { cap: 'Say you want to play. Everyone gets the same word today.', turns: [gscU('Play Daily Word on After Pixels.'),
       gscAi('daily-word', ['Daily Word No. 212 is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
     { cap: 'Green: right place. Amber: in the word, wrong place. Grey: not in it.', turns: [gscU('crane'), gscAi('daily-word', 'No letters in the word. 5 guesses left.'), gscU('slate'),
       gscAi('daily-word', 'S is in place. L and T are in the word. 4 guesses left.', [{ type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'CRANE', marks: 'xxxxx' }, { letters: 'SLATE', marks: 'hnxnx' }] }])] },
@@ -52,7 +52,7 @@ GS_CHATS = {
       gscAi('daily-word', 'The word contains the letter I. One hint left today.')] },
   ],
   groups: [
-    { cap: 'Sixteen words hide four groups of four.', turns: [gscU('I want to play Daily Groups.'),
+    { cap: 'Sixteen words hide four groups of four.', turns: [gscU('Play Daily Groups on After Pixels.'),
       gscAi('daily-groups', 'Find four groups of four. You can make four mistakes.', [{ type: 'wordboard', words: ['BASS', 'PIKE', 'FROST', 'RAIL', 'CARP', 'CHORD', 'MIST', 'GATE', 'SOLE', 'SCALE', 'HAIL', 'POST', 'PERCH', 'NOTE', 'SLEET', 'PANEL'] }])] },
     { cap: 'Each set of four goes to the engine, which checks it and counts your mistakes.', turns: [gscU('Bass, pike, carp, sole.'), gscAi('daily-groups', 'One away. 3 mistakes left.'),
       gscU('Pike, carp, sole, perch.'), gscAi('daily-groups', 'Three groups to go.', [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }], words: ['BASS', 'FROST', 'RAIL', 'CHORD', 'MIST', 'GATE', 'SCALE', 'HAIL', 'POST', 'NOTE', 'SLEET', 'PANEL'] }])] },
@@ -60,7 +60,7 @@ GS_CHATS = {
       gscAi('daily-groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }, { label: 'Weather', words: ['FROST', 'MIST', 'HAIL', 'SLEET'] }, { label: 'Music', words: ['BASS', 'CHORD', 'SCALE', 'NOTE'] }, { label: 'Parts of a fence', words: ['RAIL', 'GATE', 'POST', 'PANEL'] }], words: [] }])] },
   ],
   mystery: [
-    { cap: 'A body, four suspects and an inspector who answers yes or no.', turns: [gscU('I want to play Daily Mystery.'),
+    { cap: 'A body, four suspects and an inspector who answers yes or no.', turns: [gscU('Play Daily Mystery on After Pixels.'),
       gscAi('mystery', ['Daily Mystery No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.', 'The body was found in the dining room. Read the clues, ask the inspector, then make one accusation.'])] },
     { cap: 'Two questions a day: was a suspect in a room, or did they have a weapon?', turns: [gscU('Was Delphine Rooke in the study?'), gscAi('mystery', 'The inspector says yes. One question left today.'),
       gscU('Did Arthur Penhallow have the paper knife?'), gscAi('mystery', 'Yes. That was your last question.')] },
@@ -69,7 +69,7 @@ GS_CHATS = {
   ],
   // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
   escape: [
-    { cap: 'The door locks behind you. Look around.', turns: [gscU('I want to play Escape.'),
+    { cap: 'The door locks behind you. Look around.', turns: [gscU('Play Escape on After Pixels.'),
       gscAi('escape', ['Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.', 'What do you examine first?'])] },
     { cap: 'Every lock has three hints. A hint never costs a try.', turns: [gscU('Examine the workbench.'),
       gscAi('escape', GS_ES1.bench),
@@ -79,7 +79,7 @@ GS_CHATS = {
       gscAi('escape', 'The lock gives and the oak door swings open. Escaped in 28 min, under par, with 1 hint and 2 wrong tries.', null, [{ type: 'result', title: 'The Clockmaker’s Study', status: 'Escaped', stats: [{ label: 'Time', value: '28 min, under par' }, { label: 'Hints', value: 1 }, { label: 'Wrong tries', value: 2 }], actions: GSC_WIN }])] },
   ],
   casebook: [
-    { cap: 'Three guests were still up. Sixteen turns to find out why.', turns: [gscU('I want to play Casebook.'),
+    { cap: 'Three guests were still up. Sixteen turns to find out why.', turns: [gscU('Play Casebook on After Pixels.'),
       gscAi('casebook', ['The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.', 'You have sixteen turns. Where do you start?'])] },
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
@@ -94,7 +94,7 @@ GS_CHATS = {
       gscAi('delve', 'Grizzletooth flees, and you lead Elsie out into the moonlight. Every roll is on your session page.', [{ type: 'mono', text: 'Grizzletooth: defeated\nBryn the Fighter\n✅ Elsie rescued · 13 rolls' }])] },
   ],
   barrow: [
-    { cap: 'Choose a hero. The engine sets the world.', turns: [gscU('I want to play The Barrow of Hollowmere.'),
+    { cap: 'Choose a hero. The engine sets the world.', turns: [gscU('Play The Barrow of Hollowmere on After Pixels.'),
       gscAi('hollowmere', ['Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.', 'Will you go as a fighter, a rogue or a wizard?'])] },
     { cap: 'Every attack is a roll the engine makes, and the dice are the truth.', turns: [gscU('I attack the skeleton with my longsword.'),
       gscAi('hollowmere', 'Your blade bites through old bone. The barrow skeleton falls apart on the stone.', [{ type: 'mono', text: 'Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage' }])] },
@@ -102,7 +102,7 @@ GS_CHATS = {
       gscAi('hollowmere', 'The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.', [{ type: 'mono', text: 'Quest complete\n+100 XP' }])] },
   ],
   hunter: [
-    { cap: 'Grey dawn. The band sets out without waiting.', turns: [gscU('I want to play 36,000 Summers Ago.'),
+    { cap: 'Grey dawn. The band sets out without waiting.', turns: [gscU('Play 36,000 Summers Ago on After Pixels.'),
       gscAi('summers', ['Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.', 'What do you do?'])] },
     { cap: 'The engine rolls the dice and keeps the time.', turns: [gscU('I follow the gatherers up to the plateau.'),
       gscAi('summers', 'Ren shows you where wild onions grow under the scree. By midday your bag is heavy.', [{ type: 'roll', label: 'Foraging', roll: 14, mod: 2, target: 12, result: 'hit' }])] },

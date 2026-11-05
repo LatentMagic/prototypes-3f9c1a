@@ -24,7 +24,7 @@ const GS_MORE = [
       often: 'New every day', h: 'One line in code. Crack it before midnight.',
       ps: ['Every letter stands for another. Guess a few, test them on the line, and watch the words come through.', 'Your AI takes your guesses and reads back the line as it stands. The game engine holds the key. Name your first letter.'],
       ai: 'Takes your letter swaps and reads the line back to you.', server: 'Holds the key, checks every swap and counts your hints.' },
-    chat: ['Swap a letter and the whole line changes.', 'I want to play Daily Cipher.', ['Daily Cipher No. 41. One line, every letter swapped for another.', 'QEB NRFZH YOLTK CLU. Which letter first?']] },
+    chat: ['Swap a letter and the whole line changes.', 'Play Daily Cipher on After Pixels.', ['Daily Cipher No. 41. One line, every letter swapped for another.', 'QEB NRFZH YOLTK CLU. Which letter first?']] },
   { k: 'nighttrain', name: 'The Night Train', category: 'MYSTERY', when: 'Weekly', ed: ['case', 'cases'], long: '25–40 min', units: 'cases',
     editions: [['The Sleeper to Inverness', '5 October'], ['A Death in Carriage Four', '28 September'], ['The Last Stop at Crewe', '21 September']], once: true,
     blurb: 'Someone left the sleeper car and never reached the next one.', ready: 'This week’s case is ready',

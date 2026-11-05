@@ -508,7 +508,7 @@ Object.assign(GS_PAGES, {
 });
 Object.assign(GS_CHATS, {
   where: [
-    { cap: 'Name a country. Everyone hunts the same one today.', turns: [gscU('I want to play Where.'),
+    { cap: 'Name a country. Everyone hunts the same one today.', turns: [gscU('Play Where on After Pixels.'),
       gscAi('where', ['Where #' + DP_NO + '. Today’s country is hidden, and you have six guesses.', 'Each miss tells you how far it is from today’s country, border to border. Name your first country.'])] },
     { cap: 'Every miss comes back as a distance, measured border to border.', turns: [gscU('Spain.'), gscAi('where', 'Spain is ' + dpKm(1110) + ' from today’s country. 5 guesses left.'),
       gscU('Poland.'), gscAi('where', 'Poland is ' + dpKm(80) + ' away. 4 guesses left.')] },
@@ -516,7 +516,7 @@ Object.assign(GS_CHATS, {
       gscU('Hungary.'), gscAi('where', ['Found in 3 of 6, with the hint.', 'Hungary sits in the Carpathian Basin, and the Danube runs through Budapest.'])] },
   ],
   chain: [
-    { cap: 'You get both ends of the line and every first letter.', turns: [gscU('I want to play Chain.'),
+    { cap: 'You get both ends of the line and every first letter.', turns: [gscU('Play Chain on After Pixels.'),
       gscAi('chain', ['Chain #' + DP_NO + '. Six words, each joined to the next. Guess inward from either end.'], null, [dpMono(dpChEnds(CH_TODAY))])] },
     { cap: 'A wrong guess shows you the next letter.', turns: [gscU('Ball.'), gscAi('chain', 'Ball is right: snowball.'),
       gscU('Race.'), gscAi('chain', 'Not race. The next word starts RO.')] },
@@ -524,13 +524,13 @@ Object.assign(GS_CHATS, {
       gscAi('chain', ['Service is right. The chain is done, with 2 wrong guesses.', 'Snowball, ballroom, room service, service station, station wagon.'])] },
   ],
   salvage: [
-    { cap: 'Five wrecks lie somewhere under an eight-by-eight sea.', turns: [gscU('I want to play Salvage.'),
+    { cap: 'Five wrecks lie somewhere under an eight-by-eight sea.', turns: [gscU('Play Salvage on After Pixels.'),
       gscAi('salvage', ['Salvage #' + DP_NO + '. Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.', 'You have ' + SLV_DIVES + ' dives. Call your first square.'], null, [dpMono(svBoard(slvPlayAt('won', 0)))])] },
     { cap: 'Each dive comes back as a hit, a miss or sunk.', turns: [...svDive('won', 1), ...svDive('won', 2)] },
     { cap: 'The board is redrawn after every dive, so your AI can read it aloud.', turns: svDive('won', 4, svBoard(slvPlayAt('won', 4))) },
   ],
   common: [
-    { cap: 'The game shows one item at a time.', turns: [gscU('I want to play Common.'),
+    { cap: 'The game shows one item at a time.', turns: [gscU('Play Common on After Pixels.'),
       gscAi('common', 'Common No. ' + CM_NO + '. Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.', null, [dpMono('EGG')])] },
     { cap: 'The earlier you name the connection, the more it scores.', turns: [gscU('Another item.'),
       gscAi('common', 'A right guess now scores 3.', null, [dpMono('EGG\nTORTOISE')]),

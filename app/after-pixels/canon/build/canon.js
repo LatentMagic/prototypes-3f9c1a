@@ -1024,7 +1024,7 @@
   const useGs = () => React$1.useContext(GsCtx);
   const GS = {
     today: "Tuesday 6 October",
-    link: "https://afterpixels.com/mcp",
+    link: "https://play.afterpixels.com",
     purchase: "Purchases only ever happen on this site; your AI will never ask you to pay.",
     works: "ChatGPT · Claude · Gemini · OpenClaw · any assistant that supports MCP connectors"
   };
@@ -1892,7 +1892,7 @@
     GS_CHATS = {
       word: [
         { cap: "Say you want to play. Everyone gets the same word today.", turns: [
-          gscU("I want to play Daily Word."),
+          gscU("Play Daily Word on After Pixels."),
           gscAi("daily-word", ["Daily Word No. 212 is ready. You have six tries to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
         { cap: "Green: right place. Amber: in the word, wrong place. Grey: not in it.", turns: [
@@ -1908,7 +1908,7 @@
       ],
       groups: [
         { cap: "Sixteen words hide four groups of four.", turns: [
-          gscU("I want to play Daily Groups."),
+          gscU("Play Daily Groups on After Pixels."),
           gscAi("daily-groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Each set of four goes to the engine, which checks it and counts your mistakes.", turns: [
@@ -1924,7 +1924,7 @@
       ],
       mystery: [
         { cap: "A body, four suspects and an inspector who answers yes or no.", turns: [
-          gscU("I want to play Daily Mystery."),
+          gscU("Play Daily Mystery on After Pixels."),
           gscAi("mystery", ["Daily Mystery No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.", "The body was found in the dining room. Read the clues, ask the inspector, then make one accusation."])
         ] },
         { cap: "Two questions a day: was a suspect in a room, or did they have a weapon?", turns: [
@@ -1941,7 +1941,7 @@
       // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
       escape: [
         { cap: "The door locks behind you. Look around.", turns: [
-          gscU("I want to play Escape."),
+          gscU("Play Escape on After Pixels."),
           gscAi("escape", ["Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
         ] },
         { cap: "Every lock has three hints. A hint never costs a try.", turns: [
@@ -1957,7 +1957,7 @@
       ],
       casebook: [
         { cap: "Three guests were still up. Sixteen turns to find out why.", turns: [
-          gscU("I want to play Casebook."),
+          gscU("Play Casebook on After Pixels."),
           gscAi("casebook", ["The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
         ] },
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
@@ -1980,7 +1980,7 @@
       ],
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
-          gscU("I want to play The Barrow of Hollowmere."),
+          gscU("Play The Barrow of Hollowmere on After Pixels."),
           gscAi("hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
@@ -1994,7 +1994,7 @@
       ],
       hunter: [
         { cap: "Grey dawn. The band sets out without waiting.", turns: [
-          gscU("I want to play 36,000 Summers Ago."),
+          gscU("Play 36,000 Summers Ago on After Pixels."),
           gscAi("summers", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
         ] },
         { cap: "The engine rolls the dice and keeps the time.", turns: [
@@ -5440,7 +5440,7 @@
     Object.assign(GS_CHATS, {
       where: [
         { cap: "Name a country. Everyone hunts the same one today.", turns: [
-          gscU("I want to play Where."),
+          gscU("Play Where on After Pixels."),
           gscAi("where", ["Where #" + DP_NO + ". Today’s country is hidden, and you have six guesses.", "Each miss tells you how far it is from today’s country, border to border. Name your first country."])
         ] },
         { cap: "Every miss comes back as a distance, measured border to border.", turns: [
@@ -5458,7 +5458,7 @@
       ],
       chain: [
         { cap: "You get both ends of the line and every first letter.", turns: [
-          gscU("I want to play Chain."),
+          gscU("Play Chain on After Pixels."),
           gscAi("chain", ["Chain #" + DP_NO + ". Six words, each joined to the next. Guess inward from either end."], null, [dpMono(dpChEnds(CH_TODAY))])
         ] },
         { cap: "A wrong guess shows you the next letter.", turns: [
@@ -5474,7 +5474,7 @@
       ],
       salvage: [
         { cap: "Five wrecks lie somewhere under an eight-by-eight sea.", turns: [
-          gscU("I want to play Salvage."),
+          gscU("Play Salvage on After Pixels."),
           gscAi("salvage", ["Salvage #" + DP_NO + ". Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.", "You have " + SLV_DIVES + " dives. Call your first square."], null, [dpMono(svBoard(slvPlayAt("won", 0)))])
         ] },
         { cap: "Each dive comes back as a hit, a miss or sunk.", turns: [...svDive("won", 1), ...svDive("won", 2)] },
@@ -5482,7 +5482,7 @@
       ],
       common: [
         { cap: "The game shows one item at a time.", turns: [
-          gscU("I want to play Common."),
+          gscU("Play Common on After Pixels."),
           gscAi("common", "Common No. " + CM_NO + ". Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.", null, [dpMono("EGG")])
         ] },
         { cap: "The earlier you name the connection, the more it scores.", turns: [
@@ -6221,13 +6221,13 @@
   };
   const GS_AI_PLUGIN = { claude: ["Claude", "https://claude.ai/settings/connectors"], chatgpt: ["ChatGPT", "https://chatgpt.com/"] };
   const GS_AI_OTHERS = [
-    ["openclaw", "OpenClaw", ["In a terminal, run openclaw mcp add and give it the address as the URL.", "Approve the connection, then sign in to After Pixels when OpenClaw asks."]],
-    ["gemini", "Gemini", ["In Gemini, open Settings, then Custom apps, and add an app. Paste the address there.", "Approve the connection, then sign in to After Pixels when Gemini asks."]],
-    ["other", "Other", ["In your AI’s settings, find where it adds MCP connectors or custom apps. Paste the address there.", "Approve the connection, then sign in to After Pixels when it asks."]]
+    ["openclaw", "OpenClaw", ["In a terminal, run openclaw mcp add, name it After Pixels, and give it the address as the URL.", "Approve the connection, then sign in to After Pixels when OpenClaw asks."]],
+    ["gemini", "Gemini", ["In Gemini, open Settings, then Custom apps, and add an app. Name it After Pixels and paste the address.", "Approve the connection, then sign in to After Pixels when Gemini asks."]],
+    ["other", "Other", ["In your AI’s settings, find where it adds MCP connectors or custom apps. Name it After Pixels and paste the address.", "Approve the connection, then sign in to After Pixels when it asks."]]
   ];
   const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: GS_AI_LOGO[ai] }));
   const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
-  const gsPromptText = (r) => r.kind === "games" ? "Load the After Pixels games tool and show me the games it lists, with a line about each." : "Load the After Pixels games tool and start " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + ". Run it exactly as the tool says.";
+  const gsPromptText = (r) => r.kind === "games" ? "Play After Pixels." : "Play " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + " on After Pixels.";
   const gsPromptTitle = (r) => r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
   const gsSessEd = (gs, sid) => {
     const s = GS_SESSIONS[sid];
@@ -6315,7 +6315,7 @@
   const GsConnect = () => {
     const [ai, setAi] = React$1.useState("openclaw");
     const t = gsPromptText({ kind: "games" });
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-md hw-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "You play every game inside your own AI. Connect it to After Pixels once and sign in, and nothing plays until you have.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-grid2" }, Object.keys(GS_AI_PLUGIN).map((k) => /* @__PURE__ */ React$1.createElement(GsAiCard, { key: k, k }))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-other" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Another AI"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "radiogroup", "aria-label": "Your AI" }, GS_AI_OTHERS.map(([id, l]) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, role: "radio", "aria-checked": ai === id, variant: ai === id ? "main" : "secondary", onClick: () => setAi(id) }, l)))), /* @__PURE__ */ React$1.createElement(GsOtherSteps, { id: ai }))), /* @__PURE__ */ React$1.createElement("section", { className: "hw-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Start playing"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Paste this into your AI and it lists every game. Pick one and it starts.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-promptrow" }, /* @__PURE__ */ React$1.createElement(GsPrompt, { text: t }), /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text: t }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Remove After Pixels in your AI’s settings, where you added it. Your results and history stay on After Pixels.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "If something doesn’t work, write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and say which AI you use."))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-md hw-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "You play every game inside your own AI. Connect it to After Pixels once and sign in, and nothing plays until you have.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-grid2" }, Object.keys(GS_AI_PLUGIN).map((k) => /* @__PURE__ */ React$1.createElement(GsAiCard, { key: k, k }))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-other" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Another AI"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "radiogroup", "aria-label": "Your AI" }, GS_AI_OTHERS.map(([id, l]) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, role: "radio", "aria-checked": ai === id, variant: ai === id ? "main" : "secondary", onClick: () => setAi(id) }, l)))), /* @__PURE__ */ React$1.createElement(GsOtherSteps, { id: ai }))), /* @__PURE__ */ React$1.createElement("section", { className: "hw-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Start playing"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Say this to your AI and it lists every game. Pick one and it starts.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-promptrow" }, /* @__PURE__ */ React$1.createElement(GsPrompt, { text: t }), /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text: t }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Remove After Pixels in your AI’s settings, where you added it. Your results and history stay on After Pixels.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "If something doesn’t work, write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and say which AI you use."))));
   };
   const GsPlayBox = ({ id }) => {
     const gs = useGs();
@@ -7263,8 +7263,8 @@
     const made = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Made by" }, /* @__PURE__ */ React$1.createElement(DlcOut, null, "Harness Intent Ltd"));
     const cats = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Categories" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.chips }, /* @__PURE__ */ React$1.createElement("span", { style: dlcS.chip }, "Games"), /* @__PURE__ */ React$1.createElement("span", { style: dlcS.chip }, "Problems & puzzles")));
     const sign = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Sign-in" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.value }, "Required"));
-    const url = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Connector URL" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.url }, "https://<domain>/mcp"));
-    const more = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "More info" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.more }, /* @__PURE__ */ React$1.createElement(DlcOut, { title: "<domain>/how-it-works" }, "Documentation"), /* @__PURE__ */ React$1.createElement(DlcOut, { title: "support@harnessintent.com" }, "Support"), /* @__PURE__ */ React$1.createElement(DlcOut, { title: "<domain>/privacy" }, "Privacy Policy")));
+    const url = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "Connector URL" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.url }, "https://play.afterpixels.com"));
+    const more = /* @__PURE__ */ React$1.createElement(DlcFact, { label: "More info" }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.more }, /* @__PURE__ */ React$1.createElement(DlcOut, { title: "<domain>/how-it-works" }, "Documentation"), /* @__PURE__ */ React$1.createElement(DlcOut, { title: "support@afterpixels.com" }, "Support"), /* @__PURE__ */ React$1.createElement(DlcOut, { title: "<domain>/privacy" }, "Privacy Policy")));
     if (phone) return /* @__PURE__ */ React$1.createElement("div", { style: dlcS.factsPhone }, /* @__PURE__ */ React$1.createElement("div", { style: dlcS.facts }, made, cats, sign), /* @__PURE__ */ React$1.createElement("div", { style: dlcS.facts }, url, more));
     return /* @__PURE__ */ React$1.createElement("div", { style: dlcS.facts }, made, cats, sign, url, more);
   };
@@ -10002,7 +10002,7 @@
         ai: "Takes your letter swaps and reads the line back to you.",
         server: "Holds the key, checks every swap and counts your hints."
       },
-      chat: ["Swap a letter and the whole line changes.", "I want to play Daily Cipher.", ["Daily Cipher No. 41. One line, every letter swapped for another.", "QEB NRFZH YOLTK CLU. Which letter first?"]]
+      chat: ["Swap a letter and the whole line changes.", "Play Daily Cipher on After Pixels.", ["Daily Cipher No. 41. One line, every letter swapped for another.", "QEB NRFZH YOLTK CLU. Which letter first?"]]
     },
     {
       k: "nighttrain",
