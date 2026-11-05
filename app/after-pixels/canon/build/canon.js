@@ -10510,7 +10510,7 @@
     const g = GS_GAMES[id];
     return /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev", role: "img", "aria-label": "Link preview: " + g.name + ". " + g.blurb }, /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-art" }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "wide" })), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgc-prev-site" }, "afterpixels.com"), /* @__PURE__ */ React$1.createElement("b", null, g.name), /* @__PURE__ */ React$1.createElement("span", null, g.blurb)));
   };
-  const PgcStrip = ({ id, rule }) => /* @__PURE__ */ React$1.createElement("section", { className: "pgc-strip", "aria-label": "Where the card line also appears" }, /* @__PURE__ */ React$1.createElement(PgcWhy, { rule }), /* @__PURE__ */ React$1.createElement("h2", { className: "pgc-strip-h" }, "Where the card line also appears"), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-strip-row" }, /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgc-card" }, /* @__PURE__ */ React$1.createElement(GsGameCard, { id })), /* @__PURE__ */ React$1.createElement("figcaption", null, "The game card at its narrowest (220px). The line should fit in two lines.")), /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig" }, /* @__PURE__ */ React$1.createElement(PgcPreview, { id }), /* @__PURE__ */ React$1.createElement("figcaption", null, "A shared link’s preview"))));
+  const PgcStrip = ({ id, rule }) => /* @__PURE__ */ React$1.createElement("section", { className: "pgc-strip", "aria-label": "Where the card line also appears" }, /* @__PURE__ */ React$1.createElement(PgcWhy, { rule }), /* @__PURE__ */ React$1.createElement("h2", { className: "pgc-strip-h" }, "Where the card line also appears"), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-strip-row" }, /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgc-card" }, /* @__PURE__ */ React$1.createElement(GsGameCard, { id })), /* @__PURE__ */ React$1.createElement("figcaption", null, "The game card at its narrowest (220px). The name and line must fit the card’s height: no taller than a one-line name and a two-line line.")), /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig" }, /* @__PURE__ */ React$1.createElement(PgcPreview, { id }), /* @__PURE__ */ React$1.createElement("figcaption", null, "A shared link’s preview"))));
   const PGC_WHY = {
     job: {
       h: "Why the job rule (recommended)",
@@ -10521,7 +10521,7 @@
         "Agents can check it. Every line traces to the game spec, which holds every week.",
         "Guess already reads this way, and you found its page largely good."
       ],
-      against: "The heading is held to the card’s two lines, story pages read flatter, and it ends the 6 October “cold open, with a dare” headings."
+      against: "The heading must fit on a game card, story pages read flatter, and it ends the 6 October “cold open, with a dare” headings."
     },
     situation: {
       h: "Why the situation rule",
