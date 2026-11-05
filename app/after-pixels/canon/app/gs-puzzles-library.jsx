@@ -111,16 +111,16 @@ PZ = {
     done: { st: { kind: 'ok', label: GS_RESULT.groups({ found: 4, mistakes: 1 }) }, line: 'You found all four groups with one mistake, and no hints.', bar: ['4 of 4 groups', 4, 4] }, recent: 'Your groups',
     ach: [{ k: 'g1', n: 'Solved', how: 'Find all four groups in a Daily Groups.', by: (p) => p.status.kind === 'ok' },
       { k: 'g0', n: 'Solved with no mistakes', how: 'Find all four groups without a mistake.', by: (p) => p.status.label === GS_RESULT.groups({ found: 4, mistakes: 0 }) },
-      { k: 'g7', n: 'Seven days in a row', how: 'Play Daily Groups seven days running.', of: 7 }],
+      { k: 'g7', n: 'Seven Days in a Row', how: 'Play Daily Groups seven days running.', of: 7 }],
   },
   mystery: {
     no: (i) => 'Accuse #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
     ok: () => GS_RESULT.mystery({ ok: true }), bad: GS_RESULT.mystery({ ok: false }),
     title: 'Today’s case', next: 'Next case: tomorrow',
     done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) } }, recent: 'Your cases',
-    ach: [{ k: 'm1', n: 'Case closed', how: 'Solve an Accuse case.', by: (p) => p.status.kind === 'ok' },
+    ach: [{ k: 'm1', n: 'Case Closed', how: 'Solve an Accuse case.', by: (p) => p.status.kind === 'ok' },
       { k: 'm0', n: 'Unaided', how: 'Solve a case without a hint.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && !s.hints; } },
-      { k: 'm7', n: 'Seven days in a row', how: 'Solve a case seven days running.', of: 7 }],
+      { k: 'm7', n: 'Seven Days in a Row', how: 'Solve a case seven days running.', of: 7 }],
   },
   // Escape: this week's room is No. 1 The Clockmaker’s Study; its finished play is escape-week. Earlier rooms: the foot of this file.
   escape: {
