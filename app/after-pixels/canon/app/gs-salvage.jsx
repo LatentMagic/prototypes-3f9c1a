@@ -17,6 +17,9 @@ const SLV_COLS = 'ABCDEFGH';
 const SLV_N8 = [1, 2, 3, 4, 5, 6, 7, 8];
 export const SLV_WRECKS = [['A5', 'B5', 'C5', 'D5'], ['E3', 'F3', 'G3'], ['F6', 'G6', 'H6'], ['G8', 'H8'], ['C1', 'C2']];
 const SLV_SHOWN = { row: [3, 5, 6, 7], col: ['C', 'E', 'F', 'H'] };
+// KEEP: the dive total, which tools appear, the sonar ration and the margin counts come from the play's rules version (deployed
+// salvage-game.ts limitsFor) and its edition's shown lines, never from constants: 20 dives with the kit is v2 and v3's, v1 gave 35 and
+// no kit, and an edition with no shown lines has no margin counts.
 export const SLV_DIVES = 20;
 const SLV_TOOLS = { sonar: 'Sonar', detector: 'Metal detector', net: 'Dragnet' };
 export const SLV_ALL = Object.keys(SLV_TOOLS);
