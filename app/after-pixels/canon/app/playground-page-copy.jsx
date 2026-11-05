@@ -84,7 +84,7 @@ const PgcStrip = ({ id, rule }) => (
     <PgcWhy rule={rule} />
     <h2 className="pgc-strip-h">Where the card line also appears</h2>
     <div className="pgc-strip-row">
-      <figure className="pgc-fig"><div className="pgc-card"><GsGameCard id={id} /></div><figcaption>The game card at its narrowest (220px). The line should fit in two lines.</figcaption></figure>
+      <figure className="pgc-fig"><div className="pgc-card"><GsGameCard id={id} /></div><figcaption>The game card at its narrowest (220px). The name and line must fit the card’s height: no taller than a one-line name and a two-line line.</figcaption></figure>
       <figure className="pgc-fig"><PgcPreview id={id} /><figcaption>A shared link’s preview</figcaption></figure>
     </div>
   </section>);
@@ -96,7 +96,7 @@ const PGC_WHY = {
     'A stranger learns what they would do. Games played in your chat are new, so “pick a hero, go room by room” sells the play before any story.',
     'Agents can check it. Every line traces to the game spec, which holds every week.',
     'Guess already reads this way, and you found its page largely good.'],
-    against: 'The heading is held to the card’s two lines, story pages read flatter, and it ends the 6 October “cold open, with a dare” headings.' },
+    against: 'The heading must fit on a game card, story pages read flatter, and it ends the 6 October “cold open, with a dare” headings.' },
   situation: { h: 'Why the situation rule', by: 'Backed by the marketing advisor and Gemini.', for: [
     'The heading can hook. By the time you reach it, the page has said the name, the kind of game, the length and how often, so the heading’s job is pull.',
     'Links and the AI still get a plain line: the card line is written separately and says what you do.',
