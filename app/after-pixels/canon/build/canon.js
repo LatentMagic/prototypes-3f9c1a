@@ -4045,10 +4045,8 @@
   };
   const ACC_CASE = {
     no: 64,
-    scene: [
-      { id: "lodge", name: "The lodge", text: "An avalanche has blocked the only road down the mountain, and the guests are stuck at the Edelweiss Lodge until the snowploughs come." },
-      { id: "victim", name: "The victim", text: "Klaus Berger had raised the prices, called in old debts and insulted every one of his guests at dinner." }
-    ],
+    // The deployed case's scene, word for word: the setting's description, then who the victim was (case-generator.ts).
+    scene: [{ id: "scene", name: "The scene", text: "An avalanche has blocked the only road down the mountain, and the guests are stuck at the Edelweiss Lodge until the snowploughs come. Klaus Berger had raised the prices, called in old debts and insulted every one of his guests at dinner." }],
     suspects: [
       ["Mr Piers Fairfax", "A land agent who wants to build a hotel where the lodge stands."],
       ["Toby Lang", "A young instructor whose job depends on Berger’s mood."],
@@ -4120,7 +4118,7 @@
   const accGroups = (p) => {
     const named = (k, list) => list.map(([name, text]) => ({ id: k + ":" + name, name, text }));
     return [
-      { key: "scene", head: "Scene", items: ACC_CASE.scene, count: null },
+      { key: "scene", head: "Setting", items: ACC_CASE.scene, count: null },
       { key: "suspects", head: "Suspects", items: named("s", ACC_CASE.suspects), count: null },
       { key: "weapons", head: "Weapons", items: named("w", ACC_CASE.weapons), count: null },
       { key: "places", head: "Places", items: named("p", ACC_CASE.places), count: null },

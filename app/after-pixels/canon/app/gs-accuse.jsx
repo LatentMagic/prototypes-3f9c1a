@@ -1,6 +1,6 @@
 // ============================================================================
 // After Pixels — Accuse's session page (1236): the notebook, the board and the panel, on the shared session card (GsSessCard).
-//   Notebook: Escape's sheet as a case folder. Tabs Scene, Suspects, Weapons, Places, Clues, Hints; the open tab joins the folder,
+//   Notebook: Escape's sheet as a case folder. Tabs Setting, Suspects, Weapons, Places, Clues, Hints; the open tab joins the folder,
 //     which holds its chips and one reader. Hints is greyed out at 0.
 //   Board: the case's cards in three ruled columns, marked in pen once played. A ring only ever means the player's pick: green when
 //     right, amber when wrong. The truth the player missed is underlined once in green. No legend.
@@ -18,9 +18,8 @@ import { GS_SESSION_BODY } from './registry.js';
 
 const ACC_CASE = {
   no: 64,
-  scene: [
-    { id: 'lodge', name: 'The lodge', text: 'An avalanche has blocked the only road down the mountain, and the guests are stuck at the Edelweiss Lodge until the snowploughs come.' },
-    { id: 'victim', name: 'The victim', text: 'Klaus Berger had raised the prices, called in old debts and insulted every one of his guests at dinner.' }],
+  // The deployed case's scene, word for word: the setting's description, then who the victim was (case-generator.ts).
+  scene: [{ id: 'scene', name: 'The scene', text: 'An avalanche has blocked the only road down the mountain, and the guests are stuck at the Edelweiss Lodge until the snowploughs come. Klaus Berger had raised the prices, called in old debts and insulted every one of his guests at dinner.' }],
   suspects: [['Mr Piers Fairfax', 'A land agent who wants to build a hotel where the lodge stands.'], ['Toby Lang', 'A young instructor whose job depends on Berger’s mood.'],
     ['Anneliese Berger', 'His wife, who wants a divorce he refuses to give.'], ['Rick Dawson', 'A champion skier whose medal Berger said was won by cheating.']],
   weapons: [['Hunting knife', 'With a short, sharp blade.'], ['Bottle of schnapps', 'Strong, and nearly full.'], ['Snow shovel', 'Steel-edged.'],
@@ -70,7 +69,7 @@ const accGroups = (p) => {
   // Suspects, Weapons and Places show no count: every case has four of each (game spec daily-mystery.md), so the number never
   // changes and says nothing (owner's ruling). Clues (5 or 6) and Hints (0 to 2) keep theirs.
   return [
-    { key: 'scene', head: 'Scene', items: ACC_CASE.scene, count: null },
+    { key: 'scene', head: 'Setting', items: ACC_CASE.scene, count: null },
     { key: 'suspects', head: 'Suspects', items: named('s', ACC_CASE.suspects), count: null },
     { key: 'weapons', head: 'Weapons', items: named('w', ACC_CASE.weapons), count: null },
     { key: 'places', head: 'Places', items: named('p', ACC_CASE.places), count: null },
