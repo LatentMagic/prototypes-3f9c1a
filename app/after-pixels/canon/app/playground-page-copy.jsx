@@ -20,32 +20,28 @@ const PGC_COPY = {
   // AI's line are fixed under both rules: canon's name week 1's goblins and a room count that varies by week.
   delve: {
     job: {
-      h: 'Pick a hero and play a new adventure each week, room by room, on dice nobody can fudge.', blurb: 'h',
-      ps: ["Each week Delve opens a new adventure with its own setting, foes and story. You pick one of three heroes, explore a handful of rooms, choose what to search, fight and carry, and face the final foe at the end. A run takes about half an hour.",
-        "Fights go back and forth. You strike, and whatever stands against you strikes back. Your hero is dressed for the week, but always one of three kinds: one soaks up blows, one dodges them, and one hits hardest but can’t take much. Each has a heavy attack for the right moment, and one sure blow to save for when it counts.",
-        "The game rolls every die and keeps every secret, so nobody can fudge a roll or peek ahead. Your AI is the dungeon master: it tells the story and voices the people you meet, and every choice stays yours. Each miss raises the danger, and if it fills, the run is lost. The final foe has a weakness, and the clues to it are there to find."],
+      h: 'Pick a hero. Play a new adventure each week.', blurb: 'h',
+      ps: ["Each week brings a new setting, new foes and a new story. Pick one of three heroes, go room by room, and face the final foe at the end. About half an hour.", "Fights go back and forth: you strike, and the foe strikes back. The game rolls every die and keeps every secret, while your AI tells the story."],
       caps: ["Pick one of three heroes, each built to fight a different way.", "You strike, then the foe rolls to strike back. The game rolls both.", "Find the final foe’s weakness, and the run ends in a scene of its own. Every roll is kept."], tags: ['Adventure', 'One run a week'], ai: 'Plays dungeon master: tells the story, voices the people you meet, and asks what you do next.' },
     situation: {
-      h: 'A new adventure every week, and a fight that hits back.', blurb: 'A weekly adventure for your chat. Pick a hero, go room by room, and the game rolls real dice while your AI plays dungeon master.',
-      ps: ["Each week Delve opens a new adventure with its own setting, foes and story. You pick one of three heroes, explore a handful of rooms, choose what to search, fight and carry, and face the final foe at the end. A run takes about half an hour.",
-        "Fights go back and forth. You strike, and whatever stands against you strikes back. Your hero is dressed for the week, but always one of three kinds: one soaks up blows, one dodges them, and one hits hardest but can’t take much. Each has a heavy attack for the right moment, and one sure blow to save for when it counts.",
-        "The game rolls every die and keeps every secret, so nobody can fudge a roll or peek ahead. Your AI is the dungeon master: it tells the story and voices the people you meet, and every choice stays yours. Each miss raises the danger, and if it fills, the run is lost. The final foe has a weakness, and the clues to it are there to find."],
+      h: 'A new adventure every week, and a fight that hits back.', blurb: 'A weekly adventure, played on real dice.',
+      ps: ["Each week brings a new setting, new foes and a new story. Pick one of three heroes, go room by room, and face the final foe at the end. About half an hour.", "Fights go back and forth: you strike, and the foe strikes back. The game rolls every die and keeps every secret, while your AI tells the story."],
       caps: ["Pick one of three heroes, each built to fight a different way.", "You strike, then the foe rolls to strike back. The game rolls both.", "Find the final foe’s weakness, and the run ends in a scene of its own. Every roll is kept."], tags: ['Adventure', 'One run a week'], ai: 'Plays dungeon master: tells the story, voices the people you meet, and asks what you do next.' },
   },
   mystery: {
     job: {
-      h: 'Work out who did it, with what and where. You get one accusation.', blurb: 'h',
+      h: 'Work out who did it. You get one accusation.', blurb: 'h',
       ps: ['You get every clue at the start. Together they leave only one answer.', 'Two hints help when you’re stuck. Then make one accusation, checked part by part.'],
       caps: ['Every suspect, weapon, place and clue, given once at the start.', 'When you’re stuck, take a hint. You get two.', null] },
     situation: {
-      h: null, blurb: 'A daily murder mystery. Work out who did it from the clues, then accuse.',
+      h: null, blurb: 'A daily murder mystery, solved from clues.',
       caps: ['Every suspect, weapon, place and clue, given once at the start.', null, null] },
   },
   where: {
     job: {
       h: 'Find today’s country in six guesses.', blurb: 'h',
       ps: ['Name any country. The game tells you how far it lies from today’s, border to border.', 'Zero means the two touch. You get one hint: the compass direction from your last guess.'] },
-    situation: { h: null, blurb: 'A daily geography puzzle. Find today’s country in six guesses.' },
+    situation: { h: null, blurb: 'A daily geography puzzle. Six guesses.' },
   },
 };
 
@@ -88,7 +84,7 @@ const PgcStrip = ({ id, rule }) => (
     <PgcWhy rule={rule} />
     <h2 className="pgc-strip-h">Where the card line also appears</h2>
     <div className="pgc-strip-row">
-      <figure className="pgc-fig"><div className="pgc-card"><GsGameCard id={id} /></div><figcaption>The game card (More games, Discover)</figcaption></figure>
+      <figure className="pgc-fig"><div className="pgc-card"><GsGameCard id={id} /></div><figcaption>The game card at its narrowest (220px). The line should fit in two lines.</figcaption></figure>
       <figure className="pgc-fig"><PgcPreview id={id} /><figcaption>A shared link’s preview</figcaption></figure>
     </div>
   </section>);
@@ -100,7 +96,7 @@ const PGC_WHY = {
     'A stranger learns what they would do. Games played in your chat are new, so “pick a hero, go room by room” sells the play before any story.',
     'Agents can check it. Every line traces to the game spec, which holds every week.',
     'Guess already reads this way, and you found its page largely good.'],
-    against: 'Story pages read flatter, and it ends the 6 October “cold open, with a dare” headings.' },
+    against: 'The heading is held to the card’s two lines, story pages read flatter, and it ends the 6 October “cold open, with a dare” headings.' },
   situation: { h: 'Why the situation rule', by: 'Backed by the marketing advisor and Gemini.', for: [
     'The heading can hook. By the time you reach it, the page has said the name, the kind of game, the length and how often, so the heading’s job is pull.',
     'Links and the AI still get a plain line: the card line is written separately and says what you do.',
