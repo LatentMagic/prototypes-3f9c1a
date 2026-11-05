@@ -4747,7 +4747,7 @@
     return ["  A B C D E F G H", ...[0, 1, 2, 3, 4, 5, 6, 7].map((y) => y + 1 + " " + [0, 1, 2, 3, 4, 5, 6, 7].map((x) => mark[x + "," + y] || "·").join(" "))].join("\n");
   };
   const svSunk = (log) => log.filter((l) => l[1] === "sunk").length;
-  const dpSvHead = (n, log, hint) => "Salvage #" + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of 30 dives" + (hint ? " · 1 hint" : "");
+  const dpSvHead = (n, log, hint) => "Salvage #" + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of " + SLV_DIVES + " dives" + (hint ? " · 1 hint" : "");
   let SV_TODAY;
   let SV_TODAY_DIVES;
   let SV_TODAY_HINT;
@@ -4807,7 +4807,7 @@
     const hunt = first.concat(rest);
     const open = ([x, y]) => x >= 0 && y >= 0 && x < 8 && y < 8 && !tried.has(x + "," + y) && !clear.has(x + "," + y);
     const around = ([x, y]) => [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
-    while (log.length < 30 && sunk < 5) {
+    while (log.length < SLV_DIVES && sunk < 5) {
       let cell2 = null;
       while (queue.length && !cell2) {
         const q = queue.shift();
@@ -5000,7 +5000,7 @@
       return { ...base, ...own, share: x.line };
     }
     const d = dpSvDay(i, x.ok);
-    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of 30 dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
+    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of " + SLV_DIVES + " dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
   };
   const cmFoundIn = (p) => {
     const m = /^(\d) of 3 connections found$/.exec(((GS_SESSIONS[p.sid] || {}).figures || [])[1] || "");
@@ -5091,7 +5091,7 @@
     Object.assign(GS_RESULT, {
       where: (r) => r.ok ? "Found in " + r.guesses + " of 6" : "Not found",
       chain: (r) => r.given ? r.found + " of " + r.of + " words found" : "Solved, " + dpWrong(r.wrong),
-      salvage: (r) => r.found === 5 ? "All 5 wrecks, " + r.dives + " of 30 dives" : r.found + " of 5 wrecks found",
+      salvage: (r) => r.found === 5 ? "All 5 wrecks, " + r.dives + " of " + SLV_DIVES + " dives" : r.found + " of 5 wrecks found",
       common: (r) => "Completed · " + r.score + " of 15"
     });
     WH_TODAY = { a: "Hungary", g: [["Spain", 1110], ["Poland", 80]], hint: "From Poland, the country lies south" };
@@ -5137,7 +5137,7 @@
     CH_FAIL = { w: CH_TODAY.w, p: [["BELL", 1], ["BALL", 1], ["RACE", 2], ["ROAD", 2], ["ROOF", 2], ["SUITE", 3], ["SERVICE", 3], ["STORE", 4], ["STATION", 4]] };
     SV_COLS = "ABCDEFGH";
     SV_TODAY = [[[1, 1], [2, 1], [3, 1], [4, 1]], [[6, 0], [6, 1], [6, 2]], [[0, 4], [0, 5], [0, 6]], [[3, 4], [4, 4]], [[6, 6], [7, 6]]];
-    SV_TODAY_DIVES = svReplay(SV_TODAY, ["D4", "E2", "E3", "E1", "F2", "D2", "C2", "B2", "G2", "G3", "G1", "A6", "A5", "A7", "E6", "E5", "F5", "D5", "G6", "H8", "G7", "H7"].map((s) => [SV_COLS.indexOf(s[0]), +s.slice(1) - 1]));
+    SV_TODAY_DIVES = svReplay(SV_TODAY, ["D4", "E2", "E3", "E1", "F2", "D2", "C2", "B2", "G2", "G3", "G1", "A6", "A5", "A7", "E6", "E5", "D5", "H8", "G7", "H7"].map((s) => [SV_COLS.indexOf(s[0]), +s.slice(1) - 1]));
     SV_TODAY_HINT = { at: 11, what: "Sonar on column A", said: "3 wreck squares" };
     dpSvDay = /* @__PURE__ */ (() => {
       const memo = {};
@@ -5223,7 +5223,7 @@
         hints: 1,
         result: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }),
         date: GS.today,
-        figures: ["5 of 5 wrecks", SV_TODAY_DIVES.length + " of 30 dives", "1 hint"],
+        figures: ["5 of 5 wrecks", SV_TODAY_DIVES.length + " of " + SLV_DIVES + " dives", "1 hint"],
         share: GS_RESULT.salvage({ found: 5, dives: SV_TODAY_DIVES.length }),
         shareLines: [dpSvHead(DP_NO, SV_TODAY_DIVES, true), ...svMarks(SV_TODAY_DIVES)],
         lines: svLines(SV_TODAY_DIVES, SV_TODAY_HINT)
@@ -5237,7 +5237,7 @@
         live: true,
         result: "In progress",
         date: GS.today,
-        figures: [svSunk(dpSvL) + " of 5 wrecks", dpSvL.length + " of 30 dives"],
+        figures: [svSunk(dpSvL) + " of 5 wrecks", dpSvL.length + " of " + SLV_DIVES + " dives"],
         share: null,
         lines: svLines(dpSvL)
       },
@@ -5284,10 +5284,10 @@
     const dpDives = SV_TODAY_DIVES.map((d) => d[0]);
     const dpCells = (list) => list.map((c) => [SV_COLS.indexOf(c[0]), +c.slice(1) - 1]);
     const dpPickSv = (extra, upTo, now) => {
-      const log = svReplay(SV_TODAY, [...dpDives.slice(0, upTo), ...dpCells(extra), ...dpDives.slice(upTo)].slice(0, 30));
+      const log = svReplay(SV_TODAY, [...dpDives.slice(0, upTo), ...dpCells(extra), ...dpDives.slice(upTo)].slice(0, SLV_DIVES));
       const sunk = svSunk(log);
       const res = GS_RESULT.salvage({ found: sunk, dives: log.length });
-      return { ...GS_SESSIONS["salvage-today"], loss: sunk < 5, result: res, share: res, figures: [sunk + " of 5 wrecks", log.length + " of 30 dives", "1 hint"], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
+      return { ...GS_SESSIONS["salvage-today"], loss: sunk < 5, result: res, share: res, figures: [sunk + " of 5 wrecks", log.length + " of " + SLV_DIVES + " dives", "1 hint"], shareLines: [dpSvHead(DP_NO, log, true), ...svMarks(log)], lines: svLines(log, SV_TODAY_HINT), now };
     };
     const dpPickCm = (play, recovered, now) => {
       const { day, ...own } = cmSess(CM_NO, play);
@@ -5301,12 +5301,12 @@
       "salvage-today-hard": dpPickSv(
         ["A1", "H1", "H2", "A8", "C7", "F7", "B4", "F8"],
         14,
-        { line: "You found all five wrecks on your last dive, with one hint.", bar: ["30 of 30 dives", 30, 30] }
+        { line: "You found all five wrecks on your last dive, with one hint.", bar: [SLV_DIVES + " of " + SLV_DIVES + " dives", SLV_DIVES, SLV_DIVES] }
       ),
       "salvage-today-failed": dpPickSv(
         ["A1", "H1", "H2", "A8", "C7", "F7", "B4", "F8", "C4", "B6", "H4", "H5", "D7", "E8", "C1", "D8"],
         14,
-        { line: "You used all 30 dives and found 3 of the 5 wrecks.", bar: ["30 of 30 dives", 30, 30] }
+        { line: "You used all " + SLV_DIVES + " dives and found 3 of the 5 wrecks.", bar: [SLV_DIVES + " of " + SLV_DIVES + " dives", SLV_DIVES, SLV_DIVES] }
       ),
       "common-today-hard": dpPickCm(CM_HARD, false, { line: "You found all three connections and scored 3 of 15.", bar: ["3 of 15", 3, 15] }),
       "common-today-failed": dpPickCm(CM_FAIL_TODAY, true, { line: "You found 1 of the 3 connections and scored 1 of 15.", bar: ["1 of 15", 1, 15] })
@@ -5371,13 +5371,13 @@
         title: "Today’s sea",
         next: "Next sea: tomorrow",
         tag: true,
-        live: { line: "You’ve found " + svSunk(dpSvL) + " of the 5 wrecks in " + dpSvL.length + " dives.", bar: [dpSvL.length + " of 30 dives", dpSvL.length, 30] },
-        done: { st: { kind: "ok", label: GS_SESSIONS["salvage-today"].result }, line: "You found all five wrecks with " + (30 - SV_TODAY_DIVES.length) + " dives to spare, and one hint.", bar: [SV_TODAY_DIVES.length + " of 30 dives", SV_TODAY_DIVES.length, 30] },
+        live: { line: "You’ve found " + svSunk(dpSvL) + " of the 5 wrecks in " + dpSvL.length + " dives.", bar: [dpSvL.length + " of " + SLV_DIVES + " dives", dpSvL.length, SLV_DIVES] },
+        done: { st: { kind: "ok", label: GS_SESSIONS["salvage-today"].result }, line: "You found all five wrecks with " + (SLV_DIVES - SV_TODAY_DIVES.length) + " dives to spare, and one hint.", bar: [SV_TODAY_DIVES.length + " of " + SLV_DIVES + " dives", SV_TODAY_DIVES.length, SLV_DIVES] },
         recent: "Your seas",
         ach: [
           { k: "sv1", n: "Every wreck found", how: "Find all five wrecks in a Salvage.", by: (p) => p.status.kind === "ok" },
           { k: "sv5", n: "Five dives to spare", how: "Find all five wrecks in 25 dives or fewer.", by: (p) => {
-            const m = /^All 5 wrecks, (\d+) of 30/.exec(p.status.label);
+            const m = new RegExp("^All 5 wrecks, (\\d+) of " + SLV_DIVES).exec(p.status.label);
             return !!m && +m[1] <= 25;
           } },
           { k: "sv7", n: "Seven days in a row", how: "Find every wreck seven days running.", of: 7 }
@@ -5524,17 +5524,17 @@
       salvage: [
         { cap: "Five wrecks lie somewhere under an eight-by-eight sea.", turns: [
           gscU("I want to play Salvage."),
-          gscAi("salvage", ["Salvage #" + DP_NO + ". Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.", "You have 30 dives. Call your first square."], null, [dpMono(svBoard(SV_TODAY, []))])
+          gscAi("salvage", ["Salvage #" + DP_NO + ". Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.", "You have " + SLV_DIVES + " dives. Call your first square."], null, [dpMono(svBoard(SV_TODAY, []))])
         ] },
         { cap: "Each dive comes back as a hit, a miss or sunk.", turns: [
           gscU("E2."),
-          gscAi("salvage", "Hit. 29 dives left."),
+          gscAi("salvage", "Hit. " + (SLV_DIVES - 1) + " dives left."),
           gscU("E3."),
-          gscAi("salvage", "Miss. 28 dives left.")
+          gscAi("salvage", "Miss. " + (SLV_DIVES - 2) + " dives left.")
         ] },
         { cap: "The board is redrawn after every dive, so your AI can read it aloud.", turns: [
           gscU("B2."),
-          gscAi("salvage", "Sunk: the wreck of 4. " + (30 - 8) + " dives left.", null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])
+          gscAi("salvage", "Sunk: the wreck of 4. " + (SLV_DIVES - 8) + " dives left.", null, [dpMono(svBoard(SV_TODAY, SV_TODAY_DIVES.slice(0, 8)))])
         ] }
       ],
       common: [

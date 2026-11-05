@@ -143,6 +143,7 @@ const SlvKit = ({ p }) => (<ul className="slv-kit">{SLV_ALL.map((k) => { const u
 
 const SlvSessBody = ({ s }) => {
   const p = SLV_PLAYS[s.fx];
+  // KEEP: an earlier edition's session page is not designed yet: it draws the same page as today's edition, from its own play, not this fallback.
   if (!p) return <><GsSessResult s={s} />{s.lines.length > 0 && <GsMoves s={s} />}</>;
   return <>
     <GsSessCard r={SLV_RESULT[p.state]} className="slv-card" board={<SlvSea p={p} />} rows={[['Haul', <SlvHaul p={p} />], ['Kit', <SlvKit p={p} />]]} />
