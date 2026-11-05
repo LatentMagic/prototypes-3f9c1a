@@ -5345,7 +5345,7 @@
         ok: (i) => cmSess(0, CM_OK[i % CM_OK.length]).result,
         bad: cmSess(0, CM_FAIL).result,
         title: "Today’s threads",
-        next: "Next threads: tomorrow",
+        next: "Next set: tomorrow",
         live: { line: "You’re on thread 1 of 3, with 0 points so far.", bar: ["Thread 1 of 3", 1, 3] },
         done: { st: { kind: "ok", label: GS_SESSIONS["common-today"].result }, line: "You found all three connections and scored " + cmScore(dpCmToday.day) + " of 15.", bar: [cmScore(dpCmToday.day) + " of 15", cmScore(dpCmToday.day), 15] },
         recent: "Your days",
