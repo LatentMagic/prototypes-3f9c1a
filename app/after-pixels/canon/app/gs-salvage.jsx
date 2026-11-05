@@ -100,7 +100,7 @@ const SlvSea = ({ p }) => {
   const sw = p.sweep;
   const isSw = (axis, name) => !!sw && sw.axis === axis && sw.name === name;
   const clue = (axis, name) => (slvIsShown({ axis, name }) || isSw(axis, name) ? slvLineCount({ axis, name }) : undefined);
-  const dots = [...p.hit].filter((s) => !p.raised.has(slvWreckOf(s)));
+  const dots = [...p.hit];
   return (
     <div className="slv-sea" role="img" aria-label={'The sea: ' + p.raised.size + ' of 5 wrecks raised, ' + p.dives + ' of ' + SLV_DIVES + ' dives'}>
       {SLV_COLS.split('').map((c, i) => <React.Fragment key={c}>
@@ -112,7 +112,7 @@ const SlvSea = ({ p }) => {
       {SLV_COLS.split('').flatMap((c, i) => SLV_N8.map((r) => <span key={c + r} className="slv-sq" style={{ gridColumn: slvGc(i), gridRow: slvGr(r - 1) }} />))}
       {SLV_ALL.filter((k) => p.tools[k]).flatMap((k) => p.tools[k].squares.map((s) => <i key={k + s} className={'slv-cv t-' + k} style={cell(s)} />))}
       {p.miss.map((s) => <span key={s} className="slv-mk" style={cell(s)}><i className="slv-dot is-miss" /></span>)}
-      {dots.map((s) => <span key={s} className="slv-mk" style={cell(s)}><i className="slv-dot is-hit" /></span>)}
+      {dots.map((s) => <span key={s} className="slv-mk is-hit" style={cell(s)}><i className="slv-dot is-hit" /></span>)}
       {SLV_WRECKS.map((w, i) => { const up = p.raised.has(i); if (!up && p.state !== 'lost') return null; const across = slvRowOf(w[0]) === slvRowOf(w[w.length - 1]);
         // KEEP: an unfound wreck is a dashed pill, the raised pill's shape. Drawn as SVG because a dashed CSS border on a rounded box loses its sides on iPhone Safari.
         // The viewBox is the hull in ninths of a square (the hull is inset 1/9 each side), so the pill is never stretched.

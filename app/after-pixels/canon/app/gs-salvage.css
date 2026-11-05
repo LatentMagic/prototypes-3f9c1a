@@ -25,10 +25,13 @@
 .slv-dot { display: block; border-radius: 50%; }
 .slv-dot.is-miss { width: 7px; height: 7px; background: var(--muted); opacity: .7; }
 .slv-dot.is-hit { width: calc(var(--c) * .42); height: calc(var(--c) * .42); background: var(--off-white); }
-/* A raised wreck is a pill across its squares; a wreck not found (a lost play) is the same pill, dashed (SVG, in gs-salvage.jsx). */
+/* A raised wreck is a faint pill outlined in off-white across its squares, its hit dots showing inside; a wreck not found (a lost play)
+   is the same pill, dashed (SVG, in gs-salvage.jsx). */
 /* KEEP: a raised or unfound wreck sits above the tool-coverage corners; the corners use clip-path, which paints them above unpositioned siblings, so the hull needs its own layer. */
 .slv-hull { pointer-events: none; margin: calc(var(--c) / 9); position: relative; z-index: 1; }
-.slv-hull.is-raised { border-radius: 999px; background: var(--off-white); }
+.slv-hull.is-raised { border-radius: 999px; background: color-mix(in srgb, var(--off-white) 15%, transparent); box-shadow: inset 0 0 0 1.5px var(--off-white); }
+/* KEEP: hit dots sit above the hull, so a raised wreck shows its dots, not a tint over them. */
+.slv-mk.is-hit { position: relative; z-index: 2; }
 .slv-hull.is-unfound { color: var(--muted); }
 .slv-hull.is-unfound svg { display: block; }
 

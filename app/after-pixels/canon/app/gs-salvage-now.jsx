@@ -10,20 +10,25 @@ import { LbNowCard } from './gs-library.jsx';
 import { edList } from './gs-history.jsx';
 import { SLV_WRECKS, SLV_DIVES, SLV_ALL, SLV_PLAYS, SLV_RESULT, SLV_ST, ICON } from './gs-salvage.jsx';
 
-// A hull in ninths of a square, as the session page draws one (the pill inset 1/9 each side), so it is never stretched: raised solid,
-// otherwise dashed with a disc for each square already hit, filled from the left.
+// A hull in ninths of a square, as the session page draws one (the pill inset 1/9 each side), so it is never stretched: raised, a faint
+// outlined pill with a disc for every square; otherwise dashed with a disc for each square already hit, filled from the left.
 // KEEP: the card's hulls are deeper than the session page's pills (11/9 of a square, not 7/9), so at this size they read as ships, not lines.
 const SVN_H = 11;
+// KEEP: a disc's radius in ninths; in a raised hull the gaps from each end and between discs are equal, so the discs sit evenly.
+const SVN_R = 2.5;
 const SvnHull = ({ w, p }) => {
   const up = w.every((s) => p.hit.has(s)); const n = w.length; const L = 9 * n - 2;
   return (
     <svg className={'svn-hull ' + (up ? 'is-raised' : 'is-open')} style={{ '--n': n }} viewBox={'0 0 ' + L + ' ' + SVN_H} aria-hidden="true">
       {up
-        ? <rect x="0" y="0" width={L} height={SVN_H} rx={SVN_H / 2} />
+        ? <>
+          <rect x=".3" y=".3" width={L - .6} height={SVN_H - .6} rx={SVN_H / 2 - .3} />
+          {w.map((s, i) => { const g = (L - 2 * n * SVN_R) / (n + 1); return <circle key={s} cx={g + SVN_R + i * (g + 2 * SVN_R)} cy={SVN_H / 2} r={SVN_R} />; })}
+        </>
         : <>
           <rect className="svn-dash" x=".3" y=".3" width={L - .6} height={SVN_H - .6} rx={SVN_H / 2 - .3} strokeDasharray="1.1 .9" />
           {/* KEEP: hits fill from the left as a count, not at the square that was hit (the card says how much of a wreck is found, not where). */}
-          {w.filter((s) => p.hit.has(s)).map((s, i) => <circle key={s} cx={9 * i + SVN_H / 2} cy={SVN_H / 2} r={SVN_H * .34} />)}
+          {w.filter((s) => p.hit.has(s)).map((s, i) => <circle key={s} cx={9 * i + SVN_H / 2} cy={SVN_H / 2} r={SVN_R} />)}
         </>}
     </svg>);
 };
