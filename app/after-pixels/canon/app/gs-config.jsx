@@ -94,7 +94,7 @@ export const ConfigExtraBase = () => {
           edHint)}
         {edNote ? <p className="kit-config-edwarn" role="status">{edNote}</p> : null}
         {R('Past day', r.pastDay || 'none', (v) => set(() => api.setReview({ pastDay: v })), o([['none', 'None'], ['live', 'In progress'], ['late', 'Finished late']]),
-          'Adds a Common day (Pass) and a Daily Word day from before today, each started on its day.')}
+          'Adds a Common day (Pass) and a Guess day from before today, each started on its day.')}
       </Group>
 
       <Group title="Escape">

@@ -17,10 +17,10 @@ const GsPassConfigRows = () => {
     <Group title="Pass upsell">
       <Row label="New editions" value={v.newEds} onChange={(x) => GsPassStage.set({ newEds: x })}
         options={[{ value: 'seed', label: 'As seeded' }, { value: 'most', label: 'Most not played' }]}
-        hint="Most not played treats every daily but Daily Word as unplayed today. New for you still holds only what the player can play now." />
+        hint="Most not played treats every daily but Guess as unplayed today. New for you still holds only what the player can play now." />
       <Row label="Free: Word and Escape" value={v.freeNew ? 'new' : 'played'} onChange={(x) => GsPassStage.set({ freeNew: x === 'new' })}
         options={[{ value: 'new', label: 'Not played' }, { value: 'played', label: 'Played' }]}
-        hint="A free account's today's Daily Word and Escape's first room. Not played puts both in New for you." />
+        hint="A free account's today's Guess and Escape's first room. Not played puts both in New for you." />
     </Group>
   );
 };

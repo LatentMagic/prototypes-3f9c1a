@@ -42,7 +42,7 @@
   .gs-sess-title { font: 600 16px/1.25 var(--font-heading); letter-spacing: 0; }
 }
 
-/* ==== LM-1110 (2026-10-13): Daily Word and Daily Mystery layout fixes, made once in the shared parts ==== */
+/* ==== LM-1110 (2026-10-13): Guess and Accuse layout fixes, made once in the shared parts ==== */
 /* C5: the pitch and "How it plays" share a top */
 .gs-pitch > * { align-self: start !important; }
 

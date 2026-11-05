@@ -63,7 +63,7 @@ const DLC = { page: '#F9F9F7', head: '#FCFCFB', ink: '#0B0B0B', grey: '#52514E',
   sans: '"Instrument Sans", ui-sans-serif, system-ui, sans-serif', serif: '"Source Serif 4", Georgia, serif', mono: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' };
 const DLC_ONELINER = 'Your AI does the talking. The game keeps the score. Play daily puzzles, mysteries and dice adventures in the chat.';
 const DLC_TOOLS = ['games_library', 'games_start', 'games_move', 'games_read', 'games_look', 'games_manual', 'games_hint', 'games_share', 'games_stop', 'games_abandon'];
-const DLC_GALLERY = [['word', 'Daily Word'], ['casebook', 'Casebook'], ['barrow', 'The Barrow of Hollowmere']];
+const DLC_GALLERY = [['word', 'Guess'], ['casebook', 'Casebook'], ['barrow', 'The Barrow of Hollowmere']];
 
 const dlcS = {
   page: { minHeight: '100%', flex: 1, background: DLC.page, color: DLC.ink, font: '400 16px/1.5 ' + DLC.sans, WebkitFontSmoothing: 'antialiased' },

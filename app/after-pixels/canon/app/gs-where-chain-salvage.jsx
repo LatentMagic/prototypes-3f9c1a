@@ -271,7 +271,7 @@ const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + ' …'), 
 
 
 // ---- Staged states (app/states.jsx spreads them into its register). ----
-// Where and Chain's session pages: today's play, in progress, failed, and an earlier play (the same four states as Daily Mystery).
+// Where and Chain's session pages: today's play, in progress, failed, and an earlier play (the same four states as Accuse).
 // Chain's session states sit with every other game's session page (Screens, "7. Session page: …"), so the States half of the
 // Config pill lists its four together, beside the rest.
 const dpSessAt = (k) => (k === 'chain' ? ['Screens', '7. Session page: '] : ['Daily puzzles 1213', 'Session page: ']);

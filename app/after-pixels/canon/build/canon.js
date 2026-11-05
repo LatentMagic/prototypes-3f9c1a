@@ -1043,9 +1043,9 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Daily Word", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily", "10 min"] },
+    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily", "10 min"] },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Daily Mystery", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily", "10 min"] },
+    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily", "10 min"] },
     escape: { access: "first", name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly", "About 30 min"] },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
@@ -1090,7 +1090,8 @@
     { name: "Derelict", art: "derelict", line: "The same game, in science fiction" },
     { name: GS_GAMES.barrow.name, art: "barrow", line: GS_GAMES.barrow.blurb, label: "CHAPTER 3", play: "Play chapter 1", route: "barrow" }
   ];
-  const gsLink = (gid) => "https://afterpixels.com/" + (["casebook", "escape", "delve", "barrow"].includes(gid) ? "discover/" : "") + GS_GAMES[gid].route;
+  const GS_LINK_ID = { word: "guess", mystery: "accuse" };
+  const gsLink = (gid) => "https://afterpixels.com/" + (["word", "mystery", "casebook", "escape", "delve", "barrow"].includes(gid) ? "discover/" : "") + (GS_LINK_ID[gid] || GS_GAMES[gid].route);
   const GS_BARROW_CREDIT = "Rules material from the System Reference Document 5.2.1 by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/legalcode).";
   const GS_ORD = ["first", "second", "third", "fourth", "fifth", "sixth"];
   const gsJoin = (xs) => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
@@ -1253,11 +1254,11 @@
       share: "Elsie rescued",
       shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5", "💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩"]
     },
-    // Daily Word and Daily Mystery tell one story per game on every surface: today's play, its in-progress form and one earlier play.
+    // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
       kind: "puzzle",
       gid: "word",
-      game: "Daily Word",
+      game: "Guess",
       art: "word",
       number: 212,
       answer: "STILL",
@@ -1272,7 +1273,7 @@
     "word-hard": {
       kind: "puzzle",
       gid: "word",
-      game: "Daily Word",
+      game: "Guess",
       art: "word",
       number: 210,
       answer: "FLOOR",
@@ -1285,7 +1286,7 @@
     "word-failed": {
       kind: "puzzle",
       gid: "word",
-      game: "Daily Word",
+      game: "Guess",
       art: "word",
       number: 208,
       answer: "STEAL",
@@ -1312,7 +1313,7 @@
     "mystery-today": {
       kind: "puzzle",
       gid: "mystery",
-      game: "Daily Mystery",
+      game: "Accuse",
       art: "murder",
       number: 64,
       q: 2,
@@ -1329,7 +1330,7 @@
     "word-1005": {
       kind: "puzzle",
       gid: "word",
-      game: "Daily Word",
+      game: "Guess",
       art: "word",
       number: 211,
       answer: "CHAIN",
@@ -1392,7 +1393,7 @@
     "mystery-1004": {
       kind: "puzzle",
       gid: "mystery",
-      game: "Daily Mystery",
+      game: "Accuse",
       art: "murder",
       number: 62,
       q: 2,
@@ -1460,7 +1461,7 @@
         ["Try 6", "NOTE · RAIL · GATE · BASS", "Not a group"]
       ]
     },
-    // Daily Mystery asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
+    // Accuse asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
     "mystery-today-avg": {
       ...GS_SESSIONS["mystery-today"],
       loss: false,
@@ -1510,7 +1511,7 @@
     "word-live": {
       kind: "puzzle",
       gid: "word",
-      game: "Daily Word",
+      game: "Guess",
       art: "word",
       number: 212,
       answer: "STILL",
@@ -1535,7 +1536,7 @@
     "mystery-live": {
       kind: "puzzle",
       gid: "mystery",
-      game: "Daily Mystery",
+      game: "Accuse",
       art: "murder",
       number: 64,
       q: 2,
@@ -1892,18 +1893,18 @@
     GS_CHATS = {
       word: [
         { cap: "Say you want to play. Everyone gets the same word today.", turns: [
-          gscU("Play Daily Word on After Pixels."),
-          gscAi("daily-word", ["Daily Word No. 212 is ready. You have six tries to find the hidden five-letter word.", "What’s your first guess?"])
+          gscU("Play Guess on After Pixels."),
+          gscAi("guess", ["Guess No. 212 is ready. You have six tries to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
         { cap: "Green: right place. Amber: in the word, wrong place. Grey: not in it.", turns: [
           gscU("crane"),
-          gscAi("daily-word", "No letters in the word. 5 guesses left."),
+          gscAi("guess", "No letters in the word. 5 guesses left."),
           gscU("slate"),
-          gscAi("daily-word", "S is in place. L and T are in the word. 4 guesses left.", [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xxxxx" }, { letters: "SLATE", marks: "hnxnx" }] }])
+          gscAi("guess", "S is in place. L and T are in the word. 4 guesses left.", [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xxxxx" }, { letters: "SLATE", marks: "hnxnx" }] }])
         ] },
         { cap: "Ask for a hint and the engine gives one. Two a day.", turns: [
           gscU("Give me a hint."),
-          gscAi("daily-word", "The word contains the letter I. One hint left today.")
+          gscAi("guess", "The word contains the letter I. One hint left today.")
         ] }
       ],
       groups: [
@@ -1924,18 +1925,18 @@
       ],
       mystery: [
         { cap: "A body, four suspects and an inspector who answers yes or no.", turns: [
-          gscU("Play Daily Mystery on After Pixels."),
-          gscAi("mystery", ["Daily Mystery No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.", "The body was found in the dining room. Read the clues, ask the inspector, then make one accusation."])
+          gscU("Play Accuse on After Pixels."),
+          gscAi("accuse", ["Accuse No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.", "The body was found in the dining room. Read the clues, ask the inspector, then make one accusation."])
         ] },
         { cap: "Two questions a day: was a suspect in a room, or did they have a weapon?", turns: [
           gscU("Was Delphine Rooke in the study?"),
-          gscAi("mystery", "The inspector says yes. One question left today."),
+          gscAi("accuse", "The inspector says yes. One question left today."),
           gscU("Did Arthur Penhallow have the paper knife?"),
-          gscAi("mystery", "Yes. That was your last question.")
+          gscAi("accuse", "Yes. That was your last question.")
         ] },
         { cap: "One accusation, checked by the engine.", turns: [
           gscU("It was Sebastian Wyle, with the iron poker, in the dining room."),
-          gscAi("mystery", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Sebastian Wyle** of the murder, with the **iron poker**, in the **dining room**?", facts: [{ label: "Suspect", value: "Sebastian Wyle" }, { label: "Weapon", value: "Iron poker" }, { label: "Room", value: "Dining room" }], note: "This is the one accusation today.", confirm: "Confirm accusation", cancel: "Cancel" }])
+          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Sebastian Wyle** of the murder, with the **iron poker**, in the **dining room**?", facts: [{ label: "Suspect", value: "Sebastian Wyle" }, { label: "Weapon", value: "Iron poker" }, { label: "Room", value: "Dining room" }], note: "This is the one accusation today.", confirm: "Confirm accusation", cancel: "Cancel" }])
         ] }
       ],
       // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
@@ -4456,7 +4457,7 @@
     pzMis = gsMis;
     PZ = {
       word: {
-        no: (i) => "Daily Word #" + (212 - i),
+        no: (i) => "Guess #" + (212 - i),
         salt: 0,
         keep: { 1: true },
         pin: { 2: "word-hard", 4: "word-failed" },
@@ -4471,9 +4472,9 @@
         done: { st: { kind: "ok", label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: "You found the word on your third guess, with one hint.", bar: ["Guess 3 of 6", 3, 6] },
         recent: "Your words",
         ach: [
-          { k: "w1", n: "Solved", how: "Solve a Daily Word.", by: (p) => p.status.kind === "ok" },
-          { k: "w2", n: "Solved in two", how: "Solve a Daily Word in two guesses.", by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
-          { k: "w7", n: "Seven days in a row", how: "Solve Daily Word seven days running.", of: 7 }
+          { k: "w1", n: "Solved", how: "Solve a word.", by: (p) => p.status.kind === "ok" },
+          { k: "w2", n: "Solved in two", how: "Solve a word in two guesses.", by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
+          { k: "w7", n: "Seven days in a row", how: "Solve the word seven days running.", of: 7 }
         ]
       },
       groups: {
@@ -4499,7 +4500,7 @@
         ]
       },
       mystery: {
-        no: (i) => "Daily Mystery #" + (64 - i),
+        no: (i) => "Accuse #" + (64 - i),
         salt: 2,
         keep: { 2: true },
         past: "mystery-1004",
@@ -4513,8 +4514,8 @@
         done: { st: { kind: "bad", label: GS_RESULT.mystery({ ok: false }) }, line: "You accused after two questions, and the weapon was wrong." },
         recent: "Your cases",
         ach: [
-          { k: "m1", n: "Case closed", how: "Solve a Daily Mystery case.", by: (p) => p.status.kind === "ok" },
-          { k: "m0", n: "Closed with no hints and no questions", how: "Close a Daily Mystery without a hint or a question.", by: (p) => {
+          { k: "m1", n: "Case closed", how: "Solve an Accuse case.", by: (p) => p.status.kind === "ok" },
+          { k: "m0", n: "Closed with no hints and no questions", how: "Close a case without a hint or a question.", by: (p) => {
             const s = GS_SESSIONS[p.sid];
             return p.status.kind === "ok" && !!s && s.q === 0 && !s.hints;
           } },
@@ -6530,13 +6531,13 @@
       const guesses = s.lines.filter((l) => /^Guess/.test(l[0])).map((l) => l[1]);
       const answer = s.answer || guesses[guesses.length - 1];
       const h = s.hints || 0;
-      const head = "Daily Word No. " + s.number + " · " + (s.loss ? "X" : guesses.length) + "/6" + (h ? " · " + h + (h === 1 ? " hint " : " hints ") + "💡".repeat(h) : "");
+      const head = "Guess No. " + s.number + " · " + (s.loss ? "X" : guesses.length) + "/6" + (h ? " · " + h + (h === 1 ? " hint " : " hints ") + "💡".repeat(h) : "");
       return [head, "", ...guesses.map((g) => gsWordRow(g, answer)), link];
     }
     if (s.gid === "mystery" && s.number) {
       const q = s.q != null ? s.q : s.lines.filter((l) => /^Question/.test(l[0])).length;
       const qn = q === 0 ? "no questions" : q === 1 ? "1 question" : q + " questions";
-      return ["Daily Mystery No. " + s.number + " · " + (s.loss ? "wrong accusation" : "solved") + " · " + qn + (q ? " " + "🔎".repeat(q) : ""), s.loss ? "❌" : "✅", link];
+      return ["Accuse No. " + s.number + " · " + (s.loss ? "wrong accusation" : "solved") + " · " + qn + (q ? " " + "🔎".repeat(q) : ""), s.loss ? "❌" : "✅", link];
     }
     if (s.shareHead) return [s.shareHead, ...s.rows || [], link];
     if (s.kind === "delve") return ["Delve 🎲 " + s.result + ", " + s.reached.toLowerCase(), "🎲 " + s.lines.length + " rolls  ⏳ threat " + s.tracks.threat + "/6", link];
@@ -6580,7 +6581,7 @@
   };
   const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, r && /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap), fig)), last)));
   const GsMoves = ({ s }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React$1.createElement(DS.Disclosure, { title: "Every move (" + s.lines.length + ")" }, /* @__PURE__ */ React$1.createElement(DS.MoveList, { label: "Every move" }, s.lines.map((l, i) => /* @__PURE__ */ React$1.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
-  const gsHeadGame = (s) => s.gid === "word" ? "Guess" : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
+  const gsHeadGame = (s) => s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
   const gsHeadTitle = (s, ed) => ed ? ed.title || "No. " + ed.n : s.title || (s.number != null ? "No. " + s.number : null);
   const GsSessHead = ({ art, label, title, actions }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React$1.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-acts" }, actions)));
@@ -7207,7 +7208,7 @@
   };
   const DLC_ONELINER = "Your AI does the talking. The game keeps the score. Play daily puzzles, mysteries and dice adventures in the chat.";
   const DLC_TOOLS = ["games_library", "games_start", "games_move", "games_read", "games_look", "games_manual", "games_hint", "games_share", "games_stop", "games_abandon"];
-  const DLC_GALLERY = [["word", "Daily Word"], ["casebook", "Casebook"], ["barrow", "The Barrow of Hollowmere"]];
+  const DLC_GALLERY = [["word", "Guess"], ["casebook", "Casebook"], ["barrow", "The Barrow of Hollowmere"]];
   const dlcS = {
     page: { minHeight: "100%", flex: 1, background: DLC.page, color: DLC.ink, font: "400 16px/1.5 " + DLC.sans, WebkitFontSmoothing: "antialiased" },
     head: { background: DLC.head, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px" },
@@ -7742,13 +7743,13 @@
         c.setConnected(true);
         c.go("delve");
       } },
-      { group: "Screens", id: "word-free", label: "5. Daily Word, free account (played today)", stage: (c) => {
+      { group: "Screens", id: "word-free", label: "5. Guess, free account (played today)", stage: (c) => {
         gsPassSet({ freeNew: false });
         c.setView("free");
         c.setConnected(true);
         c.go("word");
       } },
-      { group: "Screens", id: "word-signed-out", label: "5. Daily Word, signed out", stage: (c) => c.go("word") },
+      { group: "Screens", id: "word-signed-out", label: "5. Guess, signed out", stage: (c) => c.go("word") },
       { group: "Screens", id: "groups-free", label: "5. Daily Groups, free account", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
@@ -7759,7 +7760,7 @@
         c.setConnected(true);
         c.go("groups");
       } },
-      { group: "Screens", id: "mystery-pass", label: "5. Daily Mystery, with the Pass (today not solved)", stage: (c) => {
+      { group: "Screens", id: "mystery-pass", label: "5. Accuse, with the Pass (today not solved)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("mystery");
@@ -7910,17 +7911,17 @@
         c.setReview({ week: "live" });
         c.go("session", { id: "delve-live" });
       } },
-      { group: "Screens", id: "session-puzzle", label: "7. Session page: Daily Word", stage: (c) => {
+      { group: "Screens", id: "session-puzzle", label: "7. Session page: Guess", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "word-today" });
       } },
-      { group: "Screens", id: "session-word-hard", label: "7. Session page: Daily Word, the hard play (five guesses and the hint)", stage: (c) => {
+      { group: "Screens", id: "session-word-hard", label: "7. Session page: Guess, the hard play (five guesses and the hint)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "word-hard" });
       } },
-      { group: "Screens", id: "session-word-failed", label: "7. Session page: Daily Word, failed (six guesses)", stage: (c) => {
+      { group: "Screens", id: "session-word-failed", label: "7. Session page: Guess, failed (six guesses)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "word-failed" });
@@ -7954,18 +7955,18 @@
         c.setConnected(true);
         c.go("session", { id: "hunter-hg0" });
       } },
-      { group: "Screens", id: "session-word-in-progress", label: "7. Session page: Daily Word in progress", stage: (c) => {
+      { group: "Screens", id: "session-word-in-progress", label: "7. Session page: Guess in progress", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
         c.go("session", { id: "word-live" });
       } },
-      { group: "Screens", id: "session-mystery", label: "7. Session page: Daily Mystery", stage: (c) => {
+      { group: "Screens", id: "session-mystery", label: "7. Session page: Accuse", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "mystery-today" });
       } },
-      { group: "Screens", id: "session-mystery-in-progress", label: "7. Session page: Daily Mystery in progress", stage: (c) => {
+      { group: "Screens", id: "session-mystery-in-progress", label: "7. Session page: Accuse in progress", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
@@ -8014,24 +8015,24 @@
         c.setReview({ ed: "hard" });
         c.go("delve", { page: "record" });
       } },
-      { group: "Library", id: "library-word", label: "Daily Word in your library, with the Pass", stage: (c) => {
+      { group: "Library", id: "library-word", label: "Guess in your library, with the Pass", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("word", { page: "record" });
       } },
-      { group: "Library", id: "library-word-in-progress", label: "Daily Word in your library, today in progress", stage: (c) => {
+      { group: "Library", id: "library-word-in-progress", label: "Guess in your library, today in progress", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
         c.go("word", { page: "record" });
       } },
-      { group: "Library", id: "library-word-streak-broken", label: "Daily Word in your library, streak broken (yesterday failed)", stage: (c) => {
+      { group: "Library", id: "library-word-streak-broken", label: "Guess in your library, streak broken (yesterday failed)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ broken: true });
         c.go("word", { page: "record" });
       } },
-      { group: "Library", id: "library-mystery-never-played", label: "Daily Mystery in your library, free account, never played", stage: (c) => {
+      { group: "Library", id: "library-mystery-never-played", label: "Accuse in your library, free account, never played", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ never: "mystery", today: "none" });
@@ -8049,7 +8050,7 @@
         c.setReview({ week: "live" });
         c.go("library");
       } },
-      { group: "Library", id: "library-word-free", aliases: ["fp-word-library-free"], label: "Daily Word in your library, free account", stage: (c) => {
+      { group: "Library", id: "library-word-free", aliases: ["fp-word-library-free"], label: "Guess in your library, free account", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.go("word", { page: "record" });
@@ -8094,7 +8095,7 @@
         c.go("barrow", { page: "record" });
         gsPassSet({ bwDone: true });
       } },
-      { group: "Pass upsell", id: "pur-word-done", label: "6. Daily Word, today’s word done", stage: (c) => {
+      { group: "Pass upsell", id: "pur-word-done", label: "6. Guess, today’s word done", stage: (c) => {
         gsPassSet({ freeNew: false });
         c.setView("free");
         c.setConnected(true);
@@ -8123,18 +8124,18 @@
         c.setConnected(true);
         c.go("groups", { page: "record" });
       } },
-      { group: "Library", id: "library-mystery", label: "Daily Mystery in your library, with the Pass", stage: (c) => {
+      { group: "Library", id: "library-mystery", label: "Accuse in your library, with the Pass", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("mystery", { page: "record" });
       } },
-      { group: "Library", id: "library-mystery-in-progress", label: "Daily Mystery in your library, today in progress", stage: (c) => {
+      { group: "Library", id: "library-mystery-in-progress", label: "Accuse in your library, today in progress", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
         c.go("mystery", { page: "record" });
       } },
-      { group: "Library", id: "library-mystery-free", label: "Daily Mystery in your library, free account", stage: (c) => {
+      { group: "Library", id: "library-mystery-free", label: "Accuse in your library, free account", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.go("mystery", { page: "record" });
@@ -8502,32 +8503,32 @@
         c.go("offline");
       } },
       // Every edition can be played; a finished one of a game played once says so.
-      { group: "Library", id: "library-word-editions", label: "Daily Word: every word (the editions list)", stage: (c) => {
+      { group: "Library", id: "library-word-editions", label: "Guess: every word (the editions list)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("word", { page: "record", list: true });
       } },
-      { group: "Library", id: "edition-word-earlier", label: "Daily Word: an earlier word not played, its prompt", stage: (c) => {
+      { group: "Library", id: "edition-word-earlier", label: "Guess: an earlier word not played, its prompt", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("word", { page: "record", list: true, pgeOpen: PZ.word.all.find((x) => x.i > 0 && !x.played).id });
       } },
-      { group: "Library", id: "edition-word-done", label: "Daily Word: an earlier word played (played once, no prompt)", stage: (c) => {
+      { group: "Library", id: "edition-word-done", label: "Guess: an earlier word played (played once, no prompt)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("word", { page: "record", list: true, pgeOpen: PZ.word.all[2].id });
       } },
-      { group: "Library", id: "library-mystery-editions", label: "Daily Mystery: every case (the editions list)", stage: (c) => {
+      { group: "Library", id: "library-mystery-editions", label: "Accuse: every case (the editions list)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("mystery", { page: "record", list: true });
       } },
-      { group: "Library", id: "edition-mystery-earlier", label: "Daily Mystery: an earlier case not played, its prompt", stage: (c) => {
+      { group: "Library", id: "edition-mystery-earlier", label: "Accuse: an earlier case not played, its prompt", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("mystery", { page: "record", list: true, pgeOpen: PZ.mystery.all.find((x) => x.i > 0 && !x.played).id });
       } },
-      { group: "Library", id: "edition-mystery-done", label: "Daily Mystery: an earlier case played (played once, no prompt)", stage: (c) => {
+      { group: "Library", id: "edition-mystery-done", label: "Accuse: an earlier case played (played once, no prompt)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("mystery", { page: "record", list: true, pgeOpen: PZ.mystery.all[2].id });
@@ -8579,7 +8580,7 @@
         c.setReview({ week: "live", several: true });
         c.go("delve", { page: "record", list: true });
       } },
-      { group: "Library", id: "editions-word-free", label: "Daily Word, free account: every word (the editions list)", stage: (c) => {
+      { group: "Library", id: "editions-word-free", label: "Guess, free account: every word (the editions list)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.go("word", { page: "record", list: true });
@@ -8610,12 +8611,12 @@
         c.setConnected(true);
         c.go("hunter", { page: "record", list: true });
       } },
-      { group: "History", id: "session-word-earlier", label: "Session page, an earlier Daily Word played (played once)", stage: (c) => {
+      { group: "History", id: "session-word-earlier", label: "Session page, an earlier Guess played (played once)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: PZ.word.all[2].sid });
       } },
-      { group: "History", id: "session-mystery-earlier", label: "Session page, an earlier Daily Mystery played (played once)", stage: (c) => {
+      { group: "History", id: "session-mystery-earlier", label: "Session page, an earlier Accuse played (played once)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: PZ.mystery.all[2].sid });
@@ -8687,49 +8688,49 @@
         c.setReview({ pastDay: "live" });
         c.go("common", { page: "record" });
       } },
-      { group: "Past day", id: "past-day-word-session", label: "3b. Session page, Daily Word, a past day, in progress (free account)", stage: (c) => {
+      { group: "Past day", id: "past-day-word-session", label: "3b. Session page, Guess, a past day, in progress (free account)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "live" });
         c.go("session", { id: "word-past" });
       } },
-      { group: "Past day", id: "past-day-word-history", label: "3b. History, Daily Word, a past day, in progress (free account)", stage: (c) => {
+      { group: "Past day", id: "past-day-word-history", label: "3b. History, Guess, a past day, in progress (free account)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "live" });
         c.go("history", { game: "word" });
       } },
-      { group: "Past day", id: "past-day-word-editions", label: "3b. Every word, Daily Word, a past day, in progress (free account)", stage: (c) => {
+      { group: "Past day", id: "past-day-word-editions", label: "3b. Every word, Guess, a past day, in progress (free account)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "live" });
         c.go("word", { page: "record", list: true });
       } },
-      { group: "Past day", id: "past-day-word-library", label: "3b. Daily Word in your library, Daily Word, a past day, in progress (free account): streak strip and Now card", stage: (c) => {
+      { group: "Past day", id: "past-day-word-library", label: "3b. Guess in your library, Guess, a past day, in progress (free account): streak strip and Now card", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "live" });
         c.go("word", { page: "record" });
       } },
-      { group: "Past day", id: "past-day-word-late-session", label: "3c. Session page, Daily Word, a past day, finished late (free account)", stage: (c) => {
+      { group: "Past day", id: "past-day-word-late-session", label: "3c. Session page, Guess, a past day, finished late (free account)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "late" });
         c.go("session", { id: "word-past-late" });
       } },
-      { group: "Past day", id: "past-day-word-late-history", label: "3c. History, Daily Word, a past day, finished late (free account)", stage: (c) => {
+      { group: "Past day", id: "past-day-word-late-history", label: "3c. History, Guess, a past day, finished late (free account)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "late" });
         c.go("history", { game: "word" });
       } },
-      { group: "Past day", id: "past-day-word-late-editions", label: "3c. Every word, Daily Word, a past day, finished late (free account)", stage: (c) => {
+      { group: "Past day", id: "past-day-word-late-editions", label: "3c. Every word, Guess, a past day, finished late (free account)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "late" });
         c.go("word", { page: "record", list: true });
       } },
-      { group: "Past day", id: "past-day-word-late-library", label: '3c. Daily Word in your library, Daily Word, a past day, finished late (free account): streak strip "Not played"', stage: (c) => {
+      { group: "Past day", id: "past-day-word-late-library", label: '3c. Guess in your library, Guess, a past day, finished late (free account): streak strip "Not played"', stage: (c) => {
         c.setView("free");
         c.setConnected(true);
         c.setReview({ pastDay: "late" });
@@ -8755,7 +8756,7 @@
     ];
     KIT_STATE_GROUP_NOTES = {
       "Past day": [
-        "Or set Config “Past day”: In progress adds a Common day (Pass) and a Daily Word day from before today, each started on its day; Finished late adds a Daily Word day finished the morning after. Each is the first unplayed earlier day of its game."
+        "Or set Config “Past day”: In progress adds a Common day (Pass) and a Guess day from before today, each started on its day; Finished late adds a Guess day finished the morning after. Each is the first unplayed earlier day of its game."
       ],
       "Username": [
         "Account, username change open: it is the Account page itself, the Username card shows its field whenever there is no wait. Change it to start the wait.",
@@ -9086,7 +9087,7 @@
   KIT_QA.unshift({
     key: "rhythm-filters",
     title: "Daily and weekly filters (not ratified)",
-    note: "Each held state shows its surface’s empty list. By hand: Daily shows only Daily Word, Groups and Mystery (or their plays); Weekly only Escape and Delve; Casebook, the Barrow and 36,000 Summers Ago only under All games. Combine with search, genre, Free, Order, Plays, Show; only the list part loads. Check at 320px.",
+    note: "Each held state shows its surface’s empty list. By hand: Daily shows only Guess, Groups and Accuse (or their plays); Weekly only Escape and Delve; Casebook, the Barrow and 36,000 Summers Ago only under All games. Combine with search, genre, Free, Order, Plays, Show; only the list part loads. Check at 320px.",
     steps: ["games", "filter-empty-discover", "library", "filter-empty-library", "history", "filter-empty-history"]
   });
   KIT_QA.unshift({
@@ -9229,7 +9230,7 @@
   KIT_QA.unshift({
     key: "canon-delta-walk",
     title: "Walk rulings, 18 October",
-    note: "Pass ended: earned achievements read “Earned {date}”, full-colour badge, and one line, “You can’t earn the rest until the Pass returns.” Account (lapsed, ending, cancel): the one What freezes sentence. Daily Word product page, played today: Play opens the prompt. Connect at phone width: Copy keeps its width beside the address, which scrolls sideways. Escape and Delve free: the Playing earlier line under the page. Two in progress (Escape, Delve): Your rooms or Your runs lists both, each In progress; the list shows both unmarked; an earlier one’s panel shows its prompt and Copy, with no warning; this week’s card still continues this week’s.",
+    note: "Pass ended: earned achievements read “Earned {date}”, full-colour badge, and one line, “You can’t earn the rest until the Pass returns.” Account (lapsed, ending, cancel): the one What freezes sentence. Guess product page, played today: Play opens the prompt. Connect at phone width: Copy keeps its width beside the address, which scrolls sideways. Escape and Delve free: the Playing earlier line under the page. Two in progress (Escape, Delve): Your rooms or Your runs lists both, each In progress; the list shows both unmarked; an earlier one’s panel shows its prompt and Copy, with no warning; this week’s card still continues this week’s.",
     steps: ["library-escape-two-in-progress", "editions-escape-two-in-progress", "library-delve-two-in-progress", "editions-delve-two-in-progress", "library-delve-pass-ended", "library-pass-ended", "pass-card-lapsed", "pass-card-ending", "word-free", "groups-pass", "session-puzzle", "connect", "library-escape-free", "library-delve-no-pass"]
   });
   KIT_QA.unshift({
@@ -9319,14 +9320,14 @@
   });
   KIT_QA.unshift({
     key: "word-1236",
-    title: "Daily Word: session page (1236, not signed off)",
+    title: "Guess: session page (1236, not signed off)",
     note: 'Each at desktop and phone width; Hard at 1440 x 900 and 1280 x 800 must show the whole board without scrolling. The board on its grey ground, centred, the ground wrapping every tile; the hint a slim row, its letter in its place with "Hint" beside it; no dashed edges; in progress, an underline for each guess left. The cover: the grey square small and thin at rest, full and filled on hover, focus or tap. Every guess collapsed below.',
     steps: ["session-puzzle", "session-word-hard", "session-word-failed", "session-word-in-progress"]
   });
   KIT_QA.unshift({
     key: "this-edition-picks",
     title: "Config: This edition (Average, Hard, Failed)",
-    note: "Config → Every game → This edition. Pick Hard, then Failed, then Average: Daily Word, Daily Groups and Daily Mystery change on the now card, Your plays, History and the session page together; Escape changes on Hard only. Daily Word’s History also holds #210 (hard) and #208 (failed). Escape keeps its par pick in its own section.",
+    note: "Config → Every game → This edition. Pick Hard, then Failed, then Average: Guess, Daily Groups and Accuse change on the now card, Your plays, History and the session page together; Escape changes on Hard only. Guess’s History also holds #210 (hard) and #208 (failed). Escape keeps its par pick in its own section.",
     steps: ["history", "library-word", "library-escape"]
   });
   const ConfigExtraBase = () => {
@@ -9426,7 +9427,7 @@
       r.pastDay || "none",
       (v) => set(() => api.setReview({ pastDay: v })),
       o([["none", "None"], ["live", "In progress"], ["late", "Finished late"]]),
-      "Adds a Common day (Pass) and a Daily Word day from before today, each started on its day."
+      "Adds a Common day (Pass) and a Guess day from before today, each started on its day."
     )), /* @__PURE__ */ React$1.createElement(Group, { title: "Escape" }, R(
       "This week’s room, finished",
       r.escape === "par" || r.escape === "over" ? r.escape : "under",
@@ -9458,7 +9459,7 @@
         value: v.newEds,
         onChange: (x) => GsPassStage.set({ newEds: x }),
         options: [{ value: "seed", label: "As seeded" }, { value: "most", label: "Most not played" }],
-        hint: "Most not played treats every daily but Daily Word as unplayed today. New for you still holds only what the player can play now."
+        hint: "Most not played treats every daily but Guess as unplayed today. New for you still holds only what the player can play now."
       }
     ), /* @__PURE__ */ React$1.createElement(
       Row,
@@ -9467,7 +9468,7 @@
         value: v.freeNew ? "new" : "played",
         onChange: (x) => GsPassStage.set({ freeNew: x === "new" }),
         options: [{ value: "new", label: "Not played" }, { value: "played", label: "Played" }],
-        hint: "A free account's today's Daily Word and Escape's first room. Not played puts both in New for you."
+        hint: "A free account's today's Guess and Escape's first room. Not played puts both in New for you."
       }
     ));
   };

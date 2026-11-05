@@ -1,6 +1,6 @@
 // ============================================================================
 // After Pixels — Salvage's session page body, under the shared head: one card on the shared session card (GsSessCard,
-// gs-session.jsx), as Daily Word's, Where's and Chain's are. Result top left (Completed, Failed or In progress); the Sea (an 8 by 8
+// gs-session.jsx), as Guess's, Where's and Chain's are. Result top left (Completed, Failed or In progress); the Sea (an 8 by 8
 // grid) left; Haul (dives and wrecks) above Kit (three tools) in the panel beside it, ruled off at its left; on a phone, stacked.
 // The plays on the invented edition 21 are held here once, run by the game's rules below, so every count, mark and reach is worked
 // out from the moves: won (salvage-today), hard (salvage-today-hard), lost (salvage-today-failed), in progress (salvage-live).

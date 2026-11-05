@@ -50,20 +50,20 @@ export const gsShareText = (s) => {
     // A Hint line is not a guess: the tile rows and the count skip it.
     const guesses = s.lines.filter((l) => /^Guess/.test(l[0])).map((l) => l[1]); const answer = s.answer || guesses[guesses.length - 1];
     const h = s.hints || 0;
-    const head = 'Daily Word No. ' + s.number + ' · ' + (s.loss ? 'X' : guesses.length) + '/6' + (h ? ' · ' + h + (h === 1 ? ' hint ' : ' hints ') + '💡'.repeat(h) : '');
+    const head = 'Guess No. ' + s.number + ' · ' + (s.loss ? 'X' : guesses.length) + '/6' + (h ? ' · ' + h + (h === 1 ? ' hint ' : ' hints ') + '💡'.repeat(h) : '');
     return [head, '', ...guesses.map((g) => gsWordRow(g, answer)), link];
   }
   if (s.gid === 'mystery' && s.number) {
     const q = s.q != null ? s.q : s.lines.filter((l) => /^Question/.test(l[0])).length;
     const qn = q === 0 ? 'no questions' : q === 1 ? '1 question' : q + ' questions';
-    return ['Daily Mystery No. ' + s.number + ' · ' + (s.loss ? 'wrong accusation' : 'solved') + ' · ' + qn + (q ? ' ' + '🔎'.repeat(q) : ''), s.loss ? '❌' : '✅', link];
+    return ['Accuse No. ' + s.number + ' · ' + (s.loss ? 'wrong accusation' : 'solved') + ' · ' + qn + (q ? ' ' + '🔎'.repeat(q) : ''), s.loss ? '❌' : '✅', link];
   }
   if (s.shareHead) return [s.shareHead, ...(s.rows || []), link];
   if (s.kind === 'delve') return ['Delve 🎲 ' + s.result + ', ' + s.reached.toLowerCase(), '🎲 ' + s.lines.length + ' rolls  ⏳ threat ' + s.tracks.threat + '/6', link];
   if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];
   return [s.game + ' · ' + s.share, link];
 };
-// KEEP: a blank share line (Daily Word's, after its head) shows as a blank line while the card's gaps stay one 4px token, and Copy
+// KEEP: a blank share line (Guess's, after its head) shows as a blank line while the card's gaps stay one 4px token, and Copy
 // still carries it, so what's pasted matches what's shown.
 const GsShareText = ({ lines }) => {
   const shown = []; (lines || []).forEach((l) => { if (l === '' && shown.length) shown[shown.length - 1] += '\n'; else shown.push(l); });
@@ -92,7 +92,7 @@ export const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   );
 };
 
-// The session card a daily puzzle's body is built on (Daily Word's, Where's, Chain's): the result statement top left; below it the game's
+// The session card a daily puzzle's body is built on (Guess's, Where's, Chain's): the result statement top left; below it the game's
 // board, and beside it a panel ruled off at its left, a captioned figure per row (Guesses, Hint) and an optional last row (the
 // answer on a loss). Phone: the result, the board, then the figures side by side under a rule. Styles: app/gs-sess-card.css.
 export const GsSessCard = ({ r, board, rows, last, className = '', style }) => (
@@ -119,8 +119,8 @@ export const GsMoves = ({ s }) => (
 );
 
 // ---- The one session head. A game supplies data only: its name, its edition's name or number, the day played, its art, which actions apply. ----
-// The label's game name: Daily Word is called Guess on this page.
-const gsHeadGame = (s) => (s.gid === 'word' ? 'Guess' : s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game);
+// The label's game name.
+const gsHeadGame = (s) => (s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game);
 // The day played, short: "Tuesday 6 October, 21:40" → "Tue 6 Oct".
 const gsHeadDay = (d) => (typeof d === 'string' ? gsShortDay(d.split(',')[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, '$1') : d);
 // The edition as its game names it: a room's name, or a number ("No. 212"). Falls back to the session's own title (a 36,000 Summers Ago day), then its number.

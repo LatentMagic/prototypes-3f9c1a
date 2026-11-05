@@ -1,6 +1,6 @@
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
-/* A board of tiles reads its tile size (--t) and gap (--g) from the card (Daily Word's and Chain's tiles, gs-word.css .wd-t).
+/* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).
    KEEP: the tiles read 100cqi where they are drawn, inside the card (a container), so the phone size subtracts only the number
    gutters either side (2 x 28px): about 49px at 390px wide. From 640px: from the window's height, so the hard play fits under
    the head on a laptop, 56 to 72px. */

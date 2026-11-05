@@ -88,26 +88,26 @@ export const registerPuzzlesLibrary = () => { ['word', 'groups', 'mystery', 'esc
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsPuzzlesLibrary() {
 // ============================================================================
-// After Pixels — the library game pages of Daily Word, Daily Groups, Daily Mystery and Escape.
+// After Pixels — the library game pages of Guess, Daily Groups, Accuse and Escape.
 // Word, Groups and Mystery's pages are replaced by gs-pass-library.jsx in every view (cprPzLibrary), Escape's for a player without
 // the Pass (CprEsLibrary), and PzNow there too.
 // Each is the standard library game page, built like Delve's: the now card (today's, or this
 // week's for Escape), the run, achievements and your plays. "All…" opens History filtered to the game.
 // Each game has its own streak. Achievements per game from game-specs/daily-puzzles.md; Escape's are proposed.
-// Free: Daily Word and Daily Mystery's current edition, with a streak and the achievements; earlier editions stay in results and playing them comes with the Pass.
+// Free: Guess and Accuse's current edition, with a streak and the achievements; earlier editions stay in results and playing them comes with the Pass.
 // Records are invented; a play opens the existing session page.
 // ============================================================================
 pzMis = gsMis;
 PZ = {
   word: {
-    no: (i) => 'Daily Word #' + (212 - i), salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
+    no: (i) => 'Guess #' + (212 - i), salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
     ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
     title: 'Today’s word', next: 'Next word: tomorrow',
     live: { line: 'You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.', bar: ['Guess 2 of 6', 2, 6] },
     done: { st: { kind: 'ok', label: GS_RESULT.word({ ok: true, guesses: 3 }) }, line: 'You found the word on your third guess, with one hint.', bar: ['Guess 3 of 6', 3, 6] }, recent: 'Your words',
-    ach: [{ k: 'w1', n: 'Solved', how: 'Solve a Daily Word.', by: (p) => p.status.kind === 'ok' },
-      { k: 'w2', n: 'Solved in two', how: 'Solve a Daily Word in two guesses.', by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
-      { k: 'w7', n: 'Seven days in a row', how: 'Solve Daily Word seven days running.', of: 7 }],
+    ach: [{ k: 'w1', n: 'Solved', how: 'Solve a word.', by: (p) => p.status.kind === 'ok' },
+      { k: 'w2', n: 'Solved in two', how: 'Solve a word in two guesses.', by: (p) => p.status.label === GS_RESULT.word({ ok: true, guesses: 2 }) },
+      { k: 'w7', n: 'Seven days in a row', how: 'Solve the word seven days running.', of: 7 }],
   },
   groups: {
     no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', liveSid: 'groups-live',
@@ -121,13 +121,13 @@ PZ = {
       { k: 'g7', n: 'Seven days in a row', how: 'Play Daily Groups seven days running.', of: 7 }],
   },
   mystery: {
-    no: (i) => 'Daily Mystery #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
+    no: (i) => 'Accuse #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
     ok: () => GS_RESULT.mystery({ ok: true }), bad: GS_RESULT.mystery({ ok: false }),
     title: 'Today’s case', next: 'Next case: tomorrow',
     live: { line: 'You’ve asked the inspector two questions. You haven’t accused anyone yet.' },
     done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) }, line: 'You accused after two questions, and the weapon was wrong.' }, recent: 'Your cases',
-    ach: [{ k: 'm1', n: 'Case closed', how: 'Solve a Daily Mystery case.', by: (p) => p.status.kind === 'ok' },
-      { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a Daily Mystery without a hint or a question.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && s.q === 0 && !s.hints; } },
+    ach: [{ k: 'm1', n: 'Case closed', how: 'Solve an Accuse case.', by: (p) => p.status.kind === 'ok' },
+      { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a case without a hint or a question.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && s.q === 0 && !s.hints; } },
       { k: 'm7', n: 'Seven days in a row', how: 'Solve a case seven days running.', of: 7 }],
   },
   // Escape: this week's room is No. 1 The Clockmaker’s Study; its finished play is escape-week. Earlier rooms: the foot of this file.
@@ -152,7 +152,7 @@ PZ = {
 PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERVE', 'QUILT', 'SPOKE', 'CHALK', 'DRIFT'];
 PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
 PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
-// Earlier Daily Mystery days, in the real grammar: SAMPLES, not real cases. At most two questions; a wrong accusation gets one part wrong.
+// Earlier Accuse days, in the real grammar: SAMPLES, not real cases. At most two questions; a wrong accusation gets one part wrong.
 PZ_SUS = ['Ivy Marchbank', 'Colonel Rufus Hale', 'Delphine Rooke', 'Arthur Penhallow', 'Mr Graves', 'Sebastian Wyle', 'Dr Helena Strand', 'Nell Okafor'];
 PZ_WPN = ['brass candlestick', 'vial of foxglove', 'antique pistol', 'iron poker', 'curtain cord', 'paper knife', 'marble bust', 'hatpin'];
 PZ_RMS = ['library', 'conservatory', 'butler’s pantry', 'billiard room', 'wine cellar', 'dining room', 'morning room', 'study'];
@@ -175,7 +175,7 @@ Object.entries(PZ).forEach(([id, c]) => {
   const base = c.today; c.todayBase = base;
   Object.defineProperty(c, 'today', { configurable: true, get: () => (id === 'escape' && window.gsApi && typeof esFinished === 'function' ? esFinished(window.gsApi) : gsEdPick(id) || base) });
 });
-// State library-word-streak-broken: yesterday's Daily Word finished in a first play that failed.
+// State library-word-streak-broken: yesterday's Guess finished in a first play that failed.
 (() => {
   const c = PZ.word; const y = c.all[1]; const keep = GS_SESSIONS['word-e1'];
   pzSession('word', c, { ...y, ok: false, line: c.bad }); GS_SESSIONS['word-broken-first'] = GS_SESSIONS['word-e1'];

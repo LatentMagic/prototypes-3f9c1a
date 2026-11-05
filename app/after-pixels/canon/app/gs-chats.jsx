@@ -44,12 +44,12 @@ export const GsChatRow = ({ id }) => {
 export function initGsChats() {
 GS_CHATS = {
   word: [
-    { cap: 'Say you want to play. Everyone gets the same word today.', turns: [gscU('Play Daily Word on After Pixels.'),
-      gscAi('daily-word', ['Daily Word No. 212 is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
-    { cap: 'Green: right place. Amber: in the word, wrong place. Grey: not in it.', turns: [gscU('crane'), gscAi('daily-word', 'No letters in the word. 5 guesses left.'), gscU('slate'),
-      gscAi('daily-word', 'S is in place. L and T are in the word. 4 guesses left.', [{ type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'CRANE', marks: 'xxxxx' }, { letters: 'SLATE', marks: 'hnxnx' }] }])] },
+    { cap: 'Say you want to play. Everyone gets the same word today.', turns: [gscU('Play Guess on After Pixels.'),
+      gscAi('guess', ['Guess No. 212 is ready. You have six tries to find the hidden five-letter word.', 'What’s your first guess?'])] },
+    { cap: 'Green: right place. Amber: in the word, wrong place. Grey: not in it.', turns: [gscU('crane'), gscAi('guess', 'No letters in the word. 5 guesses left.'), gscU('slate'),
+      gscAi('guess', 'S is in place. L and T are in the word. 4 guesses left.', [{ type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'CRANE', marks: 'xxxxx' }, { letters: 'SLATE', marks: 'hnxnx' }] }])] },
     { cap: 'Ask for a hint and the engine gives one. Two a day.', turns: [gscU('Give me a hint.'),
-      gscAi('daily-word', 'The word contains the letter I. One hint left today.')] },
+      gscAi('guess', 'The word contains the letter I. One hint left today.')] },
   ],
   groups: [
     { cap: 'Sixteen words hide four groups of four.', turns: [gscU('Play Daily Groups on After Pixels.'),
@@ -60,12 +60,12 @@ GS_CHATS = {
       gscAi('daily-groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }, { label: 'Weather', words: ['FROST', 'MIST', 'HAIL', 'SLEET'] }, { label: 'Music', words: ['BASS', 'CHORD', 'SCALE', 'NOTE'] }, { label: 'Parts of a fence', words: ['RAIL', 'GATE', 'POST', 'PANEL'] }], words: [] }])] },
   ],
   mystery: [
-    { cap: 'A body, four suspects and an inspector who answers yes or no.', turns: [gscU('Play Daily Mystery on After Pixels.'),
-      gscAi('mystery', ['Daily Mystery No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.', 'The body was found in the dining room. Read the clues, ask the inspector, then make one accusation.'])] },
-    { cap: 'Two questions a day: was a suspect in a room, or did they have a weapon?', turns: [gscU('Was Delphine Rooke in the study?'), gscAi('mystery', 'The inspector says yes. One question left today.'),
-      gscU('Did Arthur Penhallow have the paper knife?'), gscAi('mystery', 'Yes. That was your last question.')] },
+    { cap: 'A body, four suspects and an inspector who answers yes or no.', turns: [gscU('Play Accuse on After Pixels.'),
+      gscAi('accuse', ['Accuse No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.', 'The body was found in the dining room. Read the clues, ask the inspector, then make one accusation.'])] },
+    { cap: 'Two questions a day: was a suspect in a room, or did they have a weapon?', turns: [gscU('Was Delphine Rooke in the study?'), gscAi('accuse', 'The inspector says yes. One question left today.'),
+      gscU('Did Arthur Penhallow have the paper knife?'), gscAi('accuse', 'Yes. That was your last question.')] },
     { cap: 'One accusation, checked by the engine.', turns: [gscU('It was Sebastian Wyle, with the iron poker, in the dining room.'),
-      gscAi('mystery', null, [{ type: 'confirm', title: 'Confirm your accusation', question: 'Accuse **Sebastian Wyle** of the murder, with the **iron poker**, in the **dining room**?', facts: [{ label: 'Suspect', value: 'Sebastian Wyle' }, { label: 'Weapon', value: 'Iron poker' }, { label: 'Room', value: 'Dining room' }], note: 'This is the one accusation today.', confirm: 'Confirm accusation', cancel: 'Cancel' }])] },
+      gscAi('accuse', null, [{ type: 'confirm', title: 'Confirm your accusation', question: 'Accuse **Sebastian Wyle** of the murder, with the **iron poker**, in the **dining room**?', facts: [{ label: 'Suspect', value: 'Sebastian Wyle' }, { label: 'Weapon', value: 'Iron poker' }, { label: 'Room', value: 'Dining room' }], note: 'This is the one accusation today.', confirm: 'Confirm accusation', cancel: 'Cancel' }])] },
   ],
   // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
   escape: [

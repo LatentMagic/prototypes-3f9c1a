@@ -29,7 +29,7 @@
 .gs-host .gs-tagbtn { position: relative; z-index: 2; }
 .gs-host .gs-titlebtn:focus-visible { outline: none; }
 .gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
-/* KEEP: Motion art for Daily Word, Daily Mystery, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
+/* KEEP: Motion art for Guess, Accuse, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
 .mcp-art.is-wine { background: var(--cover-bg-wine); }
 .mcp-art.is-forest { background: var(--cover-bg-forest); }
 .gs-st { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(100cqw, 133.333cqh); aspect-ratio: 4 / 3; container-type: size; --u: .625cqw; }

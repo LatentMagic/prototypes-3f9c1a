@@ -46,9 +46,9 @@ export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // edLine: SAMPLE, the line every edition's panel prints about it (the editions list, gs-editions.jsx). Optional.
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
 export const GS_GAMES = {
-  word: { access: 'daily', name: 'Daily Word', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], edLine: 'Five letters. Six guesses.', daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily', '10 min'] },
+  word: { access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], edLine: 'Five letters. Six guesses.', daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily', '10 min'] },
   groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', edLine: 'Sixteen words hide four groups. Find all four.', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
-  mystery: { access: 'daily', name: 'Daily Mystery', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], edLine: 'One suspect, one weapon, one room. One accusation.', daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily', '10 min'] },
+  mystery: { access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], edLine: 'One suspect, one weapon, one room. One accusation.', daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily', '10 min'] },
   escape: { access: 'first', name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly', 'About 30 min'] },
   // Casebook is episodic: cases are its editions, with no schedule.
   casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
@@ -96,7 +96,9 @@ export const GS_SOON = [
 ];
 
 // The share card's link for the games whose deployed card names /discover/<game>.
-export const gsLink = (gid) => 'https://afterpixels.com/' + (['casebook', 'escape', 'delve', 'barrow'].includes(gid) ? 'discover/' : '') + GS_GAMES[gid].route;
+// Guess and Accuse are the deployed ids of the routes word and mystery.
+const GS_LINK_ID = { word: 'guess', mystery: 'accuse' };
+export const gsLink = (gid) => 'https://afterpixels.com/' + (['word', 'mystery', 'casebook', 'escape', 'delve', 'barrow'].includes(gid) ? 'discover/' : '') + (GS_LINK_ID[gid] || GS_GAMES[gid].route);
 // Required wherever the Barrow's rules material is used (verbatim).
 export const GS_BARROW_CREDIT = 'Rules material from the System Reference Document 5.2.1 by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, licensed under the Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/legalcode).';
 
@@ -105,7 +107,7 @@ export const GS_BARROW_CREDIT = 'Rules material from the System Reference Docume
 // part is what happened, the rest qualify it. Sample plays; the wording follows each game's session-record.ts. ----
 const GS_ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
 const gsJoin = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]);
-// Daily Word / Guess: what each letter of a guess scored, as the game's page says it: "S is in place. L and T are in the word."
+// Guess: what each letter of a guess scored, as the game's page says it: "S is in place. L and T are in the word."
 // A letter the guess repeats is named by its place ("the second L"), so the two never read as one.
 export const gsGuessParts = (word, answer) => {
   const w = word.split(''); const a = answer.split(''); const marks = w.map(() => 'miss'); const left = {};
@@ -117,7 +119,7 @@ export const gsGuessParts = (word, answer) => {
     const t = gsJoin(n) + (n.length === 1 ? ' is ' : ' are ') + tail; return t.charAt(0).toUpperCase() + t.slice(1); };
   return [say('hit', 'in place'), say('near', 'in the word'), say('miss', 'not in the word')].filter(Boolean);
 };
-// A Daily Word play: each entry is a guess (a word) or a line passed through (the hint, as ['Hint', 'Letter 2 is T.']).
+// A Guess play: each entry is a guess (a word) or a line passed through (the hint, as ['Hint', 'Letter 2 is T.']).
 export const gsWordLines = (answer, seq) => { let n = 0; return seq.map((x) => (typeof x === 'string' ? ['Guess ' + (n += 1), x, ...gsGuessParts(x, answer)] : x)); };
 // Escape: moves are numbered across moves only (hints and items are not moves). A name sits mid-sentence in lower case.
 const gsEsLines = (steps) => { let n = 0; return steps.map((x) => (x[0] === 'Hint' || x[0] === 'Item' ? x : ['Move ' + (n += 1), ...x])); };
@@ -235,7 +237,7 @@ export const GS_CB_HARD = [
 ];
 export const GS_CB_FAILED = [...GS_CB_REC.slice(0, 7), { c: 'A', act: 'Accusation', what: 'Tobias Pike', out: 'Wrong' }];
 
-// Today's Daily Mystery questions, shared by the finished play and its in-progress form.
+// Today's Accuse questions, shared by the finished play and its in-progress form.
 const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'The inspector said yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'The inspector said yes']];
 // Session records: sample plays (Delve's lines are the deployed engine's, above).
 export const GS_SESSIONS = {
@@ -251,21 +253,21 @@ export const GS_SESSIONS = {
     share: 'Elsie rescued',
     shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5', '💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩'],
   },
-  // Daily Word and Daily Mystery tell one story per game on every surface: today's play, its in-progress form and one earlier play.
+  // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
-    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     share: 'Solved in 3 of 6',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STILL']),
   },
   // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
   // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
   'word-hard': {
-    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
     share: 'Solved in 5 of 6',
     lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOUR', 'FLOOR']),
   },
   'word-failed': {
-    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
     share: 'Failed',
     lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 4 is A.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
   },
@@ -277,13 +279,13 @@ export const GS_SESSIONS = {
     lines: GS_ES1_LINES,
   },
   'mystery-today': {
-    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, result: 'Failed', loss: true, date: GS.today,
+    kind: 'puzzle', gid: 'mystery', game: 'Accuse', art: 'murder', number: 64, q: 2, hints: 0, result: 'Failed', loss: true, date: GS.today,
     setting: 'a storm-bound weekend at Hollowmere House', victim: 'Madame Odette Varga, the medium',
     figures: ['2 questions', 'No hints'], share: 'Failed',
     lines: [...GS_MYSTERY_QS, ['Accusation', 'Sebastian Wyle, with the iron poker, in the dining room', 'Wrong', 'The suspect, the weapon and the room were all wrong']],
   },
   'word-1005': {
-    kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
     share: 'Solved in 4 of 6',
     lines: gsWordLines('CHAIN', ['CRANE', 'CHANT', 'CHAIR', 'CHAIN']),
   },
@@ -310,7 +312,7 @@ export const GS_SESSIONS = {
     lines: gsCbLines(GS_CB_REC),
   },
   'mystery-1004': {
-    kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 62, q: 2, hints: 0, result: 'Solved', date: 'Sunday 4 October',
+    kind: 'puzzle', gid: 'mystery', game: 'Accuse', art: 'murder', number: 62, q: 2, hints: 0, result: 'Solved', date: 'Sunday 4 October',
     setting: 'the annual gala of the Royal Botanical Society', victim: 'Dr Ambrose Kell, the collector',
     figures: ['2 questions', 'No hints'], share: 'Solved',
     lines: [['Question 1', 'Was Mr Graves in the study?', 'The inspector said yes'], ['Question 2', 'Did Dr Helena Strand have the curtain cord?', 'The inspector said yes'],
@@ -333,7 +335,7 @@ Object.assign(GS_SESSIONS, {
     shareHead: 'Daily Groups #88 · 4 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟩🟩🟪'],
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
       ['Try 5', 'CHORD · SCALE · NOTE · RAIL', 'One away'], ['Try 6', 'NOTE · RAIL · GATE · BASS', 'Not a group']] },
-  // Daily Mystery asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
+  // Accuse asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
   'mystery-today-avg': { ...GS_SESSIONS['mystery-today'], loss: false, now: { line: 'You asked the inspector one question, then named the right suspect, weapon and room.' }, q: 1, result: 'Solved', share: 'Solved', figures: ['1 question', 'No hints'],
     lines: [GS_MYSTERY_QS[0], ['Accusation', 'Delphine Rooke, with the curtain cord, in the conservatory', 'Right']] },
   'mystery-today-hard': { ...GS_SESSIONS['mystery-today'], loss: false, now: { line: 'You asked the inspector both questions, then named the right suspect, weapon and room.' }, result: 'Solved', share: 'Solved',
@@ -360,11 +362,11 @@ export const gsSessStatus = (s) => ({ kind: s.loss ? 'bad' : 'ok', label: s.resu
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
-  'word-live': { kind: 'puzzle', gid: 'word', game: 'Daily Word', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
+  'word-live': { kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
     lines: gsWordLines('STILL', ['CRANE', 'SLATE']) },
   'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },
-  'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Daily Mystery', art: 'murder', number: 64, q: 2, hints: 0, live: true, result: 'In progress', date: GS.today,
+  'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Accuse', art: 'murder', number: 64, q: 2, hints: 0, live: true, result: 'In progress', date: GS.today,
     figures: ['2 questions', 'No hints'], share: null, lines: GS_MYSTERY_QS.slice() },
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },

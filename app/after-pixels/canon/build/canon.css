@@ -973,7 +973,7 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 .dl-now-route .dv2-dbtn:focus-visible { outline: 0; }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
-/* A board of tiles reads its tile size (--t) and gap (--g) from the card (Daily Word's and Chain's tiles, gs-word.css .wd-t).
+/* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).
    KEEP: the tiles read 100cqi where they are drawn, inside the card (a container), so the phone size subtracts only the number
    gutters either side (2 x 28px): about 49px at 390px wide. From 640px: from the window's height, so the hard play fits under
    the head on a laptop, 56 to 72px. */
@@ -2202,7 +2202,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .gs-host .gs-tagbtn { position: relative; z-index: 2; }
 .gs-host .gs-titlebtn:focus-visible { outline: none; }
 .gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
-/* KEEP: Motion art for Daily Word, Daily Mystery, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
+/* KEEP: Motion art for Guess, Accuse, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
 .mcp-art.is-wine { background: var(--cover-bg-wine); }
 .mcp-art.is-forest { background: var(--cover-bg-forest); }
 .gs-st { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(100cqw, 133.333cqh); aspect-ratio: 4 / 3; container-type: size; --u: .625cqw; }
@@ -2337,7 +2337,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .gs-sess-title { font: 600 16px/1.25 var(--font-heading); letter-spacing: 0; }
 }
 
-/* ==== LM-1110 (2026-10-13): Daily Word and Daily Mystery layout fixes, made once in the shared parts ==== */
+/* ==== LM-1110 (2026-10-13): Guess and Accuse layout fixes, made once in the shared parts ==== */
 /* C5: the pitch and "How it plays" share a top */
 .gs-pitch > * { align-self: start !important; }
 
@@ -2618,10 +2618,10 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .esx-fold, .esx-card, .esx-chip { transition: none; }
   .esx-in { animation: none; }
 }
-/* Daily Word: the session page board and cover, the now card (app/gs-word.jsx).
+/* Guess: the session page board and cover, the now card (app/gs-word.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
-/* ---- Daily Word (1236): the session page's board and cover (app/gs-word.jsx) ---- */
+/* ---- Guess (1236): the session page's board and cover (app/gs-word.jsx) ---- */
 /* Tiles are square. Phone: from the column's width (page and card padding, the number gutters out), up to 64px. From 640px:
    from the window's height, so the hard play fits under the head on a laptop, 56 to 72px. */
 .wd-board { display: grid; gap: var(--g); justify-content: center; }
@@ -2666,7 +2666,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @container gs (min-width: 900px) {
   .wd-nrow { grid-template-columns: 1ch auto; } .wd-nrow > span:last-child { display: none; }
 }
-/* ---- Daily Word's session card (app/gs-word.jsx WdSessBody, on the shared GsSessCard, gs-sess-card.css). ---- */
+/* ---- Guess's session card (app/gs-word.jsx WdSessBody, on the shared GsSessCard, gs-sess-card.css). ---- */
 /* The ring: 104px, 128px from a 672px card. */
 .wd-ring { position: relative; width: 104px; height: 104px; }
 .wd-ring svg { display: block; width: 100%; height: 100%; }
@@ -2689,7 +2689,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wd-ans-row { display: flex; gap: 4px; }
 .wd-ans-t { width: calc(var(--t) * .5); height: calc(var(--t) * .5); font-size: calc(var(--t) * .26); border: 1.5px solid #918B80; color: #ABA79E; }
 
-/* ---- Daily Word's now card (app/gs-word.jsx WdNow; Joe's pick, D2), on the shared frame (LbNowCard). ---- */
+/* ---- Guess's now card (app/gs-word.jsx WdNow; Joe's pick, D2), on the shared frame (LbNowCard). ---- */
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
 .wd-now { container: wdnow / inline-size; position: relative; }
 .wd-now > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
@@ -2727,7 +2727,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .wd-nring { --r: 40px; }
   .wd-nring-n { font-size: 15px; }
 }
-/* KEEP: Daily Word's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
+/* KEEP: Guess's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
    stroke 3.2 so it draws at 2); when the pressable thing it sits in is hovered, focused or pressed (--on 1, the design system's
    game-art rule) it grows to full size and fills. Where nothing sets --on (the session page) it stays at rest. */
 .wd-cover-miss { transform-box: fill-box; transform-origin: center; transform: scale(calc(.625 + .375 * var(--on, 0)));
@@ -2865,7 +2865,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pg-config-opts { display: flex; flex-wrap: wrap; gap: 8px; }
 .pg-config-opt { text-align: left; }
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
-   session card (gs-sess-card.css) and Daily Word's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
+   session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 
 /* KEEP: the tile is 40px on a phone and 44px from 760px, shrunk only when the longest row (--chn-n tiles) would not fit the card
    (--wcap); the joint between rows is 20px; one chain unit --lu is 1.3px (1.5px from 760px), so a link stands about one tile tall;
@@ -3100,7 +3100,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .slv-dot.is-hit.is-lost { background: var(--warning); }
 .slv-hull.is-unfound svg { display: block; }
 
-/* ---- Haul: the number as large as Daily Word's guesses figure in its ring (36px, 44px from a 672px card: gs-word.css .wd-ring-n b). ---- */
+/* ---- Haul: the number as large as Guess's guesses figure in its ring (36px, 44px from a 672px card: gs-word.css .wd-ring-n b). ---- */
 .slv-haul { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 28px; }
 .slv-big { display: flex; align-items: baseline; gap: 2px; font-variant-numeric: tabular-nums; }
 .slv-big b { font: 700 36px/1 var(--font-heading); color: var(--text); }
@@ -3125,7 +3125,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @container dv2 (min-width: 672px) {
   .slv-sea { --c: clamp(24px, calc((100cqi - 16px - 24px - 129px - 252px) / 8), 44px); }
   .slv-big b { font-size: 44px; }
-  /* KEEP: the divider runs the card's full height, as on Daily Word (the shared rule rises past the Result row), while Haul and Kit
+  /* KEEP: the divider runs the card's full height, as on Guess (the shared rule rises past the Result row), while Haul and Kit
      centre on the Sea: the panel's top padding takes back that rise (29px Result row + 24px gap). */
   .slv-card .gs-sc-panel { padding-top: calc(29px + 24px); }
 }
@@ -3157,7 +3157,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .svn-tools .slv-bx svg { width: 62%; height: 62%; }
 
 /* On a page from 640px: the picture sits at the centre of the whole card, head and action row included, as Guess's, Where's and
-   Daily Word's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
+   Guess's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
 @container gs (min-width: 640px) {
   .svn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .svn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }

@@ -37,7 +37,7 @@
 .slv-dot.is-hit.is-lost { background: var(--warning); }
 .slv-hull.is-unfound svg { display: block; }
 
-/* ---- Haul: the number as large as Daily Word's guesses figure in its ring (36px, 44px from a 672px card: gs-word.css .wd-ring-n b). ---- */
+/* ---- Haul: the number as large as Guess's guesses figure in its ring (36px, 44px from a 672px card: gs-word.css .wd-ring-n b). ---- */
 .slv-haul { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 28px; }
 .slv-big { display: flex; align-items: baseline; gap: 2px; font-variant-numeric: tabular-nums; }
 .slv-big b { font: 700 36px/1 var(--font-heading); color: var(--text); }
@@ -62,7 +62,7 @@
 @container dv2 (min-width: 672px) {
   .slv-sea { --c: clamp(24px, calc((100cqi - 16px - 24px - 129px - 252px) / 8), 44px); }
   .slv-big b { font-size: 44px; }
-  /* KEEP: the divider runs the card's full height, as on Daily Word (the shared rule rises past the Result row), while Haul and Kit
+  /* KEEP: the divider runs the card's full height, as on Guess (the shared rule rises past the Result row), while Haul and Kit
      centre on the Sea: the panel's top padding takes back that rise (29px Result row + 24px gap). */
   .slv-card .gs-sc-panel { padding-top: calc(29px + 24px); }
 }

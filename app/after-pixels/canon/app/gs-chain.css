@@ -1,5 +1,5 @@
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
-   session card (gs-sess-card.css) and Daily Word's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
+   session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 
 /* KEEP: the tile is 40px on a phone and 44px from 760px, shrunk only when the longest row (--chn-n tiles) would not fit the card
    (--wcap); the joint between rows is 20px; one chain unit --lu is 1.3px (1.5px from 760px), so a link stands about one tile tall;

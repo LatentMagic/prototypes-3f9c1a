@@ -1,8 +1,8 @@
 // ============================================================================
-// After Pixels — Daily Word's own parts (1236): the session page's body (the board, then Every guess) and the cover the
+// After Pixels — Guess's own parts (1236): the session page's body (the board, then Every guess) and the cover the
 // session page shows. Reads the plays in app/gs-data.jsx (word-today, word-hard, word-failed, word-live). Loads after
 // app/gs-escape.jsx and extends the same seams in app/gs-session.jsx.
-// The record holds each guess with its marks and each hint as "Letter N is X." (game spec daily-word.md § 2): the place of
+// The record holds each guess with its marks and each hint as "Letter N is X." (game spec guess.md § 2): the place of
 // the first letter not yet green. The answer is never printed; the seed's answer only computes the marks.
 // ============================================================================
 

@@ -1,7 +1,7 @@
-/* Daily Word: the session page board and cover, the now card (app/gs-word.jsx).
+/* Guess: the session page board and cover, the now card (app/gs-word.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
-/* ---- Daily Word (1236): the session page's board and cover (app/gs-word.jsx) ---- */
+/* ---- Guess (1236): the session page's board and cover (app/gs-word.jsx) ---- */
 /* Tiles are square. Phone: from the column's width (page and card padding, the number gutters out), up to 64px. From 640px:
    from the window's height, so the hard play fits under the head on a laptop, 56 to 72px. */
 .wd-board { display: grid; gap: var(--g); justify-content: center; }
@@ -46,7 +46,7 @@
 @container gs (min-width: 900px) {
   .wd-nrow { grid-template-columns: 1ch auto; } .wd-nrow > span:last-child { display: none; }
 }
-/* ---- Daily Word's session card (app/gs-word.jsx WdSessBody, on the shared GsSessCard, gs-sess-card.css). ---- */
+/* ---- Guess's session card (app/gs-word.jsx WdSessBody, on the shared GsSessCard, gs-sess-card.css). ---- */
 /* The ring: 104px, 128px from a 672px card. */
 .wd-ring { position: relative; width: 104px; height: 104px; }
 .wd-ring svg { display: block; width: 100%; height: 100%; }
@@ -69,7 +69,7 @@
 .wd-ans-row { display: flex; gap: 4px; }
 .wd-ans-t { width: calc(var(--t) * .5); height: calc(var(--t) * .5); font-size: calc(var(--t) * .26); border: 1.5px solid #918B80; color: #ABA79E; }
 
-/* ---- Daily Word's now card (app/gs-word.jsx WdNow; Joe's pick, D2), on the shared frame (LbNowCard). ---- */
+/* ---- Guess's now card (app/gs-word.jsx WdNow; Joe's pick, D2), on the shared frame (LbNowCard). ---- */
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
 .wd-now { container: wdnow / inline-size; position: relative; }
 .wd-now > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
@@ -107,7 +107,7 @@
   .wd-nring { --r: 40px; }
   .wd-nring-n { font-size: 15px; }
 }
-/* KEEP: Daily Word's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
+/* KEEP: Guess's block for a letter not in the word. At rest (--on 0) a small square, thin grey outline (scaled .625, its
    stroke 3.2 so it draws at 2); when the pressable thing it sits in is hovered, focused or pressed (--on 1, the design system's
    game-art rule) it grows to full size and fills. Where nothing sets --on (the session page) it stays at rest. */
 .wd-cover-miss { transform-box: fill-box; transform-origin: center; transform: scale(calc(.625 + .375 * var(--on, 0)));

@@ -34,7 +34,7 @@ const phShort = (d) => lbShort(lbDate(d));
 
 // An edition's name, as a History row and the session page write it: the edition's name where it has one ("The Clockmaker’s Study"),
 // the number where it has none ("#212"). A named edition shows no number. edLabel puts the game's name first:
-// "Daily Word #212", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
+// "Guess #212", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
 export const edName = (e) => (e.title ? e.title : '#' + e.n);
 export const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #' + e.n);
 let ED_NONE;
@@ -79,7 +79,7 @@ export const edNeedsPass = (gs, e) => gs.view !== 'pass' && (GS_GAMES[e.gid].fre
 // The past day's play for an edition, as Config → Past day sets it (in progress, or finished late), or null. A Pass game's is the Pass holder's.
 const phPast = (gs, key) => { const e = PH_PAST[key]; const m = gs && gs.review && gs.review.pastDay; const p = e && m && e[m];
   return p && !gsFresh(gs) && (GS_GAMES[e.gid].free || gs.view === 'pass') ? p : null; };
-// Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Daily Mystery #64"), its title, and its date.
+// Search: a row is found by its name and number as written ("Daily Groups #84", "groups 84", "Accuse #64"), its title, and its date.
 // Every word typed must start a word of the row; a number must be a whole number (84 finds #84, not #184).
 // A keyboard apostrophe matches the curly one. A query naming a month is a date and matches as before (substring).
 export const phNorm = (q) => (q || '').trim().toLowerCase().replace(/^#/, '');
@@ -282,7 +282,7 @@ export const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
 // listed on its own page). Search and one Filters panel that only narrows: Genre, Schedule, Game, Order.
 // When nothing matches, Clear all clears search and narrowing. Narrowed to a game when the library game page's "See in History" opens it.
 // Every row opens its session page. No Pass mark on any row or filter.
-// A row's title comes from its edition: edLabel ("Daily Word #212"), or edName in a one-game list ("#212").
+// A row's title comes from its edition: edLabel ("Guess #212"), or edName in a one-game list ("#212").
 const phTitle = (p, one) => { const m = phMeta()[p.ed]; if (m) return one ? edName(m) : edLabel(m);
   return one || (p.edTitle.includes(GS_GAMES[p.gid].name) && p.gid !== 'barrow') ? p.edTitle : GS_GAMES[p.gid].name + ' · ' + p.edTitle; };
 // A row's parts: the edition's own name, and the game's name for a list that mixes games (ListRow joins them).
@@ -351,8 +351,8 @@ PH_META = null;
 PH_EDS = {};
 PH_PLAYS = [];
 PH_LIVE = { kind: 'live', label: 'In progress' };
-// Past-day plays (Config → Past day): one Common day and one Daily Word day, editions the seed leaves unplayed, each started on its day.
-// In progress, the play is an ordinary session page with Play. Finished late, the play is a Daily Word finished the morning after: the session page and
+// Past-day plays (Config → Past day): one Common day and one Guess day, editions the seed leaves unplayed, each started on its day.
+// In progress, the play is an ordinary session page with Play. Finished late, the play is a Guess finished the morning after: the session page and
 // History show the result, and the streak strip does not mark the day (pzRun skips a late play).
 PH_PAST = (() => {
   const day = (id) => PZ[id].all.filter((x) => x.i > 0 && !x.played)[0];
@@ -414,7 +414,7 @@ HG_DAYS.forEach((x, i) => {
 // the Library row, the chapters list, the session page, achievements). Shown only while that record stands (phVisible).
 phEd('barrow', 'bw1', BW_T1, PH_TODAY, [{ at: phAt(PH_TODAY, 19, 45), status: { kind: 'ok', label: 'Quest complete' }, src: BW_REC1, sid: 'gs-pu-barrow-ch1', open: phSess('gs-pu-barrow-ch1') }]);
 PH_ALL = PH_PLAYS.slice().sort((a, b) => b.at - a.at);
-// State library-word-streak-broken (Config-less: review.broken): yesterday's Daily Word was finished in a first play that
+// State library-word-streak-broken (Config-less: review.broken): yesterday's Guess was finished in a first play that
 // failed. History shows that play in place of the log's seeded one, as the game page does.
 PH_BROKEN = (() => {
   const e = PH_EDS.word1; if (!e) return [];
@@ -422,7 +422,7 @@ PH_BROKEN = (() => {
   return [{ ...f, pid: 'word1-broken-0', status: { kind: 'bad', label: c.bad }, open: phSess('word-broken-first') }];
 })();
 // Who sees what. A player keeps History for everything they played.
-// Free: Daily Word and Daily Mystery in full, and the first edition of Escape, Delve and the Barrow. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
+// Free: Guess and Accuse in full, and the first edition of Escape, Delve and the Barrow. Pass ended: those plus every play from before it ended (gsEndedOn), this week's included. A new account: nothing.
 // ---- The free first edition's one play record (a free first run or room, or chapter). Every surface reads it: the game page's head
 // card, its list of plays, History, the Library row, the editions list, the case or session page and its achievements. Its date is
 // the day it was played. It has an in-progress form and an ended form, switched by the same control as this week's play

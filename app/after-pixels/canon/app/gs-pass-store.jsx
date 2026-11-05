@@ -3,9 +3,9 @@
 
 // ---- Review store: what the Config row and the states set. Not saved. ----
 // bwDone: the Barrow's chapter 1 is finished (canon has nobody playing it). newEds: 'seed' reads the seed's played data;
-// 'most' treats every game but Daily Word as having an unplayed current edition, so New for you can be seen full.
+// 'most' treats every game but Guess as having an unplayed current edition, so New for you can be seen full.
 // lapsed: which Pass-ended player is staged. 'seed' as before; 'every' covers the four cases of the Pass-ended proposal (state "Pass ended: every case").
-// freeNew: the seeded free player hasn't played today's Daily Word or Escape's first room, so their New for you
+// freeNew: the seeded free player hasn't played today's Guess or Escape's first room, so their New for you
 // holds two games. false: both played, as the seed had them.
 import React from 'react';
 import { GS_TODAY_PLAYED, GS_GAME_ORDER, GS_GAMES, gsLapsed, gsFresh, useGs, GS_NAME } from './gs-data.jsx';

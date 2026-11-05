@@ -299,7 +299,7 @@ export const CbNow = ({ c }) => {
   );
 };
 
-// The now card of a library game page. Daily Word's own card (WdNow in gs-word.jsx) takes it, played or not, and Escape's
+// The now card of a library game page. Guess's own card (WdNow in gs-word.jsx) takes it, played or not, and Escape's
 // (EsNow in gs-escape.jsx) once there is a play; Chain's (ChNow in gs-chain-now.jsx) and Salvage's (SvNow in gs-salvage-now.jsx) take it always, fresh included; every other card is CprPzNow.
 export const PzNow = (props) => {
   const own = props.id === 'word' ? <WdNow c={props.c} done={props.done} none={props.none} />

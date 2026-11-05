@@ -26,7 +26,7 @@
 .svn-tools .slv-bx svg { width: 62%; height: 62%; }
 
 /* On a page from 640px: the picture sits at the centre of the whole card, head and action row included, as Guess's, Where's and
-   Daily Word's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
+   Guess's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
 @container gs (min-width: 640px) {
   .svn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .svn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }

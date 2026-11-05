@@ -1,5 +1,5 @@
 // ============================================================================
-// Where's session card and library now card (Joe, 2026-10-31). The session card is the shared one Daily Word's is
+// Where's session card and library now card (Joe, 2026-10-31). The session card is the shared one Guess's is
 // (GsSessCard, gs-session.jsx), so its places move when Guess's do: the result top left, the board (a ruled log of the guesses
 // made, never the hint), and a panel ruled off at the board's right holding Guesses (the globe) and Hint (the chart). The now card is the last guess, then the globe and the chart as one group, centred on the whole card as
 // Guess's is. A play is read from its session's lines (gs-where-chain-salvage.jsx dpWhere), so the cards and Every guess agree.

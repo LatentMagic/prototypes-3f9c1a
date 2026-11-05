@@ -6,4 +6,4 @@ Naming: `<game>-<app>-<yyyy-mm-dd of play>.png`, kebab-case.
 
 | File | Game | App | Played | Size |
 |---|---|---|---|---|
-| `daily-word-claude-code-2026-10-05.png` | Daily Word | Claude Code (terminal) | 5 Oct 2026 | 1840×1498 |
+| `daily-word-claude-code-2026-10-05.png` | Guess | Claude Code (terminal) | 5 Oct 2026 | 1840×1498 |
