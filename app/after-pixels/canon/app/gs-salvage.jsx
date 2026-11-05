@@ -89,7 +89,8 @@ export const SLV_PLAYS = {
 const slvShareLinesOf = (p) => { const wrecks = p.raised.size === 5 ? 'all 5 wrecks' : p.raised.size + ' of 5 wrecks';
   const rows = []; for (let i = 0; i < p.marks.length; i += 10) rows.push(p.marks.slice(i, i + 10).join(' '));
   return ['Salvage No. 21 · ' + wrecks + ' · ' + p.dives + ' of ' + SLV_DIVES + ' dives', '', ...rows]; };
-// Completed and Failed are working words, not yet ruled; In progress is the deployed headline.
+// Completed and Failed are working words for the result statement, not yet ruled. The result line and the share text use the deployed
+// headline (session-record.ts headlineOf): "All 5 wrecks in N of 20 dives", "N of 5 wrecks found", "In progress".
 export const SLV_RESULT = { won: { tone: 'ok', word: 'Completed' }, lost: { tone: 'bad', word: 'Failed' }, live: { tone: 'live', word: 'In progress' } };
 
 // ---- The Sea: one grid of a label column, eight squares and a clue column, under a row of clues and a row of letters. ----
@@ -158,7 +159,7 @@ export const initGsSalvage = () => {
   GS_SESSION_BODY.salvage = SlvSessBody;
   Object.keys(FIXTURES).forEach((sid) => {
     const fx = FIXTURES[sid]; const p = SLV_PLAYS[fx]; const done = fx !== 'live';
-    const result = done ? SLV_RESULT[fx].word + ': ' + (p.raised.size === 5 ? 'all 5 wrecks' : p.raised.size + ' of 5 wrecks') + ' in ' + p.dives + ' of ' + SLV_DIVES + ' dives' : 'In progress';
+    const result = !done ? 'In progress' : p.raised.size === 5 ? 'All 5 wrecks in ' + p.dives + ' of ' + SLV_DIVES + ' dives' : p.raised.size + ' of 5 wrecks found';
     Object.assign(GS_SESSIONS[sid], { fx, loss: fx === 'lost', result, lines: p.lines,
       figures: [p.raised.size + ' of 5 wrecks', p.dives + ' of ' + SLV_DIVES + ' dives'], share: done ? result : null, shareLines: done ? slvShareLinesOf(p) : undefined });
   });

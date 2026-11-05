@@ -4068,7 +4068,7 @@
       const fx = FIXTURES[sid];
       const p = SLV_PLAYS[fx];
       const done = fx !== "live";
-      const result = done ? SLV_RESULT[fx].word + ": " + (p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks") + " in " + p.dives + " of " + SLV_DIVES + " dives" : "In progress";
+      const result = !done ? "In progress" : p.raised.size === 5 ? "All 5 wrecks in " + p.dives + " of " + SLV_DIVES + " dives" : p.raised.size + " of 5 wrecks found";
       Object.assign(GS_SESSIONS[sid], {
         fx,
         loss: fx === "lost",
@@ -5377,7 +5377,7 @@
         ach: [
           { k: "sv1", n: "Every wreck found", how: "Find all five wrecks in a Salvage.", by: (p) => p.status.kind === "ok" },
           { k: "sv5", n: "Five dives to spare", how: "Find all five wrecks in 25 dives or fewer.", by: (p) => {
-            const m = new RegExp("^All 5 wrecks, (\\d+) of " + SLV_DIVES).exec(p.status.label);
+            const m = new RegExp("^All 5 wrecks(?:,| in) (\\d+) of " + SLV_DIVES).exec(p.status.label);
             return !!m && +m[1] <= 25;
           } },
           { k: "sv7", n: "Seven days in a row", how: "Find every wreck seven days running.", of: 7 }
