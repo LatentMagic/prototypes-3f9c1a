@@ -1,0 +1,25 @@
+/* Accuse's now card on its library game page (app/gs-accuse-now.jsx): the session page's panel in small, the Hints card beside the
+   culprit's case card (.acc-hc, .acc-case, gs-accuse.css). */
+.acn { position: relative; }
+.acn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
+.acn .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
+.acn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
+
+/* KEEP: on a phone the two cards sit side by side, as on the session page's panel: captions centred over each, both cards one height,
+   the Hints card as narrow as its count and the case card up to 240px. */
+.acn-pic { align-self: center; justify-self: center; width: 100%; min-width: 0; display: grid; justify-items: center; }
+.acn-pair { display: grid; grid-template-columns: auto minmax(0, 240px); justify-content: center; column-gap: 12px; width: 100%; }
+.acn-col { display: grid; grid-template-rows: auto 1fr; row-gap: 8px; min-width: 0; }
+.acn-col > .gs-sc-cap { justify-self: center; }
+.acn .acc-hc, .acn .acc-case { width: 100%; height: 100%; align-content: center; }
+.acn .acc-blank { width: min(160px, 80%); }
+.acn .acc-blank.is-s { width: min(190px, 92%); }
+
+/* KEEP: on a page from 640px the pair is one group centred on the whole card, head and action row included, with the body at the
+   standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's and
+   action row's height, never onto their words, since it sits between them. The switch reads the page's width, not the card's. */
+@container gs (min-width: 640px) {
+  .acn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
+  .acn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max-content; pointer-events: none; }
+  .acn-pair { grid-template-columns: auto 240px; column-gap: 16px; }
+}

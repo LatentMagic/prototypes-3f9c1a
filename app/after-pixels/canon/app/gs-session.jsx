@@ -53,11 +53,6 @@ export const gsShareText = (s) => {
     const head = 'Guess No. ' + s.number + ' · ' + (s.loss ? 'X' : guesses.length) + '/6' + (h ? ' · ' + h + (h === 1 ? ' hint ' : ' hints ') + '💡'.repeat(h) : '');
     return [head, '', ...guesses.map((g) => gsWordRow(g, answer)), link];
   }
-  if (s.gid === 'mystery' && s.number) {
-    const q = s.q != null ? s.q : s.lines.filter((l) => /^Question/.test(l[0])).length;
-    const qn = q === 0 ? 'no questions' : q === 1 ? '1 question' : q + ' questions';
-    return ['Accuse No. ' + s.number + ' · ' + (s.loss ? 'wrong accusation' : 'solved') + ' · ' + qn + (q ? ' ' + '🔎'.repeat(q) : ''), s.loss ? '❌' : '✅', link];
-  }
   if (s.shareHead) return [s.shareHead, ...(s.rows || []), link];
   if (s.kind === 'delve') return ['Delve 🎲 ' + s.result + ', ' + s.reached.toLowerCase(), '🎲 ' + s.lines.length + ' rolls  ⏳ threat ' + s.tracks.threat + '/6', link];
   if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];

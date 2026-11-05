@@ -237,8 +237,6 @@ export const GS_CB_HARD = [
 ];
 export const GS_CB_FAILED = [...GS_CB_REC.slice(0, 7), { c: 'A', act: 'Accusation', what: 'Tobias Pike', out: 'Wrong' }];
 
-// Today's Accuse questions, shared by the finished play and its in-progress form.
-const GS_MYSTERY_QS = [['Question 1', 'Was Delphine Rooke in the study?', 'The inspector said yes'], ['Question 2', 'Did Arthur Penhallow have the paper knife?', 'The inspector said yes']];
 // Session records: sample plays (Delve's lines are the deployed engine's, above).
 export const GS_SESSIONS = {
   // Delve run 1 won, Bryn the Fighter.
@@ -278,12 +276,6 @@ export const GS_SESSIONS = {
     share: 'Escaped in 28 min, under par', shareLines: ['Escape No. 1 · escaped in 28 min, under par · 1 hint 💡 · 2 wrong tries'],
     lines: GS_ES1_LINES,
   },
-  'mystery-today': {
-    kind: 'puzzle', gid: 'mystery', game: 'Accuse', art: 'murder', number: 64, q: 2, hints: 0, result: 'Failed', loss: true, date: GS.today,
-    setting: 'a storm-bound weekend at Hollowmere House', victim: 'Madame Odette Varga, the medium',
-    figures: ['2 questions', 'No hints'], share: 'Failed',
-    lines: [...GS_MYSTERY_QS, ['Accusation', 'Sebastian Wyle, with the iron poker, in the dining room', 'Wrong', 'The suspect, the weapon and the room were all wrong']],
-  },
   'word-1005': {
     kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
     share: 'Solved in 4 of 6',
@@ -311,13 +303,6 @@ export const GS_SESSIONS = {
     shareLines: ['Casebook: The Last Night at Gull Point', '✅ solved · 11 of 16 turns · 4 lies exposed'],
     lines: gsCbLines(GS_CB_REC),
   },
-  'mystery-1004': {
-    kind: 'puzzle', gid: 'mystery', game: 'Accuse', art: 'murder', number: 62, q: 2, hints: 0, result: 'Solved', date: 'Sunday 4 October',
-    setting: 'the annual gala of the Royal Botanical Society', victim: 'Dr Ambrose Kell, the collector',
-    figures: ['2 questions', 'No hints'], share: 'Solved',
-    lines: [['Question 1', 'Was Mr Graves in the study?', 'The inspector said yes'], ['Question 2', 'Did Dr Helena Strand have the curtain cord?', 'The inspector said yes'],
-      ['Accusation', 'Ivy Marchbank, with the vial of foxglove, in the wine cellar', 'Right']],
-  },
 };
 // This edition's play as Config → This edition picks it (gsEdPick): Average, Hard (every try and hint used, still won) or Failed.
 // Same edition, same answer as today's play and its in-progress form. A game with no entry for a pick keeps its seeded play.
@@ -335,11 +320,6 @@ Object.assign(GS_SESSIONS, {
     shareHead: 'Daily Groups #88 · 4 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟩🟩🟪'],
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
       ['Try 5', 'CHORD · SCALE · NOTE · RAIL', 'One away'], ['Try 6', 'NOTE · RAIL · GATE · BASS', 'Not a group']] },
-  // Accuse asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
-  'mystery-today-avg': { ...GS_SESSIONS['mystery-today'], loss: false, now: { line: 'You asked the inspector one question, then named the right suspect, weapon and room.' }, q: 1, result: 'Solved', share: 'Solved', figures: ['1 question', 'No hints'],
-    lines: [GS_MYSTERY_QS[0], ['Accusation', 'Delphine Rooke, with the curtain cord, in the conservatory', 'Right']] },
-  'mystery-today-hard': { ...GS_SESSIONS['mystery-today'], loss: false, now: { line: 'You asked the inspector both questions, then named the right suspect, weapon and room.' }, result: 'Solved', share: 'Solved',
-    lines: [...GS_MYSTERY_QS, ['Accusation', 'Delphine Rooke, with the curtain cord, in the conservatory', 'Right']] },
 });
 Object.assign(GS_SESSIONS, {
   'casebook-hard': { ...GS_SESSIONS.casebook, figures: ['16 of 16 turns', '4 of 4 lies exposed', 'You accused Dr. Celia Rourke'], lines: gsCbLines(GS_CB_HARD) },
@@ -366,8 +346,6 @@ Object.assign(GS_SESSIONS, {
     lines: gsWordLines('STILL', ['CRANE', 'SLATE']) },
   'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },
-  'mystery-live': { kind: 'puzzle', gid: 'mystery', game: 'Accuse', art: 'murder', number: 64, q: 2, hints: 0, live: true, result: 'In progress', date: GS.today,
-    figures: ['2 questions', 'No hints'], share: null, lines: GS_MYSTERY_QS.slice() },
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.

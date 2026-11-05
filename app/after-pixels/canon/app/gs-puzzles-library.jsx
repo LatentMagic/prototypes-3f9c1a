@@ -4,6 +4,7 @@ import { lbDate, lbMonth, lbAutoBadges, lbWeekDone, lbNow, lbStreak, LbHead, LbR
 import { DP_PZ, dpSession, DP_IDS } from './gs-where-chain-salvage.jsx';
 import { phVisible, phAch, LbRecent, edPuzzle } from './gs-history.jsx';
 import { PzNow } from './gs-pass-library.jsx';
+import { accSession, accWrong, ACC_TRUTH } from './gs-accuse.jsx';
 import { esFinished } from './gs-escape.jsx';
 import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
@@ -12,11 +13,6 @@ export let PZ;
 let PZ_WORDS;
 let PZ_OPEN;
 let PZ_GROUPS;
-let PZ_SUS;
-let PZ_WPN;
-let PZ_RMS;
-const pzQn = (q) => (q === 0 ? 'No questions' : q === 1 ? '1 question' : q + ' questions');
-const pzAcc = (s, w, r) => s + ', with the ' + w + ', in the ' + r;
 let PZ_MOVES;
 export const pzLong = (d) => d.toLocaleString('en-GB', { weekday: 'long' }) + ' ' + lbDate(d);
 export const pzSession = (id, c, x) => {
@@ -36,15 +32,8 @@ export const pzSession = (id, c, x) => {
     s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], share: x.line,
       shareHead: 'Daily Groups #' + (88 - i) + ' · ' + pzMis(mis), rows, lines };
   } else if (id === 'mystery') {
-    const cs = (i * 3) % 8; const cw = (i * 5 + 1) % 8; const cr = (i * 7 + 2) % 8; const q = i % 3;
-    const qs = Array.from({ length: q }, (_, k) => (k === 0
-      ? ['Question 1', 'Was ' + PZ_SUS[(i + 1) % 8] + ' in the ' + PZ_RMS[(i + 4) % 8] + '?', i % 2 ? 'The inspector said yes' : 'The inspector said no']
-      : ['Question 2', 'Did ' + PZ_SUS[(i + 5) % 8] + ' have the ' + PZ_WPN[(i + 3) % 8] + '?', i % 3 === 1 ? 'The inspector said yes' : 'The inspector said no']));
-    const part = i % 3;
-    const acc = x.ok ? pzAcc(PZ_SUS[cs], PZ_WPN[cw], PZ_RMS[cr])
-      : pzAcc(PZ_SUS[part === 0 ? (cs + 1) % 8 : cs], PZ_WPN[part === 1 ? (cw + 1) % 8 : cw], PZ_RMS[part === 2 ? (cr + 1) % 8 : cr]);
-    s = { ...base, number: 64 - i, q, hints: 0, share: x.line, figures: [pzQn(q), 'No hints'],
-      lines: [...qs, x.ok ? ['Accusation', acc, 'Right'] : ['Accusation', acc, 'Wrong', ['The suspect was wrong', 'The weapon was wrong', 'The room was wrong'][part]]] };
+    // Every earlier case is a play of the one sample case (gs-accuse.jsx): 0 to 2 hints, and a wrong accusation gets one part wrong.
+    s = accSession({ no: 64 - i, date: base.date, hints: i % 3, pick: x.ok ? ACC_TRUTH : accWrong(i % 3) });
   } else {
     // Escape's earlier rooms are seeded at the foot of this file; this is only a fallback.
     s = { ...GS_SESSIONS['escape-week'], date: base.date };
@@ -128,10 +117,9 @@ PZ = {
     no: (i) => 'Accuse #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
     ok: () => GS_RESULT.mystery({ ok: true }), bad: GS_RESULT.mystery({ ok: false }),
     title: 'Today’s case', next: 'Next case: tomorrow',
-    live: { line: 'You’ve asked the inspector two questions. You haven’t accused anyone yet.' },
-    done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) }, line: 'You accused after two questions, and the weapon was wrong.' }, recent: 'Your cases',
+    done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) } }, recent: 'Your cases',
     ach: [{ k: 'm1', n: 'Case closed', how: 'Solve an Accuse case.', by: (p) => p.status.kind === 'ok' },
-      { k: 'm0', n: 'Closed with no hints and no questions', how: 'Close a case without a hint or a question.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && s.q === 0 && !s.hints; } },
+      { k: 'm0', n: 'Unaided', how: 'Solve a case without a hint.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && !s.hints; } },
       { k: 'm7', n: 'Seven days in a row', how: 'Solve a case seven days running.', of: 7 }],
   },
   // Escape: this week's room is No. 1 The Clockmaker’s Study; its finished play is escape-week. Earlier rooms: the foot of this file.
@@ -156,10 +144,6 @@ PZ = {
 PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERVE', 'QUILT', 'SPOKE', 'CHALK', 'DRIFT'];
 PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
 PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
-// Earlier Accuse days, in the real grammar: SAMPLES, not real cases. At most two questions; a wrong accusation gets one part wrong.
-PZ_SUS = ['Ivy Marchbank', 'Colonel Rufus Hale', 'Delphine Rooke', 'Arthur Penhallow', 'Mr Graves', 'Sebastian Wyle', 'Dr Helena Strand', 'Nell Okafor'];
-PZ_WPN = ['brass candlestick', 'vial of foxglove', 'antique pistol', 'iron poker', 'curtain cord', 'paper knife', 'marble bust', 'hatpin'];
-PZ_RMS = ['library', 'conservatory', 'butler’s pantry', 'billiard room', 'wine cellar', 'dining room', 'morning room', 'study'];
 PZ_MOVES = [];
 // Seed: forty days (thirty weeks for Escape), newest first; index 0 is this edition.
 Object.entries(PZ).forEach(([id, c]) => {

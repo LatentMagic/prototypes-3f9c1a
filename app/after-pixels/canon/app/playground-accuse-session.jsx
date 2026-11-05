@@ -51,7 +51,7 @@ const pgaSession = (key) => {
   const lines = live ? hintLines : [...hintLines, ['Accusation', pgaSentence(p.pick), right ? 'Right' : 'Wrong']];
   const result = live ? 'In progress' : right ? 'Solved' : 'Failed';
   return { ...GS_SESSIONS['mystery-today'], number: PGA_CASE.no, live, loss: !live && !right, result, share: live ? null : result,
-    figures: [], lines, pga: { ...p, live, right } };
+    figures: [], shareLines: null, lines, pga: { ...p, live, right } };
 };
 
 // ---- Notebook. The groups, in tab order; each item is a chip that opens one reader under the chips. ----

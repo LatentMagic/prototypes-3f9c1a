@@ -1228,7 +1228,6 @@
     GS_CB_REC[11]
   ];
   const GS_CB_FAILED = [...GS_CB_REC.slice(0, 7), { c: "A", act: "Accusation", what: "Tobias Pike", out: "Wrong" }];
-  const GS_MYSTERY_QS = [["Question 1", "Was Delphine Rooke in the study?", "The inspector said yes"], ["Question 2", "Did Arthur Penhallow have the paper knife?", "The inspector said yes"]];
   const GS_SESSIONS = {
     // Delve run 1 won, Bryn the Fighter.
     delve: {
@@ -1310,23 +1309,6 @@
       shareLines: ["Escape No. 1 · escaped in 28 min, under par · 1 hint 💡 · 2 wrong tries"],
       lines: GS_ES1_LINES
     },
-    "mystery-today": {
-      kind: "puzzle",
-      gid: "mystery",
-      game: "Accuse",
-      art: "murder",
-      number: 64,
-      q: 2,
-      hints: 0,
-      result: "Failed",
-      loss: true,
-      date: GS.today,
-      setting: "a storm-bound weekend at Hollowmere House",
-      victim: "Madame Odette Varga, the medium",
-      figures: ["2 questions", "No hints"],
-      share: "Failed",
-      lines: [...GS_MYSTERY_QS, ["Accusation", "Sebastian Wyle, with the iron poker, in the dining room", "Wrong", "The suspect, the weapon and the room were all wrong"]]
-    },
     "word-1005": {
       kind: "puzzle",
       gid: "word",
@@ -1389,26 +1371,6 @@
       share: "Solved",
       shareLines: ["Casebook: The Last Night at Gull Point", "✅ solved · 11 of 16 turns · 4 lies exposed"],
       lines: gsCbLines(GS_CB_REC)
-    },
-    "mystery-1004": {
-      kind: "puzzle",
-      gid: "mystery",
-      game: "Accuse",
-      art: "murder",
-      number: 62,
-      q: 2,
-      hints: 0,
-      result: "Solved",
-      date: "Sunday 4 October",
-      setting: "the annual gala of the Royal Botanical Society",
-      victim: "Dr Ambrose Kell, the collector",
-      figures: ["2 questions", "No hints"],
-      share: "Solved",
-      lines: [
-        ["Question 1", "Was Mr Graves in the study?", "The inspector said yes"],
-        ["Question 2", "Did Dr Helena Strand have the curtain cord?", "The inspector said yes"],
-        ["Accusation", "Ivy Marchbank, with the vial of foxglove, in the wine cellar", "Right"]
-      ]
     }
   };
   Object.assign(GS_SESSIONS, {
@@ -1460,25 +1422,6 @@
         ["Try 5", "CHORD · SCALE · NOTE · RAIL", "One away"],
         ["Try 6", "NOTE · RAIL · GATE · BASS", "Not a group"]
       ]
-    },
-    // Accuse asks at most two questions. Today's culprit is a SAMPLE: the seeded play accused the wrong person.
-    "mystery-today-avg": {
-      ...GS_SESSIONS["mystery-today"],
-      loss: false,
-      now: { line: "You asked the inspector one question, then named the right suspect, weapon and room." },
-      q: 1,
-      result: "Solved",
-      share: "Solved",
-      figures: ["1 question", "No hints"],
-      lines: [GS_MYSTERY_QS[0], ["Accusation", "Delphine Rooke, with the curtain cord, in the conservatory", "Right"]]
-    },
-    "mystery-today-hard": {
-      ...GS_SESSIONS["mystery-today"],
-      loss: false,
-      now: { line: "You asked the inspector both questions, then named the right suspect, weapon and room." },
-      result: "Solved",
-      share: "Solved",
-      lines: [...GS_MYSTERY_QS, ["Accusation", "Delphine Rooke, with the curtain cord, in the conservatory", "Right"]]
     }
   });
   Object.assign(GS_SESSIONS, {
@@ -1532,21 +1475,6 @@
       figures: ["2 of 4 groups", "1 mistake"],
       share: null,
       lines: [["Try 1", "BASS · PIKE · CARP · SOLE", "One away"], ["Try 2", "PIKE · CARP · SOLE · PERCH", "Found: fish"], ["Try 3", "FROST · MIST · HAIL · SLEET", "Found: weather"]]
-    },
-    "mystery-live": {
-      kind: "puzzle",
-      gid: "mystery",
-      game: "Accuse",
-      art: "murder",
-      number: 64,
-      q: 2,
-      hints: 0,
-      live: true,
-      result: "In progress",
-      date: GS.today,
-      figures: ["2 questions", "No hints"],
-      share: null,
-      lines: GS_MYSTERY_QS.slice()
     },
     "escape-live": {
       kind: "puzzle",
@@ -4115,6 +4043,264 @@
     const r = SLV_RESULT[p.state];
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "salvage", title, result: { kind: r.tone, label: r.word }, open: () => gs.go("session", { id: sid }), next: c.next, className: "svn" }, /* @__PURE__ */ React$1.createElement(SvnPic, { p }));
   };
+  const ACC_CASE = {
+    no: 64,
+    scene: [
+      { id: "lodge", name: "The lodge", text: "A snowed-in weekend at the Edelweiss Lodge. The cable car stopped at dusk; nobody left." },
+      { id: "victim", name: "The victim", text: "Klaus Berger, the lodge owner, found at first light. Last seen arguing in the great hall." }
+    ],
+    suspects: [
+      ["Toby Lang", "Ski instructor. Owed Klaus money."],
+      ["Mrs Harriet Coombe", "A guest of twenty winters."],
+      ["Rick Dawson", "The barman."],
+      ["Dr Lena Fischer", "A doctor on holiday, or so she says. She arrived the night before the cable car stopped."]
+    ],
+    weapons: [
+      ["Hunting knife", "From the trophy wall."],
+      ["Bottle of schnapps", "Half empty, from the bar."],
+      ["Brass cowbell", "A souvenir by the door."],
+      ["Walking stick", "Klaus’s own, silver-topped."]
+    ],
+    places: [
+      ["Sauna", "Down the outside steps."],
+      ["Great hall", "The fire, the long table."],
+      ["Games room", "Billiards and old maps."],
+      ["Cable car hut", "At the top of the line, unheated."]
+    ],
+    clues: [
+      "Whoever carried the hunting knife was not in the sauna.",
+      "The killer carried the brass cowbell.",
+      "Dr Lena Fischer carried the brass cowbell.",
+      "Whoever was in the great hall carried the bottle of schnapps.",
+      "Whoever carried the walking stick was not in the sauna."
+    ],
+    hints: ["Rick Dawson was not in the games room.", "The walking stick was in the great hall."],
+    truth: ["Dr Lena Fischer", "Brass cowbell", "Cable car hut"]
+  };
+  const ACC_TRUTH = ACC_CASE.truth;
+  const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
+  const accSentence = ([s, w, p]) => s + ", with the " + accLow(w) + ", in the " + accLow(p);
+  const accTrace = () => "with the " + accLow(ACC_TRUTH[1]) + ", in the " + accLow(ACC_TRUTH[2]) + ".";
+  const accWrong = (part) => ACC_TRUTH.map((t, k) => k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t);
+  const accSession = ({ no, date, hints, pick }) => {
+    const live = !pick;
+    const right = !live && pick.every((x, i) => x === ACC_TRUTH[i]);
+    const hintLines = ACC_CASE.hints.slice(0, hints).map((h, i) => ["Hint " + (i + 1), h]);
+    const lines = live ? hintLines : [...hintLines, ["Accusation", accSentence(pick), right ? "Right" : "Wrong"]];
+    const result = live ? "In progress" : right ? "Solved" : "Failed";
+    const shareLines = live ? null : [
+      "Accuse No. " + no + " · " + result.toLowerCase() + (hints ? " · " + hints + (hints === 1 ? " hint " : " hints ") + "💡".repeat(hints) : ""),
+      ...right ? [] : [["suspect", "weapon", "place"].map((k, i) => k + " " + (pick[i] === ACC_TRUTH[i] ? "✓" : "✗")).join(" · ")]
+    ];
+    return {
+      kind: "puzzle",
+      gid: "mystery",
+      game: "Accuse",
+      art: "murder",
+      number: no,
+      date,
+      hints,
+      live,
+      loss: !live && !right,
+      result,
+      share: live ? null : result,
+      shareLines,
+      lines,
+      acc: { hints, pick, live, right }
+    };
+  };
+  const ACC_IC = {
+    scene: "M3 21h18M5 21V10l7-6 7 6v11M10 21v-5h4v5",
+    suspects: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 21c0-4 3.4-6 7.5-6s7.5 2 7.5 6",
+    weapons: "M5 19L17 7M14 4l6 6M4 20l2-2",
+    places: "M6 21V3.5h12V21M3.5 21h17M14.5 12.5h.01",
+    hints: "M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3zM9.5 19h5M10.5 21.5h3"
+  };
+  const accGroups = (p) => {
+    const named = (k, list) => list.map(([name, text]) => ({ id: k + ":" + name, name, text }));
+    return [
+      { key: "scene", head: "Scene", items: ACC_CASE.scene, count: null },
+      { key: "suspects", head: "Suspects", items: named("s", ACC_CASE.suspects), count: null },
+      { key: "weapons", head: "Weapons", items: named("w", ACC_CASE.weapons), count: null },
+      { key: "places", head: "Places", items: named("p", ACC_CASE.places), count: null },
+      { key: "clues", head: "Clues", items: ACC_CASE.clues.map((text, i) => ({ id: "c" + i, name: "Clue " + (i + 1), text })) },
+      { key: "hints", head: "Hints", items: ACC_CASE.hints.slice(0, p.hints).map((text, i) => ({ id: "h" + i, name: "Hint " + (i + 1), text })) }
+    ];
+  };
+  const AccIcon = ({ k }) => k === "clues" ? /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-slip" })) : /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk acc-ic", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: ACC_IC[k] })));
+  const AccNotebook = ({ p }) => {
+    const g = React$1.useMemo(() => accGroups(p), [p]);
+    const [open, setOpen] = React$1.useState(null);
+    const [sel, setSel] = React$1.useState(null);
+    const grp = g.find((x) => x.key === open);
+    const it = sel && grp && grp.items.find((x) => x.id === sel);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet acc-nb", "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "acc-tabs", role: "tablist", "data-row": g.findIndex((x) => x.key === open) < 3 ? 0 : 1, "data-open": grp ? "y" : "n" }, g.map((x) => /* @__PURE__ */ React$1.createElement(
+      "button",
+      {
+        key: x.key,
+        type: "button",
+        role: "tab",
+        "aria-selected": open === x.key,
+        "aria-expanded": open === x.key,
+        disabled: !x.items.length,
+        "aria-label": x.head + (x.count === null ? "" : " " + x.items.length),
+        className: "acc-tab" + (open === x.key ? " is-open" : ""),
+        onClick: () => {
+          setOpen(open === x.key ? null : x.key);
+          setSel(null);
+        }
+      },
+      /* @__PURE__ */ React$1.createElement("span", { className: "acc-tl" }, /* @__PURE__ */ React$1.createElement(AccIcon, { k: x.key }), /* @__PURE__ */ React$1.createElement("span", { className: "acc-tn" }, x.head)),
+      /* @__PURE__ */ React$1.createElement("b", { className: "esx-num" }, x.count === null ? " " : x.items.length)
+    ))), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && /* @__PURE__ */ React$1.createElement("div", { className: "acc-folder", role: "tabpanel", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-fh" }, grp.head), /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "esx-chips esx-in" }, grp.items.map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "esx-chip", "aria-expanded": sel === x.id, onClick: () => setSel(sel === x.id ? null : x.id) }, /* @__PURE__ */ React$1.createElement("b", null, x.name)))), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!it }, it && /* @__PURE__ */ React$1.createElement("div", { key: it.id, className: "esx-read esx-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-nm" }, /* @__PURE__ */ React$1.createElement("b", null, it.name)), /* @__PURE__ */ React$1.createElement("p", { className: "esx-tx" }, it.text))))));
+  };
+  const accSeed = (s) => {
+    let h = 2166136261;
+    for (const c of s) {
+      h ^= c.charCodeAt(0);
+      h = Math.imul(h, 16777619);
+    }
+    return () => {
+      h += 1831565813;
+      let t = h;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  };
+  const accSmooth = (p) => {
+    let d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1);
+    for (let i = 0; i < p.length - 1; i++) {
+      const a = p[i - 1] || p[i];
+      const b = p[i];
+      const c = p[i + 1];
+      const e = p[i + 2] || c;
+      d += " C" + [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1]].map((v) => v.toFixed(1)).join(" ");
+    }
+    return d;
+  };
+  const accRing = (L, T, R, B, r) => {
+    const cx = (L + R) / 2;
+    const cy = (T + B) / 2;
+    const rx = (R - L) / 2;
+    const ry = (B - T) / 2;
+    const tilt = (r() - 0.5) * 0.06;
+    const a0 = -2 + (r() - 0.5) * 0.4;
+    const p = [];
+    for (let i = 0; i <= 22; i++) {
+      const t = i / 22;
+      const a = a0 + Math.PI * 2.2 * t;
+      const f = 1 + (r() - 0.5) * 0.05 + 0.08 * (t - 0.5);
+      const x = Math.cos(a) * rx * f;
+      const y = Math.sin(a) * ry * f;
+      p.push([cx + x * Math.cos(tilt) - y * Math.sin(tilt), cy + x * Math.sin(tilt) + y * Math.cos(tilt)]);
+    }
+    return accSmooth(p);
+  };
+  const accLine = (x1, x2, y, r) => {
+    const p = [];
+    const n = Math.max(2, Math.round((x2 - x1) / 30));
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      p.push([x1 + (x2 - x1) * t, y + 0.8 * (t - 0.5) + (r() - 0.5) * 1.2]);
+    }
+    return accSmooth(p);
+  };
+  const accRects = (el) => {
+    const g = document.createRange();
+    g.selectNodeContents(el.firstChild);
+    return [...g.getClientRects()].filter((q) => q.width > 1);
+  };
+  const accDraw = (host, ov) => {
+    const H = host.getBoundingClientRect();
+    let out = "";
+    host.querySelectorAll("[data-pen]").forEach((el) => {
+      const k = el.dataset.pen;
+      const r = accSeed(el.textContent + k);
+      const rs = accRects(el);
+      if (!rs.length) return;
+      const L = Math.min(...rs.map((q) => q.left)) - H.left;
+      const R = Math.max(...rs.map((q) => q.right)) - H.left;
+      const T = Math.min(...rs.map((q) => q.top)) - H.top;
+      const B = Math.max(...rs.map((q) => q.bottom)) - H.top;
+      const C = el.closest(".acc-col").getBoundingClientRect();
+      if (k !== "miss") out += '<path class="' + (k === "right" ? "g" : "a") + '" d="' + accRing(Math.max(L - 7, C.left - H.left - 5), T - 4, Math.min(R + 7, C.right - H.left + 5), B + 3, r) + '"/>';
+      else rs.forEach((q) => {
+        out += '<path class="g" d="' + accLine(q.left - H.left - 1, q.right - H.left + 1, q.bottom - H.top + 1, r) + '"/>';
+      });
+    });
+    ov.innerHTML = out;
+  };
+  const ACC_HEADS = ["Suspects", "Weapons", "Places"];
+  const AccBoard = ({ p }) => {
+    const host = React$1.useRef(null);
+    const ov = React$1.useRef(null);
+    React$1.useLayoutEffect(() => {
+      const draw = () => host.current && accDraw(host.current, ov.current);
+      draw();
+      if (document.fonts) document.fonts.ready.then(draw);
+      const ro = new ResizeObserver(draw);
+      ro.observe(host.current);
+      return () => ro.disconnect();
+    }, [p]);
+    const mark = (k, name) => {
+      if (!p.pick) return null;
+      const mine = p.pick[k] === name;
+      const t = ACC_CASE.truth[k] === name;
+      return mine ? t ? "right" : "wrong" : t ? "miss" : null;
+    };
+    const say = { right: ", your pick, right", wrong: ", your pick, wrong", miss: ", the answer" };
+    return /* @__PURE__ */ React$1.createElement("div", { className: "acc-bd", ref: host }, [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places].map((list, k) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "acc-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, ACC_HEADS[k]), /* @__PURE__ */ React$1.createElement("ul", null, list.map(([name]) => {
+      const m = mark(k, name);
+      return /* @__PURE__ */ React$1.createElement("li", { key: name }, m ? /* @__PURE__ */ React$1.createElement("span", { className: "acc-m", "data-pen": m }, name, /* @__PURE__ */ React$1.createElement("span", { className: "acc-sr" }, say[m])) : name);
+    })))), /* @__PURE__ */ React$1.createElement("svg", { className: "acc-ov", ref: ov, "aria-hidden": "true" }));
+  };
+  const AccCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "acc-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "acc-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-name" }, ACC_CASE.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "acc-sent" }, accTrace()));
+  const AccHintsCard = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "acc-hc" + (p.live ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 }));
+  const accResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
+  const AccPage = ({ s }) => {
+    const p = s.acc;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(AccNotebook, { p }), /* @__PURE__ */ React$1.createElement(
+      GsSessCard,
+      {
+        r: accResult(p),
+        className: "acc-card",
+        board: /* @__PURE__ */ React$1.createElement(AccBoard, { p }),
+        rows: [["Hints", /* @__PURE__ */ React$1.createElement(AccHintsCard, { p })], ["The culprit", /* @__PURE__ */ React$1.createElement(AccCulprit, { p })]]
+      }
+    ), s.lines.length > 0 && /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const AccBody = ({ s, sid }) => /* @__PURE__ */ React$1.createElement(AccPage, { key: sid, s });
+  const initGsAccuse = () => {
+    GS_SESSION_BODY.mystery = AccBody;
+    Object.assign(GS_SESSIONS, {
+      "mystery-today": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ["Rick Dawson", "Brass cowbell", "Cable car hut"] }),
+      "mystery-today-avg": accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: ACC_TRUTH }),
+      "mystery-today-hard": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_TRUTH }),
+      "mystery-live": accSession({ no: ACC_CASE.no, date: GS.today, hints: 1, pick: null }),
+      "mystery-1004": accSession({ no: 62, date: "Sunday 4 October", hints: 1, pick: ACC_TRUTH })
+    });
+  };
+  const AcnPic = ({ no, p }) => /* @__PURE__ */ React$1.createElement(
+    "div",
+    {
+      className: "acn-pic",
+      role: "img",
+      "aria-label": "Case " + no + ", " + (p.live ? "in progress" : p.right ? "solved" : "failed") + ", " + p.hints + " of 2 hints." + (p.live ? "" : " The culprit: " + ACC_TRUTH[0] + ", " + accTrace())
+    },
+    /* @__PURE__ */ React$1.createElement("div", { className: "acn-pair", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Hints"), /* @__PURE__ */ React$1.createElement(AccHintsCard, { p })), /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "The culprit"), /* @__PURE__ */ React$1.createElement(AccCulprit, { p })))
+  );
+  const ACN_FRESH = { hints: 0, live: true, right: false };
+  const AcNow = ({ c, done, none }) => {
+    const gs = useGs();
+    const no = GS_SESSIONS[c.today].number;
+    const title = "#" + no;
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "mystery", title, play: () => gs.playReq({ kind: "edition", e: edList(gs, "mystery")[0] }), next: c.next, className: "acn" }, /* @__PURE__ */ React$1.createElement(AcnPic, { no, p: ACN_FRESH }));
+    const sid = done ? c.today : c.liveSid;
+    const s = GS_SESSIONS[sid];
+    const p = s.acc;
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "mystery", title, result: { kind: p.live ? "live" : p.right ? "ok" : "bad", label: s.result }, open: () => gs.go("session", { id: sid }), next: c.next, className: "acn" }, /* @__PURE__ */ React$1.createElement(AcnPic, { no, p }));
+  };
   const CPR_SHIP_LIB = {};
   const cprEscFirst = () => PZ.escape.all[PZ.escape.all.length - 1];
   let CPR_FIRST;
@@ -4315,7 +4501,7 @@
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "casebook", title: c.title, result: !c.live && cbStatus(c), tag: true, open: () => cbGo(gs, c.id), span: true }, /* @__PURE__ */ React$1.createElement("p", null, cbRecap(c)), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: c.turns + " of 16 turns used", value: c.turns, max: 16, showValue: false }));
   };
   const PzNow = (props) => {
-    const own = props.id === "word" ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done, none: props.none }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : props.id === "chain" ? /* @__PURE__ */ React$1.createElement(ChNow, { c: props.c, done: props.done, none: props.none }) : props.id === "salvage" ? /* @__PURE__ */ React$1.createElement(SvNow, { c: props.c, done: props.done, none: props.none }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
+    const own = props.id === "word" ? /* @__PURE__ */ React$1.createElement(WdNow, { c: props.c, done: props.done, none: props.none }) : props.id === "escape" && !props.none ? /* @__PURE__ */ React$1.createElement(EsNow, { title: props.c.title, next: props.c.next }) : props.id === "chain" ? /* @__PURE__ */ React$1.createElement(ChNow, { c: props.c, done: props.done, none: props.none }) : props.id === "salvage" ? /* @__PURE__ */ React$1.createElement(SvNow, { c: props.c, done: props.done, none: props.none }) : props.id === "mystery" ? /* @__PURE__ */ React$1.createElement(AcNow, { c: props.c, done: props.done, none: props.none }) : /* @__PURE__ */ React$1.createElement(CprPzNow, { ...props });
     const Pg = GS_NOW[props.id];
     return Pg ? /* @__PURE__ */ React$1.createElement(Pg, { ...props }, own) : own;
   };
@@ -4362,11 +4548,6 @@
   let PZ_WORDS;
   let PZ_OPEN;
   let PZ_GROUPS;
-  let PZ_SUS;
-  let PZ_WPN;
-  let PZ_RMS;
-  const pzQn = (q) => q === 0 ? "No questions" : q === 1 ? "1 question" : q + " questions";
-  const pzAcc = (s, w, r) => s + ", with the " + w + ", in the " + r;
   const pzLong = (d) => d.toLocaleString("en-GB", { weekday: "long" }) + " " + lbDate(d);
   const pzSession = (id, c, x) => {
     const i = x.i;
@@ -4407,22 +4588,7 @@
         lines
       };
     } else if (id === "mystery") {
-      const cs = i * 3 % 8;
-      const cw = (i * 5 + 1) % 8;
-      const cr = (i * 7 + 2) % 8;
-      const q = i % 3;
-      const qs = Array.from({ length: q }, (_, k) => k === 0 ? ["Question 1", "Was " + PZ_SUS[(i + 1) % 8] + " in the " + PZ_RMS[(i + 4) % 8] + "?", i % 2 ? "The inspector said yes" : "The inspector said no"] : ["Question 2", "Did " + PZ_SUS[(i + 5) % 8] + " have the " + PZ_WPN[(i + 3) % 8] + "?", i % 3 === 1 ? "The inspector said yes" : "The inspector said no"]);
-      const part = i % 3;
-      const acc = x.ok ? pzAcc(PZ_SUS[cs], PZ_WPN[cw], PZ_RMS[cr]) : pzAcc(PZ_SUS[part === 0 ? (cs + 1) % 8 : cs], PZ_WPN[part === 1 ? (cw + 1) % 8 : cw], PZ_RMS[part === 2 ? (cr + 1) % 8 : cr]);
-      s = {
-        ...base,
-        number: 64 - i,
-        q,
-        hints: 0,
-        share: x.line,
-        figures: [pzQn(q), "No hints"],
-        lines: [...qs, x.ok ? ["Accusation", acc, "Right"] : ["Accusation", acc, "Wrong", ["The suspect was wrong", "The weapon was wrong", "The room was wrong"][part]]]
-      };
+      s = accSession({ no: 64 - i, date: base.date, hints: i % 3, pick: x.ok ? ACC_TRUTH : accWrong(i % 3) });
     } else {
       s = { ...GS_SESSIONS["escape-week"], date: base.date };
     }
@@ -4529,14 +4695,13 @@
         bad: GS_RESULT.mystery({ ok: false }),
         title: "Today’s case",
         next: "Next case: tomorrow",
-        live: { line: "You’ve asked the inspector two questions. You haven’t accused anyone yet." },
-        done: { st: { kind: "bad", label: GS_RESULT.mystery({ ok: false }) }, line: "You accused after two questions, and the weapon was wrong." },
+        done: { st: { kind: "bad", label: GS_RESULT.mystery({ ok: false }) } },
         recent: "Your cases",
         ach: [
           { k: "m1", n: "Case closed", how: "Solve an Accuse case.", by: (p) => p.status.kind === "ok" },
-          { k: "m0", n: "Closed with no hints and no questions", how: "Close a case without a hint or a question.", by: (p) => {
+          { k: "m0", n: "Unaided", how: "Solve a case without a hint.", by: (p) => {
             const s = GS_SESSIONS[p.sid];
-            return p.status.kind === "ok" && !!s && s.q === 0 && !s.hints;
+            return p.status.kind === "ok" && !!s && !s.hints;
           } },
           { k: "m7", n: "Seven days in a row", how: "Solve a case seven days running.", of: 7 }
         ]
@@ -4577,9 +4742,6 @@
     PZ_WORDS = ["TORCH", "SHIRE", "GLOVE", "PLANK", "CRISP", "BLOOM", "FROST", "NERVE", "QUILT", "SPOKE", "CHALK", "DRIFT"];
     PZ_OPEN = ["SLATE", "CRANE", "AUDIO", "ROUTE", "MOIST", "PRISM"];
     PZ_GROUPS = [["🟦", "colours: TEAL · RUBY · JADE · AMBER"], ["🟨", "birds: WREN · KITE · ROOK · TERN"], ["🟩", "card games: SNAP · BRAG · RUMMY · WHIST"], ["🟪", "things with keys: PIANO · MAP · LOCK · CODE"]];
-    PZ_SUS = ["Ivy Marchbank", "Colonel Rufus Hale", "Delphine Rooke", "Arthur Penhallow", "Mr Graves", "Sebastian Wyle", "Dr Helena Strand", "Nell Okafor"];
-    PZ_WPN = ["brass candlestick", "vial of foxglove", "antique pistol", "iron poker", "curtain cord", "paper knife", "marble bust", "hatpin"];
-    PZ_RMS = ["library", "conservatory", "butler’s pantry", "billiard room", "wine cellar", "dining room", "morning room", "study"];
     Object.entries(PZ).forEach(([id, c]) => {
       c.gid = id;
       c.all = Array.from({ length: c.count || (c.weekly ? 30 : 40) }, (_, i) => {
@@ -6554,11 +6716,6 @@
       const head = "Guess No. " + s.number + " · " + (s.loss ? "X" : guesses.length) + "/6" + (h ? " · " + h + (h === 1 ? " hint " : " hints ") + "💡".repeat(h) : "");
       return [head, "", ...guesses.map((g) => gsWordRow(g, answer)), link];
     }
-    if (s.gid === "mystery" && s.number) {
-      const q = s.q != null ? s.q : s.lines.filter((l) => /^Question/.test(l[0])).length;
-      const qn = q === 0 ? "no questions" : q === 1 ? "1 question" : q + " questions";
-      return ["Accuse No. " + s.number + " · " + (s.loss ? "wrong accusation" : "solved") + " · " + qn + (q ? " " + "🔎".repeat(q) : ""), s.loss ? "❌" : "✅", link];
-    }
     if (s.shareHead) return [s.shareHead, ...s.rows || [], link];
     if (s.kind === "delve") return ["Delve 🎲 " + s.result + ", " + s.reached.toLowerCase(), "🎲 " + s.lines.length + " rolls  ⏳ threat " + s.tracks.threat + "/6", link];
     if (s.kind === "case") return [s.game + " 🔎 " + s.result, s.figures.join(" · "), link];
@@ -7992,6 +8149,12 @@
         c.setReview({ week: "live" });
         c.go("session", { id: "mystery-live" });
       } },
+      { group: "Screens", id: "session-mystery-solved", label: "7. Session page: Accuse, solved with no hints", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "average" });
+        c.go("session", { id: "mystery-today-avg" });
+      } },
       { group: "Screens", id: "history", label: "8. History, with the Pass", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -8153,6 +8316,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
+        c.go("mystery", { page: "record" });
+      } },
+      { group: "Library", id: "library-mystery-solved", label: "Accuse in your library, today solved with no hints", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "average" });
         c.go("mystery", { page: "record" });
       } },
       { group: "Library", id: "library-mystery-free", label: "Accuse in your library, free account", stage: (c) => {
@@ -10553,6 +10722,7 @@
       result,
       share: live ? null : result,
       figures: [],
+      shareLines: null,
       lines,
       pga: { ...p, live, right }
     };
@@ -11321,6 +11491,7 @@
   initGsCasebookData();
   initGsCasebook();
   initGsDelveLibrary();
+  initGsAccuse();
   initGsPuzzlesLibrary();
   initGsHunterLibrary();
   initGsBarrowLibrary();
