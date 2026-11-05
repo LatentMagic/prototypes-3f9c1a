@@ -6,7 +6,7 @@
 // To remove it: delete this file and playground-page-copy.css, and their lines in main.jsx and canon.css.
 // ============================================================================
 import React from 'react';
-import { GS_GAMES } from './gs-data.jsx';
+import { GS_GAMES, DS } from './gs-data.jsx';
 import { GS_PAGES, GsGamePage } from './gs-game.jsx';
 import { GS_CHATS } from './gs-chats.jsx';
 import { GsGameCard } from './gs-pass-home.jsx';
@@ -86,8 +86,9 @@ const PgcStrip = ({ id, rule }) => (
   <section className="pgc-strip" aria-label="Where the card line also appears">
     <PgcWhy rule={rule} />
     <h2 className="pgc-strip-h">Where the card line also appears</h2>
+    <figure className="pgc-fig pgc-fig-row"><DS.CardRow className="gs-row4">{[...new Set(['barrow', id, 'escape'])].map((k) => <GsGameCard key={k} id={k} />)}</DS.CardRow><figcaption>Discover’s Just added row, as it is: the line must fit the height the row’s cards share.</figcaption></figure>
     <div className="pgc-strip-row">
-      <figure className="pgc-fig"><div className="pgc-card"><GsGameCard id={id} /></div><figcaption>The game card at its narrowest (220px). The name and line must fit the card’s height: no taller than a one-line name and a two-line line.</figcaption></figure>
+      
       <figure className="pgc-fig"><PgcPreview id={id} /><figcaption>A shared link’s preview</figcaption></figure>
     </div>
   </section>);
