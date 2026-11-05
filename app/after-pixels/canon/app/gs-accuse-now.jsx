@@ -8,11 +8,11 @@ import React from 'react';
 import { useGs, GS_SESSIONS } from './gs-data.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { edList } from './gs-history.jsx';
-import { AccHintsCard, AccCulprit, ACC_TRUTH, accTrace, accResult } from './gs-accuse.jsx';
+import { AccHintsCard, AccCulprit, ACC_TRUTH, accWithWhere, accResult } from './gs-accuse.jsx';
 
 const AcnPic = ({ no, p }) => (
   <div className="acn-pic" role="img"
-    aria-label={'Case ' + no + ', ' + accResult(p).word.toLowerCase() + ', ' + p.hints + ' of 2 hints.' + (p.live ? '' : ' The culprit: ' + ACC_TRUTH[0] + ', ' + accTrace())}>
+    aria-label={'Case ' + no + ', ' + accResult(p).word.toLowerCase() + ', ' + p.hints + ' of 2 hints.' + (p.live ? '' : ' The culprit: ' + ACC_TRUTH[0] + ', ' + accWithWhere())}>
     <div className="acn-pair" aria-hidden="true">
       <div className="acn-col"><span className="gs-sc-cap">Hints</span><AccHintsCard p={p} /></div>
       <div className="acn-col"><span className="gs-sc-cap">The culprit</span><AccCulprit p={p} /></div>

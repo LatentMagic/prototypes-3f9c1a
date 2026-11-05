@@ -4080,7 +4080,7 @@
   const ACC_TRUTH = ACC_CASE.truth;
   const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
   const accSentence = ([s, w, p]) => s + ", with the " + accLow(w) + ", in the " + accLow(p);
-  const accTrace = () => "with the " + accLow(ACC_TRUTH[1]) + ", in the " + accLow(ACC_TRUTH[2]) + ".";
+  const accWithWhere = () => "with the " + accLow(ACC_TRUTH[1]) + ", in the " + accLow(ACC_TRUTH[2]) + ".";
   const accWrong = (part) => ACC_TRUTH.map((t, k) => k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t);
   const accResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
   const accSession = ({ no, date, hints, pick }) => {
@@ -4256,7 +4256,7 @@
       return /* @__PURE__ */ React$1.createElement("li", { key: name }, m ? /* @__PURE__ */ React$1.createElement("span", { className: "acc-m", "data-pen": m }, name, /* @__PURE__ */ React$1.createElement("span", { className: "acc-sr" }, say[m])) : name);
     })))), /* @__PURE__ */ React$1.createElement("svg", { className: "acc-ov", ref: ov, "aria-hidden": "true" }));
   };
-  const AccCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "acc-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "acc-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-name" }, ACC_CASE.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "acc-sent" }, accTrace()));
+  const AccCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "acc-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "acc-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-name" }, ACC_CASE.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "acc-sent" }, accWithWhere()));
   const AccHintsCard = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "acc-hc" + (p.live ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 }));
   const AccPage = ({ s }) => {
     const p = s.acc;
@@ -4286,7 +4286,7 @@
     {
       className: "acn-pic",
       role: "img",
-      "aria-label": "Case " + no + ", " + accResult(p).word.toLowerCase() + ", " + p.hints + " of 2 hints." + (p.live ? "" : " The culprit: " + ACC_TRUTH[0] + ", " + accTrace())
+      "aria-label": "Case " + no + ", " + accResult(p).word.toLowerCase() + ", " + p.hints + " of 2 hints." + (p.live ? "" : " The culprit: " + ACC_TRUTH[0] + ", " + accWithWhere())
     },
     /* @__PURE__ */ React$1.createElement("div", { className: "acn-pair", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Hints"), /* @__PURE__ */ React$1.createElement(AccHintsCard, { p })), /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "The culprit"), /* @__PURE__ */ React$1.createElement(AccCulprit, { p })))
   );
