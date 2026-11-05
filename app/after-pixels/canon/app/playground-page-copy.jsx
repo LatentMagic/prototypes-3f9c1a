@@ -16,17 +16,21 @@ import { pgRegister, usePgSetting } from './playground.jsx';
 // ---- The copy, as the proposal file lists it. A line left out (null, or no entry) stays canon's. `blurb: 'h'` means the
 // card line is the pitch heading. A `ps` shorter than canon's drops the paragraphs past its length. ----
 const PGC_COPY = {
+  // Delve: content from its game spec as open PR #1410 changes it (advisor-delve-content.md), not from canon's copy. Tags and the
+  // AI's line are fixed under both rules: canon's name week 1's goblins and a room count that varies by week.
   delve: {
     job: {
-      h: 'Pick a hero and play a new adventure each week, one risky roll at a time.', blurb: 'h',
-      ps: ['Each week brings a new setting, new foes and a new story. You go room by room, choosing what to search, what to fight and what to carry.',
-        'Every risky move is a d20 roll the game makes, where nobody can fudge it. Run out of hit points, or let the threat fill, and the run is lost.'],
-      caps: ['The run opens: the first room, its ways on, and the numbers.', 'Every risky move is a roll the game makes, not your AI.', 'Every run ends one of four ways, and your session keeps every roll.'] },
+      h: 'Pick a hero and play a new adventure each week, room by room, on dice nobody can fudge.', blurb: 'h',
+      ps: ["Each week Delve opens a new adventure with its own setting, foes and story. You pick one of three heroes, explore a handful of rooms, choose what to search, fight and carry, and face the final foe at the end. A run takes about half an hour.",
+        "Fights go back and forth. You strike, and whatever stands against you strikes back. Your hero is dressed for the week, but always one of three kinds: one soaks up blows, one dodges them, and one hits hardest but can’t take much. Each has a heavy attack for the right moment, and one sure blow to save for when it counts.",
+        "The game rolls every die and keeps every secret, so nobody can fudge a roll or peek ahead. Your AI is the dungeon master: it tells the story and voices the people you meet, and every choice stays yours. Each miss raises the danger, and if it fills, the run is lost. The final foe has a weakness, and the clues to it are there to find."],
+      caps: ["Pick one of three heroes, each built to fight a different way.", "You strike, then the foe rolls to strike back. The game rolls both.", "Find the final foe’s weakness, and the run ends in a scene of its own. Every roll is kept."], tags: ['Adventure', 'One run a week'], ai: 'Plays dungeon master: tells the story, voices the people you meet, and asks what you do next.' },
     situation: {
-      h: 'A new adventure every week. Every slip brings the end closer.', blurb: 'A weekly adventure game. Pick a hero and play it room by room, on real dice.',
-      ps: ['Pick a fighter, a rogue or a wizard. Go room by room, choosing what to search, fight and carry.',
-        'The game rolls every die where nobody can fudge it, so a win is yours. Pick your hero.'],
-      caps: ['The run opens: the first room, its ways on, and the numbers.', 'A weak hit: the foe gives ground, at a cost the game draws.', 'The ending, with a link back to your full session.'] },
+      h: 'A new adventure every week, and a fight that hits back.', blurb: 'A weekly adventure for your chat. Pick a hero, go room by room, and the game rolls real dice while your AI plays dungeon master.',
+      ps: ["Each week Delve opens a new adventure with its own setting, foes and story. You pick one of three heroes, explore a handful of rooms, choose what to search, fight and carry, and face the final foe at the end. A run takes about half an hour.",
+        "Fights go back and forth. You strike, and whatever stands against you strikes back. Your hero is dressed for the week, but always one of three kinds: one soaks up blows, one dodges them, and one hits hardest but can’t take much. Each has a heavy attack for the right moment, and one sure blow to save for when it counts.",
+        "The game rolls every die and keeps every secret, so nobody can fudge a roll or peek ahead. Your AI is the dungeon master: it tells the story and voices the people you meet, and every choice stays yours. Each miss raises the danger, and if it fills, the run is lost. The final foe has a weakness, and the clues to it are there to find."],
+      caps: ["Pick one of three heroes, each built to fight a different way.", "You strike, then the foe rolls to strike back. The game rolls both.", "Find the final foe’s weakness, and the run ends in a scene of its own. Every roll is kept."], tags: ['Adventure', 'One run a week'], ai: 'Plays dungeon master: tells the story, voices the people you meet, and asks what you do next.' },
   },
   mystery: {
     job: {
@@ -51,13 +55,13 @@ let pgcCanon = null;
 const pgcRead = () => {
   if (pgcCanon) return;
   pgcCanon = {};
-  PGC_GAMES.forEach((id) => { pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb }; });
+  PGC_GAMES.forEach((id) => { pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), ai: GS_PAGES[id].who && GS_PAGES[id].who.ai }; });
 };
 const pgcApply = (id, rule) => {
   pgcRead();
   PGC_GAMES.forEach((k) => {
     const c = pgcCanon[k];
-    GS_PAGES[k].pitch.h = c.h; GS_PAGES[k].pitch.ps = c.ps.slice(); GS_GAMES[k].blurb = c.blurb;
+    GS_PAGES[k].pitch.h = c.h; GS_PAGES[k].pitch.ps = c.ps.slice(); GS_GAMES[k].blurb = c.blurb; if (c.tags) GS_PAGES[k].tags = c.tags.slice(); if (GS_PAGES[k].who) GS_PAGES[k].who.ai = c.ai;
     GS_CHATS[k].forEach((x, i) => { x.cap = c.caps[i]; });
   });
   const r = PGC_COPY[id][rule]; if (!r) return;
@@ -65,6 +69,8 @@ const pgcApply = (id, rule) => {
   if (r.h) GS_PAGES[id].pitch.h = r.h;
   if (r.ps) GS_PAGES[id].pitch.ps = r.ps.map((p, i) => p || c.ps[i]);
   if (r.caps) GS_CHATS[id].forEach((x, i) => { x.cap = r.caps[i] || c.caps[i]; });
+  if (r.tags) GS_PAGES[id].tags = r.tags.slice();
+  if (r.ai) GS_PAGES[id].who.ai = r.ai;
   if (r.blurb) GS_GAMES[id].blurb = r.blurb === 'h' ? GS_PAGES[id].pitch.h : r.blurb;
 };
 
@@ -77,8 +83,9 @@ const PgcPreview = ({ id }) => {
       <div className="pgc-prev-text"><span className="pgc-prev-site">afterpixels.com</span><b>{g.name}</b><span>{g.blurb}</span></div>
     </div>);
 };
-const PgcStrip = ({ id }) => (
+const PgcStrip = ({ id, rule }) => (
   <section className="pgc-strip" aria-label="Where the card line also appears">
+    <PgcWhy rule={rule} />
     <h2 className="pgc-strip-h">Where the card line also appears</h2>
     <div className="pgc-strip-row">
       <figure className="pgc-fig"><div className="pgc-card"><GsGameCard id={id} /></div><figcaption>The game card (More games, Discover)</figcaption></figure>
@@ -86,11 +93,36 @@ const PgcStrip = ({ id }) => (
     </div>
   </section>);
 
+// ---- The case for each rule, from the advisor reads in business-ops (product-pages _specs/copy-rule/_resources). ----
+const PGC_WHY = {
+  job: { h: 'Why the job rule (recommended)', by: 'Backed by the product advisor.', for: [
+    'One line to keep true. The heading is also the card line, the link preview and what the AI reads in its library. Those must describe the game plainly, not tease it, so the heading meets that bar too, and nothing drifts.',
+    'A stranger learns what they would do. Games played in your chat are new, so “pick a hero, go room by room” sells the play before any story.',
+    'Agents can check it. Every line traces to the game spec, which holds every week.',
+    'Guess already reads this way, and you found its page largely good.'],
+    against: 'Story pages read flatter, and it ends the 6 October “cold open, with a dare” headings.' },
+  situation: { h: 'Why the situation rule', by: 'Backed by the marketing advisor and Gemini.', for: [
+    'The heading can hook. By the time you reach it, the page has said the name, the kind of game, the length and how often, so the heading’s job is pull.',
+    'Links and the AI still get a plain line: the card line is written separately and says what you do.',
+    'Story games keep their pull without selling one week’s plot. For a daily puzzle the two rules nearly meet.'],
+    against: 'Two lines per game to write and keep in line, and a hook is harder for an agent to check against the spec.' },
+};
+const PgcWhy = ({ rule }) => {
+  const w = PGC_WHY[rule]; if (!w) return null;
+  return (
+    <aside className="pgc-why" aria-label={w.h}>
+      <h2 className="pgc-why-h">{w.h}</h2>
+      <ul>{w.for.map((x) => <li key={x}>{x}</li>)}</ul>
+      <p><b>Against:</b> {w.against}</p>
+      <p className="pgc-why-by">{w.by} No study compares the two kinds of heading, so this is judgement, not proof.</p>
+    </aside>);
+};
+
 // Rendered by main.jsx in place of the routed page (its candidate hook), so the page is canon's own GsGamePage, with the strip in its `top` slot.
 const PgcScreen = () => {
   const id = usePgSetting('game'); const rule = usePgSetting('rule');
   pgcApply(id, rule);
-  return <GsGamePage key={id + rule} id={id} top={<PgcStrip id={id} />} />;
+  return <GsGamePage key={id + rule} id={id} top={<PgcStrip id={id} rule={rule} />} />;
 };
 
 export const initPlaygroundPageCopy = () => {
