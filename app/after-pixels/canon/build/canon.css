@@ -3094,7 +3094,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .slv-hull.is-raised { border-radius: 999px; background: color-mix(in srgb, var(--off-white) 15%, transparent); box-shadow: inset 0 0 0 1.5px var(--off-white); }
 /* KEEP: hit dots sit above the hull, so a raised wreck shows its dots, not a tint over them. */
 .slv-mk.is-hit { position: relative; z-index: 2; }
-.slv-hull.is-unfound { color: var(--muted); }
+/* A lost play's unfound wrecks, and the hits on them, take the Failed colour, as on the now card (gs-salvage-now.css). */
+.slv-hull.is-unfound { color: var(--warning); }
+.slv-dot.is-hit.is-lost { background: var(--warning); }
 .slv-hull.is-unfound svg { display: block; }
 
 /* ---- Haul: the number as large as Daily Word's guesses figure in its ring (36px, 44px from a 672px card: gs-word.css .wd-ring-n b). ---- */
