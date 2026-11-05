@@ -15,10 +15,12 @@
 .acn .acc-blank { width: min(160px, 80%); }
 .acn .acc-blank.is-s { width: min(190px, 92%); }
 
-/* KEEP: on a page from 640px the pair is one group centred on the whole card, head and action row included, with the body at the
-   standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's and
-   action row's height, never onto their words, since it sits between them. The switch reads the page's width, not the card's. */
-@container gs (min-width: 640px) {
+/* KEEP: on a page from 1160px (a card of about 700px or more) the pair is one group centred on the whole card, head and action row
+   included, with the body at the standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller
+   than the body, into the head's and action row's height, so it needs a card wide enough for its 360px to clear the head's "#64" on
+   the left and the action row's button and "Next case" line on the right. Below 1160px it stays the phone row between them. The switch
+   reads the page's width, not the card's, so the threshold is the page width at which the card reaches that size. */
+@container gs (min-width: 1160px) {
   .acn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .acn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max-content; pointer-events: none; }
   .acn-pair { grid-template-columns: auto 240px; column-gap: 16px; }
