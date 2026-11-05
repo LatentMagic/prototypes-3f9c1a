@@ -18,8 +18,11 @@ import { GS_SESSION_BODY } from './registry.js';
 
 const ACC_CASE = {
   no: 64,
-  // The deployed case's scene, word for word: the setting's description, then who the victim was (case-generator.ts).
-  scene: [{ id: 'scene', name: 'The scene', text: 'An avalanche has blocked the only road down the mountain, and the guests are stuck at the Edelweiss Lodge until the snowploughs come. Klaus Berger had raised the prices, called in old debts and insulted every one of his guests at dinner.' }],
+  // KEEP: two chips, the setting's description and the victim's. The deployed case joins them into one scene string; the cast keeps
+  // them apart (case-generator.ts), so the record needs both.
+  scene: [
+    { id: 'scene', name: 'The scene', text: 'An avalanche has blocked the only road down the mountain, and the guests are stuck at the Edelweiss Lodge until the snowploughs come.' },
+    { id: 'victim', name: 'The victim', text: 'Klaus Berger had raised the prices, called in old debts and insulted every one of his guests at dinner.' }],
   suspects: [['Mr Piers Fairfax', 'A land agent who wants to build a hotel where the lodge stands.'], ['Toby Lang', 'A young instructor whose job depends on Berger’s mood.'],
     ['Anneliese Berger', 'His wife, who wants a divorce he refuses to give.'], ['Rick Dawson', 'A champion skier whose medal Berger said was won by cheating.']],
   weapons: [['Hunting knife', 'With a short, sharp blade.'], ['Bottle of schnapps', 'Strong, and nearly full.'], ['Snow shovel', 'Steel-edged.'],
