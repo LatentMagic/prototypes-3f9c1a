@@ -1923,20 +1923,35 @@
           gscAi("daily-groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
+      // Accuse as the deployed game plays it: the case once, then only what changes. There is no notebook in chat.
       mystery: [
-        { cap: "A body, four suspects and an inspector who answers yes or no.", turns: [
-          gscU("Play Accuse on After Pixels."),
-          gscAi("accuse", ["Accuse No. 64. A storm-bound weekend at Hollowmere House. Madame Odette Varga, the medium, is dead.", "The body was found in the dining room. Read the clues, ask the inspector, then make one accusation."])
+        { cap: "The case once: suspects, weapons, places and every clue.", turns: [
+          gscU("I want to play Accuse."),
+          gscAi("accuse", [
+            "Accuse No. 64. A storm-bound weekend at Hollowmere House. Sir Edmund Hale, the host, is dead.",
+            "Each suspect was in a different place with a different weapon. One of them is the killer.",
+            "Suspects: Nora Finch, the housekeeper. Sebastian Wyle, the nephew. Colonel Ashby, the old soldier. Mrs Dorothy Vane, the neighbour.",
+            "Weapons: the candlestick, the iron poker, the curtain cord, the letter opener.",
+            "Places: the library, the conservatory, the wine cellar, the music room.",
+            "Clues:",
+            "1. Nora Finch carried the letter opener.",
+            "2. Whoever was in the wine cellar carried the curtain cord.",
+            "3. Colonel Ashby was not in the wine cellar.",
+            "4. The killer was in the wine cellar.",
+            "5. Mrs Dorothy Vane never carried the curtain cord.",
+            "Every clue is given. Work out from them who did it, with what, and where.",
+            "You have 2 hints and one accusation."
+          ])
         ] },
-        { cap: "Two questions a day: was a suspect in a room, or did they have a weapon?", turns: [
-          gscU("Was Delphine Rooke in the study?"),
-          gscAi("accuse", "The inspector says yes. One question left today."),
-          gscU("Did Arthur Penhallow have the paper knife?"),
-          gscAi("accuse", "Yes. That was your last question.")
+        { cap: "Your AI never solves the case for you. When you’re stuck, take a hint.", turns: [
+          gscU("Who had the curtain cord? Just tell me."),
+          gscAi("accuse", "That’s yours to work out, but a hint can help. You have 2 hints left. Shall I take one?"),
+          gscU("Yes, give me a hint."),
+          gscAi("accuse", ["Colonel Ashby never carried the curtain cord.", "Hints left: 1"])
         ] },
-        { cap: "One accusation, checked by the engine.", turns: [
-          gscU("It was Sebastian Wyle, with the iron poker, in the dining room."),
-          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Sebastian Wyle** of the murder, with the **iron poker**, in the **dining room**?", facts: [{ label: "Suspect", value: "Sebastian Wyle" }, { label: "Weapon", value: "Iron poker" }, { label: "Room", value: "Dining room" }], note: "This is the one accusation today.", confirm: "Confirm accusation", cancel: "Cancel" }])
+        { cap: "One accusation, checked part by part.", turns: [
+          gscU("It was Sebastian Wyle, with the curtain cord, in the wine cellar."),
+          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Sebastian Wyle**, with the **curtain cord**, in the **wine cellar**?", facts: [{ label: "Suspect", value: "Sebastian Wyle" }, { label: "Weapon", value: "Curtain cord" }, { label: "Place", value: "Wine cellar" }], note: "This is the one accusation in this case.", confirm: "Confirm accusation", cancel: "Cancel" }])
         ] }
       ],
       // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
@@ -6395,16 +6410,17 @@
           small: gsFreeSmall("Today’s case"),
           heading: "Play it in your own AI chat",
           button: "Play today’s case",
-          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Question the inspector"), ", then make one accusation."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
+          steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Work it out from the clues"), ", then make one accusation."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
         facts: { long: "10 min", often: "New every day" },
         tags: [],
         pitch: { h: "There’s a body and a story that doesn’t add up.", ps: [
-          "The clues point to one suspect, one weapon and one room. Ask the inspector two yes-or-no questions, then make one accusation.",
-          "Your AI sets the scene, voices the cast and reads you the clues. The game engine holds the answer until you accuse. Make your move."
+          "You get every clue at the start. Together they leave only one answer: who did it, with what, and where.",
+          "Reason it out from the clues. Two hints help when you’re stuck, and you get one accusation.",
+          "Your AI sets the scene and gives you every clue, but never solves the case for you. The game engine holds the answer. Make your move."
         ] },
-        who: { ai: "Voices the suspects and the inspector, and takes your questions.", server: "Holds the answer, counts your questions and checks your accusation." },
-        week: { title: "Today’s case", line: "One suspect, one weapon, one room. One accusation.", session: "mystery-today" }
+        who: { ai: "Sets the scene, gives every clue, and offers a hint when you’re stuck. It never solves the case for you.", server: "Holds the answer and every clue, works out each hint from the clues itself and checks your accusation part by part." },
+        week: { title: "Today’s case", line: "Four suspects, four weapons, four places. One accusation.", session: "mystery-today" }
       },
       escape: {
         rhythm: "A NEW ROOM EVERY WEEK",

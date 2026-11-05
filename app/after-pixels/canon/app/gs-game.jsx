@@ -120,13 +120,14 @@ GS_PAGES = {
   mystery: {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s case'), heading: 'Play it in your own AI chat', button: 'Play today’s case',
-      steps: [GS_STEP_CONNECT, <><b>Question the inspector</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
+      steps: [GS_STEP_CONNECT, <><b>Work it out from the clues</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
     pitch: { h: 'There’s a body and a story that doesn’t add up.', ps: [
-      'The clues point to one suspect, one weapon and one room. Ask the inspector two yes-or-no questions, then make one accusation.',
-      'Your AI sets the scene, voices the cast and reads you the clues. The game engine holds the answer until you accuse. Make your move.'] },
-    who: { ai: 'Voices the suspects and the inspector, and takes your questions.', server: 'Holds the answer, counts your questions and checks your accusation.' },
-    week: { title: 'Today’s case', line: 'One suspect, one weapon, one room. One accusation.', session: 'mystery-today' },
+      'You get every clue at the start. Together they leave only one answer: who did it, with what, and where.',
+      'Reason it out from the clues. Two hints help when you’re stuck, and you get one accusation.',
+      'Your AI sets the scene and gives you every clue, but never solves the case for you. The game engine holds the answer. Make your move.'] },
+    who: { ai: 'Sets the scene, gives every clue, and offers a hint when you’re stuck. It never solves the case for you.', server: 'Holds the answer and every clue, works out each hint from the clues itself and checks your accusation part by part.' },
+    week: { title: 'Today’s case', line: 'Four suspects, four weapons, four places. One accusation.', session: 'mystery-today' },
   },
   escape: {
     rhythm: 'A NEW ROOM EVERY WEEK',
