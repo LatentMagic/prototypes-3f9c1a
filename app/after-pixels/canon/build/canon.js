@@ -4086,10 +4086,10 @@
     const up = w.every((s) => p.hit.has(s));
     const n = w.length;
     const L = 9 * n - 2;
-    return /* @__PURE__ */ React$1.createElement("svg", { className: "svn-hull " + (up ? "is-raised" : "is-open"), style: { "--n": n }, viewBox: "0 0 " + L + " " + SVN_H, "aria-hidden": "true" }, up ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { x: ".3", y: ".3", width: L - 0.6, height: SVN_H - 0.6, rx: SVN_H / 2 - 0.3 }), w.map((s, i) => {
+    return /* @__PURE__ */ React$1.createElement("svg", { className: "svn-hull " + (up ? "is-raised" : "is-open" + (p.state === "lost" ? " is-lost" : "")), style: { "--n": n }, viewBox: "0 0 " + L + " " + SVN_H, "aria-hidden": "true" }, up ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { x: ".3", y: ".3", width: L - 0.6, height: SVN_H - 0.6, rx: SVN_H / 2 - 0.3 }), w.map((s, i) => {
       const g = (L - 2 * n * SVN_R) / (n + 1);
       return /* @__PURE__ */ React$1.createElement("circle", { key: s, cx: g + SVN_R + i * (g + 2 * SVN_R), cy: SVN_H / 2, r: SVN_R });
-    })) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { className: "svn-dash", x: ".3", y: ".3", width: L - 0.6, height: SVN_H - 0.6, rx: SVN_H / 2 - 0.3, strokeDasharray: "1.1 .9" }), w.filter((s) => p.hit.has(s)).map((s, i) => /* @__PURE__ */ React$1.createElement("circle", { key: s, cx: 9 * i + SVN_H / 2, cy: SVN_H / 2, r: SVN_R }))));
+    })) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { className: "svn-dash", x: ".3", y: ".3", width: L - 0.6, height: SVN_H - 0.6, rx: SVN_H / 2 - 0.3, strokeDasharray: "1.1 .9" }), p.state === "live" ? null : w.filter((s) => p.hit.has(s)).map((s, i) => /* @__PURE__ */ React$1.createElement("circle", { key: s, cx: 9 * i + SVN_H / 2, cy: SVN_H / 2, r: SVN_R }))));
   };
   const SvnTools = ({ p }) => /* @__PURE__ */ React$1.createElement("ul", { className: "svn-tools", "aria-hidden": "true" }, SLV_ALL.map((k) => /* @__PURE__ */ React$1.createElement("li", { key: k, className: "slv-tool t-" + k + (p.tools[k] ? " is-used" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "slv-bx" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", ...SLV_ST }, ICON[k])))));
   const SvnPic = ({ p }) => {

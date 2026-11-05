@@ -19,7 +19,7 @@ const SVN_R = 2.5;
 const SvnHull = ({ w, p }) => {
   const up = w.every((s) => p.hit.has(s)); const n = w.length; const L = 9 * n - 2;
   return (
-    <svg className={'svn-hull ' + (up ? 'is-raised' : 'is-open')} style={{ '--n': n }} viewBox={'0 0 ' + L + ' ' + SVN_H} aria-hidden="true">
+    <svg className={'svn-hull ' + (up ? 'is-raised' : 'is-open' + (p.state === 'lost' ? ' is-lost' : ''))} style={{ '--n': n }} viewBox={'0 0 ' + L + ' ' + SVN_H} aria-hidden="true">
       {up
         ? <>
           <rect x=".3" y=".3" width={L - .6} height={SVN_H - .6} rx={SVN_H / 2 - .3} />
@@ -27,8 +27,10 @@ const SvnHull = ({ w, p }) => {
         </>
         : <>
           <rect className="svn-dash" x=".3" y=".3" width={L - .6} height={SVN_H - .6} rx={SVN_H / 2 - .3} strokeDasharray="1.1 .9" />
-          {/* KEEP: hits fill from the left as a count, not at the square that was hit (the card says how much of a wreck is found, not where). */}
-          {w.filter((s) => p.hit.has(s)).map((s, i) => <circle key={s} cx={9 * i + SVN_H / 2} cy={SVN_H / 2} r={SVN_R} />)}
+          {/* KEEP: while a play is live an unraised hull stays empty: a hit inside it would say which wreck it belongs to, and so its length,
+              which the game keeps secret until the play ends. Once a lost play ends, its unfound hulls turn the Failed colour and show their
+              hits, filled from the left as a count. */}
+          {p.state === 'live' ? null : w.filter((s) => p.hit.has(s)).map((s, i) => <circle key={s} cx={9 * i + SVN_H / 2} cy={SVN_H / 2} r={SVN_R} />)}
         </>}
     </svg>);
 };
