@@ -4046,36 +4046,36 @@
   const ACC_CASE = {
     no: 64,
     scene: [
-      { id: "lodge", name: "The lodge", text: "A snowed-in weekend at the Edelweiss Lodge. The cable car stopped at dusk; nobody left." },
-      { id: "victim", name: "The victim", text: "Klaus Berger, the lodge owner, found at first light. Last seen arguing in the great hall." }
+      { id: "lodge", name: "The lodge", text: "An avalanche has blocked the only road down the mountain, and the guests are stuck at the Edelweiss Lodge until the snowploughs come." },
+      { id: "victim", name: "The victim", text: "Klaus Berger had raised the prices, called in old debts and insulted every one of his guests at dinner." }
     ],
     suspects: [
-      ["Toby Lang", "Ski instructor. Owed Klaus money."],
-      ["Mrs Harriet Coombe", "A guest of twenty winters."],
-      ["Rick Dawson", "The barman."],
-      ["Dr Lena Fischer", "A doctor on holiday, or so she says. She arrived the night before the cable car stopped."]
+      ["Mr Piers Fairfax", "A land agent who wants to build a hotel where the lodge stands."],
+      ["Toby Lang", "A young instructor whose job depends on Berger’s mood."],
+      ["Anneliese Berger", "His wife, who wants a divorce he refuses to give."],
+      ["Rick Dawson", "A champion skier whose medal Berger said was won by cheating."]
     ],
     weapons: [
-      ["Hunting knife", "From the trophy wall."],
-      ["Bottle of schnapps", "Half empty, from the bar."],
-      ["Brass cowbell", "A souvenir by the door."],
-      ["Walking stick", "Klaus’s own, silver-topped."]
+      ["Hunting knife", "With a short, sharp blade."],
+      ["Bottle of schnapps", "Strong, and nearly full."],
+      ["Snow shovel", "Steel-edged."],
+      ["Climbing rope", "Red, and very strong."]
     ],
     places: [
-      ["Sauna", "Down the outside steps."],
-      ["Great hall", "The fire, the long table."],
-      ["Games room", "Billiards and old maps."],
-      ["Cable car hut", "At the top of the line, unheated."]
+      ["Great hall", "Antlers over a stone fireplace."],
+      ["Games room", "A dartboard and a chess table."],
+      ["Cable car hut", "A cold hut at the top of the lift."],
+      ["Cellar bar", "Low, warm and full of pipe smoke."]
     ],
     clues: [
-      "Whoever carried the hunting knife was not in the sauna.",
-      "The killer carried the brass cowbell.",
-      "Dr Lena Fischer carried the brass cowbell.",
-      "Whoever was in the great hall carried the bottle of schnapps.",
-      "Whoever carried the walking stick was not in the sauna."
+      "Whoever carried the snow shovel was not in the games room.",
+      "The killer was in the cable car hut.",
+      "Anneliese Berger was not in the great hall.",
+      "Anneliese Berger carried the snow shovel.",
+      "Rick Dawson was in the cellar bar."
     ],
-    hints: ["Rick Dawson was not in the games room.", "The walking stick was in the great hall."],
-    truth: ["Dr Lena Fischer", "Brass cowbell", "Cable car hut"]
+    hints: ["Rick Dawson was not the killer.", "Anneliese Berger was in the cable car hut."],
+    truth: ["Anneliese Berger", "Snow shovel", "Cable car hut"]
   };
   const ACC_TRUTH = ACC_CASE.truth;
   const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
@@ -4274,7 +4274,7 @@
   const initGsAccuse = () => {
     GS_SESSION_BODY.mystery = AccBody;
     Object.assign(GS_SESSIONS, {
-      "mystery-today": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ["Rick Dawson", "Brass cowbell", "Cable car hut"] }),
+      "mystery-today": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ["Rick Dawson", "Snow shovel", "Cable car hut"] }),
       "mystery-today-avg": accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: ACC_TRUTH }),
       "mystery-today-hard": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_TRUTH }),
       "mystery-live": accSession({ no: ACC_CASE.no, date: GS.today, hints: 1, pick: null }),

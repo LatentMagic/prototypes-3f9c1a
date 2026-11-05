@@ -32,7 +32,7 @@ export const pzSession = (id, c, x) => {
     s = { ...base, figures: [found + ' of 4 groups', mis ? pzMis(mis).replace(/^./, (ch) => ch.toUpperCase()) : 'No mistakes'], share: x.line,
       shareHead: 'Daily Groups #' + (88 - i) + ' · ' + pzMis(mis), rows, lines };
   } else if (id === 'mystery') {
-    // Every earlier case is a play of the one sample case (gs-accuse.jsx): 0 to 2 hints, and a wrong accusation gets one part wrong.
+    // Every earlier case is a play of the one deployed edition 1 case, ski-lodge cast (gs-accuse.jsx): 0 to 2 hints, and a wrong accusation gets one part wrong.
     s = accSession({ no: 64 - i, date: base.date, hints: i % 3, pick: x.ok ? ACC_TRUTH : accWrong(i % 3) });
   } else {
     // Escape's earlier rooms are seeded at the foot of this file; this is only a fallback.
