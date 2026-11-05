@@ -10708,13 +10708,13 @@
   const PgaHintsCard = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "pga-hc" + (p.live ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 }));
   const PgaPage = ({ s, lay, card = "", wrap = "" }) => {
     const p = s.pga;
-    const pn = usePgSetting("panel") || "side";
+    const pn = usePgSetting("panel") || "two";
     const two = pn !== "now";
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" + (wrap ? " " + wrap : "") }, /* @__PURE__ */ React$1.createElement(PgaNotebook, { p, lay }), /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
         r: pgaResult(p),
-        className: "pga-card" + (card ? " " + card : "") + (two ? " pga-2c is-" + pn : ""),
+        className: "pga-card" + (card ? " " + card : "") + (two ? " pga-2c" : ""),
         board: /* @__PURE__ */ React$1.createElement(PgaBoard, { p }),
         rows: [["Hints", two ? /* @__PURE__ */ React$1.createElement(PgaHintsCard, { p }) : /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 })], ["The culprit", /* @__PURE__ */ React$1.createElement(PgaCulprit, { p })]]
       }
@@ -10739,8 +10739,7 @@
         { value: "3", label: "3 Two rows" }
       ] },
       { key: "panel", kind: "concept", label: "Panel", options: [
-        { value: "side", label: "Two cards, side by side" },
-        { value: "stack", label: "Two cards, stacked" },
+        { value: "two", label: "Two cards" },
         { value: "now", label: "As before" }
       ] },
       { key: "play", label: "Play", options: [
