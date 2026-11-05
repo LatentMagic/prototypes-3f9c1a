@@ -459,7 +459,8 @@ DP_PZ = {
     done: { st: { kind: 'ok', label: GS_SESSIONS['salvage-today'].result }, line: 'You found all five wrecks with ' + (SLV_DIVES - SV_TODAY_DIVES.length) + ' dives to spare, and one hint.', bar: [SV_TODAY_DIVES.length + ' of ' + SLV_DIVES + ' dives', SV_TODAY_DIVES.length, SLV_DIVES] },
     recent: 'Your seas',
     ach: [{ k: 'sv1', n: 'Every wreck found', how: 'Find all five wrecks in a Salvage.', by: (p) => p.status.kind === 'ok' },
-      { k: 'sv5', n: 'Five dives to spare', how: 'Find all five wrecks in 25 dives or fewer.', by: (p) => { const m = new RegExp('^All 5 wrecks(?:,| in) (\\d+) of ' + SLV_DIVES).exec(p.status.label); return !!m && +m[1] <= 25; } },
+      // KEEP: a deployed achievement (monorepo play-records.ts, "Last Dive"); the platform has nine, the library shows three.
+      { k: 'sv5', n: 'Last dive', how: 'Find all five wrecks with your twentieth and final dive.', by: (p) => { const m = new RegExp('^All 5 wrecks in (\\d+) of ' + SLV_DIVES).exec(p.status.label); return !!m && +m[1] === SLV_DIVES; } },
       { k: 'sv7', n: 'Seven days in a row', how: 'Find every wreck seven days running.', of: 7 }],
   },
   common: {
