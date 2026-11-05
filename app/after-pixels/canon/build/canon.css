@@ -3170,7 +3170,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* ---- Notebook: folder tabs. KEEP: the open tab is the folder's own colour and runs into it (no rule between), so the tab and the
    folder read as one piece; the closed tabs sit behind, on the card's colour. ---- */
 .acc-nb { gap: 0; }
-.acc-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; align-items: end; margin-top: 8px; }
+.acc-tabs { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; align-items: end; margin-top: 8px; }
 /* KEEP: a tab's top corners are cut at 45 degrees (8px), its edge drawn as a 1px outer shape behind a fill inset 1px, so the edge
    follows the cut corners unbroken (a plain border is clipped off at the corners). */
 .acc-tab { --edge: var(--control-edge); --fill: var(--card); --cut: polygon(0 100%, 0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%);
@@ -3189,7 +3189,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acc-tab:disabled .acc-ic svg, .acc-tab:disabled .esx-num { color: var(--muted); }
 .acc-tab .esx-num { font: 700 20px/22px var(--font-heading); height: 22px; }
 /* KEEP: with every tab shut, a rule in the tabs' own edge colour closes the row off along their feet, so the tabs don't read as open-bottomed boxes. */
-.acc-tabs { position: relative; }
 .acc-tabs[data-open="n"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--control-edge); z-index: 2; }
 .acc-folder { background: var(--page); border: 1px solid var(--control-edge); padding: 0 12px 12px; }
 .acc-folder .esx-read { background: var(--card); }
@@ -3225,7 +3224,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* The case card: a card with its top right corner folded. */
 .acc-case { position: relative; display: grid; gap: 2px; justify-items: center; width: 240px; max-width: 100%; box-sizing: border-box; padding: 14px 12px;
   border: 1px solid var(--control-edge); background: var(--card); text-align: center; }
-.acc-case::after { content: ''; position: absolute; top: -1px; right: -1px; width: 14px; height: 14px;
+.acc-case::after, .acc-hc::after { content: ''; position: absolute; top: -1px; right: -1px; width: 14px; height: 14px;
   background: linear-gradient(225deg, var(--page) 50%, var(--control-edge) 50% calc(50% + 1px), var(--popup) calc(50% + 1px)); }
 .acc-case.is-open { border-color: var(--line); }
 .acc-tag { margin-bottom: 8px; padding: 5px 8px; font: 600 11px/1 var(--font-text); letter-spacing: .08em; text-transform: uppercase; background: var(--tag-neutral-bg); }
@@ -3239,8 +3238,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* ---- Hints: a card of its own with the case card's edge, corner and height; its count larger. ---- */
 .acc-hc { position: relative; display: grid; place-items: center; box-sizing: border-box; min-width: 104px; padding: 14px 16px;
   border: 1px solid var(--control-edge); background: var(--card); }
-.acc-hc::after { content: ''; position: absolute; top: -1px; right: -1px; width: 14px; height: 14px;
-  background: linear-gradient(225deg, var(--page) 50%, var(--control-edge) 50% calc(50% + 1px), var(--popup) calc(50% + 1px)); }
 .acc-hc.is-open { border-color: var(--line); }
 .acc-hc .slv-big b { font-size: 48px; }
 /* KEEP: as the groundwork card draws the panel: on a phone (a card under 672px) Hints and The culprit side by side under the board,
