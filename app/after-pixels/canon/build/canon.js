@@ -2374,11 +2374,18 @@
   const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].join(GS_NB);
   const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
   const gsNb = (s) => s.replace(/ /g, GS_NB);
-  const GS_PLAN = {
-    monthly: { name: "Monthly", price: gsNb("£3 a month"), per: gsNb("£3 / month"), due: "£3.00", months: 1 },
-    yearly: { name: "Yearly", price: gsNb("£30 a year"), per: gsNb("£30 / year"), due: "£30.00", months: 12 }
+  const GS_CUR = {
+    GBP: { sym: "£", month: "3", year: "30", yearMonth: "2.50" },
+    USD: { sym: "$", month: "4", year: "40", yearMonth: "3.33" },
+    EUR: { sym: "€", month: "4", year: "40", yearMonth: "3.33" }
   };
-  const GS_YEAR_MONTH = gsNb("£2.50 a month");
+  const gsCurKey = (new URLSearchParams(window.location.search).get("cur") || "GBP").toUpperCase();
+  const GS_C = GS_CUR[gsCurKey] || GS_CUR.GBP;
+  const GS_PLAN = {
+    monthly: { name: "Monthly", price: gsNb(GS_C.sym + GS_C.month + " a month"), per: gsNb(GS_C.sym + GS_C.month + " / month"), due: GS_C.sym + GS_C.month + ".00", months: 1 },
+    yearly: { name: "Yearly", price: gsNb(GS_C.sym + GS_C.year + " a year"), per: gsNb(GS_C.sym + GS_C.year + " / year"), due: GS_C.sym + GS_C.year + ".00", months: 12 }
+  };
+  const GS_YEAR_MONTH = gsNb(GS_C.sym + GS_C.yearMonth + " a month");
   const gsOther = (plan) => plan === "yearly" ? "monthly" : "yearly";
   const gsSubDate = (sub) => {
     if (sub.renew) return new Date(sub.renew);
