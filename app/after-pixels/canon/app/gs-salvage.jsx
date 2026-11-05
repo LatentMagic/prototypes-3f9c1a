@@ -2,7 +2,7 @@
 // After Pixels — Salvage's session page body, under the shared head: one card on the shared session card (GsSessCard,
 // gs-session.jsx), as Daily Word's, Where's and Chain's are. Result top left (Completed, Failed or In progress); the Sea (an 8 by 8
 // grid) left; Haul (dives and wrecks) above Kit (three tools) in the panel beside it, ruled off at its left; on a phone, stacked.
-// The three plays on today's edition (No. 21) are fixtures run by the game's rules below, so every count, mark and reach is worked
+// The three plays on the invented edition 21 are fixtures run by the game's rules below, so every count, mark and reach is worked
 // out from the moves: won (salvage-today), lost (salvage-today-failed), in progress (salvage-live). An earlier edition's session
 // carries no fixture and keeps the plain result and list. Styles: app/gs-salvage.css.
 // ============================================================================
@@ -11,7 +11,8 @@ import { GsMoves, GsSessCard, GsSessResult } from './gs-session.jsx';
 import { GS_SESSIONS } from './gs-data.jsx';
 import { GS_SESSION_BODY } from './registry.js';
 
-// ---- Edition No. 21: five wrecks (4, 3, 3, 2, 2) and the four rows and four columns whose counts the sea shows. ----
+// ---- An invented sea, numbered edition 21 (not the deployed edition 21): five wrecks (4, 3, 3, 2, 2) and the four rows and four columns
+// whose counts the sea shows. ----
 const SLV_COLS = 'ABCDEFGH';
 const SLV_N8 = [1, 2, 3, 4, 5, 6, 7, 8];
 export const SLV_WRECKS = [['A5', 'B5', 'C5', 'D5'], ['E3', 'F3', 'G3'], ['F6', 'G6', 'H6'], ['G8', 'H8'], ['C1', 'C2']];
@@ -36,7 +37,8 @@ const slvPatch = (sq) => { const c = slvColOf(sq), r = slvRowOf(sq); const out =
   for (let y = Math.max(0, r - 1); y <= Math.min(7, r + 1); y++) for (let x = Math.max(0, c - 1); x <= Math.min(7, c + 1); x++) out.push(slvAt(x, y)); return out; };
 
 // ---- A play, run by the game's rules (Salvage spec; deployed salvage-game.ts, player-view.ts, session-record.ts). A dive on a square
-// already found is skipped free. Sonar counts every wreck square on one line whose count is not shown; the metal detector every wreck
+// already dived is skipped free: deployed planRun skips every dived square, misses and dragnet snags included, and refuses a dive whose
+// squares are all dived (the fixtures never repeat a square, so only a hit is skipped here). Sonar counts every wreck square on one line whose count is not shown; the metal detector every wreck
 // square in the 3x3 slvPatch round a square, cut at the edge; the dragnet snags on the first wreck square from its end, and a square not
 // yet found becomes a hit. Won when all five are raised; lost when the 20th dive is spent first. The Every move lines are the deployed
 // record's words. ----
