@@ -8,7 +8,7 @@
 import React from 'react';
 import { GS_GAMES, DS } from './gs-data.jsx';
 import { GS_PAGES, GsGamePage } from './gs-game.jsx';
-import { GS_CHATS } from './gs-chats.jsx';
+import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
 import { GsGameCard } from './gs-pass-home.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { pgRegister, usePgSetting } from './playground.jsx';
@@ -18,7 +18,24 @@ import { pgRegister, usePgSetting } from './playground.jsx';
 const PGC_DELVE = {
   h: 'A new world every week: fight room by room to the villain at its heart.', blurb: 'h',
   ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
-  caps: ["Three heroes for this week’s world: one wades in, one darts and dodges, one burns bright and breaks easily.", "Say what you try and the die decides. A 20 lands like a legend; a 1 brings the danger on fast.", "Win or lose, the run ends in a scene of its own, and a row of your rolls to post: 20s sparkle, 1s are skulls."],
+  caps: ["Every hero comes with their own odds and gear, laid out before you pick.", "A clever plan can still miss. Try again and spend your inspiration: two dice, and the better one counts.", "The run ends with its result, and a row of your rolls to post: green held, red failed, a spark for a 20."],
+  // The three chats, trimmed from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md).
+  // Nothing is reworded: a line is kept whole or left out. No edition secret appears.
+  chats: [
+    [gscU('hey, I want to play Delve'),
+      gscAi('delve', ['Delve #5: The Labyrinth of Crete', 'Every year King Minos of Crete makes Athens send young people to him as tributes, a sort of payment. They are fed to the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.', 'Choose your hero:'],
+        null, [{ type: 'mono', text: 'Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12' }]),
+      gscU('I’ll go with Ione'),
+      gscAi('delve', 'You are Ione, a bull-leaper. You trained to somersault over charging bulls, so you are quick and light, and very hard to hit.')],
+    [gscU('I watch the walls for a bit, then dart through the gap that stays open longest'),
+      gscAi('delve', 'You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.', null, [{ type: 'mono', text: 'd20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage' }]),
+      gscU('ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up'),
+      gscAi('delve', 'The stone shudders and then stops, with a straight path laid down the hall.', null, [{ type: 'mono', text: 'd20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent' }])],
+    [gscU('go for the somersault to finish it'),
+      gscAi('delve', ['The Minotaur goes down, and this time it does not get up. The den goes quiet at last.', 'You won Delve #5. The next run opens next week.']),
+      gscU('nice, share my result'),
+      gscAi('delve', 'Here’s your result, ready to copy:', null, [{ type: 'mono', text: 'The Labyrinth of Crete\nIone the Bull-leaper · ✅ the Minotaur beaten · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩' }])],
+  ],
   tags: [], facts: { long: '25–45 min', often: 'New every week' }, noRun: true, genreOnly: true,
   ai: "Tells the story as your Game Master, voices everyone you meet, and never makes a choice for you.", server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in." };
 const PGC_COPY = {
@@ -49,20 +66,21 @@ let pgcCanon = null;
 const pgcRead = () => {
   if (pgcCanon) return;
   pgcCanon = {};
-  PGC_GAMES.forEach((id) => { pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), facts: { ...GS_PAGES[id].facts }, ai: GS_PAGES[id].who && GS_PAGES[id].who.ai, server: GS_PAGES[id].who && GS_PAGES[id].who.server }; });
+  PGC_GAMES.forEach((id) => { pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), turns: GS_CHATS[id].map((x) => x.turns), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), facts: { ...GS_PAGES[id].facts }, ai: GS_PAGES[id].who && GS_PAGES[id].who.ai, server: GS_PAGES[id].who && GS_PAGES[id].who.server }; });
 };
 const pgcApply = (id, rule) => {
   pgcRead();
   PGC_GAMES.forEach((k) => {
     const c = pgcCanon[k];
     GS_PAGES[k].pitch.h = c.h; GS_PAGES[k].pitch.ps = c.ps.slice(); GS_GAMES[k].blurb = c.blurb; if (c.tags) GS_PAGES[k].tags = c.tags.slice(); GS_PAGES[k].facts = { ...c.facts }; if (GS_PAGES[k].who) { GS_PAGES[k].who.ai = c.ai; GS_PAGES[k].who.server = c.server; }
-    GS_CHATS[k].forEach((x, i) => { x.cap = c.caps[i]; });
+    GS_CHATS[k].forEach((x, i) => { x.cap = c.caps[i]; x.turns = c.turns[i]; });
   });
   const r = PGC_COPY[id][rule]; if (!r) return;
   const c = pgcCanon[id];
   if (r.h) GS_PAGES[id].pitch.h = r.h;
   if (r.ps) GS_PAGES[id].pitch.ps = r.ps.map((p, i) => p || c.ps[i]);
   if (r.caps) GS_CHATS[id].forEach((x, i) => { x.cap = r.caps[i] || c.caps[i]; });
+  if (r.chats) GS_CHATS[id].forEach((x, i) => { if (r.chats[i]) x.turns = r.chats[i]; });
   if (r.tags) GS_PAGES[id].tags = r.tags.slice();
   if (r.facts) GS_PAGES[id].facts = { ...GS_PAGES[id].facts, ...r.facts };
   if (r.ai) GS_PAGES[id].who.ai = r.ai;
