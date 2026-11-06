@@ -2041,8 +2041,10 @@
   // A prototype may address a state of its own (canon reads `?state=<id>` against
   // its states register). The console never interprets that query — it only hands
   // it through to the iframe, so a state the console has never heard of still works.
+  var LOADED_AT = Date.now();
   function srcFor(app, slug, html, query, path) {
-    return (path ? path + '/' : 'app/' + app + '/' + slug + '/') + (html || 'latentpulse.html') + (query ? '?' + query : '');
+    // `_` changes on every console load, so a phone never gets a prototype page from its cache after a push (owner, 2026-11-06).
+    return (path ? path + '/' : 'app/' + app + '/' + slug + '/') + (html || 'latentpulse.html') + '?' + (query ? query + '&' : '') + '_=' + LOADED_AT;
   }
 
   var tablist = document.querySelector('.prototypes');

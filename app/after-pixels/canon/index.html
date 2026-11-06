@@ -14,7 +14,9 @@
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/logo-180.png" />
 <link rel="stylesheet" href="tokens.css" />
-<link rel="stylesheet" href="build/canon.css" />
+<!-- The build loads with a fresh query on every visit, so a phone never shows a cached build after a push (GitHub Pages caches
+     files for 10 minutes, and Safari keeps them longer). Owner's complaint, 2026-11-06. -->
+<script>window.__canonV = Date.now(); document.write('<link rel="stylesheet" href="build/canon.css?v=' + window.__canonV + '" />');</script>
 </head>
 <body>
 <!-- ============================================================================
@@ -33,6 +35,6 @@
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
 
-<script src="build/canon.js"></script>
+<script>document.write('<script src="build/canon.js?v=' + window.__canonV + '"><\/script>');</script>
 </body>
 </html>
