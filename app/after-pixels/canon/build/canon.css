@@ -3306,6 +3306,13 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
      window its blank lines shrink to fit and nothing runs past the card. */
   .acc-card .acc-case { grid-template-columns: minmax(0, 1fr); }
 }
+/* KEEP: on a card 264px inside or narrower (a window of about 320px or narrower; 375px is 309px inside and stays side by side),
+   Hints sits above The culprit, the two cards one width, each as wide as the panel, captions centred: side by side, The culprit's
+   column is under 140px, so its tag wraps and its sentence runs a word or two a line. */
+@container dv2 (max-width: 264px) {
+  .acc-card .gs-sc-panel { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
+  .acc-card .acc-hc, .acc-card .acc-case { height: auto; }
+}
 @container dv2 (min-width: 672px) { .acc-card .acc-hc { width: 240px; max-width: 100%; } }
 /* Accuse's now card on its library game page (app/gs-accuse-now.jsx): the session page's panel in small, the Hints card beside the
    culprit's case card (.acc-hc, .acc-case, gs-accuse.css). */
