@@ -1,13 +1,13 @@
 // ============================================================================
 // After Pixels — the game page: one template for every game. Delve's page is the model. Order: cover and
 // play box; facts band (how long, how often, genre tags); pitch beside who does what; how it looks in
-// your chat; (Delve: stat tiles); more games. Every null is a gap in the record and shows as "—".
+// your chat; more games. Every null is a gap in the record and shows as "—".
 // The play box at the top is the page's one Play. GsPlayBox is in gs-pass-game.jsx.
 // `week` stays in GS_PAGES: the library game pages read its line.
 // ============================================================================
 import React from 'react';
 import { GS_NAME, DS, useGs, GS_GAMES, GS_BARROW_CREDIT, GS_SOON } from './gs-data.jsx';
-import { GsCover, GsWhoCols, GsStat, GsSoonCard } from './gs-parts.jsx';
+import { GsCover, GsWhoCols, GsSoonCard } from './gs-parts.jsx';
 import { GsChatRow } from './gs-chats.jsx';
 import { GS_HOME_GAMES } from './gs-home.jsx';
 import { GsGameCard } from './gs-pass-home.jsx';
@@ -47,7 +47,7 @@ export const GsGamePage = ({ id, top }) => {
         <div className="gs-hero-cover">
           <GsCover art={g.art} fit />
           <div className="gs-cover-over">
-            <span className="gs-label">{g.category + ' · ' + p.rhythm}</span>
+            <span className="gs-label">{g.category}</span>
             <h1 className="gs-cover-title">{g.name}</h1>
           </div>
         </div>
@@ -71,14 +71,6 @@ export const GsGamePage = ({ id, top }) => {
         <GsChatRow id={id} />
         {id === 'barrow' && <p className="gs-small gs-muted gs-credit" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
       </section>
-
-      {id === 'delve' && (
-        <section className="gs-grid3">
-          <GsStat label="IN A RUN" figure="5 rooms" line="This week: flooded tunnel to shrine cavern." />
-          <GsStat label="TYPICAL RUN" figure="10–14 rolls" line="Every one listed on your session page afterwards." />
-          <GsStat label="ENDINGS" figure="4 ways out" line="Win, turn back early, fall, or run out of time." />
-        </section>
-      )}
 
       {/* More games is the home page's card row (GS_HOME_GAMES) without this game, then the soon cards and a link to the store. */}
       <section className="gs-stack-md">
@@ -160,12 +152,12 @@ GS_PAGES = {
     box: { label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: 'The first run is free with an account. Every other run comes with the After Pixels Pass.' },
-    facts: { long: '25–40 min', often: 'One run every week' },
-    tags: ['Adventure', 'One run a week · five rooms'],
-    pitch: { h: 'Get her out before the ritual is complete', ps: [
-      'Goblins have dragged the miller’s daughter into the tunnels beneath Ashford Mill, and their shaman means to offer her to his idol at moonrise. Pick a fighter, a rogue or a wizard and make your way room by room: past bone chimes and goblin sentries, through choices about what to search and what to carry, to the shrine where the ritual is under way.',
-      'Every risky move is a d20 roll, made by the game where nobody can fudge it. Each foe has a track you wear down, your hit points run out if you are careless, and the ritual creeps on with every slip. Your AI tells the story around the dice.'] },
-    who: { ai: 'Narrates the warren, voices the goblins and the captive, and asks what you do next.', server: 'Rolls every die, keeps the score of foes, hit points and threat, decides each outcome and records your session.' },
+    facts: { long: '25–45 min', often: 'New every week' },
+    tags: [],
+    pitch: { h: 'A new world every week: fight room by room to the villain at its heart.', ps: [
+      'One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.',
+      'Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can.'] },
+    who: { ai: 'Tells the story as your Game Master, voices everyone you meet, and never makes a choice for you.', server: 'Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in.' },
     week: { title: 'This week’s run', line: 'Get Elsie out of the warren beneath Ashford Mill before the ritual is complete.', session: 'delve' },
   },
   barrow: {
