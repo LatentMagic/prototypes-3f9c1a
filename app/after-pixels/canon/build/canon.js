@@ -2379,14 +2379,31 @@
     USD: { sym: "$", month: "4", year: "40", yearMonth: "3.33" },
     "USD-INTL": { sym: "$", label: "US", month: "4", year: "40", yearMonth: "3.33" }
   };
-  const gsCurKey = (new URLSearchParams(window.location.search).get("cur") || "GBP").toUpperCase();
-  const GS_C = GS_CUR[gsCurKey] || GS_CUR.GBP;
-  const gsMoney = (amount, tail = "") => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, GS_C.label && /* @__PURE__ */ React$1.createElement("span", { className: "gs-cur-label" }, GS_C.label), GS_C.sym + amount + gsNb(tail));
-  const GS_PLAN = {
-    monthly: { name: "Monthly", price: gsMoney(GS_C.month, " a month"), per: gsMoney(GS_C.month, " / month"), due: gsMoney(GS_C.month + ".00"), months: 1 },
-    yearly: { name: "Yearly", price: gsMoney(GS_C.year, " a year"), per: gsMoney(GS_C.year, " / year"), due: gsMoney(GS_C.year + ".00"), months: 12 }
+  const gsCurSeed = (new URLSearchParams(window.location.search).get("cur") || "GBP").toUpperCase();
+  let gsCurKey = GS_CUR[gsCurSeed] ? gsCurSeed : "GBP";
+  const gsGetCur = () => gsCurKey;
+  const gsSetCur = (k) => {
+    if (GS_CUR[k]) gsCurKey = k;
   };
-  const GS_YEAR_MONTH = gsMoney(GS_C.yearMonth, " a month");
+  const gsMoney = (amount, tail = "") => {
+    const c = GS_CUR[gsCurKey];
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, c.label && /* @__PURE__ */ React$1.createElement("span", { className: "gs-cur-label" }, c.label), c.sym + amount + gsNb(tail));
+  };
+  const gsPlanOf = (name, field, months, tail) => ({
+    name,
+    months,
+    get price() {
+      return gsMoney(GS_CUR[gsCurKey][field], " a " + tail);
+    },
+    get per() {
+      return gsMoney(GS_CUR[gsCurKey][field], " / " + tail);
+    },
+    get due() {
+      return gsMoney(GS_CUR[gsCurKey][field] + ".00");
+    }
+  });
+  const GS_PLAN = { monthly: gsPlanOf("Monthly", "month", 1, "month"), yearly: gsPlanOf("Yearly", "year", 12, "year") };
+  const gsYearMonth = () => gsMoney(GS_CUR[gsCurKey].yearMonth, " a month");
   const gsOther = (plan) => plan === "yearly" ? "monthly" : "yearly";
   const gsSubDate = (sub) => {
     if (sub.renew) return new Date(sub.renew);
@@ -2527,7 +2544,7 @@
   const GsSubscribe = () => {
     const gs = useGs();
     const plan = GS_PLAN[gs.choice];
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React$1.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React$1.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React$1.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React$1.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-name" }, GS_PLAN[k].name), k === "yearly" && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "success" }, GS_YEAR_MONTH), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-price gs-num-text" }, GS_PLAN[k].per)))), /* @__PURE__ */ React$1.createElement(GsRows, { rows: [["Due today", plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React$1.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React$1.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React$1.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React$1.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-name" }, GS_PLAN[k].name), k === "yearly" && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "success" }, gsYearMonth()), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-price gs-num-text" }, GS_PLAN[k].per)))), /* @__PURE__ */ React$1.createElement(GsRows, { rows: [["Due today", plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
   };
   const GsProviderFrame = ({ merchant, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth" }, /* @__PURE__ */ React$1.createElement("main", { className: "gs-auth-col" }, children, /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-center" }, "This is a simulated provider boundary.")));
   const gsFmt = {
@@ -9474,6 +9491,15 @@
       (v) => setSub({ endedOn: v === "today" ? GS_DAY0.getTime() : null }),
       o([["earlier", "18 September"], ["today", "Today"]]),
       "The one date every page prints for an ended Pass (Subscription None, Had the Pass before Yes)."
+    )), /* @__PURE__ */ React$1.createElement(Group, { title: "Pricing" }, R(
+      "Currency",
+      gsGetCur(),
+      (v) => set(() => {
+        gsSetCur(v);
+        api.setReview({});
+      }),
+      o([["GBP", "£ UK"], ["USD", "$ US"], ["USD-INTL", "US$ elsewhere"]]),
+      "The Pass prices on every screen. £ is the UK and the default; $ is a visitor in the US; US$ is a dollar visitor anywhere else. ?cur=GBP, USD or USD-INTL opens with it set."
     )));
   };
   const GsPassConfigRows = () => {

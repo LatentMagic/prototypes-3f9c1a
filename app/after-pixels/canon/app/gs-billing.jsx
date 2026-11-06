@@ -1,7 +1,7 @@
 // ============================================================================
 // After Pixels — the Pass: dates and prices, the Pass card in every state, Switch and
 // Cancel sheets, the buying block, checkout, and the update-card page. Prices are
-// £3 a month and £30 a year by default, with the dollar prices behind ?cur= (see GS_CUR).
+// £3 a month and £30 a year by default, with the dollar prices behind Config → Pricing and ?cur= (see GS_CUR).
 // GsPass (the Pass page) is in gs-pass-pricing.jsx.
 // ============================================================================
 import React from 'react';
@@ -17,24 +17,31 @@ export const gsAddMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMo
 const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].join(GS_NB);
 const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
 const gsNb = (s) => s.replace(/ /g, GS_NB);
-// Pricing: ?cur=GBP (default, canon, UK) | USD (US visitor, "$") | USD-INTL (dollar visitor outside the US, "US$") swaps the prices only. The yearly per-month figure is the yearly price over 12, to the cent.
-// label sets "US" smaller and lighter before the "$" for a dollar visitor outside the US; it stays text so a copy or a screen reader still reads "US$40".
-const GS_CUR = {
+// Pricing: GBP (default, canon, UK) | USD (US visitor, "$") | USD-INTL (dollar visitor outside the US, "US$") swaps the prices only. Config → Pricing sets it live; ?cur= seeds it at load as a deep link, and the control wins after that (the URL is not rewritten). The yearly per-month figure is the yearly price over 12, to the cent.
+// label sets "US" lighter before the "$" for a dollar visitor outside the US; it stays text so a copy or a screen reader still reads "US$40".
+export const GS_CUR = {
   GBP: { sym: '£', month: '3', year: '30', yearMonth: '2.50' },
   USD: { sym: '$', month: '4', year: '40', yearMonth: '3.33' },
   'USD-INTL': { sym: '$', label: 'US', month: '4', year: '40', yearMonth: '3.33' },
 };
-const gsCurKey = (new URLSearchParams(window.location.search).get('cur') || 'GBP').toUpperCase();
-const GS_C = GS_CUR[gsCurKey] || GS_CUR.GBP;
+const gsCurSeed = (new URLSearchParams(window.location.search).get('cur') || 'GBP').toUpperCase();
+let gsCurKey = GS_CUR[gsCurSeed] ? gsCurSeed : 'GBP';
+export const gsGetCur = () => gsCurKey;
+export const gsSetCur = (k) => { if (GS_CUR[k]) gsCurKey = k; };
 // Every price string goes through this: the amount with its currency mark, then the tail (" a month"), spaces kept unbreakable.
-const gsMoney = (amount, tail = '') => (
-  <>{GS_C.label && <span className="gs-cur-label">{GS_C.label}</span>}{GS_C.sym + amount + gsNb(tail)}</>
-);
-export const GS_PLAN = {
-  monthly: { name: 'Monthly', price: gsMoney(GS_C.month, ' a month'), per: gsMoney(GS_C.month, ' / month'), due: gsMoney(GS_C.month + '.00'), months: 1 },
-  yearly: { name: 'Yearly', price: gsMoney(GS_C.year, ' a year'), per: gsMoney(GS_C.year, ' / year'), due: gsMoney(GS_C.year + '.00'), months: 12 },
+const gsMoney = (amount, tail = '') => {
+  const c = GS_CUR[gsCurKey];
+  return <>{c.label && <span className="gs-cur-label">{c.label}</span>}{c.sym + amount + gsNb(tail)}</>;
 };
-const GS_YEAR_MONTH = gsMoney(GS_C.yearMonth, ' a month'); // the yearly plan, per month
+// Read at render, so a change in Config shows on the next render.
+const gsPlanOf = (name, field, months, tail) => ({
+  name, months,
+  get price() { return gsMoney(GS_CUR[gsCurKey][field], ' a ' + tail); },
+  get per() { return gsMoney(GS_CUR[gsCurKey][field], ' / ' + tail); },
+  get due() { return gsMoney(GS_CUR[gsCurKey][field] + '.00'); },
+});
+export const GS_PLAN = { monthly: gsPlanOf('Monthly', 'month', 1, 'month'), yearly: gsPlanOf('Yearly', 'year', 12, 'year') };
+const gsYearMonth = () => gsMoney(GS_CUR[gsCurKey].yearMonth, ' a month'); // the yearly plan, per month
 const gsOther = (plan) => (plan === 'yearly' ? 'monthly' : 'yearly');
 // The date that matters for a subscription: next renewal or end.
 const gsSubDate = (sub) => {
@@ -233,7 +240,7 @@ export const GsSubscribe = () => {
               <input type="radio" name="gs-plan" value={k} checked={gs.choice === k} onChange={() => gs.setChoice(k)} />
               <span className="gs-plan-dot" aria-hidden="true" />
               <span className="gs-plan-name">{GS_PLAN[k].name}</span>
-              {k === 'yearly' && <DS.Tag kind="success">{GS_YEAR_MONTH}</DS.Tag>}
+              {k === 'yearly' && <DS.Tag kind="success">{gsYearMonth()}</DS.Tag>}
               <span className="gs-plan-price gs-num-text">{GS_PLAN[k].per}</span>
             </label>
           ))}
