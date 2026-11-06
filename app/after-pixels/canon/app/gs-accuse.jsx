@@ -34,7 +34,6 @@ const ACC_CASE = {
 // A second deployed case, edition 13 (museum-gala cast), for Config → This edition "hard" only: its "Lady Clementine Hartwell" needs three
 // lines on a 390px phone, the longest board name in the 63 deployed cases. Hints are the deployed solver's first two steps for it.
 const ACC_CASE_13 = {
-  no: 64,
   scene: [{ id: 'scene', name: 'The scene', text: 'The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which.' }],
   suspects: [['Lady Clementine Hartwell', 'Sir Basil’s niece, who thinks his money should be hers.'], ['Mr Owen Price', 'A night watchman with a gambling problem.'],
     ['Dr Marion Pike', 'The curator, who chose every piece and would be ruined by a fake.'], ['Mr Teodor Lukas', 'A dealer who sold Sir Basil many of his finest pieces.']],

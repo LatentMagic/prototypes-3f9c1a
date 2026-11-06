@@ -4076,7 +4076,6 @@
     truth: ["Anneliese Berger", "Snow shovel", "Cable car hut"]
   };
   const ACC_CASE_13 = {
-    no: 64,
     scene: [{ id: "scene", name: "The scene", text: "The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which." }],
     suspects: [
       ["Lady Clementine Hartwell", "Sir Basil’s niece, who thinks his money should be hers."],
