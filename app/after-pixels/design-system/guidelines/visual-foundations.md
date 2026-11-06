@@ -1,7 +1,7 @@
 # Visual foundations
 
 
-- **Colour.** Warm neutrals: page #1B1917, card #262320, pop-up #322E2A, line #37332E, control edge #918B80; text #F0EEE8, muted #ABA79E. The single accent is off-white #EDE8DF (main button, links, selected-tab line, small labels, progress, ticks). Status: success #4CC38A, warning #FFD23A, error/delete #FF6B5E, each with a dark on-colour. Strong colour appears only in covers, shape blocks and status. No blue, no navy ground, no player-chosen colour.
+- **Colour.** Warm neutrals: page #1B1917, card #262320, pop-up #322E2A, line #37332E, control edge #918B80; text #F0EEE8, muted #ABA79E. The single accent is off-white #EDE8DF (main button, links, selected-tab line, small labels, progress, ticks). Status: success #4CC38A, warning #FFD23A, error/delete #FF6B5E, each with a dark on-colour. Where colour goes is in Colour use, below.
 - **Type.** Bricolage Grotesque 700 at -0.01em for headings (34 / 24 / 20px; cover names 15px; disclosure titles 17px). Hanken Grotesk 400 body 16/1.5, 600 for labels (14px), buttons (16px) and small labels (13px). Inputs never under 16px. `text-wrap: balance` on headings.
 - **Spacing.** 4, 8, 12, 16, 24, 36px. Controls 48px high; touch floor 44px.
 - **Shape.** Straight, clean edges and even sizes. Asymmetric placement is fine (the logo is asymmetric). What the system avoids is wonkiness, meaning curviness: rounded corners, or a run of shapes in steadily changing sizes whose outline swells into a curve. Logos and marks also stay inside their own square, so they still fill a 16px favicon.
@@ -15,4 +15,18 @@
 - **Underlines.** One underline everywhere: text links, inline links and GameTile's name. At rest 1.5px, 4px below the text, 45% of the text colour. Hover, focus and press: full strength, 6px below, text to white (red stays red). 160ms on the one curve. Card and row titles carry no underline; the whole card or row is the signal. A footer directory (short labels stacked under a heading) carries none at rest either: its place is the signal, as in a menu. On hover, focus and press it takes the same underline at full strength, 6px below, and its quiet text turns to text colour. Any link in a sentence, the footer's included, keeps the underline at rest.
 - **Focus.** 2px off-white outline, 2px offset. Inputs also turn their border off-white.
 - **Borders.** 1px #37332E for structure, 1px #918B80 on inputs and pop-ups, 1.5px #918B80 on secondary buttons and the locked tag. No dashed edges on components: 1.5px dashes fall between a phone's pixels and drop out on short sides.
-- **Layout.** Phone first, then widen. On desktop, arrange rather than stretch. One button width for the whole system, set by screen width: under 640px every button is full width, and a link sharing its row with a button sits on its own line beneath it; at 640px and up buttons keep natural width, also in a narrow column. Pairs keep one shared width, secondary first (stacked, secondary on top, under 640px). `Button` and `ButtonPair` do this themselves; `block` forces full width at any width. A Popup's actions and a Menu's trigger keep their own rule. No stranded phone-width column on desktop. No fixed elements are defined.
+- **Layout.** Phone first, then widen. On desktop, arrange rather than stretch. One button width for the whole system, set by screen width: under 640px every button is full width, and a link sharing its row with a button sits on its own line beneath it; at 640px and up buttons keep natural width, also in a narrow column. Pairs keep one shared width, secondary first (stacked, secondary on top, under 640px). `Button` and `ButtonPair` do this themselves; `block` forces full width at any width. A Popup's actions, a Menu's trigger and the session page head's actions ([page-patterns.md](page-patterns.md)) keep their own rule. No stranded phone-width column on desktop. No fixed elements are defined.
+
+## Colour use
+
+The system is one dark surface, and colour is used to make things stand out against it.
+
+- **The shop stays neutral.** The page, its cards, the top bar, the footer and every control use the warm neutrals and the off-white accent. They carry no hue: no blue, no navy ground and no player-chosen colour. No session page takes a white or cream ground.
+- **A game comes through in its elements, never in a colour theme.** On a game's part of the session page and on its now card, the game's pieces carry colour: its tiles, marks, tools and figures. The page's background and chrome stay the shop's. A game never re-colours the page around its part.
+- **Covers and shape blocks carry the cover colours.** Cover grounds are indigo, wine and forest; cover shapes use the cover colour set (`--cover-*` in `tokens/colors.css`). The same colours draw a game's own art where it reuses its cover, and the earned achievement badges.
+- **Results use the status colours.** A win, a found item and a right mark are success green (`--success`). On the now card and the session card a miss is the warning colour (`--warning`). A result word for a play still under way is text colour.
+- **Amber (`--cover-amber`) marks a distinct third state.** Amber earns its place where a game resolves to a state that is neither found nor failed. A plain failure, such as running out of guesses, need not be amber.
+- **A game's tools keep one colour each,** wherever the tool shows (`--tool-*` in `tokens/colors.css`). Pen marks use the `--pen-underline-*` tokens.
+- **Text on a coloured ground is dark or light,** whichever meets WCAG AA against that ground. On the three cover grounds that is the light text.
+- **Errors and destructive actions use the error colour,** as the destructive-actions rule in [layout-and-patterns.md](layout-and-patterns.md) sets.
+

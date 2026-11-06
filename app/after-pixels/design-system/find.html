@@ -31,10 +31,11 @@ code{font:13px/1.3 ui-monospace,monospace}
 const docs=[
 ['visual-foundations.md','Colour, type, spacing, corners, depth'],
 ['layout-and-patterns.md','Page layout, overlays, card rows, errors, destructive actions'],
+['page-patterns.md','Page frame, breakpoints, product, library and session page patterns'],
 ['ui-standard.md','UI rules every screen follows'],
 ['game-art-motion.md','How game art is built and moves'],
 ['iconography.md','Icon drawing rules'],
-['voice.md','How the shop writes'],
+['voice.md','Copy rules: where they are (the monorepo)'],
 ['sources-and-index.md','Where each rule came from']
 ].map(([f,s])=>({kind:'Guideline',name:f.replace('.md','').replace(/-/g,' '),sub:s,path:'guidelines/'+f,where:'guidelines/'+f}));
 const KINDS=['All','Card','Component','Token','Guideline'];

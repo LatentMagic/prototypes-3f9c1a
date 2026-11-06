@@ -12,7 +12,7 @@ Source: [`specs/governance/standards/ui-design.md`](https://github.com/LatentMag
 | Text-input font floor 16px | `TextField`, `SearchField` |
 | Errors present in place | `TextField error` renders inline with glyph and `aria-describedby` |
 | Deferred validation; refused submit moves focus to the first invalid field (form-level failure: the field carrying it, else the first field) | Pattern, shown in `ui_kits/shop` sign-in and the "Errors in place" card. Pass `inputRef` to focus |
-| Descriptive action labels | Copy rules in readme; Button and Menu labels name the action |
+| Descriptive action labels | Copy rules in the monorepo's `specs/projects/mcp-games/ui.md` (see `guidelines/voice.md`); Button and Menu labels name the action |
 | Destructive actions signal themselves; weight proportionate | `Button variant="danger"` (heavy), `TextLink danger` and `Menu` item `danger` (light) |
 | Prefer a statement to a disabled control | `Button disabled` exists; prefer a sentence in the slot |
 | Touch-target floor (value is the project's to set) | 48px controls and menu rows, 44px minimum |
