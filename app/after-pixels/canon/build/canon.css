@@ -3178,3 +3178,5 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pgc-why ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 .pgc-why p { margin: 0; }
 .pgc-why-by { color: var(--muted); font-size: 13px; }
+/* Rule "The job", Delve: the "In a run" tiles (typical run and endings) are deleted from the page; canon draws them as the page's one .gs-grid3. */
+.pgc-no-run .gs-grid3 { display: none; }

@@ -10435,6 +10435,9 @@
     ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
     caps: ["Three heroes for this week’s world: one wades in, one darts and dodges, one burns bright and breaks easily.", "Say what you try and the die decides. A 20 lands like a legend; a 1 brings the danger on fast.", "Win or lose, the run ends in a scene of its own, and a row of your rolls to post: 20s sparkle, 1s are skulls."],
     tags: [],
+    facts: { long: "25–45 min", often: "New every week" },
+    noRun: true,
+    genreOnly: true,
     ai: "Tells the story as your Game Master, voices everyone you meet, and never makes a choice for you.",
     server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in."
   };
@@ -10471,7 +10474,7 @@
     if (pgcCanon) return;
     pgcCanon = {};
     PGC_GAMES.forEach((id) => {
-      pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), ai: GS_PAGES[id].who && GS_PAGES[id].who.ai, server: GS_PAGES[id].who && GS_PAGES[id].who.server };
+      pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), facts: { ...GS_PAGES[id].facts }, ai: GS_PAGES[id].who && GS_PAGES[id].who.ai, server: GS_PAGES[id].who && GS_PAGES[id].who.server };
     });
   };
   const pgcApply = (id, rule) => {
@@ -10482,6 +10485,7 @@
       GS_PAGES[k].pitch.ps = c2.ps.slice();
       GS_GAMES[k].blurb = c2.blurb;
       if (c2.tags) GS_PAGES[k].tags = c2.tags.slice();
+      GS_PAGES[k].facts = { ...c2.facts };
       if (GS_PAGES[k].who) {
         GS_PAGES[k].who.ai = c2.ai;
         GS_PAGES[k].who.server = c2.server;
@@ -10499,6 +10503,7 @@
       x.cap = r.caps[i] || c.caps[i];
     });
     if (r.tags) GS_PAGES[id].tags = r.tags.slice();
+    if (r.facts) GS_PAGES[id].facts = { ...GS_PAGES[id].facts, ...r.facts };
     if (r.ai) GS_PAGES[id].who.ai = r.ai;
     if (r.server) GS_PAGES[id].who.server = r.server;
     if (r.blurb) GS_GAMES[id].blurb = r.blurb === "h" ? GS_PAGES[id].pitch.h : r.blurb;
@@ -10540,7 +10545,13 @@
     const id = usePgSetting("game");
     const rule = usePgSetting("rule");
     pgcApply(id, rule);
-    return /* @__PURE__ */ React$1.createElement(GsGamePage, { key: id + rule, id, top: /* @__PURE__ */ React$1.createElement(PgcStrip, { id, rule }) });
+    const r = (PGC_COPY[id] || {})[rule] || {};
+    const box = React$1.useRef(null);
+    React$1.useLayoutEffect(() => {
+      const el = r.genreOnly && box.current && box.current.querySelector(".gs-cover-over .gs-label");
+      if (el) el.textContent = GS_GAMES[id].category;
+    });
+    return /* @__PURE__ */ React$1.createElement("div", { ref: box, className: r.noRun ? "pgc-no-run" : void 0, style: { display: "contents" } }, /* @__PURE__ */ React$1.createElement(GsGamePage, { key: id + rule, id, top: /* @__PURE__ */ React$1.createElement(PgcStrip, { id, rule }) }));
   };
   const initPlaygroundPageCopy = () => {
     pgRegister("page-copy", { title: "Product page copy", settings: [
