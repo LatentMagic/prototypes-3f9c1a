@@ -80,12 +80,13 @@ const WdRing = ({ s, p }) => {
     </div>);
 };
 // The hint in its place among the word's five letters: the hint's square dashed with its letter (the hint edge), the others flat
-// in the line colour, so only the hint reads.
+// in the line colour, so only the hint reads. Where the five do not fit beside the board, the hint's square alone (gs-word.css).
 const WdPlaces = ({ s, p }) => (
   <div className={'wd-places' + (p.hint ? '' : ' is-none')} role="img" aria-label={p.hint ? 'Hint: ' + p.hint.text : s.live ? 'Hint not used yet' : 'No hint'}>
     <div className="wd-places-row" aria-hidden="true">
       {[0, 1, 2, 3, 4].map((j) => (p.hint && p.hint.pos === j ? <span key={j} className="wd-place is-hint">{p.hint.letter}</span> : <span key={j} className="wd-place" />))}
     </div>
+    {p.hint && <span className="wd-place wd-place-one is-hint" aria-hidden="true">{p.hint.letter}</span>}
     {!p.hint && <span className="wd-places-note" aria-hidden="true">{s.live ? 'Not used yet' : 'None taken'}</span>}
   </div>);
 // A loss: the word in outlined tiles at half the board's.
@@ -95,7 +96,7 @@ const WdAnswer = ({ s }) => (s.loss && s.answer ? (
     <div className="wd-ans-row" aria-hidden="true">{s.answer.split('').map((ch, i) => <span key={i} className="wd-t wd-ans-t">{ch}</span>)}</div>
   </div>) : null);
 export const WdSessBody = ({ s }) => { const p = wdPlay(s); return <>
-  <GsSessCard r={wdResult(s)} board={<WdBoard s={s} guessesOnly />}
+  <GsSessCard className="wd-card" r={wdResult(s)} board={<WdBoard s={s} guessesOnly />}
     rows={[['Guesses', <WdRing s={s} p={p} />], ['Hint', <WdPlaces s={s} p={p} />]]} last={<WdAnswer s={s} />} />
   <GsMoves s={s} />
 </>; };

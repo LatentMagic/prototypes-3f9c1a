@@ -63,6 +63,21 @@
 .wd-place { box-sizing: border-box; width: var(--pt); height: var(--pt); display: grid; place-items: center; background: var(--line); }
 .wd-place.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 calc(var(--pt) * .5)/1 var(--font-heading); }
 .wd-places-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+/* KEEP: where the five places do not fit, the hint shows its own square alone, as on the now card, and nothing runs past the
+   card's edge. On a phone the five (166px) show while the Hint's half of the panel is at least 150px, spilling at most 8px into the card's padding; beside the board (from a 672px card) they need
+   196px of the panel. The board's tiles size from the window's height there, so the panel, not the board, gives way. */
+.wd-place-one { display: none; }
+@container dv2 (max-width: 671.98px) {
+  .wd-card .gs-sc-row { container: wdhint / inline-size; width: 100%; }
+}
+@container dv2 (min-width: 672px) {
+  .wd-card .gs-sc-duo { grid-template-columns: auto minmax(0, calc(196px + 65px)); }
+  .wd-card .gs-sc-panel { container: wdhint / inline-size; justify-self: stretch; }
+}
+@container wdhint (max-width: 149.98px) { .wd-places-row { display: none; } .wd-place-one { display: grid; } }
+@container dv2 (min-width: 672px) {
+  @container wdhint (max-width: 195.98px) { .wd-places-row { display: none; } .wd-place-one { display: grid; } }
+}
 @container dv2 (min-width: 672px) { .wd-places { --pt: 36px; } }
 /* The word on a loss: tiles at half the board's, outlined in the ring's grey, the letters in the grey of a letter not in the word. */
 .wd-ans { display: grid; justify-items: center; gap: 8px; width: 100%; }

@@ -2693,6 +2693,21 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wd-place { box-sizing: border-box; width: var(--pt); height: var(--pt); display: grid; place-items: center; background: var(--line); }
 .wd-place.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 calc(var(--pt) * .5)/1 var(--font-heading); }
 .wd-places-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
+/* KEEP: where the five places do not fit, the hint shows its own square alone, as on the now card, and nothing runs past the
+   card's edge. On a phone the five (166px) show while the Hint's half of the panel is at least 150px, spilling at most 8px into the card's padding; beside the board (from a 672px card) they need
+   196px of the panel. The board's tiles size from the window's height there, so the panel, not the board, gives way. */
+.wd-place-one { display: none; }
+@container dv2 (max-width: 671.98px) {
+  .wd-card .gs-sc-row { container: wdhint / inline-size; width: 100%; }
+}
+@container dv2 (min-width: 672px) {
+  .wd-card .gs-sc-duo { grid-template-columns: auto minmax(0, calc(196px + 65px)); }
+  .wd-card .gs-sc-panel { container: wdhint / inline-size; justify-self: stretch; }
+}
+@container wdhint (max-width: 149.98px) { .wd-places-row { display: none; } .wd-place-one { display: grid; } }
+@container dv2 (min-width: 672px) {
+  @container wdhint (max-width: 195.98px) { .wd-places-row { display: none; } .wd-place-one { display: grid; } }
+}
 @container dv2 (min-width: 672px) { .wd-places { --pt: 36px; } }
 /* The word on a loss: tiles at half the board's, outlined in the ring's grey, the letters in the grey of a letter not in the word. */
 .wd-ans { display: grid; justify-items: center; gap: 8px; width: 100%; }
@@ -2794,13 +2809,14 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wh-a { display: grid; justify-items: center; gap: 8px; }
 .wh-a b { font: 700 20px/1.1 var(--font-heading); color: var(--muted); }
 .wh-card .gs-sc-board { width: 100%; justify-items: stretch; }
-/* Desktop: the board at its own width (400px at most) centred left of the rule; Guesses and Hint side by side, the country under
-   both. The panel has equal space either side, so it centres between the rule and the card's edge. */
+/* KEEP: desktop, as on Guess, Chain and Salvage: the board (400px at most) and the panel centre as one group in the card, the space
+   left of the board equal to the space right of the panel, and the rule 64px from each (gs-sess-card.css). Guesses and Hint side
+   by side, the country under both. */
 @container dv2 (min-width: 672px) {
-  .wh-card .gs-sc-duo { grid-template-columns: minmax(0, 1fr) auto; justify-content: stretch; column-gap: 0; }
-  .wh-card .gs-sc-board { width: auto; justify-self: stretch; justify-items: center; padding-right: clamp(24px, 6cqi, 64px); }
-  .wh-card .wh-log { width: min(400px, 100%); }
-  .wh-card .gs-sc-panel { grid-template-columns: auto auto; column-gap: 40px; row-gap: 24px; padding: 0 clamp(24px, 6cqi, 64px); }
+  .wh-card .gs-sc-duo { grid-template-columns: minmax(0, max-content) auto; }
+  .wh-card .gs-sc-board { grid-template-columns: minmax(0, 400px); width: auto; justify-self: stretch; justify-content: center; }
+  .wh-card .wh-log { width: 100%; }
+  .wh-card .gs-sc-panel { grid-template-columns: auto auto; column-gap: 40px; row-gap: 24px; }
 }
 
 /* ---- The now card: the last guess, then the globe and the chart as one group that never splits (Joe, 2026-10-31). ---- */
@@ -3204,8 +3220,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP: the open tab and its folder share one off-white edge, the selection colour, so the pair reads as one piece. */
 .acc-folder { background: var(--page); border: 1px solid var(--off-white); padding: 0 12px 12px; }
 .acc-folder .esx-read { background: var(--card); }
+/* KEEP: below a 672px sheet each tab shows its icon and count only, and the open folder names itself. The longest name
+   (Suspects, with its icon: about 82px) needs a tab of about 102px with its padding; at 672px a tab is about 108px. Hidden any later,
+   a name runs into the tab's cut corner. */
 .acc-fh { display: none; }
-@container dv4 (max-width: 560px) {
+@container dv4 (max-width: 671px) {
   .acc-tabs { gap: 3px; }
   .acc-tab { justify-items: center; padding: 8px 4px 8px; }
   .acc-tab.is-open { padding-bottom: 12px; }
@@ -3216,11 +3235,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* ---- Board: the case's cards as three ruled columns, pen marks drawn over them. ---- */
 .acc-card .gs-sc-board { justify-items: stretch; width: 100%; }
 .acc-bd { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; width: 100%; }
-/* KEEP: from a 672px card (the shared session card's line, gs-sess-card.css), the board and the panel always sit side by side, as the
-   groundwork card draws them: the board in the wider column (1.4 to 1), the panel to its right. The board fills its column, so it
-   never pushes the panel out of the card. */
+/* KEEP: from a 672px card (the shared session card's line, gs-sess-card.css), the board and the panel sit side by side and, as on
+   Guess, Chain and Salvage, centre as one group in the card: the space left of the board equals the space right of the panel, and
+   the rule is 64px from each. The board is as wide as its longest names, and shrinks before it pushes the panel out of the card. */
 @container dv2 (min-width: 672px) {
-  .acc-card .gs-sc-duo { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); justify-content: stretch; }
+  .acc-card .gs-sc-duo { grid-template-columns: minmax(0, max-content) auto; }
 }
 /* KEEP: each row is as tall as its tallest name across the three columns, so the row rules run straight across the board; a
    one-line name sits centred in its row. Subgrid: the columns and their lists share the board's five row tracks. */

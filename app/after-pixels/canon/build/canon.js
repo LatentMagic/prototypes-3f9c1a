@@ -3411,13 +3411,14 @@
       }
     ))), /* @__PURE__ */ React$1.createElement("span", { className: "wd-ring-n", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("b", null, p.n)));
   };
-  const WdPlaces = ({ s, p }) => /* @__PURE__ */ React$1.createElement("div", { className: "wd-places" + (p.hint ? "" : " is-none"), role: "img", "aria-label": p.hint ? "Hint: " + p.hint.text : s.live ? "Hint not used yet" : "No hint" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-places-row", "aria-hidden": "true" }, [0, 1, 2, 3, 4].map((j) => p.hint && p.hint.pos === j ? /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-place is-hint" }, p.hint.letter) : /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-place" }))), !p.hint && /* @__PURE__ */ React$1.createElement("span", { className: "wd-places-note", "aria-hidden": "true" }, s.live ? "Not used yet" : "None taken"));
+  const WdPlaces = ({ s, p }) => /* @__PURE__ */ React$1.createElement("div", { className: "wd-places" + (p.hint ? "" : " is-none"), role: "img", "aria-label": p.hint ? "Hint: " + p.hint.text : s.live ? "Hint not used yet" : "No hint" }, /* @__PURE__ */ React$1.createElement("div", { className: "wd-places-row", "aria-hidden": "true" }, [0, 1, 2, 3, 4].map((j) => p.hint && p.hint.pos === j ? /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-place is-hint" }, p.hint.letter) : /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-place" }))), p.hint && /* @__PURE__ */ React$1.createElement("span", { className: "wd-place wd-place-one is-hint", "aria-hidden": "true" }, p.hint.letter), !p.hint && /* @__PURE__ */ React$1.createElement("span", { className: "wd-places-note", "aria-hidden": "true" }, s.live ? "Not used yet" : "None taken"));
   const WdAnswer = ({ s }) => s.loss && s.answer ? /* @__PURE__ */ React$1.createElement("div", { className: "wd-ans", role: "img", "aria-label": "The word was " + s.answer }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap", "aria-hidden": "true" }, "The word"), /* @__PURE__ */ React$1.createElement("div", { className: "wd-ans-row", "aria-hidden": "true" }, s.answer.split("").map((ch, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "wd-t wd-ans-t" }, ch)))) : null;
   const WdSessBody = ({ s }) => {
     const p = wdPlay(s);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
+        className: "wd-card",
         r: wdResult(s),
         board: /* @__PURE__ */ React$1.createElement(WdBoard, { s, guessesOnly: true }),
         rows: [["Guesses", /* @__PURE__ */ React$1.createElement(WdRing, { s, p })], ["Hint", /* @__PURE__ */ React$1.createElement(WdPlaces, { s, p })]],

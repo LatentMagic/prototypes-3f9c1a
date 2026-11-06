@@ -98,7 +98,7 @@ const AccIcon = ({ k }) => (k === 'clues'
 
 // KEEP: as Escape's sheet, no tab is open at first and the folder is shut; a tap on a tab opens the folder on its things, a tap on
 // another swaps the contents and shuts the reader, and a tap on the open tab shuts the folder. A tab with nothing in it (Hints at 0)
-// is greyed out and does nothing. On a phone (sheet 560px or less) each tab shows its icon and count only and the open tab's
+// is greyed out and does nothing. Below a 672px sheet each tab shows its icon and count only and the open tab's
 // name heads the folder, so six tabs fit across 358px without clipping a word.
 const AccNotebook = ({ p }) => {
   const g = React.useMemo(() => accGroups(p), [p]);

@@ -29,8 +29,11 @@
 /* KEEP: the open tab and its folder share one off-white edge, the selection colour, so the pair reads as one piece. */
 .acc-folder { background: var(--page); border: 1px solid var(--off-white); padding: 0 12px 12px; }
 .acc-folder .esx-read { background: var(--card); }
+/* KEEP: below a 672px sheet each tab shows its icon and count only, and the open folder names itself. The longest name
+   (Suspects, with its icon: about 82px) needs a tab of about 102px with its padding; at 672px a tab is about 108px. Hidden any later,
+   a name runs into the tab's cut corner. */
 .acc-fh { display: none; }
-@container dv4 (max-width: 560px) {
+@container dv4 (max-width: 671px) {
   .acc-tabs { gap: 3px; }
   .acc-tab { justify-items: center; padding: 8px 4px 8px; }
   .acc-tab.is-open { padding-bottom: 12px; }
@@ -41,11 +44,11 @@
 /* ---- Board: the case's cards as three ruled columns, pen marks drawn over them. ---- */
 .acc-card .gs-sc-board { justify-items: stretch; width: 100%; }
 .acc-bd { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; width: 100%; }
-/* KEEP: from a 672px card (the shared session card's line, gs-sess-card.css), the board and the panel always sit side by side, as the
-   groundwork card draws them: the board in the wider column (1.4 to 1), the panel to its right. The board fills its column, so it
-   never pushes the panel out of the card. */
+/* KEEP: from a 672px card (the shared session card's line, gs-sess-card.css), the board and the panel sit side by side and, as on
+   Guess, Chain and Salvage, centre as one group in the card: the space left of the board equals the space right of the panel, and
+   the rule is 64px from each. The board is as wide as its longest names, and shrinks before it pushes the panel out of the card. */
 @container dv2 (min-width: 672px) {
-  .acc-card .gs-sc-duo { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); justify-content: stretch; }
+  .acc-card .gs-sc-duo { grid-template-columns: minmax(0, max-content) auto; }
 }
 /* KEEP: each row is as tall as its tallest name across the three columns, so the row rules run straight across the board; a
    one-line name sits centred in its row. Subgrid: the columns and their lists share the board's five row tracks. */
