@@ -11,7 +11,7 @@ import { GS_GAMES, useGs, DS, GS_ART, GS, GS_NAME, GS_SOON } from './gs-data.jsx
 import { GsArt, useGsArtHost, gsKeepLast, GsTagList, GsSoonCard } from './gs-parts.jsx';
 import { GS_HERO_CHAT, GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
 import { GS_HOME_GAMES, GsFeature, GsWhatsNew } from './gs-home.jsx';
-import { GS_PLAN } from './gs-billing.jsx';
+import { gsPlans } from './gs-billing.jsx';
 import { cprLocked, cprPassLine, CPR_SHOWN, CPR_STAGE } from './gs-pass-store.jsx';
 
 const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== 'FREE' && t !== 'FIRST' && t !== 'PASS');
@@ -60,13 +60,13 @@ const cprMix = (ids) => {
 };
 let CPR_MOSAIC;
 const CprPassCard = () => {
-  const gs = useGs(); const host = useGsArtHost(); const go = () => gs.go('pass');
+  const gs = useGs(); const plans = gsPlans(gs.review.cur); const host = useGsArtHost(); const go = () => gs.go('pass');
   return (
     <DS.GameCard className="mcp-art-host gs-host cpr-pcard"
       art={<div ref={host} className="cpr-mosaic" aria-hidden="true" onClick={go}>{CPR_MOSAIC.map((k) => <GsArt key={k} art={GS_GAMES[k].art} shape="square" />)}</div>}
       title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={go}><DS.Icon name="lock" size={18} className="cpr-lock" />The Pass<span className="cpr-chev" aria-hidden="true"><DS.Icon name="down" size={18} style={{ transform: 'rotate(-90deg)' }} /></span></button>}
       blurb="Every game, every edition."
-      tags={<span className="cpr-price"><span>{GS_PLAN.monthly.price}</span> or <span>{GS_PLAN.yearly.price}</span></span>} />
+      tags={<span className="cpr-price"><span>{plans.monthly.price}</span> or <span>{plans.yearly.price}</span></span>} />
   );
 };
 

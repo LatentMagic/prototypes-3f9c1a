@@ -4,10 +4,10 @@
 import React from 'react';
 import { useGs, DS, GS } from './gs-data.jsx';
 import { GsCompare } from './gs-parts.jsx';
-import { GS_PLAN } from './gs-billing.jsx';
+import { gsPlans } from './gs-billing.jsx';
 
 export const GsPass = () => {
-  const gs = useGs(); const holds = gs.view === 'pass';
+  const gs = useGs(); const plans = gsPlans(gs.review.cur); const holds = gs.view === 'pass';
   return (
     <main className="gs-wrap gs-main">
       <div className="gs-pass-page">
@@ -18,7 +18,7 @@ export const GsPass = () => {
         <GsCompare foot={!holds && (
           <div className="gs-stack-sm">
             <div className="gs-pass-foot">
-              <span className="gs-pass-price gs-num-text">{GS_PLAN.yearly.price}<span className="gs-muted"> or {GS_PLAN.monthly.price}</span></span>
+              <span className="gs-pass-price gs-num-text">{plans.yearly.price}<span className="gs-muted"> or {plans.monthly.price}</span></span>
               <DS.Button onClick={() => gs.go('subscribe')}>Choose a plan</DS.Button>
             </div>
             <p className="gs-small gs-pu-wrap gs-pu-payline">{GS.purchase}</p>

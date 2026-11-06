@@ -1,7 +1,8 @@
 // ============================================================================
 // After Pixels — the Pass: dates and prices, the Pass card in every state, Switch and
-// Cancel sheets, the buying block, checkout, and the update-card page. Prices £3 a
-// month and £30 a year. GsPass (the Pass page) is in gs-pass-pricing.jsx.
+// Cancel sheets, the buying block, checkout, and the update-card page. Prices are
+// £3 a month and £30 a year by default, with the dollar prices behind Config → Pricing and ?cur= (see GS_CUR).
+// GsPass (the Pass page) is in gs-pass-pricing.jsx.
 // ============================================================================
 import React from 'react';
 import { useGs, DS, gsEndedOn } from './gs-data.jsx';
@@ -16,11 +17,30 @@ export const gsAddMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMo
 const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].join(GS_NB);
 const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
 const gsNb = (s) => s.replace(/ /g, GS_NB);
-export const GS_PLAN = {
-  monthly: { name: 'Monthly', price: gsNb('£3 a month'), per: gsNb('£3 / month'), due: '£3.00', months: 1 },
-  yearly: { name: 'Yearly', price: gsNb('£30 a year'), per: gsNb('£30 / year'), due: '£30.00', months: 12 },
+// Pricing: GBP (default, canon, UK) | USD (US visitor, "$") | USD-INTL (dollar visitor outside the US, "US$") swaps the prices only. Config → Pricing sets `cur` in the review state; ?cur= seeds it at load as a deep link, Reset returns to that seed, and the URL is not rewritten. The yearly per-month figure is the yearly price over 12, to the cent.
+// label sets "US" lighter before the "$" for a dollar visitor outside the US; it stays text so a copy or a screen reader still reads "US$40".
+export const GS_CUR = {
+  GBP: { name: '£ UK', sym: '£', month: '3', year: '30', yearMonth: '2.50' },
+  USD: { name: '$ US', sym: '$', month: '4', year: '40', yearMonth: '3.33' },
+  'USD-INTL': { name: 'US$ elsewhere', sym: '$', label: 'US', month: '4', year: '40', yearMonth: '3.33' },
 };
-const GS_YEAR_MONTH = gsNb('£2.50 a month'); // the yearly plan, per month
+// The currency a prototype load starts with; the live one is `cur` in the review state (GS_REVIEW_DEFAULT seeds it from here).
+const gsCurFromUrl = (new URLSearchParams(window.location.search).get('cur') || 'GBP').toUpperCase();
+export const GS_CUR_SEED = GS_CUR[gsCurFromUrl] ? gsCurFromUrl : 'GBP';
+// Every price string goes through this: the amount with its currency mark, then the tail (" a month"), spaces kept unbreakable.
+const gsMoney = (cur, amount, tail = '') => {
+  const c = GS_CUR[cur];
+  return <>{c.label && <span className="gs-cur-label">{c.label}</span>}{c.sym + amount + gsNb(tail)}</>;
+};
+// The two plans in a currency; a screen passes gs.review.cur.
+const gsPlan = (cur, name, field, months, tail) => ({
+  name, months,
+  price: gsMoney(cur, GS_CUR[cur][field], ' a ' + tail),
+  per: gsMoney(cur, GS_CUR[cur][field], ' / ' + tail),
+  due: gsMoney(cur, GS_CUR[cur][field] + '.00'),
+});
+export const gsPlans = (cur) => ({ monthly: gsPlan(cur, 'Monthly', 'month', 1, 'month'), yearly: gsPlan(cur, 'Yearly', 'year', 12, 'year') });
+const gsYearMonth = (cur) => gsMoney(cur, GS_CUR[cur].yearMonth, ' a month'); // the yearly plan, per month
 const gsOther = (plan) => (plan === 'yearly' ? 'monthly' : 'yearly');
 // The date that matters for a subscription: next renewal or end.
 const gsSubDate = (sub) => {
@@ -55,6 +75,7 @@ const GsKeepLock = ({ lead }) => (
 const gsPassFails = (gs) => !!(gs.review && gs.review.passFail);
 export const GsPassCard = () => {
   const gs = useGs();
+  const plans = gsPlans(gs.review.cur);
   const { sub } = gs;
   const [sheet, setSheet] = React.useState(gs.route.sheet || null); // 'switch' | 'cancel'
   const [busy, run] = useGsBusy();
@@ -69,7 +90,7 @@ export const GsPassCard = () => {
   });
   const done = (k, msg) => { want.current = k; gsAnnounce(msg); };
   const date = gsLong(gsSubDate(sub));
-  const plan = GS_PLAN[sub.plan];
+  const plan = plans[sub.plan];
   const other = gsOther(sub.plan);
   const card = { gap: 16, justifyItems: 'stretch', alignContent: 'start' };
   const update = <DS.Button variant="secondary" onClick={() => gs.go('update-card')}><GsGlyph name="card" />Update payment card</DS.Button>;
@@ -85,11 +106,11 @@ export const GsPassCard = () => {
   const marker = sub.status === 'failed' ? <span className="gs-marker is-bad">Payment failed</span>
     : sub.status === 'ending' ? <span className="gs-marker">Ending</span>
     : <span className="gs-marker"><DS.Icon name="check" />Active</span>;
-  let rows = [['Plan', plan.name + ' · ' + plan.price]];
+  let rows = [['Plan', <>{plan.name} · {plan.price}</>]];
   let body = null;
   if (sub.status === 'active') {
     rows.push(['Next renewal', date]);
-    if (sub.pending) rows.push(['From ' + date, GS_PLAN[sub.pending].name + ' · ' + GS_PLAN[sub.pending].price]);
+    if (sub.pending) rows.push(['From ' + date, <>{plans[sub.pending].name} · {plans[sub.pending].price}</>]);
     body = (
       <div className="gs-stack-sm">
         <div className="gs-pair-even">
@@ -103,7 +124,7 @@ export const GsPassCard = () => {
     );
   } else if (sub.status === 'failed') {
     // A pending switch stays on the card with its date; there is no switch or keep control while the payment has failed (MCPG-015 AF-07).
-    if (sub.pending) rows.push(['From ' + date, GS_PLAN[sub.pending].name + ' · ' + GS_PLAN[sub.pending].price]);
+    if (sub.pending) rows.push(['From ' + date, <>{plans[sub.pending].name} · {plans[sub.pending].price}</>]);
     body = <div className="gs-line-act"><p>Update the card within 30 days to keep your Pass.</p>{update}</div>;
   } else {
     rows.push(['Ends on', date]);
@@ -144,6 +165,7 @@ const GsBeforeAfter = ({ now, then }) => (
 );
 const GsSwitchSheet = ({ open, onClose, onDone }) => {
   const gs = useGs();
+  const plans = gsPlans(gs.review.cur);
   const { sub } = gs;
   const to = gsOther(sub.plan);
   const last = React.useRef(null);
@@ -161,7 +183,7 @@ const GsSwitchSheet = ({ open, onClose, onDone }) => {
   return (
     <DS.Popup open={open} onClose={close} posture="window" label={'Switch to ' + p.to + '?'}>
       <GsPopTitle>Switch to {p.to}?</GsPopTitle>
-      <GsBeforeAfter now={['Now', GS_PLAN[p.from].name, GS_PLAN[p.from].price]} then={['From ' + p.date, GS_PLAN[p.to].name, GS_PLAN[p.to].price]} />
+      <GsBeforeAfter now={['Now', plans[p.from].name, plans[p.from].price]} then={['From ' + p.date, plans[p.to].name, plans[p.to].price]} />
       <p>Nothing is paid now.</p>
       {failed && <GsXLine>Your plan wasn’t switched. Try again.</GsXLine>}
       <GsActs>
@@ -173,11 +195,12 @@ const GsSwitchSheet = ({ open, onClose, onDone }) => {
 };
 const GsCancelSheet = ({ open, onClose, onDone }) => {
   const gs = useGs();
+  const plans = gsPlans(gs.review.cur);
   const { sub } = gs;
   const last = React.useRef(null);
   if (open) last.current = { failed: sub.status === 'failed', plan: sub.plan, date: gsShort(gsSubDate(sub)), long: gsLong(gsSubDate(sub)) };
   const p = last.current || { failed: false, plan: sub.plan, date: '' };
-  const now = ['Now', GS_PLAN[p.plan].name, GS_PLAN[p.plan].price];
+  const now = ['Now', plans[p.plan].name, plans[p.plan].price];
   const [busy, run, cancel] = useGsBusy();
   const [failed, setFailed] = React.useState(false);
   React.useEffect(() => { if (open) setFailed(false); }, [open]);
@@ -207,7 +230,8 @@ const GsCancelSheet = ({ open, onClose, onDone }) => {
 // The subscribe page: the plan choice (yearly first), what is due, and the one control (MCPG-012 BF-01, AF-02).
 export const GsSubscribe = () => {
   const gs = useGs();
-  const plan = GS_PLAN[gs.choice];
+  const plans = gsPlans(gs.review.cur);
+  const plan = plans[gs.choice];
   return (
     <main className="gs-wrap gs-main">
       <section className="gs-buy-block" aria-labelledby="gs-buy-h">
@@ -218,9 +242,9 @@ export const GsSubscribe = () => {
             <label key={k} className={'gs-plan' + (gs.choice === k ? ' is-on' : '')}>
               <input type="radio" name="gs-plan" value={k} checked={gs.choice === k} onChange={() => gs.setChoice(k)} />
               <span className="gs-plan-dot" aria-hidden="true" />
-              <span className="gs-plan-name">{GS_PLAN[k].name}</span>
-              {k === 'yearly' && <DS.Tag kind="success">{GS_YEAR_MONTH}</DS.Tag>}
-              <span className="gs-plan-price gs-num-text">{GS_PLAN[k].per}</span>
+              <span className="gs-plan-name">{plans[k].name}</span>
+              {k === 'yearly' && <DS.Tag kind="success">{gsYearMonth(gs.review.cur)}</DS.Tag>}
+              <span className="gs-plan-price gs-num-text">{plans[k].per}</span>
             </label>
           ))}
         </fieldset>
@@ -264,7 +288,8 @@ const GsCardInputs = () => {
 };
 export const GsCheckout = () => {
   const gs = useGs();
-  const plan = GS_PLAN[gs.choice];
+  const plans = gsPlans(gs.review.cur);
+  const plan = plans[gs.choice];
   const [paying, setPaying] = React.useState(false);
   const pay = (e) => { e.preventDefault(); if (paying) return; setPaying(true); setTimeout(() => gs.paid(), 1400); };
   return (

@@ -24,6 +24,8 @@
 .gs-pass-foot { display: grid; gap: 16px; padding-top: 8px; }
 .gs-pass-price { font: 600 24px/1.2 var(--font-text); }
 .gs-pass-price .gs-muted { font-size: 16px; font-weight: 400; }
+.gs-cur-label { font-weight: 400; color: var(--text-muted); margin-right: 0.25em; }
+.mcp-tag-success .gs-cur-label { color: var(--success-on); margin-right: 0; }
 @container gs (min-width: 640px) { .gs-pass-foot { display: flex; align-items: center; justify-content: flex-end; gap: 24px; } }
 
 /* subscribe page plan block */
