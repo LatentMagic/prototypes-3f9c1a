@@ -50,7 +50,7 @@ const ACC_CASE_13 = {
 export const ACC_TRUTH = ACC_CASE.truth;
 const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
 // The culprit's weapon and place, "with the X, in the Y.", the case card's last line.
-// KEEP: deployed places carry their own preposition (clue.ts, 29 of 63 cases take "on" or "at"); "in the" holds only for this sample case.
+// KEEP: deployed places carry their own preposition (clue.ts, 29 of 63 cases take "on" or "at"); "in the" holds only for the two sample cases (1 and 13).
 export const accWithWhere = (cs = ACC_CASE) => 'with the ' + accLow(cs.truth[1]) + ', in the ' + accLow(cs.truth[2]) + '.';
 // A wrong accusation gets one part wrong: part 0 the suspect, 1 the weapon, 2 the place.
 export const accWrong = (part) => ACC_TRUTH.map((t, k) => (k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t));
