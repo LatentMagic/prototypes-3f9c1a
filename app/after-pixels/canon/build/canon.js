@@ -2377,7 +2377,7 @@
   const GS_CUR = {
     GBP: { sym: "£", month: "3", year: "30", yearMonth: "2.50" },
     USD: { sym: "$", month: "4", year: "40", yearMonth: "3.33" },
-    EUR: { sym: "€", month: "4", year: "40", yearMonth: "3.33" }
+    "USD-INTL": { sym: "US$", month: "4", year: "40", yearMonth: "3.33" }
   };
   const gsCurKey = (new URLSearchParams(window.location.search).get("cur") || "GBP").toUpperCase();
   const GS_C = GS_CUR[gsCurKey] || GS_CUR.GBP;

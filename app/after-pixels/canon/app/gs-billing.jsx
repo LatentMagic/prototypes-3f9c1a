@@ -16,11 +16,11 @@ export const gsAddMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMo
 const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].join(GS_NB);
 const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
 const gsNb = (s) => s.replace(/ /g, GS_NB);
-// Pricing proposal: ?cur=GBP|USD|EUR swaps the price values only; GBP is canon.
+// Pricing: ?cur=GBP (default, canon, UK) | USD (US visitor, "$") | USD-INTL (dollar visitor outside the US, "US$") swaps the price strings only. The yearly per-month figure is the yearly price over 12, to the cent.
 const GS_CUR = {
   GBP: { sym: '£', month: '3', year: '30', yearMonth: '2.50' },
   USD: { sym: '$', month: '4', year: '40', yearMonth: '3.33' },
-  EUR: { sym: '€', month: '4', year: '40', yearMonth: '3.33' },
+  'USD-INTL': { sym: 'US$', month: '4', year: '40', yearMonth: '3.33' },
 };
 const gsCurKey = (new URLSearchParams(window.location.search).get('cur') || 'GBP').toUpperCase();
 const GS_C = GS_CUR[gsCurKey] || GS_CUR.GBP;
