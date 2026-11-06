@@ -34,7 +34,6 @@ const ACC_CASE = {
 // A second deployed case, edition 13 (museum-gala cast), for Config → This edition "hard" only: its "Lady Clementine Hartwell" needs three
 // lines on a 390px phone, the longest board name in the 63 deployed cases. Hints are the deployed solver's first two steps for it.
 const ACC_CASE_13 = {
-  no: 64,
   scene: [{ id: 'scene', name: 'The scene', text: 'The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which.' }],
   suspects: [['Lady Clementine Hartwell', 'Sir Basil’s niece, who thinks his money should be hers.'], ['Mr Owen Price', 'A night watchman with a gambling problem.'],
     ['Dr Marion Pike', 'The curator, who chose every piece and would be ruined by a fake.'], ['Mr Teodor Lukas', 'A dealer who sold Sir Basil many of his finest pieces.']],
@@ -50,7 +49,7 @@ const ACC_CASE_13 = {
 export const ACC_TRUTH = ACC_CASE.truth;
 const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
 // The culprit's weapon and place, "with the X, in the Y.", the case card's last line.
-// KEEP: deployed places carry their own preposition (clue.ts, 29 of 63 cases take "on" or "at"); "in the" holds only for this sample case.
+// KEEP: deployed places carry their own preposition (clue.ts, 29 of 63 cases take "on" or "at"); "in the" holds only for the two sample cases (1 and 13).
 export const accWithWhere = (cs = ACC_CASE) => 'with the ' + accLow(cs.truth[1]) + ', in the ' + accLow(cs.truth[2]) + '.';
 // A wrong accusation gets one part wrong: part 0 the suspect, 1 the weapon, 2 the place.
 export const accWrong = (part) => ACC_TRUTH.map((t, k) => (k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t));
