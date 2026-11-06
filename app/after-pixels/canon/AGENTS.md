@@ -79,7 +79,7 @@ Every game has editions. Its word for one is `GS_GAMES[gid].ed`; its editions ar
 
 <important if="you are building or changing UI">
 Build from the design system's components (`DS.<Name>`) and canon's shared parts. Never build a one-off where one of these fits; if none does, say so in your report.
-- Design system: the list is in `../design-system/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`; guidelines (layout, overlays, loading) are in `../design-system/guidelines/`. The UI standard is the monorepo's `specs/governance/standards/ui-design.md`; read it there, since the design system keeps no copy.
+- Design system: the list is in `../design-system/readme.md`; each component's use is in `../design-system/components/<group>/<Name>.prompt.md`; guidelines (layout, overlays, loading, and the values of the product, library game and session pages in `page-patterns.md`) are in `../design-system/guidelines/`. The UI standard is the monorepo's `specs/governance/standards/ui-design.md`; read it there, since the design system keeps no copy.
 - Canon parts: `gs-parts.jsx` (covers, art, tags, cards, `GsStat`, top bar), `gs-site.jsx` (glyphs, spinners, `GsPart`, footer), `gs-session.jsx` (`GsMoves`, `GsSessCard` (the session card Guess's, Where's and Chain's bodies are built on: result, board, a panel of figures), share pop-up; `GsSessHead` and `GsSessResult` are used only inside it, so export one before reusing it), `gs-library.jsx` (`LbHead`, `LbResult`, `LbAch` and the other library card parts). A now card is built on `LbNowCard`, which draws the label, title, result and action row (`LbActions`); a game passes its data and its picture.
 - Changing a component is a design-system change: do it only when the brief asks.
 </important>
@@ -89,7 +89,7 @@ A playground lives on its own `candidate/<name>` branch, never on `main`; `app/p
 </important>
 
 <important if="you are writing a product string">
-Read `../design-system/guidelines/voice.md` first.
+Read the copy rules in the monorepo (`LatentMagic/monorepo`) first: the shop-wide voice in `specs/projects/mcp-games/ui.md` (Voice), and for a page written for each game, its standard in `specs/projects/mcp-games/pages/`.
 </important>
 
 <important if="you are writing or changing CSS">

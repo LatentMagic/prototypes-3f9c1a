@@ -10,4 +10,4 @@ Flows to try:
 - On the game page, "Delete save" (red link) → dialog. It stays a centred window at every width. "Delete save" shows it is working, then the dialog closes.
 - "Sign in" in the top bar → sign-in panel. Submit empty to see deferred validation and focus moving to the field.
 
-Copy comes from `voice.md` samples (headline, Weekly Interrogation, Dungeon Quest, word puzzle). The tags "Weekly" and "Locked" are illustrative.
+Its copy (headline, Weekly Interrogation, Dungeon Quest, word puzzle) follows the monorepo's copy rules (see `guidelines/voice.md`). The tags "Weekly" and "Locked" are illustrative.

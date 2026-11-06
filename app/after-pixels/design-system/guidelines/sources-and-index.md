@@ -2,11 +2,11 @@
 
 ## Sources
 
-- Local hand-off folder `design-system/` (README.md, rules.md, voice.md, design-system.html, circlists-reuse.md, ui-design.md, shots/). Copies are in `guidelines/source/` and `guidelines/source-shots/`. Decisions dated 2026-10-06.
+- Local hand-off folder `design-system/` (README.md, rules.md, design-system.html, circlists-reuse.md, ui-design.md, shots/). Copies are in `guidelines/source/` and `guidelines/source-shots/`, kept as the hand-off was. Where a copy differs from the guidelines, the guidelines hold, and copy rules are the monorepo's (`guidelines/voice.md`). Decisions dated 2026-10-06.
 - GitHub: [LatentMagic/monorepo @ main, `specs/governance/standards/`](https://github.com/LatentMagic/monorepo/tree/main/specs/governance/standards), chiefly [`ui-design.md`](https://github.com/LatentMagic/monorepo/blob/main/specs/governance/standards/ui-design.md), the cross-app UI standard. The `ui-design-gallery/*.webp` pictures in that folder are ~130-byte LFS pointers and could not be viewed. Explore the repo further (`error-handling.md`, `validation.md`, Circlists specs) for more context when designing.
 - `guidelines/ui-standard.md` summarises what this system adopts from the standard.
 
-**Not decided upstream** (do not invent): how shapes are assembled into a cover, the layout of any screen, product features. The owner supplied the logo mark (`assets/logo.svg`).
+**Not decided upstream** (do not invent): how shapes are assembled into a cover, the layout of any screen that `guidelines/page-patterns.md` does not cover, product features. The owner supplied the logo mark (`assets/logo.svg`).
 
 
 ## Index
@@ -22,6 +22,8 @@
 - `ui_kits/shop/`: click-through composing the components (All games, game page with delete dialog, sign in; working states on Add to Claude, Delete save and Sign in).
 - `guidelines/cards/`: foundation and pattern specimen cards.
 - `guidelines/ui-standard.md`: adopted rules from the cross-app standard.
+- `guidelines/page-patterns.md`: the page frame, breakpoints and the named patterns that the monorepo's page standards (`specs/projects/mcp-games/pages/`) refer to.
+- `guidelines/voice.md`: a pointer to the monorepo's copy rules.
 - `guidelines/game-art-motion.md`: game art motion, when art moves, hover surface, touch, and the describe-then-draw rule for art in each frame shape. The three pieces in it are examples.
 - `assets/logo.svg` (mark) and `assets/logo/` (PNG 16, 32, 180, 512, 1024), supplied by the owner.
 - `assets/shapes/`: the shape set (currentColor fills).
