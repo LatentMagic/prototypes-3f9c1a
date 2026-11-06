@@ -3218,6 +3218,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acc-bd ul { display: grid; grid-row: span 4; grid-template-rows: subgrid; list-style: none; margin: 8px 0 0; padding: 0; }
 .acc-bd li { display: flex; align-items: center; padding: 12px 2px; border-bottom: 1px solid var(--line); font: 400 16px/1.3 var(--font-text); color: var(--text); }
 .acc-bd li:first-child { border-top: 1px solid var(--line); }
+/* KEEP: the last row has no rule of its own: the panel's rule (phone) or the card's edge closes the board, so a phone never shows two
+   rules stacked under it. The session-page standard, as on Where (gs-where.css). */
+.acc-bd li:last-child { border-bottom: 0; }
 @container dv2 (max-width: 460px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding: 10px 1px; } }
 .acc-m { font-weight: 600; }
 .acc-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
