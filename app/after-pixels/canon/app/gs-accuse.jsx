@@ -31,29 +31,45 @@ const ACC_CASE = {
   hints: ['Anneliese Berger was not in the games room.', 'Whoever carried the snow shovel was not in the great hall.'],
   truth: ['Anneliese Berger', 'Snow shovel', 'Cable car hut'],
 };
+// A second deployed case, edition 13 (museum-gala cast), for Config → This edition "hard" only: its "Lady Clementine Hartwell" needs three
+// lines on a 390px phone, the longest board name in the 63 deployed cases. Hints are the deployed solver's first two steps for it.
+const ACC_CASE_13 = {
+  no: 64,
+  scene: [{ id: 'scene', name: 'The scene', text: 'The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which.' }],
+  suspects: [['Lady Clementine Hartwell', 'Sir Basil’s niece, who thinks his money should be hers.'], ['Mr Owen Price', 'A night watchman with a gambling problem.'],
+    ['Dr Marion Pike', 'The curator, who chose every piece and would be ruined by a fake.'], ['Mr Teodor Lukas', 'A dealer who sold Sir Basil many of his finest pieces.']],
+  weapons: [['Velvet rope', 'Unhooked from the barriers.'], ['Vial of arsenic', 'From an old display on poisons.'], ['Ceremonial sword', 'With a jewelled handle.'],
+    ['Marble bust', 'The head of a Roman emperor.']],
+  places: [['Grand foyer', 'Where the guests were greeted.'], ['Butterfly room', 'Glass cases of pinned wings.'], ['Dinosaur hall', 'A great skeleton under the dome.'],
+    ['Mending workshop', 'Half-mended vases and pots of glue.']],
+  clues: ['The killer handled the vial of arsenic.', 'Whoever was in the mending workshop handled the vial of arsenic.', 'Dr Marion Pike was in the dinosaur hall.',
+    'Mr Teodor Lukas was not in the mending workshop.', 'Lady Clementine Hartwell was in the butterfly room.'],
+  hints: ['The killer was in the mending workshop.', 'Mr Teodor Lukas was not the killer.'],
+  truth: ['Mr Owen Price', 'Vial of arsenic', 'Mending workshop'],
+};
 export const ACC_TRUTH = ACC_CASE.truth;
 const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
 // The culprit's weapon and place, "with the X, in the Y.", the case card's last line.
 // KEEP: deployed places carry their own preposition (clue.ts, 29 of 63 cases take "on" or "at"); "in the" holds only for this sample case.
-export const accWithWhere = () => 'with the ' + accLow(ACC_TRUTH[1]) + ', in the ' + accLow(ACC_TRUTH[2]) + '.';
+export const accWithWhere = (cs = ACC_CASE) => 'with the ' + accLow(cs.truth[1]) + ', in the ' + accLow(cs.truth[2]) + '.';
 // A wrong accusation gets one part wrong: part 0 the suspect, 1 the weapon, 2 the place.
 export const accWrong = (part) => ACC_TRUTH.map((t, k) => (k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t));
 // The one place the three-way result (in progress, solved, failed) is decided: the tone and the word.
 export const accResult = (p) => (p.live ? { tone: 'live', word: 'In progress' } : p.right ? { tone: 'ok', word: 'Solved' } : { tone: 'bad', word: 'Failed' });
 // A play of the case: the hints taken (0 to 2) and the accusation (suspect, weapon, place), or none while the case is open.
-export const accSession = ({ no, date, hints, pick }) => {
-  const live = !pick; const right = !live && pick.every((x, i) => x === ACC_TRUTH[i]);
+export const accSession = ({ no, date, hints, pick, cs = ACC_CASE }) => {
+  const live = !pick; const right = !live && pick.every((x, i) => x === cs.truth[i]);
   // As the deployed record writes them: each hint labelled "Hint", and the accusation as one marked part per card, "Rick Dawson: Wrong".
-  const hintLines = ACC_CASE.hints.slice(0, hints).map((h) => ['Hint', h]);
-  const accPart = (x, k) => (k ? 'the ' + accLow(x) : x) + ': ' + (x === ACC_TRUTH[k] ? 'Right' : 'Wrong');
+  const hintLines = cs.hints.slice(0, hints).map((h) => ['Hint', h]);
+  const accPart = (x, k) => (k ? 'the ' + accLow(x) : x) + ': ' + (x === cs.truth[k] ? 'Right' : 'Wrong');
   const lines = live ? hintLines : [...hintLines, ['Accusation', ...pick.map(accPart)]];
   const result = accResult({ live, right }).word;
   // Share text as the game spec gives it: the verdict and the hints taken; a failed case adds a line marking each part, never naming a card.
   const shareLines = live ? null : [
     'Accuse No. ' + no + ' · ' + result.toLowerCase() + (hints ? ' · ' + hints + (hints === 1 ? ' hint ' : ' hints ') + '💡'.repeat(hints) : ''),
-    ...(right ? [] : [['suspect', 'weapon', 'place'].map((k, i) => k + ' ' + (pick[i] === ACC_TRUTH[i] ? '✓' : '✗')).join(' · ')])];
+    ...(right ? [] : [['suspect', 'weapon', 'place'].map((k, i) => k + ' ' + (pick[i] === cs.truth[i] ? '✓' : '✗')).join(' · ')])];
   return { kind: 'puzzle', gid: 'mystery', game: 'Accuse', art: 'murder', number: no, date, hints, live, loss: !live && !right, result, share: live ? null : result,
-    shareLines, lines, acc: { hints, pick, live, right } };
+    shareLines, lines, acc: { hints, pick, live, right, cs } };
 };
 
 // ---- Notebook. The groups, in tab order; each item is a chip that opens one reader under the chips. ----
@@ -65,16 +81,16 @@ const ACC_IC = {
   hints: 'M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3zM9.5 19h5M10.5 21.5h3',
 };
 const accGroups = (p) => {
-  const named = (k, list) => list.map(([name, text]) => ({ id: k + ':' + name, name, text }));
+  const C = p.cs; const named = (k, list) => list.map(([name, text]) => ({ id: k + ':' + name, name, text }));
   // Suspects, Weapons and Places show no count: every case has four of each (game spec daily-mystery.md), so the number never
   // changes and says nothing (owner's ruling). Clues (5 or 6) and Hints (0 to 2) keep theirs.
   return [
-    { key: 'scene', head: 'Setting', items: ACC_CASE.scene, count: null },
-    { key: 'suspects', head: 'Suspects', items: named('s', ACC_CASE.suspects), count: null },
-    { key: 'weapons', head: 'Weapons', items: named('w', ACC_CASE.weapons), count: null },
-    { key: 'places', head: 'Places', items: named('p', ACC_CASE.places), count: null },
-    { key: 'clues', head: 'Clues', items: ACC_CASE.clues.map((text, i) => ({ id: 'c' + i, name: 'Clue ' + (i + 1), text })) },
-    { key: 'hints', head: 'Hints', items: ACC_CASE.hints.slice(0, p.hints).map((text, i) => ({ id: 'h' + i, name: 'Hint ' + (i + 1), text })) },
+    { key: 'scene', head: 'Setting', items: C.scene, count: null },
+    { key: 'suspects', head: 'Suspects', items: named('s', C.suspects), count: null },
+    { key: 'weapons', head: 'Weapons', items: named('w', C.weapons), count: null },
+    { key: 'places', head: 'Places', items: named('p', C.places), count: null },
+    { key: 'clues', head: 'Clues', items: C.clues.map((text, i) => ({ id: 'c' + i, name: 'Clue ' + (i + 1), text })) },
+    { key: 'hints', head: 'Hints', items: C.hints.slice(0, p.hints).map((text, i) => ({ id: 'h' + i, name: 'Hint ' + (i + 1), text })) },
   ];
 };
 const AccIcon = ({ k }) => (k === 'clues'
@@ -148,11 +164,11 @@ const AccBoard = ({ p }) => {
     const ro = new ResizeObserver(draw); ro.observe(host.current); return () => ro.disconnect();
   }, [p]);
   // A word's mark: right (the player's pick, and true), wrong (the player's pick, not true), miss (true, not picked), or none.
-  const mark = (k, name) => { if (!p.pick) return null; const mine = p.pick[k] === name; const t = ACC_CASE.truth[k] === name;
+  const mark = (k, name) => { if (!p.pick) return null; const mine = p.pick[k] === name; const t = p.cs.truth[k] === name;
     return mine ? (t ? 'right' : 'wrong') : t ? 'miss' : null; };
   const say = { right: ', your pick, right', wrong: ', your pick, wrong', miss: ', the answer' };
   return <div className="acc-bd" ref={host}>
-    {[ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places].map((list, k) => (
+    {[p.cs.suspects, p.cs.weapons, p.cs.places].map((list, k) => (
       <div key={k} className="acc-col"><span className="gs-sc-cap">{ACC_HEADS[k]}</span>
         <ul>{list.map(([name]) => { const m = mark(k, name);
           return <li key={name}>{m ? <span className="acc-m" data-pen={m}>{name}<span className="acc-sr">{say[m]}</span></span> : name}</li>; })}</ul>
@@ -165,7 +181,7 @@ const AccBoard = ({ p }) => {
 export const AccCulprit = ({ p }) => (p.live
   ? <div className="acc-case is-open"><span className="acc-tag">Case open</span><span className="acc-blank" /><span className="acc-blank is-s" /></div>
   : <div className="acc-case"><span className={'acc-tag ' + (p.right ? 'is-ok' : 'is-bad')}>{p.right ? 'Case closed' : 'Case cold'}</span>
-    <span className="acc-name">{ACC_CASE.truth[0]}</span><span className="acc-sent">{accWithWhere()}</span></div>);
+    <span className="acc-name">{p.cs.truth[0]}</span><span className="acc-sent">{accWithWhere(p.cs)}</span></div>);
 
 
 // Hints taken, as Salvage's count (Big) in a card of its own, with the case card's edge and corner. Open while the case is.
@@ -187,7 +203,7 @@ export const initGsAccuse = () => {
   Object.assign(GS_SESSIONS, {
     'mystery-today': accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ['Rick Dawson', 'Snow shovel', 'Cable car hut'] }),
     'mystery-today-avg': accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: ACC_TRUTH }),
-    'mystery-today-hard': accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_TRUTH }),
+    'mystery-today-hard': accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_CASE_13.truth, cs: ACC_CASE_13 }),
     'mystery-live': accSession({ no: ACC_CASE.no, date: GS.today, hints: 1, pick: null }),
     'mystery-1004': accSession({ no: 62, date: 'Sunday 4 October', hints: 1, pick: ACC_TRUTH }),
   });

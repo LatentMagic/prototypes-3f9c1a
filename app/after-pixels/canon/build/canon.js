@@ -4075,21 +4075,52 @@
     hints: ["Anneliese Berger was not in the games room.", "Whoever carried the snow shovel was not in the great hall."],
     truth: ["Anneliese Berger", "Snow shovel", "Cable car hut"]
   };
+  const ACC_CASE_13 = {
+    no: 64,
+    scene: [{ id: "scene", name: "The scene", text: "The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which." }],
+    suspects: [
+      ["Lady Clementine Hartwell", "Sir Basil’s niece, who thinks his money should be hers."],
+      ["Mr Owen Price", "A night watchman with a gambling problem."],
+      ["Dr Marion Pike", "The curator, who chose every piece and would be ruined by a fake."],
+      ["Mr Teodor Lukas", "A dealer who sold Sir Basil many of his finest pieces."]
+    ],
+    weapons: [
+      ["Velvet rope", "Unhooked from the barriers."],
+      ["Vial of arsenic", "From an old display on poisons."],
+      ["Ceremonial sword", "With a jewelled handle."],
+      ["Marble bust", "The head of a Roman emperor."]
+    ],
+    places: [
+      ["Grand foyer", "Where the guests were greeted."],
+      ["Butterfly room", "Glass cases of pinned wings."],
+      ["Dinosaur hall", "A great skeleton under the dome."],
+      ["Mending workshop", "Half-mended vases and pots of glue."]
+    ],
+    clues: [
+      "The killer handled the vial of arsenic.",
+      "Whoever was in the mending workshop handled the vial of arsenic.",
+      "Dr Marion Pike was in the dinosaur hall.",
+      "Mr Teodor Lukas was not in the mending workshop.",
+      "Lady Clementine Hartwell was in the butterfly room."
+    ],
+    hints: ["The killer was in the mending workshop.", "Mr Teodor Lukas was not the killer."],
+    truth: ["Mr Owen Price", "Vial of arsenic", "Mending workshop"]
+  };
   const ACC_TRUTH = ACC_CASE.truth;
   const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
-  const accWithWhere = () => "with the " + accLow(ACC_TRUTH[1]) + ", in the " + accLow(ACC_TRUTH[2]) + ".";
+  const accWithWhere = (cs = ACC_CASE) => "with the " + accLow(cs.truth[1]) + ", in the " + accLow(cs.truth[2]) + ".";
   const accWrong = (part) => ACC_TRUTH.map((t, k) => k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t);
   const accResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
-  const accSession = ({ no, date, hints, pick }) => {
+  const accSession = ({ no, date, hints, pick, cs = ACC_CASE }) => {
     const live = !pick;
-    const right = !live && pick.every((x, i) => x === ACC_TRUTH[i]);
-    const hintLines = ACC_CASE.hints.slice(0, hints).map((h) => ["Hint", h]);
-    const accPart = (x, k) => (k ? "the " + accLow(x) : x) + ": " + (x === ACC_TRUTH[k] ? "Right" : "Wrong");
+    const right = !live && pick.every((x, i) => x === cs.truth[i]);
+    const hintLines = cs.hints.slice(0, hints).map((h) => ["Hint", h]);
+    const accPart = (x, k) => (k ? "the " + accLow(x) : x) + ": " + (x === cs.truth[k] ? "Right" : "Wrong");
     const lines = live ? hintLines : [...hintLines, ["Accusation", ...pick.map(accPart)]];
     const result = accResult({ live, right }).word;
     const shareLines = live ? null : [
       "Accuse No. " + no + " · " + result.toLowerCase() + (hints ? " · " + hints + (hints === 1 ? " hint " : " hints ") + "💡".repeat(hints) : ""),
-      ...right ? [] : [["suspect", "weapon", "place"].map((k, i) => k + " " + (pick[i] === ACC_TRUTH[i] ? "✓" : "✗")).join(" · ")]
+      ...right ? [] : [["suspect", "weapon", "place"].map((k, i) => k + " " + (pick[i] === cs.truth[i] ? "✓" : "✗")).join(" · ")]
     ];
     return {
       kind: "puzzle",
@@ -4105,7 +4136,7 @@
       share: live ? null : result,
       shareLines,
       lines,
-      acc: { hints, pick, live, right }
+      acc: { hints, pick, live, right, cs }
     };
   };
   const ACC_IC = {
@@ -4116,14 +4147,15 @@
     hints: "M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3zM9.5 19h5M10.5 21.5h3"
   };
   const accGroups = (p) => {
+    const C = p.cs;
     const named = (k, list) => list.map(([name, text]) => ({ id: k + ":" + name, name, text }));
     return [
-      { key: "scene", head: "Setting", items: ACC_CASE.scene, count: null },
-      { key: "suspects", head: "Suspects", items: named("s", ACC_CASE.suspects), count: null },
-      { key: "weapons", head: "Weapons", items: named("w", ACC_CASE.weapons), count: null },
-      { key: "places", head: "Places", items: named("p", ACC_CASE.places), count: null },
-      { key: "clues", head: "Clues", items: ACC_CASE.clues.map((text, i) => ({ id: "c" + i, name: "Clue " + (i + 1), text })) },
-      { key: "hints", head: "Hints", items: ACC_CASE.hints.slice(0, p.hints).map((text, i) => ({ id: "h" + i, name: "Hint " + (i + 1), text })) }
+      { key: "scene", head: "Setting", items: C.scene, count: null },
+      { key: "suspects", head: "Suspects", items: named("s", C.suspects), count: null },
+      { key: "weapons", head: "Weapons", items: named("w", C.weapons), count: null },
+      { key: "places", head: "Places", items: named("p", C.places), count: null },
+      { key: "clues", head: "Clues", items: C.clues.map((text, i) => ({ id: "c" + i, name: "Clue " + (i + 1), text })) },
+      { key: "hints", head: "Hints", items: C.hints.slice(0, p.hints).map((text, i) => ({ id: "h" + i, name: "Hint " + (i + 1), text })) }
     ];
   };
   const AccIcon = ({ k }) => k === "clues" ? /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-slip" })) : /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk acc-ic", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: ACC_IC[k] })));
@@ -4245,16 +4277,16 @@
     const mark = (k, name) => {
       if (!p.pick) return null;
       const mine = p.pick[k] === name;
-      const t = ACC_CASE.truth[k] === name;
+      const t = p.cs.truth[k] === name;
       return mine ? t ? "right" : "wrong" : t ? "miss" : null;
     };
     const say = { right: ", your pick, right", wrong: ", your pick, wrong", miss: ", the answer" };
-    return /* @__PURE__ */ React$1.createElement("div", { className: "acc-bd", ref: host }, [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places].map((list, k) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "acc-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, ACC_HEADS[k]), /* @__PURE__ */ React$1.createElement("ul", null, list.map(([name]) => {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "acc-bd", ref: host }, [p.cs.suspects, p.cs.weapons, p.cs.places].map((list, k) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "acc-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, ACC_HEADS[k]), /* @__PURE__ */ React$1.createElement("ul", null, list.map(([name]) => {
       const m = mark(k, name);
       return /* @__PURE__ */ React$1.createElement("li", { key: name }, m ? /* @__PURE__ */ React$1.createElement("span", { className: "acc-m", "data-pen": m }, name, /* @__PURE__ */ React$1.createElement("span", { className: "acc-sr" }, say[m])) : name);
     })))), /* @__PURE__ */ React$1.createElement("svg", { className: "acc-ov", ref: ov, "aria-hidden": "true" }));
   };
-  const AccCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "acc-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "acc-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-name" }, ACC_CASE.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "acc-sent" }, accWithWhere()));
+  const AccCulprit = ({ p }) => p.live ? /* @__PURE__ */ React$1.createElement("div", { className: "acc-case is-open" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag" }, "Case open"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank" }), /* @__PURE__ */ React$1.createElement("span", { className: "acc-blank is-s" })) : /* @__PURE__ */ React$1.createElement("div", { className: "acc-case" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tag " + (p.right ? "is-ok" : "is-bad") }, p.right ? "Case closed" : "Case cold"), /* @__PURE__ */ React$1.createElement("span", { className: "acc-name" }, p.cs.truth[0]), /* @__PURE__ */ React$1.createElement("span", { className: "acc-sent" }, accWithWhere(p.cs)));
   const AccHintsCard = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "acc-hc" + (p.live ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement(Big, { n: p.hints, of: 2 }));
   const AccPage = ({ s }) => {
     const p = s.acc;
@@ -4274,7 +4306,7 @@
     Object.assign(GS_SESSIONS, {
       "mystery-today": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ["Rick Dawson", "Snow shovel", "Cable car hut"] }),
       "mystery-today-avg": accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: ACC_TRUTH }),
-      "mystery-today-hard": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_TRUTH }),
+      "mystery-today-hard": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_CASE_13.truth, cs: ACC_CASE_13 }),
       "mystery-live": accSession({ no: ACC_CASE.no, date: GS.today, hints: 1, pick: null }),
       "mystery-1004": accSession({ no: 62, date: "Sunday 4 October", hints: 1, pick: ACC_TRUTH })
     });
@@ -4284,7 +4316,7 @@
     {
       className: "acn-pic",
       role: "img",
-      "aria-label": "Case " + no + ", " + accResult(p).word.toLowerCase() + ", " + p.hints + " of 2 hints." + (p.live ? "" : " The culprit: " + ACC_TRUTH[0] + ", " + accWithWhere())
+      "aria-label": "Case " + no + ", " + accResult(p).word.toLowerCase() + ", " + p.hints + " of 2 hints." + (p.live ? "" : " The culprit: " + p.cs.truth[0] + ", " + accWithWhere(p.cs))
     },
     /* @__PURE__ */ React$1.createElement("div", { className: "acn-pair", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Hints"), /* @__PURE__ */ React$1.createElement(AccHintsCard, { p })), /* @__PURE__ */ React$1.createElement("div", { className: "acn-col" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "The culprit"), /* @__PURE__ */ React$1.createElement(AccCulprit, { p })))
   );
@@ -8153,6 +8185,12 @@
         c.setConnected(true);
         c.setReview({ ed: "average" });
         c.go("session", { id: "mystery-today-avg" });
+      } },
+      { group: "Screens", id: "session-mystery-hard", label: "7. Session page: Accuse, the hard play (two hints, a three-line name on a phone)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
+        c.go("session", { id: "mystery-today-hard" });
       } },
       { group: "Screens", id: "history", label: "8. History, with the Pass", stage: (c) => {
         c.setView("pass");

@@ -205,6 +205,7 @@ KIT_STATE_REGISTER = [
   { group: 'Screens', id: 'session-mystery', label: '7. Session page: Accuse', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('session', { id: 'mystery-today' }); } },
   { group: 'Screens', id: 'session-mystery-in-progress', label: '7. Session page: Accuse in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('session', { id: 'mystery-live' }); } },
   { group: 'Screens', id: 'session-mystery-solved', label: '7. Session page: Accuse, solved with no hints', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'average' }); c.go('session', { id: 'mystery-today-avg' }); } },
+  { group: 'Screens', id: 'session-mystery-hard', label: '7. Session page: Accuse, the hard play (two hints, a three-line name on a phone)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go('session', { id: 'mystery-today-hard' }); } },
   { group: 'Screens', id: 'history', label: '8. History, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('history'); } },
   { group: 'Screens', id: 'pass-free', aliases: ['pass-page-never-subscribed'], label: '9. Pass, with a free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('pass'); } },
   { group: 'Screens', id: 'pass-holder-page', label: '9. Pass, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('pass'); } },
