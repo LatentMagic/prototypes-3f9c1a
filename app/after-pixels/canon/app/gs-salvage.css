@@ -56,6 +56,14 @@
 .slv-tool.is-used .slv-nm { color: var(--muted); }
 .slv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
+/* KEEP: under a 252px card (a 280px or 300px window) the whole board and kit shrink with the card, so nothing runs past its edge: the
+   square down to 20px (22px in a 216px card), the label columns to 14px and 22px, the kit's three columns to a third each with 8px gaps. */
+@container dv2 (max-width: 251.98px) {
+  .slv-sea { --c: clamp(20px, calc((100cqi - 14px - 22px) / 8), 36px); grid-template-columns: 14px repeat(8, var(--c)) 22px; }
+  .slv-chip { min-width: 16px; height: 16px; padding: 0 3px; border-radius: 8px; line-height: 16px; }
+  .slv-kit { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+}
+
 /* ---- Arrangement. Phone: Result, Sea, Haul, Kit, stacked, each centred. KEEP: the panel's two rows stack on a phone (the shared
    card puts them side by side, and the kit needs the full width). From 672px: the shared card's rule (gs-sess-card.css). ---- */
 .slv-card .gs-sc-panel { grid-template-columns: minmax(0, 1fr); }

@@ -2591,7 +2591,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .esx-chip > b { font: inherit; min-width: 0; overflow-wrap: break-word; }
 
 /* ---- The cards on the left, the latest slot across the rest of the row. ---- */
-.esx-stat { display: flex; align-items: stretch; gap: 16px; }
+/* KEEP: the row may shrink below its text's width (min-width: 0), so the latest line's ellipsis takes the squeeze, not the card's edge (a 776px window overran it by 7.5px). */
+.esx-stat { display: flex; align-items: stretch; gap: 16px; min-width: 0; }
 .esx-latest { flex: 1; min-width: 0; display: block; padding-left: 16px; border-left: 1px solid var(--line); }
 .esx-lh { display: block; margin-bottom: 6px; font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .esx-l1 { display: block; font: var(--type-card-title); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2624,6 +2625,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .esx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .esx-card { height: 80px; padding: 8px; }
   .esx-num { font-size: 24px; line-height: 24px; height: 24px; }
+}
+/* KEEP: in a sheet card 240px wide or less (a 280px window) the three tiles tighten their padding, label gap and letter-spacing so POCKETS ends inside the tile and the row inside the card. */
+@container dv4 (max-width: 240px) {
+  .esx-card { padding: 8px 6px; }
+  .esx-cl1 { gap: 4px; letter-spacing: .02em; }
+  .esx-cards { gap: 6px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3152,6 +3159,14 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   background: linear-gradient(to bottom right, transparent calc(50% - 1.25px), var(--off-white) calc(50% - 1.25px), var(--off-white) calc(50% + 1.25px), transparent calc(50% + 1.25px)); }
 .slv-tool.is-used .slv-nm { color: var(--muted); }
 .slv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* KEEP: under a 252px card (a 280px or 300px window) the whole board and kit shrink with the card, so nothing runs past its edge: the
+   square down to 20px (22px in a 216px card), the label columns to 14px and 22px, the kit's three columns to a third each with 8px gaps. */
+@container dv2 (max-width: 251.98px) {
+  .slv-sea { --c: clamp(20px, calc((100cqi - 14px - 22px) / 8), 36px); grid-template-columns: 14px repeat(8, var(--c)) 22px; }
+  .slv-chip { min-width: 16px; height: 16px; padding: 0 3px; border-radius: 8px; line-height: 16px; }
+  .slv-kit { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+}
 
 /* ---- Arrangement. Phone: Result, Sea, Haul, Kit, stacked, each centred. KEEP: the panel's two rows stack on a phone (the shared
    card puts them side by side, and the kit needs the full width). From 672px: the shared card's rule (gs-sess-card.css). ---- */
