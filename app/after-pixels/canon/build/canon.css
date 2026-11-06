@@ -5,7 +5,7 @@
 :root{
 /* Surfaces and text (base) */
 --page:#1B1917;--card:#262320;--popup:#322E2A;--line:#37332E;--control-edge:#918B80;
---text:#F0EEE8;--muted:#ABA79E;--off-white:#EDE8DF;
+--text:#F0EEE8;--muted:#ABA79E;--off-white:#EDE8DF;--white:#FFF;
 --dim:rgba(0,0,0,.55);--shadow-color:rgba(0,0,0,.55);
 /* Status */
 --success:#4CC38A;--success-on:#08140E;
