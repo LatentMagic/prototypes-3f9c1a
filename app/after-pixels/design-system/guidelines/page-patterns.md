@@ -41,7 +41,7 @@ The sizes, weights and families are in [visual-foundations.md](visual-foundation
 
 The Library band sits above the Product page head.
 
-- It is a card-filled band with a 1px line border, 12px padding above and below and 16px at the sides. Its parts stand 12px apart across and 16px down.
+- It is a card-filled band with a 1px line border, 12px padding above and below and 16px at the sides. Its parts stand 12px apart down and 16px apart across.
 - Under a 640px page it holds the label and text, then its link on a row of its own. From a 640px page it holds a 64px picture, the label and text, and the link at the right, in one row.
 
 
