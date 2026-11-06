@@ -1,7 +1,8 @@
 // ============================================================================
 // After Pixels — the Pass: dates and prices, the Pass card in every state, Switch and
-// Cancel sheets, the buying block, checkout, and the update-card page. Prices £3 a
-// month and £30 a year. GsPass (the Pass page) is in gs-pass-pricing.jsx.
+// Cancel sheets, the buying block, checkout, and the update-card page. Prices are
+// £3 a month and £30 a year by default, with the dollar prices behind ?cur= (see GS_CUR).
+// GsPass (the Pass page) is in gs-pass-pricing.jsx.
 // ============================================================================
 import React from 'react';
 import { useGs, DS, gsEndedOn } from './gs-data.jsx';
