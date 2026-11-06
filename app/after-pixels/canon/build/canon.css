@@ -1424,7 +1424,7 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .gs-brand-mark { width: 32px; height: 32px; display: block; flex: none; overflow: visible; transform-origin: 50% 50%; }
 .gs-brand-mark i { animation: none; } .gs-brand-mark .tr { background: #D66847; border-radius: 50%; transform: translate(10px,-10px); }
 /* KEEP: below a 340px window the top bar drops the "After Pixels" wording and keeps the logo mark (the button's aria-label still names it), so Menu and the account icon stay inside the window; the full bar needs 332px. */
-@media (max-width: 339px) { .gs-brand > span:not(.gs-brand-mark) { display: none; } }
+@media (max-width: 339px) { .gs-top .gs-brand > span:not(.gs-brand-mark) { display: none; } }
 .gs-brand:active { opacity: .55; }
 .gs-nav { display: none; flex: 1; align-items: center; gap: 24px; }
 .gs-top-end { display: flex; align-items: center; gap: 16px; margin-left: auto; }
