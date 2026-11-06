@@ -462,7 +462,6 @@ DP_PZ = {
 dpSeeResult = <><b>See your result</b> on your session page.</>;
 Object.assign(GS_PAGES, {
   where: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new country every day', button: 'Play today’s country',
       steps: [GS_STEP_CONNECT, dpStep('Find today’s country.', ' You get six guesses.'), dpSeeResult], small: GS_NAME.where + ' comes only with the After Pixels Pass.' },
     facts: { long: '5 min', often: 'New every day' }, tags: [],
@@ -473,7 +472,6 @@ Object.assign(GS_PAGES, {
     week: { title: 'Today’s country', line: 'You get six guesses and one hint.', session: 'where-today' },
   },
   chain: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new chain every day', button: 'Play today’s chain',
       steps: [GS_STEP_CONNECT, dpStep('Fill in today’s chain', ', working in from either end.'), dpSeeResult], small: GS_NAME.chain + ' comes only with the After Pixels Pass.' },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
@@ -484,7 +482,6 @@ Object.assign(GS_PAGES, {
     week: { title: 'Today’s chain', line: 'You get both ends and every first letter.', session: 'chain-today' },
   },
   salvage: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new sea every day', button: 'Play today’s sea',
       steps: [GS_STEP_CONNECT, dpStep('Find today’s five wrecks.', ' You get twenty dives.'), dpSeeResult], small: GS_NAME.salvage + ' comes only with the After Pixels Pass.' },
     facts: { long: '15 min', often: 'New every day' }, tags: [],
@@ -495,7 +492,6 @@ Object.assign(GS_PAGES, {
     week: { title: 'Today’s sea', line: 'You get twenty dives to find five wrecks.', session: 'salvage-today' },
   },
   common: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'Three new threads every day', button: 'Play today’s threads',
       steps: [GS_STEP_CONNECT, dpStep('Ask for another item', ', guess, or pass.'), dpSeeResult], small: GS_NAME.common + ' comes only with the After Pixels Pass.' },
     facts: { long: '10 min', often: 'New every day' }, tags: [],

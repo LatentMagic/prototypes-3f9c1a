@@ -37,7 +37,7 @@ export const GS_ART = {
 export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
-// category: one per game, printed before the rhythm in the product page's label (proposed values).
+// category: one per game, printed as the product page’s cover label (proposed values).
 // access: who plays what, held here once. 'daily' free to play (the current edition, a streak, its achievements); 'first' a free player
 // gets the game's one first edition; 'pass' only with the Pass. free, first and the card's access tag are derived from it (gsAccess); never type them.
 // once: the game has a fixed answer, so a finished play is never started again, with or without a schedule. Read it through gsStartsOver only.
@@ -52,7 +52,7 @@ export const GS_GAMES = {
   escape: { access: 'first', name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly', 'About 30 min'] },
   // Casebook is episodic: cases are its editions, with no schedule.
   casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
-  delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'A new world every week: fight room by room to the villain at its heart.', tags: ['Weekly', '25–40 min'] },
+  delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'A new world every week: fight room by room to the villain at its heart.', tags: ['Weekly', '25–45 min'] },
   // Chapters are its editions; a free player gets chapter 1. Sample content.
   barrow: { access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
   hunter: { access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', ed: ['summer', 'summers'], blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },

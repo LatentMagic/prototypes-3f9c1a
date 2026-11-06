@@ -1049,7 +1049,7 @@
     escape: { access: "first", name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly", "About 30 min"] },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
-    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "A new world every week: fight room by room to the villain at its heart.", tags: ["Weekly", "25–40 min"] },
+    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "A new world every week: fight room by room to the villain at its heart.", tags: ["Weekly", "25–45 min"] },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
     barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
     hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
@@ -5397,7 +5397,6 @@
     dpSeeResult = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.");
     Object.assign(GS_PAGES, {
       where: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A new country every day",
@@ -5415,7 +5414,6 @@
         week: { title: "Today’s country", line: "You get six guesses and one hint.", session: "where-today" }
       },
       chain: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A new chain every day",
@@ -5433,7 +5431,6 @@
         week: { title: "Today’s chain", line: "You get both ends and every first letter.", session: "chain-today" }
       },
       salvage: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A new sea every day",
@@ -5451,7 +5448,6 @@
         week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
       },
       common: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "Three new threads every day",
@@ -6380,7 +6376,6 @@
   function initGsGame() {
     GS_PAGES = {
       word: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "FREE WITH AN ACCOUNT",
           small: gsFreeSmall("Today’s word"),
@@ -6398,7 +6393,6 @@
         week: { title: "Today’s word", line: "Five letters. Six guesses.", session: "word-today" }
       },
       groups: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           small: gsFreeSmall("Today’s groups"),
@@ -6416,7 +6410,6 @@
         week: { title: "Today’s groups", line: "Four groups. Four mistakes to spare.", session: "groups-today" }
       },
       mystery: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "FREE WITH AN ACCOUNT",
           small: gsFreeSmall("Today’s case"),
@@ -6435,7 +6428,6 @@
         week: { title: "Today’s case", line: "Four suspects, four weapons, four places. One accusation.", session: "mystery-today" }
       },
       escape: {
-        rhythm: "A NEW ROOM EVERY WEEK",
         box: {
           label: "FIRST ROOM FREE",
           small: "The first room is free with an account. Every other room comes with the After Pixels Pass.",
@@ -6454,7 +6446,6 @@
         week: { title: "This week’s room", line: "Find the way out.", session: "escape-week" }
       },
       casebook: {
-        rhythm: "ONE CASE",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "Sixteen turns. One accusation.",
@@ -6473,7 +6464,6 @@
         week: { label: "A CASE", title: "Sixteen turns, then one accusation", line: "Ask the question they haven’t prepared for.", session: "casebook" }
       },
       delve: {
-        rhythm: "ONE RUN A WEEK",
         box: {
           label: "FIRST RUN FREE",
           heading: "One run every week",
@@ -6492,7 +6482,6 @@
         week: { title: "This week’s run", line: "Get Elsie out of the warren beneath Ashford Mill before the ritual is complete.", session: "delve" }
       },
       barrow: {
-        rhythm: "A BARROW CAMPAIGN",
         box: {
           label: "FIRST CHAPTER FREE",
           heading: "A campaign in two chapters",
@@ -6513,7 +6502,6 @@
         week2: { label: "A QUEST", title: "The chalice is in the abbey", line: "Bring the Chalice of St. Ebba home from the drowned abbey, and stop whenever you like." }
       },
       hunter: {
-        rhythm: "ONE DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A different day every time",
@@ -10025,7 +10013,6 @@
       ready: "Today’s cipher is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="80" cy="60" r="38" fill="none" stroke="#A390B2" stroke-width="12"/><circle cx="80" cy="60" r="16" fill="#E5A63B"/><rect x="74" y="10" width="12" height="12" fill="#F2EBE0"/>'],
       page: {
-        rhythm: "NEW EVERY DAY",
         heading: "A new cipher every day",
         step: cprStep("Crack today’s cipher.", " Ask for a letter if you’re stuck."),
         often: "New every day",
@@ -10050,7 +10037,6 @@
       ready: "This week’s case is ready",
       art: ["indigo", "bottom", '<rect width="160" height="120" fill="#1D1B3A"/><rect x="22" y="62" width="116" height="36" fill="#D66847"/><rect x="30" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="58" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="86" y="70" width="16" height="12" fill="#1D1B3A"/><rect x="114" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="0" y="106" width="160" height="6" fill="#E5A63B"/><circle cx="128" cy="28" r="10" fill="#A390B2"/>'],
       page: {
-        rhythm: "A NEW CASE EVERY WEEK",
         heading: "A new case every week",
         step: cprStep("Work one full case", ", from the first stop to the last."),
         often: "A new case every week",
@@ -10074,7 +10060,6 @@
       ready: "This week’s voyage is ready",
       art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><path d="M76 24L76 84L40 84Z" fill="#F2EBE0"/><rect x="34" y="88" width="72" height="12" fill="#D66847"/><rect x="0" y="104" width="160" height="16" fill="#328A88"/><circle cx="126" cy="34" r="14" fill="#E5A63B"/>'],
       page: {
-        rhythm: "A NEW VOYAGE EVERY WEEK",
         heading: "A new voyage every week",
         step: cprStep("Sail one voyage", ", from the quay to the drop."),
         often: "A new voyage every week",
@@ -10098,7 +10083,6 @@
       ready: "This week’s job is ready",
       art: ["wine", "centre", '<rect width="160" height="120" fill="#421A28"/><rect x="44" y="24" width="72" height="72" fill="#A390B2"/><circle cx="80" cy="60" r="20" fill="#F2EBE0"/><rect x="76" y="44" width="8" height="32" fill="#E5A63B"/>'],
       page: {
-        rhythm: "A NEW JOB EVERY WEEK",
         heading: "A new job every week",
         step: cprStep("Plan this week’s job", ", then pull it off."),
         often: "A new job every week",
@@ -10121,7 +10105,6 @@
       ready: "Chapter 1 is ready",
       art: ["indigo", "bottom", '<rect width="160" height="120" fill="#1D1B3A"/><rect x="0" y="92" width="160" height="28" fill="#F2EBE0"/><rect x="58" y="60" width="44" height="32" fill="#D66847"/><path d="M52 62L80 38L108 62Z" fill="#E5A63B"/><circle cx="30" cy="30" r="4" fill="#A390B2"/><circle cx="130" cy="22" r="4" fill="#A390B2"/><circle cx="118" cy="48" r="4" fill="#A390B2"/>'],
       page: {
-        rhythm: "ONE CHAPTER",
         heading: "A winter told in chapters",
         step: cprStep("Play chapter 1", ", from first snow to the frozen river."),
         often: "At your own pace",
@@ -10144,7 +10127,6 @@
       ready: "Mission 1 is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="62" cy="66" r="38" fill="#F2EBE0"/><circle cx="128" cy="28" r="12" fill="#328A88"/><rect x="108" y="74" width="12" height="12" fill="#E5A63B"/>'],
       page: {
-        rhythm: "ONE MISSION",
         heading: "A flight told in missions",
         step: cprStep("Fly mission 1", ", from launch to splashdown."),
         often: "At your own pace",
@@ -10167,7 +10149,6 @@
       ready: "The court is ready",
       art: ["wine", "bottom", '<rect width="160" height="120" fill="#421A28"/><rect x="56" y="30" width="48" height="90" fill="#A390B2"/><path d="M50 56L50 34L64 46L80 28L96 46L110 34L110 56Z" fill="#E5A63B"/><rect x="72" y="70" width="16" height="16" fill="#F2EBE0"/>'],
       page: {
-        rhythm: "ONE NIGHT",
         heading: "A different court every time",
         step: cprStep("Play the night", ", from the bell to the dawn."),
         often: "A different culprit every time you start",
@@ -10190,7 +10171,6 @@
       ready: "Low tide is ready",
       art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><rect x="0" y="84" width="160" height="36" fill="#328A88"/><rect x="24" y="66" width="40" height="22" fill="#A390B2"/><circle cx="104" cy="96" r="12" fill="#D66847"/><circle cx="124" cy="24" r="14" fill="#E5A63B"/>'],
       page: {
-        rhythm: "ONE TIDE",
         heading: "A different shore every time",
         step: cprStep("Explore the shore", " until the water comes back."),
         often: "A different shore every time you start",
@@ -10213,7 +10193,6 @@
       ready: "The workshop is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="64" cy="64" r="28" fill="none" stroke="#E5A63B" stroke-width="10"/><circle cx="110" cy="44" r="16" fill="none" stroke="#328A88" stroke-width="8"/><circle cx="64" cy="64" r="6" fill="#F2EBE0"/><circle cx="110" cy="44" r="4" fill="#F2EBE0"/>'],
       page: {
-        rhythm: "ONE MACHINE",
         heading: "A different vault every time",
         step: cprStep("Build the machine", ", one part at a time."),
         often: "A different vault every time you start",
@@ -10239,7 +10218,6 @@
       GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
       GS_GAMES[d.k] = gsAccess({ access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
       GS_PAGES[d.k] = {
-        rhythm: d.page.rhythm,
         box: {
           label: "ONLY WITH THE PASS",
           heading: d.page.heading,

@@ -88,7 +88,6 @@ export const GsGamePage = ({ id, top }) => {
 export function initGsGame() {
 GS_PAGES = {
   word: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s word'), heading: 'Play it in your own AI chat', button: 'Play today’s word',
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
@@ -99,7 +98,6 @@ GS_PAGES = {
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
   },
   groups: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', small: gsFreeSmall('Today’s groups'), heading: 'New groups every day', button: 'Play today’s groups',
       steps: [GS_STEP_CONNECT, <><b>Find today’s four groups.</b> You can make four mistakes.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
@@ -110,7 +108,6 @@ GS_PAGES = {
     week: { title: 'Today’s groups', line: 'Four groups. Four mistakes to spare.', session: 'groups-today' },
   },
   mystery: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s case'), heading: 'Play it in your own AI chat', button: 'Play today’s case',
       steps: [GS_STEP_CONNECT, <><b>Work it out from the clues</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: '10 min', often: 'New every day' }, tags: [],
@@ -122,7 +119,6 @@ GS_PAGES = {
     week: { title: 'Today’s case', line: 'Four suspects, four weapons, four places. One accusation.', session: 'mystery-today' },
   },
   escape: {
-    rhythm: 'A NEW ROOM EVERY WEEK',
     box: { label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every other room comes with the After Pixels Pass.', heading: 'A new room every week', button: 'Play the first room',
       steps: [GS_STEP_CONNECT, <><b>Play the first room.</b> Every lock has three hints if you need them.</>, <><b>See your result</b> on your session page.</>] },
     facts: { long: 'About 30 min', often: 'A new room every week' }, tags: [],
@@ -134,7 +130,6 @@ GS_PAGES = {
     week: { title: 'This week’s room', line: 'Find the way out.', session: 'escape-week' },
   },
   casebook: {
-    rhythm: 'ONE CASE',
     box: { label: 'ONLY WITH THE PASS', heading: 'Sixteen turns. One accusation.', session: 'casebook',
       steps: [GS_STEP_CONNECT, <><b>Play one full case</b>, start to ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: GS_NAME.casebook + ' comes only with the After Pixels Pass.' },
@@ -148,7 +143,6 @@ GS_PAGES = {
     week: { label: 'A CASE', title: 'Sixteen turns, then one accusation', line: 'Ask the question they haven’t prepared for.', session: 'casebook' },
   },
   delve: {
-    rhythm: 'ONE RUN A WEEK',
     box: { label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: 'The first run is free with an account. Every other run comes with the After Pixels Pass.' },
@@ -161,7 +155,6 @@ GS_PAGES = {
     week: { title: 'This week’s run', line: 'Get Elsie out of the warren beneath Ashford Mill before the ritual is complete.', session: 'delve' },
   },
   barrow: {
-    rhythm: 'A BARROW CAMPAIGN',
     box: { label: 'FIRST CHAPTER FREE', heading: 'A campaign in two chapters', button: 'Play Chapter 1',
       steps: [GS_STEP_CONNECT, <><b>Choose a hero</b>, then play at your own pace.</>, <><b>Keep your hero.</b> They carry on into the next chapter.</>],
       small: 'The first chapter is free with an account. Every other chapter comes with the After Pixels Pass.' },
@@ -177,7 +170,6 @@ GS_PAGES = {
     week2: { label: 'A QUEST', title: 'The chalice is in the abbey', line: 'Bring the Chalice of St. Ebba home from the drowned abbey, and stop whenever you like.' },
   },
   hunter: {
-    rhythm: 'ONE DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A different day every time', session: 'hunter',
       steps: [GS_STEP_CONNECT, <><b>Play the day</b>, from grey dawn to firelight.</>, <><b>Keep your day.</b> It stays in your history.</>],
       small: '36,000 Summers Ago comes only with the After Pixels Pass.' },
