@@ -17,19 +17,24 @@ export const gsAddMonths = (d, n) => { const x = new Date(d); x.setMonth(x.getMo
 const gsLong = (d) => [d.getDate(), GS_MONTHS[d.getMonth()], d.getFullYear()].join(GS_NB);
 const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
 const gsNb = (s) => s.replace(/ /g, GS_NB);
-// Pricing: ?cur=GBP (default, canon, UK) | USD (US visitor, "$") | USD-INTL (dollar visitor outside the US, "US$") swaps the price strings only. The yearly per-month figure is the yearly price over 12, to the cent.
+// Pricing: ?cur=GBP (default, canon, UK) | USD (US visitor, "$") | USD-INTL (dollar visitor outside the US, "US$") swaps the prices only. The yearly per-month figure is the yearly price over 12, to the cent.
+// label sets "US" smaller and lighter before the "$" for a dollar visitor outside the US; it stays text so a copy or a screen reader still reads "US$40".
 const GS_CUR = {
   GBP: { sym: '£', month: '3', year: '30', yearMonth: '2.50' },
   USD: { sym: '$', month: '4', year: '40', yearMonth: '3.33' },
-  'USD-INTL': { sym: 'US$', month: '4', year: '40', yearMonth: '3.33' },
+  'USD-INTL': { sym: '$', label: 'US', month: '4', year: '40', yearMonth: '3.33' },
 };
 const gsCurKey = (new URLSearchParams(window.location.search).get('cur') || 'GBP').toUpperCase();
 const GS_C = GS_CUR[gsCurKey] || GS_CUR.GBP;
+// Every price string goes through this: the amount with its currency mark, then the tail (" a month"), spaces kept unbreakable.
+const gsMoney = (amount, tail = '') => (
+  <>{GS_C.label && <span className="gs-cur-label">{GS_C.label}</span>}{GS_C.sym + amount + gsNb(tail)}</>
+);
 export const GS_PLAN = {
-  monthly: { name: 'Monthly', price: gsNb(GS_C.sym + GS_C.month + ' a month'), per: gsNb(GS_C.sym + GS_C.month + ' / month'), due: GS_C.sym + GS_C.month + '.00', months: 1 },
-  yearly: { name: 'Yearly', price: gsNb(GS_C.sym + GS_C.year + ' a year'), per: gsNb(GS_C.sym + GS_C.year + ' / year'), due: GS_C.sym + GS_C.year + '.00', months: 12 },
+  monthly: { name: 'Monthly', price: gsMoney(GS_C.month, ' a month'), per: gsMoney(GS_C.month, ' / month'), due: gsMoney(GS_C.month + '.00'), months: 1 },
+  yearly: { name: 'Yearly', price: gsMoney(GS_C.year, ' a year'), per: gsMoney(GS_C.year, ' / year'), due: gsMoney(GS_C.year + '.00'), months: 12 },
 };
-const GS_YEAR_MONTH = gsNb(GS_C.sym + GS_C.yearMonth + ' a month'); // the yearly plan, per month
+const GS_YEAR_MONTH = gsMoney(GS_C.yearMonth, ' a month'); // the yearly plan, per month
 const gsOther = (plan) => (plan === 'yearly' ? 'monthly' : 'yearly');
 // The date that matters for a subscription: next renewal or end.
 const gsSubDate = (sub) => {
@@ -94,11 +99,11 @@ export const GsPassCard = () => {
   const marker = sub.status === 'failed' ? <span className="gs-marker is-bad">Payment failed</span>
     : sub.status === 'ending' ? <span className="gs-marker">Ending</span>
     : <span className="gs-marker"><DS.Icon name="check" />Active</span>;
-  let rows = [['Plan', plan.name + ' · ' + plan.price]];
+  let rows = [['Plan', <>{plan.name} · {plan.price}</>]];
   let body = null;
   if (sub.status === 'active') {
     rows.push(['Next renewal', date]);
-    if (sub.pending) rows.push(['From ' + date, GS_PLAN[sub.pending].name + ' · ' + GS_PLAN[sub.pending].price]);
+    if (sub.pending) rows.push(['From ' + date, <>{GS_PLAN[sub.pending].name} · {GS_PLAN[sub.pending].price}</>]);
     body = (
       <div className="gs-stack-sm">
         <div className="gs-pair-even">
@@ -112,7 +117,7 @@ export const GsPassCard = () => {
     );
   } else if (sub.status === 'failed') {
     // A pending switch stays on the card with its date; there is no switch or keep control while the payment has failed (MCPG-015 AF-07).
-    if (sub.pending) rows.push(['From ' + date, GS_PLAN[sub.pending].name + ' · ' + GS_PLAN[sub.pending].price]);
+    if (sub.pending) rows.push(['From ' + date, <>{GS_PLAN[sub.pending].name} · {GS_PLAN[sub.pending].price}</>]);
     body = <div className="gs-line-act"><p>Update the card within 30 days to keep your Pass.</p>{update}</div>;
   } else {
     rows.push(['Ends on', date]);

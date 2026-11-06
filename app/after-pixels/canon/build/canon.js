@@ -2377,15 +2377,16 @@
   const GS_CUR = {
     GBP: { sym: "£", month: "3", year: "30", yearMonth: "2.50" },
     USD: { sym: "$", month: "4", year: "40", yearMonth: "3.33" },
-    "USD-INTL": { sym: "US$", month: "4", year: "40", yearMonth: "3.33" }
+    "USD-INTL": { sym: "$", label: "US", month: "4", year: "40", yearMonth: "3.33" }
   };
   const gsCurKey = (new URLSearchParams(window.location.search).get("cur") || "GBP").toUpperCase();
   const GS_C = GS_CUR[gsCurKey] || GS_CUR.GBP;
+  const gsMoney = (amount, tail = "") => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, GS_C.label && /* @__PURE__ */ React$1.createElement("span", { className: "gs-cur-label" }, GS_C.label), GS_C.sym + amount + gsNb(tail));
   const GS_PLAN = {
-    monthly: { name: "Monthly", price: gsNb(GS_C.sym + GS_C.month + " a month"), per: gsNb(GS_C.sym + GS_C.month + " / month"), due: GS_C.sym + GS_C.month + ".00", months: 1 },
-    yearly: { name: "Yearly", price: gsNb(GS_C.sym + GS_C.year + " a year"), per: gsNb(GS_C.sym + GS_C.year + " / year"), due: GS_C.sym + GS_C.year + ".00", months: 12 }
+    monthly: { name: "Monthly", price: gsMoney(GS_C.month, " a month"), per: gsMoney(GS_C.month, " / month"), due: gsMoney(GS_C.month + ".00"), months: 1 },
+    yearly: { name: "Yearly", price: gsMoney(GS_C.year, " a year"), per: gsMoney(GS_C.year, " / year"), due: gsMoney(GS_C.year + ".00"), months: 12 }
   };
-  const GS_YEAR_MONTH = gsNb(GS_C.sym + GS_C.yearMonth + " a month");
+  const GS_YEAR_MONTH = gsMoney(GS_C.yearMonth, " a month");
   const gsOther = (plan) => plan === "yearly" ? "monthly" : "yearly";
   const gsSubDate = (sub) => {
     if (sub.renew) return new Date(sub.renew);
@@ -2422,11 +2423,11 @@
     const update = /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("update-card") }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "card" }), "Update payment card");
     if (!GS_SUB_HOLDS.includes(sub.status)) return /* @__PURE__ */ React$1.createElement(DS.Card, { style: card }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Pass"), sub.hadPass ? /* @__PURE__ */ React$1.createElement(GsKeepLock, { lead: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your Pass ended on ", gsLong(gsEndedOn(gs)), ".") }) : /* @__PURE__ */ React$1.createElement("p", null, "You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "getpass", variant: "secondary", onClick: () => gs.go("pass") }, sub.hadPass ? "Get the Pass again" : "Get the Pass")));
     const marker = sub.status === "failed" ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker is-bad" }, "Payment failed") : sub.status === "ending" ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, "Ending") : /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "Active");
-    let rows = [["Plan", plan.name + " · " + plan.price]];
+    let rows = [["Plan", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, plan.name, " · ", plan.price)]];
     let body = null;
     if (sub.status === "active") {
       rows.push(["Next renewal", date]);
-      if (sub.pending) rows.push(["From " + date, GS_PLAN[sub.pending].name + " · " + GS_PLAN[sub.pending].price]);
+      if (sub.pending) rows.push(["From " + date, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, GS_PLAN[sub.pending].name, " · ", GS_PLAN[sub.pending].price)]);
       body = /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pair-even" }, update, sub.pending ? /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "keep", variant: "secondary", loading: busy, onClick: () => {
         setFailed(null);
         run(() => {
@@ -2439,7 +2440,7 @@
         });
       } }, "Keep ", plan.name.toLowerCase()) : /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "switch", variant: "secondary", onClick: () => setSheet("switch") }, "Switch to ", other)), failed === "keep" && sub.pending && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your switch to ", sub.pending, " is still set. Try again."));
     } else if (sub.status === "failed") {
-      if (sub.pending) rows.push(["From " + date, GS_PLAN[sub.pending].name + " · " + GS_PLAN[sub.pending].price]);
+      if (sub.pending) rows.push(["From " + date, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, GS_PLAN[sub.pending].name, " · ", GS_PLAN[sub.pending].price)]);
       body = /* @__PURE__ */ React$1.createElement("div", { className: "gs-line-act" }, /* @__PURE__ */ React$1.createElement("p", null, "Update the card within 30 days to keep your Pass."), update);
     } else {
       rows.push(["Ends on", date]);
