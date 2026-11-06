@@ -2375,35 +2375,25 @@
   const gsShort = (d) => d.getDate() + GS_NB + GS_MONTHS[d.getMonth()].slice(0, 3);
   const gsNb = (s) => s.replace(/ /g, GS_NB);
   const GS_CUR = {
-    GBP: { sym: "£", month: "3", year: "30", yearMonth: "2.50" },
-    USD: { sym: "$", month: "4", year: "40", yearMonth: "3.33" },
-    "USD-INTL": { sym: "$", label: "US", month: "4", year: "40", yearMonth: "3.33" }
+    GBP: { name: "£ UK", sym: "£", month: "3", year: "30", yearMonth: "2.50" },
+    USD: { name: "$ US", sym: "$", month: "4", year: "40", yearMonth: "3.33" },
+    "USD-INTL": { name: "US$ elsewhere", sym: "$", label: "US", month: "4", year: "40", yearMonth: "3.33" }
   };
-  const gsCurSeed = (new URLSearchParams(window.location.search).get("cur") || "GBP").toUpperCase();
-  let gsCurKey = GS_CUR[gsCurSeed] ? gsCurSeed : "GBP";
-  const gsGetCur = () => gsCurKey;
-  const gsSetCur = (k) => {
-    if (GS_CUR[k]) gsCurKey = k;
-  };
-  const gsMoney = (amount, tail = "") => {
-    const c = GS_CUR[gsCurKey];
+  const gsCurFromUrl = (new URLSearchParams(window.location.search).get("cur") || "GBP").toUpperCase();
+  const GS_CUR_SEED = GS_CUR[gsCurFromUrl] ? gsCurFromUrl : "GBP";
+  const gsMoney = (cur, amount, tail = "") => {
+    const c = GS_CUR[cur];
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, c.label && /* @__PURE__ */ React$1.createElement("span", { className: "gs-cur-label" }, c.label), c.sym + amount + gsNb(tail));
   };
-  const gsPlanOf = (name, field, months, tail) => ({
+  const gsPlan = (cur, name, field, months, tail) => ({
     name,
     months,
-    get price() {
-      return gsMoney(GS_CUR[gsCurKey][field], " a " + tail);
-    },
-    get per() {
-      return gsMoney(GS_CUR[gsCurKey][field], " / " + tail);
-    },
-    get due() {
-      return gsMoney(GS_CUR[gsCurKey][field] + ".00");
-    }
+    price: gsMoney(cur, GS_CUR[cur][field], " a " + tail),
+    per: gsMoney(cur, GS_CUR[cur][field], " / " + tail),
+    due: gsMoney(cur, GS_CUR[cur][field] + ".00")
   });
-  const GS_PLAN = { monthly: gsPlanOf("Monthly", "month", 1, "month"), yearly: gsPlanOf("Yearly", "year", 12, "year") };
-  const gsYearMonth = () => gsMoney(GS_CUR[gsCurKey].yearMonth, " a month");
+  const gsPlans = (cur) => ({ monthly: gsPlan(cur, "Monthly", "month", 1, "month"), yearly: gsPlan(cur, "Yearly", "year", 12, "year") });
+  const gsYearMonth = (cur) => gsMoney(cur, GS_CUR[cur].yearMonth, " a month");
   const gsOther = (plan) => plan === "yearly" ? "monthly" : "yearly";
   const gsSubDate = (sub) => {
     if (sub.renew) return new Date(sub.renew);
@@ -2417,6 +2407,7 @@
   const gsPassFails = (gs) => !!(gs.review && gs.review.passFail);
   const GsPassCard = () => {
     const gs = useGs();
+    const plans = gsPlans(gs.review.cur);
     const { sub } = gs;
     const [sheet, setSheet] = React$1.useState(gs.route.sheet || null);
     const [busy, run] = useGsBusy();
@@ -2434,7 +2425,7 @@
       gsAnnounce(msg);
     };
     const date = gsLong(gsSubDate(sub));
-    const plan = GS_PLAN[sub.plan];
+    const plan = plans[sub.plan];
     const other = gsOther(sub.plan);
     const card = { gap: 16, justifyItems: "stretch", alignContent: "start" };
     const update = /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("update-card") }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "card" }), "Update payment card");
@@ -2444,7 +2435,7 @@
     let body = null;
     if (sub.status === "active") {
       rows.push(["Next renewal", date]);
-      if (sub.pending) rows.push(["From " + date, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, GS_PLAN[sub.pending].name, " · ", GS_PLAN[sub.pending].price)]);
+      if (sub.pending) rows.push(["From " + date, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, plans[sub.pending].name, " · ", plans[sub.pending].price)]);
       body = /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pair-even" }, update, sub.pending ? /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "keep", variant: "secondary", loading: busy, onClick: () => {
         setFailed(null);
         run(() => {
@@ -2457,7 +2448,7 @@
         });
       } }, "Keep ", plan.name.toLowerCase()) : /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "switch", variant: "secondary", onClick: () => setSheet("switch") }, "Switch to ", other)), failed === "keep" && sub.pending && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your switch to ", sub.pending, " is still set. Try again."));
     } else if (sub.status === "failed") {
-      if (sub.pending) rows.push(["From " + date, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, GS_PLAN[sub.pending].name, " · ", GS_PLAN[sub.pending].price)]);
+      if (sub.pending) rows.push(["From " + date, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, plans[sub.pending].name, " · ", plans[sub.pending].price)]);
       body = /* @__PURE__ */ React$1.createElement("div", { className: "gs-line-act" }, /* @__PURE__ */ React$1.createElement("p", null, "Update the card within 30 days to keep your Pass."), update);
     } else {
       rows.push(["Ends on", date]);
@@ -2478,6 +2469,7 @@
   const GsBeforeAfter = ({ now, then }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-ba" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-ba-side" }, now.map((l, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: i === 0 ? "gs-small" : i === 1 ? "gs-strong" : "gs-num-text" }, l))), /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "arrow" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-ba-side is-hi" }, then.map((l, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: i === 0 ? "gs-small" : i === 1 ? "gs-strong" : "gs-num-text" }, l))));
   const GsSwitchSheet = ({ open, onClose, onDone }) => {
     const gs = useGs();
+    const plans = gsPlans(gs.review.cur);
     const { sub } = gs;
     const to = gsOther(sub.plan);
     const last = React$1.useRef(null);
@@ -2504,15 +2496,16 @@
         onClose();
       });
     };
-    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Switch to " + p.to + "?" }, /* @__PURE__ */ React$1.createElement(GsPopTitle, null, "Switch to ", p.to, "?"), /* @__PURE__ */ React$1.createElement(GsBeforeAfter, { now: ["Now", GS_PLAN[p.from].name, GS_PLAN[p.from].price], then: ["From " + p.date, GS_PLAN[p.to].name, GS_PLAN[p.to].price] }), /* @__PURE__ */ React$1.createElement("p", null, "Nothing is paid now."), failed && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your plan wasn’t switched. Try again."), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: go, loading: busy }, "Switch to ", p.to)));
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open, onClose: close, posture: "window", label: "Switch to " + p.to + "?" }, /* @__PURE__ */ React$1.createElement(GsPopTitle, null, "Switch to ", p.to, "?"), /* @__PURE__ */ React$1.createElement(GsBeforeAfter, { now: ["Now", plans[p.from].name, plans[p.from].price], then: ["From " + p.date, plans[p.to].name, plans[p.to].price] }), /* @__PURE__ */ React$1.createElement("p", null, "Nothing is paid now."), failed && /* @__PURE__ */ React$1.createElement(GsXLine, null, "Your plan wasn’t switched. Try again."), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: close }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: go, loading: busy }, "Switch to ", p.to)));
   };
   const GsCancelSheet = ({ open, onClose, onDone }) => {
     const gs = useGs();
+    const plans = gsPlans(gs.review.cur);
     const { sub } = gs;
     const last = React$1.useRef(null);
     if (open) last.current = { failed: sub.status === "failed", plan: sub.plan, date: gsShort(gsSubDate(sub)), long: gsLong(gsSubDate(sub)) };
     const p = last.current || { failed: false, plan: sub.plan, date: "" };
-    const now = ["Now", GS_PLAN[p.plan].name, GS_PLAN[p.plan].price];
+    const now = ["Now", plans[p.plan].name, plans[p.plan].price];
     const [busy, run, cancel] = useGsBusy();
     const [failed, setFailed] = React$1.useState(false);
     React$1.useEffect(() => {
@@ -2543,8 +2536,9 @@
   };
   const GsSubscribe = () => {
     const gs = useGs();
-    const plan = GS_PLAN[gs.choice];
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React$1.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React$1.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React$1.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React$1.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-name" }, GS_PLAN[k].name), k === "yearly" && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "success" }, gsYearMonth()), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-price gs-num-text" }, GS_PLAN[k].per)))), /* @__PURE__ */ React$1.createElement(GsRows, { rows: [["Due today", plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
+    const plans = gsPlans(gs.review.cur);
+    const plan = plans[gs.choice];
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React$1.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React$1.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React$1.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React$1.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-name" }, plans[k].name), k === "yearly" && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "success" }, gsYearMonth(gs.review.cur)), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-price gs-num-text" }, plans[k].per)))), /* @__PURE__ */ React$1.createElement(GsRows, { rows: [["Due today", plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
   };
   const GsProviderFrame = ({ merchant, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth" }, /* @__PURE__ */ React$1.createElement("main", { className: "gs-auth-col" }, children, /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-center" }, "This is a simulated provider boundary.")));
   const gsFmt = {
@@ -2562,7 +2556,8 @@
   };
   const GsCheckout = () => {
     const gs = useGs();
-    const plan = GS_PLAN[gs.choice];
+    const plans = gsPlans(gs.review.cur);
+    const plan = plans[gs.choice];
     const [paying, setPaying] = React$1.useState(false);
     const pay = (e) => {
       e.preventDefault();
@@ -2739,6 +2734,7 @@
   let CPR_MOSAIC;
   const CprPassCard = () => {
     const gs = useGs();
+    const plans = gsPlans(gs.review.cur);
     const host = useGsArtHost();
     const go = () => gs.go("pass");
     return /* @__PURE__ */ React$1.createElement(
@@ -2748,7 +2744,7 @@
         art: /* @__PURE__ */ React$1.createElement("div", { ref: host, className: "cpr-mosaic", "aria-hidden": "true", onClick: go }, CPR_MOSAIC.map((k) => /* @__PURE__ */ React$1.createElement(GsArt, { key: k, art: GS_GAMES[k].art, shape: "square" }))),
         title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: go }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "lock", size: 18, className: "cpr-lock" }), "The Pass", /* @__PURE__ */ React$1.createElement("span", { className: "cpr-chev", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 18, style: { transform: "rotate(-90deg)" } }))),
         blurb: "Every game, every edition.",
-        tags: /* @__PURE__ */ React$1.createElement("span", { className: "cpr-price" }, /* @__PURE__ */ React$1.createElement("span", null, GS_PLAN.monthly.price), " or ", /* @__PURE__ */ React$1.createElement("span", null, GS_PLAN.yearly.price))
+        tags: /* @__PURE__ */ React$1.createElement("span", { className: "cpr-price" }, /* @__PURE__ */ React$1.createElement("span", null, plans.monthly.price), " or ", /* @__PURE__ */ React$1.createElement("span", null, plans.yearly.price))
       }
     );
   };
@@ -9493,13 +9489,10 @@
       "The one date every page prints for an ended Pass (Subscription None, Had the Pass before Yes)."
     )), /* @__PURE__ */ React$1.createElement(Group, { title: "Pricing" }, R(
       "Currency",
-      gsGetCur(),
-      (v) => set(() => {
-        gsSetCur(v);
-        api.setReview({});
-      }),
-      o([["GBP", "£ UK"], ["USD", "$ US"], ["USD-INTL", "US$ elsewhere"]]),
-      "The Pass prices on every screen. £ is the UK and the default; $ is a visitor in the US; US$ is a dollar visitor anywhere else. ?cur=GBP, USD or USD-INTL opens with it set."
+      r.cur,
+      (v) => set(() => api.setReview({ cur: v })),
+      Object.entries(GS_CUR).map(([value, c]) => ({ value, label: c.name })),
+      "The Pass prices on every screen. £ is the UK and the default; $ is a visitor in the US; US$ is a dollar visitor anywhere else. ?cur=GBP, USD or USD-INTL opens with it set, and Reset returns to that."
     )));
   };
   const GsPassConfigRows = () => {
@@ -10289,8 +10282,9 @@
   }
   const GsPass = () => {
     const gs = useGs();
+    const plans = gsPlans(gs.review.cur);
     const holds = gs.view === "pass";
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React$1.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-pass-price gs-num-text" }, GS_PLAN.yearly.price, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, " or ", GS_PLAN.monthly.price)), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.purchase)) })));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React$1.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-pass-price gs-num-text" }, plans.yearly.price, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, " or ", plans.monthly.price)), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.purchase)) })));
   };
   const CPR_PICKS = [["casebook", "ONE CASE"], ["word", "A NEW WORD EVERY DAY"]];
   const cprSelection = (gs) => {
@@ -10934,7 +10928,7 @@
         go(n.name, n, "free");
       },
       paid: () => {
-        const months = GS_PLAN[choice].months;
+        const months = gsPlans(review.cur)[choice].months;
         setSubState({
           ...GS_SUB_DEFAULT,
           status: "active",
@@ -11030,7 +11024,7 @@
     registerEscape();
     registerWord();
     registerDelve();
-    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", today: "played", pastDay: "none", several: false, escape: "under", ed: null };
+    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", today: "played", pastDay: "none", several: false, escape: "under", ed: null, cur: GS_CUR_SEED };
     GS_USER_DEFAULT = { username: "MonaLaser", first: "Mona", last: "Lasker", locked: false, since: null, fresh: false, email: "you@example.com" };
     GS_SUB_DEFAULT = { status: "none", plan: "monthly", hadPass: false, pending: null, renew: null };
     GS_BARE = ["signup", "signin", "verify", "username", "recover", "returning", "checkout", "update-card", "loading", "offline", "directory-claude", "directory-chatgpt", ...GS_MORE_IDS || []];

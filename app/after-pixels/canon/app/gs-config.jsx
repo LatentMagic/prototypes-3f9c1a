@@ -3,7 +3,7 @@
 // ConfigExtraBase (wrapped by ConfigExtra in gs-pass-aids.jsx); reads and writes the app through window.gsApi.
 // ============================================================================
 import React from 'react';
-import { GS_DAY0, gsGetCur, gsSetCur } from './gs-billing.jsx';
+import { GS_DAY0, GS_CUR } from './gs-billing.jsx';
 import { ConfigGroup, ConfigRow } from './config.jsx';
 import { GsBarrowConfigRow } from './gs-pass-aids.jsx';
 import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS, gsGameOfRoute } from './gs-data.jsx';
@@ -112,8 +112,8 @@ export const ConfigExtraBase = () => {
       </Group>
 
       <Group title="Pricing">
-        {R('Currency', gsGetCur(), (v) => set(() => { gsSetCur(v); api.setReview({}); }), o([['GBP', '£ UK'], ['USD', '$ US'], ['USD-INTL', 'US$ elsewhere']]),
-          'The Pass prices on every screen. £ is the UK and the default; $ is a visitor in the US; US$ is a dollar visitor anywhere else. ?cur=GBP, USD or USD-INTL opens with it set.')}
+        {R('Currency', r.cur, (v) => set(() => api.setReview({ cur: v })), Object.entries(GS_CUR).map(([value, c]) => ({ value, label: c.name })),
+          'The Pass prices on every screen. £ is the UK and the default; $ is a visitor in the US; US$ is a dollar visitor anywhere else. ?cur=GBP, USD or USD-INTL opens with it set, and Reset returns to that.')}
       </Group>
     </React.Fragment>
   );

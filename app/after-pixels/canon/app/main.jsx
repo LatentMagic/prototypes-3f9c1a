@@ -73,7 +73,7 @@ import { GsDelve, GsWord, GsGroups, GsMystery, GsWhere, GsChain, GsSalvage, GsCo
 import { GsSignUp, GsSignIn, GsVerify, GsRecover, GsReturning } from './gs-auth.jsx';
 import { GsUsername } from './gs-username.jsx';
 import { GsConnect, gsPlayReq } from './gs-connect.jsx';
-import { GsSubscribe, GsCheckout, GsUpdateCard, GS_SUB_HOLDS, GS_DAY0, GS_PLAN, gsAddMonths } from './gs-billing.jsx';
+import { GsSubscribe, GsCheckout, GsUpdateCard, GS_SUB_HOLDS, GS_DAY0, gsPlans, GS_CUR_SEED, gsAddMonths } from './gs-billing.jsx';
 import { GsAccount } from './gs-account.jsx';
 import { kitResolveState } from './states.jsx';
 import { StatesIndex } from './states-ui.jsx';
@@ -331,7 +331,7 @@ const KitApp = () => {
       const n = next && typeof next === 'object' ? next : { name: next || 'library' }; go(n.name, n, 'free');
     },
     paid: () => {
-      const months = GS_PLAN[choice].months;
+      const months = gsPlans(review.cur)[choice].months;
       setSubState({ ...GS_SUB_DEFAULT, status: 'active', plan: choice, hadPass: true,
         renew: gsAddMonths(GS_DAY0, months).getTime() });
       go('pass', null, 'pass');
@@ -445,7 +445,7 @@ registerPassLibrary();
 registerEscape();
 registerWord();
 registerDelve();
-GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', pastDay: 'none', several: false, escape: 'under', ed: null };
+GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: 'played', pastDay: 'none', several: false, escape: 'under', ed: null, cur: GS_CUR_SEED };
 // first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
 // fresh: an account made in this session (or Config Account: New), with nothing played yet.
 GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };
