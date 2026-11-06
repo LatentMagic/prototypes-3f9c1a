@@ -18,9 +18,9 @@ import { pgRegister, usePgSetting } from './playground.jsx';
 const PGC_DELVE = {
   h: 'A new world every week: fight room by room to the villain at its heart.', blurb: 'h',
   ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
-  caps: ["Every hero comes with their own odds and gear, laid out before you pick.", "A clever plan can still miss. Try again and spend your inspiration: two dice, and the better one counts.", "The run ends with its result, and a row of your rolls to post: green held, red failed, a spark for a 20."],
+  caps: ["Each hero’s strengths, health and defence, side by side before you pick.", "A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.", "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20."],
   // The three chats, trimmed from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md).
-  // Nothing is reworded: a line is kept whole or left out. No edition secret appears.
+  // Trimmed and reformatted for the bubble; no event is changed. No edition secret appears.
   chats: [
     [gscU('hey, I want to play Delve'),
       gscAi('delve', ['Delve #5: The Labyrinth of Crete', 'Every year King Minos of Crete makes Athens send young people to him as tributes, a sort of payment. They are fed to the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.', 'Choose your hero:'],
