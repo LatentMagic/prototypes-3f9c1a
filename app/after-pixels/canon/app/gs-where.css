@@ -7,12 +7,13 @@
 .is-none > .wh-say { color: var(--muted); }
 .wh-n, .wh-km { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-/* The board. The last line has no rule of its own: the card's edge or the next part closes it, so a phone never shows two rules
-   stacked under the board (Joe, 2026-10-30). */
+/* The board: every line keeps its rule, the last included.
+   KEEP: the board ends in a line of its own, so on a phone the panel drops the shared card's rule above it (gs-sess-card.css): a phone
+   never shows two rules stacked under the board. The session-page standard, as on Accuse (Joe, 2026-11-06). */
 .wh-log { display: grid; width: 100%; }
 .wh-line { display: grid; grid-template-columns: 56px 1fr auto; align-items: end; gap: 16px; height: 44px; padding: 0 4px 8px 0; box-sizing: border-box;
   border-bottom: 1px solid var(--line); font: 600 14px/1 var(--font-text); }
-.wh-line:last-child { border-bottom: 0; }
+.wh-card .gs-sc-panel { border-top: 0; }
 /* KEEP: the margin rule is inset 8px from each line's top, so it never touches the rule above (Joe, 2026-10-31). */
 .wh-line > .wh-n, .wh-line.is-head > span:first-child { align-self: stretch; display: grid; place-items: end center; margin-top: 8px; border-right: 1px solid var(--control-edge); }
 .wh-line b { font: 700 18px/1 var(--font-heading); color: var(--text); }
