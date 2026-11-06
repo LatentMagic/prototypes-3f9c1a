@@ -89,7 +89,7 @@ A playground lives on its own `candidate/<name>` branch, never on `main`; `app/p
 </important>
 
 <important if="you are writing a product string">
-Read the monorepo's copy rules first: the shop-wide voice in `specs/projects/mcp-games/ui.md` (Voice), and for a page written for each game, its standard in `specs/projects/mcp-games/pages/`.
+Read the copy rules in the monorepo (`LatentMagic/monorepo`) first: the shop-wide voice in `specs/projects/mcp-games/ui.md` (Voice), and for a page written for each game, its standard in `specs/projects/mcp-games/pages/`.
 </important>
 
 <important if="you are writing or changing CSS">

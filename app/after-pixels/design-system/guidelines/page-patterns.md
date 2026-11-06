@@ -9,16 +9,16 @@ Every page sits in the same frame.
 - The page is at most 1200px wide and centred. Its side gutters are 16px, and 24px from a 720px page. The top bar and the footer sit inside the same gutters.
 - The page's sections stand 36px apart (`--space-6`). The first section starts 36px under the top bar, and the last ends 36px above the footer.
 - Inside a section, parts stand 16px apart (`--space-4`). Tighter groups use 8px or 4px.
-- A page with a back link has 24px above the back link and 24px between the back link and the head.
+- The session page has 24px above its back link and 24px between the back link and the head.
 - The footer stays at the foot of the window (see [layout-and-patterns.md](layout-and-patterns.md)).
 
 ## Breakpoints
 
-A page pattern's breakpoint is a container width: the width of the page, or of the card for a card's own breakpoint, never the window's width. A page in a narrow column therefore lays out as a phone page. The button and panel rules at 640px are the exception: they follow the window (see Layout in [visual-foundations.md](visual-foundations.md)).
+A page pattern's breakpoint is a container width: the width of the page's container (`.gs-root`, the full width the page is given, not its 1200px column), or of the card for a card's own breakpoint, never the window's width. A page in a narrow column therefore lays out as a phone page. The button and panel rules at 640px are the exception: they follow the window (see Layout in [visual-foundations.md](visual-foundations.md)).
 
 | Width | Measured on | What changes |
 | --- | --- | --- |
-| 480px | Page | The streak card shows its last six slots. |
+| 480px | Card | The streak card shows its last six slots. |
 | 560px | Card row | Game cards and chat cards go from one peeking card to several across. |
 | 640px | Page | The now card's action row goes side by side. |
 | 640px | Window | Buttons stop running full width. Panels become centred windows. |
@@ -26,7 +26,7 @@ A page pattern's breakpoint is a container width: the width of the page, or of t
 | 720px | Page | Gutters grow to 24px. Library cards and the session card grow their padding to 24px. The product page head goes to two columns. The session page head's cover grows to 200px. |
 | 900px | Page | The two-column pitch and the library card grid go to two columns. |
 
-A game may add a breakpoint inside its own part of the session page, measured on its own card. It never moves a breakpoint in this table, except as Session card allows.
+A game never moves a breakpoint in this table, except as Session card allows.
 
 ## Type in page patterns
 
@@ -35,7 +35,15 @@ The sizes, weights and families are in [visual-foundations.md](visual-foundation
 - **Page title.** On the library game page head, and on the session page head from a 720px page, the title shrinks with the page from 34px to 28px (`clamp(28px, 8cqi, 34px)`), at 700 with a line height of 1.08. Below a 720px page the session page title is 16px at 600, beside the small cover.
 - **Eyebrow label.** A label above a title or a figure is 13px at 600, with a line height of 1.3 and letter spacing of 0.06em, in capitals. It is off-white on the product page and the now card, and muted on the session page head.
 - **Figure caption.** A caption on a session card figure is 12px at 600, with letter spacing of 0.04em, in capitals and muted.
-- **Result word.** In the session card's result band the result word is 28px at 700, and 24px under a 560px card. Its line is body text at label weight (16px, 600). On the now card a finished result is a plain word, 18px at 600.
+- **Result word.** In the session card's result band the result word is 28px at 700, and 24px under a 560px card. Its line is body text at label weight (16px, 600).
+
+## Library band
+
+The Library band sits above the Product page head.
+
+- It is a card-filled band with a 1px line border, 12px padding above and below and 16px at the sides. Its parts stand 12px apart across and 16px down.
+- Under a 640px page it holds the label and text, then its link on a row of its own. From a 640px page it holds a 64px picture, the label and text, and the link at the right, in one row.
+
 
 ## Product page head
 
@@ -66,15 +74,23 @@ How it plays is a `Card` with 16px between its parts. Under its eyebrow label it
 
 ## Chat row
 
-The chats sit in one `CardRow` of chat cards. In a narrow row each chat card is the smaller of 340px and 86% of the row, and the next one peeks in. From a 560px row three chat cards sit across, each between 300px and 380px wide, with 24px between them. A caption sits 12px under each chat, at 13px and muted.
+The chats sit in one `CardRow` of chat cards. In a narrow row each chat card is the smaller of 340px and 86% of the row, and the next one peeks in. From a 560px row each chat card is a third of the row less its gaps, held between 300px and 380px, with 24px between them. Three sit across from a row of about 948px; below that the row scrolls. A caption sits 12px under each chat, at 13px and muted.
 
 ## Game row
 
-A row of games is a `CardRow` of `GameCard`s, the game card; a featured game is a `GamePick`, the featured card. The row's card widths and its "All games" link are set in [layout-and-patterns.md](layout-and-patterns.md). On the product page the row shows four cards to a width, with 24px between them.
+A row of games is a `CardRow` of game cards and featured cards. The row's card widths and its "All games" link are set in [layout-and-patterns.md](layout-and-patterns.md). On the product page the row shows four cards to a width, with 24px between them.
+
+### Game card
+
+The Game card is the `GameCard` component. Its values are in [layout-and-patterns.md](layout-and-patterns.md).
+
+### Featured card
+
+The Featured card is the `GamePick` component. Its values are in [layout-and-patterns.md](layout-and-patterns.md).
 
 ## Library game page head
 
-The cover sits beside the title and its links, and the two share a top and a bottom edge (`Cover fill` in `.mcp-cover-head`).
+The cover sits beside the title and its links (`Cover fill` in `.mcp-cover-head`).
 
 - The cover column grows with the page from 112px to 144px (`clamp(112px, 26cqi, 144px)`). The text stands 24px from it.
 - The text block centres on the cover. Its parts stand 14px apart. Its links stand 24px apart side by side, and 20px apart when they wrap.
@@ -96,13 +112,13 @@ The now card is the top left card. It shares its look with the game's session pa
 
 - The head holds the label and title at the left and the result at the top right. The result holds the top right at every width and takes at most half the head. The title wraps beside it.
 - The card's picture centres in the card's height and width. It is never pinned to the card's top with an empty band under it.
-- The card ends in one action row: a main `Button` at the left and one slot line at the right. The button says Play before a play, and "Go to session" while a play is under way and once it is done. The slot line is the next-time line, or the free player's "Keep playing with the Pass." Share is not on the card.
+- The card ends in one action row: a main `Button` at the left and one slot line at the right.
 - No rule or band sits above the row. The row stands 24px under the content (`--space-5`: the card's 16px gap plus 8px). It is pinned to the card's foot with `margin-top: auto`, so a card beside a taller one opens its spare height above the row.
 - Under a 640px page the button runs full width, and the slot line sits centred under it, 12px apart.
 
 ### Streak card
 
-- The strip has ten equal slots, and six on a page under 480px. Days before the player started are faint empty slots.
+- The strip has ten equal slots, and six under a 480px card. Days before the player started are faint empty slots.
 - From a 900px page the slots are 48px tall, and the strip and its legend stand 16px apart.
 - Below a 900px page the card is trimmed: its padding stays 16px, the slots are square (about 31px), and the strip and its legend stand 12px apart.
 - The strip and its legend centre together in the height under the heading.
@@ -112,13 +128,12 @@ The now card is the top left card. It shares its look with the game's session pa
 
 - The achievements are tiles across the card, each at least 240px wide. Beside the history card each tile is at least 260px wide, so a description wraps to two lines at most.
 - A tile is one button: a 40px badge, 12px of space, then the name, its description at 14px muted and a status line. A tile is at least 64px tall.
-- An earned achievement shows no status line in the tile, because its badge shows it. Its date is in the dialog. "Not earned yet" and progress use the caption type, muted.
+- A status line uses the caption type, muted.
 - A tile opens a dialog (`Popup`) with a 48px badge beside the description and the earned line.
 
 ### History card
 
-- Beside the achievements card, the history card shows as many plays as fit the achievements card's height, and never fewer than four.
-- On a phone it shows the latest four plays.
+- Beside the achievements card, the history card shows as many play rows as fit the achievements card's height.
 - A play row keeps its own height, and any spare room sits under the last row. A history card with one play stays as tall as the achievements card beside it.
 
 ## Session page head
@@ -131,10 +146,10 @@ The session page head is the platform's, and the same on every game.
 
 ## Session card
 
-The session card holds a game's part of the session page: a result band, a **board** (the game's own picture of the play) and a **panel** (the captioned figures beside it). The **rule** is the 1px line that separates the board from the panel.
+The session card is the shared card that a daily puzzle's part of the session page is built on: a result band, a **board** (the game's own picture of the play) and a **panel** (the captioned figures beside it). The **rule** is the 1px line that separates the board from the panel.
 
 - The card has 16px padding, and 24px from a 720px page. Its parts stand 24px apart.
-- Under the head, the game's sheet (where its part has one, such as a character sheet), the session card and Every move stand 16px apart.
+- Under the head, the parts of the page stand 16px apart.
 
 ### Wide card: board and panel centre as one group
 
@@ -145,7 +160,7 @@ From a 672px card, the board and the panel sit side by side.
 - The board takes the width of its own content, up to a limit the game sets. It shrinks before it pushes the panel out of the card.
 - The panel takes the width of its own content.
 - Never give either column more width than its content, as a fixed ratio such as 1.4 to 1 does, or `1fr auto`. A column wider than its content leaves empty space beside the board, and the group no longer centres.
-- The rule rises past the result band (53px: the band's 29px and the card's 24px gap), so the panel centres on the whole card. A game may centre its panel on the board instead.
+- The panel carries the rule as its left border, with 64px of padding inside it (`gs-sess-card.css:22`). The rule rises past the result band (53px: the band's 29px and the card's 24px gap), so the panel centres on the whole card. A game may centre its panel on the board instead.
 
 The shared card does this with `grid-template-columns: auto auto; justify-content: center; column-gap: 64px`. A game whose board fills its column uses `minmax(0, max-content) auto` in place of `auto auto`, so the board can shrink.
 
@@ -160,10 +175,11 @@ If the board ends in a line of its own, such as the last border of a ruled list,
 A game may set these inside the session card:
 
 - The board's content and its maximum width.
-- How the panel arranges its own figures.
-- Breakpoints inside its board, measured on the card.
+- How the panel arranges its own figures, in the order the session page standard sets.
 
 A game never changes the group's centring, the 64px either side of the rule, or the 672px line. The one exception is a game whose board is too large to sit beside its panel at 672px. That game moves the line to an 840px card and stacks each part centred below it.
+
+- Guess's card does not fit between about a 752px and an 812px card: the Hint tiles run past the card's right edge.
 
 ### How to check a session card
 

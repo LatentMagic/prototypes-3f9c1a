@@ -21,10 +21,10 @@
 
 The system is one dark surface, and colour is used to make things stand out against it.
 
-- **The shop stays neutral.** The page, its cards, the top bar, the footer and every control use the warm neutrals and the off-white accent. They carry no hue: no blue, no navy ground and no player-chosen colour. No session page takes a white or cream ground.
-- **A game comes through in its elements, never in a colour theme.** On a game's part of the session page and on its now card, the game's pieces carry colour: its tiles, marks, tools and figures. The page's background and chrome stay the shop's. A game never re-colours the page around its part.
+- **The shop's own surface is warm neutrals and the off-white accent,** so colour stands out against them. The ground is never blue, navy, white, cream or a player-chosen colour.
+- **A game comes through in its elements, never in a colour theme.** On a game's part of the session page and on its now card, the game's pieces carry colour: its tiles, marks, tools and figures. A game never re-colours the page around its part.
 - **Covers and shape blocks carry the cover colours.** Cover grounds are indigo, wine and forest; cover shapes use the cover colour set (`--cover-*` in `tokens/colors.css`). The same colours draw a game's own art where it reuses its cover, and the earned achievement badges.
-- **Results use the status colours.** A win, a found item and a right mark are success green (`--success`). On the now card and the session card a miss is the warning colour (`--warning`). A result word for a play still under way is text colour.
+- **Results use the status colours.** A win, a found item and a right mark are success green (`--success`).
 - **Amber (`--cover-amber`) marks a distinct third state.** Amber earns its place where a game resolves to a state that is neither found nor failed. A plain failure, such as running out of guesses, need not be amber.
 - **A game's tools keep one colour each,** wherever the tool shows (`--tool-*` in `tokens/colors.css`). Pen marks use the `--pen-underline-*` tokens.
 - **Text on a coloured ground is dark or light,** whichever meets WCAG AA against that ground. On the three cover grounds that is the light text.

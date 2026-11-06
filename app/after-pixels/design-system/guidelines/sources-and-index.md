@@ -2,7 +2,7 @@
 
 ## Sources
 
-- Local hand-off folder `design-system/` (README.md, rules.md, voice.md, design-system.html, circlists-reuse.md, ui-design.md, shots/). Copies are in `guidelines/source/` and `guidelines/source-shots/`, kept as the hand-off was. Where a copy differs from the guidelines, the guidelines hold, and copy rules are the monorepo's (`guidelines/voice.md`). Decisions dated 2026-10-06.
+- Local hand-off folder `design-system/` (README.md, rules.md, design-system.html, circlists-reuse.md, ui-design.md, shots/). Copies are in `guidelines/source/` and `guidelines/source-shots/`, kept as the hand-off was. Where a copy differs from the guidelines, the guidelines hold, and copy rules are the monorepo's (`guidelines/voice.md`). Decisions dated 2026-10-06.
 - GitHub: [LatentMagic/monorepo @ main, `specs/governance/standards/`](https://github.com/LatentMagic/monorepo/tree/main/specs/governance/standards), chiefly [`ui-design.md`](https://github.com/LatentMagic/monorepo/blob/main/specs/governance/standards/ui-design.md), the cross-app UI standard. The `ui-design-gallery/*.webp` pictures in that folder are ~130-byte LFS pointers and could not be viewed. Explore the repo further (`error-handling.md`, `validation.md`, Circlists specs) for more context when designing.
 - `guidelines/ui-standard.md` summarises what this system adopts from the standard.
 
