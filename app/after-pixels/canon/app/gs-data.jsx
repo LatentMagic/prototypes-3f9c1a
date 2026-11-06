@@ -37,7 +37,7 @@ export const GS_ART = {
 export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
-// category: one per game, printed before the rhythm in the product page's label (proposed values).
+// category: one per game, printed as the product page’s cover label (proposed values).
 // access: who plays what, held here once. 'daily' free to play (the current edition, a streak, its achievements); 'first' a free player
 // gets the game's one first edition; 'pass' only with the Pass. free, first and the card's access tag are derived from it (gsAccess); never type them.
 // once: the game has a fixed answer, so a finished play is never started again, with or without a schedule. Read it through gsStartsOver only.
