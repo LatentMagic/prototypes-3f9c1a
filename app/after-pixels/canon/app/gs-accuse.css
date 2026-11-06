@@ -61,7 +61,15 @@
    a phone never shows the board's line and then a second rule. The session-page standard (Joe, 2026-11-06). From a 672px card the
    panel's left rule stays. */
 .acc-card .gs-sc-panel { border-top: 0; }
-@container dv2 (max-width: 460px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding: 10px 1px; } }
+/* KEEP: a name never runs past its column, on any window from 280px. Where the columns get narrow the board's gaps and type step
+   down: 14px names with 16px gaps on a phone and on a wide card under 752px (there the columns are about 90px, and the deployed
+   cases' longest words, Conservatory and Clapperboard, are about 88px at 14px against 100px at 16px); 12px with 8px gaps under a
+   251px card (a 280px window). A word still wider than its column breaks inside itself rather than run into the gap; the pen
+   marks are measured from the words, so they follow it. */
+.acc-bd li { overflow-wrap: anywhere; }
+@container dv2 (max-width: 460px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding: 10px 0; } }
+@container dv2 (max-width: 250px) { .acc-bd { gap: 0 8px; } .acc-bd li { font-size: 12px; } }
+@container dv2 (min-width: 672px) and (max-width: 751px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding-inline: 0; } }
 .acc-m { font-weight: 600; }
 .acc-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .acc-ov path { fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
@@ -80,7 +88,7 @@
 .acc-tag.is-bad { color: var(--warning); }
 .acc-name { font: 700 20px/1.2 var(--font-heading); color: var(--text); }
 .acc-sent { max-width: 220px; font: 400 14px/1.45 var(--font-text); color: var(--muted); text-wrap: balance; }
-.acc-blank { display: block; width: 160px; height: 22px; margin-top: 6px; border-bottom: 1.5px solid var(--control-edge); }
+.acc-blank { display: block; width: 160px; max-width: 100%; height: 22px; margin-top: 6px; border-bottom: 1.5px solid var(--control-edge); }
 .acc-blank.is-s { width: 190px; height: 14px; margin-top: 4px; border-bottom-color: var(--line); }
 
 /* ---- Hints: a card of its own with the case card's edge, corner and height; its count larger. ---- */
@@ -93,8 +101,11 @@
    above The culprit, the two cards one width. */
 @container dv2 (max-width: 671px) {
   .acc-card .gs-sc-panel { grid-template-columns: auto minmax(0, 240px); justify-content: center; column-gap: 12px; }
-  .acc-card .gs-sc-row { grid-template-rows: auto 1fr; justify-items: stretch; }
+  .acc-card .gs-sc-row { grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); justify-items: stretch; }
   .acc-card .gs-sc-row > .gs-sc-cap { justify-self: center; }
   .acc-card .acc-hc, .acc-card .acc-case { width: 100%; height: 100%; align-content: center; }
+  /* KEEP: The culprit's card is as wide as its share of the panel, never as wide as its longest line, so on a 320px or 375px
+     window its blank lines shrink to fit and nothing runs past the card. */
+  .acc-card .acc-case { grid-template-columns: minmax(0, 1fr); }
 }
 @container dv2 (min-width: 672px) { .acc-card .acc-hc { width: 240px; max-width: 100%; } }
