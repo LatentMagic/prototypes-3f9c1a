@@ -2174,12 +2174,15 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .wn-sum:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
 .wn-caret { flex: none; display: inline-flex; transition: transform 180ms var(--ease); }
 details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
-.wn-wrap { padding: 0 12px 8px 22px; margin-left: -22px; scrollbar-gutter: stable; max-height: 300px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--control-edge) transparent; }
+.wn-wrap { padding: 0 0 8px 22px; margin-left: -22px; max-height: 300px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--control-edge) transparent; }
+/* Up to four folded entries fit the cap: no scroll box, no fade. When the list does scroll, the dates stay clear of the scrollbar. */
+.wn-wrap:not(:has(> .wn-nest > .wn-e:nth-child(5))) { max-height: none; overflow: visible; }
+.wn-wrap:has(> .wn-nest > .wn-e:nth-child(5)) { padding-right: 12px; }
 .wn-nest { list-style: none; margin: 0; padding: 0; position: relative; }
 .wn-nest::before { content: ""; position: absolute; left: -19px; top: 0; bottom: 18px; width: 1px; background: var(--line); }
 .wn-nest > .wn-e:first-child { border-top: 1px solid var(--line); }
-.wn-nest::after { content: ""; display: block; position: sticky; bottom: -8px; height: 56px; margin-top: -56px; pointer-events: none; background: linear-gradient(to top, var(--card), rgb(0 0 0 / 0)); }
-@supports (animation-timeline: scroll()) { .wn-nest::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
+.wn-nest:has(> .wn-e:nth-child(5))::after { content: ""; display: block; position: sticky; bottom: -8px; height: 56px; margin-top: -56px; pointer-events: none; background: linear-gradient(to top, var(--card), rgb(0 0 0 / 0)); }
+@supports (animation-timeline: scroll()) { .wn-nest:has(> .wn-e:nth-child(5))::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
