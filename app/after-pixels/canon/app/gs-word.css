@@ -64,21 +64,26 @@
 .wd-place.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 calc(var(--pt) * .5)/1 var(--font-heading); }
 .wd-places-note { font: 600 13px/1.2 var(--font-text); color: var(--muted); }
 /* KEEP: where the five places do not fit, the hint shows its own square alone, as on the now card, and nothing runs past the
-   card's edge. On a phone the five (166px) show while the Hint's half of the panel is at least 150px, spilling at most 8px into the card's padding; beside the board (from a 672px card) they need
-   196px of the panel. The board's tiles size from the window's height there, so the panel, not the board, gives way. */
+   card's edge. On a phone the five (166px) show while the Hint's half of the panel is at least 150px, spilling at most 8px into the card's padding. */
 .wd-place-one { display: none; }
 @container dv2 (max-width: 671.98px) {
   .wd-card .gs-sc-row { container: wdhint / inline-size; width: 100%; }
 }
-@container dv2 (min-width: 672px) {
-  .wd-card .gs-sc-duo { grid-template-columns: auto minmax(0, calc(196px + 65px)); }
-  .wd-card .gs-sc-panel { container: wdhint / inline-size; justify-self: stretch; }
-}
 @container wdhint (max-width: 149.98px) { .wd-places-row { display: none; } .wd-place-one { display: grid; } }
+/* KEEP: beside the board (from a 672px card) the panel is as wide as its content, so the board, rule and panel centre as one
+   group, and its content always fits: the ring (128px), or on a loss the word, whose tiles are half the board's. Where the card
+   is too narrow for that, the board's tiles shrink below their size from the window's height (to about 63px at a 678px card,
+   57px on a loss). The five places (196px) show only where they fit beside the board at its full size (board 5 tiles + 104px,
+   64px, the rule and the panel's 65px, 196px); elsewhere the hint's square alone. */
 @container dv2 (min-width: 672px) {
-  @container wdhint (max-width: 195.98px) { .wd-places-row { display: none; } .wd-place-one { display: grid; } }
+  .wd-card .gs-sc-duo { --t: min(clamp(56px, calc((100vh - 560px) / 5), 72px), calc((100cqi - 104px - 129px - 128px) / 5)); }
+  .wd-card:has(.wd-ans) .gs-sc-duo { --t: min(clamp(56px, calc((100vh - 560px) / 5), 72px), calc((100cqi - 104px - 129px - 128px) / 5), calc((100cqi - 104px - 129px - 16px) / 7.5)); }
+  .wd-places-row { display: none; } .wd-place-one { display: grid; }
+  .wd-places { --pt: 36px; }
 }
-@container dv2 (min-width: 672px) { .wd-places { --pt: 36px; } }
+@container dv2 (min-width: calc(5 * clamp(56px, (100vh - 560px) / 5, 72px) + 104px + 129px + 196px)) {
+  .wd-places-row { display: flex; } .wd-place-one { display: none; }
+}
 /* The word on a loss: tiles at half the board's, outlined in the ring's grey, the letters in the grey of a letter not in the word. */
 .wd-ans { display: grid; justify-items: center; gap: 8px; width: 100%; }
 .wd-ans-row { display: flex; gap: 4px; }
