@@ -146,12 +146,13 @@ export const GsSoonCard = ({ g }) => {
 export const gsKeepLast = (s) => { const i = s.lastIndexOf(' '); const j = i > 0 ? s.lastIndexOf(' ', i - 1) : -1; return j < 0 ? s : <>{s.slice(0, j + 1)}<span style={{ whiteSpace: 'nowrap' }}>{s.slice(j + 1)}</span></>; };
 // The one tile part (design system GameTile): Discover's wall and every CardRow kind="tiles" use it, so a tile is built
 // the same way everywhere. `pass` draws the Pass mark, which opens Pricing; `page` opens that page of the game (Library opens 'record').
-export const GsTile = ({ id, pass, page }) => {
-  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost();
+// In the store (no `page`), a game out for now is Coming soon with no way in, and `first` draws First free; a Library tile carries neither.
+export const GsTile = ({ id, pass, first, page }) => {
+  const gs = useGs(); const g = GS_GAMES[id]; const host = useGsArtHost(); const soon = !page && !!g.soon;
   return (
-    <DS.GameTile className="mcp-art-host gs-host"
-      art={<div ref={host}><GsArt art={g.art} shape="square" /></div>} pass={!!pass} onPass={() => gs.go('pass')}
-      title={<button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route, page ? { page } : undefined)}>{g.name}</button>}
+    <DS.GameTile className={soon ? 'gs-host' : 'mcp-art-host gs-host'} soon={soon} first={!page && !!first}
+      art={<div ref={soon ? undefined : host}><GsArt art={g.art} shape="square" /></div>} pass={!!pass} onPass={() => gs.go('pass')}
+      title={soon ? g.name : <button type="button" className="mcp-gtile-open mcp-art-link" onClick={() => gs.go(g.route, page ? { page } : undefined)}>{g.name}</button>}
       kind={gsKind(g.category)} />
   );
 };

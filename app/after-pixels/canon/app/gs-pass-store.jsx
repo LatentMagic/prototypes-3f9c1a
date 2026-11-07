@@ -24,6 +24,8 @@ export const useCpr = () => {
 export let CPR_STAGE;
 export let CPR_SHOWN;
 export const cprLocked = (gs, k) => CPR_STAGE[k] === 'pass' && gs.view !== 'pass';
+// Only the first edition is free: a player without the Pass, or a signed-out visitor, sees First free on the game's card.
+export const cprFirstFree = (gs, k) => CPR_STAGE[k] === 'first' && gs.view !== 'pass';
 let CPR_LAPSED;
 export const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
 // Where a free first part stands for this player: 'pass' | 'none' | 'live' | 'done'.
