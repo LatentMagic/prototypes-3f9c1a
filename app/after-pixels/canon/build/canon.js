@@ -10719,7 +10719,7 @@
     const lon = [-90, -60, -30, 0, 30, 60, 90].map((d) => d * Math.PI / 180);
     const down = (l) => "A " + Math.abs(R * Math.sin(l)) + " " + R + " 0 0 " + (l < 0 ? 0 : 1) + " " + c + " " + (c + R);
     const up = (l) => "A " + Math.abs(R * Math.sin(l)) + " " + R + " 0 0 " + (l > 0 ? 0 : 1) + " " + c + " " + (c - R);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-globe", role: "img", "aria-label": p.g.length + " of six guesses" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, [0, 1, 2, 3, 4, 5].map((i) => /* @__PURE__ */ React$1.createElement("path", { key: i, className: i < p.g.length ? "is-" + p.g[i].band : "is-spare", d: "M " + c + " " + (c - R) + " " + down(lon[i]) + " " + up(lon[i + 1]) + " Z" })), /* @__PURE__ */ React$1.createElement("line", { x1: c - R, y1: c, x2: c + R, y2: c, className: "wh-g-eq" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: R, className: "wh-g-rim" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, p.g.length, " of 6"));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-globe" + (p.g.length ? "" : " is-none"), role: "img", "aria-label": p.g.length + " of six guesses" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, [0, 1, 2, 3, 4, 5].map((i) => /* @__PURE__ */ React$1.createElement("path", { key: i, className: i < p.g.length ? "is-" + p.g[i].band : "is-spare", d: "M " + c + " " + (c - R) + " " + down(lon[i]) + " " + up(lon[i + 1]) + " Z" })), /* @__PURE__ */ React$1.createElement("line", { x1: c - R, y1: c, x2: c + R, y2: c, className: "wh-g-eq" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: R, className: "wh-g-rim" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, p.g.length, " of 6"));
   };
   const WhChart = ({ p }) => {
     const h = p.hint;
@@ -10742,9 +10742,10 @@
     ), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const WH_NOW_RESULT = { ok: { kind: "ok", label: "Solved" }, bad: { kind: "bad", label: "Failed" }, live: { kind: "live", label: "In progress" } };
+  const WH_FRESH = { g: [], hint: null, live: true };
   const WhNow = ({ c, done, none, children }) => {
     const gs = useGs();
-    if (none) return children;
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#" + GS_SESSIONS[c.today].number, result: { kind: "live", label: "New" }, play: () => gs.playReq({ kind: "edition", e: edList(gs, "where")[0] }), next: c.next, className: "wh-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-none" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, "None yet")), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p: WH_FRESH }), /* @__PURE__ */ React$1.createElement(WhChart, { p: WH_FRESH }))));
     const sid = done ? c.today : c.liveSid;
     const s = GS_SESSIONS[sid];
     if (!s) return children;

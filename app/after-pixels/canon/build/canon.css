@@ -2847,7 +2847,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wh-last b { font: 700 28px/1.1 var(--font-heading); color: var(--text); }
 .wh-last .wh-km { font: 600 15px/1.2 var(--font-text); }
 .wh-last.is-found b, .wh-last.is-found .wh-km { color: var(--success); }
-.wh-last.is-lost b { color: var(--muted); }
+.wh-last.is-lost b, .wh-last.is-none b { color: var(--muted); }
 /* On a page under 640px (a phone): everything on one row under the head, the figures 48px and their words wrapped short, the country 22px.
    KEEP: the gaps grow with the card (12 to 40px between the guess and the figures, 8 to 24px between the figures), so a phone's
    spare width goes between them instead of to the card's edges (Joe, 2026-10-31). */
