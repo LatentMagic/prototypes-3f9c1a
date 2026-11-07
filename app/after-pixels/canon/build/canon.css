@@ -3375,3 +3375,21 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acn .acc-sent { font-size: 13px; line-height: 1.35; }
 .acn .acc-blank { height: 16px; margin-top: 4px; }
 .acn .acc-blank.is-s { height: 10px; }
+/* Playground page-copy (prototype aid): the strip above the product page, under ?pg=page-copy. Imported by canon.css last. */
+.pgc-strip { display: grid; gap: 16px; padding: 16px; border: 1px dashed var(--control-edge); }
+.pgc-strip-h { margin: 0; font: 600 14px/1.3 var(--font-text); color: var(--muted); }
+.pgc-strip-row { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.pgc-fig { margin: 0; display: grid; gap: 8px; width: min(320px, 100%); font: 400 13px/1.3 var(--font-text); color: var(--muted); }
+.pgc-fig-row { width: 100%; }
+/* A shared link's preview: picture on top, then the site, the name and the one line. */
+.pgc-prev { display: grid; width: 100%; background: var(--card); border: 1px solid var(--control-edge); color: var(--text); }
+.pgc-prev-text { display: grid; gap: 4px; padding: 12px 14px; font: 400 14px/1.35 var(--font-text); }
+.pgc-prev-text b { font: 600 15px/1.3 var(--font-text); }
+.pgc-prev-site { font: 400 12px/1.3 var(--font-text); color: var(--muted); }
+.pgc-why { display: grid; gap: 8px; padding: 14px 16px; background: var(--card); border: 1px solid var(--control-edge); font: 400 14px/1.45 var(--font-text); color: var(--text); max-width: 680px; }
+.pgc-why-h { margin: 0; font: 600 16px/1.3 var(--font-text); }
+.pgc-why ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.pgc-why p { margin: 0; }
+.pgc-why-by { color: var(--muted); font-size: 13px; }
+/* Rule "The job", Delve: the "In a run" tiles (typical run and endings) are deleted from the page; canon draws them as the page's one .gs-grid3. */
+.pgc-no-run .gs-grid3 { display: none; }
