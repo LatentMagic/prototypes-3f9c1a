@@ -1,0 +1,20 @@
+/* The canvas page: canon's app is hidden except the canvas. Each card sits in a frame of its own width; the frame is a "gs"
+   container so canon's phone rules (page under 640px) apply to it whatever the browser's width. */
+.gs-root > :not(.wc), .kit-config-wrap { display: none !important; }
+.wc { display: grid; gap: 48px; width: 100%; max-width: 1000px; margin: 0 auto; padding: 24px 16px 64px; box-sizing: border-box; }
+.wc-intro { margin: -24px 0 0; max-width: 60ch; }
+.wc-item { display: grid; gap: 8px; min-width: 0; }
+.wc-h { margin: 0; display: flex; align-items: baseline; gap: 10px; font: 700 18px/1.25 var(--font-heading); }
+.wc-n { font: 700 18px/1 var(--font-heading); color: var(--muted); min-width: 3.2em; }
+.wc-note { margin: 0 0 8px; max-width: 60ch; }
+.wc-set { display: flex; flex-wrap: wrap; gap: 24px 32px; align-items: flex-start; }
+.wc-fig { margin: 0; display: grid; gap: 6px; max-width: 100%; }
+.wc .wc-frame { container: gs / inline-size; grid-template-columns: minmax(0, 1fr) !important; max-width: 100%; }
+
+/* A: the block takes the pictures' height and centres on it, and the row starts both at the top, so the captions hang below.
+   48px is the phone figure size (gs-where.css, the .wh-figs rule under 640px). */
+.wc-a .wh-row { align-items: flex-start; }
+.wc-a .wh-last { height: 48px; align-content: center; }
+
+/* B: a wider caption cap (canon 76px), the rest as canon. */
+.wc-b .wh-figs .wh-say { max-width: 120px; }
