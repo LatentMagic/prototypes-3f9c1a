@@ -259,12 +259,12 @@ export const GS_SESSIONS = {
     share: 'Solved in 3 of 6',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STILL']),
   },
-  // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
+  // Sample plays for the session page (1236). No. 210, the hard play (pushes the guess count to the limit, 6 of 6): solved on the sixth and last guess with the hint; after ROBOT only
   // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
   'word-hard': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
-    share: 'Solved in 5 of 6',
-    lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOUR', 'FLOOR']),
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 6 of 6', date: 'Sunday 4 October',
+    share: 'Solved in 6 of 6',
+    lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOAT', 'FLOUR', 'FLOOR']),
   },
   'word-failed': {
     kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
@@ -310,10 +310,12 @@ export const GS_SESSIONS = {
 // Same edition, same answer as today's play and its in-progress form. A game with no entry for a pick keeps its seeded play.
 // now: the line and bar its library now card prints where it is not the seeded play's (CprPzNow reads it, else the game's own `done`).
 Object.assign(GS_SESSIONS, {
-  'word-today-hard': { ...GS_SESSIONS['word-today'], result: 'Solved in 5 of 6', share: 'Solved in 5 of 6',
-    lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STOOL', 'STALL', 'STILL']) },
+  // Hard pushes to the limit: the guess count (6 of 6, the last guess) with the hint taken.
+  'word-today-hard': { ...GS_SESSIONS['word-today'], result: 'Solved in 6 of 6', share: 'Solved in 6 of 6',
+    lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STOOL', 'STALL', 'SKILL', 'STILL']) },
   'word-today-failed': { ...GS_SESSIONS['word-today'], loss: true, result: 'Failed', share: 'Failed',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STALL', 'SPILL', 'SKILL', 'SWILL']) },
+  // Hard pushes to the limit: the mistakes (3, the most a win allows) and the tries (7). Item length is unspecced, so words stay as they are.
   'groups-today-hard': { ...GS_SESSIONS['groups-today'], now: { line: 'You found all four groups with three mistakes, and no hints.', bar: ['4 of 4 groups', 4, 4] }, result: 'All 4 groups, 3 mistakes', share: 'All 4 groups, 3 mistakes', figures: ['4 of 4 groups', '3 mistakes'],
     shareHead: 'Daily Groups #88 · 3 mistakes', rows: ['🟪🟦🟦🟦', '🟦🟦🟦🟦', '🟨🟨🟨🟪', '🟨🟨🟨🟨', '🟪🟪🟪🟩', '🟪🟪🟪🟪', '🟩🟩🟩🟩'],
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · NOTE', 'One away'], ['Try 4', 'FROST · MIST · HAIL · SLEET', 'Found: weather'],
@@ -419,37 +421,53 @@ GS_SESSIONS['escape-over'] = { ...GS_SESSIONS['escape-week'], result: GS_RESULT.
     ['Tried TICK on the oak door lock', 'Wrong'],
     ['Tried TOCK on the oak door lock', 'Out'],
   ]) };
-// The hard play: a run built to the Escape spec's limits, to test every Escape surface. Six locks; the cabinet lock (typed)
-// takes eighteen tries and all three hints; the clock hands (a mechanism) answer each setting with a count and need a hint.
-// Out at 52 min, over par. All invented.
+// The hard play: a run built to the Escape spec's limits, to test every Escape surface. Hard pushes to the limit: all six locks, each with all
+// three hints taken (18 hints, the most six locks give); the cabinet lock (typed) takes seventeen wrong tries; the clock hands (a mechanism)
+// answer each setting with a count; a three-digit time (117 min, over par). No lock is forced: canon draws no forced lock. The desk and map case
+// are invented, and so are their hints (the drawer, cabinet, clock and door hints are the deployed room's). Wrong-try and hint counts are counted from the lines.
 GS_SESSIONS['escape-hard'] = (() => {
-  const L = []; const mv = (what, res, more) => L.push(more ? [what, res, more] : [what, res]);
-  const tryOn = (lock, list, k, from) => { for (let i = 0; i < k; i += 1) mv('Tried ' + list[from + i] + ' on the ' + lock, 'Wrong'); };
-  const setHands = (h, m, lit) => mv('Set the clock hands: Hour hand ' + h + ', Minute hand ' + m, lit + ' of 2 hands click into place.');
+  const L = []; let n = 0; let wrong = 0; const parts = {};
+  const mv = (what, res, more) => { n += 1; if (res === 'Wrong') wrong += 1; L.push(more ? [what, res, more] : [what, res]); };
+  const tryOn = (lock, code, res) => mv('Tried ' + code + ' on the ' + lock, res || 'Wrong');
+  const setHands = (h, m, lit) => { mv('Set the clock hands: Hour hand ' + h + ', Minute hand ' + m, lit === 2 ? 'Both hands click home.' : lit + ' of 2 hands click into place.');
+    if (lit < 2) { wrong += 1; parts[n] = [lit, 2]; } };
+  const hint = (lock, rung, text) => L.push(gsEsHint(lock, rung, text));
   mv('Examined the workbench', 'Gears of four sizes lie by the drawer.');
-  tryOn('workbench drawer', GS_ES_WORDS4, 1, 0); mv('Tried TICK on the workbench drawer', 'The drawer slides open.');
+  tryOn('workbench drawer', 'GEAR'); hint('workbench drawer', 1, 'Count the gears’ teeth, and read each count as a letter.');
+  tryOn('workbench drawer', 'TIME'); hint('workbench drawer', 2, 'Follow the gears from the crank, one to the next. A is 1, B is 2, and so on.');
+  tryOn('workbench drawer', 'KCIT'); hint('workbench drawer', 3, '20 is T, 9 is I, 3 is C, 11 is K. The answer is TICK.');
+  tryOn('workbench drawer', 'TICK', 'The drawer slides open.');
   L.push(['Item', 'Picked up the brass winding key', 'A small brass key, its bow shaped like a clock face.']);
   mv('Examined the glass cabinet', 'Seven watches behind glass, each stopped.');
-  tryOn('cabinet lock', GS_ES_DIG4, 9, 0); L.push(gsEsHint('cabinet lock', 1, 'Each watch has a day on its tag. The plate says what order to read them in.'));
-  tryOn('cabinet lock', GS_ES_DIG4, 4, 9); L.push(gsEsHint('cabinet lock', 2, 'Put the watches in order Monday to Thursday, then read the hour each one shows.'));
-  tryOn('cabinet lock', GS_ES_DIG4, 4, 13); L.push(gsEsHint('cabinet lock', 3, 'Monday 7, Tuesday 4, Wednesday 1, Thursday 9. The answer is 7419.'));
-  mv('Tried 7419 on the cabinet lock', 'The cabinet door swings open.');
+  GS_ES_DIG4.slice(0, 9).forEach((c) => tryOn('cabinet lock', c)); hint('cabinet lock', 1, 'Each watch has a day on its tag. The plate says what order to read them in.');
+  GS_ES_DIG4.slice(9, 13).forEach((c) => tryOn('cabinet lock', c)); hint('cabinet lock', 2, 'Put the watches in order Monday to Thursday, then read the hour each one shows.');
+  GS_ES_DIG4.slice(13, 17).forEach((c) => tryOn('cabinet lock', c)); hint('cabinet lock', 3, 'Monday 7, Tuesday 4, Wednesday 1, Thursday 9. The answer is 7419.');
+  tryOn('cabinet lock', '7419', 'The cabinet door swings open.');
   mv('Examined the case clock', 'Its hands are stopped; the winding hole is empty.');
   mv('Used the brass winding key on the case clock', 'Used up', GS_ES1.clockWound);
-  setHands(5, 30, 0); setHands(3, 30, 1); setHands(4, 45, 1);
-  L.push(gsEsHint('clock hands', 1, 'Ezra’s diary page says which moment to set.'));
-  setHands(3, 15, 1); mv('Set the clock hands: Hour hand 3, Minute hand 45', 'Both hands click home.');
+  setHands(5, 30, 0); hint('clock hands', 1, 'The moment to set is written on something kept in the glass cabinet.');
+  setHands(3, 30, 1); setHands(4, 45, 1); hint('clock hands', 2, 'What the glass cabinet holds tells of a goodbye said a quarter of an hour before four o’clock.');
+  setHands(3, 15, 1); setHands(4, 15, 0); hint('clock hands', 3, 'A quarter to four: set the hour hand to 3 and the minute hand to 45.');
+  setHands(3, 45, 2);
   mv('Examined the writing desk', 'A three-dial lock on the lid.');
-  tryOn('writing desk lock', GS_ES_DIG3, 1, 0); mv('Tried 731 on the writing desk lock', 'The lid lifts.');
+  tryOn('writing desk lock', GS_ES_DIG3[0]); hint('writing desk lock', 1, 'Look at what the blotter on the desk has been pressed against.');
+  tryOn('writing desk lock', GS_ES_DIG3[1]); hint('writing desk lock', 2, 'Three marks show on the blotter. Read them from left to right.');
+  tryOn('writing desk lock', GS_ES_DIG3[2]); hint('writing desk lock', 3, 'The marks read 7, 3 and 1. The answer is 731.');
+  tryOn('writing desk lock', '731', 'The lid lifts.');
   mv('Examined the map case', 'A five-letter lock under the railway map.');
-  tryOn('map case lock', GS_ES_WORDS5, 3, 0); L.push(gsEsHint('map case lock', 1, 'The map marks one station in red.'));
-  mv('Tried ROUTE on the map case lock', 'The drawer opens on a ticket.');
+  tryOn('map case lock', GS_ES_WORDS5[0]); hint('map case lock', 1, 'The map marks one station in red.');
+  tryOn('map case lock', GS_ES_WORDS5[1]); hint('map case lock', 2, 'Follow the line that runs to the red station. What do passengers call it?');
+  tryOn('map case lock', GS_ES_WORDS5[2]); hint('map case lock', 3, 'The line to the red station is a route. The answer is ROUTE.');
+  tryOn('map case lock', 'ROUTE', 'The drawer opens on a ticket.');
   mv('Examined the oak door', 'Four letters, and the ticket fits the slot.');
-  tryOn('oak door lock', GS_ES_WORDS4, 1, 1); mv('Tried TOCK on the oak door lock', 'Out');
-  const r = GS_RESULT.escape({ min: 52, par: 'over par' });
-  return { ...GS_SESSIONS['escape-week'], result: r, share: r, figures: ['52 min, over par', '5 hints', '27 wrong tries'],
-    shareLines: ['Escape No. 1 · escaped in 52 min, over par · 5 hints 💡 · 27 wrong tries'], lines: gsEsLines(L),
-    esTimes: { min: 52, opened: [3, 21, 30, 34, 44, 52] }, esParts: { 25: [0, 2], 26: [1, 2], 27: [1, 2], 28: [1, 2] } };
+  tryOn('oak door lock', 'TICK'); hint('oak door lock', 1, 'Since the clock started, the light shows things it did not before. Look again at what the beam crosses.');
+  tryOn('oak door lock', 'TCOK'); hint('oak door lock', 2, 'The beam touches four things in turn, and each shows a letter. Read them in the beam’s order.');
+  tryOn('oak door lock', 'KCOT'); hint('oak door lock', 3, 'The workbench shows T, the portrait O, the cabinet C and the fireplace K. The answer is TOCK.');
+  tryOn('oak door lock', 'TOCK', 'Out');
+  const r = GS_RESULT.escape({ min: 117, par: 'over par' }); const hints = L.filter((x) => x[0] === 'Hint').length;
+  return { ...GS_SESSIONS['escape-week'], result: r, share: r, figures: ['117 min, over par', hints + ' hints', wrong + ' wrong tries'],
+    shareLines: ['Escape No. 1 · escaped in 117 min, over par · ' + hints + ' hints 💡 · ' + wrong + ' wrong tries'], lines: gsEsLines(L),
+    esTimes: { min: 117, opened: [6, 38, 59, 71, 96, 117] }, esParts: parts };
 })();
 
 // A row's result in its forms, longest first (ListRow): the short form is the score alone, or the game's own short word.

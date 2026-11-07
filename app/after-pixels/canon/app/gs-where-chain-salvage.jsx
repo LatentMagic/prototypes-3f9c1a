@@ -234,8 +234,14 @@ export const cmPartway = (x) => { const { number, play, lines } = cmSess(CM_NO -
 // Today's threads run out the same way (Config → This edition: failed).
 const CM_FAIL_TODAY = { c: CM_C7, m: [[0, 'Things that are slow.', false], [0, 'Round things.', false], [0, 'Things you can crack.', false], [0, 'Shell.', true],
   [1, 'Things in an office.', false]] };
-// Today's threads on the hard play: every connection found only with all four items showing.
-const CM_HARD = { c: CM_C7, m: [0, 1, 2].flatMap((k) => [[k, 'more'], [k, 'more'], [k, 'more'], [k, CM_C7[k].link + '.', true]]) };
+// The hard play: pushes to the limit the points (3 of 15, every connection found only with all four items showing), the wrong guesses (2 of the day's 5 before the
+// last right ones) and the text, with the longest item (A SANDWICH CUT CORNER TO CORNER), link (Things shaped like a triangle) and how-it-fits lines in canon; it runs on its own
+// three threads, not today's.
+const CM_HC = [CM_CB[0], CM_CA[1], CM_CA[0]];
+const CM_HARD = { c: CM_HC, m: [
+  [0, 'Things you might pack in a lunch box.', false], [0, 'more'], [0, 'more'], [0, CM_HC[0].link + '.', true],
+  [1, 'Things you find in an aquarium or on a stage.', false], [1, 'more'], [1, 'more'], [1, CM_HC[1].link + '.', true],
+  [2, 'more'], [2, 'more'], [2, 'more'], [2, CM_HC[2].link + '.', true]] };
 
 // ---- An earlier edition's session (gs-puzzles-library.jsx pzSession). base: kind, gid, game, art, date, result, loss. ----
 export const dpSession = (id, c, x, base) => {
@@ -340,8 +346,11 @@ CH_OK = [
   { w: ['KEY', 'BOARD', 'WALK', 'WAY', 'SIDE', 'CAR'], p: [['BOARD', 1], ['SIDE', 4], ['WAY', 3], ['WAR', 2], ['WALK', 2]] },
   { w: ['HAND', 'BAG', 'PIPE', 'LINE', 'DANCE'], p: [['BALL', 1], ['BAG', 1], ['LINE', 3], ['PIPE', 2]] },
 ];
-CH_HARD = { w: CH_TODAY.w, p: [['BELL', 1], ['BAKE', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOM', 2],
-  ['SALAD', 3], ['SECOND', 3], ['SERVER', 3], ['SERVED', 3], ['SERVING', 3], ['SERVICE', 3], ['STORE', 4], ['STAGE', 4], ['STAMP', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4]] };
+// Hard pushes to the limit: the worst deployed chain's line (No. 35, six words, KITCHEN at seven letters) with the most wrong guesses a win allows
+// (15) and so the most guesses (19). Each wrong guess starts with the letters then showing, as the game requires, and none is a real link.
+CH_HARD = { w: ['SOUP', 'KITCHEN', 'TABLE', 'TENNIS', 'MATCH', 'POINT'], p: [['KNIFE', 1], ['KITTEN', 1], ['KITE', 1], ['KITCHENETTE', 1], ['KITCHENWARE', 1], ['KITCHEN', 1],
+  ['TRAIN', 2], ['TAXI', 2], ['TABLET', 2], ['TABLE', 2], ['TOWER', 3], ['TEXT', 3], ['TENOR', 3], ['TENNER', 3], ['TENNIS', 3],
+  ['MOVIE', 4], ['MAPLE', 4], ['MATTER', 4], ['MATCH', 4]] };
 // Config's Failed on today's chain: ROOM is given away on its third wrong guess (ROO shown, four letters), the other words found.
 CH_FAIL = { w: CH_TODAY.w, p: [['BELL', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOF', 2], ['SUITE', 3], ['SERVICE', 3], ['STORE', 4], ['STATION', 4]] };
 // ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
@@ -381,9 +390,13 @@ DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
 // ---- This edition as Config → This edition picks it (GS_ED_SIDS). SAMPLES on today's edition: today's number and date. Hard: every guess, dive or
 // item used and the edition still won. Failed: the edition lost. now: the line and bar of
 // the library now card (CprPzNow); Chain's card draws from the play itself. ----
-const dpHardWh = { a: 'Hungary', g: [['Spain', 1110], ['Poland', 80], ['Austria', 0], ['Slovakia', 0], ['Romania', 0]], hint: 'From Romania, the country lies west' };
+// Hard pushes to the limit: the longest hint line (the hint's country is the longest UN member name, 32 chars, and the compass point is one of the longest, southwest),
+// the longest guess name in the list (Democratic Republic of the Congo, 32 chars, so no Where answer depends on it) and the largest distances (a first guess 18,680 km out, five digits).
+// Distances are border to border to the nearest 10 km, estimated by hand from border points, so approximate; SVG to Peru bears 212 degrees, southwest. Failed adds a sixth guess
+// that shares Peru's border.
+const dpHardWh = { a: 'Peru', g: [['Thailand', 18680], ['Australia', 13190], ['Democratic Republic of the Congo', 8930], ['Mexico', 2420], ['Saint Vincent and the Grenadines', 2160]], hint: 'From Saint Vincent and the Grenadines, the country lies southwest' };
 const dpPickWh = (ok) => {
-  const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ['Croatia', 0]] }, ok); const res = GS_RESULT.where({ ok, guesses: r.guesses });
+  const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ['Ecuador', 0]] }, ok); const res = GS_RESULT.where({ ok, guesses: r.guesses });
   return { ...GS_SESSIONS['where-today'], loss: !ok, hints: r.hints, result: res, share: res, figures: [r.guesses + ' of 6 guesses', '1 hint'], shareLines: [dpWhHead(DP_NO, r, ok), r.marks], lines: r.lines,
     now: { line: ok ? 'You found the country on your sixth guess, with the hint.' : 'You used all six guesses and the hint without finding the country.', bar: ['Guess 6 of 6', 6, 6] } };
 };
@@ -561,7 +574,10 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
   ...(k === 'chain' ? [
     { group: g, id: 'library-chain-never-played', label: 'Chain in your library, with the Pass, not yet played', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ never: 'chain' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-chain-failed', label: 'Chain in your library, today failed (a word given away)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
-    { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (18 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (19 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
+  ] : []),
+  ...(k !== 'chain' ? [
+    { group: g, id: 'library-' + k + '-hard', label: n + ' in your library, the hard play', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
   ] : []),
   ...(k === 'salvage' ? [
     { group: g, id: 'library-salvage-failed', label: 'Salvage in your library, today failed (two wrecks not raised)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },

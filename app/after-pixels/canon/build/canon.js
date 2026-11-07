@@ -1268,7 +1268,7 @@
       share: "Solved in 3 of 6",
       lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STILL"])
     },
-    // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
+    // Sample plays for the session page (1236). No. 210, the hard play (pushes the guess count to the limit, 6 of 6): solved on the sixth and last guess with the hint; after ROBOT only
     // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
     "word-hard": {
       kind: "puzzle",
@@ -1278,10 +1278,10 @@
       number: 210,
       answer: "FLOOR",
       hints: 1,
-      result: "Solved in 5 of 6",
+      result: "Solved in 6 of 6",
       date: "Sunday 4 October",
-      share: "Solved in 5 of 6",
-      lines: gsWordLines("FLOOR", ["CRANE", "ROBOT", ["Hint", "Letter 1 is F."], "FROGS", "FLOUR", "FLOOR"])
+      share: "Solved in 6 of 6",
+      lines: gsWordLines("FLOOR", ["CRANE", "ROBOT", ["Hint", "Letter 1 is F."], "FROGS", "FLOAT", "FLOUR", "FLOOR"])
     },
     "word-failed": {
       kind: "puzzle",
@@ -1375,11 +1375,12 @@
     }
   };
   Object.assign(GS_SESSIONS, {
+    // Hard pushes to the limit: the guess count (6 of 6, the last guess) with the hint taken.
     "word-today-hard": {
       ...GS_SESSIONS["word-today"],
-      result: "Solved in 5 of 6",
-      share: "Solved in 5 of 6",
-      lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STOOL", "STALL", "STILL"])
+      result: "Solved in 6 of 6",
+      share: "Solved in 6 of 6",
+      lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STOOL", "STALL", "SKILL", "STILL"])
     },
     "word-today-failed": {
       ...GS_SESSIONS["word-today"],
@@ -1388,6 +1389,7 @@
       share: "Failed",
       lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STALL", "SPILL", "SKILL", "SWILL"])
     },
+    // Hard pushes to the limit: the mistakes (3, the most a win allows) and the tries (7). Item length is unspecced, so words stay as they are.
     "groups-today-hard": {
       ...GS_SESSIONS["groups-today"],
       now: { line: "You found all four groups with three mistakes, and no hints.", bar: ["4 of 4 groups", 4, 4] },
@@ -1573,51 +1575,86 @@
   };
   GS_SESSIONS["escape-hard"] = (() => {
     const L = [];
-    const mv = (what, res, more) => L.push(more ? [what, res, more] : [what, res]);
-    const tryOn = (lock, list, k, from) => {
-      for (let i = 0; i < k; i += 1) mv("Tried " + list[from + i] + " on the " + lock, "Wrong");
+    let n = 0;
+    let wrong = 0;
+    const parts = {};
+    const mv = (what, res, more) => {
+      n += 1;
+      if (res === "Wrong") wrong += 1;
+      L.push(more ? [what, res, more] : [what, res]);
     };
-    const setHands = (h, m, lit) => mv("Set the clock hands: Hour hand " + h + ", Minute hand " + m, lit + " of 2 hands click into place.");
+    const tryOn = (lock, code, res) => mv("Tried " + code + " on the " + lock, res || "Wrong");
+    const setHands = (h, m, lit) => {
+      mv("Set the clock hands: Hour hand " + h + ", Minute hand " + m, lit === 2 ? "Both hands click home." : lit + " of 2 hands click into place.");
+      if (lit < 2) {
+        wrong += 1;
+        parts[n] = [lit, 2];
+      }
+    };
+    const hint = (lock, rung, text) => L.push(gsEsHint(lock, rung, text));
     mv("Examined the workbench", "Gears of four sizes lie by the drawer.");
-    tryOn("workbench drawer", GS_ES_WORDS4, 1, 0);
-    mv("Tried TICK on the workbench drawer", "The drawer slides open.");
+    tryOn("workbench drawer", "GEAR");
+    hint("workbench drawer", 1, "Count the gears’ teeth, and read each count as a letter.");
+    tryOn("workbench drawer", "TIME");
+    hint("workbench drawer", 2, "Follow the gears from the crank, one to the next. A is 1, B is 2, and so on.");
+    tryOn("workbench drawer", "KCIT");
+    hint("workbench drawer", 3, "20 is T, 9 is I, 3 is C, 11 is K. The answer is TICK.");
+    tryOn("workbench drawer", "TICK", "The drawer slides open.");
     L.push(["Item", "Picked up the brass winding key", "A small brass key, its bow shaped like a clock face."]);
     mv("Examined the glass cabinet", "Seven watches behind glass, each stopped.");
-    tryOn("cabinet lock", GS_ES_DIG4, 9, 0);
-    L.push(gsEsHint("cabinet lock", 1, "Each watch has a day on its tag. The plate says what order to read them in."));
-    tryOn("cabinet lock", GS_ES_DIG4, 4, 9);
-    L.push(gsEsHint("cabinet lock", 2, "Put the watches in order Monday to Thursday, then read the hour each one shows."));
-    tryOn("cabinet lock", GS_ES_DIG4, 4, 13);
-    L.push(gsEsHint("cabinet lock", 3, "Monday 7, Tuesday 4, Wednesday 1, Thursday 9. The answer is 7419."));
-    mv("Tried 7419 on the cabinet lock", "The cabinet door swings open.");
+    GS_ES_DIG4.slice(0, 9).forEach((c) => tryOn("cabinet lock", c));
+    hint("cabinet lock", 1, "Each watch has a day on its tag. The plate says what order to read them in.");
+    GS_ES_DIG4.slice(9, 13).forEach((c) => tryOn("cabinet lock", c));
+    hint("cabinet lock", 2, "Put the watches in order Monday to Thursday, then read the hour each one shows.");
+    GS_ES_DIG4.slice(13, 17).forEach((c) => tryOn("cabinet lock", c));
+    hint("cabinet lock", 3, "Monday 7, Tuesday 4, Wednesday 1, Thursday 9. The answer is 7419.");
+    tryOn("cabinet lock", "7419", "The cabinet door swings open.");
     mv("Examined the case clock", "Its hands are stopped; the winding hole is empty.");
     mv("Used the brass winding key on the case clock", "Used up", GS_ES1.clockWound);
     setHands(5, 30, 0);
+    hint("clock hands", 1, "The moment to set is written on something kept in the glass cabinet.");
     setHands(3, 30, 1);
     setHands(4, 45, 1);
-    L.push(gsEsHint("clock hands", 1, "Ezra’s diary page says which moment to set."));
+    hint("clock hands", 2, "What the glass cabinet holds tells of a goodbye said a quarter of an hour before four o’clock.");
     setHands(3, 15, 1);
-    mv("Set the clock hands: Hour hand 3, Minute hand 45", "Both hands click home.");
+    setHands(4, 15, 0);
+    hint("clock hands", 3, "A quarter to four: set the hour hand to 3 and the minute hand to 45.");
+    setHands(3, 45, 2);
     mv("Examined the writing desk", "A three-dial lock on the lid.");
-    tryOn("writing desk lock", GS_ES_DIG3, 1, 0);
-    mv("Tried 731 on the writing desk lock", "The lid lifts.");
+    tryOn("writing desk lock", GS_ES_DIG3[0]);
+    hint("writing desk lock", 1, "Look at what the blotter on the desk has been pressed against.");
+    tryOn("writing desk lock", GS_ES_DIG3[1]);
+    hint("writing desk lock", 2, "Three marks show on the blotter. Read them from left to right.");
+    tryOn("writing desk lock", GS_ES_DIG3[2]);
+    hint("writing desk lock", 3, "The marks read 7, 3 and 1. The answer is 731.");
+    tryOn("writing desk lock", "731", "The lid lifts.");
     mv("Examined the map case", "A five-letter lock under the railway map.");
-    tryOn("map case lock", GS_ES_WORDS5, 3, 0);
-    L.push(gsEsHint("map case lock", 1, "The map marks one station in red."));
-    mv("Tried ROUTE on the map case lock", "The drawer opens on a ticket.");
+    tryOn("map case lock", GS_ES_WORDS5[0]);
+    hint("map case lock", 1, "The map marks one station in red.");
+    tryOn("map case lock", GS_ES_WORDS5[1]);
+    hint("map case lock", 2, "Follow the line that runs to the red station. What do passengers call it?");
+    tryOn("map case lock", GS_ES_WORDS5[2]);
+    hint("map case lock", 3, "The line to the red station is a route. The answer is ROUTE.");
+    tryOn("map case lock", "ROUTE", "The drawer opens on a ticket.");
     mv("Examined the oak door", "Four letters, and the ticket fits the slot.");
-    tryOn("oak door lock", GS_ES_WORDS4, 1, 1);
-    mv("Tried TOCK on the oak door lock", "Out");
-    const r = GS_RESULT.escape({ min: 52, par: "over par" });
+    tryOn("oak door lock", "TICK");
+    hint("oak door lock", 1, "Since the clock started, the light shows things it did not before. Look again at what the beam crosses.");
+    tryOn("oak door lock", "TCOK");
+    hint("oak door lock", 2, "The beam touches four things in turn, and each shows a letter. Read them in the beam’s order.");
+    tryOn("oak door lock", "KCOT");
+    hint("oak door lock", 3, "The workbench shows T, the portrait O, the cabinet C and the fireplace K. The answer is TOCK.");
+    tryOn("oak door lock", "TOCK", "Out");
+    const r = GS_RESULT.escape({ min: 117, par: "over par" });
+    const hints = L.filter((x) => x[0] === "Hint").length;
     return {
       ...GS_SESSIONS["escape-week"],
       result: r,
       share: r,
-      figures: ["52 min, over par", "5 hints", "27 wrong tries"],
-      shareLines: ["Escape No. 1 · escaped in 52 min, over par · 5 hints 💡 · 27 wrong tries"],
+      figures: ["117 min, over par", hints + " hints", wrong + " wrong tries"],
+      shareLines: ["Escape No. 1 · escaped in 117 min, over par · " + hints + " hints 💡 · " + wrong + " wrong tries"],
       lines: gsEsLines(L),
-      esTimes: { min: 52, opened: [3, 21, 30, 34, 44, 52] },
-      esParts: { 25: [0, 2], 26: [1, 2], 27: [1, 2], 28: [1, 2] }
+      esTimes: { min: 117, opened: [6, 38, 59, 71, 96, 117] },
+      esParts: parts
     };
   })();
   const gsForms = (s) => {
@@ -3939,14 +3976,14 @@
   const ACC_CASE_13 = {
     scene: [{ id: "scene", name: "The scene", text: "The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which." }],
     suspects: [
-      ["Lady Clementine Hartwell", "Sir Basil’s niece, who thinks his money should be hers."],
+      ["Lady Clementine Hartwell", "His sister, who has run the house for twenty years and is afraid of being sent away."],
       ["Mr Owen Price", "A night watchman with a gambling problem."],
       ["Dr Marion Pike", "The curator, who chose every piece and would be ruined by a fake."],
       ["Mr Teodor Lukas", "A dealer who sold Sir Basil many of his finest pieces."]
     ],
     weapons: [
       ["Velvet rope", "Unhooked from the barriers."],
-      ["Vial of arsenic", "From an old display on poisons."],
+      ["Poisoned toffee apple", "Sticky, and bitter underneath."],
       ["Ceremonial sword", "With a jewelled handle."],
       ["Marble bust", "The head of a Roman emperor."]
     ],
@@ -3954,17 +3991,17 @@
       ["Grand foyer", "Where the guests were greeted."],
       ["Butterfly room", "Glass cases of pinned wings."],
       ["Dinosaur hall", "A great skeleton under the dome."],
-      ["Mending workshop", "Half-mended vases and pots of glue."]
+      ["Portrait corridor", "Where old Hartwells stare down from the walls."]
     ],
     clues: [
-      "The killer handled the vial of arsenic.",
-      "Whoever was in the mending workshop handled the vial of arsenic.",
+      "The killer handled the poisoned toffee apple.",
+      "Whoever was in the portrait corridor handled the poisoned toffee apple.",
       "Dr Marion Pike was in the dinosaur hall.",
-      "Mr Teodor Lukas was not in the mending workshop.",
+      "Mr Teodor Lukas was not in the portrait corridor.",
       "Lady Clementine Hartwell was in the butterfly room."
     ],
-    hints: ["The killer was in the mending workshop.", "Mr Teodor Lukas was not the killer."],
-    truth: ["Mr Owen Price", "Vial of arsenic", "Mending workshop"]
+    hints: ["The killer was in the portrait corridor.", "Mr Teodor Lukas was not the killer."],
+    truth: ["Mr Owen Price", "Poisoned toffee apple", "Portrait corridor"]
   };
   const ACC_TRUTH = ACC_CASE.truth;
   const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
@@ -5028,7 +5065,21 @@
     [0, "Shell.", true],
     [1, "Things in an office.", false]
   ] };
-  const CM_HARD = { c: CM_C7, m: [0, 1, 2].flatMap((k) => [[k, "more"], [k, "more"], [k, "more"], [k, CM_C7[k].link + ".", true]]) };
+  const CM_HC = [CM_CB[0], CM_CA[1], CM_CA[0]];
+  const CM_HARD = { c: CM_HC, m: [
+    [0, "Things you might pack in a lunch box.", false],
+    [0, "more"],
+    [0, "more"],
+    [0, CM_HC[0].link + ".", true],
+    [1, "Things you find in an aquarium or on a stage.", false],
+    [1, "more"],
+    [1, "more"],
+    [1, CM_HC[1].link + ".", true],
+    [2, "more"],
+    [2, "more"],
+    [2, "more"],
+    [2, CM_HC[2].link + ".", true]
+  ] };
   const dpSession = (id, c, x, base) => {
     const n = (id === "common" ? CM_NO : DP_NO) - x.i;
     const i = x.i;
@@ -5164,25 +5215,26 @@
       { w: ["KEY", "BOARD", "WALK", "WAY", "SIDE", "CAR"], p: [["BOARD", 1], ["SIDE", 4], ["WAY", 3], ["WAR", 2], ["WALK", 2]] },
       { w: ["HAND", "BAG", "PIPE", "LINE", "DANCE"], p: [["BALL", 1], ["BAG", 1], ["LINE", 3], ["PIPE", 2]] }
     ];
-    CH_HARD = { w: CH_TODAY.w, p: [
-      ["BELL", 1],
-      ["BAKE", 1],
-      ["BALL", 1],
-      ["RACE", 2],
-      ["ROAD", 2],
-      ["ROOM", 2],
-      ["SALAD", 3],
-      ["SECOND", 3],
-      ["SERVER", 3],
-      ["SERVED", 3],
-      ["SERVING", 3],
-      ["SERVICE", 3],
-      ["STORE", 4],
-      ["STAGE", 4],
-      ["STAMP", 4],
-      ["STATUS", 4],
-      ["STATIC", 4],
-      ["STATION", 4]
+    CH_HARD = { w: ["SOUP", "KITCHEN", "TABLE", "TENNIS", "MATCH", "POINT"], p: [
+      ["KNIFE", 1],
+      ["KITTEN", 1],
+      ["KITE", 1],
+      ["KITCHENETTE", 1],
+      ["KITCHENWARE", 1],
+      ["KITCHEN", 1],
+      ["TRAIN", 2],
+      ["TAXI", 2],
+      ["TABLET", 2],
+      ["TABLE", 2],
+      ["TOWER", 3],
+      ["TEXT", 3],
+      ["TENOR", 3],
+      ["TENNER", 3],
+      ["TENNIS", 3],
+      ["MOVIE", 4],
+      ["MAPLE", 4],
+      ["MATTER", 4],
+      ["MATCH", 4]
     ] };
     CH_FAIL = { w: CH_TODAY.w, p: [["BELL", 1], ["BALL", 1], ["RACE", 2], ["ROAD", 2], ["ROOF", 2], ["SUITE", 3], ["SERVICE", 3], ["STORE", 4], ["STATION", 4]] };
     SV_COLS = "ABCDEFGH";
@@ -5303,9 +5355,9 @@
     DP_IDS.forEach((k) => {
       GS_TODAY_PLAYED.pass[k] = k + "-today";
     });
-    const dpHardWh = { a: "Hungary", g: [["Spain", 1110], ["Poland", 80], ["Austria", 0], ["Slovakia", 0], ["Romania", 0]], hint: "From Romania, the country lies west" };
+    const dpHardWh = { a: "Peru", g: [["Thailand", 18680], ["Australia", 13190], ["Democratic Republic of the Congo", 8930], ["Mexico", 2420], ["Saint Vincent and the Grenadines", 2160]], hint: "From Saint Vincent and the Grenadines, the country lies southwest" };
     const dpPickWh = (ok) => {
-      const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ["Croatia", 0]] }, ok);
+      const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ["Ecuador", 0]] }, ok);
       const res = GS_RESULT.where({ ok, guesses: r.guesses });
       return {
         ...GS_SESSIONS["where-today"],
@@ -5639,7 +5691,15 @@
             c.setReview({ ed: "failed" });
             c.go(k, { page: "record" });
           } },
-          { group: g, id: "library-chain-hard", label: "Chain in your library, a hard day (18 guesses)", stage: (c) => {
+          { group: g, id: "library-chain-hard", label: "Chain in your library, a hard day (19 guesses)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "hard" });
+            c.go(k, { page: "record" });
+          } }
+        ] : [],
+        ...k !== "chain" ? [
+          { group: g, id: "library-" + k + "-hard", label: n + " in your library, the hard play", stage: (c) => {
             c.setView("pass");
             c.setConnected(true);
             c.setReview({ ed: "hard" });
@@ -8156,7 +8216,7 @@
         c.setConnected(true);
         c.go("session", { id: "word-today" });
       } },
-      { group: "Screens", id: "session-word-hard", label: "7. Session page: Guess, the hard play (five guesses and the hint)", stage: (c) => {
+      { group: "Screens", id: "session-word-hard", label: "7. Session page: Guess, the hard play (six guesses and the hint)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "word-hard" });
@@ -8250,6 +8310,12 @@
         c.setReview({ week: "live" });
         c.go("casebook", { page: "record" });
       } },
+      { group: "Library", id: "library-casebook-hard", label: "Casebook in your library, the hard play (every turn, every lie)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
+        c.go("casebook", { page: "record" });
+      } },
       { group: "Library", id: "library-delve", label: "Delve in your library, with the Pass", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -8276,6 +8342,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
+        c.go("word", { page: "record" });
+      } },
+      { group: "Library", id: "library-word-hard", label: "Guess in your library, the hard play (six of six guesses, with the hint)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
         c.go("word", { page: "record" });
       } },
       { group: "Library", id: "library-word-streak-broken", label: "Guess in your library, streak broken (yesterday failed)", stage: (c) => {
@@ -8316,6 +8388,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
+        c.go("groups", { page: "record" });
+      } },
+      { group: "Library", id: "library-groups-hard", label: "Daily Groups in your library, the hard play (three mistakes)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
         c.go("groups", { page: "record" });
       } },
       // Every game's Now card, not started: Config → This edition: Not played, in the Pass view (the one view that reaches the Pass-only games). Where is not here.
@@ -8418,6 +8496,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
+        c.go("mystery", { page: "record" });
+      } },
+      { group: "Library", id: "library-mystery-hard", label: "Accuse in your library, the hard play (two hints, the longest names)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
         c.go("mystery", { page: "record" });
       } },
       { group: "Library", id: "library-mystery-solved", label: "Accuse in your library, today solved with no hints", stage: (c) => {

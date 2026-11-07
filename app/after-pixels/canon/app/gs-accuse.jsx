@@ -31,20 +31,22 @@ const ACC_CASE = {
   hints: ['Anneliese Berger was not in the games room.', 'Whoever carried the snow shovel was not in the great hall.'],
   truth: ['Anneliese Berger', 'Snow shovel', 'Cable car hut'],
 };
-// A second deployed case, edition 13 (museum-gala cast), for Config → This edition "hard" only: its "Lady Clementine Hartwell" needs three
-// lines on a 390px phone, the longest board name in the 63 deployed cases. Hints are the deployed solver's first two steps for it.
+// A second case on edition 13's museum-gala cast, for Config → This edition "hard" only. Hard pushes to the limit: both hints used, the longest
+// suspect name ("Lady Clementine Hartwell", three lines on a 390px phone), the longest weapon ("Poisoned toffee apple", cases 16 and 34), the longest
+// place ("Portrait corridor", case 53), a clue line of 71 chars (the deployed longest is 73) and an 83-char suspect description (case 2). Weapon, place,
+// clues and hints are edited from the deployed case 13 to carry them, and it still solves to one answer.
 const ACC_CASE_13 = {
   scene: [{ id: 'scene', name: 'The scene', text: 'The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which.' }],
-  suspects: [['Lady Clementine Hartwell', 'Sir Basil’s niece, who thinks his money should be hers.'], ['Mr Owen Price', 'A night watchman with a gambling problem.'],
+  suspects: [['Lady Clementine Hartwell', 'His sister, who has run the house for twenty years and is afraid of being sent away.'], ['Mr Owen Price', 'A night watchman with a gambling problem.'],
     ['Dr Marion Pike', 'The curator, who chose every piece and would be ruined by a fake.'], ['Mr Teodor Lukas', 'A dealer who sold Sir Basil many of his finest pieces.']],
-  weapons: [['Velvet rope', 'Unhooked from the barriers.'], ['Vial of arsenic', 'From an old display on poisons.'], ['Ceremonial sword', 'With a jewelled handle.'],
+  weapons: [['Velvet rope', 'Unhooked from the barriers.'], ['Poisoned toffee apple', 'Sticky, and bitter underneath.'], ['Ceremonial sword', 'With a jewelled handle.'],
     ['Marble bust', 'The head of a Roman emperor.']],
   places: [['Grand foyer', 'Where the guests were greeted.'], ['Butterfly room', 'Glass cases of pinned wings.'], ['Dinosaur hall', 'A great skeleton under the dome.'],
-    ['Mending workshop', 'Half-mended vases and pots of glue.']],
-  clues: ['The killer handled the vial of arsenic.', 'Whoever was in the mending workshop handled the vial of arsenic.', 'Dr Marion Pike was in the dinosaur hall.',
-    'Mr Teodor Lukas was not in the mending workshop.', 'Lady Clementine Hartwell was in the butterfly room.'],
-  hints: ['The killer was in the mending workshop.', 'Mr Teodor Lukas was not the killer.'],
-  truth: ['Mr Owen Price', 'Vial of arsenic', 'Mending workshop'],
+    ['Portrait corridor', 'Where old Hartwells stare down from the walls.']],
+  clues: ['The killer handled the poisoned toffee apple.', 'Whoever was in the portrait corridor handled the poisoned toffee apple.', 'Dr Marion Pike was in the dinosaur hall.',
+    'Mr Teodor Lukas was not in the portrait corridor.', 'Lady Clementine Hartwell was in the butterfly room.'],
+  hints: ['The killer was in the portrait corridor.', 'Mr Teodor Lukas was not the killer.'],
+  truth: ['Mr Owen Price', 'Poisoned toffee apple', 'Portrait corridor'],
 };
 export const ACC_TRUTH = ACC_CASE.truth;
 const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
