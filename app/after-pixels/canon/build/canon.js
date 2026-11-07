@@ -1075,7 +1075,11 @@
     free: { word: "word-today", mystery: "mystery-today" },
     pass: { word: "word-today", groups: "groups-today", mystery: "mystery-today", escape: "escape-week" }
   };
-  const gsTodayPlayed = (gs) => gsFresh(gs) || gs.view === "free" && gs.review && gs.review.today === "none" ? {} : GS_TODAY_PLAYED[gs.view] || {};
+  const gsNotPlayed = (gs) => {
+    gs = gs || window.gsApi;
+    return !!(gs && gs.review && gs.review.today === "none");
+  };
+  const gsTodayPlayed = (gs) => gsFresh(gs) || gsNotPlayed(gs) ? {} : GS_TODAY_PLAYED[gs.view] || {};
   const gsFresh = (gs) => {
     gs = gs || window.gsApi;
     return !!(gs && gs.user && gs.user.fresh);
@@ -2529,10 +2533,10 @@
   let CPR_LAPSED;
   const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
   const cprFirstState = (gs, id) => {
-    if (gs.view === "pass") return id === "barrow" && cprStore.get().bwDone ? "done" : "pass";
+    if (gs.view === "pass") return id === "barrow" && cprStore.get().bwDone && !gsNotPlayed(gs) ? "done" : "pass";
+    if (gsNotPlayed(gs)) return "none";
     if (gsLapsed(gs)) return cprLapsedOf(id).used ? "done" : "none";
     if (gsFresh(gs)) return "none";
-    if ((id === "escape" || id === "delve") && gs.view === "free" && gs.review && gs.review.today === "none") return "none";
     if (id === "barrow") return cprStore.get().bwDone ? "done" : "none";
     if (id === "escape" && cprStore.get().freeNew) return "none";
     if (!lbWeekDone(gs)) return "live";
@@ -2807,7 +2811,7 @@
     const c = sid && (!pass && sid === CB_FIRST.id ? cbFirstOf(gs) : pass && sid === CB_LIVE.id ? cbWeek(gs) : null);
     if (c) return /* @__PURE__ */ React$1.createElement(CbCase, { key: k + sid, c });
     const ach = phAch(gs, "casebook", CB_ACH);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, pass ? gsFresh(gs) ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: "casebook", title: CB_LIVE.title, line: "You haven’t opened the case yet. Ask the question they haven’t prepared for.", span: true, onPlay: () => gs.play(GS_NAME.casebook) }) : /* @__PURE__ */ React$1.createElement(CbNow, { c: cbWeek(gs) }) : null, /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: CB_BADGES, access, ed: GS_GAMES.casebook.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your cases", allLabel: "See in History", empty: "Your cases appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "casebook" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, pass ? gsFresh(gs) || gsNotPlayed(gs) ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: "casebook", title: CB_LIVE.title, line: "You haven’t opened the case yet. Ask the question they haven’t prepared for.", span: true, onPlay: () => gs.play(GS_NAME.casebook) }) : /* @__PURE__ */ React$1.createElement(CbNow, { c: cbWeek(gs) }) : null, /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: CB_BADGES, access, ed: GS_GAMES.casebook.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your cases", allLabel: "See in History", empty: "Your cases appear here once you have played one." })));
   };
   const registerCasebook = () => {
     GS_LIBRARY.casebook = CbLibrary;
@@ -5863,7 +5867,7 @@
     const k = gs.view + (gs.sub.hadPass ? "u" : "");
     if (!pass && !past) return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "hunter" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id: "hunter", ach: HG_ACH, access })));
     const plays = phVisible(gs).filter((p) => p.gid === "hunter");
-    const latest = plays[0] ? plays[0].src : null;
+    const latest = plays[0] && !gsNotPlayed(gs) ? plays[0].src : null;
     const ach = phAch(gs, "hunter", HG_ACH);
     return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "hunter" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, !pass && /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id: "hunter", had: true, ach, access }), !latest ? /* @__PURE__ */ React$1.createElement(HgNone, null) : /* @__PURE__ */ React$1.createElement(HgLatest, { day: latest, last: !pass }), pass && /* @__PURE__ */ React$1.createElement(HgLeft, { plays }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: HG_BADGES, access }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your days", allLabel: "See in History", empty: "Your days appear here once you have played one." })));
   };
@@ -6422,7 +6426,7 @@
     const gs = useGs();
     const access = lbAccess(gs, "delve");
     const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "");
-    const fresh = gsFresh(gs);
+    const fresh = gsFresh(gs) || gsNotPlayed(gs);
     const ach = phAch(gs, "delve", DV_ACH);
     const list = dvRun(gs);
     return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: "delve", title: DV_RUN1.title, line: "You haven’t started this week’s run yet. Get her out before the ritual is complete.", next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
@@ -6821,7 +6825,7 @@
     return [c && (c.todayBase || c.today), c && c.liveSid, ...Object.values(ids), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []].filter(Boolean);
   };
   const gsNoPlay = (gs, gid) => {
-    if (gsFresh(gs) || gs.review && gs.review.never === gid) return true;
+    if (gsFresh(gs) || gsNotPlayed(gs) || gs.review && gs.review.never === gid) return true;
     if (gs.view === "free" && (gid === "escape" || gid === "delve")) return cprFirstState(gs, gid) === "none";
     return !!PZ[gid] && gs.view !== "out" && (GS_GAMES[gid].free || gs.view === "pass") && !gsTodayPlayed(gs)[gid];
   };
@@ -7172,7 +7176,7 @@
   const lbWeekDone = (gs) => (gs.review && gs.review.week) !== "live";
   const lbNow = (gs, id) => {
     const done = lbWeekDone(gs);
-    if (gsFresh(gs)) return null;
+    if (gsFresh(gs) || gsNotPlayed(gs)) return null;
     if (id === "casebook") return gs.view === "pass" ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
     if (id === "delve") {
       const sid = done ? gsEdPick("delve", gs) || "delve" : "delve-live";
@@ -8307,6 +8311,39 @@
         c.setReview({ week: "live" });
         c.go("groups", { page: "record" });
       } },
+      // Every game's Now card, not started: Config → This edition: Not played, in the Pass view (the one view that reaches the Pass-only games). Where is not here.
+      ...[
+        ["word", "Guess"],
+        ["mystery", "Accuse"],
+        ["groups", "Daily Groups"],
+        ["escape", "Escape"],
+        ["casebook", "Casebook"],
+        ["delve", "Delve"],
+        ["barrow", "The Barrow of Hollowmere"],
+        ["hunter", "36,000 Summers Ago"],
+        ["chain", "Chain"],
+        ["salvage", "Salvage"],
+        ["common", "Common"],
+        ["cipher", "Daily Cipher"],
+        ["nighttrain", "The Night Train"],
+        ["saltmarsh", "Saltmarsh"],
+        ["heist", "Heist"],
+        ["winter", "The Long Winter"],
+        ["farside", "Far Side"],
+        ["ashcourt", "The Court of Ash"],
+        ["tidepool", "Low Tide"],
+        ["clockwork", "Clockwork"]
+      ].map(([k, name]) => ({
+        group: "Library",
+        id: "library-" + k + "-not-started",
+        label: name + " in your library, with the Pass, not started",
+        stage: (c) => {
+          c.setView("pass");
+          c.setConnected(true);
+          c.setReview({ today: "none" });
+          c.go(k, { page: "record" });
+        }
+      })),
       // The Pass upsell. Its review store (app/gs-pass-store.jsx) resets before every state.
       { group: "Pass upsell", id: "pur-new-account", label: "1. Library, free account, nothing played", stage: (c) => {
         c.setView("free");
@@ -9589,21 +9626,27 @@
     const Group = ConfigGroup;
     const Row = ConfigRow;
     const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
-    const edVal = r.today === "none" ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
     const route = api.route || {};
     const gid = gsGameOfRoute(route.name) || (route.name === "session" && GS_SESSIONS[route.id] ? GS_SESSIONS[route.id].gid : null);
     const g = gid ? GS_GAMES[gid] : null;
+    const notStarted = () => {
+      if (gsFresh(api) || gsNotPlayed(api) || gid && r.never === gid) return true;
+      if (!g || api.view === "out" || cprLocked(api, gid)) return false;
+      if (gid === "hunter") return !phVisible(api).some((p) => p.gid === "hunter");
+      if (gid === "barrow") return ["none", "pass"].includes(cprFirstState(api, "barrow"));
+      if (api.view !== "pass" && CPR_STAGE[gid] === "first") return cprFirstState(api, gid) === "none";
+      return !lbNow(api, gid);
+    };
+    const edVal = notStarted() ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
     const needsPass = !!g && !g.free && !g.first;
     const [forced, setForced] = React$1.useState(null);
     const edAt = (v) => [v, route.name, route.id, route.page].join("|");
     const edLabel2 = { hard: "Hard", failed: "Failed" };
     const edWhy = (v) => {
-      if (!g || !v) return null;
+      if (!g || !v || v === "none") return null;
       const ids = GS_ED_SIDS[gid];
       if (!ids) return { text: g.name + " has no result for an edition, so this doesn’t change it." };
-      if (v !== "none" && api.view === "free" && needsPass) return { view: "pass", text: g.name + " needs the Pass, so the view is now Pass." };
-      if (v === "none" && api.view === "pass" && !needsPass) return { view: "free", text: "Not played is for a free account, so the view is now Free." };
-      if (v === "none" && needsPass) return { text: "Not played is for a free account, and " + g.name + " needs the Pass." };
+      if (api.view === "free" && needsPass) return { view: "pass", text: g.name + " needs the Pass, so the view is now Pass." };
       if (edLabel2[v] && !ids[v]) return { text: g.name + " has no " + edLabel2[v] + " play, so it shows its normal play." };
       return null;
     };
@@ -9630,7 +9673,7 @@
     const lostHard = names(withEd.filter((k) => GS_ED_SIDS[k].hard && GS_SESSIONS[GS_ED_SIDS[k].hard].loss));
     const noFailed = names(withEd.filter((k) => !GS_ED_SIDS[k].failed));
     const noResult = [...names(keys.filter((k) => !GS_ED_SIDS[k] && !GS_GAMES[k].added)), ...keys.some((k) => !GS_ED_SIDS[k] && GS_GAMES[k].added) ? ["the added games"] : []];
-    const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: a win that took most of the tries or hints." + (lostHard.length ? " " + list(lostHard) + (lostHard.length > 1 ? " end" : " ends") + " in a loss." : "") + (noFailed.length ? " " + list(noFailed) + (noFailed.length > 1 ? " have" : " has") + " no Failed." : "") + (noResult.length ? " " + list(noResult) + (noResult.length > 1 ? " have" : " has") + " no result for an edition." : "") + " Not played applies to a free account. Nothing picked: as seeded.";
+    const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: a win that took most of the tries or hints." + (lostHard.length ? " " + list(lostHard) + (lostHard.length > 1 ? " end" : " ends") + " in a loss." : "") + (noFailed.length ? " " + list(noFailed) + (noFailed.length > 1 ? " have" : " has") + " no Failed." : "") + (noResult.length ? " " + list(noResult) + (noResult.length > 1 ? " have" : " has") + " no result for an edition." : "") + " Not played shows the not-started card on every game, in the view you are in. Nothing picked: as seeded.";
     const setSub = (patch) => set(() => {
       if (api.view === "out") api.setView("free");
       api.setSub(patch);

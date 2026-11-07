@@ -6,9 +6,11 @@ import React from 'react';
 import { GS_DAY0, GS_CUR } from './gs-billing.jsx';
 import { ConfigGroup, ConfigRow } from './config.jsx';
 import { GsBarrowConfigRow } from './gs-pass-aids.jsx';
-import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS, gsGameOfRoute } from './gs-data.jsx';
+import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS, gsGameOfRoute, gsFresh, gsNotPlayed } from './gs-data.jsx';
 import { gsEdFollow } from './gs-session.jsx';
-import { GsPassStage } from './gs-pass-store.jsx';
+import { GsPassStage, cprFirstState, cprLocked, CPR_STAGE } from './gs-pass-store.jsx';
+import { lbNow } from './gs-library.jsx';
+import { phVisible } from './gs-history.jsx';
 
 export const ConfigExtraBase = () => {
   const api = window.gsApi || {};
@@ -19,24 +21,34 @@ export const ConfigExtraBase = () => {
   const Group = ConfigGroup; const Row = ConfigRow;
   const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
   // Changing the subscription signs in, so the demo bar moves with it.
-  // This edition: one pick over the old week (in progress), today (a free account's not played) and ed (the finished play).
-  const edVal = r.today === 'none' ? 'none' : r.week === 'live' ? 'live' : ['average', 'hard', 'failed'].includes(r.ed) ? r.ed : null;
   // The game on screen: a game's own page, or the game of the session page open.
   const route = api.route || {};
   const gid = gsGameOfRoute(route.name) || (route.name === 'session' && GS_SESSIONS[route.id] ? GS_SESSIONS[route.id].gid : null);
   const g = gid ? GS_GAMES[gid] : null;
+  // The game on screen shows its not-started Now card, however it got there: Not played, a new account, a game marked never played,
+  // a free player's unplayed first part or daily, a Pass holder's untouched Barrow, or a Pass-only game nobody has played. Read from the same
+  // tests the pages use, so the row cannot say Not played over a page that shows a play, or nothing over one that does not.
+  const notStarted = () => {
+    if (gsFresh(api) || gsNotPlayed(api) || (gid && r.never === gid)) return true;
+    if (!g || api.view === 'out' || cprLocked(api, gid)) return false;
+    if (gid === 'hunter') return !phVisible(api).some((p) => p.gid === 'hunter');
+    if (gid === 'barrow') return ['none', 'pass'].includes(cprFirstState(api, 'barrow'));
+    if (api.view !== 'pass' && CPR_STAGE[gid] === 'first') return cprFirstState(api, gid) === 'none';
+    return !lbNow(api, gid);
+  };
+  // This edition: one pick over what the page shows: not started, the old week (in progress), or ed (the finished play).
+  const edVal = notStarted() ? 'none' : r.week === 'live' ? 'live' : ['average', 'hard', 'failed'].includes(r.ed) ? r.ed : null;
   const needsPass = !!g && !g.free && !g.first;
   const [forced, setForced] = React.useState(null);
   const edAt = (v) => [v, route.name, route.id, route.page].join('|');
   const edLabel = { hard: 'Hard', failed: 'Failed' };
   // When the pick does nothing for the game on screen, or moves the view to work: the first rule that fits, in order. The view moves only in setEd, at the pick.
+  // Not played never moves the view: it shows the not-started card in the view the page is in.
   const edWhy = (v) => {
-    if (!g || !v) return null;
+    if (!g || !v || v === 'none') return null;
     const ids = GS_ED_SIDS[gid];
     if (!ids) return { text: g.name + ' has no result for an edition, so this doesn\u2019t change it.' };
-    if (v !== 'none' && api.view === 'free' && needsPass) return { view: 'pass', text: g.name + ' needs the Pass, so the view is now Pass.' };
-    if (v === 'none' && api.view === 'pass' && !needsPass) return { view: 'free', text: 'Not played is for a free account, so the view is now Free.' };
-    if (v === 'none' && needsPass) return { text: 'Not played is for a free account, and ' + g.name + ' needs the Pass.' };
+    if (api.view === 'free' && needsPass) return { view: 'pass', text: g.name + ' needs the Pass, so the view is now Pass.' };
     if (edLabel[v] && !ids[v]) return { text: g.name + ' has no ' + edLabel[v] + ' play, so it shows its normal play.' };
     return null;
   };
@@ -61,7 +73,7 @@ export const ConfigExtraBase = () => {
   const noResult = [...names(keys.filter((k) => !GS_ED_SIDS[k] && !GS_GAMES[k].added)), ...(keys.some((k) => !GS_ED_SIDS[k] && GS_GAMES[k].added) ? ['the added games'] : [])];
   const edHint = "This edition's play on every screen that shows it: the day for each daily game, the week for Escape and Delve, the case for Casebook. Hard: a win that took most of the tries or hints."
     + (lostHard.length ? ' ' + list(lostHard) + (lostHard.length > 1 ? ' end' : ' ends') + ' in a loss.' : '') + (noFailed.length ? ' ' + list(noFailed) + (noFailed.length > 1 ? ' have' : ' has') + ' no Failed.' : '')
-    + (noResult.length ? ' ' + list(noResult) + (noResult.length > 1 ? ' have' : ' has') + ' no result for an edition.' : '') + ' Not played applies to a free account. Nothing picked: as seeded.';
+    + (noResult.length ? ' ' + list(noResult) + (noResult.length > 1 ? ' have' : ' has') + ' no result for an edition.' : '') + ' Not played shows the not-started card on every game, in the view you are in. Nothing picked: as seeded.';
   const setSub = (patch) => set(() => { if (api.view === 'out') api.setView('free'); api.setSub(patch); });
   const R = (label, value, onChange, options, hint) => <Row label={label} value={value} onChange={onChange} options={options} hint={hint} />;
   return (

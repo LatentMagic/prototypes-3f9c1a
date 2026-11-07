@@ -10,7 +10,7 @@
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 // text: the line where it isn't the edition's own (a kept session).
 import React from 'react';
-import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsTodayPlayed, gsEdPick, gsStartsOver, gsSessDate, gsFresh, GS_BARROW_CREDIT } from './gs-data.jsx';
+import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsTodayPlayed, gsEdPick, gsStartsOver, gsSessDate, gsFresh, gsNotPlayed, GS_BARROW_CREDIT } from './gs-data.jsx';
 import { GsNotFound } from './gs-site.jsx';
 import { GsCover } from './gs-parts.jsx';
 import { GsGap, gsOr } from './gs-game.jsx';
@@ -146,7 +146,7 @@ const gsEdMine = (gid) => {
 // This account has no play of this edition, by the library page's own tests (lbNow, cprFirstState, review.never, gsFresh): a new account,
 // a game marked never played, a free player's unplayed first Escape room or Delve run, or a seeded daily that Config → This edition: Not played empties.
 const gsNoPlay = (gs, gid) => {
-  if (gsFresh(gs) || (gs.review && gs.review.never === gid)) return true;
+  if (gsFresh(gs) || gsNotPlayed(gs) || (gs.review && gs.review.never === gid)) return true;
   if (gs.view === 'free' && (gid === 'escape' || gid === 'delve')) return cprFirstState(gs, gid) === 'none';
   // The daily puzzles, as lbNow reads them: a play of this edition exists only for a game the account can play.
   return !!PZ[gid] && gs.view !== 'out' && (GS_GAMES[gid].free || gs.view === 'pass') && !gsTodayPlayed(gs)[gid];

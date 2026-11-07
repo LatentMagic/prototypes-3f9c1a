@@ -6,7 +6,7 @@
 // What this player can play of a game: 'all' everything the game offers; 'first' the game's one first edition; 'none' nothing.
 // Read from the game's access (gs-data.jsx): a Pass holder or 'daily', 'all'; 'first', 'first'; 'pass', 'none'.
 import React from 'react';
-import { GS_GAMES, gsLapsed, gsEndedOn, DS, useGs, GS_ART, gsRhythm, gsNorm, gsFresh, gsTodayPlayed, GS_SESSIONS, gsEdPick, gsSessStatus } from './gs-data.jsx';
+import { GS_GAMES, gsLapsed, gsEndedOn, DS, useGs, GS_ART, gsRhythm, gsNorm, gsFresh, gsNotPlayed, gsTodayPlayed, GS_SESSIONS, gsEdPick, gsSessStatus } from './gs-data.jsx';
 import { GsSharePopup } from './gs-session.jsx';
 import { CB_LIVE } from './gs-casebook-data.jsx';
 import { cbStatus, cbWeek, cbGo } from './gs-casebook.jsx';
@@ -315,7 +315,7 @@ export const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => (
 export const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
 // This edition's play of a game for this player, the same on every screen: { status, open } or null when not played (or not playable).
 export const lbNow = (gs, id) => {
-  const done = lbWeekDone(gs); if (gsFresh(gs)) return null;
+  const done = lbWeekDone(gs); if (gsFresh(gs) || gsNotPlayed(gs)) return null;
   if (id === 'casebook') return gs.view === 'pass' ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
   if (id === 'delve') { const sid = done ? gsEdPick('delve', gs) || 'delve' : 'delve-live';
     return gs.view === 'pass' ? { status: done ? gsSessStatus(GS_SESSIONS[sid]) : dvStatus(DV_LIVE), open: () => gs.go('session', { id: sid }) } : null; }

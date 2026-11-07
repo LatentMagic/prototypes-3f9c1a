@@ -8,7 +8,7 @@
 // freeNew: the seeded free player hasn't played today's Guess or Escape's first room, so their New for you
 // holds two games. false: both played, as the seed had them.
 import React from 'react';
-import { GS_TODAY_PLAYED, GS_GAME_ORDER, GS_GAMES, gsLapsed, gsFresh, useGs, GS_NAME } from './gs-data.jsx';
+import { GS_TODAY_PLAYED, GS_GAME_ORDER, GS_GAMES, gsLapsed, gsFresh, gsNotPlayed, useGs, GS_NAME } from './gs-data.jsx';
 import { lbWeekDone, CprPassEnd } from './gs-library.jsx';
 
 export const CPR_DEFAULTS = { bwDone: false, newEds: 'seed', lapsed: 'seed', freeNew: true };
@@ -29,11 +29,11 @@ let CPR_LAPSED;
 export const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
 // Where a free first part stands for this player: 'pass' | 'none' | 'live' | 'done'.
 export const cprFirstState = (gs, id) => {
-  if (gs.view === 'pass') return id === 'barrow' && cprStore.get().bwDone ? 'done' : 'pass';
+  // Config → This edition: Not played is not started in every view, the Pass holder's Barrow ('pass') and a Pass-ended player's included.
+  if (gs.view === 'pass') return id === 'barrow' && cprStore.get().bwDone && !gsNotPlayed(gs) ? 'done' : 'pass';
+  if (gsNotPlayed(gs)) return 'none';
   if (gsLapsed(gs)) return cprLapsedOf(id).used ? 'done' : 'none';
   if (gsFresh(gs)) return 'none';
-  // Config → This edition: Not played reaches a free player's first Escape room and first Delve run too.
-  if ((id === 'escape' || id === 'delve') && gs.view === 'free' && gs.review && gs.review.today === 'none') return 'none';
   if (id === 'barrow') return cprStore.get().bwDone ? 'done' : 'none';
   if (id === 'escape' && cprStore.get().freeNew) return 'none';
   if (!lbWeekDone(gs)) return 'live';

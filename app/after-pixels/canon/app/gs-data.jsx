@@ -78,8 +78,10 @@ export const GS_TODAY_PLAYED = {
   free: { word: 'word-today', mystery: 'mystery-today' },
   pass: { word: 'word-today', groups: 'groups-today', mystery: 'mystery-today', escape: 'escape-week' },
 };
-// This player's plays of this edition. Config "Free account, today: Not played" empties a free account's (state free-not-played-today).
-export const gsTodayPlayed = (gs) => (gsFresh(gs) || (gs.view === 'free' && gs.review && gs.review.today === 'none') ? {} : GS_TODAY_PLAYED[gs.view] || {});
+// Config → This edition: Not played. This edition has no play for this player, whatever the view or the subscription.
+export const gsNotPlayed = (gs) => { gs = gs || window.gsApi; return !!(gs && gs.review && gs.review.today === 'none'); };
+// This player's plays of this edition. Config → This edition: Not played empties them in every view (state free-not-played-today).
+export const gsTodayPlayed = (gs) => (gsFresh(gs) || gsNotPlayed(gs) ? {} : GS_TODAY_PLAYED[gs.view] || {});
 // A new account (made in the prototype, or Config Account: New): nothing played anywhere.
 export const gsFresh = (gs) => { gs = gs || window.gsApi; return !!(gs && gs.user && gs.user.fresh); };
 // The one date a Pass ended on: the day this player's own Pass ended (sub.endedOn, set when it ends in the prototype

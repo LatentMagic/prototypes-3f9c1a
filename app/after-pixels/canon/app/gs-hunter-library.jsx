@@ -4,7 +4,7 @@
 // rather than a streak. The now card is your latest day, with where you left off. Records are invented.
 // ============================================================================
 import React from 'react';
-import { GS_RESULT, GS_SESSIONS, GS_NAME, useGs, DS } from './gs-data.jsx';
+import { GS_RESULT, GS_SESSIONS, GS_NAME, useGs, gsNotPlayed, DS } from './gs-data.jsx';
 import { lbDate, lbMonth, lbDistinct, lbAutoBadges, lbShort, LbRun, lbRunOf, lbAccess, lbPast, LbHead, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edSample } from './gs-history.jsx';
 import { LbNeedsPass } from './gs-pass-library.jsx';
@@ -75,7 +75,7 @@ const HgLibrary = () => {
   if (!pass && !past) return (
     <main key={k} className="gs-wrap gs-main"><LbHead id="hunter" /><div className="lb-lay"><LbNeedsPass id="hunter" ach={HG_ACH} access={access} /></div></main>
   );
-  const plays = phVisible(gs).filter((p) => p.gid === 'hunter'); const latest = plays[0] ? plays[0].src : null;
+  const plays = phVisible(gs).filter((p) => p.gid === 'hunter'); const latest = plays[0] && !gsNotPlayed(gs) ? plays[0].src : null;
   const ach = phAch(gs, 'hunter', HG_ACH);
   return (
     <main key={k} className="gs-wrap gs-main">
