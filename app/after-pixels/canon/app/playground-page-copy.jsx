@@ -93,8 +93,8 @@ const pgcApply = (id, rule) => {
 
 // ---- The line under Delve's Play button for a free player. Each ends "the Pass." (canon links it); the value is the words before. ----
 const PGC_FREE = {
-  current: 'Free with an account. Every other run comes with ',
-  a: 'The first run is free with an account. Every run after it needs ',
+  current: 'The first run is free with an account. Every run after it needs ',
+  old: 'Free with an account. Every other run comes with ',
   b: 'Your first run is free with an account. Play every run after it with ',
   c: 'Create an account and the first run is free. After that, runs come with ',
 };
@@ -170,7 +170,7 @@ export const initPlaygroundPageCopy = () => {
     { key: 'game', label: 'Game', options: [
       { value: 'delve', label: 'Delve' }, { value: 'mystery', label: 'Accuse' }, { value: 'where', label: 'Where' }] },
     { key: 'freeline', label: 'Free line', when: { key: 'game', value: 'delve' }, options: [
-      { value: 'current', label: 'Current' }, { value: 'a', label: '1 First run free' }, { value: 'b', label: '2 Your first run' }, { value: 'c', label: '3 Create an account' }] },
+      { value: 'current', label: 'Current' }, { value: 'old', label: 'Old' }, { value: 'b', label: '2 Your first run' }, { value: 'c', label: '3 Create an account' }] },
   ] });
   if (new URLSearchParams(window.location.search).get('pg') === 'page-copy') window.KitCandidate = { Screen: PgcScreen };
 };

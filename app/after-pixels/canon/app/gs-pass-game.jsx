@@ -26,7 +26,7 @@ export const GsPlayBox = ({ id }) => {
       {passOnly
         ? <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
         : <DS.Button block onClick={() => gs.playReq({ ...gsPlayReq(gs, g.name), page: true })}>{label}</DS.Button>}
-      {small && (small.endsWith(' comes with the Pass.')
+      {small && (/ (comes with|needs) the Pass\.$/.test(small)
         ? <CprPassEnd className="gs-small gs-pu-wrap" text={small} />
         : <p className="gs-small gs-pu-wrap">{small}</p>)}
       <div className="gs-rule" />

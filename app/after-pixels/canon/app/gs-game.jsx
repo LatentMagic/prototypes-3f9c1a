@@ -121,7 +121,7 @@ GS_PAGES = {
     week: { title: 'Today’s case', line: 'Four suspects, four weapons, four places. One accusation.', session: 'mystery-today' },
   },
   escape: {
-    box: { label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every other room comes with the After Pixels Pass.', heading: 'A new room every week', button: 'Play the first room',
+    box: { label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every room after it needs the Pass.', heading: 'A new room every week', button: 'Play the first room',
       steps: [GS_STEP_CONNECT, <><b>Play the first room.</b> Every lock has three hints if you need them.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'A new room every week' }, tags: [],
     pitch: { h: 'The door’s locked and you’re on the wrong side of it.', ps: [
@@ -148,7 +148,7 @@ GS_PAGES = {
     box: { label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       firstStep: <><b>Play the first run</b>, from the first room to its ending.</>,
-      small: 'The first run is free with an account. Every other run comes with the After Pixels Pass.' },
+      small: 'The first run is free with an account. Every run after it needs the Pass.' },
     facts: { often: 'New every week' },
     tags: [],
     pitch: { h: 'A new world every week: fight room by room to the villain at its heart.', ps: [
@@ -160,7 +160,7 @@ GS_PAGES = {
   barrow: {
     box: { label: 'FIRST CHAPTER FREE', heading: 'A campaign in two chapters', button: 'Play Chapter 1',
       steps: [GS_STEP_CONNECT, <><b>Choose a hero</b>, then play at your own pace.</>, <><b>Keep your hero.</b> They carry on into the next chapter.</>],
-      small: 'The first chapter is free with an account. Every other chapter comes with the After Pixels Pass.' },
+      small: 'The first chapter is free with an account. Every chapter after it needs the Pass.' },
     facts: { long: 'Several sessions', often: 'Two chapters, played at your own pace over several sessions' },
     tags: ['Adventure', 'Mist, old stone and honest dice'],
     pitch: { h: 'Bring the bell home. Keep the hero.', ps: [
