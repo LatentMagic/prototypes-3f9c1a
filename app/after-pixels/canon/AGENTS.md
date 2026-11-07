@@ -126,18 +126,20 @@ It tells a stranger what they will do and why they would want it, using only tru
 </important>
 
 <important if="your change makes a situation hard to reach (an account state, a failed play, a game mid-run)">
-Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; that file's header gives the entry's shape and id rules. A state earns an entry only by being hard to reach: a screen you can click to from a registered state gets none. Its id names the situation (`payment-retrying`), never the code's internals, and never a width.
+Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; that file's header gives the entry's shape and id rules. A state earns an entry only by being hard to reach: a screen you can click to from a registered state gets none, except a game's standard states (see the game block below). Its id names the situation (`payment-retrying`), never the code's internals, and never a width.
 </important>
 
 <important if="you are building or testing a game, or adding one">
-Build and test every game against its standard states. A game is not done until each one is reachable from Config and has an entry in `KIT_STATE_REGISTER`, whatever the entry rule above says.
+Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape has no Failed, `GS_ED_SIDS` in `gs-data.jsx`). Make each other state reachable from Config and give it an entry in `KIT_STATE_REGISTER`: register each state on the library game page, with the id `library-<game>-<situation>` per the id rules in `states.jsx`'s header. A new game needs its row in `GS_ED_SIDS` for the This edition picks to reach it. Where This edition cannot reach a state, stage it through the game's own setting: the Config → Escape row, or the Barrow's Config group. A game that needs the Pass cannot take Not played (`gs-config.jsx`).
 
 | State | Meaning | Config → Editions → This edition |
 |---|---|---|
-| Not started | The edition is unplayed (a free account) | Not played |
+| Not started | The edition is unplayed | Not played |
 | In progress | Play has begun and not ended | In progress |
-| Completed | A finished play | Average |
+| Completed | A finished play that ended well | Average |
 | Failed | Play ended in a loss | Failed |
 
-Hard (a win that took most of the tries or hints) and Past day (None, In progress, Finished late) are variants: cover them where the game has one. Each state also has an entry in the `?state=index` list, in the Library group.
+Not played applies to a free account.
+
+Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day (None, In progress, Finished late) are variants: cover them where the game has one.
 </important>
