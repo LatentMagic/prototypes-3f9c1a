@@ -1828,20 +1828,22 @@
   function initGsChats() {
     GS_CHATS = {
       // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
-      // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, RANCH, then the word)
-      // is chosen so that the one guess shown and the share row leave about sixty words open: no chat gives No. 34's word away.
+      // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, GUARD, then the word)
+      // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives No. 34's word away.
       word: [
         { cap: "Ask for today’s word and the board opens on your first guess.", turns: [
           gscU("Play Guess on After Pixels."),
           gscAi("guess", ["Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
-        { cap: "Even a first guess with nothing in place gives you letters to build on.", turns: [
+        { cap: "Each guess builds on the letters the one before it found.", turns: [
           gscU("Spray."),
-          gscAi("guess", ["R and A are in the word, both in other places. S, P and Y aren’t in it.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }])
+          gscAi("guess", ["R and A are in the word, both in other places. S, P and Y aren’t in it.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
+          gscU("Guard."),
+          gscAi("guess", ["A is in place now. R is in the word, but not where you put it. G, U and D aren’t in it.", "You have 4 guesses left."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
         ] },
         { cap: "Your shared result shows how you did and hides every letter.", turns: [
           gscU("Share my result."),
-          gscAi("guess", "You found it in 3 of 6 guesses.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n🟨🟨🟨⬛⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
+          gscAi("guess", "You found it in 3 of 6 guesses, and you didn’t use your hint.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
         ] }
       ],
       groups: [
