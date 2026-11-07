@@ -94,9 +94,9 @@ GS_PAGES = {
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'One hidden word a day: close in on it in six guesses.', ps: [
-      'Everyone playing today is after the same five letters. You have six tries to pin them down and one hint in reserve, so it can be over in one lucky guess or come down to a last-ditch sixth. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.',
-      'Each guess tells you something. A letter turns green in its place, yellow when it belongs somewhere else, and dark when it isn’t in the word at all. Then the choice is yours: spend a guess on fresh letters to learn more, or go for the word while you still have tries in hand. If a gap won’t give, the hint drops one letter into place without costing a guess, though your shared result owns up to it.'] },
-    who: { ai: 'Draws your board after every guess and explains the marks. It isn’t told the word until you’re done, so it can’t let it slip.', server: 'Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you.' },
+      'Everyone playing today is after the same five letters. You have one hint in reserve, and it can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.',
+      'Every guess comes back marked letter by letter, and each mark narrows the field. Keep the letters that landed, shift the ones sitting in the wrong spot and leave out the ones that missed, until only one word fits. Nothing is checked before you commit to a word, so every guess you make is spent.'] },
+    who: { ai: 'Draws the whole board after every guess and gives no help unless you ask. When a word could be a guess or a request, it checks which you mean.', server: 'Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you.' },
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
   },
   groups: {

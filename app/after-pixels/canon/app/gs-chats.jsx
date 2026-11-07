@@ -50,19 +50,16 @@ export const GsChatRow = ({ id }) => {
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsChats() {
 GS_CHATS = {
-  // Guess: the product page's three chats, trimmed from a real play (2026-11-07, No. 34); no event is changed. The winning guess
-  // and the word are left out, so no chat gives the answer away; the share row hides every letter.
+  // Guess: the product page's three chats, cut from a real play (2026-11-07, No. 34): turns 1-2, turn 3 and turn 6, word for word.
+  // Only the first guess is shown and the share row hides every letter, so no chat gives the word away.
   word: [
     { cap: 'Ask for it in your own words, and have the marks explained before your first guess.', turns: [gscU('hey, can we play the daily word game? guess I think it’s called'),
       gscAi('guess', ['Yes, it’s called Guess, and today’s puzzle (#34) is ready. You have six tries to find the hidden five-letter word. You have 1 hint left.', 'The board is empty, so the first guess is yours. What would you like to try?']),
       gscU('how do the marks work?'),
       gscAi('guess', ['Each guess comes back with a mark on every letter:', 'Correct: the letter is in the word and in the right place.', 'Present: the letter is in the word but in a different place.', 'Absent: the letter isn’t in the word.', 'What’s your first guess?'])] },
-    { cap: 'Two guesses in, four letters sit green and one is left to find.', turns: [gscU('ok, crane'),
-      gscAi('guess', ['R and A are in the right places, and N is in the word but in a different spot. C and E aren’t in it.', 'You have 5 guesses left. What’s your next guess?'], [{ type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'CRANE', marks: 'xhhnx' }] }]),
-      gscU('grain'),
-      gscAi('guess', ['New find: R, A, I and N are all in the right places now, and G isn’t in the word.', 'You have 4 guesses left. What’s your next guess?'], [{ type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'CRANE', marks: 'xhhnx' }, { letters: 'GRAIN', marks: 'xhhhh' }] }])] },
-    { cap: 'Finish in three with three to spare, and copy a result that is ready to send.', turns: [
-      gscAi('guess', ['You got it in 3 guesses, with 3 left over. You didn’t use your hint.']),
+    { cap: 'Make one guess and see three letters show up, two of them already in place.', turns: [gscU('ok, crane'),
+      gscAi('guess', ['R and A are in the right places, and N is in the word but in a different spot. C and E aren’t in it.', 'You have 5 guesses left. What’s your next guess?'], [{ type: 'tilegrid', length: 5, count: 1, rows: [{ letters: 'CRANE', marks: 'xhhnx' }] }])] },
+    { cap: 'Ask to share, and your guesses come back as squares you can paste anywhere.', turns: [
       gscU('nice, give me the share thing'),
       gscAi('guess', null, [{ type: 'mono', text: 'Guess No. 34 · 3/6\n\n⬛🟩🟩🟨⬛\n⬛🟩🟩🟩🟩\n🟩🟩🟩🟩🟩' }])] },
   ],

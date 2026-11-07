@@ -1827,8 +1827,8 @@
   };
   function initGsChats() {
     GS_CHATS = {
-      // Guess: the product page's three chats, trimmed from a real play (2026-11-07, No. 34); no event is changed. The winning guess
-      // and the word are left out, so no chat gives the answer away; the share row hides every letter.
+      // Guess: the product page's three chats, cut from a real play (2026-11-07, No. 34): turns 1-2, turn 3 and turn 6, word for word.
+      // Only the first guess is shown and the share row hides every letter, so no chat gives the word away.
       word: [
         { cap: "Ask for it in your own words, and have the marks explained before your first guess.", turns: [
           gscU("hey, can we play the daily word game? guess I think it’s called"),
@@ -1836,14 +1836,11 @@
           gscU("how do the marks work?"),
           gscAi("guess", ["Each guess comes back with a mark on every letter:", "Correct: the letter is in the word and in the right place.", "Present: the letter is in the word but in a different place.", "Absent: the letter isn’t in the word.", "What’s your first guess?"])
         ] },
-        { cap: "Two guesses in, four letters sit green and one is left to find.", turns: [
+        { cap: "Make one guess and see three letters show up, two of them already in place.", turns: [
           gscU("ok, crane"),
-          gscAi("guess", ["R and A are in the right places, and N is in the word but in a different spot. C and E aren’t in it.", "You have 5 guesses left. What’s your next guess?"], [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xhhnx" }] }]),
-          gscU("grain"),
-          gscAi("guess", ["New find: R, A, I and N are all in the right places now, and G isn’t in the word.", "You have 4 guesses left. What’s your next guess?"], [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xhhnx" }, { letters: "GRAIN", marks: "xhhhh" }] }])
+          gscAi("guess", ["R and A are in the right places, and N is in the word but in a different spot. C and E aren’t in it.", "You have 5 guesses left. What’s your next guess?"], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "CRANE", marks: "xhhnx" }] }])
         ] },
-        { cap: "Finish in three with three to spare, and copy a result that is ready to send.", turns: [
-          gscAi("guess", ["You got it in 3 guesses, with 3 left over. You didn’t use your hint."]),
+        { cap: "Ask to share, and your guesses come back as squares you can paste anywhere.", turns: [
           gscU("nice, give me the share thing"),
           gscAi("guess", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛🟩🟩🟨⬛\n⬛🟩🟩🟩🟩\n🟩🟩🟩🟩🟩" }])
         ] }
@@ -6631,10 +6628,10 @@
         facts: { often: "New every day" },
         tags: [],
         pitch: { h: "One hidden word a day: close in on it in six guesses.", ps: [
-          "Everyone playing today is after the same five letters. You have six tries to pin them down and one hint in reserve, so it can be over in one lucky guess or come down to a last-ditch sixth. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.",
-          "Each guess tells you something. A letter turns green in its place, yellow when it belongs somewhere else, and dark when it isn’t in the word at all. Then the choice is yours: spend a guess on fresh letters to learn more, or go for the word while you still have tries in hand. If a gap won’t give, the hint drops one letter into place without costing a guess, though your shared result owns up to it."
+          "Everyone playing today is after the same five letters. You have one hint in reserve, and it can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.",
+          "Every guess comes back marked letter by letter, and each mark narrows the field. Keep the letters that landed, shift the ones sitting in the wrong spot and leave out the ones that missed, until only one word fits. Nothing is checked before you commit to a word, so every guess you make is spent."
         ] },
-        who: { ai: "Draws your board after every guess and explains the marks. It isn’t told the word until you’re done, so it can’t let it slip.", server: "Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you." },
+        who: { ai: "Draws the whole board after every guess and gives no help unless you ask. When a word could be a guess or a request, it checks which you mean.", server: "Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you." },
         week: { title: "Today’s word", line: "Five letters. Six guesses.", session: "word-today" }
       },
       groups: {
