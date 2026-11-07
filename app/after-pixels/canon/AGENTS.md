@@ -126,11 +126,11 @@ It tells a stranger what they will do and why they would want it, using only tru
 </important>
 
 <important if="your change makes a situation hard to reach (an account state, a failed play, a game mid-run)">
-Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; that file's header gives the entry's shape and id rules. A state earns an entry only by being hard to reach: a screen you can click to from a registered state gets none, except a game's standard states: every game is checked against them, so each gets its own address (next block). Its id names the situation (`payment-retrying`), never the code's internals, and never a width.
+Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; that file's header gives the entry's shape and id rules. A state earns an entry only by being hard to reach: a screen you can click to from a registered state gets none. Its id names the situation (`payment-retrying`), never the code's internals, and never a width.
 </important>
 
 <important if="you are building or testing a game, or adding one">
-Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape has no Failed, `GS_ED_SIDS` in `gs-data.jsx`). Make each other state reachable from Config and register it on the library game page with an id of the form `library-<game>-<situation>` (id rules in `states.jsx`'s header). A new game needs its row in `GS_ED_SIDS` for the This edition picks to reach it, and its Not started entry in the per-game list in `states.jsx`. A game with no `GS_ED_SIDS` row, or no pick for a state, stages that state through its own setting: the Config → Escape row, or the Barrow's Config group. A session-page entry is optional and does not stand in for the library-page entry.
+Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape cannot fail: its `GS_ED_SIDS` row in `gs-data.jsx` has no `failed`). Make each other state reachable from Config and register it on the library game page, even where a click from the library list reaches it. `library-<game>` opens the game's seeded play, whichever state that is; each other state adds its name: `-not-started`, `-in-progress`, `-completed`, `-failed`, or a variant's own, such as `-hard`. Ids already registered that name a state another way (`library-mystery-solved`, `library-escape-on-par`) stay: ids are public links. Give a new game its row in `GS_ED_SIDS` so the This edition picks reach it, and its Not started entry in the per-game list in `states.jsx`. Where a game has no row (the Barrow) or its row lacks a pick (Escape's Average), that state is staged from the game's own Config group instead. A session-page entry is optional and does not stand in for the library-page entry.
 
 | State | Meaning | Config → Editions → This edition |
 |---|---|---|
@@ -139,5 +139,5 @@ Build and test every game against the standard states it can have. Skip a state 
 | Completed | A finished play that ended well | Average |
 | Failed | Play ended in a loss | Failed |
 
-Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day's Finished late and In progress are variants: cover them where the game has one.
+Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day's Finished late and In progress are variants: cover them where the game has one. A variant's entry follows its group's ids: `library-delve-hard`, `past-day-word-late-library`.
 </important>
