@@ -5,7 +5,7 @@ import { GsNeedsPass } from './gs-session.jsx';
 import { lbShort, LbBack, LbTools, LbChoice, LbResult } from './gs-library.jsx';
 import { gsPromptText, GsCopyPrompt, GsHowLink, GsPrompt } from './gs-connect.jsx';
 import { edList, edName, edNeedsPass, phHay, phParse, phNorm, phMatch, PhPages, edLabel } from './gs-history.jsx';
-import { GS_PAGES } from './gs-game.jsx';
+import { GS_PAGES, gsGameTime } from './gs-game.jsx';
 
 const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
 // Only the dailies go by number. A game whose editions are named scenarios shows the name alone, no number anywhere.
@@ -13,8 +13,8 @@ const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== 'daily';
 // A named edition carries the game's word and number beside its title: “Room 1 · The Clockmaker’s Study”. A daily's is its number.
 const pgeRowTitle = (gid, e) => (pgeNoNum(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + ' ' + e.n + ' · ' + e.title : e.title ? '#' + e.n + ' · ' + e.name : e.name);
 const pgeAnd = (a) => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
-// What an edition says about itself: the game's edLine (SAMPLE, gs-data.jsx), and how long a play takes (the product page's facts.long).
-const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || '', len: GS_PAGES[e.gid].facts.long, who: null });
+// What an edition says about itself: the game's edLine (SAMPLE, gs-data.jsx), and how long a play takes (gsGameTime, gs-game.jsx).
+const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || '', len: gsGameTime(e.gid), who: null });
 // Only a game with a schedule (gsRhythm) prints an edition's date.
 const pgeDated = (gid) => !!gsRhythm(gid);
 

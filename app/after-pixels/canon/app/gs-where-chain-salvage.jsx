@@ -286,13 +286,13 @@ export function initGsWhereChainSalvage() {
 Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage', common: 'Common' });
 Object.assign(GS_GAMES, {
   where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], edLine: 'You get six guesses to find the country.', daily: true, once: true,
-    blurb: 'Today’s country is somewhere on the map. Find it in six guesses.', tags: ['Daily', '5 min'] }),
+    blurb: 'Today’s country is somewhere on the map. Find it in six guesses.', tags: ['Daily'], size: 'tiny' }),
   chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], edLine: 'You get both ends. Find the words between.', daily: true, once: true,
-    blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily', '10 min'] }),
+    blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily'], size: 'tiny' }),
   salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], edLine: 'You get twenty dives to find five wrecks.', daily: true, once: true,
-    blurb: 'Five wrecks lie under today’s sea. Find them in twenty dives.', tags: ['Daily', '15 min'] }),
+    blurb: 'Five wrecks lie under today’s sea. Find them in twenty dives.', tags: ['Daily'], size: 'tiny' }),
   common: gsAccess({ access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], edLine: 'You get three threads of four items. Name each connection early.', daily: true, once: true,
-    blurb: 'Name the hidden connection between four items, as early as you dare.', tags: ['Daily', '10 min'] }),
+    blurb: 'Name the hidden connection between four items, as early as you dare.', tags: ['Daily'], size: 'tiny' }),
 });
 GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);
 // ---- Art. The static cover is the moving piece's rest pose on its 160 by 120 stage (the same numbers as the CSS in index.html).
@@ -465,7 +465,7 @@ Object.assign(GS_PAGES, {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new country every day', button: 'Play today’s country',
       steps: [GS_STEP_CONNECT, dpStep('Find today’s country.', ' You get six guesses.'), dpSeeResult], small: GS_NAME.where + ' comes only with the After Pixels Pass.' },
-    facts: { long: '5 min', often: 'New every day' }, tags: [],
+    facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Today’s country is out there. Find it in six guesses.', ps: [
       'Name any country. The game tells you how far it lies from today’s, border to border. Zero means the two touch.',
       'You get one hint: the compass direction from your last guess. Your AI isn’t told the answer until you finish. Name your first country.'] },
@@ -476,7 +476,7 @@ Object.assign(GS_PAGES, {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new chain every day', button: 'Play today’s chain',
       steps: [GS_STEP_CONNECT, dpStep('Fill in today’s chain', ', working in from either end.'), dpSeeResult], small: GS_NAME.chain + ' comes only with the After Pixels Pass.' },
-    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Fire joins house, and house joins plant. Find the words in between.', ps: [
       'You see both ends of the line and the first letter of every word between. Guess inward from either end, one word at a time.',
       'A wrong guess shows you the next letter of that word. Run out of letters and the word is given away. Make your first guess.'] },
@@ -487,7 +487,7 @@ Object.assign(GS_PAGES, {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new sea every day', button: 'Play today’s sea',
       steps: [GS_STEP_CONNECT, dpStep('Find today’s five wrecks.', ' You get twenty dives.'), dpSeeResult], small: GS_NAME.salvage + ' comes only with the After Pixels Pass.' },
-    facts: { long: '15 min', often: 'New every day' }, tags: [],
+    facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Five wrecks lie somewhere under you. Find them in twenty dives.', ps: [
       'Call a square from A1 to H8 and dive. Each dive comes back as a hit, a miss or sunk.',
       'Your AI reads the sea back to you after every dive, row by row. The game engine holds the wrecks. Call your first square.'] },
@@ -498,7 +498,7 @@ Object.assign(GS_PAGES, {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'Three new threads every day', button: 'Play today’s threads',
       steps: [GS_STEP_CONNECT, dpStep('Ask for another item', ', guess, or pass.'), dpSeeResult], small: GS_NAME.common + ' comes only with the After Pixels Pass.' },
-    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'An egg, a tortoise and a peanut have something in common. Name it early.', ps: [
       'Each day brings three threads, the same for every player. A thread is four items that share one hidden connection, and the game shows one at a time.',
       'The earlier you name the connection, the more it scores: 5 points from one item, then 3, 2 and 1. You have five guesses for the whole day, right or wrong, and a pass spends none. Early items can point at a wrong connection, so the skill is knowing when to commit. When a thread closes, the game shows the connection, so a thread that scored nothing still ends with the answer.'] },

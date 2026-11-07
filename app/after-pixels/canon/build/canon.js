@@ -216,6 +216,7 @@
     function StatusMessage({ kind = "success", children }) {
       return /* @__PURE__ */ React2.createElement("p", { className: "mcp-msg mcp-msg-" + kind, role: kind === "error" ? "alert" : "status" }, /* @__PURE__ */ React2.createElement(Icon2, { name: G[kind] }), /* @__PURE__ */ React2.createElement("span", null, children));
     }
+    const TIME_CHIPS = { tiny: "5–15 min", small: "25–45 min" };
     function Tag({ kind = "daily", children, icon, go }) {
       const ic = icon || (kind === "locked" ? "lock" : null);
       const g = go ?? (kind === "locked" || kind === "open");
@@ -931,6 +932,7 @@
     ns.Loader = Loader;
     ns.ProgressBar = ProgressBar;
     ns.StatusMessage = StatusMessage;
+    ns.TIME_CHIPS = TIME_CHIPS;
     ns.Tag = Tag;
     ns.Checkbox = Checkbox;
     ns.TextField = TextField;
@@ -1043,13 +1045,13 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily", "10 min"] },
+    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily"], size: "tiny" },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily", "10 min"] },
-    escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly", "About 30 min"] },
+    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily"], size: "tiny" },
+    escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
-    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Get her out before the ritual is complete.", tags: ["Weekly", "25–40 min"] },
+    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Get her out before the ritual is complete.", tags: ["Weekly"], size: "small" },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
     barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
     hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
@@ -1057,7 +1059,7 @@
   const gsAccess = (g) => {
     g.free = g.access === "daily";
     g.first = g.access === "first";
-    g.tags = [{ daily: "FREE", first: "FIRST", pass: "PASS" }[g.access], ...g.tags.filter((t) => !["FREE", "FIRST", "PASS"].includes(t))];
+    g.tags = [{ daily: "FREE", first: "FIRST", pass: "PASS" }[g.access], ...g.tags.filter((t) => !["FREE", "FIRST", "PASS"].includes(t)), ...g.size ? [DS.TIME_CHIPS[g.size]] : []];
     return g;
   };
   Object.values(GS_GAMES).forEach(gsAccess);
@@ -5077,7 +5079,8 @@
         daily: true,
         once: true,
         blurb: "Today’s country is somewhere on the map. Find it in six guesses.",
-        tags: ["Daily", "5 min"]
+        tags: ["Daily"],
+        size: "tiny"
       }),
       chain: gsAccess({
         access: "pass",
@@ -5090,7 +5093,8 @@
         daily: true,
         once: true,
         blurb: "Every word in the line joins the next. Find the ones in between.",
-        tags: ["Daily", "10 min"]
+        tags: ["Daily"],
+        size: "tiny"
       }),
       salvage: gsAccess({
         access: "pass",
@@ -5103,7 +5107,8 @@
         daily: true,
         once: true,
         blurb: "Five wrecks lie under today’s sea. Find them in twenty dives.",
-        tags: ["Daily", "15 min"]
+        tags: ["Daily"],
+        size: "tiny"
       }),
       common: gsAccess({
         access: "pass",
@@ -5116,7 +5121,8 @@
         daily: true,
         once: true,
         blurb: "Name the hidden connection between four items, as early as you dare.",
-        tags: ["Daily", "10 min"]
+        tags: ["Daily"],
+        size: "tiny"
       })
     });
     GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf("mystery") + 1, 0, ...DP_IDS);
@@ -5444,7 +5450,7 @@
           steps: [GS_STEP_CONNECT, dpStep("Find today’s country.", " You get six guesses."), dpSeeResult],
           small: GS_NAME.where + " comes only with the After Pixels Pass."
         },
-        facts: { long: "5 min", often: "New every day" },
+        facts: { often: "New every day" },
         tags: [],
         pitch: { h: "Today’s country is out there. Find it in six guesses.", ps: [
           "Name any country. The game tells you how far it lies from today’s, border to border. Zero means the two touch.",
@@ -5462,7 +5468,7 @@
           steps: [GS_STEP_CONNECT, dpStep("Fill in today’s chain", ", working in from either end."), dpSeeResult],
           small: GS_NAME.chain + " comes only with the After Pixels Pass."
         },
-        facts: { long: "10 min", often: "New every day" },
+        facts: { often: "New every day" },
         tags: [],
         pitch: { h: "Fire joins house, and house joins plant. Find the words in between.", ps: [
           "You see both ends of the line and the first letter of every word between. Guess inward from either end, one word at a time.",
@@ -5480,7 +5486,7 @@
           steps: [GS_STEP_CONNECT, dpStep("Find today’s five wrecks.", " You get twenty dives."), dpSeeResult],
           small: GS_NAME.salvage + " comes only with the After Pixels Pass."
         },
-        facts: { long: "15 min", often: "New every day" },
+        facts: { often: "New every day" },
         tags: [],
         pitch: { h: "Five wrecks lie somewhere under you. Find them in twenty dives.", ps: [
           "Call a square from A1 to H8 and dive. Each dive comes back as a hit, a miss or sunk.",
@@ -5498,7 +5504,7 @@
           steps: [GS_STEP_CONNECT, dpStep("Ask for another item", ", guess, or pass."), dpSeeResult],
           small: GS_NAME.common + " comes only with the After Pixels Pass."
         },
-        facts: { long: "10 min", often: "New every day" },
+        facts: { often: "New every day" },
         tags: [],
         pitch: { h: "An egg, a tortoise and a peanut have something in common. Name it early.", ps: [
           "Each day brings three threads, the same for every player. A thread is four items that share one hidden connection, and the game shows one at a time.",
@@ -6577,10 +6583,11 @@
   const gsFreeSmall = (edition) => edition + ", your streak and your achievements are free with an account.";
   const GS_STEP_CONNECT = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI"), " in about two minutes. ChatGPT, Claude, OpenClaw and others.");
   let GS_PAGES;
+  const gsGameTime = (id) => GS_GAMES[id].size ? DS.TIME_CHIPS[GS_GAMES[id].size] : GS_PAGES[id].facts.long;
   let GS_FACT_LABELS;
   const GsFacts = ({ id }) => {
     const p = GS_PAGES[id];
-    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-factband", "aria-label": "Facts" }, /* @__PURE__ */ React$1.createElement("dl", { className: "gs-facts" }, GS_FACT_LABELS.map(([k, l]) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "gs-fact" }, /* @__PURE__ */ React$1.createElement("dt", { className: "gs-label" }, l.toUpperCase()), /* @__PURE__ */ React$1.createElement("dd", null, gsOr(p.facts[k]))))), p.tags.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "gs-tags gs-fact-tags" }, p.tags.map((t) => /* @__PURE__ */ React$1.createElement(DS.Tag, { key: t, kind: "daily" }, t))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-factband", "aria-label": "Facts" }, /* @__PURE__ */ React$1.createElement("dl", { className: "gs-facts" }, GS_FACT_LABELS.map(([k, l]) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "gs-fact" }, /* @__PURE__ */ React$1.createElement("dt", { className: "gs-label" }, l.toUpperCase()), /* @__PURE__ */ React$1.createElement("dd", null, gsOr(k === "long" ? gsGameTime(id) : p.facts[k]))))), p.tags.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "gs-tags gs-fact-tags" }, p.tags.map((t) => /* @__PURE__ */ React$1.createElement(DS.Tag, { key: t, kind: "daily" }, t))));
   };
   const GsGamePage = ({ id, top }) => {
     const gs = useGs();
@@ -6600,7 +6607,7 @@
           button: "Play today’s word",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play today’s word."), " You get six guesses."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
-        facts: { long: "10 min", often: "New every day" },
+        facts: { often: "New every day" },
         tags: [],
         pitch: { h: "Six guesses to find today’s five-letter word.", ps: [
           "Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get one hint a day, and it places a letter for you.",
@@ -6636,7 +6643,7 @@
           button: "Play today’s case",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Work it out from the clues"), ", then make one accusation."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
-        facts: { long: "10 min", often: "New every day" },
+        facts: { often: "New every day" },
         tags: [],
         pitch: { h: "There’s a body and a story that doesn’t add up.", ps: [
           "You get every clue at the start. Together they leave only one answer: who did it, with what, and where.",
@@ -6655,7 +6662,7 @@
           button: "Play the first room",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the first room."), " Every lock has three hints if you need them."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
-        facts: { long: "About 30 min", often: "A new room every week" },
+        facts: { often: "A new room every week" },
         tags: [],
         pitch: { h: "The door’s locked and you’re on the wrong side of it.", ps: [
           "Examine what’s in the room and find its locks. Each one opens to an answer you work out from clues around you. Carry what you find, set what moves and choose your way on. The room changes as it opens, and a lock may open onto a second room.",
@@ -6694,7 +6701,7 @@
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play this week’s run"), ", from the first room to its ending."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
           small: "The first run is free with an account. Every other run comes with the After Pixels Pass."
         },
-        facts: { long: "25–40 min", often: "One run every week" },
+        facts: { often: "One run every week" },
         tags: ["Adventure", "One run a week · five rooms"],
         pitch: { h: "Get her out before the ritual is complete", ps: [
           "Goblins have dragged the miller’s daughter into the tunnels beneath Ashford Mill, and their shaman means to offer her to his idol at moonrise. Pick a fighter, a rogue or a wizard and make your way room by room: past bone chimes and goblin sentries, through choices about what to search and what to carry, to the shrine where the ritual is under way.",
@@ -6899,7 +6906,7 @@
   const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
   const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== "daily";
   const pgeRowTitle = (gid, e) => pgeNoNum(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + " " + e.n + " · " + e.title : e.title ? "#" + e.n + " · " + e.name : e.name;
-  const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || "", len: GS_PAGES[e.gid].facts.long, who: null });
+  const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || "", len: gsGameTime(e.gid), who: null });
   const pgeDated = (gid) => !!gsRhythm(gid);
   const pgePlayed = (e) => !!e.status && e.status.kind !== "none" && e.status.kind !== "live";
   const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({
