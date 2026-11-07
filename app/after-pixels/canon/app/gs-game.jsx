@@ -113,11 +113,10 @@ GS_PAGES = {
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s case'), heading: 'Play it in your own AI chat', button: 'Play today’s case',
       steps: [GS_STEP_CONNECT, <><b>Work it out from the clues</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'There’s a body and a story that doesn’t add up.', ps: [
-      'You get every clue at the start. Together they leave only one answer: who did it, with what, and where.',
-      'Reason it out from the clues. Two hints help when you’re stuck, and you get one accusation.',
-      'Your AI sets the scene and gives you every clue, but never solves the case for you. The game engine holds the answer. Make your move.'] },
-    who: { ai: 'Sets the scene, gives every clue, and offers a hint when you’re stuck. It never solves the case for you.', server: 'Holds the answer and every clue, works out each hint from the clues itself and checks your accusation part by part.' },
+    pitch: { h: 'One murder a day: work out who did it, with what, and where.', ps: [
+      'The body turns up somewhere new each time: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.',
+      'At first the clues are loose facts, and none of them points anywhere. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold.'] },
+    who: { ai: 'Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.', server: 'Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong.' },
     week: { title: 'Today’s case', line: 'Four suspects, four weapons, four places. One accusation.', session: 'mystery-today' },
   },
   escape: {

@@ -1047,7 +1047,7 @@
   const GS_GAMES = {
     word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily"], size: "tiny" },
+    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "One murder a day: work out who did it, with what, and where.", tags: ["Daily"], size: "tiny" },
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
@@ -1862,35 +1862,33 @@
           gscAi("daily-groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
-      // Accuse as the logic case, with the approved chat change (not yet deployed): the case once, then only what changes; no notebook in chat.
+      // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
+      // edition: the monorepo case generator's deal for an unused seed (900001), dressed in the circus cast, which edition 64 cannot draw (the
+      // circus rests after edition 51). Both hints are that solver's first two steps. No chat names the accusation or the reveal.
       mystery: [
-        { cap: "The case once: suspects, weapons, places and every clue.", turns: [
-          gscU("I want to play Accuse."),
+        { cap: "Every suspect had a reason, so only the clues can tell you who acted on it.", turns: [
+          gscU("Play Accuse on After Pixels."),
           gscAi("accuse", [
-            "Accuse No. 64. A storm-bound weekend at Hollowmere House. Sir Edmund Hale, the host, is dead.",
+            "Accuse No. 64. The Marvello Circus has played its last show, and Signor Marvello, the ringmaster, is dead. He had sold the circus behind everyone’s back.",
             "Each suspect was in a different place with a different weapon. One of them is the killer.",
-            "Suspects: Nora Finch, the housekeeper. Sebastian Wyle, the nephew. Colonel Ashby, the old soldier. Mrs Dorothy Vane, the neighbour.",
-            "Weapons: the candlestick, the iron poker, the curtain cord, the letter opener.",
-            "Places: the library, the conservatory, the wine cellar, the music room.",
-            "Clues:",
-            "1. Nora Finch carried the letter opener.",
-            "2. Whoever was in the wine cellar carried the curtain cord.",
-            "3. Colonel Ashby was not in the wine cellar.",
-            "4. The killer was in the wine cellar.",
-            "5. Mrs Dorothy Vane never carried the curtain cord.",
-            "Every clue is given. Work out from them who did it, with what, and where.",
-            "You have 2 hints and one accusation."
+            "The suspects are Coco, the sad clown; Bella Flint, the trapeze artist; Ivan the Mighty, the strongman; and Madame Zara, the fortune teller. The weapons are the poisoned toffee apple, the iron tent peg, the sleeping draught and the brass bugle. The places are the big top, the cook tent, the generator truck and the costume tent.",
+            "1. Madame Zara handled the brass bugle.",
+            "2. Whoever handled the brass bugle was not in the costume tent.",
+            "3. Coco was in the cook tent.",
+            "4. Ivan the Mighty was in the generator truck.",
+            "5. The killer was in the big top.",
+            "Every clue is given. Work out from them who did it, with what, and where. You have 2 hints and one accusation."
           ])
         ] },
-        { cap: "Your AI never solves the case for you. When you’re stuck, take a hint.", turns: [
-          gscU("Who had the curtain cord? Just tell me."),
-          gscAi("accuse", "That’s yours to work out, but a hint can help. You have 2 hints left. Shall I take one?"),
-          gscU("Yes, give me a hint."),
-          gscAi("accuse", ["Colonel Ashby never carried the curtain cord.", "Hints left: 1"])
+        { cap: "When you’re stuck, a hint gives you the next step, and the case starts moving again.", turns: [
+          gscU("A hint, please."),
+          gscAi("accuse", ["Madame Zara was not in the costume tent.", "You have 1 hint left."]),
+          gscU("One more hint."),
+          gscAi("accuse", ["Coco never handled the brass bugle.", "You have no hints left, and one accusation."])
         ] },
-        { cap: "One accusation, checked part by part.", turns: [
-          gscU("It was Sebastian Wyle, with the curtain cord, in the wine cellar."),
-          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Sebastian Wyle**, with the **curtain cord**, in the **wine cellar**?", facts: [{ label: "Suspect", value: "Sebastian Wyle" }, { label: "Weapon", value: "Curtain cord" }, { label: "Place", value: "Wine cellar" }], note: "This is the one accusation in this case.", confirm: "Confirm accusation", cancel: "Cancel" }])
+        { cap: "Name all three correctly and the case is solved, with every hint you took on your result.", turns: [
+          gscU("Share my result."),
+          gscAi("accuse", "You solved the case with 2 hints.", null, [{ type: "mono", text: "Accuse No. 64 · solved · 2 hints 💡💡\nhttps://afterpixels.com/discover/accuse" }])
         ] }
       ],
       // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
@@ -6663,12 +6661,11 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "There’s a body and a story that doesn’t add up.", ps: [
-          "You get every clue at the start. Together they leave only one answer: who did it, with what, and where.",
-          "Reason it out from the clues. Two hints help when you’re stuck, and you get one accusation.",
-          "Your AI sets the scene and gives you every clue, but never solves the case for you. The game engine holds the answer. Make your move."
+        pitch: { h: "One murder a day: work out who did it, with what, and where.", ps: [
+          "The body turns up somewhere new each time: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.",
+          "At first the clues are loose facts, and none of them points anywhere. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold."
         ] },
-        who: { ai: "Sets the scene, gives every clue, and offers a hint when you’re stuck. It never solves the case for you.", server: "Holds the answer and every clue, works out each hint from the clues itself and checks your accusation part by part." },
+        who: { ai: "Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.", server: "Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong." },
         week: { title: "Today’s case", line: "Four suspects, four weapons, four places. One accusation.", session: "mystery-today" }
       },
       escape: {

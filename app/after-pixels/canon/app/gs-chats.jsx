@@ -1,6 +1,6 @@
 // ============================================================================
 // After Pixels — "In your chat": the DS ChatPictures per game (three, and four for Delve), and the home hero's.
-// Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, trimmed from a real play, and Guess's, written from one.
+// Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, trimmed from a real play, and Guess's and Accuse's, written from one.
 // ============================================================================
 import React from 'react';
 import { GS_ES1, DS, GS_GAMES } from './gs-data.jsx';
@@ -71,23 +71,22 @@ GS_CHATS = {
     { cap: 'Afterwards, your AI explains the groups.', turns: [gscU('Rail, gate, post, panel.'),
       gscAi('daily-groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }, { label: 'Weather', words: ['FROST', 'MIST', 'HAIL', 'SLEET'] }, { label: 'Music', words: ['BASS', 'CHORD', 'SCALE', 'NOTE'] }, { label: 'Parts of a fence', words: ['RAIL', 'GATE', 'POST', 'PANEL'] }], words: [] }])] },
   ],
-  // Accuse as the logic case, with the approved chat change (not yet deployed): the case once, then only what changes; no notebook in chat.
+  // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
+  // edition: the monorepo case generator's deal for an unused seed (900001), dressed in the circus cast, which edition 64 cannot draw (the
+  // circus rests after edition 51). Both hints are that solver's first two steps. No chat names the accusation or the reveal.
   mystery: [
-    { cap: 'The case once: suspects, weapons, places and every clue.', turns: [gscU('I want to play Accuse.'),
-      gscAi('accuse', ['Accuse No. 64. A storm-bound weekend at Hollowmere House. Sir Edmund Hale, the host, is dead.',
+    { cap: 'Every suspect had a reason, so only the clues can tell you who acted on it.', turns: [gscU('Play Accuse on After Pixels.'),
+      gscAi('accuse', ['Accuse No. 64. The Marvello Circus has played its last show, and Signor Marvello, the ringmaster, is dead. He had sold the circus behind everyone’s back.',
         'Each suspect was in a different place with a different weapon. One of them is the killer.',
-        'Suspects: Nora Finch, the housekeeper. Sebastian Wyle, the nephew. Colonel Ashby, the old soldier. Mrs Dorothy Vane, the neighbour.',
-        'Weapons: the candlestick, the iron poker, the curtain cord, the letter opener.',
-        'Places: the library, the conservatory, the wine cellar, the music room.',
-        'Clues:', '1. Nora Finch carried the letter opener.', '2. Whoever was in the wine cellar carried the curtain cord.', '3. Colonel Ashby was not in the wine cellar.', '4. The killer was in the wine cellar.', '5. Mrs Dorothy Vane never carried the curtain cord.',
-        'Every clue is given. Work out from them who did it, with what, and where.',
-        'You have 2 hints and one accusation.'])] },
-    { cap: 'Your AI never solves the case for you. When you’re stuck, take a hint.', turns: [gscU('Who had the curtain cord? Just tell me.'),
-      gscAi('accuse', 'That’s yours to work out, but a hint can help. You have 2 hints left. Shall I take one?'),
-      gscU('Yes, give me a hint.'),
-      gscAi('accuse', ['Colonel Ashby never carried the curtain cord.', 'Hints left: 1'])] },
-    { cap: 'One accusation, checked part by part.', turns: [gscU('It was Sebastian Wyle, with the curtain cord, in the wine cellar.'),
-      gscAi('accuse', null, [{ type: 'confirm', title: 'Confirm your accusation', question: 'Accuse **Sebastian Wyle**, with the **curtain cord**, in the **wine cellar**?', facts: [{ label: 'Suspect', value: 'Sebastian Wyle' }, { label: 'Weapon', value: 'Curtain cord' }, { label: 'Place', value: 'Wine cellar' }], note: 'This is the one accusation in this case.', confirm: 'Confirm accusation', cancel: 'Cancel' }])] },
+        'The suspects are Coco, the sad clown; Bella Flint, the trapeze artist; Ivan the Mighty, the strongman; and Madame Zara, the fortune teller. The weapons are the poisoned toffee apple, the iron tent peg, the sleeping draught and the brass bugle. The places are the big top, the cook tent, the generator truck and the costume tent.',
+        '1. Madame Zara handled the brass bugle.', '2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.',
+        'Every clue is given. Work out from them who did it, with what, and where. You have 2 hints and one accusation.'])] },
+    { cap: 'When you’re stuck, a hint gives you the next step, and the case starts moving again.', turns: [gscU('A hint, please.'),
+      gscAi('accuse', ['Madame Zara was not in the costume tent.', 'You have 1 hint left.']),
+      gscU('One more hint.'),
+      gscAi('accuse', ['Coco never handled the brass bugle.', 'You have no hints left, and one accusation.'])] },
+    { cap: 'Name all three correctly and the case is solved, with every hint you took on your result.', turns: [gscU('Share my result.'),
+      gscAi('accuse', 'You solved the case with 2 hints.', null, [{ type: 'mono', text: 'Accuse No. 64 · solved · 2 hints 💡💡\nhttps://afterpixels.com/discover/accuse' }])] },
   ],
   // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
   escape: [
