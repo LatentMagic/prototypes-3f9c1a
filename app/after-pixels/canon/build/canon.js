@@ -1811,12 +1811,10 @@
     gscU("Show Maeve the bar ledger."),
     gscAi("casebook", "“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”", [{ type: "clues", groups: [{ kind: "Evidence", facts: ["The bar ledger"] }, { kind: "Statements", facts: [{ text: "Maeve Doyle: lie exposed", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "5 of 16" }] }])
   ];
-  const GSC_DV_FIGHT_CAP = "Try a bold move or a quick blow, and a lucky 20 lays the second guard flat.";
+  const GSC_DV_FIGHT_CAP = "Say how you want to fight the guards.";
   const GSC_DV_FIGHT = [
-    gscU("I’ll try a somersault over the first guard and hit him"),
-    gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze. The second guard swings his spear at you, but you’re no longer where you were, and the point scrapes stone.", null, [{ type: "mono", text: "Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls\nGuard’s counter: d20 11 against defence 14\nMiss · no damage" }]),
-    gscU("now a plain quick hit on the other guard"),
-    gscAi("delve", "You dart in and land a quick blow, and the stars come out of that helmet. A natural 20 lands twice as hard, and the second guard goes down groaning beside the first.", null, [{ type: "mono", text: "d20 20 +3 Agility = 23 against DC 12\nCritical hit · the guards are defeated" }])
+    gscU("I somersault over the first guard and kick him."),
+    gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze. The second guard swings his spear at you, but you’re no longer where you were, and the point scrapes stone.", null, [{ type: "mono", text: "Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls" }])
   ];
   let GS_CHATS;
   let GS_HERO_CHAT;
@@ -1916,32 +1914,32 @@
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
       ],
-      // Delve: the product page's four chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
+      // Delve: the product page's four chats, written for the page from a real playtest (2026-11-06) and the game spec: every turn shows something the game really does, and no edition secret appears.
       // Each block is the design system's mono block, one line per row.
       delve: [
         { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
-          gscU("hey, I want to play Delve"),
+          gscU("Play Delve on After Pixels."),
           gscAi(
             "delve",
-            ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to him as tributes, a sort of payment. They are fed to the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
+            ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
             null,
             [{ type: "mono", text: "Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12" }]
           ),
-          gscU("I’ll go with Ione"),
-          gscAi("delve", "You are Ione, a bull-leaper. You trained to somersault over charging bulls, so you are quick and light, and very hard to hit.")
+          gscU("Ione."),
+          gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
         ] },
-        { cap: "A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.", turns: [
-          gscU("I watch the walls for a bit, then dart through the gap that stays open longest"),
+        { cap: "A miss costs you health. Spend your inspiration on the retry.", turns: [
+          gscU("I wait for a gap in the moving walls, then dart through."),
           gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "mono", text: "d20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage" }]),
-          gscU("ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up"),
+          gscU("I try again and spend my inspiration."),
           gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "mono", text: "d20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent" }])
         ] },
         { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
-        { cap: "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20.", turns: [
-          gscU("go for the somersault to finish it"),
+        { cap: "Your result is ready to post, with one mark for every roll you made.", turns: [
+          gscU("Finish it with the somersault."),
           gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
-          gscU("nice, share my result"),
-          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ the Minotaur beaten · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩" }])
+          gscU("Share my result."),
+          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
         ] }
       ],
       barrow: [
@@ -6720,7 +6718,7 @@
           "One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.",
           "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."
         ] },
-        who: { ai: "Tells the story as your Game Master, voices everyone you meet, and never makes a choice for you.", server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in." },
+        who: { ai: "Tells the story as your Game Master, voices everyone you meet, and asks what you do next.", server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in." },
         week: { title: "This week’s run", line: "Get Elsie out of the warren beneath Ashford Mill before the ritual is complete.", session: "delve" }
       },
       barrow: {
@@ -10714,40 +10712,40 @@
     h: "A new world every week: fight room by room to the villain at its heart.",
     blurb: "h",
     ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
-    caps: ["Each hero’s strengths, health and defence, side by side before you pick.", "A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.", GSC_DV_FIGHT_CAP, "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20."],
-    // The four chats, trimmed from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md).
-    // Trimmed and reformatted for the bubble; no event is changed. No edition secret appears.
+    caps: ["See each hero’s strengths, health and defence side by side before you pick.", "A miss costs you health. Spend your inspiration on the retry.", GSC_DV_FIGHT_CAP, "Your result is ready to post, with one mark for every roll you made."],
+    // The four chats, written for the page from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md) and the game spec.
+    // Every event is true to the play; no edition secret appears.
     chats: [
       [
-        gscU("hey, I want to play Delve"),
+        gscU("Play Delve on After Pixels."),
         gscAi(
           "delve",
-          ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to him as tributes, a sort of payment. They are fed to the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
+          ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
           null,
           [{ type: "mono", text: "Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12" }]
         ),
-        gscU("I’ll go with Ione"),
-        gscAi("delve", "You are Ione, a bull-leaper. You trained to somersault over charging bulls, so you are quick and light, and very hard to hit.")
+        gscU("Ione."),
+        gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
       ],
       [
-        gscU("I watch the walls for a bit, then dart through the gap that stays open longest"),
+        gscU("I wait for a gap in the moving walls, then dart through."),
         gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "mono", text: "d20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage" }]),
-        gscU("ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up"),
+        gscU("I try again and spend my inspiration."),
         gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "mono", text: "d20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent" }])
       ],
       GSC_DV_FIGHT,
       [
-        gscU("go for the somersault to finish it"),
+        gscU("Finish it with the somersault."),
         gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
-        gscU("nice, share my result"),
-        gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ the Minotaur beaten · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩" }])
+        gscU("Share my result."),
+        gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
       ]
     ],
     tags: [],
     facts: { long: "25–45 min", often: "New every week" },
     noRun: true,
     genreOnly: true,
-    ai: "Tells the story as your Game Master, voices everyone you meet, and never makes a choice for you.",
+    ai: "Tells the story as your Game Master, voices everyone you meet, and asks what you do next.",
     server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in."
   };
   const PGC_COPY = {

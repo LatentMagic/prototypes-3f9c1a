@@ -1,6 +1,6 @@
 // ============================================================================
 // After Pixels — "In your chat": the DS ChatPictures per game (three, and four for Delve), and the home hero's.
-// Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, trimmed from a real play, and Guess's and Accuse's, written from one.
+// Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, Guess's and Accuse's, written from a real play.
 // ============================================================================
 import React from 'react';
 import { GS_ES1, DS, GS_GAMES } from './gs-data.jsx';
@@ -18,12 +18,10 @@ const GSC_CB_SEARCH = [gscU('Ask Maeve Doyle where she was at ten.'),
 const GSC_CB_LIE = [gscU('Show Maeve the bar ledger.'),
   gscAi('casebook', '“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”', [{ type: 'clues', groups: [{ kind: 'Evidence', facts: ['The bar ledger'] }, { kind: 'Statements', facts: [{ text: 'Maeve Doyle: lie exposed', new: true }] }] }, { type: 'stats', items: [{ label: 'Turn', value: '5 of 16' }] }])];
 
-// Delve's fight chat, trimmed from the same playtest (turns 10 and 11); no event is changed and no edition secret appears. Shared with the page-copy playground.
-export const GSC_DV_FIGHT_CAP = 'Try a bold move or a quick blow, and a lucky 20 lays the second guard flat.';
-export const GSC_DV_FIGHT = [gscU('I’ll try a somersault over the first guard and hit him'),
-  gscAi('delve', 'You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze. The second guard swings his spear at you, but you’re no longer where you were, and the point scrapes stone.', null, [{ type: 'mono', text: 'Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls\nGuard’s counter: d20 11 against defence 14\nMiss · no damage' }]),
-  gscU('now a plain quick hit on the other guard'),
-  gscAi('delve', 'You dart in and land a quick blow, and the stars come out of that helmet. A natural 20 lands twice as hard, and the second guard goes down groaning beside the first.', null, [{ type: 'mono', text: 'd20 20 +3 Agility = 23 against DC 12\nCritical hit · the guards are defeated' }])];
+// Delve's fight chat, written for the page from the same playtest; every event is true to it and no edition secret appears. Shared with the page-copy playground.
+export const GSC_DV_FIGHT_CAP = 'Say how you want to fight the guards.';
+export const GSC_DV_FIGHT = [gscU('I somersault over the first guard and kick him.'),
+  gscAi('delve', 'You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze. The second guard swings his spear at you, but you’re no longer where you were, and the point scrapes stone.', null, [{ type: 'mono', text: 'Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls' }])];
 
 export let GS_CHATS;
 export let GS_HERO_CHAT;
@@ -105,23 +103,23 @@ GS_CHATS = {
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
   ],
-  // Delve: the product page's four chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
+  // Delve: the product page's four chats, written for the page from a real playtest (2026-11-06) and the game spec: every turn shows something the game really does, and no edition secret appears.
   // Each block is the design system's mono block, one line per row.
   delve: [
-    { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('hey, I want to play Delve'),
-      gscAi('delve', ['Delve #5: The Labyrinth of Crete', 'Every year King Minos of Crete makes Athens send young people to him as tributes, a sort of payment. They are fed to the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.', 'Choose your hero:'],
+    { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('Play Delve on After Pixels.'),
+      gscAi('delve', ['Delve #5: The Labyrinth of Crete', 'Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.', 'Choose your hero:'],
         null, [{ type: 'mono', text: 'Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12' }]),
-      gscU('I’ll go with Ione'),
-      gscAi('delve', 'You are Ione, a bull-leaper. You trained to somersault over charging bulls, so you are quick and light, and very hard to hit.')] },
-    { cap: 'A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.', turns: [gscU('I watch the walls for a bit, then dart through the gap that stays open longest'),
+      gscU('Ione.'),
+      gscAi('delve', 'You are Ione, a bull-leaper, quick and light and very hard to hit.')] },
+    { cap: 'A miss costs you health. Spend your inspiration on the retry.', turns: [gscU('I wait for a gap in the moving walls, then dart through.'),
       gscAi('delve', 'You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.', null, [{ type: 'mono', text: 'd20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage' }]),
-      gscU('ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up'),
+      gscU('I try again and spend my inspiration.'),
       gscAi('delve', 'The stone shudders and then stops, with a straight path laid down the hall.', null, [{ type: 'mono', text: 'd20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent' }])] },
     { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
-    { cap: 'The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20.', turns: [gscU('go for the somersault to finish it'),
+    { cap: 'Your result is ready to post, with one mark for every roll you made.', turns: [gscU('Finish it with the somersault.'),
       gscAi('delve', ['The Minotaur goes down, and this time it does not get up. The den goes quiet at last.', 'You won Delve #5. The next run opens next week.']),
-      gscU('nice, share my result'),
-      gscAi('delve', 'Here’s your result, ready to copy:', null, [{ type: 'mono', text: 'The Labyrinth of Crete\nIone the Bull-leaper · ✅ the Minotaur beaten · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩' }])] },
+      gscU('Share my result.'),
+      gscAi('delve', 'Here’s your result, ready to copy:', null, [{ type: 'mono', text: 'The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve' }])] },
   ],
   barrow: [
     { cap: 'Choose a hero. The engine sets the world.', turns: [gscU('Play The Barrow of Hollowmere on After Pixels.'),
