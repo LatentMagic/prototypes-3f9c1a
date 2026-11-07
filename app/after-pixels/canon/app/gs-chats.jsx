@@ -1,5 +1,5 @@
 // ============================================================================
-// After Pixels — "In your chat": three DS ChatPictures per game, and the home hero's.
+// After Pixels — "In your chat": the DS ChatPictures per game (three, and four for Delve), and the home hero's.
 // Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, which are trimmed from a real playtest.
 // ============================================================================
 import React from 'react';
@@ -17,6 +17,13 @@ const GSC_CB_SEARCH = [gscU('Ask Maeve Doyle where she was at ten.'),
   gscAi('casebook', 'The last drink on Maeve’s tab was poured at 9.40.', [{ type: 'clues', groups: [{ kind: 'Evidence', facts: [{ text: 'The bar ledger', new: true }] }] }, { type: 'stats', items: [{ label: 'Turn', value: '4 of 16' }] }])];
 const GSC_CB_LIE = [gscU('Show Maeve the bar ledger.'),
   gscAi('casebook', '“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”', [{ type: 'clues', groups: [{ kind: 'Evidence', facts: ['The bar ledger'] }, { kind: 'Statements', facts: [{ text: 'Maeve Doyle: lie exposed', new: true }] }] }, { type: 'stats', items: [{ label: 'Turn', value: '5 of 16' }] }])];
+
+// Delve's fight chat, trimmed from the same playtest (turns 10 and 11); no event is changed and no edition secret appears. Shared with the page-copy playground.
+export const GSC_DV_FIGHT_CAP = 'Try a bold move or a quick blow, and a lucky 20 lays the second guard flat.';
+export const GSC_DV_FIGHT = [gscU('I’ll try a somersault over the first guard and hit him'),
+  gscAi('delve', 'You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze. The second guard swings his spear at you, but you’re no longer where you were, and the point scrapes stone.', null, [{ type: 'mono', text: 'Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls\nGuard’s counter: d20 11 against defence 14\nMiss · no damage' }]),
+  gscU('now a plain quick hit on the other guard'),
+  gscAi('delve', 'You dart in and land a quick blow, and the stars come out of that helmet. A natural 20 lands twice as hard, and the second guard goes down groaning beside the first.', null, [{ type: 'mono', text: 'd20 20 +3 Agility = 23 against DC 12\nCritical hit · the guards are defeated' }])];
 
 export let GS_CHATS;
 export let GS_HERO_CHAT;
@@ -94,7 +101,7 @@ GS_CHATS = {
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
   ],
-  // Delve: the product page's chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
+  // Delve: the product page's four chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
   // Each block is the design system's mono block, one line per row.
   delve: [
     { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('hey, I want to play Delve'),
@@ -106,6 +113,7 @@ GS_CHATS = {
       gscAi('delve', 'You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.', null, [{ type: 'mono', text: 'd20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage' }]),
       gscU('ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up'),
       gscAi('delve', 'The stone shudders and then stops, with a straight path laid down the hall.', null, [{ type: 'mono', text: 'd20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent' }])] },
+    { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
     { cap: 'The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20.', turns: [gscU('go for the somersault to finish it'),
       gscAi('delve', ['The Minotaur goes down, and this time it does not get up. The den goes quiet at last.', 'You won Delve #5. The next run opens next week.']),
       gscU('nice, share my result'),

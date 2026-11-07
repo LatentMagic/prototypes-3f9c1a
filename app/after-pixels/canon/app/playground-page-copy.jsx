@@ -8,7 +8,7 @@
 import React from 'react';
 import { GS_GAMES, DS } from './gs-data.jsx';
 import { GS_PAGES, GsGamePage } from './gs-game.jsx';
-import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
+import { GS_CHATS, GSC_DV_FIGHT, GSC_DV_FIGHT_CAP, gscU, gscAi } from './gs-chats.jsx';
 import { GsGameCard } from './gs-pass-home.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { pgRegister, usePgSetting } from './playground.jsx';
@@ -18,8 +18,8 @@ import { pgRegister, usePgSetting } from './playground.jsx';
 const PGC_DELVE = {
   h: 'A new world every week: fight room by room to the villain at its heart.', blurb: 'h',
   ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
-  caps: ["Each hero’s strengths, health and defence, side by side before you pick.", "A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.", "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20."],
-  // The three chats, trimmed from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md).
+  caps: ["Each hero’s strengths, health and defence, side by side before you pick.", "A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.", GSC_DV_FIGHT_CAP, "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20."],
+  // The four chats, trimmed from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md).
   // Trimmed and reformatted for the bubble; no event is changed. No edition secret appears.
   chats: [
     [gscU('hey, I want to play Delve'),
@@ -31,6 +31,7 @@ const PGC_DELVE = {
       gscAi('delve', 'You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.', null, [{ type: 'mono', text: 'd20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage' }]),
       gscU('ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up'),
       gscAi('delve', 'The stone shudders and then stops, with a straight path laid down the hall.', null, [{ type: 'mono', text: 'd20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent' }])],
+    GSC_DV_FIGHT,
     [gscU('go for the somersault to finish it'),
       gscAi('delve', ['The Minotaur goes down, and this time it does not get up. The den goes quiet at last.', 'You won Delve #5. The next run opens next week.']),
       gscU('nice, share my result'),

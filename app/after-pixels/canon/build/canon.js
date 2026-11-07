@@ -1811,6 +1811,13 @@
     gscU("Show Maeve the bar ledger."),
     gscAi("casebook", "“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”", [{ type: "clues", groups: [{ kind: "Evidence", facts: ["The bar ledger"] }, { kind: "Statements", facts: [{ text: "Maeve Doyle: lie exposed", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "5 of 16" }] }])
   ];
+  const GSC_DV_FIGHT_CAP = "Try a bold move or a quick blow, and a lucky 20 lays the second guard flat.";
+  const GSC_DV_FIGHT = [
+    gscU("I’ll try a somersault over the first guard and hit him"),
+    gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze. The second guard swings his spear at you, but you’re no longer where you were, and the point scrapes stone.", null, [{ type: "mono", text: "Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls\nGuard’s counter: d20 11 against defence 14\nMiss · no damage" }]),
+    gscU("now a plain quick hit on the other guard"),
+    gscAi("delve", "You dart in and land a quick blow, and the stars come out of that helmet. A natural 20 lands twice as hard, and the second guard goes down groaning beside the first.", null, [{ type: "mono", text: "d20 20 +3 Agility = 23 against DC 12\nCritical hit · the guards are defeated" }])
+  ];
   let GS_CHATS;
   let GS_HERO_CHAT;
   const GsChatPic = ({ turns, height, width, label }) => /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { turns, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height, width, label });
@@ -1908,7 +1915,7 @@
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
       ],
-      // Delve: the product page's chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
+      // Delve: the product page's four chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
       // Each block is the design system's mono block, one line per row.
       delve: [
         { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
@@ -1928,6 +1935,7 @@
           gscU("ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up"),
           gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "mono", text: "d20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent" }])
         ] },
+        { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
         { cap: "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20.", turns: [
           gscU("go for the somersault to finish it"),
           gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
@@ -10705,8 +10713,8 @@
     h: "A new world every week: fight room by room to the villain at its heart.",
     blurb: "h",
     ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
-    caps: ["Each hero’s strengths, health and defence, side by side before you pick.", "A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.", "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20."],
-    // The three chats, trimmed from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md).
+    caps: ["Each hero’s strengths, health and defence, side by side before you pick.", "A miss costs you. Spend your inspiration to try again: two dice, and the better one counts.", GSC_DV_FIGHT_CAP, "The run ends with its result, and a row of your rolls to post: green landed, red missed, a spark for a 20."],
+    // The four chats, trimmed from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md).
     // Trimmed and reformatted for the bubble; no event is changed. No edition secret appears.
     chats: [
       [
@@ -10726,6 +10734,7 @@
         gscU("ok try again, I’ll use my inspiration this time and vault through when the carved wall lines up"),
         gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "mono", text: "d20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent" }])
       ],
+      GSC_DV_FIGHT,
       [
         gscU("go for the somersault to finish it"),
         gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
