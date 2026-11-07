@@ -1045,7 +1045,7 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "One hidden word a day, and six guesses to close in on it.", tags: ["Daily"], size: "tiny" },
+    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "One hidden word a day: close in on it in six guesses.", tags: ["Daily"], size: "tiny" },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
     mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily"], size: "tiny" },
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
@@ -6630,7 +6630,7 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "One hidden word a day, and six guesses to close in on it.", ps: [
+        pitch: { h: "One hidden word a day: close in on it in six guesses.", ps: [
           "Everyone playing today is after the same five letters. You have six tries to pin them down and one hint in reserve, so it can be over in one lucky guess or come down to a last-ditch sixth. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.",
           "Each guess tells you something. A letter turns green in its place, yellow when it belongs somewhere else, and dark when it isn’t in the word at all. Then the choice is yours: spend a guess on fresh letters to learn more, or go for the word while you still have tries in hand. If a gap won’t give, the hint drops one letter into place without costing a guess, though your shared result owns up to it."
         ] },
