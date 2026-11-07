@@ -51,17 +51,15 @@ export const GsChatRow = ({ id }) => {
 export function initGsChats() {
 GS_CHATS = {
   // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
-  // every turn shows something the game really does, in fewer words. Only the first guess is shown, the result is the
-  // count alone and the share row (the spec's format) hides every letter, so no chat gives the word away.
+  // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, RANCH, then the word)
+  // is chosen so that the one guess shown and the share row leave about sixty words open: no chat gives No. 34's word away.
   word: [
-    { cap: 'Start on an empty board, with six tries and one hint.', turns: [gscU('Play Guess on After Pixels.'),
-      gscAi('guess', ['Guess No. 34 is ready. You have six tries to find the hidden five-letter word, and 1 hint.', 'What’s your first guess?'])] },
-    { cap: 'One guess finds three of the five letters, and two are already in place.', turns: [gscU('Crane.'),
-      gscAi('guess', ['R and A are in place. N is in the word, somewhere else.', '5 guesses left.'], [{ type: 'tilegrid', length: 5, count: 1, rows: [{ letters: 'CRANE', marks: 'xhhnx' }] }])] },
-    { cap: 'Solve it in three, with three guesses left over.', turns: [
-      gscAi('guess', 'Solved in 3 of 6 guesses.'),
-      gscU('Share my result.'),
-      gscAi('guess', null, [{ type: 'mono', text: 'Guess No. 34 · 3/6\n\n⬛🟩🟩🟨⬛\n⬛🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess' }])] },
+    { cap: 'Ask for today’s word and start guessing straight away.', turns: [gscU('Play Guess on After Pixels.'),
+      gscAi('guess', ['Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.', 'What’s your first guess?'])] },
+    { cap: 'Even a first guess with nothing in place gives you letters to build on.', turns: [gscU('Spray.'),
+      gscAi('guess', ['R and A are in the word, both in other places. S, P and Y aren’t in it.', 'You have 5 guesses left.'], [{ type: 'tilegrid', length: 5, count: 1, rows: [{ letters: 'SPRAY', marks: 'xxnnx' }] }])] },
+    { cap: 'Post your board as coloured squares, and no one sees a letter.', turns: [gscU('Share my result.'),
+      gscAi('guess', 'You found it in 3 of 6 guesses.', null, [{ type: 'mono', text: 'Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n🟨🟨🟨⬛⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess' }])] },
   ],
   groups: [
     { cap: 'Sixteen words hide four groups of four.', turns: [gscU('Play Daily Groups on After Pixels.'),

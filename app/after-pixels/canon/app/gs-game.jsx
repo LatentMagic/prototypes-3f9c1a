@@ -94,9 +94,9 @@ GS_PAGES = {
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'One hidden word a day: find it in six guesses.', ps: [
-      'The word is five letters long, and you have one hint in reserve. It can be over in one lucky guess or come down to your very last try.',
-      'The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, and too few guesses left to try them all. The one letter you still need can take longer than the other four.'] },
-    who: { ai: 'Draws the whole board after every guess and gives no help unless you ask.', server: 'Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you.' },
+      'The word is five letters long, and you have one hint, which shows you where a letter goes. It can be over on your first guess or come down to your last.',
+      'The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, with too few guesses left to try them all. Your hint would settle it, unless you spent it earlier.'] },
+    who: { ai: 'Draws the whole board after every guess and gives no help unless you ask. Before your first guess, it explains how each guess is marked.', server: 'Keeps the word secret, marks every letter of every guess, counts your guesses and picks the letter a hint gives you.' },
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
   },
   groups: {

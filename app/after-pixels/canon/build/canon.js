@@ -1828,21 +1828,20 @@
   function initGsChats() {
     GS_CHATS = {
       // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
-      // every turn shows something the game really does, in fewer words. Only the first guess is shown, the result is the
-      // count alone and the share row (the spec's format) hides every letter, so no chat gives the word away.
+      // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, RANCH, then the word)
+      // is chosen so that the one guess shown and the share row leave about sixty words open: no chat gives No. 34's word away.
       word: [
-        { cap: "Start on an empty board, with six tries and one hint.", turns: [
+        { cap: "Ask for today’s word and start guessing straight away.", turns: [
           gscU("Play Guess on After Pixels."),
-          gscAi("guess", ["Guess No. 34 is ready. You have six tries to find the hidden five-letter word, and 1 hint.", "What’s your first guess?"])
+          gscAi("guess", ["Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
-        { cap: "One guess finds three of the five letters, and two are already in place.", turns: [
-          gscU("Crane."),
-          gscAi("guess", ["R and A are in place. N is in the word, somewhere else.", "5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "CRANE", marks: "xhhnx" }] }])
+        { cap: "Even a first guess with nothing in place gives you letters to build on.", turns: [
+          gscU("Spray."),
+          gscAi("guess", ["R and A are in the word, both in other places. S, P and Y aren’t in it.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }])
         ] },
-        { cap: "Solve it in three, with three guesses left over.", turns: [
-          gscAi("guess", "Solved in 3 of 6 guesses."),
+        { cap: "Post your board as coloured squares, and no one sees a letter.", turns: [
           gscU("Share my result."),
-          gscAi("guess", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛🟩🟩🟨⬛\n⬛🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
+          gscAi("guess", "You found it in 3 of 6 guesses.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n🟨🟨🟨⬛⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
         ] }
       ],
       groups: [
@@ -6629,10 +6628,10 @@
         facts: { often: "New every day" },
         tags: [],
         pitch: { h: "One hidden word a day: find it in six guesses.", ps: [
-          "The word is five letters long, and you have one hint in reserve. It can be over in one lucky guess or come down to your very last try.",
-          "The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, and too few guesses left to try them all. The one letter you still need can take longer than the other four."
+          "The word is five letters long, and you have one hint, which shows you where a letter goes. It can be over on your first guess or come down to your last.",
+          "The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, with too few guesses left to try them all. Your hint would settle it, unless you spent it earlier."
         ] },
-        who: { ai: "Draws the whole board after every guess and gives no help unless you ask.", server: "Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you." },
+        who: { ai: "Draws the whole board after every guess and gives no help unless you ask. Before your first guess, it explains how each guess is marked.", server: "Keeps the word secret, marks every letter of every guess, counts your guesses and picks the letter a hint gives you." },
         week: { title: "Today’s word", line: "Five letters. Six guesses.", session: "word-today" }
       },
       groups: {
