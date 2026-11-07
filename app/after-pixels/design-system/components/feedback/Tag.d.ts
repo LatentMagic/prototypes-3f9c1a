@@ -7,4 +7,6 @@ export interface TagProps{
   /** Trailing next chevron. Defaults to true for locked and open, false otherwise. */
   go?:boolean;
 }
+/** The standard time chip text by game size. */
+export declare const TIME_CHIPS:{tiny:'5–15 min';small:'25–45 min'};
 export declare function Tag(props:TagProps):JSX.Element;

@@ -15,6 +15,7 @@ GameCard is the one game card. It works anywhere; inside a CardRow every card is
   Coming soon has its own card, SoonCard. Don't write a page's own game card.
 - Name and blurb sit snug under the picture, whatever the name's length.
 - Chips: the row shares one chip line, as tall as the tallest chip set, and each card's chips are centred in it. One line of chips sits level with the middle of another card's two, with no blank space under it. This has regressed before: never pin chips to the card's bottom edge, and never give the card its own row heights inside a CardRow.
+- A sized game's time chip is its size's chip, `Tag` `kind="daily"` with `TIME_CHIPS[size]` (see Tag); never type its time.
 - Every card in a row is a GameCard. Don't wrap the slots in extra boxes.
 - Don't stretch, grow or re-size the picture to fill height.
 - Write names to two lines at most, blurbs to two lines and tags to one line at the narrowest card (220px). Longer copy still lines up, but it makes every card in the row taller.

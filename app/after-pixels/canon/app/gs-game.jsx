@@ -20,6 +20,8 @@ const gsFreeSmall = (edition) => edition + ', your streak and your achievements 
 export const GS_STEP_CONNECT = <><b>Connect your AI</b> in about two minutes. ChatGPT, Claude, OpenClaw and others.</>;
 
 export let GS_PAGES;
+// How long a play takes: a sized game's size chip, else the game's own text on its page. Read by the product page and the editions panel.
+export const gsGameTime = (id) => (GS_GAMES[id].size ? DS.TIME_CHIPS[GS_GAMES[id].size] : GS_PAGES[id].facts.long);
 let GS_FACT_LABELS;
 
 const GsFacts = ({ id }) => {
@@ -28,7 +30,7 @@ const GsFacts = ({ id }) => {
     <section className="gs-factband" aria-label="Facts">
       <dl className="gs-facts">
         {GS_FACT_LABELS.map(([k, l]) => (
-          <div key={k} className="gs-fact"><dt className="gs-label">{l.toUpperCase()}</dt><dd>{gsOr(p.facts[k])}</dd></div>
+          <div key={k} className="gs-fact"><dt className="gs-label">{l.toUpperCase()}</dt><dd>{gsOr(k === 'long' ? gsGameTime(id) : p.facts[k])}</dd></div>
         ))}
       </dl>
       {p.tags.length > 0 && <div className="gs-tags gs-fact-tags">{p.tags.map((t) => <DS.Tag key={t} kind="daily">{t}</DS.Tag>)}</div>}
@@ -99,7 +101,7 @@ GS_PAGES = {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s word'), heading: 'Play it in your own AI chat', button: 'Play today’s word',
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
-    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Six guesses to find today’s five-letter word.', ps: [
       'Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get one hint a day, and it places a letter for you.',
       'Your AI runs the game but isn’t told the word until it’s over, so it can’t give it away. Solve it to keep your streak, then share your grid.'] },
@@ -121,7 +123,7 @@ GS_PAGES = {
     rhythm: 'NEW EVERY DAY',
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s case'), heading: 'Play it in your own AI chat', button: 'Play today’s case',
       steps: [GS_STEP_CONNECT, <><b>Work it out from the clues</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
-    facts: { long: '10 min', often: 'New every day' }, tags: [],
+    facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'There’s a body and a story that doesn’t add up.', ps: [
       'You get every clue at the start. Together they leave only one answer: who did it, with what, and where.',
       'Reason it out from the clues. Two hints help when you’re stuck, and you get one accusation.',
@@ -133,7 +135,7 @@ GS_PAGES = {
     rhythm: 'A NEW ROOM EVERY WEEK',
     box: { label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every other room comes with the After Pixels Pass.', heading: 'A new room every week', button: 'Play the first room',
       steps: [GS_STEP_CONNECT, <><b>Play the first room.</b> Every lock has three hints if you need them.</>, <><b>See your result</b> on your session page.</>] },
-    facts: { long: 'About 30 min', often: 'A new room every week' }, tags: [],
+    facts: { often: 'A new room every week' }, tags: [],
     pitch: { h: 'The door’s locked and you’re on the wrong side of it.', ps: [
       'Examine what’s in the room and find its locks. Each one opens to an answer you work out from clues around you. Carry what you find, set what moves and choose your way on. The room changes as it opens, and a lock may open onto a second room.',
       'Every lock has three hints, taken in order. The first two point the way and the third gives the answer. A hint costs no try, and it shows on your result.',
@@ -160,7 +162,7 @@ GS_PAGES = {
     box: { label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       small: 'The first run is free with an account. Every other run comes with the After Pixels Pass.' },
-    facts: { long: '25–40 min', often: 'One run every week' },
+    facts: { often: 'One run every week' },
     tags: ['Adventure', 'One run a week · five rooms'],
     pitch: { h: 'Get her out before the ritual is complete', ps: [
       'Goblins have dragged the miller’s daughter into the tunnels beneath Ashford Mill, and their shaman means to offer her to his idol at moonrise. Pick a fighter, a rogue or a wizard and make your way room by room: past bone chimes and goblin sentries, through choices about what to search and what to carry, to the shrine where the ritual is under way.',
