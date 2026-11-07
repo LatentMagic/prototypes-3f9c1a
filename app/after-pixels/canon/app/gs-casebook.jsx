@@ -6,8 +6,8 @@
 // Seed in gs-casebook-data.jsx; shared parts in gs-library.jsx.
 // ============================================================================
 import React from 'react';
-import { GS_RESULT, useGs, DS, GS_ONCE_LINE, gsFresh, GS_NAME, GS_GAMES } from './gs-data.jsx';
-import { lbWeekDone, LbShare, LbBackTo, LbResult, lbAccess, LbHead, LbFreshNow, LbAch } from './gs-library.jsx';
+import { GS_RESULT, useGs, DS, GS_ONCE_LINE, GS_NAME, GS_GAMES } from './gs-data.jsx';
+import { lbWeekDone, lbNow, LbShare, LbBackTo, LbResult, lbAccess, LbHead, LbFreshNow, LbAch } from './gs-library.jsx';
 import { CB_ALL, CB_DONE, CB_LIVE, cbShareLines, CB_ACH, CB_BADGES, cbDone } from './gs-casebook-data.jsx';
 import { phFirstSt, edList, edRuns, phAch, LbRecent } from './gs-history.jsx';
 import { CbNow } from './gs-pass-library.jsx';
@@ -84,7 +84,7 @@ const CbLibrary = () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="casebook" />
       <div className="lb-lay">
-        {pass ? (gsFresh(gs) ? <LbFreshNow gid="casebook" title={CB_LIVE.title} line="You haven’t opened the case yet. Ask the question they haven’t prepared for." span onPlay={() => gs.play(GS_NAME.casebook)} /> : <CbNow c={cbWeek(gs)} />) : null}
+        {pass ? (!lbNow(gs, 'casebook') ? <LbFreshNow gid="casebook" title={CB_LIVE.title} line="You haven’t opened the case yet. Ask the question they haven’t prepared for." span onPlay={() => gs.play(GS_NAME.casebook)} /> : <CbNow c={cbWeek(gs)} />) : null}
         <LbAch items={ach} badges={CB_BADGES} access={access} ed={GS_GAMES.casebook.ed} />
         <LbRecent title="Your cases" allLabel="See in History" empty="Your cases appear here once you have played one." />
       </div>

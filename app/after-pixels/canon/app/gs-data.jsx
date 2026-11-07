@@ -71,15 +71,14 @@ export const GS_RHYTHMS = [['daily', 'Daily'], ['weekly', 'Weekly']];
 export const gsStartsOver = (k) => !!k && !!GS_GAMES[k] && !gsRhythm(k) && !GS_GAMES[k].once;
 export const GS_ONCE_LINE = 'You’ve played this one. It can’t be played again.';
 export const gsGameOfRoute = (route) => GS_GAME_ORDER.find((k) => GS_GAMES[k].route === route) || null;
-// This edition's play of each free daily, by plan: today's. Daily Groups is Pass-only and Escape's free room is its first edition (cprFirstState), so a free account has neither here.
-// Finished by default; Config (This week, or today) turns every screen to in progress together (lbNow, gs-library.jsx).
+// Which dailies each plan can play today, and the session of this edition's seeded play. Whether this edition has a play for this
+// player is the record's (phThis, gs-history.jsx): Config → This edition and the free seed (cprStore freeNew) act there, not here.
+// Daily Groups is Pass-only and Escape's free room is its first edition (cprFirstState), so a free account has neither here.
 export const GS_TODAY_PLAYED = {
   out: {},
   free: { word: 'word-today', mystery: 'mystery-today' },
   pass: { word: 'word-today', groups: 'groups-today', mystery: 'mystery-today', escape: 'escape-week' },
 };
-// This player's plays of this edition. Config "Free account, today: Not played" empties a free account's (state free-not-played-today).
-export const gsTodayPlayed = (gs) => (gsFresh(gs) || (gs.view === 'free' && gs.review && gs.review.today === 'none') ? {} : GS_TODAY_PLAYED[gs.view] || {});
 // A new account (made in the prototype, or Config Account: New): nothing played anywhere.
 export const gsFresh = (gs) => { gs = gs || window.gsApi; return !!(gs && gs.user && gs.user.fresh); };
 // The one date a Pass ended on: the day this player's own Pass ended (sub.endedOn, set when it ends in the prototype

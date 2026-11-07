@@ -223,6 +223,11 @@ KIT_STATE_REGISTER = [
   { group: 'Library', id: 'library-word-free', aliases: ['fp-word-library-free'], label: 'Guess in your library, free account', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('word', { page: 'record' }); } },
   { group: 'Library', id: 'library-groups', label: 'Daily Groups in your library, with the Pass', stage: (c) => { c.setView('pass'); c.setConnected(true); c.go('groups', { page: 'record' }); } },
   { group: 'Library', id: 'library-groups-in-progress', label: 'Daily Groups in your library, today in progress', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ week: 'live' }); c.go('groups', { page: 'record' }); } },
+  // Every game's Now card, not started: Config → This edition: Not played, in the Pass view (the one view that reaches the Pass-only games). Where is not here.
+  ...[['word', 'Guess'], ['mystery', 'Accuse'], ['groups', 'Daily Groups'], ['escape', 'Escape'], ['casebook', 'Casebook'], ['delve', 'Delve'], ['barrow', 'The Barrow of Hollowmere'], ['hunter', '36,000 Summers Ago'],
+    ['chain', 'Chain'], ['salvage', 'Salvage'], ['common', 'Common'], ['cipher', 'Daily Cipher'], ['nighttrain', 'The Night Train'], ['saltmarsh', 'Saltmarsh'], ['heist', 'Heist'], ['winter', 'The Long Winter'],
+    ['farside', 'Far Side'], ['ashcourt', 'The Court of Ash'], ['tidepool', 'Low Tide'], ['clockwork', 'Clockwork']].map(([k, name]) => ({ group: 'Library', id: 'library-' + k + '-not-started', label: name + ' in your library, with the Pass, not started',
+    stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ today: 'none' }); c.go(k, { page: 'record' }); } })),
   // The Pass upsell. Its review store (app/gs-pass-store.jsx) resets before every state.
   { group: 'Pass upsell', id: 'pur-new-account', label: '1. Library, free account, nothing played', stage: (c) => { c.setView('free'); c.setConnected(true); c.setUser({ fresh: true }); c.go('library'); } },
   { group: 'Pass upsell', id: 'pur-new-for-you', label: '2. Library, New for you full', stage: (c) => { c.setView('free'); c.setConnected(true); c.go('library'); gsPassSet({ newEds: 'most' }); } },

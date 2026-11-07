@@ -1,6 +1,6 @@
 import React from 'react';
-import { GS_RESULT, GS_SESSIONS, useGs, gsFresh, GS_GAMES, gsEdPick, gsSessStatus } from './gs-data.jsx';
-import { lbAutoBadges, lbAccess, lbWeekDone, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
+import { GS_RESULT, GS_SESSIONS, useGs, GS_GAMES, gsEdPick, gsSessStatus } from './gs-data.jsx';
+import { lbAutoBadges, lbAccess, lbWeekDone, lbNow, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
 import { DlNow } from './gs-delve.jsx';
 import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
@@ -35,7 +35,7 @@ export const dvRun = (gs) => { const by = {}; phVisible(gs).forEach((p) => { if 
 
 const DvLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'delve'); const pass = access === 'all'; const k = gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '');
-  const fresh = gsFresh(gs);
+  const fresh = !lbNow(gs, 'delve');
   const ach = phAch(gs, 'delve', DV_ACH);
   const list = dvRun(gs);
   return (

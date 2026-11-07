@@ -9,6 +9,7 @@ import React from 'react';
 import { useGs, GS_SESSIONS } from './gs-data.jsx';
 import { GsMoves, GsSessCard } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
+import { edList } from './gs-history.jsx';
 import { GS_SESSION_BODY, GS_NOW } from './registry.js';
 
 const whKm = (km) => km.toLocaleString('en-GB') + ' km';
@@ -42,12 +43,13 @@ const WhLog = ({ p }) => (
 
 // The globe: six gores between meridians at -90, -60 … 90 degrees, each drawn as two half-ellipses from pole to pole. Each gore
 // is its guess, shaded by how close it came, green for the find; a loss stays grey, as the result says Failed (Joe, 2026-10-30).
+// KEEP: with no guess made the globe takes is-none, so its "0 of 6" caption reads grey, not the text colour.
 const WhGlobe = ({ p }) => {
   const c = 60; const R = 52; const lon = [-90, -60, -30, 0, 30, 60, 90].map((d) => d * Math.PI / 180);
   const down = (l) => 'A ' + Math.abs(R * Math.sin(l)) + ' ' + R + ' 0 0 ' + (l < 0 ? 0 : 1) + ' ' + c + ' ' + (c + R);
   const up = (l) => 'A ' + Math.abs(R * Math.sin(l)) + ' ' + R + ' 0 0 ' + (l > 0 ? 0 : 1) + ' ' + c + ' ' + (c - R);
   return (
-    <div className="wh-globe" role="img" aria-label={p.g.length + ' of six guesses'}>
+    <div className={'wh-globe' + (p.g.length ? '' : ' is-none')} role="img" aria-label={p.g.length + ' of six guesses'}>
       <svg viewBox="0 0 120 120" aria-hidden="true">
         {[0, 1, 2, 3, 4, 5].map((i) => <path key={i} className={i < p.g.length ? 'is-' + p.g[i].band : 'is-spare'} d={'M ' + c + ' ' + (c - R) + ' ' + down(lon[i]) + ' ' + up(lon[i + 1]) + ' Z'} />)}
         <line x1={c - R} y1={c} x2={c + R} y2={c} className="wh-g-eq" /><circle cx={c} cy={c} r={R} className="wh-g-rim" />
@@ -83,10 +85,19 @@ const WhSessBody = ({ s }) => { const p = whRead(s); return <>
   <GsMoves s={s} />
 </>; };
 
-// ---- The now card: the last guess (the hidden country on a loss), then the globe and the chart, one group that never splits. ----
+// ---- The now card: the last guess (the hidden country on a loss), then the globe and the chart, one group that never splits.
+// Not yet played, the same card with nothing in it: New where the result goes, no last guess, the globe unlit (0 of 6, grey) and the hint unused. ----
 const WH_NOW_RESULT = { ok: { kind: 'ok', label: 'Solved' }, bad: { kind: 'bad', label: 'Failed' }, live: { kind: 'live', label: 'In progress' } };
+const WH_FRESH = { g: [], hint: null, live: true };
 const WhNow = ({ c, done, none, children }) => {
-  const gs = useGs(); if (none) return children;
+  const gs = useGs();
+  if (none) return (
+    <LbNowCard gid="where" title={'#' + GS_SESSIONS[c.today].number} result={{ kind: 'live', label: 'New' }} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'where')[0] })} next={c.next} className="wh-now">
+      <div className="wh-row">
+        <div className="wh-last is-none"><span className="wh-cap">Last guess</span><b>None yet</b></div>
+        <div className="wh-figs"><WhGlobe p={WH_FRESH} /><WhChart p={WH_FRESH} /></div>
+      </div>
+    </LbNowCard>);
   const sid = done ? c.today : c.liveSid; const s = GS_SESSIONS[sid]; if (!s) return children;
   const p = whRead(s); const g = p.g[p.g.length - 1]; if (!g) return children;
   return (

@@ -70,12 +70,15 @@ const HgNone = () => {
     </section>
   );
 };
+// The day the Now card shows, or null: a Pass holder's is today's (this edition's), so Config → This edition: Not played leaves none;
+// a Pass-ended player's is the last day played before the Pass ended.
+export const hgLatest = (gs) => { const p = phVisible(gs).find((x) => x.gid === 'hunter'); return p && (gs.view !== 'pass' || p.cur) ? p.src : null; };
 const HgLibrary = () => {
   const gs = useGs(); const access = lbAccess(gs, 'hunter'); const pass = access === 'all'; const past = lbPast(gs); const k = gs.view + (gs.sub.hadPass ? 'u' : '');
   if (!pass && !past) return (
     <main key={k} className="gs-wrap gs-main"><LbHead id="hunter" /><div className="lb-lay"><LbNeedsPass id="hunter" ach={HG_ACH} access={access} /></div></main>
   );
-  const plays = phVisible(gs).filter((p) => p.gid === 'hunter'); const latest = plays[0] ? plays[0].src : null;
+  const plays = phVisible(gs).filter((p) => p.gid === 'hunter'); const latest = hgLatest(gs);
   const ach = phAch(gs, 'hunter', HG_ACH);
   return (
     <main key={k} className="gs-wrap gs-main">
