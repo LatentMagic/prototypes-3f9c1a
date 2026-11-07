@@ -1831,7 +1831,7 @@
       // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, RANCH, then the word)
       // is chosen so that the one guess shown and the share row leave about sixty words open: no chat gives No. 34's word away.
       word: [
-        { cap: "Ask for today’s word and start guessing straight away.", turns: [
+        { cap: "Ask for today’s word and the board opens on your first guess.", turns: [
           gscU("Play Guess on After Pixels."),
           gscAi("guess", ["Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
@@ -1839,7 +1839,7 @@
           gscU("Spray."),
           gscAi("guess", ["R and A are in the word, both in other places. S, P and Y aren’t in it.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }])
         ] },
-        { cap: "Post your board as coloured squares, and no one sees a letter.", turns: [
+        { cap: "Your shared result shows how you did and hides every letter.", turns: [
           gscU("Share my result."),
           gscAi("guess", "You found it in 3 of 6 guesses.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n🟨🟨🟨⬛⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
         ] }
@@ -6631,7 +6631,7 @@
           "The word is five letters long, and you have one hint, which shows you where a letter goes. It can be over on your first guess or come down to your last.",
           "The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, with too few guesses left to try them all. Your hint would settle it, unless you spent it earlier."
         ] },
-        who: { ai: "Draws the whole board after every guess and gives no help unless you ask. Before your first guess, it explains how each guess is marked.", server: "Keeps the word secret, marks every letter of every guess, counts your guesses and picks the letter a hint gives you." },
+        who: { ai: "Draws the whole board after every guess and gives no help unless you ask.", server: "Keeps the word secret, marks every letter of every guess, counts your guesses and picks the letter a hint gives you." },
         week: { title: "Today’s word", line: "Five letters. Six guesses.", session: "word-today" }
       },
       groups: {
