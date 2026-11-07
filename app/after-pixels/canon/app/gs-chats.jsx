@@ -73,18 +73,19 @@ GS_CHATS = {
   // edition: the monorepo case generator's deal for an unused seed (900001), dressed in the circus cast, numbered 112 to clear every real edition.
   // The clues settle Madame Zara, the brass bugle and the big top; the hint is that solver's first step. The share link is a literal: the build's init-order check rejects gsLink here.
   mystery: [
-    { cap: 'You get the whole case at once: four suspects, four weapons, four places and every clue.', turns: [gscU('Play Accuse on After Pixels.'),
+    { cap: 'You can set the clues against each other before you commit to anything.', turns: [gscU('Play Accuse on After Pixels.'),
       gscAi('accuse', ['The Marvello Circus has played its last show, and Signor Marvello, the ringmaster, is dead.',
         'Each suspect was in a different place with a different weapon. One of them is the killer.',
         'The suspects are Coco, Bella Flint, Ivan the Mighty and Madame Zara. The weapons are the poisoned toffee apple, the iron tent peg, the sleeping draught and the brass bugle. The places are the big top, the cook tent, the generator truck and the costume tent.',
         '1. Madame Zara handled the brass bugle.', '2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.',
         'Every clue is given. You have 2 hints and one accusation.'])] },
-    { cap: 'When you’re stuck, a hint gives you one fact the clues already imply.', turns: [gscU('A hint, please.'),
+    { cap: 'When you’re stuck, a hint shows you the next step toward the answer.', turns: [gscU('A hint, please.'),
       gscAi('accuse', ['Madame Zara was not in the costume tent.', 'You have 1 hint left.'])] },
-    { cap: 'The case closes with all three parts marked, and the story of how it really happened.', turns: [gscU('Madame Zara, the brass bugle, the big top.'),
+    { cap: 'You get the verdict on your accusation, and a short ending.', turns: [gscU('Madame Zara, the brass bugle, the big top.'),
       gscAi('accuse', null, [{ type: 'confirm', title: 'Confirm your accusation', question: 'Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?', note: 'This is the one accusation in this case.', confirm: 'Confirm accusation', cancel: 'Cancel' }]),
       gscU('Confirm accusation.'),
-      gscAi('accuse', ['Solved: suspect, weapon and place were all right.', 'Madame Zara struck in the empty big top, with the dented brass bugle in her hand.']),
+      gscAi('accuse', ['Solved: suspect, weapon and place were all right.', 'Madame Zara did it, with the brass bugle, in the big top. She left incense behind.']),
+      gscU('Share my result.'),
       gscAi('accuse', null, null, [{ type: 'mono', text: 'Accuse No. 112 · solved · 1 hint 💡\nhttps://afterpixels.com/discover/accuse' }])] },
   ],
   // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.

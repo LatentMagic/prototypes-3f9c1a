@@ -115,7 +115,7 @@ GS_PAGES = {
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'One murder a day: work out who did it, with what, and where.', ps: [
       'The body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.',
-      'At first the clues are loose facts, and none of them settles anything on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold.'] },
+      'At first the clues are loose facts, and none of them settles the case on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold.'] },
     who: { ai: 'Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.', server: 'Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong.' },
     week: { title: 'Today’s case', line: 'Four suspects, four weapons, four places. One accusation.', session: 'mystery-today' },
   },

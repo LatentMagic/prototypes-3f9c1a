@@ -1864,7 +1864,7 @@
       // edition: the monorepo case generator's deal for an unused seed (900001), dressed in the circus cast, numbered 112 to clear every real edition.
       // The clues settle Madame Zara, the brass bugle and the big top; the hint is that solver's first step. The share link is a literal: the build's init-order check rejects gsLink here.
       mystery: [
-        { cap: "You get the whole case at once: four suspects, four weapons, four places and every clue.", turns: [
+        { cap: "You can set the clues against each other before you commit to anything.", turns: [
           gscU("Play Accuse on After Pixels."),
           gscAi("accuse", [
             "The Marvello Circus has played its last show, and Signor Marvello, the ringmaster, is dead.",
@@ -1878,15 +1878,16 @@
             "Every clue is given. You have 2 hints and one accusation."
           ])
         ] },
-        { cap: "When you’re stuck, a hint gives you one fact the clues already imply.", turns: [
+        { cap: "When you’re stuck, a hint shows you the next step toward the answer.", turns: [
           gscU("A hint, please."),
           gscAi("accuse", ["Madame Zara was not in the costume tent.", "You have 1 hint left."])
         ] },
-        { cap: "The case closes with all three parts marked, and the story of how it really happened.", turns: [
+        { cap: "You get the verdict on your accusation, and a short ending.", turns: [
           gscU("Madame Zara, the brass bugle, the big top."),
           gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?", note: "This is the one accusation in this case.", confirm: "Confirm accusation", cancel: "Cancel" }]),
           gscU("Confirm accusation."),
-          gscAi("accuse", ["Solved: suspect, weapon and place were all right.", "Madame Zara struck in the empty big top, with the dented brass bugle in her hand."]),
+          gscAi("accuse", ["Solved: suspect, weapon and place were all right.", "Madame Zara did it, with the brass bugle, in the big top. She left incense behind."]),
+          gscU("Share my result."),
           gscAi("accuse", null, null, [{ type: "mono", text: "Accuse No. 112 · solved · 1 hint 💡\nhttps://afterpixels.com/discover/accuse" }])
         ] }
       ],
@@ -6662,7 +6663,7 @@
         tags: [],
         pitch: { h: "One murder a day: work out who did it, with what, and where.", ps: [
           "The body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.",
-          "At first the clues are loose facts, and none of them settles anything on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold."
+          "At first the clues are loose facts, and none of them settles the case on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold."
         ] },
         who: { ai: "Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.", server: "Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong." },
         week: { title: "Today’s case", line: "Four suspects, four weapons, four places. One accusation.", session: "mystery-today" }
