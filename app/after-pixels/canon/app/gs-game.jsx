@@ -59,7 +59,7 @@ export const GsGamePage = ({ id, top }) => {
       <GsFacts id={id} />
 
       <section className="gs-pitch">
-        <div className="gs-stack-md gs-measure">
+        <div className="gs-stack-md">
           <h2 className="mcp-t-sec">{p.pitch.h}</h2>
           {p.pitch.ps.map((t, i) => <p key={i}>{t}</p>)}
         </div>
