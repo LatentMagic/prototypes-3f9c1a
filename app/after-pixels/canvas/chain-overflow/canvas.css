@@ -1,0 +1,31 @@
+/* The canvas page: canon's app is hidden except the canvas. Each card sits in a frame as wide as a phone, with the page's 16px
+   gutters; the frame is a "gs" container so canon's phone rules apply to it whatever the browser's width. */
+.gs-root > :not(.wc), .kit-config-wrap { display: none !important; }
+.wc { display: grid; gap: 40px; width: 100%; max-width: 1000px; margin: 0 auto; padding: 24px 16px 64px; box-sizing: border-box; }
+.wc-intro { margin: -20px 0 0; max-width: 60ch; }
+.wc-item { display: grid; gap: 8px; min-width: 0; }
+.wc-h { margin: 0; display: flex; align-items: baseline; gap: 10px; font: 700 18px/1.25 var(--font-heading); }
+.wc-n { font: 700 18px/1 var(--font-heading); color: var(--muted); min-width: 3.2em; }
+.wc-note { margin: 0 0 8px; max-width: 60ch; }
+.wc-set { display: flex; flex-wrap: wrap; gap: 24px 32px; align-items: flex-start; }
+.wc-fig { margin: 0; display: grid; gap: 6px; }
+.wc .wc-frame { container: gs / inline-size; box-sizing: border-box; padding: 16px; background: var(--page); outline: 1px solid var(--line); overflow-x: auto; }
+/* On a phone the frames run to the screen's edges, so a 390 frame shows at its width on a 390 phone. */
+@media (max-width: 429.98px) { .wc-set { margin-inline: -16px; } .wc-fig > figcaption { padding-inline: 16px; } .wc .wc-frame { outline: 0; } }
+
+/* 1: the platform's rule (chain-now-part.component.css): tiles 48px, shrunk only when the word would not fit the card's inside
+   (100cqi of canon's cn container); --n is the word's letters. */
+.wc-1 .cn-focus { --t: min(48px, (100cqi - (var(--n) - 1) * 4px) / var(--n)); }
+
+/* 2: once the word does not fit at 48px, tiles are 40px and the word wraps into rows of --per tiles, centred. */
+.wc-2 .is-broken .cn-focus { --t: 40px; }
+.wc-2 .is-broken .cn-word { flex-wrap: wrap; justify-content: center; max-width: calc(var(--per) * 44px - 4px); }
+
+/* 3: canon's word is hidden and the chain's words take its place (canvas.jsx ChainWords), in the tiles' colours (gs-chain-now.css). */
+.wc-3 .cn-focus { display: none; }
+.cv-host { display: contents; }
+.cv-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 100%; }
+.cv-w { box-sizing: border-box; display: inline-grid; place-items: center; height: 32px; padding: 0 8px; font: 700 16px/1 var(--font-heading); text-transform: uppercase; letter-spacing: .04em; }
+.cv-w.is-end { background: var(--off-white); color: var(--page); }
+.cv-w.is-found { border: 2px solid var(--success); color: var(--text); }
+.cv-w.is-given { border: 2px solid #E5A63B; color: #E5A63B; }
