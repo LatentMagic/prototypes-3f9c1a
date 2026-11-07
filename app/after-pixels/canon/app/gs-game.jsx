@@ -93,10 +93,10 @@ GS_PAGES = {
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s word'), heading: 'Play it in your own AI chat', button: 'Play today’s word',
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'One hidden word a day: close in on it in six guesses.', ps: [
-      'The word is five letters long, and you have one hint in reserve. It can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.',
-      'The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, with too few guesses left to work through them. The one letter you still need can take longer than the other four.'] },
-    who: { ai: 'Draws the whole board after every guess and gives no help unless you ask. When a word could be a guess or a request, it checks which you mean.', server: 'Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you.' },
+    pitch: { h: 'One hidden word a day: find it in six guesses.', ps: [
+      'The word is five letters long, and you have one hint in reserve. It can be over in one lucky guess or come down to your very last try.',
+      'The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, and too few guesses left to try them all. The one letter you still need can take longer than the other four.'] },
+    who: { ai: 'Draws the whole board after every guess and gives no help unless you ask.', server: 'Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you.' },
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
   },
   groups: {

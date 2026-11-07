@@ -1,6 +1,6 @@
 // ============================================================================
 // After Pixels — "In your chat": the DS ChatPictures per game (three, and four for Delve), and the home hero's.
-// Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's and Guess's, which are trimmed from real plays.
+// Sample turns, written to follow each game's seed record (gs-data.jsx), except Delve's, trimmed from a real play, and Guess's, written from one.
 // ============================================================================
 import React from 'react';
 import { GS_ES1, DS, GS_GAMES } from './gs-data.jsx';
@@ -50,18 +50,18 @@ export const GsChatRow = ({ id }) => {
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsChats() {
 GS_CHATS = {
-  // Guess: the product page's three chats, cut from a real play (2026-11-07, No. 34): turns 1-2, turn 3 and turn 6, word for word.
-  // Only the first guess is shown and the share row hides every letter, so no chat gives the word away.
+  // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
+  // every turn shows something the game really does, in fewer words. Only the first guess is shown, the result is the
+  // count alone and the share row (the spec's format) hides every letter, so no chat gives the word away.
   word: [
-    { cap: 'Ask for it in your own words, and have the marks explained before your first guess.', turns: [gscU('hey, can we play the daily word game? guess I think it’s called'),
-      gscAi('guess', ['Yes, it’s called Guess, and today’s puzzle (#34) is ready. You have six tries to find the hidden five-letter word. You have 1 hint left.', 'The board is empty, so the first guess is yours. What would you like to try?']),
-      gscU('how do the marks work?'),
-      gscAi('guess', ['Each guess comes back with a mark on every letter:', 'Correct: the letter is in the word and in the right place.', 'Present: the letter is in the word but in a different place.', 'Absent: the letter isn’t in the word.', 'What’s your first guess?'])] },
-    { cap: 'Make one guess and see three letters show up, two of them already in place.', turns: [gscU('ok, crane'),
-      gscAi('guess', ['R and A are in the right places, and N is in the word but in a different spot. C and E aren’t in it.', 'You have 5 guesses left. What’s your next guess?'], [{ type: 'tilegrid', length: 5, count: 1, rows: [{ letters: 'CRANE', marks: 'xhhnx' }] }])] },
-    { cap: 'Ask to share, and your guesses come back as squares you can paste anywhere.', turns: [
-      gscU('nice, give me the share thing'),
-      gscAi('guess', null, [{ type: 'mono', text: 'Guess No. 34 · 3/6\n\n⬛🟩🟩🟨⬛\n⬛🟩🟩🟩🟩\n🟩🟩🟩🟩🟩' }])] },
+    { cap: 'Start on an empty board, with six tries and one hint.', turns: [gscU('Play Guess on After Pixels.'),
+      gscAi('guess', ['Guess No. 34 is ready. You have six tries to find the hidden five-letter word, and 1 hint.', 'What’s your first guess?'])] },
+    { cap: 'One guess finds three of the five letters, and two are already in place.', turns: [gscU('Crane.'),
+      gscAi('guess', ['R and A are in place. N is in the word, somewhere else.', '5 guesses left.'], [{ type: 'tilegrid', length: 5, count: 1, rows: [{ letters: 'CRANE', marks: 'xhhnx' }] }])] },
+    { cap: 'Solve it in three, with three guesses left over.', turns: [
+      gscAi('guess', 'Solved in 3 of 6 guesses.'),
+      gscU('Share my result.'),
+      gscAi('guess', null, [{ type: 'mono', text: 'Guess No. 34 · 3/6\n\n⬛🟩🟩🟨⬛\n⬛🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess' }])] },
   ],
   groups: [
     { cap: 'Sixteen words hide four groups of four.', turns: [gscU('Play Daily Groups on After Pixels.'),
