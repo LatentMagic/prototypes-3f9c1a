@@ -22,10 +22,10 @@ GameCard is the one game card. It works anywhere; inside a CardRow every card is
 - When the whole card opens something, put that one link or button in `title` and stretch it over the card (`mcp-art-host` on the card via `className`, `mcp-art-link` on the button).
 - A game that needs the Pass gets `pass` (a player without the Pass sees the mark on the picture; a Pass holder and every free game don't). The Pass is never a tag in the tag row, and the mark never carries a price.
 - The Pass mark opens the Pass page on its own: pass `onPass` with `pass`. It is a second control on the card, above the stretched link, so pressing it never opens the game. Hover lifts its fill and brightens its edge, as the Secondary button does.
-
 - The top-right corner holds one chip at most: Coming soon (`soon`) wins, then the Pass (`pass`), then First free (`first`). The tag row holds two chips at most and keeps the schedule tag (Daily, Weekly), so none of these is ever a tag.
 - A game whose first edition is free and the rest need the Pass gets `first` (lock and "First free"), for a player without the Pass. It is not a control; the card opens the game, whose page says the rest.
 - A game that is out for now and coming back gets `soon`: "Coming soon" with no lock, the card dimmed behind it, no way in and no hover, focus or press effect. Pass `title` as plain text and leave `mcp-art-host` off. A game not out yet, or a game's next chapter, is a SoonCard instead.
+
 ## In the Game Store today
 
 A note on the product as it stands, not a rule. It may be out of date; the product is the source.

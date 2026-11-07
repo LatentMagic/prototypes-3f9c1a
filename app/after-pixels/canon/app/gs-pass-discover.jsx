@@ -1,5 +1,5 @@
 // After Pixels — Discover (route `games`). Declares GsGames. Cards and picks are
-// the re-published GsCard and GsPick (the Pass mark top right, no Free or First chips); the wall is the shared GsTile with the same mark.
+// the re-published GsCard and GsPick (one corner chip top right: Coming soon, then Pass, then First free; no Free or First tags); the wall is the shared GsTile with the same chip.
 // Proposed, not ratified yet: search and filters as History's (one search field and a Filters panel), and the selection below.
 // Discover doesn't sell the Pass: only a game's product page and its Library page do, so it has no Pass line.
 
