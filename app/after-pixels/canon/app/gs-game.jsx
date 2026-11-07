@@ -95,7 +95,7 @@ GS_PAGES = {
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'One hidden word a day: close in on it in six guesses.', ps: [
       'The word is five letters long, and you have one hint in reserve. It can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.',
-      'The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, with too few guesses left to work through them. The last letter can take longer than the other four.'] },
+      'The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, with too few guesses left to work through them. The one letter you still need can take longer than the other four.'] },
     who: { ai: 'Draws the whole board after every guess and gives no help unless you ask. When a word could be a guess or a request, it checks which you mean.', server: 'Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you.' },
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
   },
