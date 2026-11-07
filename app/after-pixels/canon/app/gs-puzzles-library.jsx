@@ -22,7 +22,7 @@ export const pzSession = (id, c, x) => {
   else if (id === 'word') {
     const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
     const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
-    s = { ...base, number: 212 - i, answer, share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
+    s = { ...base, number: 34 - i, answer, share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
   } else if (id === 'groups') {
     const mis = x.ok ? (i === 1 ? 0 : i % 4) : 4; const found = x.ok ? 4 : 2; const lines = []; const rows = [];
     for (let k = 0, f = 0, m = 0; f < found || m < mis; k++) {
@@ -89,7 +89,7 @@ export function initGsPuzzlesLibrary() {
 pzMis = gsMis;
 PZ = {
   word: {
-    no: (i) => 'Guess #' + (212 - i), salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
+    no: (i) => 'Guess #' + (34 - i), count: 34, salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
     ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
     title: 'Today’s word', next: 'Next word: tomorrow',
     live: { line: 'You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.', bar: ['Guess 2 of 6', 2, 6] },
@@ -145,7 +145,7 @@ PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERV
 PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
 PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
 PZ_MOVES = [];
-// Seed: forty days (thirty weeks for Escape), newest first; index 0 is this edition.
+// Seed: forty days (thirty weeks for Escape; Guess has only 34, its No. 1 to No. 34), newest first; index 0 is this edition.
 Object.entries(PZ).forEach(([id, c]) => {
   c.gid = id;
   c.all = Array.from({ length: c.count || (c.weekly ? 30 : 40) }, (_, i) => {

@@ -255,19 +255,19 @@ export const GS_SESSIONS = {
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 34, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     share: 'Solved in 3 of 6',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STILL']),
   },
-  // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
-  // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
+  // Sample plays for the session page (1236). No. 32, the hard play: solved on the fifth guess with the hint; after ROBOT only
+  // letter 4 was green, so the hint gave letter 1. No. 30, lost: the SHA_E trap, four letters in place from guess 2 to 6.
   'word-hard': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 32, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
     share: 'Solved in 5 of 6',
     lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOUR', 'FLOOR']),
   },
   'word-failed': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 30, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
     share: 'Failed',
     lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 4 is A.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
   },
@@ -279,7 +279,7 @@ export const GS_SESSIONS = {
     lines: GS_ES1_LINES,
   },
   'word-1005': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 33, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
     share: 'Solved in 4 of 6',
     lines: gsWordLines('CHAIN', ['CRANE', 'CHANT', 'CHAIR', 'CHAIN']),
   },
@@ -344,7 +344,7 @@ export const gsSessStatus = (s) => ({ kind: s.loss ? 'bad' : 'ok', label: s.resu
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
-  'word-live': { kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
+  'word-live': { kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 34, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
     lines: gsWordLines('STILL', ['CRANE', 'SLATE']) },
   'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },

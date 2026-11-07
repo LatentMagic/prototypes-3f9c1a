@@ -118,7 +118,7 @@ export const GsMoves = ({ s }) => (
 const gsHeadGame = (s) => (s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game);
 // The day played, short: "Tuesday 6 October, 21:40" → "Tue 6 Oct".
 const gsHeadDay = (d) => (typeof d === 'string' ? gsShortDay(d.split(',')[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, '$1') : d);
-// The edition as its game names it: a room's name, or a number ("No. 212"). Falls back to the session's own title (a 36,000 Summers Ago day), then its number.
+// The edition as its game names it: a room's name, or a number ("No. 34"). Falls back to the session's own title (a 36,000 Summers Ago day), then its number.
 const gsHeadTitle = (s, ed) => (ed ? (ed.title || 'No. ' + ed.n) : s.title || (s.number != null ? 'No. ' + s.number : null));
 const GsSessHead = ({ art, label, title, actions }) => (
   <section className="gs-sess-head">

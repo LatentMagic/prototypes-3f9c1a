@@ -1260,7 +1260,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 212,
+      number: 34,
       answer: "STILL",
       hints: 1,
       result: "Solved in 3 of 6",
@@ -1268,14 +1268,14 @@
       share: "Solved in 3 of 6",
       lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STILL"])
     },
-    // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
-    // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
+    // Sample plays for the session page (1236). No. 32, the hard play: solved on the fifth guess with the hint; after ROBOT only
+    // letter 4 was green, so the hint gave letter 1. No. 30, lost: the SHA_E trap, four letters in place from guess 2 to 6.
     "word-hard": {
       kind: "puzzle",
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 210,
+      number: 32,
       answer: "FLOOR",
       hints: 1,
       result: "Solved in 5 of 6",
@@ -1288,7 +1288,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 208,
+      number: 30,
       answer: "STEAL",
       loss: true,
       hints: 1,
@@ -1315,7 +1315,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 211,
+      number: 33,
       answer: "CHAIN",
       result: "Solved in 4 of 6",
       date: "Monday 5 October",
@@ -1457,7 +1457,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 212,
+      number: 34,
       answer: "STILL",
       live: true,
       result: "In progress",
@@ -4472,7 +4472,7 @@
       const answer = PZ_WORDS[i % PZ_WORDS.length];
       const n = x.ok ? 3 + i % 4 : 6;
       const guesses = Array.from({ length: n }, (_, k) => x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]);
-      s = { ...base, number: 212 - i, answer, share: x.line, lines: guesses.map((g, k) => ["Guess " + (k + 1), g, ...gsGuessParts(g, answer)]) };
+      s = { ...base, number: 34 - i, answer, share: x.line, lines: guesses.map((g, k) => ["Guess " + (k + 1), g, ...gsGuessParts(g, answer)]) };
     } else if (id === "groups") {
       const mis = x.ok ? i === 1 ? 0 : i % 4 : 4;
       const found = x.ok ? 4 : 2;
@@ -4551,7 +4551,8 @@
     pzMis = gsMis;
     PZ = {
       word: {
-        no: (i) => "Guess #" + (212 - i),
+        no: (i) => "Guess #" + (34 - i),
+        count: 34,
         salt: 0,
         keep: { 1: true },
         pin: { 2: "word-hard", 4: "word-failed" },
@@ -6330,7 +6331,7 @@
     const U = u.toUpperCase();
     if (k === "daily" && id === "groups") return null;
     if (k === "daily") {
-      const no = { word: 212, mystery: 64 }[id];
+      const no = { word: 34, mystery: 64 }[id];
       return ["TODAY’S " + U + " · #" + no, "Free with an account. A new " + u + " every day."];
     }
     if (k === "first") return [id === "barrow" ? "CHAPTER 1" : "THE FIRST " + U, "Free with an account. Every other " + u + " comes with the Pass."];
@@ -6628,7 +6629,7 @@
         facts: { often: "New every day" },
         tags: [],
         pitch: { h: "One hidden word a day: close in on it in six guesses.", ps: [
-          "Everyone playing today is after the same five letters. You have one hint in reserve, and it can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.",
+          "The word is five letters long, and you have one hint in reserve. It can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.",
           "Every guess comes back marked letter by letter, and each mark narrows the field. Keep the letters that landed, shift the ones sitting in the wrong spot and leave out the ones that missed, until only one word fits. Nothing is checked before you commit to a word, so every guess you make is spent."
         ] },
         who: { ai: "Draws the whole board after every guess and gives no help unless you ask. When a word could be a guess or a request, it checks which you mean.", server: "Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you." },
@@ -9538,7 +9539,7 @@
   KIT_QA.unshift({
     key: "audit-fixes",
     title: "Audit fixes, 18 October: one play record",
-    note: "Every play, date, count and earned achievement comes from the play log. Check that the head card, the list of plays, History, the Library row, the editions list and achievements agree, that no date falls after Tue 6 Oct, and that a Pass-ended player has no Pass-only play or earned date after 18 Sep (later days are frozen). Groups, free: the never-had card alone. Summers Ago: a day with no ending reads Not finished; the head matches day 18. Library: Escape reads Today. Also: Account has no Your data or Notifications card; the play box reads #212; the Barrow panel ends on See in History; an empty editions search reads Nothing matches that. with Clear all (search zzzz).",
+    note: "Every play, date, count and earned achievement comes from the play log. Check that the head card, the list of plays, History, the Library row, the editions list and achievements agree, that no date falls after Tue 6 Oct, and that a Pass-ended player has no Pass-only play or earned date after 18 Sep (later days are frozen). Groups, free: the never-had card alone. Summers Ago: a day with no ending reads Not finished; the head matches day 18. Library: Escape reads Today. Also: Account has no Your data or Notifications card; the play box reads #34; the Barrow panel ends on See in History; an empty editions search reads Nothing matches that. with Clear all (search zzzz).",
     steps: ["library-groups-free", "pur-pass-ended-every", "library-pass-ended", "library-casebook-pass-ended", "library-delve-pass-ended", "library-hunter-pass-ended", "pur-first-done", "library-word", "history", "lapsed-history", "session-barrow", "library-barrow", "edition-barrow-done", "edition-barrow-done-free", "library-hunter", "session-hunter", "history-hunter", "library", "session-kept-pass-ended", "word-free", "library-casebook-editions", "editions-word-free", "edition-delve-in-progress", "escape-free", "account-email"]
   });
   const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);

@@ -107,7 +107,7 @@ export const registerWord = () => {
   GS_SESSION_QUIET.word = (s) => ({ label: s.game, h1: 'No. ' + s.number });
 };
 
-// ---- The now card (Joe's pick, D2): the shared frame (LbNowCard) with the edition as its title ("#212"), and the play as a
+// ---- The now card (Joe's pick, D2): the shared frame (LbNowCard) with the edition as its title ("#34"), and the play as a
 // picture centred on the whole card: the guess it ended on at full tile size (the word in quiet outlined tiles on a loss), and
 // under it the guesses as a small ring and the hint as one box. Not yet played: empty tiles, the ring at 0 and Play. ----
 export const wdSay = (g) => 'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ');

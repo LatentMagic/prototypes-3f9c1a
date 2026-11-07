@@ -94,7 +94,7 @@ GS_PAGES = {
       steps: [GS_STEP_CONNECT, <><b>Play today’s word.</b> You get six guesses.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'One hidden word a day: close in on it in six guesses.', ps: [
-      'Everyone playing today is after the same five letters. You have one hint in reserve, and it can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.',
+      'The word is five letters long, and you have one hint in reserve. It can be over in one lucky guess or come down to your very last try. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.',
       'Every guess comes back marked letter by letter, and each mark narrows the field. Keep the letters that landed, shift the ones sitting in the wrong spot and leave out the ones that missed, until only one word fits. Nothing is checked before you commit to a word, so every guess you make is spent.'] },
     who: { ai: 'Draws the whole board after every guess and gives no help unless you ask. When a word could be a guess or a request, it checks which you mean.', server: 'Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you.' },
     week: { title: 'Today’s word', line: 'Five letters. Six guesses.', session: 'word-today' },
