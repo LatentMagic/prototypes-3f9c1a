@@ -642,7 +642,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-gtile-open:active,.mcp-gtile-open.is-pressed{text-decoration-color:currentColor;text-underline-offset:6px;color:#fff}
 .mcp-gtile-kind{font:400 14px/1.4 var(--font-text);color:var(--muted)}
 
-/* KEEP: Pass mark: GameCard, GamePick and GameTile draw it on the picture when pass is set, and make it a button when onPass is set. Solid page fill and the control edge, so it reads on any picture, dark ground or bright shape. Without onPass it is not a control and sits under the card's stretched link. With onPass (.is-link) it is a button above that link, with the Secondary button's hover, press and focus, and a 44px hit area. */
+/* KEEP: Pass mark: GameCard, GamePick and GameTile draw it on the picture when pass is set (the same chip carries First free or Coming soon instead: game-mark.jsx), and make it a button when onPass is set. Solid page fill and the control edge, so it reads on any picture, dark ground or bright shape. Without onPass it is not a control and sits under the card's stretched link. With onPass (.is-link) it is a button above that link, with the Secondary button's hover, press and focus, and a 44px hit area. */
 .mcp-gcard-art,.mcp-gpick-art,.mcp-gtile-art{position:relative}
 .mcp-passmark{position:absolute;top:var(--space-2);right:var(--space-2);display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;font:600 var(--size-small)/1 var(--font-text);white-space:nowrap;background:var(--page);color:var(--text);border:1.5px solid var(--control-edge);pointer-events:none}
 .mcp-passmark .mcp-ico{width:14px;height:14px;margin-top:-1px}
@@ -652,6 +652,10 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-passmark.is-link:active,.mcp-passmark.is-link.is-pressed{background:color-mix(in srgb,var(--text) 16%,var(--page));transform:scale(.97)}
 .mcp-passmark.is-link:focus-visible,.mcp-passmark.is-link.is-focus{outline:2px solid var(--off-white);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.mcp-passmark.is-link{transition:none}.mcp-passmark.is-link:active{transform:none}}
+/* KEEP: Coming soon on a game card, pick or tile (soon): the picture, name, blurb, kind and tags dim to 45% while the chip stays at full strength, and the card takes no pointer at all, so nothing reacts to hover, focus or press and the cursor stays an arrow. The card cannot be opened; its name is plain text. */
+:is(.mcp-gcard,.mcp-gpick,.mcp-gtile).is-soon{pointer-events:none;cursor:default}
+.mcp-gtile.is-soon>.mcp-gtile-name{min-height:24px}
+.is-soon>:is(.mcp-gcard-art,.mcp-gpick-art,.mcp-gtile-art)>:not(.mcp-passmark),.is-soon>:is(.mcp-gcard-text,.mcp-gcard-tags,.mcp-gpick-text,.mcp-gpick-tags,.mcp-gtile-name,.mcp-gtile-kind){opacity:.45}
 
 /* KEEP: Touch: whatever you press to open something is not selectable text, and the phone's selection and callout stay out of the way of a hold. Body text elsewhere stays selectable. */
 .mcp-card.is-link,.mcp-row.is-link,.mcp-btn,.mcp-lnk,.mcp-art-host,.mcp-disc-btn,.mcp-menu-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}

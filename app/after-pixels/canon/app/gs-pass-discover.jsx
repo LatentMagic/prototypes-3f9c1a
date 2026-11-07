@@ -1,5 +1,5 @@
 // After Pixels — Discover (route `games`). Declares GsGames. Cards and picks are
-// the re-published GsCard and GsPick (the Pass mark top right, no Free or First chips); the wall is the shared GsTile with the same mark.
+// the re-published GsCard and GsPick (one corner chip top right: Coming soon, then Pass, then First free; no Free or First tags); the wall is the shared GsTile with the same chip.
 // Proposed, not ratified yet: search and filters as History's (one search field and a Filters panel), and the selection below.
 // Discover doesn't sell the Pass: only a game's product page and its Library page do, so it has no Pass line.
 
@@ -9,19 +9,16 @@ import { useGs, GS_GAMES, gsRhythm, DS, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart, GsSpin, GsLoadFailed } from './gs-site.jsx';
 import { GsTile } from './gs-parts.jsx';
 import { LbTools, LbChoice } from './gs-library.jsx';
-import { GS_ADDED, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
-import { CPR_SHOWN, CPR_STAGE, cprLocked } from './gs-pass-store.jsx';
+import { gsFind, gsKinds, gsKind } from './gs-discover.jsx';
+import { CPR_SHOWN, CPR_STAGE, cprLocked, cprFirstFree } from './gs-pass-store.jsx';
 import { GsCard, GsPick } from './gs-pass-home.jsx';
 
 const CPR_PICKS = [['casebook', 'ONE CASE'], ['word', 'A NEW WORD EVERY DAY']];
-// The selection: Just added (not picked), then Free to play (every game with free play, picks
-// included; gone with the Pass). A row with nothing in it isn't shown.
+// The selection: Free to play (every game with free play, picks included; gone with the Pass). A row with nothing in it isn't shown.
+// Just added is off while the catalogue is small; GS_ADDED (gs-discover.jsx) still holds its games for when it returns.
 const cprSelection = (gs) => {
-  const shown = CPR_PICKS.map((p) => p[0]);
-  const take = (ks) => { const out = ks.filter((k) => CPR_SHOWN.includes(k) && !shown.includes(k)); shown.push(...out); return out; };
-  const added = take(GS_ADDED);
   const free = gs.view === 'pass' ? [] : CPR_SHOWN.filter((k) => CPR_STAGE[k] !== 'pass');
-  return { added, free };
+  return { free };
 };
 
 // Search and filters live in the page shell, not the body, so they survive the body reloading in place; the shell writes them
@@ -47,12 +44,11 @@ const CprDiscoverBody = ({ f, setF }) => {
     </div>
     {!filtering && <>
       <div className="mcp-gpicks">{CPR_PICKS.map(([k, l]) => <GsPick key={k} id={k} label={l} />)}</div>
-      {cardRow('Just added', sel.added)}
       {cardRow('Free to play', sel.free)}
     </>}
     <section className="dc-sec">
       <h2 className="mcp-t-sec">All games</h2>
-      {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="mcp-gwall">{ids.map((k) => <GsTile key={k} id={k} pass={cprLocked(gs, k)} />)}</div>
+      {wait ? <GsPart label="Loading games" /> : ids.length ? <div className="mcp-gwall">{ids.map((k) => <GsTile key={k} id={k} pass={cprLocked(gs, k)} first={cprFirstFree(gs, k)} />)}</div>
         : <div className="gs-nomatch"><p>Nothing matches that.</p><DS.TextLink onClick={clearAll}>Clear all</DS.TextLink></div>}
     </section>
   </>;

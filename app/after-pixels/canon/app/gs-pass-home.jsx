@@ -5,23 +5,26 @@
 
 // The Pass mark is the design system's: GameCard, GamePick and GameTile draw it on the picture when `pass`
 // is set. Set for Pass-only games, for a player without the Pass. The mark is its own control: it opens Pricing (`pass`).
-// The Free and "First … free" chips come off the cards; the Pass is never a tag.
+// The Free and "First … free" tags come off the cards; the Pass is never a tag. A game whose first edition is free carries
+// First free in the Pass mark's corner instead (cprFirstFree), and a game out for now carries Coming soon there (GS_GAMES soon).
 import React from 'react';
 import { GS_GAMES, useGs, DS, GS_ART, GS, GS_NAME, GS_SOON } from './gs-data.jsx';
 import { GsArt, useGsArtHost, gsKeepLast, GsTagList, GsSoonCard } from './gs-parts.jsx';
 import { GS_HERO_CHAT, GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
 import { GS_HOME_GAMES, GsFeature, GsWhatsNew } from './gs-home.jsx';
 import { gsPlans } from './gs-billing.jsx';
-import { cprLocked, cprPassLine, CPR_SHOWN, CPR_STAGE } from './gs-pass-store.jsx';
+import { cprLocked, cprFirstFree, cprPassLine, CPR_SHOWN, CPR_STAGE } from './gs-pass-store.jsx';
 
 const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== 'FREE' && t !== 'FIRST' && t !== 'PASS');
 const CprArt = ({ host, id, shape }) => <div ref={host}><GsArt art={GS_GAMES[id].art} shape={shape} /></div>;
+// A Coming soon game's card is not a way in: no stretched link, no art host, so nothing moves or reacts. Its name is plain text.
+const cprTitle = (gs, g) => (g.soon ? g.name : <button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>);
 export const GsCard = ({ id, mark }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
-    <DS.GameCard className="mcp-art-host gs-host"
-      art={<CprArt host={host} id={id} shape="wide" />} pass={cprLocked(gs, id)} onPass={() => gs.go('pass')}
-      title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
+    <DS.GameCard className={g.soon ? 'gs-host' : 'mcp-art-host gs-host'} soon={!!g.soon} first={cprFirstFree(gs, id)}
+      art={<CprArt host={g.soon ? undefined : host} id={id} shape="wide" />} pass={cprLocked(gs, id)} onPass={() => gs.go('pass')}
+      title={cprTitle(gs, g)}
       mark={mark && <DS.Tag kind="daily" icon="check">{mark}</DS.Tag>}
       blurb={gsKeepLast(g.blurb)}
       tags={<GsTagList tags={cprTags(id)} ed={g.ed} />} />
@@ -31,10 +34,10 @@ export const GsGameCard = GsCard;
 export const GsPick = ({ id, label }) => {
   const gs = useGs(); const host = useGsArtHost(); const g = GS_GAMES[id];
   return (
-    <DS.GamePick className="mcp-art-host gs-host"
-      art={<CprArt host={host} id={id} shape="wide" />} pass={cprLocked(gs, id)} onPass={() => gs.go('pass')}
+    <DS.GamePick className={g.soon ? 'gs-host' : 'mcp-art-host gs-host'} soon={!!g.soon} first={cprFirstFree(gs, id)}
+      art={<CprArt host={g.soon ? undefined : host} id={id} shape="wide" />} pass={cprLocked(gs, id)} onPass={() => gs.go('pass')}
       label={label}
-      title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={() => gs.go(g.route)}>{g.name}</button>}
+      title={cprTitle(gs, g)}
       blurb={gsKeepLast(g.blurb)}
       tags={<GsTagList tags={cprTags(id)} ed={g.ed} />} />
   );

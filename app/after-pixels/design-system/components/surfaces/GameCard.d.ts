@@ -6,6 +6,10 @@ export interface GameCardProps{
   pass?:boolean;
   /** Opens the Pass page. With it, the Pass mark is its own button, pressable apart from the card: it sits above the card's stretched link and takes the Secondary button's hover, press and focus. Pass it wherever `pass` is set. */
   onPass?:(e:React.MouseEvent)=>void;
+  /** Set on a game whose first edition is free and the rest need the Pass, for a player without the Pass. Draws "First free" with the lock in the picture's top-right corner, where the Pass mark sits. Never a control: the card itself opens the game. Ignored when `soon` or `pass` is set. */
+  first?:boolean;
+  /** Set on a game that is out for now and coming back. Draws "Coming soon" (no lock) in the top-right corner and dims the picture, text and tags behind it. The card cannot be pressed and has no hover, focus or press effect: pass `title` as plain text, not a link or button, and leave `mcp-art-host` off. Wins over `pass` and `first`. */
+  soon?:boolean;
   /** The game's name, set as mcp-t-card. Pass the card's one main link or button here when the card opens something. */
   title:React.ReactNode;
   /** Optional Tag beside the name, e.g. "Played". */

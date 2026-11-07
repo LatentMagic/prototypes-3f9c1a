@@ -648,26 +648,26 @@
     function FormCard({ title, children, className = "", style }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-panel " + className).trim(), style }, /* @__PURE__ */ React2.createElement("svg", { className: "mcp-deco", viewBox: "0 0 120 76", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("rect", { x: "84", y: "0", width: "36", height: "44", fill: "#328A88" }), /* @__PURE__ */ React2.createElement("rect", { x: "56", y: "0", width: "28", height: "28", fill: "#EDE8DF" }), /* @__PURE__ */ React2.createElement("circle", { cx: "102", cy: "58", r: "12", fill: "#E5A63B" })), /* @__PURE__ */ React2.createElement("div", { className: "mcp-panel-in" }, title && /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), children));
     }
-    function GameCard({ art, pass, onPass, title, mark, blurb, tags, className = "", style }) {
-      const m = pass && (onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
+    function gameMark({ soon, pass, onPass, first }) {
+      if (soon) return /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark is-soon" }, "Coming soon");
+      if (pass) return onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
         e.stopPropagation();
         onPass(e);
-      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass"));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gcard " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-text" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-name" }, /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), mark), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gcard-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-tags" }, tags));
+      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass");
+      if (first) return /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "First free");
+      return null;
     }
-    function GamePick({ art, pass, onPass, label, title, blurb, tags, className = "", style }) {
-      const m = pass && (onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
-        e.stopPropagation();
-        onPass(e);
-      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass"));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gpick " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-text" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-gpick-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gpick-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-tags" }, tags));
+    function GameCard({ art, pass, onPass, first, soon, title, mark, blurb, tags, className = "", style }) {
+      const m = gameMark({ soon, pass, onPass, first });
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gcard " + (soon ? "is-soon " : "") + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-text" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-name" }, /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), mark), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gcard-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-tags" }, tags));
     }
-    function GameTile({ art, pass, onPass, title, kind, className = "", style }) {
-      const m = pass && (onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
-        e.stopPropagation();
-        onPass(e);
-      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass"));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-gtile " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gtile-art" }, art, m), /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-name" }, title), kind && /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-kind" }, kind));
+    function GamePick({ art, pass, onPass, first, soon, label, title, blurb, tags, className = "", style }) {
+      const m = gameMark({ soon, pass, onPass, first });
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gpick " + (soon ? "is-soon " : "") + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-text" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-gpick-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gpick-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-tags" }, tags));
+    }
+    function GameTile({ art, pass, onPass, first, soon, title, kind, className = "", style }) {
+      const m = gameMark({ soon, pass, onPass, first });
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-gtile " + (soon ? "is-soon " : "") + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gtile-art" }, art, m), /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-name" }, title), kind && /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-kind" }, kind));
     }
     const said$1 = /* @__PURE__ */ new Set();
     const warn$1 = (m) => {
@@ -1048,7 +1048,7 @@
     word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily"], size: "tiny" },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
     mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily"], size: "tiny" },
-    escape: { access: "first", name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
+    escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
     delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Get her out before the ritual is complete.", tags: ["Weekly"], size: "small" },
@@ -3043,10 +3043,8 @@
     const s = gsNorm(q);
     return !s || gsNorm(GS_GAMES[k].name).includes(s);
   };
-  let GS_ADDED;
   let GS_LIB_READY;
   function initGsDiscover() {
-    GS_ADDED = ["barrow", "casebook", "delve", "escape"];
     GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", common: "Today’s threads are ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
   }
   const ESX_ROOM = {
@@ -6273,6 +6271,7 @@
   let CPR_STAGE;
   let CPR_SHOWN;
   const cprLocked = (gs, k) => CPR_STAGE[k] === "pass" && gs.view !== "pass";
+  const cprFirstFree = (gs, k) => CPR_STAGE[k] === "first" && gs.view !== "pass";
   let CPR_LAPSED;
   const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
   const cprFirstState = (gs, id) => {
@@ -6344,6 +6343,7 @@
   }
   const cprTags = (k) => GS_GAMES[k].tags.filter((t) => t !== "FREE" && t !== "FIRST" && t !== "PASS");
   const CprArt = ({ host, id, shape }) => /* @__PURE__ */ React$1.createElement("div", { ref: host }, /* @__PURE__ */ React$1.createElement(GsArt, { art: GS_GAMES[id].art, shape }));
+  const cprTitle = (gs, g) => g.soon ? g.name : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: () => gs.go(g.route) }, g.name);
   const GsCard = ({ id, mark }) => {
     const gs = useGs();
     const host = useGsArtHost();
@@ -6351,11 +6351,13 @@
     return /* @__PURE__ */ React$1.createElement(
       DS.GameCard,
       {
-        className: "mcp-art-host gs-host",
-        art: /* @__PURE__ */ React$1.createElement(CprArt, { host, id, shape: "wide" }),
+        className: g.soon ? "gs-host" : "mcp-art-host gs-host",
+        soon: !!g.soon,
+        first: cprFirstFree(gs, id),
+        art: /* @__PURE__ */ React$1.createElement(CprArt, { host: g.soon ? void 0 : host, id, shape: "wide" }),
         pass: cprLocked(gs, id),
         onPass: () => gs.go("pass"),
-        title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: () => gs.go(g.route) }, g.name),
+        title: cprTitle(gs, g),
         mark: mark && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "daily", icon: "check" }, mark),
         blurb: gsKeepLast(g.blurb),
         tags: /* @__PURE__ */ React$1.createElement(GsTagList, { tags: cprTags(id), ed: g.ed })
@@ -6370,12 +6372,14 @@
     return /* @__PURE__ */ React$1.createElement(
       DS.GamePick,
       {
-        className: "mcp-art-host gs-host",
-        art: /* @__PURE__ */ React$1.createElement(CprArt, { host, id, shape: "wide" }),
+        className: g.soon ? "gs-host" : "mcp-art-host gs-host",
+        soon: !!g.soon,
+        first: cprFirstFree(gs, id),
+        art: /* @__PURE__ */ React$1.createElement(CprArt, { host: g.soon ? void 0 : host, id, shape: "wide" }),
         pass: cprLocked(gs, id),
         onPass: () => gs.go("pass"),
         label,
-        title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: () => gs.go(g.route) }, g.name),
+        title: cprTitle(gs, g),
         blurb: gsKeepLast(g.blurb),
         tags: /* @__PURE__ */ React$1.createElement(GsTagList, { tags: cprTags(id), ed: g.ed })
       }
@@ -7272,18 +7276,21 @@
     const j = i > 0 ? s.lastIndexOf(" ", i - 1) : -1;
     return j < 0 ? s : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, s.slice(0, j + 1), /* @__PURE__ */ React$1.createElement("span", { style: { whiteSpace: "nowrap" } }, s.slice(j + 1)));
   };
-  const GsTile = ({ id, pass, page }) => {
+  const GsTile = ({ id, pass, first, page }) => {
     const gs = useGs();
     const g = GS_GAMES[id];
     const host = useGsArtHost();
+    const soon = !page && !!g.soon;
     return /* @__PURE__ */ React$1.createElement(
       DS.GameTile,
       {
-        className: "mcp-art-host gs-host",
-        art: /* @__PURE__ */ React$1.createElement("div", { ref: host }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "square" })),
+        className: soon ? "gs-host" : "mcp-art-host gs-host",
+        soon,
+        first: !page && !!first,
+        art: /* @__PURE__ */ React$1.createElement("div", { ref: soon ? void 0 : host }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "square" })),
         pass: !!pass,
         onPass: () => gs.go("pass"),
-        title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-gtile-open mcp-art-link", onClick: () => gs.go(g.route, page ? { page } : void 0) }, g.name),
+        title: soon ? g.name : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-gtile-open mcp-art-link", onClick: () => gs.go(g.route, page ? { page } : void 0) }, g.name),
         kind: gsKind(g.category)
       }
     );
@@ -10541,15 +10548,8 @@
   };
   const CPR_PICKS = [["casebook", "ONE CASE"], ["word", "A NEW WORD EVERY DAY"]];
   const cprSelection = (gs) => {
-    const shown = CPR_PICKS.map((p) => p[0]);
-    const take = (ks) => {
-      const out = ks.filter((k) => CPR_SHOWN.includes(k) && !shown.includes(k));
-      shown.push(...out);
-      return out;
-    };
-    const added = take(GS_ADDED);
     const free = gs.view === "pass" ? [] : CPR_SHOWN.filter((k) => CPR_STAGE[k] !== "pass");
-    return { added, free };
+    return { free };
   };
   const CprDiscoverBody = ({ f, setF }) => {
     const { q, cat, rhy } = f;
@@ -10570,7 +10570,7 @@
     const ids = CPR_SHOWN.filter((k) => (cat === "all" || GS_GAMES[k].category === cat) && (rhy === "all" || gsRhythm(k) === rhy) && gsFind(q, k));
     const sel = cprSelection(gs);
     const cardRow = (title, ks) => ks.length ? /* @__PURE__ */ React$1.createElement("section", { className: "dc-sec" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title, className: "gs-row4" }, ks.map((k) => /* @__PURE__ */ React$1.createElement(GsCard, { key: k, id: k })))) : null;
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { ref: tools }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...gsKinds().map((c) => [c, gsKind(c)])], onPick: setCat }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: setRhy }))), !filtering && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-gpicks" }, CPR_PICKS.map(([k, l]) => /* @__PURE__ */ React$1.createElement(GsPick, { key: k, id: k, label: l }))), cardRow("Just added", sel.added), cardRow("Free to play", sel.free)), /* @__PURE__ */ React$1.createElement("section", { className: "dc-sec" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "All games"), wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading games" }) : ids.length ? /* @__PURE__ */ React$1.createElement("div", { className: "mcp-gwall" }, ids.map((k) => /* @__PURE__ */ React$1.createElement(GsTile, { key: k, id: k, pass: cprLocked(gs, k) }))) : /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: clearAll }, "Clear all"))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { ref: tools }, /* @__PURE__ */ React$1.createElement(LbTools, null, /* @__PURE__ */ React$1.createElement(DS.SearchField, { label: "Search", placeholder: "Name", value: q, onChange: (e) => setQ(e.target.value) }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Genre", value: cat, opts: [["all", "All games"], ...gsKinds().map((c) => [c, gsKind(c)])], onPick: setCat }), /* @__PURE__ */ React$1.createElement(LbChoice, { label: "Schedule", value: rhy, opts: [["all", "All games"], ...GS_RHYTHMS], onPick: setRhy }))), !filtering && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-gpicks" }, CPR_PICKS.map(([k, l]) => /* @__PURE__ */ React$1.createElement(GsPick, { key: k, id: k, label: l }))), cardRow("Free to play", sel.free)), /* @__PURE__ */ React$1.createElement("section", { className: "dc-sec" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "All games"), wait ? /* @__PURE__ */ React$1.createElement(GsPart, { label: "Loading games" }) : ids.length ? /* @__PURE__ */ React$1.createElement("div", { className: "mcp-gwall" }, ids.map((k) => /* @__PURE__ */ React$1.createElement(GsTile, { key: k, id: k, pass: cprLocked(gs, k), first: cprFirstFree(gs, k) }))) : /* @__PURE__ */ React$1.createElement("div", { className: "gs-nomatch" }, /* @__PURE__ */ React$1.createElement("p", null, "Nothing matches that."), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: clearAll }, "Clear all"))));
   };
   const GsGames = () => {
     const gs = useGs();

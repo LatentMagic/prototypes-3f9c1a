@@ -46,11 +46,12 @@ export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups).
 // edLine: SAMPLE, the line every edition's panel prints about it (the editions list, gs-editions.jsx). Optional.
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
+// soon: the game is out for now and coming back. Every card, pick and tile shows it Coming soon, dimmed, with no way in.
 export const GS_GAMES = {
   word: { access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], edLine: 'Five letters. Six guesses.', daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily'], size: 'tiny' },
   groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', edLine: 'Sixteen words hide four groups. Find all four.', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
   mystery: { access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], edLine: 'One suspect, one weapon, one room. One accusation.', daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily'], size: 'tiny' },
-  escape: { access: 'first', name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly'], size: 'small' },
+  escape: { access: 'first', soon: true, name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly'], size: 'small' },
   // Casebook is episodic: cases are its editions, with no schedule.
   casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
   delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'Get her out before the ritual is complete.', tags: ['Weekly'], size: 'small' },

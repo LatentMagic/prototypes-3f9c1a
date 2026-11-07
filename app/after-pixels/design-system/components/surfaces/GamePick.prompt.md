@@ -13,6 +13,9 @@ GamePick is a game featured by hand, above the rows, always one of a pair. Use i
 - The label says why it's picked, not what the game is.
 - The picture is 3:1. Don't resize it to fill.
 - A game that needs the Pass gets `pass` (a player without the Pass sees the mark on the picture; a Pass holder and every free game don't). The mark opens the Pass page on its own: pass `onPass` with `pass`. The Pass is never a tag in the tag row, and the mark never carries a price.
+- The top-right corner holds one chip at most: Coming soon (`soon`) wins, then the Pass (`pass`), then First free (`first`). The tag row holds two chips at most and keeps the schedule tag (Daily, Weekly), so none of these is ever a tag.
+- A game whose first edition is free and the rest need the Pass gets `first` (lock and "First free"), for a player without the Pass. It is not a control; the pick opens the game, whose page says the rest.
+- A game that is out for now and coming back gets `soon`: "Coming soon" with no lock, the pick dimmed behind it, no way in and no hover, focus or press effect. Pass `title` as plain text and leave `mcp-art-host` off. A game not out yet, or a game's next chapter, is a SoonCard instead.
 
 ## In the Game Store today
 
