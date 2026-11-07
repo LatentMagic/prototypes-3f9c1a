@@ -3,6 +3,8 @@
 // The job and Situation, then verbs. The rule's pitch heading, pitch paragraphs, chat captions and card line replace canon's
 // while the page is open; every other line stays canon's. Above the page, the card line as it appears elsewhere: canon's game
 // card and a plain link-preview box. The settings bar (app/playground.jsx) picks the rule and the game; open with ?pg=page-copy.
+// The free line: Delve's play box, free signed-in player (?state=delve-free), line under the button. The settings bar's "Free line"
+// swaps the words before "the Pass" in that line's first text node, so canon's own box, link and styling stay.
 // To remove it: delete this file and playground-page-copy.css, and their lines in main.jsx and canon.css.
 // ============================================================================
 import React from 'react';
@@ -89,6 +91,14 @@ const pgcApply = (id, rule) => {
   if (r.blurb) GS_GAMES[id].blurb = r.blurb === 'h' ? GS_PAGES[id].pitch.h : r.blurb;
 };
 
+// ---- The line under Delve's Play button for a free player. Each ends "the Pass." (canon links it); the value is the words before. ----
+const PGC_FREE = {
+  current: 'Free with an account. Every other run comes with ',
+  a: 'The first run is free with an account. Every run after it needs ',
+  b: 'Your first run is free with an account. Play every run after it with ',
+  c: 'Create an account and the first run is free. After that, runs come with ',
+};
+
 // ---- Where the card line also appears: canon's game card, and a plain preview of a shared link (name, picture, one line). ----
 const PgcPreview = ({ id }) => {
   const g = GS_GAMES[id];
@@ -142,7 +152,11 @@ const PgcScreen = () => {
   // Canon builds the cover label as category + ' · ' + rhythm inline (gs-game.jsx) and draws the "In a run" tiles inline for Delve,
   // so the genre-only label is set on the rendered cover and the tiles are hidden by a class, leaving canon untouched.
   const box = React.useRef(null);
+  const free = usePgSetting('freeline');
   React.useLayoutEffect(() => {
+    const line = id === 'delve' && box.current && box.current.querySelector('.gs-pu-box p.gs-pu-wrap');
+    const t = line && line.firstChild;
+    if (t && t.nodeType === 3 && Object.values(PGC_FREE).includes(t.data)) t.data = PGC_FREE[free] || PGC_FREE.current;
     const el = r.genreOnly && box.current && box.current.querySelector('.gs-cover-over .gs-label');
     if (el) el.textContent = GS_GAMES[id].category;
   });
@@ -155,6 +169,8 @@ export const initPlaygroundPageCopy = () => {
       { value: 'current', label: 'Current' }, { value: 'job', label: 'The job' }, { value: 'situation', label: 'Situation, then verbs' }] },
     { key: 'game', label: 'Game', options: [
       { value: 'delve', label: 'Delve' }, { value: 'mystery', label: 'Accuse' }, { value: 'where', label: 'Where' }] },
+    { key: 'freeline', label: 'Free line', when: { key: 'game', value: 'delve' }, options: [
+      { value: 'current', label: 'Current' }, { value: 'a', label: '1 First run free' }, { value: 'b', label: '2 Your first run' }, { value: 'c', label: '3 Create an account' }] },
   ] });
   if (new URLSearchParams(window.location.search).get('pg') === 'page-copy') window.KitCandidate = { Screen: PgcScreen };
 };

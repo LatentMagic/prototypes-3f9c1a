@@ -10823,6 +10823,12 @@
     if (r.server) GS_PAGES[id].who.server = r.server;
     if (r.blurb) GS_GAMES[id].blurb = r.blurb === "h" ? GS_PAGES[id].pitch.h : r.blurb;
   };
+  const PGC_FREE = {
+    current: "Free with an account. Every other run comes with ",
+    a: "The first run is free with an account. Every run after it needs ",
+    b: "Your first run is free with an account. Play every run after it with ",
+    c: "Create an account and the first run is free. After that, runs come with "
+  };
   const PgcPreview = ({ id }) => {
     const g = GS_GAMES[id];
     return /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev", role: "img", "aria-label": "Link preview: " + g.name + ". " + g.blurb }, /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-art" }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "wide" })), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgc-prev-site" }, "afterpixels.com"), /* @__PURE__ */ React$1.createElement("b", null, g.name), /* @__PURE__ */ React$1.createElement("span", null, g.blurb)));
@@ -10862,7 +10868,11 @@
     pgcApply(id, rule);
     const r = (PGC_COPY[id] || {})[rule] || {};
     const box = React$1.useRef(null);
+    const free = usePgSetting("freeline");
     React$1.useLayoutEffect(() => {
+      const line = id === "delve" && box.current && box.current.querySelector(".gs-pu-box p.gs-pu-wrap");
+      const t = line && line.firstChild;
+      if (t && t.nodeType === 3 && Object.values(PGC_FREE).includes(t.data)) t.data = PGC_FREE[free] || PGC_FREE.current;
       const el = r.genreOnly && box.current && box.current.querySelector(".gs-cover-over .gs-label");
       if (el) el.textContent = GS_GAMES[id].category;
     });
@@ -10879,6 +10889,12 @@
         { value: "delve", label: "Delve" },
         { value: "mystery", label: "Accuse" },
         { value: "where", label: "Where" }
+      ] },
+      { key: "freeline", label: "Free line", when: { key: "game", value: "delve" }, options: [
+        { value: "current", label: "Current" },
+        { value: "a", label: "1 First run free" },
+        { value: "b", label: "2 Your first run" },
+        { value: "c", label: "3 Create an account" }
       ] }
     ] });
     if (new URLSearchParams(window.location.search).get("pg") === "page-copy") window.KitCandidate = { Screen: PgcScreen };
