@@ -97,7 +97,7 @@ GS_CHATS = {
   // Delve: the product page's chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
   // Each block is the design system's mono block, one line per row.
   delve: [
-    { cap: 'Each hero’s strengths, health and defence, side by side before you pick.', turns: [gscU('hey, I want to play Delve'),
+    { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('hey, I want to play Delve'),
       gscAi('delve', ['Delve #5: The Labyrinth of Crete', 'Every year King Minos of Crete makes Athens send young people to him as tributes, a sort of payment. They are fed to the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.', 'Choose your hero:'],
         null, [{ type: 'mono', text: 'Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12' }]),
       gscU('I’ll go with Ione'),

@@ -1911,7 +1911,7 @@
       // Delve: the product page's chats, trimmed from a real playtest (2026-11-06); no event is changed and no edition secret appears.
       // Each block is the design system's mono block, one line per row.
       delve: [
-        { cap: "Each hero’s strengths, health and defence, side by side before you pick.", turns: [
+        { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
           gscU("hey, I want to play Delve"),
           gscAi(
             "delve",
@@ -6582,9 +6582,10 @@
     const paying = gs.view === "pass";
     const mine = !paying ? cprBoxCopy(id) : null;
     const passOnly = CPR_STAGE[id] === "pass" && !paying;
-    const label = g.first && !paying ? b.button : "Play";
+    const firstFree = g.first && !paying;
+    const label = firstFree ? b.button : "Play";
     const small = paying || passOnly ? null : mine ? mine[1] : b.small;
-    return /* @__PURE__ */ React$1.createElement(DS.Card, { className: "gs-pu-box", style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, !paying && /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, mine ? mine[0] : b.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, b.heading), /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI"), " first. ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), ...b.steps.slice(1).map((s) => gsOr(s))] }), passOnly ? /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.go("pass") }, "Get the Pass") : /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.playReq({ ...gsPlayReq(gs, g.name), page: true }) }, label), small && (small.endsWith(" comes with the Pass.") ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-small gs-pu-wrap", text: small }) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, small)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, GS.works)));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { className: "gs-pu-box", style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, !paying && /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, mine ? mine[0] : b.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, b.heading), /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI"), " first. ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), ...b.steps.slice(1).map((s, i) => gsOr(i === 0 && firstFree && b.firstStep ? b.firstStep : s))] }), passOnly ? /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.go("pass") }, "Get the Pass") : /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.playReq({ ...gsPlayReq(gs, g.name), page: true }) }, label), small && (small.endsWith(" comes with the Pass.") ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-small gs-pu-wrap", text: small }) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, small)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, GS.works)));
   };
   const GsGap = () => /* @__PURE__ */ React$1.createElement("span", { className: "gs-gap", title: "Not decided yet" }, "—");
   const gsOr = (v) => v == null ? /* @__PURE__ */ React$1.createElement(GsGap, null) : v;
@@ -6701,6 +6702,7 @@
           session: "delve",
           button: "Play the first run",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play this week’s run"), ", from the first room to its ending."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
+          firstStep: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the first run"), ", from the first room to its ending."),
           small: "The first run is free with an account. Every other run comes with the After Pixels Pass."
         },
         facts: { often: "New every week" },

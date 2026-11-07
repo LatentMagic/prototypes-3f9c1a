@@ -147,6 +147,7 @@ GS_PAGES = {
   delve: {
     box: { label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
+      firstStep: <><b>Play the first run</b>, from the first room to its ending.</>,
       small: 'The first run is free with an account. Every other run comes with the After Pixels Pass.' },
     facts: { often: 'New every week' },
     tags: [],

@@ -13,14 +13,16 @@ export const GsPlayBox = ({ id }) => {
   const paying = gs.view === 'pass';
   const mine = !paying ? cprBoxCopy(id) : null;
   const passOnly = CPR_STAGE[id] === 'pass' && !paying;
-  const label = g.first && !paying ? b.button : 'Play';
+  const firstFree = g.first && !paying;
+  // firstStep: a free-first-edition game's play step for a player without the Pass, who gets the first edition, not this week's.
+  const label = firstFree ? b.button : 'Play';
   // A Pass holder's box has no Pass line and no label; a Pass-only box keeps its label and Get the Pass, no line.
   const small = paying || passOnly ? null : mine ? mine[1] : b.small;
   return (
     <DS.Card className="gs-pu-box" style={{ gap: 16, justifyItems: 'stretch', alignContent: 'start' }}>
       {!paying && <span className="gs-label">{mine ? mine[0] : b.label}</span>}
       <h2 className="mcp-t-card">{b.heading}</h2>
-      <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s) => gsOr(s))]} />
+      <GsSteps items={[<><b>Connect your AI</b> first. <GsHowLink label="How to connect" /></>, ...b.steps.slice(1).map((s, i) => gsOr(i === 0 && firstFree && b.firstStep ? b.firstStep : s))]} />
       {passOnly
         ? <DS.Button block onClick={() => gs.go('pass')}>Get the Pass</DS.Button>
         : <DS.Button block onClick={() => gs.playReq({ ...gsPlayReq(gs, g.name), page: true })}>{label}</DS.Button>}
