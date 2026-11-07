@@ -38,7 +38,8 @@ export const ConfigExtraBase = () => {
     return !lbNow(api, gid);
   };
   // This edition: one pick over what the page shows: not started, the old week (in progress), or ed (the finished play).
-  const edVal = notStarted() ? 'none' : r.week === 'live' ? 'live' : ['average', 'hard', 'failed'].includes(r.ed) ? r.ed : null;
+  // A page that is locked or signed out shows no play, so the row shows no pick at all.
+  const edVal = api.view === 'out' || (g && cprLocked(api, gid)) ? null : notStarted() ? 'none' : r.week === 'live' ? 'live' : ['average', 'hard', 'failed'].includes(r.ed) ? r.ed : null;
   const needsPass = !!g && !g.free && !g.first;
   const [forced, setForced] = React.useState(null);
   const edAt = (v) => [v, route.name, route.id, route.page].join('|');

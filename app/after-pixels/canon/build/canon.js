@@ -4333,7 +4333,7 @@
   };
   const cprNewFor = (gs, k) => {
     if (cprLocked(gs, k)) return false;
-    if (gs.view === "pass") return !cprPlayed(gs, k);
+    if (gs.view === "pass") return cprStore.get().newEds !== "most" && (PZ[k] || k === "casebook" || k === "delve") ? !phThis(gs, k) : !cprPlayed(gs, k);
     if (CPR_STAGE[k] === "daily") return gsFresh(gs) || (cprStore.get().newEds === "most" ? k !== "word" : !phThis(gs, k));
     if (CPR_STAGE[k] === "first") return cprFirstState(gs, k) === "none";
     return false;
@@ -5913,7 +5913,7 @@
   };
   const phSeedNew = (gs, gid) => gs.view === "free" && (gid === "word" || gid === "escape") && cprStore.get().freeNew && !(gs.review && gs.review.today === "played");
   const phThisEd = (p, gs) => {
-    if (!p.cur) return p;
+    if (!p.cur && !(gs.view !== "pass" && PH_FIRST[p.gid] === p.ed)) return p;
     if (gs.review && gs.review.today === "none" || p.gid === "word" && phSeedNew(gs, "word")) return null;
     const q = phCur(p, gs);
     return lbWeekDone(gs) || !q.now ? q : { ...q, ...q.now };
@@ -9631,7 +9631,7 @@
       if (api.view !== "pass" && CPR_STAGE[gid] === "first") return cprFirstState(api, gid) === "none";
       return !lbNow(api, gid);
     };
-    const edVal = notStarted() ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
+    const edVal = api.view === "out" || g && cprLocked(api, gid) ? null : notStarted() ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
     const needsPass = !!g && !g.free && !g.first;
     const [forced, setForced] = React$1.useState(null);
     const edAt = (v) => [v, route.name, route.id, route.page].join("|");

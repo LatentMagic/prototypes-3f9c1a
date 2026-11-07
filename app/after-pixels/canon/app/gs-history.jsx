@@ -135,10 +135,11 @@ const phCur = (p, gs) => {
 // The free seed: a free player has not played today's Guess or Escape's first room (cprStore freeNew) until Config → This edition picks something.
 export const phSeedNew = (gs, gid) => gs.view === 'free' && (gid === 'word' || gid === 'escape') && cprStore.get().freeNew && !(gs.review && gs.review.today === 'played');
 // Config → This edition reaches the record here and nowhere else, in every view. This edition's play is the one marked `cur` (the current day, week or
-// case; for a free player's Escape, Delve and the Barrow the first edition, which is also current). Not played drops it, as the seed does for a free
-// player's Guess; In progress swaps in its `now` form; Average, Hard and Failed are phCur's. Nothing picked leaves the seeded play.
+// case), or, for a free player (Pass ended included), the first edition's play: Delve's and the Barrow's is also current, Escape's is its oldest room. A Pass
+// holder keeps Escape's oldest room as a past play. Not played drops it, as the seed does for a free player's Guess; In progress swaps in its `now` form;
+// Average, Hard and Failed are phCur's. Nothing picked leaves the seeded play.
 const phThisEd = (p, gs) => {
-  if (!p.cur) return p;
+  if (!p.cur && !(gs.view !== 'pass' && PH_FIRST[p.gid] === p.ed)) return p;
   if ((gs.review && gs.review.today === 'none') || (p.gid === 'word' && phSeedNew(gs, 'word'))) return null;
   const q = phCur(p, gs);
   return lbWeekDone(gs) || !q.now ? q : { ...q, ...q.now };

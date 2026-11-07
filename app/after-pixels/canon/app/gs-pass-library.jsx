@@ -223,7 +223,8 @@ const gsLibRow = (gs, k) => {
 // free first part not yet started. A Pass holder: as before.
 const cprNewFor = (gs, k) => {
   if (cprLocked(gs, k)) return false;
-  if (gs.view === 'pass') return !cprPlayed(gs, k);
+  // A Pass holder: a daily, weekly or case game is new while this edition has no play in the record (Config → This edition: Not played); the rest read the seed.
+  if (gs.view === 'pass') return cprStore.get().newEds !== 'most' && (PZ[k] || k === 'casebook' || k === 'delve') ? !phThis(gs, k) : !cprPlayed(gs, k);
   // Config's Most not played only changes which dailies count as unplayed; the playable-now rule still decides.
   if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || (cprStore.get().newEds === 'most' ? k !== 'word' : !phThis(gs, k));
   if (CPR_STAGE[k] === 'first') return cprFirstState(gs, k) === 'none';
