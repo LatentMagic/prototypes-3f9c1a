@@ -1045,7 +1045,7 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily"], size: "tiny" },
+    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "One hidden word a day, and six guesses to close in on it.", tags: ["Daily"], size: "tiny" },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
     mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily"], size: "tiny" },
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
@@ -1827,20 +1827,25 @@
   };
   function initGsChats() {
     GS_CHATS = {
+      // Guess: the product page's three chats, trimmed from a real play (2026-11-07, No. 34); no event is changed. The winning guess
+      // and the word are left out, so no chat gives the answer away; the share row hides every letter.
       word: [
-        { cap: "Say you want to play. Everyone gets the same word today.", turns: [
-          gscU("Play Guess on After Pixels."),
-          gscAi("guess", ["Guess No. 212 is ready. You have six tries to find the hidden five-letter word.", "What’s your first guess?"])
+        { cap: "Ask for it in your own words, and have the marks explained before your first guess.", turns: [
+          gscU("hey, can we play the daily word game? guess I think it’s called"),
+          gscAi("guess", ["Yes, it’s called Guess, and today’s puzzle (#34) is ready. You have six tries to find the hidden five-letter word. You have 1 hint left.", "The board is empty, so the first guess is yours. What would you like to try?"]),
+          gscU("how do the marks work?"),
+          gscAi("guess", ["Each guess comes back with a mark on every letter:", "Correct: the letter is in the word and in the right place.", "Present: the letter is in the word but in a different place.", "Absent: the letter isn’t in the word.", "What’s your first guess?"])
         ] },
-        { cap: "Green: right place. Amber: in the word, wrong place. Grey: not in it.", turns: [
-          gscU("crane"),
-          gscAi("guess", "No letters in the word. 5 guesses left."),
-          gscU("slate"),
-          gscAi("guess", "S is in place. L and T are in the word. 4 guesses left.", [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xxxxx" }, { letters: "SLATE", marks: "hnxnx" }] }])
+        { cap: "Two guesses in, four letters sit green and one is left to find.", turns: [
+          gscU("ok, crane"),
+          gscAi("guess", ["R and A are in the right places, and N is in the word but in a different spot. C and E aren’t in it.", "You have 5 guesses left. What’s your next guess?"], [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xhhnx" }] }]),
+          gscU("grain"),
+          gscAi("guess", ["New find: R, A, I and N are all in the right places now, and G isn’t in the word.", "You have 4 guesses left. What’s your next guess?"], [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xhhnx" }, { letters: "GRAIN", marks: "xhhhh" }] }])
         ] },
-        { cap: "Ask for a hint and the engine places a letter. One a day.", turns: [
-          gscU("Give me a hint."),
-          gscAi("guess", "Letter 3 is I. No hints left today.")
+        { cap: "Finish in three with three to spare, and copy a result that is ready to send.", turns: [
+          gscAi("guess", ["You got it in 3 guesses, with 3 left over. You didn’t use your hint."]),
+          gscU("nice, give me the share thing"),
+          gscAi("guess", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛🟩🟩🟨⬛\n⬛🟩🟩🟩🟩\n🟩🟩🟩🟩🟩" }])
         ] }
       ],
       groups: [
@@ -6625,11 +6630,11 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "Six guesses to find today’s five-letter word.", ps: [
-          "Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get one hint a day, and it places a letter for you.",
-          "Your AI runs the game but isn’t told the word until it’s over, so it can’t give it away. Solve it to keep your streak, then share your grid."
+        pitch: { h: "One hidden word a day, and six guesses to close in on it.", ps: [
+          "Everyone playing today is after the same five letters. You have six tries to pin them down and one hint in reserve, so it can be over in one lucky guess or come down to a last-ditch sixth. Once you’ve cracked it, post your grid of coloured squares: it shows how you got there and gives no letter away.",
+          "Each guess tells you something. A letter turns green in its place, yellow when it belongs somewhere else, and dark when it isn’t in the word at all. Then the choice is yours: spend a guess on fresh letters to learn more, or go for the word while you still have tries in hand. If a gap won’t give, the hint drops one letter into place without costing a guess, though your shared result owns up to it."
         ] },
-        who: { ai: "Takes your guesses and shows you how each one scored.", server: "Holds the word, marks every guess and keeps the count." },
+        who: { ai: "Draws your board after every guess and explains the marks. It isn’t told the word until you’re done, so it can’t let it slip.", server: "Keeps the word secret, marks every letter of every guess, counts your tries and picks the letter a hint gives you." },
         week: { title: "Today’s word", line: "Five letters. Six guesses.", session: "word-today" }
       },
       groups: {
