@@ -139,5 +139,7 @@ Build and test every game against the standard states it can have. Skip a state 
 | Completed | A finished play that ended well | Average |
 | Failed | Play ended in a loss | Failed |
 
-Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does, and it carries the worst realistic data in every field whose length or count varies: the longest names, hints and items, the most tries and hints used, the largest numbers, still solvable and within the game's rules and spec, as Accuse's Hard plays case 13 for its longest suspect name) and Past day's Finished late and In progress are variants: cover them where the game has one. A variant's entry follows its group's ids: `library-delve-hard`, `past-day-word-late-library`.
+Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day's Finished late and In progress are variants: cover them where the game has one. A variant's entry follows its group's ids: `library-delve-hard`, `past-day-word-late-library`.
+
+- **A Hard play's data:** it carries the worst realistic data in every field whose length or count varies, and stays solvable within the game's rules.
 </important>

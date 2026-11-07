@@ -462,7 +462,7 @@ GS_SESSIONS['escape-hard'] = (() => {
   mv('Examined the oak door', 'Four letters, and the ticket fits the slot.');
   tryOn('oak door lock', 'TICK'); hint('oak door lock', 1, 'Since the clock started, the light shows things it did not before. Look again at what the beam crosses.');
   tryOn('oak door lock', 'TCOK'); hint('oak door lock', 2, 'The beam touches four things in turn, and each shows a letter. Read them in the beam’s order.');
-  tryOn('oak door lock', 'KCOT'); hint('oak door lock', 3, 'The workbench shows T, the portrait O, the cabinet C and the fireplace K. The answer is TOCK.');
+  tryOn('oak door lock', 'KCOT'); hint('oak door lock', 3, 'The workbench shows T and the cabinet shows C. The answer is TOCK.');
   tryOn('oak door lock', 'TOCK', 'Out');
   const r = GS_RESULT.escape({ min: 117, par: 'over par' }); const hints = L.filter((x) => x[0] === 'Hint').length;
   return { ...GS_SESSIONS['escape-week'], result: r, share: r, figures: ['117 min, over par', hints + ' hints', wrong + ' wrong tries'],

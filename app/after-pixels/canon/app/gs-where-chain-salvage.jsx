@@ -40,7 +40,8 @@ const dpWhere = (t, ok) => {
   const far = (km) => (km === null ? 'Found it' : km === 0 ? 'Shares a border with the hidden country' : dpKm(km) + ' from the hidden country, border to border');
   const lines = rows.map((r, k) => ['Guess ' + (k + 1), r[0], far(r[1])]);
   const h = t.hint && /^From (.+), the country lies (.+)$/.exec(t.hint);
-  if (h) lines.splice(lines.length - 1, 0, ['Hint', 'The hidden country lies ' + h[2] + ' of ' + h[1]]);
+  // The hint comes from the latest guess when it is taken, so its row follows the guess it names (guess 5 when a sixth guess was made after it).
+  if (h) lines.splice(t.hintAfter ?? lines.length - 1, 0, ['Hint', 'The hidden country lies ' + h[2] + ' of ' + h[1]]);
   if (!ok) lines.push(['Answer', t.a]);
   return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(' ') };
 };
@@ -391,10 +392,10 @@ DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
 // item used and the edition still won. Failed: the edition lost. now: the line and bar of
 // the library now card (CprPzNow); Chain's card draws from the play itself. ----
 // Hard pushes to the limit: the longest hint line (the hint's country is the longest UN member name, 32 chars, and the compass point is one of the longest, southwest),
-// the longest guess name in the list (Democratic Republic of the Congo, 32 chars, so no Where answer depends on it) and the largest distances (a first guess 18,680 km out, five digits).
+// the longest guess name in the list (Democratic Republic of the Congo, 32 chars, so no Where answer depends on it) and the largest distances (a first guess 17,700 km out, five digits).
 // Distances are border to border to the nearest 10 km, estimated by hand from border points, so approximate; SVG to Peru bears 212 degrees, southwest. Failed adds a sixth guess
 // that shares Peru's border.
-const dpHardWh = { a: 'Peru', g: [['Thailand', 18680], ['Australia', 13190], ['Democratic Republic of the Congo', 8930], ['Mexico', 2420], ['Saint Vincent and the Grenadines', 2160]], hint: 'From Saint Vincent and the Grenadines, the country lies southwest' };
+const dpHardWh = { a: 'Peru', g: [['Thailand', 17700], ['Australia', 12150], ['Democratic Republic of the Congo', 8930], ['Mexico', 2420], ['Saint Vincent and the Grenadines', 2160]], hint: 'From Saint Vincent and the Grenadines, the country lies southwest', hintAfter: 5 };
 const dpPickWh = (ok) => {
   const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ['Ecuador', 0]] }, ok); const res = GS_RESULT.where({ ok, guesses: r.guesses });
   return { ...GS_SESSIONS['where-today'], loss: !ok, hints: r.hints, result: res, share: res, figures: [r.guesses + ' of 6 guesses', '1 hint'], shareLines: [dpWhHead(DP_NO, r, ok), r.marks], lines: r.lines,

@@ -1642,7 +1642,7 @@
     tryOn("oak door lock", "TCOK");
     hint("oak door lock", 2, "The beam touches four things in turn, and each shows a letter. Read them in the beam’s order.");
     tryOn("oak door lock", "KCOT");
-    hint("oak door lock", 3, "The workbench shows T, the portrait O, the cabinet C and the fireplace K. The answer is TOCK.");
+    hint("oak door lock", 3, "The workbench shows T and the cabinet shows C. The answer is TOCK.");
     tryOn("oak door lock", "TOCK", "Out");
     const r = GS_RESULT.escape({ min: 117, par: "over par" });
     const hints = L.filter((x) => x[0] === "Hint").length;
@@ -3976,7 +3976,7 @@
   const ACC_CASE_13 = {
     scene: [{ id: "scene", name: "The scene", text: "The city’s richest people have come in evening dress to see the museum’s new treasures, and the doors were locked at nine. Sir Basil had paid for every treasure in the building, and he had just accused one of his guests of selling him a fake without saying which." }],
     suspects: [
-      ["Lady Clementine Hartwell", "His sister, who has run the house for twenty years and is afraid of being sent away."],
+      ["Lady Clementine Hartwell", "His sister, who has run the museum for twenty years and is afraid of being sent away."],
       ["Mr Owen Price", "A night watchman with a gambling problem."],
       ["Dr Marion Pike", "The curator, who chose every piece and would be ruined by a fake."],
       ["Mr Teodor Lukas", "A dealer who sold Sir Basil many of his finest pieces."]
@@ -3991,7 +3991,7 @@
       ["Grand foyer", "Where the guests were greeted."],
       ["Butterfly room", "Glass cases of pinned wings."],
       ["Dinosaur hall", "A great skeleton under the dome."],
-      ["Portrait corridor", "Where old Hartwells stare down from the walls."]
+      ["Portrait corridor", "Where old portraits stare down from the walls."]
     ],
     clues: [
       "The killer handled the poisoned toffee apple.",
@@ -4763,7 +4763,7 @@
     const far = (km) => km === null ? "Found it" : km === 0 ? "Shares a border with the hidden country" : dpKm(km) + " from the hidden country, border to border";
     const lines = rows.map((r, k) => ["Guess " + (k + 1), r[0], far(r[1])]);
     const h = t.hint && /^From (.+), the country lies (.+)$/.exec(t.hint);
-    if (h) lines.splice(lines.length - 1, 0, ["Hint", "The hidden country lies " + h[2] + " of " + h[1]]);
+    if (h) lines.splice(t.hintAfter ?? lines.length - 1, 0, ["Hint", "The hidden country lies " + h[2] + " of " + h[1]]);
     if (!ok) lines.push(["Answer", t.a]);
     return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(" ") };
   };
@@ -5355,7 +5355,7 @@
     DP_IDS.forEach((k) => {
       GS_TODAY_PLAYED.pass[k] = k + "-today";
     });
-    const dpHardWh = { a: "Peru", g: [["Thailand", 18680], ["Australia", 13190], ["Democratic Republic of the Congo", 8930], ["Mexico", 2420], ["Saint Vincent and the Grenadines", 2160]], hint: "From Saint Vincent and the Grenadines, the country lies southwest" };
+    const dpHardWh = { a: "Peru", g: [["Thailand", 17700], ["Australia", 12150], ["Democratic Republic of the Congo", 8930], ["Mexico", 2420], ["Saint Vincent and the Grenadines", 2160]], hint: "From Saint Vincent and the Grenadines, the country lies southwest", hintAfter: 5 };
     const dpPickWh = (ok) => {
       const r = dpWhere(ok ? dpHardWh : { ...dpHardWh, g: [...dpHardWh.g, ["Ecuador", 0]] }, ok);
       const res = GS_RESULT.where({ ok, guesses: r.guesses });
