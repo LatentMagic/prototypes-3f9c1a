@@ -6,11 +6,11 @@ import React from 'react';
 import { GS_DAY0, GS_CUR } from './gs-billing.jsx';
 import { ConfigGroup, ConfigRow } from './config.jsx';
 import { GsBarrowConfigRow } from './gs-pass-aids.jsx';
-import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS, gsGameOfRoute, gsFresh, gsNotPlayed } from './gs-data.jsx';
+import { GS_GAMES, GS_ED_SIDS, GS_SESSIONS, gsGameOfRoute, gsFresh } from './gs-data.jsx';
 import { gsEdFollow } from './gs-session.jsx';
-import { GsPassStage, cprFirstState, cprLocked, CPR_STAGE } from './gs-pass-store.jsx';
+import { cprFirstState, cprLocked, CPR_STAGE } from './gs-pass-store.jsx';
 import { lbNow } from './gs-library.jsx';
-import { phVisible } from './gs-history.jsx';
+import { hgLatest } from './gs-hunter-library.jsx';
 
 export const ConfigExtraBase = () => {
   const api = window.gsApi || {};
@@ -29,9 +29,10 @@ export const ConfigExtraBase = () => {
   // a free player's unplayed first part or daily, a Pass holder's untouched Barrow, or a Pass-only game nobody has played. Read from the same
   // tests the pages use, so the row cannot say Not played over a page that shows a play, or nothing over one that does not.
   const notStarted = () => {
-    if (gsFresh(api) || gsNotPlayed(api) || (gid && r.never === gid)) return true;
-    if (!g || api.view === 'out' || cprLocked(api, gid)) return false;
-    if (gid === 'hunter') return !phVisible(api).some((p) => p.gid === 'hunter');
+    if (api.view === 'out' || (g && cprLocked(api, gid))) return false;
+    if (gsFresh(api) || (gid && r.never === gid)) return true;
+    if (!g) return false;
+    if (gid === 'hunter') return !hgLatest(api);
     if (gid === 'barrow') return ['none', 'pass'].includes(cprFirstState(api, 'barrow'));
     if (api.view !== 'pass' && CPR_STAGE[gid] === 'first') return cprFirstState(api, gid) === 'none';
     return !lbNow(api, gid);
@@ -60,8 +61,6 @@ export const ConfigExtraBase = () => {
     if (forced) api.setDemoView(forced.view);
     setForced(forced ? { text: forced.text, at: edAt(v) } : null);
     api.setReview({ today: v === 'none' ? 'none' : 'played', week: v === 'live' ? 'live' : 'done', ed: ['average', 'hard', 'failed'].includes(v) ? v : null });
-    // The Free: Word and Escape row below says the same: Not played leaves Word's day and Escape's first room unplayed, any other pick plays them.
-    GsPassStage.set({ freeNew: v === 'none' });
     setTimeout(() => gsEdFollow(window.gsApi), 0);
   });
   // The hint says what the pick does not reach, read from the data: which games lack a pick and which have no result for an edition.

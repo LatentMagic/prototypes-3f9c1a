@@ -6,13 +6,11 @@
 // What this player can play of a game: 'all' everything the game offers; 'first' the game's one first edition; 'none' nothing.
 // Read from the game's access (gs-data.jsx): a Pass holder or 'daily', 'all'; 'first', 'first'; 'pass', 'none'.
 import React from 'react';
-import { GS_GAMES, gsLapsed, gsEndedOn, DS, useGs, GS_ART, gsRhythm, gsNorm, gsFresh, gsNotPlayed, gsTodayPlayed, GS_SESSIONS, gsEdPick, gsSessStatus } from './gs-data.jsx';
+import { GS_GAMES, gsLapsed, gsEndedOn, DS, useGs, GS_ART, gsRhythm, gsNorm } from './gs-data.jsx';
 import { GsSharePopup } from './gs-session.jsx';
-import { CB_LIVE } from './gs-casebook-data.jsx';
-import { cbStatus, cbWeek, cbGo } from './gs-casebook.jsx';
-import { dvStatus, DV_LIVE } from './gs-delve-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
 import { pgeList } from './gs-editions.jsx';
+import { phThis, PH_FIRST } from './gs-history.jsx';
 
 export const lbAccess = (gs, id) => (gs.view === 'pass' || GS_GAMES[id].free ? 'all' : GS_GAMES[id].first ? 'first' : 'none');
 // Has the player ever held the Pass (now, or until it ended: gsEndedOn)?
@@ -314,13 +312,9 @@ export const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => (
 // This edition (today's for a daily, this week's for a weekly) is finished unless Config or the demo bar says in progress.
 export const lbWeekDone = (gs) => (gs.review && gs.review.week) !== 'live';
 // This edition's play of a game for this player, the same on every screen: { status, open } or null when not played (or not playable).
+// It is the play in the record (phThis), with the pick Config → This edition makes already applied. A free player's Escape and Delve are
+// their first edition's, read through cprFirstState instead.
 export const lbNow = (gs, id) => {
-  const done = lbWeekDone(gs); if (gsFresh(gs) || gsNotPlayed(gs)) return null;
-  if (id === 'casebook') return gs.view === 'pass' ? { status: cbStatus(cbWeek(gs)), open: () => cbGo(gs, CB_LIVE.id) } : null;
-  if (id === 'delve') { const sid = done ? gsEdPick('delve', gs) || 'delve' : 'delve-live';
-    return gs.view === 'pass' ? { status: done ? gsSessStatus(GS_SESSIONS[sid]) : dvStatus(DV_LIVE), open: () => gs.go('session', { id: sid }) } : null; }
-  const c = PZ && PZ[id]; if (!c || !gsTodayPlayed(gs)[id]) return null;
-  if (!done) return { status: { kind: 'live', label: 'In progress' }, open: () => gs.go('session', { id: c.liveSid }) };
-  const s = GS_SESSIONS[c.today];
-  return { status: gsSessStatus(s), open: () => gs.go('session', { id: c.today }) };
+  const p = (PZ[id] || id === 'casebook' || id === 'delve') && (gs.view === 'pass' || !PH_FIRST[id]) ? phThis(gs, id) : null;
+  return p ? { status: p.status, open: () => p.open(gs) } : null;
 };

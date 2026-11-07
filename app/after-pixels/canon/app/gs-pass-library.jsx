@@ -6,7 +6,7 @@
 // in the now card's place. For Casebook, Delve and Escape a Pass holder gets canon's page; the Barrow has no canon page.
 // Canon's library pages for the games a Pass holder still gets them for: copied from GS_LIBRARY in registerPassLibrary().
 import React from 'react';
-import { useGs, DS, GS_SESSIONS, gsSessStatus, gsLapsed, GS_GAMES, GS_NAME, gsFresh, gsTodayPlayed, gsRhythm, gsForms, GS_RHYTHMS } from './gs-data.jsx';
+import { useGs, DS, GS_SESSIONS, gsSessStatus, gsLapsed, GS_GAMES, GS_NAME, gsFresh, gsRhythm, gsForms, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsTile } from './gs-parts.jsx';
 import { GS_PAGES } from './gs-game.jsx';
@@ -18,7 +18,7 @@ import { DV_FIRST, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './
 import { PZ, pzRun } from './gs-puzzles-library.jsx';
 import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
 import { GS_LIB_READY, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
-import { phVisible, phAch, LbRecent, phWhen, PH_FIRST, PhLead, edList } from './gs-history.jsx';
+import { phVisible, phThis, phAch, LbRecent, phWhen, PH_FIRST, PhLead, edList } from './gs-history.jsx';
 import { useCpr, cprFirstState, CprPassEnd, cprLapsedOf, cprStore, cprLocked, CPR_STAGE, cprPlayed, CPR_SHOWN } from './gs-pass-store.jsx';
 import { EsNow } from './gs-escape.jsx';
 import { WdNow } from './gs-word.jsx';
@@ -225,7 +225,7 @@ const cprNewFor = (gs, k) => {
   if (cprLocked(gs, k)) return false;
   if (gs.view === 'pass') return !cprPlayed(gs, k);
   // Config's Most not played only changes which dailies count as unplayed; the playable-now rule still decides.
-  if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || (cprStore.get().newEds === 'most' ? k !== 'word' : !gsTodayPlayed(gs)[k]);
+  if (CPR_STAGE[k] === 'daily') return gsFresh(gs) || (cprStore.get().newEds === 'most' ? k !== 'word' : !phThis(gs, k));
   if (CPR_STAGE[k] === 'first') return cprFirstState(gs, k) === 'none';
   return false;
 };

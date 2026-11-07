@@ -7,7 +7,7 @@
 // ============================================================================
 // ---- Dates ----
 import React from 'react';
-import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED_SIDS, gsEndedOn, gsTodayPlayed, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
+import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED_SIDS, gsEndedOn, GS_TODAY_PLAYED, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, LbChoice } from './gs-library.jsx';
@@ -19,7 +19,7 @@ import { PZ, pzStatus, pzLong, pzSession } from './gs-puzzles-library.jsx';
 import { HG_DAYS, hgStatus, hgSid } from './gs-hunter-library.jsx';
 import { BW_T1, BW_REC1 } from './gs-barrow-library.jsx';
 import { gsKinds, gsKind } from './gs-discover.jsx';
-import { cprFirstState } from './gs-pass-store.jsx';
+import { cprFirstState, cprStore } from './gs-pass-store.jsx';
 import { GS_EDITIONS } from './registry.js';
 
 const PH_TODAY = new Date(2026, 9, 6);
@@ -132,11 +132,26 @@ const phCur = (p, gs) => {
   if (!sid || sid === p.sid) return p;
   return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid) };
 };
+// The free seed: a free player has not played today's Guess or Escape's first room (cprStore freeNew) until Config → This edition picks something.
+export const phSeedNew = (gs, gid) => gs.view === 'free' && (gid === 'word' || gid === 'escape') && cprStore.get().freeNew && !(gs.review && gs.review.today === 'played');
+// Config → This edition reaches the record here and nowhere else, in every view. This edition's play is the one marked `cur` (the current day, week or
+// case; for a free player's Escape, Delve and the Barrow the first edition, which is also current). Not played drops it, as the seed does for a free
+// player's Guess; In progress swaps in its `now` form; Average, Hard and Failed are phCur's. Nothing picked leaves the seeded play.
+const phThisEd = (p, gs) => {
+  if (!p.cur) return p;
+  if ((gs.review && gs.review.today === 'none') || (p.gid === 'word' && phSeedNew(gs, 'word'))) return null;
+  const q = phCur(p, gs);
+  return lbWeekDone(gs) || !q.now ? q : { ...q, ...q.now };
+};
 const phLog = (gs) => {
-  const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL).map((p) => phCur(p, gs));
+  const l = (gs.review && gs.review.broken ? PH_ALL.filter((p) => p.ed !== 'word1').concat(PH_BROKEN) : PH_ALL).map((p) => phThisEd(p, gs)).filter(Boolean);
   const u = l.concat(Object.keys(PH_PAST).map((k) => phPast(gs, k)).filter(Boolean));
   return (phMoreOn(gs) ? u.concat(PH_MORE_PLAYS) : u).slice().sort((a, b) => b.at - a.at);
 };
+// This player's play of this edition of a game, as the record stands in this view, or undefined.
+export const phThis = (gs, gid) => phVisible(gs).find((p) => p.gid === gid && p.cur);
+// A free first edition's play after the pick (a free player's Escape, Delve or the Barrow's chapter 1), or null: cprFirstState reads it.
+export const phFirstPlay = (gs, gid) => { const e = PH_EDS[PH_FIRST[gid]]; return e ? phThisEd(e.plays[0], gs) : null; };
 export let PH_FIRST;
 let PH_FIRST_LIVE;
 // 'none' | 'live' | 'done' for a player without the Pass; null for a Pass holder or a game with no free first edition.
@@ -151,17 +166,17 @@ const phFirstRec = (gs, gid) => {
 // its record stands, and for a Pass-ended player every Pass play from before the Pass ended (gsEndedOn), never one after it.
 export const phVisible = (gs) => {
   if (gsFresh(gs)) return [];
-  const live = !lbWeekDone(gs); const never = gs.review && gs.review.never;
+  const never = gs.review && gs.review.never;
   // The Barrow's chapter play shows only while its record stands finished.
   const bw = !!(cprFirstState && cprFirstState(gs, 'barrow') === 'done');
-  let all = phLog(gs).filter((p) => (p.gid !== 'barrow' || bw) && p.gid !== never).map((p) => (live && p.now ? { ...p, ...p.now } : p));
+  let all = phLog(gs).filter((p) => (p.gid !== 'barrow' || bw) && p.gid !== never);
   if (gs.view === 'pass') return all;
   // The free first edition as its record stands: hidden until started, in progress, or as logged.
   all = all.filter((p) => !(PH_FIRST[p.gid] === p.ed && phFirstSt(gs, p.gid) === 'none'))
     .map((p) => (PH_FIRST[p.gid] === p.ed && phFirstSt(gs, p.gid) === 'live' ? { ...p, status: PH_LIVE, open: PH_FIRST_LIVE[p.gid] } : p));
   const lapsed = gsLapsed(gs); const end = gsEndedOn(gs);
   return all.filter((p) => { const g = GS_GAMES[p.gid];
-    if (g.free) return p.cur ? !!gsTodayPlayed(gs)[p.gid] : true;
+    if (g.free) return p.cur ? !!(GS_TODAY_PLAYED[gs.view] || {})[p.gid] : true;
     if (PH_FIRST[p.gid] === p.ed) return true;
     return lapsed && p.at < end; });
 };
@@ -406,13 +421,15 @@ DV_ALL.forEach((s, i) => {
   phEd('delve', s.id, s.title, ed, [first], cur);
 });
 // No editions: each day is its own entry. A day started over is a new day, listed like any other.
+// Proposed, not ratified: this game has no play for today (its latest day is 5 October, today is 6 October), so its latest day counts as this edition
+// and Config → This edition: Not played hides it, as it hides any game's today.
 HG_DAYS.forEach((x, i) => {
   const d = phParse(x.date);
-  phEd('hunter', x.id, x.title, d, [{ at: phAt(d, 9 + (i % 4), 15), status: hgStatus(x), src: x, sid: hgSid(x), open: phSess(hgSid(x)) }]);
+  phEd('hunter', x.id, x.title, d, [{ at: phAt(d, 9 + (i % 4), 15), status: hgStatus(x), src: x, sid: hgSid(x), open: phSess(hgSid(x)) }], i === 0);
 });
 // The Barrow's Chapter 1, finished: the game's one play record. Every Barrow surface reads it (head card, Your chapters, History,
 // the Library row, the chapters list, the session page, achievements). Shown only while that record stands (phVisible).
-phEd('barrow', 'bw1', BW_T1, PH_TODAY, [{ at: phAt(PH_TODAY, 19, 45), status: { kind: 'ok', label: 'Quest complete' }, src: BW_REC1, sid: 'gs-pu-barrow-ch1', open: phSess('gs-pu-barrow-ch1') }]);
+phEd('barrow', 'bw1', BW_T1, PH_TODAY, [{ at: phAt(PH_TODAY, 19, 45), status: { kind: 'ok', label: 'Quest complete' }, src: BW_REC1, sid: 'gs-pu-barrow-ch1', open: phSess('gs-pu-barrow-ch1') }], true);
 PH_ALL = PH_PLAYS.slice().sort((a, b) => b.at - a.at);
 // State library-word-streak-broken (Config-less: review.broken): yesterday's Guess was finished in a first play that
 // failed. History shows that play in place of the log's seeded one, as the game page does.

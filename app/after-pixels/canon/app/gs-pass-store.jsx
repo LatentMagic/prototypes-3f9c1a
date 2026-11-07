@@ -6,14 +6,13 @@
 // 'most' treats every game but Guess as having an unplayed current edition, so New for you can be seen full.
 // lapsed: which Pass-ended player is staged. 'seed' as before; 'every' covers the four cases of the Pass-ended proposal (state "Pass ended: every case").
 // freeNew: the seeded free player hasn't played today's Guess or Escape's first room, so their New for you
-// holds two games. false: both played, as the seed had them.
+// holds two games. false: both played, as the seed had them. Config → This edition's pick overrides it (phSeedNew, gs-history.jsx).
 import React from 'react';
-import { GS_TODAY_PLAYED, GS_GAME_ORDER, GS_GAMES, gsLapsed, gsFresh, gsNotPlayed, useGs, GS_NAME } from './gs-data.jsx';
+import { GS_GAME_ORDER, GS_GAMES, gsLapsed, gsFresh, useGs, GS_NAME } from './gs-data.jsx';
 import { lbWeekDone, CprPassEnd } from './gs-library.jsx';
+import { phFirstPlay, phSeedNew } from './gs-history.jsx';
 
 export const CPR_DEFAULTS = { bwDone: false, newEds: 'seed', lapsed: 'seed', freeNew: true };
-let CPR_WORD_PLAY;
-const cprSyncSeed = (v) => { if (v.freeNew) delete GS_TODAY_PLAYED.free.word; else GS_TODAY_PLAYED.free.word = CPR_WORD_PLAY; };
 export let cprStore;
 
 export const useCpr = () => {
@@ -29,13 +28,13 @@ let CPR_LAPSED;
 export const cprLapsedOf = (id) => (CPR_LAPSED[cprStore.get().lapsed] || CPR_LAPSED.seed)[id] || { used: true, pass: true };
 // Where a free first part stands for this player: 'pass' | 'none' | 'live' | 'done'.
 export const cprFirstState = (gs, id) => {
-  // Config → This edition: Not played is not started in every view, the Pass holder's Barrow ('pass') and a Pass-ended player's included.
-  if (gs.view === 'pass') return id === 'barrow' && cprStore.get().bwDone && !gsNotPlayed(gs) ? 'done' : 'pass';
-  if (gsNotPlayed(gs)) return 'none';
+  // A first edition whose play the record does not hold (Config → This edition: Not played) is not started in every view, a Pass-ended player's included.
+  if (gs.view === 'pass') return id === 'barrow' && cprStore.get().bwDone && !!phFirstPlay(gs, id) ? 'done' : 'pass';
+  if (!phFirstPlay(gs, id)) return 'none';
   if (gsLapsed(gs)) return cprLapsedOf(id).used ? 'done' : 'none';
   if (gsFresh(gs)) return 'none';
   if (id === 'barrow') return cprStore.get().bwDone ? 'done' : 'none';
-  if (id === 'escape' && cprStore.get().freeNew) return 'none';
+  if (id === 'escape' && phSeedNew(gs, 'escape')) return 'none';
   if (!lbWeekDone(gs)) return 'live';
   return 'done';
 };
@@ -80,13 +79,11 @@ export let GsPassStage;
 
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsPassStore() {
-CPR_WORD_PLAY = GS_TODAY_PLAYED.free.word;
 cprStore = {
   v: { ...CPR_DEFAULTS }, subs: new Set(),
   get() { return this.v; },
-  set(p) { this.v = { ...this.v, ...p }; cprSyncSeed(this.v); this.subs.forEach((f) => f()); },
+  set(p) { this.v = { ...this.v, ...p }; this.subs.forEach((f) => f()); },
 };
-cprSyncSeed(cprStore.v);
 // ---- Each game's access, read from GS_GAMES (gs-data.jsx), where it is held once: 'daily' | 'first' | 'pass'. ----
 CPR_STAGE = Object.fromEntries(GS_GAME_ORDER.map((k) => [k, GS_GAMES[k].access]));
 CPR_SHOWN = GS_GAME_ORDER.filter((k) => !!CPR_STAGE[k]);
