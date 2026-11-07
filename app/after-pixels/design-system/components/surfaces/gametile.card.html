@@ -7,6 +7,7 @@
 <style>body{margin:0;padding:20px;background:var(--page);color:var(--text);font:400 16px/1.5 var(--font-text)}.cap{font:600 13px/1.3 var(--font-text);letter-spacing:.06em;color:var(--muted);margin:0 0 12px}</style></head><body><div id="root"></div>
 <script type="text/babel">
 const {GameTile,GameArt}=window.MCPGameStoreDesignSystem_ef1abd;
+const C={casebook:{first:true},groups:{soon:true}};
 const G=[['word','Daily Word','Puzzle'],['groups','Daily Groups','Puzzle'],['mystery','Daily Mystery','Puzzle'],['casebook','Casebook','Mystery'],['hunter','36,000 Summers Ago','Learning']];
-ReactDOM.createRoot(document.getElementById('root')).render(<div><p className="cap">ALL GAMES WALL. THE MARK SHOWS ON GAMES THAT NEED THE PASS</p><div className="mcp-gwall">{G.map(([a,n,k])=><GameTile key={n} pass={a==='hunter'} onPass={(a==='hunter')?()=>{}:undefined} className="mcp-art-host" art={<GameArt art={a} shape="square"/>} title={<button type="button" className="mcp-gtile-open mcp-art-link">{n}</button>} kind={k}/>)}</div></div>);
+ReactDOM.createRoot(document.getElementById('root')).render(<div><p className="cap">ALL GAMES WALL. THE PASS MARK ON GAMES THAT NEED THE PASS; FIRST FREE ON CASEBOOK; DAILY GROUPS COMING SOON</p><div className="mcp-gwall">{G.map(([a,n,k])=><GameTile key={n} {...C[a]} pass={a==='hunter'} onPass={(a==='hunter')?()=>{}:undefined} className={C[a]&&C[a].soon?'':'mcp-art-host'} art={<GameArt art={a} shape="square"/>} title={C[a]&&C[a].soon?n:<button type="button" className="mcp-gtile-open mcp-art-link">{n}</button>} kind={k}/>)}</div></div>);
 </script></body></html>

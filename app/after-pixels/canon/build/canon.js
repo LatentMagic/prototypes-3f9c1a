@@ -647,26 +647,26 @@
     function FormCard({ title, children, className = "", style }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-panel " + className).trim(), style }, /* @__PURE__ */ React2.createElement("svg", { className: "mcp-deco", viewBox: "0 0 120 76", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("rect", { x: "84", y: "0", width: "36", height: "44", fill: "#328A88" }), /* @__PURE__ */ React2.createElement("rect", { x: "56", y: "0", width: "28", height: "28", fill: "#EDE8DF" }), /* @__PURE__ */ React2.createElement("circle", { cx: "102", cy: "58", r: "12", fill: "#E5A63B" })), /* @__PURE__ */ React2.createElement("div", { className: "mcp-panel-in" }, title && /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), children));
     }
-    function GameCard({ art, pass, onPass, title, mark, blurb, tags, className = "", style }) {
-      const m = pass && (onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
+    function gameMark({ soon, pass, onPass, first }) {
+      if (soon) return /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark is-soon" }, "Coming soon");
+      if (pass) return onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
         e.stopPropagation();
         onPass(e);
-      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass"));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gcard " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-text" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-name" }, /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), mark), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gcard-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-tags" }, tags));
+      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass");
+      if (first) return /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "First free");
+      return null;
     }
-    function GamePick({ art, pass, onPass, label, title, blurb, tags, className = "", style }) {
-      const m = pass && (onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
-        e.stopPropagation();
-        onPass(e);
-      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass"));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gpick " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-text" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-gpick-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gpick-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-tags" }, tags));
+    function GameCard({ art, pass, onPass, first, soon, title, mark, blurb, tags, className = "", style }) {
+      const m = gameMark({ soon, pass, onPass, first });
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gcard " + (soon ? "is-soon " : "") + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-text" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-name" }, /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), mark), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gcard-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gcard-tags" }, tags));
     }
-    function GameTile({ art, pass, onPass, title, kind, className = "", style }) {
-      const m = pass && (onPass ? /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-passmark is-link", onClick: (e) => {
-        e.stopPropagation();
-        onPass(e);
-      } }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass") : /* @__PURE__ */ React2.createElement("span", { className: "mcp-passmark" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "lock", size: 14 }), "Pass"));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-gtile " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gtile-art" }, art, m), /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-name" }, title), kind && /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-kind" }, kind));
+    function GamePick({ art, pass, onPass, first, soon, label, title, blurb, tags, className = "", style }) {
+      const m = gameMark({ soon, pass, onPass, first });
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-gpick " + (soon ? "is-soon " : "") + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-art" }, art, m), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-text" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-gpick-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React2.createElement("p", { className: "mcp-gpick-blurb" }, blurb)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-gpick-tags" }, tags));
+    }
+    function GameTile({ art, pass, onPass, first, soon, title, kind, className = "", style }) {
+      const m = gameMark({ soon, pass, onPass, first });
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-gtile " + (soon ? "is-soon " : "") + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-gtile-art" }, art, m), /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-name" }, title), kind && /* @__PURE__ */ React2.createElement("span", { className: "mcp-gtile-kind" }, kind));
     }
     const said$1 = /* @__PURE__ */ new Set();
     const warn$1 = (m) => {
