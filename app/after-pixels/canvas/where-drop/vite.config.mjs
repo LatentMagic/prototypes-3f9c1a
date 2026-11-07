@@ -1,4 +1,4 @@
-// Builds the Where card drop canvas: canvas.jsx, canon's main.jsx and everything they import, as build/canvas.js and build/canvas.css.
+// Builds the Where hint drop canvas: canvas.jsx, canon's main.jsx and everything they import, as build/canvas.js and build/canvas.css.
 // Run from the repo root: npx vite build --config app/after-pixels/canvas/where-drop/vite.config.mjs
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';

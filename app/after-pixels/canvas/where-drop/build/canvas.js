@@ -213,9 +213,9 @@
       const pct = Math.max(0, Math.min(100, Math.round(value / max * 100)));
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-prog" }, (label || showValue) && /* @__PURE__ */ React2.createElement("div", { className: "mcp-prog-top" }, /* @__PURE__ */ React2.createElement("span", null, label), showValue && /* @__PURE__ */ React2.createElement("span", null, pct, "%")), /* @__PURE__ */ React2.createElement("div", { className: "mcp-track", role: "progressbar", "aria-valuenow": pct, "aria-valuemin": 0, "aria-valuemax": 100, "aria-label": label || "Progress" }, /* @__PURE__ */ React2.createElement("i", { style: { width: pct + "%" } })));
     }
-    const G2 = { success: "check", warning: "warn", error: "error" };
+    const G = { success: "check", warning: "warn", error: "error" };
     function StatusMessage({ kind = "success", children }) {
-      return /* @__PURE__ */ React2.createElement("p", { className: "mcp-msg mcp-msg-" + kind, role: kind === "error" ? "alert" : "status" }, /* @__PURE__ */ React2.createElement(Icon2, { name: G2[kind] }), /* @__PURE__ */ React2.createElement("span", null, children));
+      return /* @__PURE__ */ React2.createElement("p", { className: "mcp-msg mcp-msg-" + kind, role: kind === "error" ? "alert" : "status" }, /* @__PURE__ */ React2.createElement(Icon2, { name: G[kind] }), /* @__PURE__ */ React2.createElement("span", null, children));
     }
     const TIME_CHIPS = { tiny: "5–15 min", small: "25–45 min" };
     function Tag({ kind = "daily", children, icon, go }) {
@@ -907,9 +907,9 @@
       }, [open]);
       return /* @__PURE__ */ React2.createElement("div", { ref: layer, className: "mcp-layer" + (contained ? " is-contained" : "") + (open ? " is-open" : ""), "aria-hidden": !open }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-dim", onClick: () => dismiss.current() }), /* @__PURE__ */ React2.createElement("div", { ref, className: "mcp-pop is-" + mode + " is-" + (panel ? "panel" : "dialog"), role: panel ? "dialog" : "alertdialog", "aria-modal": "true", "aria-label": label || title, "aria-busy": busy || void 0 }, title && /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React2.createElement("div", { className: "mcp-pop-body" }, children), actions && /* @__PURE__ */ React2.createElement("div", { className: "mcp-btn-pair" }, actions)));
     }
-    function SoonCard({ art, label, title, line, play, onPlay, playHref, className = "", style }) {
+    function SoonCard({ art, label, title, line, play: play2, onPlay, playHref, className = "", style }) {
       const P = playHref ? "a" : "button";
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-soon " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-art" }, art), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-body" }, label && /* @__PURE__ */ React2.createElement("span", { className: "mcp-soon-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-soon-line" }, line), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-tags" }, /* @__PURE__ */ React2.createElement(Tag, { kind: "daily" }, "Coming soon"), play && /* @__PURE__ */ React2.createElement(P, { className: "mcp-soon-play", href: playHref, type: playHref ? void 0 : "button", onClick: onPlay }, /* @__PURE__ */ React2.createElement(Tag, { kind: "open", icon: "play" }, play)))));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-soon " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-art" }, art), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-body" }, label && /* @__PURE__ */ React2.createElement("span", { className: "mcp-soon-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-soon-line" }, line), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-tags" }, /* @__PURE__ */ React2.createElement(Tag, { kind: "daily" }, "Coming soon"), play2 && /* @__PURE__ */ React2.createElement(P, { className: "mcp-soon-play", href: playHref, type: playHref ? void 0 : "button", onClick: onPlay }, /* @__PURE__ */ React2.createElement(Tag, { kind: "open", icon: "play" }, play2)))));
     }
     const ns = window.MCPGameStoreDesignSystem_ef1abd = window.MCPGameStoreDesignSystem_ef1abd || {};
     ns.__errors = ns.__errors || [];
@@ -3857,7 +3857,7 @@
       );
     }));
   };
-  const Big = ({ n, of, cap }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-big", role: "img", "aria-label": n + " of " + of + (cap ? " " + cap : "") }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, n), /* @__PURE__ */ React$1.createElement("small", { "aria-hidden": "true" }, "/", of, cap ? " " + cap : ""));
+  const Big = ({ n, of, cap: cap2 }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-big", role: "img", "aria-label": n + " of " + of + (cap2 ? " " + cap2 : "") }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, n), /* @__PURE__ */ React$1.createElement("small", { "aria-hidden": "true" }, "/", of, cap2 ? " " + cap2 : ""));
   const SlvHaul = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "slv-haul" }, /* @__PURE__ */ React$1.createElement(Big, { n: p.dives, of: SLV_DIVES, cap: "dives" }), /* @__PURE__ */ React$1.createElement(Big, { n: p.raised.size, of: 5, cap: "wrecks" }));
   const SLV_ST = { fill: "none", stroke: "currentColor", strokeWidth: 1.75, strokeLinecap: "square", strokeLinejoin: "miter" };
   const ICON = {
@@ -4962,10 +4962,10 @@
   const cmHead = (n, day) => "Common No. " + n + " · " + cmScore(day) + "/15";
   const cmShare = (n, day) => [cmHead(n, day), ...day.map((t, k) => cmMarks(t, k) + "  " + t[1])];
   const cmFigures = (day) => [cmScore(day) + " of 15", cmFound(day) + " of 3 connections found"];
-  const cmSess = (n, play) => {
-    const p = cmPlay(play);
+  const cmSess = (n, play2) => {
+    const p = cmPlay(play2);
     const res = cmResult(p.day);
-    return { number: n, play, result: res, figures: cmFigures(p.day), shareLines: cmShare(n, p.day), lines: p.lines, day: p.day };
+    return { number: n, play: play2, result: res, figures: cmFigures(p.day), shareLines: cmShare(n, p.day), lines: p.lines, day: p.day };
   };
   const CM_C7 = [
     { items: ["EGG", "TORTOISE", "PEANUT", "HERMIT CRAB"], link: "Shell", fits: "An egg, a tortoise, a peanut and a hermit crab all have one." },
@@ -5019,8 +5019,8 @@
   ] };
   const CM_PARTWAY = { c: CM_CB, m: [[0, "Pointy things.", false], [0, "Triangles.", true], [1, "more"]] };
   const cmPartway = (x) => {
-    const { number, play, lines } = cmSess(CM_NO - x.i, CM_PARTWAY);
-    return { number, play, lines };
+    const { number, play: play2, lines } = cmSess(CM_NO - x.i, CM_PARTWAY);
+    return { number, play: play2, lines };
   };
   const CM_FAIL_TODAY = { c: CM_C7, m: [
     [0, "Things that are slow.", false],
@@ -5038,9 +5038,9 @@
       return { ...base, number: n, hints: r.hints, figures: [r.guesses + " of 6 guesses", r.hints ? "1 hint" : "No hints"], share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
     }
     if (id === "chain") {
-      const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL;
-      const r = dpChain(play);
-      return { ...base, number: n, play, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
+      const play2 = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL;
+      const r = dpChain(play2);
+      return { ...base, number: n, play: play2, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (ch) => ch.toUpperCase())], share: x.line, shareLines: [dpChHead(n, r), r.marks], lines: r.lines };
     }
     if (id === "common") {
       const { day, result, ...own } = cmSess(n, x.ok ? CM_OK[i % CM_OK.length] : CM_FAIL);
@@ -5320,13 +5320,13 @@
         now: { line: ok ? "You found the country on your sixth guess, with the hint." : "You used all six guesses and the hint without finding the country.", bar: ["Guess 6 of 6", 6, 6] }
       };
     };
-    const dpPickCh = (play) => {
-      const r = dpChain(play);
+    const dpPickCh = (play2) => {
+      const r = dpChain(play2);
       const res = dpChResult(r);
-      return { ...GS_SESSIONS["chain-today"], loss: r.given > 0, play, result: res, share: res, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (c) => c.toUpperCase())], shareLines: [dpChHead(DP_NO, r), r.marks], lines: r.lines };
+      return { ...GS_SESSIONS["chain-today"], loss: r.given > 0, play: play2, result: res, share: res, figures: [r.words + " words", dpWrong(r.wrong).replace(/^./, (c) => c.toUpperCase())], shareLines: [dpChHead(DP_NO, r), r.marks], lines: r.lines };
     };
-    const dpPickCm = (play, recovered, now) => {
-      const { day, ...own } = cmSess(CM_NO, play);
+    const dpPickCm = (play2, recovered, now) => {
+      const { day, ...own } = cmSess(CM_NO, play2);
       return { ...GS_SESSIONS["common-today"], loss: false, recovered, ...own, share: own.result, now };
     };
     Object.assign(GS_SESSIONS, {
@@ -6142,7 +6142,7 @@
     PH_LIVE = { kind: "live", label: "In progress" };
     PH_PAST = (() => {
       const day = (id) => PZ[id].all.filter((x) => x.i > 0 && !x.played)[0];
-      const play = (gid, x, sid, at, status, late2) => ({ gid, ed: x.id, edTitle: x.title, edDate: x.d, n: 0, cur: false, pid: x.id + "-past", at, status, open: phSess(sid), sid, ...late2 ? { late: true } : {} });
+      const play2 = (gid, x, sid, at, status, late2) => ({ gid, ed: x.id, edTitle: x.title, edDate: x.d, n: 0, cur: false, pid: x.id + "-past", at, status, open: phSess(sid), sid, ...late2 ? { late: true } : {} });
       const g = day("common");
       const gAt = phAt(g.d, 21, 40);
       GS_SESSIONS["common-past"] = { kind: "puzzle", gid: "common", game: "Common", art: "common", edKey: g.id, live: true, result: "In progress", date: pzLong(gAt) + ", 21:40", share: null, ...cmPartway(g) };
@@ -6154,8 +6154,8 @@
       GS_SESSIONS["word-past-late"] = { ...GS_SESSIONS[late], edKey: w.id, date: pzLong(wEnd) + ", 08:15" };
       delete GS_SESSIONS[late];
       return {
-        [g.id]: { gid: "common", live: play("common", g, "common-past", gAt, PH_LIVE) },
-        [w.id]: { gid: "word", live: play("word", w, "word-past", wAt, PH_LIVE), late: play("word", w, "word-past-late", wEnd, gsSessStatus(GS_SESSIONS["word-past-late"]), true) }
+        [g.id]: { gid: "common", live: play2("common", g, "common-past", gAt, PH_LIVE) },
+        [w.id]: { gid: "word", live: play2("word", w, "word-past", wAt, PH_LIVE), late: play2("word", w, "word-past-late", wEnd, gsSessStatus(GS_SESSIONS["word-past-late"]), true) }
       };
     })();
     PH_LIVE_SID = { word: "word-live", groups: "groups-live", mystery: "mystery-live", escape: "escape-live", ...Object.fromEntries(DP_IDS.map((k) => [k, k + "-live"])) };
@@ -6826,7 +6826,7 @@
       /* @__PURE__ */ React$1.createElement(GsShareText, { lines })
     );
   };
-  const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, r && /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap), fig)), last)));
+  const GsSessCard = ({ r, board, rows, last, className = "", style }) => /* @__PURE__ */ React$1.createElement("section", { className: "dv2 gs-sc " + className, style, "aria-label": "How it went" }, r && /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + r.tone }, r.word)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-duo" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-board" }, board), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sc-panel" }, rows.map(([cap2, fig]) => /* @__PURE__ */ React$1.createElement("div", { key: cap2, className: "gs-sc-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, cap2), fig)), last)));
   const GsMoves = ({ s }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-moves" }, /* @__PURE__ */ React$1.createElement(DS.Disclosure, { title: "Every move (" + s.lines.length + ")" }, /* @__PURE__ */ React$1.createElement(DS.MoveList, { label: "Every move" }, s.lines.map((l, i) => /* @__PURE__ */ React$1.createElement(DS.MoveRow, { key: i, label: l[0], parts: l.slice(1) })))));
   const gsHeadGame = (s) => s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
@@ -7186,7 +7186,7 @@
     return r === "daily" ? "TODAY" : r === "weekly" ? "THIS WEEK" : "A " + GS_GAMES[gid].ed[0].toUpperCase();
   };
   const LbNowResult = ({ s, tag }) => s.kind === "live" || tag ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s })) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-vd is-" + (s.kind === "ok" ? "ok" : "over") }, s.label);
-  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }) : next }));
+  const LbNowCard = ({ gid, label, title, result, tag, play: play2, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play2 ? "Play" : void 0, onClick: play2 || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }) : next }));
   const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid, title, play: onPlay, next, span }, /* @__PURE__ */ React$1.createElement("p", null, line));
   const lbWeekDone = (gs) => (gs.review && gs.review.week) !== "live";
   const lbNow = (gs, id) => {
@@ -9632,7 +9632,7 @@
       setTimeout(() => bump((n) => n + 1), 0);
     };
     const Group = ConfigGroup;
-    const Row = ConfigRow;
+    const Row2 = ConfigRow;
     const o = (pairs) => pairs.map(([value, label]) => ({ value, label }));
     const route = api.route || {};
     const gid = gsGameOfRoute(route.name) || (route.name === "session" && GS_SESSIONS[route.id] ? GS_SESSIONS[route.id].gid : null);
@@ -9686,7 +9686,7 @@
       if (api.view === "out") api.setView("free");
       api.setSub(patch);
     });
-    const R = (label, value, onChange, options, hint) => /* @__PURE__ */ React$1.createElement(Row, { label, value, onChange, options, hint });
+    const R = (label, value, onChange, options, hint) => /* @__PURE__ */ React$1.createElement(Row2, { label, value, onChange, options, hint });
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(Group, { title: "After Pixels", scope: "global" }, R("Your AI", api.connected ? "yes" : "no", (v) => set(() => api.setConnected(v === "yes")), o([["yes", "Connected"], ["no", "Not connected"]])), R(
       "Account",
       api.user && api.user.fresh ? "new" : "played",
@@ -9755,9 +9755,9 @@
   const GsPassConfigRows = () => {
     const v = useCpr();
     const Group = ConfigGroup;
-    const Row = ConfigRow;
+    const Row2 = ConfigRow;
     return /* @__PURE__ */ React$1.createElement(Group, { title: "Pass upsell" }, /* @__PURE__ */ React$1.createElement(
-      Row,
+      Row2,
       {
         label: "New editions",
         value: v.newEds,
@@ -9766,7 +9766,7 @@
         hint: "Most not played treats every daily but Guess as unplayed today. New for you still holds only what the player can play now."
       }
     ), /* @__PURE__ */ React$1.createElement(
-      Row,
+      Row2,
       {
         label: "Free: Word and Escape",
         value: v.freeNew ? "new" : "played",
@@ -9782,9 +9782,9 @@
   };
   const GsBarrowConfigRow = () => {
     const v = useCpr();
-    const Row = ConfigRow;
+    const Row2 = ConfigRow;
     return /* @__PURE__ */ React$1.createElement(
-      Row,
+      Row2,
       {
         label: "Chapter 1",
         value: v.bwDone ? "done" : "none",
@@ -10877,8 +10877,8 @@
   const CmMini = ({ x }) => /* @__PURE__ */ React$1.createElement("div", { className: "cmn-row is-" + x.state + " th-" + x.k, "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", { className: "cmn-tiles" }, [0, 1, 2, 3].map((i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "cmn-t is-" + cmItem(x, i) }))), /* @__PURE__ */ React$1.createElement("span", { className: "cmn-pts" }, cmClosed(x) ? x.pts : ""));
   const cmBoardLabel = (p) => p.t.map((x) => "thread " + (x.k + 1) + ": " + (x.state === "found" ? "named, " + x.pts + (x.pts === 1 ? " point" : " points") : x.state === "passed" ? "passed" : x.state === "lost" ? "out of guesses" : x.state === "open" ? "open" : "not reached")).join("; ");
   const CmNowPic = ({ p }) => /* @__PURE__ */ React$1.createElement("div", { className: "cmn-pic" }, /* @__PURE__ */ React$1.createElement("div", { className: "cmn-board", role: "img", "aria-label": cmBoardLabel(p) }, p.t.map((x) => /* @__PURE__ */ React$1.createElement(CmMini, { key: x.k, x }))), /* @__PURE__ */ React$1.createElement("div", { className: "cmn-sum" }, /* @__PURE__ */ React$1.createElement("div", { className: "cmn-score", role: "img", "aria-label": cmTotal(p) + " of 15 points" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, cmTotal(p)), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/ 15")), /* @__PURE__ */ React$1.createElement(CmPool, { p })));
-  const cmFresh = (play) => {
-    const p = cmPlay({ c: play.c, m: [] }, true);
+  const cmFresh = (play2) => {
+    const p = cmPlay({ c: play2.c, m: [] }, true);
     return { ...p, t: p.t.map((x) => ({ ...x, shown: 0, state: "waiting" })) };
   };
   const CM_NOW_RESULT = { done: { kind: "ok", label: "Completed" }, live: { kind: "live", label: "In progress" } };
@@ -11352,34 +11352,69 @@
   initGsCommon();
   initGsSalvage();
   const WH_POINTS = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"];
-  const whSay = (p) => p.hint ? p.hint.dir[0].toUpperCase() + p.hint.dir.slice(1) + " of " + p.hint.from : p.live ? "Not used yet" : "No hint";
-  const WhGlobe = ({ p, say }) => {
+  const cap = (s) => s[0].toUpperCase() + s.slice(1);
+  const whSay = (p) => p.hint ? cap(p.hint.dir) + " of " + p.hint.from : p.live ? "Not used yet" : "No hint";
+  const WhGlobe = ({ p }) => {
     const c = 60;
     const R = 52;
     const lon = [-90, -60, -30, 0, 30, 60, 90].map((d) => d * Math.PI / 180);
     const down = (l) => "A " + Math.abs(R * Math.sin(l)) + " " + R + " 0 0 " + (l < 0 ? 0 : 1) + " " + c + " " + (c + R);
     const up = (l) => "A " + Math.abs(R * Math.sin(l)) + " " + R + " 0 0 " + (l > 0 ? 0 : 1) + " " + c + " " + (c - R);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-globe" + (p.g.length ? "" : " is-none"), role: "img", "aria-label": p.g.length + " of six guesses" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, [0, 1, 2, 3, 4, 5].map((i) => /* @__PURE__ */ React$1.createElement("path", { key: i, className: i < p.g.length ? "is-" + p.g[i].band : "is-spare", d: "M " + c + " " + (c - R) + " " + down(lon[i]) + " " + up(lon[i + 1]) + " Z" })), /* @__PURE__ */ React$1.createElement("line", { x1: c - R, y1: c, x2: c + R, y2: c, className: "wh-g-eq" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: R, className: "wh-g-rim" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, say || p.g.length + " of 6"));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-globe", role: "img", "aria-label": p.g.length + " of six guesses" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, [0, 1, 2, 3, 4, 5].map((i) => /* @__PURE__ */ React$1.createElement("path", { key: i, className: i < p.g.length ? "is-" + p.g[i].band : "is-spare", d: "M " + c + " " + (c - R) + " " + down(lon[i]) + " " + up(lon[i + 1]) + " Z" })), /* @__PURE__ */ React$1.createElement("line", { x1: c - R, y1: c, x2: c + R, y2: c, className: "wh-g-eq" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: R, className: "wh-g-rim" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, p.g.length, " of 6"));
   };
-  const WhChart = ({ p }) => {
+  const WhChart = ({ p, say }) => {
     const h = p.hint;
     const a = h ? (WH_POINTS.indexOf(h.dir) * 45 - 90) * Math.PI / 180 : 0;
     const c = 60;
     const L = 44;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-chart" + (h ? "" : " is-none"), role: "img", "aria-label": whSay(p) }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: "8", y: "8", width: "104", height: "104", className: "wh-ch-box" }), [34, 60, 86].map((v) => /* @__PURE__ */ React$1.createElement("g", { key: v }, /* @__PURE__ */ React$1.createElement("line", { x1: v, y1: "8", x2: v, y2: "112", className: "wh-ch-grid" }), /* @__PURE__ */ React$1.createElement("line", { x1: "8", y1: v, x2: "112", y2: v, className: "wh-ch-grid" }))), /* @__PURE__ */ React$1.createElement("text", { x: "60", y: "22", className: "wh-ch-n" }, "N"), h && /* @__PURE__ */ React$1.createElement("line", { x1: c, y1: c, x2: c + Math.cos(a) * L, y2: c + Math.sin(a) * L, className: "wh-ch-bear" }), h && /* @__PURE__ */ React$1.createElement("circle", { cx: c + Math.cos(a) * L, cy: c + Math.sin(a) * L, r: "4", className: "wh-ch-end" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: "5", className: "wh-ch-from" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, whSay(p)));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-chart" + (h ? "" : " is-none"), role: "img", "aria-label": h ? "Hint: the country lies " + h.dir + " of " + h.from : whSay(p) }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("rect", { x: "8", y: "8", width: "104", height: "104", className: "wh-ch-box" }), [34, 60, 86].map((v) => /* @__PURE__ */ React$1.createElement("g", { key: v }, /* @__PURE__ */ React$1.createElement("line", { x1: v, y1: "8", x2: v, y2: "112", className: "wh-ch-grid" }), /* @__PURE__ */ React$1.createElement("line", { x1: "8", y1: v, x2: "112", y2: v, className: "wh-ch-grid" }))), /* @__PURE__ */ React$1.createElement("text", { x: "60", y: "22", className: "wh-ch-n" }, "N"), h && /* @__PURE__ */ React$1.createElement("line", { x1: c, y1: c, x2: c + Math.cos(a) * L, y2: c + Math.sin(a) * L, className: "wh-ch-bear" }), h && /* @__PURE__ */ React$1.createElement("circle", { cx: c + Math.cos(a) * L, cy: c + Math.sin(a) * L, r: "4", className: "wh-ch-end" }), /* @__PURE__ */ React$1.createElement("circle", { cx: c, cy: c, r: "5", className: "wh-ch-from" })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, say(p)));
   };
-  const G = ["far", "far", "mid", "mid", "near", "found"].map((band, i) => ({ n: i + 1, c: "Chad", km: null, band }));
-  const SOLVED = (from) => ({ g: G, hint: { dir: "north", from, after: 5 }, live: false, lost: false });
-  const LONG = SOLVED("Democratic Republic of the Congo");
-  const SHORT = SOLVED("Poland");
-  const Card = ({ p }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#21", result: { kind: "ok", label: "Solved" }, open: () => {
-  }, next: PZ.where.next, className: "wh-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-found" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, "Chad"), /* @__PURE__ */ React$1.createElement("span", { className: "wh-km" }, "Found")), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p }), /* @__PURE__ */ React$1.createElement(WhChart, { p }))));
-  const Frame = ({ w, p, note }) => /* @__PURE__ */ React$1.createElement("figure", { className: "wc-fig" }, /* @__PURE__ */ React$1.createElement("figcaption", { className: "gs-muted" }, w, "px, ", note), /* @__PURE__ */ React$1.createElement("div", { className: "wc-frame lb-lay", style: { width: w } }, /* @__PURE__ */ React$1.createElement(Card, { p })));
-  const ITEMS = [
-    { k: "today", n: "Today", h: "As canon draws it", note: 'The row centres the "Last guess" block on the figures plus their captions, so a long hint pulls it down.' },
-    { k: "a", n: "A", h: "Line the block up with the globe and chart", note: "Pictures and the block share a top and centre; captions hang below." },
-    { k: "b", n: "B", h: "Wider caption", note: "The caption may be 120px wide (canon: 76px), so the long hint wraps to fewer lines. The block stays centred as today." }
+  const play = (c, bands, dir, from) => ({ last: c, g: bands.map((band, i) => ({ n: i + 1, band })), hint: { dir, from }, live: false });
+  const LONGEST = play("Peru", ["far", "far", "far", "far", "far", "found"], "southwest", "Saint Vincent and the Grenadines");
+  const SHORT = play("Hungary", ["far", "near", "near", "near", "near", "found"], "west", "Romania");
+  const WAYS = [
+    {
+      k: "today",
+      n: "Today",
+      h: "As canon draws it",
+      say: whSay,
+      note: 'The row centres the "Last guess" block on the pictures and their captions together, so a long hint pulls the block down.'
+    },
+    {
+      k: "one",
+      n: "1",
+      h: "Line the block up with the pictures",
+      say: whSay,
+      note: "The block, the globe and the chart share one centre line; the captions sit in a row beneath. The long caption still hangs under the chart."
+    },
+    {
+      k: "two",
+      n: "2",
+      h: "Shorten the hint to its direction",
+      say: (p) => p.hint ? cap(p.hint.dir) : whSay(p),
+      note: "The chart's caption says only the direction. The country the hint came from leaves this card; the session page still shows it."
+    },
+    {
+      k: "three",
+      n: "3",
+      h: "Give the hint a line of its own",
+      say: (p) => p.hint ? "1 hint" : whSay(p),
+      line: true,
+      note: "The chart's caption becomes a count, like the globe's. The full hint moves to a line under the row, at the card's width."
+    }
   ];
-  const Canvas = () => /* @__PURE__ */ React$1.createElement("main", { className: "wc" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Where: now card, the drop"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-intro" }, "Solved (Chad, 6 of 6). Each version at 390px and 320px card width, with the long hint (North of Democratic Republic of the Congo) and a short one (North of Poland). Copy and data are rough."), ITEMS.map((it) => /* @__PURE__ */ React$1.createElement("section", { key: it.k, className: "wc-item wc-" + it.k, "aria-labelledby": "wc-" + it.k }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-" + it.k, className: "wc-h" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, it.n), it.h), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, it.note), /* @__PURE__ */ React$1.createElement("div", { className: "wc-set" }, /* @__PURE__ */ React$1.createElement(Frame, { w: 390, p: LONG, note: "long hint" }), /* @__PURE__ */ React$1.createElement(Frame, { w: 320, p: LONG, note: "long hint" }), /* @__PURE__ */ React$1.createElement(Frame, { w: 390, p: SHORT, note: "short hint" }), /* @__PURE__ */ React$1.createElement(Frame, { w: 320, p: SHORT, note: "short hint" })))));
+  const Row = ({ p, w }) => /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-found" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, p.last), /* @__PURE__ */ React$1.createElement("span", { className: "wh-km" }, "Found")), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p }), /* @__PURE__ */ React$1.createElement(WhChart, { p, say: w.say })));
+  const Card = ({ p, w }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#21", result: { kind: "ok", label: "Solved" }, open: () => {
+  }, next: PZ.where.next, className: "wh-now" }, w.line ? /* @__PURE__ */ React$1.createElement("div", { className: "wc-body" }, /* @__PURE__ */ React$1.createElement(Row, { p, w }), /* @__PURE__ */ React$1.createElement("p", { className: "wc-hint" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Hint"), " ", cap(p.hint.dir), " of ", p.hint.from)) : /* @__PURE__ */ React$1.createElement(Row, { p, w }));
+  const VIEWS = [
+    { k: "l390", l: "390 · longest hint", w: 390, p: LONGEST },
+    { k: "l320", l: "320 · longest hint", w: 320, p: LONGEST },
+    { k: "s390", l: "390 · short hint", w: 390, p: SHORT }
+  ];
+  const Canvas = () => {
+    const [v, setV] = React$1.useState("l390");
+    const view = VIEWS.find((x) => x.k === v);
+    return /* @__PURE__ */ React$1.createElement("main", { className: "wc" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Where: now card, the long-hint drop"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-intro" }, "Today's broken card, then three ways to fix it. Solved, found on guess 6 with the hint. The first tab has the longest hint a real play can give; the others show each way holds at 320px and with a short hint. Nothing is decided."), /* @__PURE__ */ React$1.createElement("div", { className: "lb-choice wc-tabs" }, VIEWS.map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.k, type: "button", "aria-pressed": x.k === v, onClick: () => setV(x.k) }, x.l))), WAYS.map((w) => /* @__PURE__ */ React$1.createElement("section", { key: w.k, className: "wc-item wc-" + w.k, "aria-labelledby": "wc-" + w.k }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-" + w.k, className: "wc-h" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, w.n), w.h), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, w.note), /* @__PURE__ */ React$1.createElement("div", { className: "wc-frame lb-lay", style: { width: view.w } }, /* @__PURE__ */ React$1.createElement(Card, { p: view.p, w })))));
+  };
   window.KitCandidate.Screen = Canvas;
 })(React, ReactDOM);
