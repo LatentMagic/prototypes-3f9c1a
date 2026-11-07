@@ -1,0 +1,20 @@
+/* The canvas page: canon's app is hidden except the canvas, and each card sits at its real width on the library game page
+   (the page's padding on a phone, 752px at most, the now card's width on a 1440 page). */
+.gs-root > :not(.wc), .kit-config-wrap { display: none !important; }
+.wc { display: grid; gap: 40px; width: 100%; max-width: 784px; margin: 0 auto; padding: 24px 16px 64px; box-sizing: border-box; }
+.wc-intro { margin: -24px 0 0; max-width: 60ch; }
+.wc-item { display: grid; gap: 8px; min-width: 0; }
+.wc-h { margin: 0; display: flex; align-items: baseline; gap: 10px; font: 700 18px/1.25 var(--font-heading); }
+.wc-n { font: 700 18px/1 var(--font-heading); color: var(--muted); min-width: 1.2em; }
+.wc-note { margin: 0 0 8px; max-width: 60ch; }
+.wc .wc-slot { min-width: 0; grid-template-columns: minmax(0, 1fr) !important; } /* one card per row: the library grid would halve it */
+
+/* Concept 4: the last-guess slot before any guess, in the muted tone a loss's country uses. */
+.wc-empty b { color: var(--muted); }
+
+/* Concept 5: three captioned figures, centred as a row in the card. */
+.wc-rules { display: grid; grid-template-columns: repeat(3, minmax(0, auto)); justify-content: center; column-gap: clamp(16px, 8cqi, 48px); text-align: center; }
+.wc-rules > div { display: grid; justify-items: center; gap: 4px; }
+
+/* Concept 6: the row runs to the card's edges, as a list in a card does (page-patterns.md, Library card grid). */
+.wc-row { margin-inline: calc(var(--lb-pad) * -1); border-inline: 0; box-shadow: none; }
