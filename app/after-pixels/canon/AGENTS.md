@@ -128,3 +128,16 @@ It tells a stranger what they will do and why they would want it, using only tru
 <important if="your change makes a situation hard to reach (an account state, a failed play, a game mid-run)">
 Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; that file's header gives the entry's shape and id rules. A state earns an entry only by being hard to reach: a screen you can click to from a registered state gets none. Its id names the situation (`payment-retrying`), never the code's internals, and never a width.
 </important>
+
+<important if="you are building or testing a game, or adding one">
+Build and test every game against its standard states. A game is not done until each one is reachable from Config and has an entry in `KIT_STATE_REGISTER`, whatever the entry rule above says.
+
+| State | Meaning | Config → Editions → This edition |
+|---|---|---|
+| Not started | The edition is unplayed (a free account) | Not played |
+| In progress | Play has begun and not ended | In progress |
+| Completed | A finished play | Average |
+| Failed | Play ended in a loss | Failed |
+
+Hard (a win that took most of the tries or hints) and Past day (None, In progress, Finished late) are variants: cover them where the game has one. Each state also has an entry in the `?state=index` list, in the Library group.
+</important>
