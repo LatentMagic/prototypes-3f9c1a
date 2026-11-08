@@ -5119,7 +5119,7 @@
       return { ...base, ...own, share: x.line };
     }
     const d = dpSvDay(i, x.ok);
-    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of " + SLV_DIVES + " dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
+    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of " + SLV_DIVES + " dives"], share: x.line, shareLines: [dpSvHead(n, d.log), "", ...svMarks(d.log)], lines: svLines(d.log) };
   };
   const cmFoundIn = (p) => {
     const m = /^(\d) of 3 connections found$/.exec(((GS_SESSIONS[p.sid] || {}).figures || [])[1] || "");
@@ -5183,7 +5183,7 @@
         edLine: "You get twenty dives to find five wrecks.",
         daily: true,
         once: true,
-        blurb: "Five wrecks lie under today’s sea. Find them in twenty dives.",
+        blurb: "Five wrecks lie somewhere on the sea bed. Find them in twenty dives.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5666,7 +5666,7 @@
           gscU("D5 to finish it"),
           gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
           gscU("Share my result"),
-          gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
+          gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
         ] }
       ],
       // Common: the product page's three chats, written for the page from a real play (2026-11-08, No. 35) and the game spec (common.md §2, §4, §5).
