@@ -182,7 +182,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-prog{display:grid;gap:var(--space-2);justify-self:stretch;width:100%}
 .mcp-card>.mcp-msg,.mcp-card>.mcp-fld,.mcp-card>.mcp-disc{justify-self:stretch}
 .mcp-prog-top{display:flex;justify-content:space-between;font:600 14px/1.2 var(--font-text);color:var(--text)}
-.mcp-track{height:8px;background:var(--line);overflow:hidden}
+.mcp-track{height:8px;background:color-mix(in srgb,var(--control-edge) 40%,var(--page));overflow:hidden}
 .mcp-track>i{display:block;height:100%;background:var(--off-white);transition:width var(--time-dropdown) var(--ease)}
 
 .mcp-card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);padding:var(--space-4);display:grid;gap:var(--space-2);justify-items:start;color:var(--text)}
@@ -695,6 +695,8 @@ button.mcp-cb-ent{cursor:pointer}
 .dv2-die.is-fumble .nm { fill: var(--error); }
 /* KEEP: under 64px a two-d20 roll shows a second hex behind its die; from 64px the small numbered die at its corner. */
 .dv2-die .gh { fill: var(--card); stroke: var(--muted); stroke-width: 1; vector-effect: non-scaling-stroke; }
+/* The foe's roll: a red hex behind the die, outside the advantage hex. */
+.dv2-die .fo { fill: color-mix(in srgb, var(--error) 50%, var(--card)); stroke: var(--error); stroke-opacity: .9; stroke-width: 1; vector-effect: non-scaling-stroke; }
 .dv2-die .tw polygon { fill: var(--card); stroke: var(--muted); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
 .dv2-die .tw text { font: 700 17px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; }
 /* KEEP: the picked die gets an off-white ring outside its own rim, so a natural's rim still shows. */
@@ -759,6 +761,16 @@ button.mcp-cb-ent{cursor:pointer}
 .dv3-dl dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dv3-dl dd span { font-weight: 400; color: var(--muted); }
 .dv3-dl dd[class*="is-"] { color: var(--tc); }
+/* The foe's roll in the held roll: its diamond (filled red when it hit), what it did, the defence; then the foe's health as a meter. */
+.dv3-foe dd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.dv3-foe dd b { color: var(--text); }
+.dv3-foe dd b.is-err { color: var(--error); }
+.dv3-fd { display: inline-block; overflow: visible; flex: none; }
+.dv3-fd .fx { fill: var(--popup); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.dv3-fd.is-hit .fx { fill: var(--error); stroke: none; }
+.dv3-fd .nm { font: 700 15px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
+.dv3-fd.is-hit .nm { fill: var(--error-on); }
+.dv3-dl > .dv3-fm { grid-template-columns: minmax(0, 1fr); align-items: center; }
 /* KEEP: under 800px the held roll sits above the route, so it is kept short: the ledger's die moves beside its name, the big figures shrink. */
 @container dv2 (max-width: 799.98px) {
   .dv3-held { padding: 12px; gap: 8px; }

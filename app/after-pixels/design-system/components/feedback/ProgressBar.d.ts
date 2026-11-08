@@ -1,4 +1,4 @@
-/** 8px square track in --line with an off-white fill; label and percentage above in 14px/600. */
+/** 8px square track in a mid tone (--control-edge at 40% over --page) with an off-white fill; label and percentage above in 14px/600. */
 export interface ProgressBarProps{
   label?:string;
   value?:number;

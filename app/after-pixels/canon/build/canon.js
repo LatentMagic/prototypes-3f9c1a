@@ -1138,13 +1138,13 @@
   const GS_DV_WON = [
     ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "Rolled 1 + 0 = 1 against DC 12", "HP 12/13"],
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Miss", "Rolled 9 + 1 = 10 against DC 12", "HP 11/13"],
-    ["Dexterity", "Weak hit", "Rolled 11 + 1 = 12 against DC 12"],
+    ["Dexterity", "Miss", "Rolled 9 + 1 = 10 against DC 12", "Struck back: d20 14 vs 13, hit, 1 damage, HP 11/13"],
+    ["Dexterity", "Weak hit", "Rolled 11 + 1 = 12 against DC 12", "Struck back: d20 6 vs 13, missed"],
     ["Dexterity", "Strong hit", "Rolled 18 + 1 = 19 against DC 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12"],
-    ["Strength", "Weak hit", "Rolled 13 + 3 = 16 against DC 12", "HP 9/13"],
+    ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12", "Struck back: d20 8 vs 13, missed"],
+    ["Strength", "Weak hit", "Rolled 13 + 3 = 16 against DC 12", "Struck back: d20 15 vs 13, hit, 2 damage, HP 9/13"],
     ["Strength", "Strong hit", "Rolled 17 + 3 = 20 against DC 12"],
     ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "Rolled 20 + 1 = 21 against DC 12"],
     ["Room", "Entered Snaggle's den"],
@@ -1154,22 +1154,22 @@
     ["Room", "Doubled back to the warren", "The ritual +1"],
     ["Lock", "Opened the bone gate with the iron key"],
     ["Room", "Entered the shrine cavern"],
-    ["Strength", "Strong hit", "Rolled 19, the higher of 11 and 19, + 3 = 22 against DC 12"],
+    ["Strength", "Strong hit", "Rolled 19, the higher of 11 and 19, + 3 = 22 against DC 12", "Struck back: d20 5 vs 13, missed"],
     ["Strength", "Strong hit", "Rolled 17, the higher of 17 and 9, + 3 = 20 against DC 12"]
   ];
   const GS_DV_LIVE = [
     ["Oracle", "Is anyone awake down here?", "Yes", "Rolled d100 23 against 25"],
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Weak hit", "Rolled 13 + 3 = 16 against DC 12"],
+    ["Dexterity", "Weak hit", "Rolled 13 + 3 = 16 against DC 12", "Struck back: d20 7 vs 13, missed"],
     ["Dexterity", "Strong hit", "Rolled 16 + 3 = 19 against DC 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Dexterity", "Strong hit", "Rolled 14 + 3 = 17 against DC 12"],
-    ["Dexterity", "Strong hit", "Rolled 14, the higher of 8 and 14, + 3 = 17 against DC 12"],
+    ["Dexterity", "Strong hit", "Rolled 14 + 3 = 17 against DC 12", "Struck back: d20 3 vs 13, missed"],
+    ["Dexterity", "Strong hit", "Rolled 14, the higher of 8 and 14, + 3 = 17 against DC 12", "Struck back: d20 10 vs 13, missed"],
     ["Intelligence", "Study the wall scratchings", "Success", "Rolled 19, the higher of 19 and 15, + 1 = 20 against DC 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Dexterity", "Strong hit", "Rolled 14, the higher of 14 and 5, + 3 = 17 against DC 12"],
-    ["Dexterity", "Strong hit", "Rolled 18, the higher of 18 and 7, + 3 = 21 against DC 12"],
+    ["Dexterity", "Strong hit", "Rolled 14, the higher of 14 and 5, + 3 = 17 against DC 12", "Struck back: d20 9 vs 13, missed"],
+    ["Dexterity", "Strong hit", "Rolled 18, the higher of 18 and 7, + 3 = 21 against DC 12", "Struck back: d20 12 vs 13, missed"],
     ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "Rolled 20, the higher of 20 and 6, + 3 = 23 against DC 12"],
     ["Room", "Doubled back to the warren", "The ritual +1"]
   ];
@@ -2622,6 +2622,7 @@
     CB_FIRST = CB_DONE;
     CB_KINDS = [["Show evidence", "Evidence shown"], ["Search", "Searches"], ["Question", "Questions"]];
   }
+  const DL_FOES = { "the chime run": ["Chime-rat", 2], "the warren": ["Warren guard", 3], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Ritual priest", 2] };
   const DL_CARRY = 3;
   const DL_HEROES = {
     "Bryn the Fighter": {
@@ -2654,7 +2655,8 @@
     const fumble = /Natural 1\b/.test(t);
     const tier = fumble ? "miss" : /Weak hit|Partial success/.test(t) ? "weak" : /\bMiss\b|Failure/.test(t) ? "miss" : /Strong hit|\bSuccess\b/.test(t) || crit ? "strong" : "miss";
     const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
-    return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, action: DL_GRADE.test(parts[0]) ? "" : parts[0] };
+    const sb = /^Struck back: d20 (\d+) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
+    return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: sb ? { roll: +sb[1], dc: +sb[2], hit: sb[3] === "hit", dmg: sb[4] ? +sb[4] : 0 } : null, action: DL_GRADE.test(parts[0]) ? "" : parts[0] };
   };
   const DL_END = { won: "The winning blow", fallen: "The last blow", overrun: "The last roll", live: "Latest roll" };
   const dlMoments = (R, end) => {
@@ -2684,6 +2686,11 @@
     const order = [];
     let cur = null;
     let hp = s.hpMax;
+    const foeHp = {};
+    const foeOf = () => {
+      const f = cur && DL_FOES[cur.name.toLowerCase()];
+      return f ? { f, k: cur.key } : null;
+    };
     const open = (name, back) => {
       name = name && dlCap(name);
       const key = name || "_first";
@@ -2698,6 +2705,9 @@
         return;
       }
       if (!cur) open(null, false);
+      const wear = l[0] === "Gear" && /→ (\d+)$/.exec(String(l[2] || ""));
+      const fo = foeOf();
+      if (wear && fo) foeHp[fo.k] = +wear[1];
       const r = dlRoll(l);
       if (!r) return;
       r.n = rolls.length + 1;
@@ -2706,6 +2716,11 @@
       r.back = cur.back;
       r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0;
       if (r.hp != null) hp = r.hp;
+      if (fo && !r.action) {
+        const left = foeHp[fo.k] != null ? foeHp[fo.k] : fo.f[1];
+        foeHp[fo.k] = r.tier === "miss" ? left : Math.max(0, left - (r.crit ? 2 : 1));
+        if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: fo.f[1] };
+      }
       rolls.push(r);
       cur.rolls.push(r);
     });
@@ -2717,23 +2732,29 @@
     const moments = dlMoments(rolls, end);
     return { stops, rolls, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
   };
-  const dlSay = (r) => "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + DL_TIER[r.tier].toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "");
+  const dlSay = (r) => "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + DL_TIER[r.tier].toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-die is-" + r.tier + (r.crit ? " is-crit" : "") + (r.fumble ? " is-fumble" : "") + (sel ? " is-sel" : ""), viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, r.two && size < 64 && !sel && /* @__PURE__ */ React$1.createElement("polygon", { className: "gh", points: DL_HEX, transform: r.crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), r.crit && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM }), /* @__PURE__ */ React$1.createElement("text", { className: "nm", x: "18", y: "20.5" }, r.kept), r.two && size >= 64 && /* @__PURE__ */ React$1.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, r.other)), /* @__PURE__ */ React$1.createElement("polygon", { className: "sl", points: DL_RIM }));
-  const DlDieBtn = ({ r, size, act, on }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.n, "aria-label": dlSay(r), onClick: () => on.sel(r.n), onMouseEnter: () => on.hov(r.n), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.n }));
+  const dlFoeAt = (r, gh) => r.crit ? gh ? [-10, -9.5] : [-7, -6.5] : gh ? [-7, -6] : [-3.5, -3];
+  const DlDie = ({ r, size = 36, sel, foe = true }) => {
+    const gh = r.two && size < 64 && !sel;
+    const fa = foe && r.foe && size < 64 && !sel ? dlFoeAt(r, gh) : null;
+    return /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-die is-" + r.tier + (r.crit ? " is-crit" : "") + (r.fumble ? " is-fumble" : "") + (sel ? " is-sel" : ""), viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, fa && /* @__PURE__ */ React$1.createElement("polygon", { className: "fo", points: DL_HEX, transform: "translate(" + fa[0] + " " + fa[1] + ")" }), r.two && size < 64 && !sel && /* @__PURE__ */ React$1.createElement("polygon", { className: "gh", points: DL_HEX, transform: r.crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), r.crit && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM }), /* @__PURE__ */ React$1.createElement("text", { className: "nm", x: "18", y: "20.5" }, r.kept), r.two && size >= 64 && /* @__PURE__ */ React$1.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, r.other)), /* @__PURE__ */ React$1.createElement("polygon", { className: "sl", points: DL_RIM }));
+  };
+  const DlDieBtn = ({ r, size, act, on, foe }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.n, "aria-label": dlSay(r), onClick: () => on.sel(r.n), onMouseEnter: () => on.hov(r.n), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.n, foe }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
     const line = m.end === "live" ? null : s.result;
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
   };
+  const DlFoeDie = ({ f }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv3-fd" + (f.hit ? " is-hit" : ""), viewBox: "-2 -2 40 44", width: "34", height: "37", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { className: "fx", points: "18,0 36,20 18,40 0,20" }), /* @__PURE__ */ React$1.createElement("text", { className: "nm", x: "18", y: "20.5" }, f.roll));
   const DlHeld = ({ m, act }) => {
     const r = act ? m.rolls[act - 1] : null;
     if (!r) return null;
     const x = m.mom[r.n];
     const tcls = r.fumble ? "fumble" : r.tier;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72 }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, DL_TIER[r.tier])), r.harm > 0 && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72 }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, DL_TIER[r.tier])), r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))), r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")), r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: r.foe.name, n: r.foe.health, of: r.foe.max })))));
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
   const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
@@ -2837,7 +2858,7 @@
       const keys = st.rolls.filter((r) => m.mom[r.n]);
       const rest = st.rolls.filter((r) => !m.mom[r.n]);
       const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === m.stops.length - 1 ? " is-row-end" : "");
-      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34 }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
+      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34, foe: false }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
     }));
   };
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
@@ -2866,16 +2887,16 @@
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Success", "Rolled 14 + 0 = 14 against DC 12"],
         ["Room", "Entered the chime run"],
-        ["Dexterity", "Miss", "Rolled 5 + 1 = 6 against DC 12", "HP 11/13"],
-        ["Dexterity", "Weak hit", "Rolled 12 + 1 = 13 against DC 12", "HP 10/13"],
+        ["Dexterity", "Miss", "Rolled 5 + 1 = 6 against DC 12", "Struck back: d20 15 vs 13, hit, 2 damage, HP 11/13"],
+        ["Dexterity", "Weak hit", "Rolled 12 + 1 = 13 against DC 12", "Struck back: d20 14 vs 13, hit, 1 damage, HP 10/13"],
         ["Dexterity", "Strong hit", "Rolled 19 + 1 = 20 against DC 12"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Strength", "Miss", "Rolled 3 + 3 = 6 against DC 12", "HP 7/13"],
-        ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12", "HP 5/13"],
-        ["Strength", "Miss", "Natural 1", "Rolled 1 + 3 = 4 against DC 12", "HP 2/13"],
-        ["Strength", "Strong hit", "Rolled 15 + 3 = 18 against DC 12"],
-        ["Strength", "Miss", "Rolled 7 + 3 = 10 against DC 12", "HP 0/13"]
+        ["Strength", "Miss", "Rolled 3 + 3 = 6 against DC 12", "Struck back: d20 17 vs 13, hit, 3 damage, HP 7/13"],
+        ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12", "Struck back: d20 15 vs 13, hit, 2 damage, HP 5/13"],
+        ["Strength", "Miss", "Natural 1", "Rolled 1 + 3 = 4 against DC 12", "Struck back: d20 16 vs 13, hit, 3 damage, HP 2/13"],
+        ["Strength", "Strong hit", "Rolled 15 + 3 = 18 against DC 12", "Struck back: d20 4 vs 13, missed"],
+        ["Strength", "Miss", "Rolled 7 + 3 = 10 against DC 12", "Struck back: d20 18 vs 13, hit, 2 damage, HP 0/13"]
       ]
     };
     GS_SESSIONS["delve-hard"] = {
