@@ -122,7 +122,7 @@ const CprDvLibrary = () => {
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
       </div>
       {/* Earlier runs come with the Pass (delve.md section 4); a Pass holder gets canon's page, so never sees it. "the Pass" is the line's only link, as the dailies'. */}
-      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES.delve.ed[1] + ' comes with the Pass.'} />
+      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Earlier ' + GS_GAMES.delve.ed[1] + ' need the Pass.'} />
     </main>
   );
 };
@@ -144,7 +144,7 @@ const CprEsLibrary = () => {
         <LbRecent title="Your rooms" allLabel="See in History" empty="Your rooms appear here once you have played one." />
       </div>
       {/* Earlier rooms come with the Pass (escape.md section 4). */}
-      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES.escape.ed[1] + ' comes with the Pass.'} />
+      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Earlier ' + GS_GAMES.escape.ed[1] + ' need the Pass.'} />
     </main>
   );
 };
@@ -189,7 +189,7 @@ const cprPzLibrary = (id) => () => {
         <LbAch items={ach} badges={c.badges} access="all" />
         <LbRecent title={recent} allLabel="See in History" empty={recent + ' appear here once you have played one.'} />
       </div>
-      {gs.view !== 'pass' && !locked && <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} />}
+      {gs.view !== 'pass' && !locked && <CprPassEnd className="gs-muted gs-pu-wrap" text={'Earlier ' + GS_GAMES[id].ed[1] + ' need the Pass.'} />}
     </main>
   );
 };
