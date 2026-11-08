@@ -291,7 +291,7 @@ Object.assign(GS_GAMES, {
   where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], edLine: 'You get six guesses to find the country.', daily: true, once: true,
     blurb: 'Which country is hidden? Each guess shows how far off you are.', tags: ['Daily'], size: 'tiny' }),
   chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], edLine: 'You get both ends. Find the words between.', daily: true, once: true,
-    blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily'], size: 'tiny' }),
+    blurb: 'Work out the missing words in a chain where each joins the next.', tags: ['Daily'], size: 'tiny' }),
   salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], edLine: 'You get twenty dives to find five wrecks.', daily: true, once: true,
     blurb: 'Five wrecks lie under today’s sea. Find them in twenty dives.', tags: ['Daily'], size: 'tiny' }),
   common: gsAccess({ access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], edLine: 'You get three threads of four items. Name each connection early.', daily: true, once: true,
@@ -478,7 +478,7 @@ Object.assign(GS_PAGES, {
     box: { label: 'ONLY WITH THE PASS', heading: 'A new chain every day', button: 'Play today’s chain',
       steps: [GS_STEP_CONNECT, dpStep('Fill in today’s chain', ', working in from either end.'), dpSeeResult], small: GS_NAME.chain + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'Fire joins house, and house joins plant. Find the words in between.', ps: [
+    pitch: { h: 'Work out the missing words in a chain where each joins the next.', ps: [
       'A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.',
       'Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word.'] },
     who: { ai: 'Draws the whole line after every guess, with the words you can try next marked, and goes through every link once the chain is solved.', server: 'Keeps the chain secret, shows only the letters you’ve earned, and gives a word away once its letters run out.' },

@@ -5140,7 +5140,7 @@
         edLine: "You get both ends. Find the words between.",
         daily: true,
         once: true,
-        blurb: "Every word in the line joins the next. Find the ones in between.",
+        blurb: "Work out the missing words in a chain where each joins the next.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5516,7 +5516,7 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "Fire joins house, and house joins plant. Find the words in between.", ps: [
+        pitch: { h: "Work out the missing words in a chain where each joins the next.", ps: [
           "A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.",
           "Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word."
         ] },
