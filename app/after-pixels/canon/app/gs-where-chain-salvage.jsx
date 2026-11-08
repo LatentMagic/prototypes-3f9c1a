@@ -502,7 +502,7 @@ Object.assign(GS_PAGES, {
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Five wrecks lie somewhere under you. Find them in twenty dives.', ps: [
       'Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.',
-      'You also get three tools that cost no dive: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools.'] },
+      'You also get three tools: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools.'] },
     who: { ai: 'Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.', server: 'Keeps the wrecks secret, answers every dive and tool, and counts what you have left.' },
     week: { title: 'Today’s sea', line: 'You get twenty dives to find five wrecks.', session: 'salvage-today' },
   },
@@ -558,8 +558,8 @@ Object.assign(GS_CHATS, {
   // edition (see SV_CHAT_SEA): the real play mirrored left to right, as No. 112. The sea is drawn as the deployed script has the AI draw it each turn (svGrid).
   salvage: [
     { cap: 'Five wrecks lie hidden, and the margins count some rows and columns.', turns: [gscU('Play Salvage on After Pixels'),
-      gscAi('salvage', 'The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching, and three tools cost no dive.', [svGrid([], [], []), svStats(20, 3)])] },
-    { cap: 'A dragnet snags the first wreck square on a line, and costs no dive.', turns: [gscU('Row 1 counts 4, so dragnet along it from the left'),
+      gscAi('salvage', 'The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.', [svGrid([], [], []), svStats(20, 3)])] },
+    { cap: 'A dragnet snags the first wreck square on a line.', turns: [gscU('Row 1 counts 4, so dragnet along it from the left'),
       gscAi('salvage', 'The dragnet snagged at D1, a hit.', [svGrid([], ['D1'], []), svStats(20, 2)])] },
     { cap: 'The last wreck raised wins the day.', turns: [gscU('D5 to finish it'),
       gscAi('salvage', 'D5 raised the wreck of 3, covering B5 to D5.', [svGrid(['A4'], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: 'result', title: 'Salvage No. 112', status: 'All 5 wrecks', stats: [{ label: 'Dives used', value: '14 of 20' }, { label: 'Tools used', value: 3 }] }]),

@@ -5540,7 +5540,7 @@
         tags: [],
         pitch: { h: "Five wrecks lie somewhere under you. Find them in twenty dives.", ps: [
           "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.",
-          "You also get three tools that cost no dive: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools."
+          "You also get three tools: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools."
         ] },
         who: { ai: "Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.", server: "Keeps the wrecks secret, answers every dive and tool, and counts what you have left." },
         week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
@@ -5617,9 +5617,9 @@
       salvage: [
         { cap: "Five wrecks lie hidden, and the margins count some rows and columns.", turns: [
           gscU("Play Salvage on After Pixels"),
-          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching, and three tools cost no dive.", [svGrid([], [], []), svStats(20, 3)])
+          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.", [svGrid([], [], []), svStats(20, 3)])
         ] },
-        { cap: "A dragnet snags the first wreck square on a line, and costs no dive.", turns: [
+        { cap: "A dragnet snags the first wreck square on a line.", turns: [
           gscU("Row 1 counts 4, so dragnet along it from the left"),
           gscAi("salvage", "The dragnet snagged at D1, a hit.", [svGrid([], ["D1"], []), svStats(20, 2)])
         ] },
