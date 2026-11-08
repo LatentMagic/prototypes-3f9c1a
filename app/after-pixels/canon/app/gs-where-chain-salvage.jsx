@@ -91,8 +91,8 @@ const svGrid = (miss, hit, raised, swept = {}) => {
   const mark = {};
   miss.forEach((sq) => { mark[sq] = ['○', '']; }); hit.forEach((sq) => { mark[sq] = ['✕', 'n']; }); raised.forEach((sq) => { mark[sq] = ['■', 'h']; });
   const cols = 'ABCDEFGH'.split('');
-  const head = [{ l: ' ', m: ' ' }, ...cols.map((c) => ({ l: String(cnt.cols[c] || '-'), m: 'x' })), { l: ' ', m: ' ' }];
-  const letters = [{ l: ' ', m: ' ' }, ...cols.map((c) => ({ l: c, m: 'x' })), { l: ' ', m: ' ' }];
+  const head = [{ l: ' ', m: '_' }, ...cols.map((c) => ({ l: String(cnt.cols[c] || '-'), m: 'x' })), { l: ' ', m: '_' }];
+  const letters = [{ l: ' ', m: '_' }, ...cols.map((c) => ({ l: c, m: 'x' })), { l: ' ', m: '_' }];
   const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: 'x' }, ...cols.map((c) => ({ l: (mark[c + r] || [' '])[0], m: (mark[c + r] || [' ', ' '])[1] || ' ' })), { l: String(cnt.rows[r] || '-'), m: 'x' }]);
   return { type: 'tilegrid', length: 10, rows: [head, letters, ...body].map((r) => ({ letters: r.map((x) => x.l).join(''), marks: r.map((x) => x.m).join('') })) };
 };

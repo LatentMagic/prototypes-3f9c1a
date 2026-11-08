@@ -472,6 +472,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-cb-tiles-in.mcp-cb-fence{padding:6px}
 .mcp-cb-tiles-row{display:flex;gap:4px}
 .mcp-cb-tile{position:relative;width:var(--t);height:var(--t);display:grid;place-items:center;border:1px solid var(--cb-line);background:var(--cb-panel);color:var(--cb-ink);font:700 calc(var(--t) * .5)/1 var(--font-text);text-transform:uppercase;overflow:hidden}
+/* KEEP: A blank tile (mark _) draws nothing, no edge and no fill, but keeps its slot so the columns around it stay aligned. It is for a grid's corner where a header row meets a side column; a tile with no letter and no mark is still an empty square. */
+.mcp-cb-tile.is-blank{visibility:hidden;border:0;background:none}
 .mcp-cb-tile.is-filled{border:1.5px solid var(--cb-ink)}
 .mcp-cb-tile.is-hit{background:var(--cover-green);border-color:var(--cover-green);color:var(--success-on)}
 .mcp-cb-tile.is-near{background:var(--cover-amber);border-color:var(--cover-amber);color:var(--warning-on)}

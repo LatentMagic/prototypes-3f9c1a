@@ -204,11 +204,11 @@
       while (count2 && all.length < count2) all.push({ letters: "" });
       const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
         const c = ((r.letters || "")[i] || " ").trim();
-        const s = c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
+        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
         return { c, s };
       }));
-      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty") ? " empty" : ": " + row.map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s }, x.c))))));
+      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s, "aria-hidden": x.s === "blank" || void 0 }, x.s === "blank" ? null : x.c))))));
     }
     function Track({ items = [], className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-track " + className).trim() }, items.map((t, i) => {
@@ -4861,8 +4861,8 @@
       mark[sq] = ["■", "h"];
     });
     const cols = "ABCDEFGH".split("");
-    const head = [{ l: " ", m: " " }, ...cols.map((c) => ({ l: String(cnt.cols[c] || "-"), m: "x" })), { l: " ", m: " " }];
-    const letters = [{ l: " ", m: " " }, ...cols.map((c) => ({ l: c, m: "x" })), { l: " ", m: " " }];
+    const head = [{ l: " ", m: "_" }, ...cols.map((c) => ({ l: String(cnt.cols[c] || "-"), m: "x" })), { l: " ", m: "_" }];
+    const letters = [{ l: " ", m: "_" }, ...cols.map((c) => ({ l: c, m: "x" })), { l: " ", m: "_" }];
     const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: "x" }, ...cols.map((c) => ({ l: (mark[c + r] || [" "])[0], m: (mark[c + r] || [" ", " "])[1] || " " })), { l: String(cnt.rows[r] || "-"), m: "x" }]);
     return { type: "tilegrid", length: 10, rows: [head, letters, ...body].map((r) => ({ letters: r.map((x) => x.l).join(""), marks: r.map((x) => x.m).join("") })) };
   };
