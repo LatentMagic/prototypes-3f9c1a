@@ -1876,8 +1876,8 @@
             null,
             [
               { type: "entities", title: "Suspects", items: [{ name: "Coco" }, { name: "Bella Flint" }, { name: "Ivan the Mighty" }, { name: "Madame Zara" }] },
-              { type: "entities", title: "Weapons", items: [{ name: "The poisoned toffee apple" }, { name: "The iron tent peg" }, { name: "The sleeping draught" }, { name: "The brass bugle" }] },
-              { type: "entities", title: "Places", items: [{ name: "The big top" }, { name: "The cook tent" }, { name: "The generator truck" }, { name: "The costume tent" }] },
+              { type: "entities", title: "Weapons", items: [{ name: "Poisoned toffee apple" }, { name: "Iron tent peg" }, { name: "Sleeping draught" }, { name: "Brass bugle" }] },
+              { type: "entities", title: "Places", items: [{ name: "Big top" }, { name: "Cook tent" }, { name: "Generator truck" }, { name: "Costume tent" }] },
               { type: "clues", groups: [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }] }
             ]
           )
