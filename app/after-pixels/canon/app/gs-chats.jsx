@@ -80,7 +80,7 @@ GS_CHATS = {
         null, [{ type: 'entities', className: 'is-compact', title: 'Suspects', items: [{ name: 'Coco' }, { name: 'Bella Flint' }, { name: 'Ivan the Mighty' }, { name: 'Madame Zara' }] },
          { type: 'entities', className: 'is-compact', title: 'Weapons', items: [{ name: 'Poisoned toffee apple' }, { name: 'Iron tent peg' }, { name: 'Sleeping draught' }, { name: 'Brass bugle' }] },
          { type: 'entities', className: 'is-compact', title: 'Places', items: [{ name: 'Big top' }, { name: 'Cook tent' }, { name: 'Generator truck' }, { name: 'Costume tent' }] },
-         { type: 'clues', groups: [{ kind: 'Clues', facts: ['1. Madame Zara handled the brass bugle.', '2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.'] }] }])] },
+         { type: 'clues', collapsed: true, groups: [{ kind: 'Clues', facts: ['1. Madame Zara handled the brass bugle.', '2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.'] }] }])] },
     { cap: 'When you’re stuck, a hint shows you the next step toward the answer.', turns: [gscU('A hint, please.'),
       gscAi('accuse', ['Madame Zara was not in the costume tent.', 'You have 1 hint left.'], null, [{ type: 'clues', groups: [{ kind: 'Hint', facts: [{ text: 'Madame Zara was not in the costume tent.', new: true }] }] }])] },
     { cap: 'You get the verdict on your accusation, and a short ending.', turns: [gscU('Madame Zara, the brass bugle, the big top.'),

@@ -5,6 +5,12 @@ export interface FactRowsProps{
   /** No fence, for use inside another part. */
   plain?:boolean;
   label?:string;
+  /** Fold title (falls back to label). The count is the number of rows. */
+  title?:string;
+  /** Opt in: the card sits behind a disclosure headed by its title, a count and a chevron. Starts open. */
+  collapsible?:boolean;
+  /** Opt in and start closed. Implies collapsible. */
+  collapsed?:boolean;
   className?:string;
 }
 export declare function FactRows(props:FactRowsProps):JSX.Element;

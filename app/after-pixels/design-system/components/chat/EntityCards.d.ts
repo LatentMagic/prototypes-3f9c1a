@@ -3,6 +3,11 @@ export interface EntityCardsProps{
   /** Heading above the grid, e.g. "Suspects". */
   title?:string;
   items:{name:string;line?:string;pic?:string;icon?:import('../media/Icon').IconName;tone?:'amber'|'teal'|'orange'|'lilac'|'green'|'cream';state?:'out'|'picked'}[];
+  /** Fold title is `title`; the count is the number of items. */
+  /** Opt in: the card sits behind a disclosure headed by its title, a count and a chevron. Starts open. */
+  collapsible?:boolean;
+  /** Opt in and start closed. Implies collapsible. */
+  collapsed?:boolean;
   onPick?:(item:any,index:number)=>void;
   className?:string;
 }

@@ -445,6 +445,20 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-cb-clue li+li{border-top:1px solid color-mix(in srgb,var(--cb-edge) 70%,transparent)}
 .mcp-cb-clue li.is-new{margin:0 -8px;padding-inline:8px;background:color-mix(in srgb,var(--cb-tone) 55%,var(--cb-panel))}
 .mcp-cb-clue li.is-new::before{background:var(--cb-ink)}
+/* Optional fold on a card-style part (collapsible / collapsed): a native details, so it opens with no handler, a picture included. The summary is the whole tap target (44px) and the chevron turns as the Disclosure's does. */
+.mcp-cb-fold{display:block;min-width:0}
+.mcp-cb-fold>summary{list-style:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.mcp-cb-fold>summary::-webkit-details-marker{display:none}
+.mcp-cb-fold-t{font:700 13.5px/1.3 var(--font-text);color:var(--cb-ink)}
+.mcp-cb-fold-n{font:600 12px/1 var(--font-text);color:var(--cb-ink2);font-variant-numeric:tabular-nums}
+.mcp-cb-fold-n::before{content:"\00b7";margin-right:8px}
+.mcp-cb-fold>summary .mcp-ico{margin-left:auto;flex:none;color:var(--cb-ink2);transition:transform var(--time-dropdown) var(--ease)}
+.mcp-cb-fold[open]>summary .mcp-ico{transform:rotate(180deg)}
+.mcp-cb-fold[open]>summary{border-bottom:1px solid var(--cb-edge)}
+.mcp-cb-fold>summary:focus-visible{outline:2px solid var(--cb-ink);outline-offset:-2px}
+.mcp-cb-fold-b.is-pad{padding:8px 10px 10px}
+@media (hover:hover){.mcp-cb-fold>summary:hover{background:color-mix(in srgb,var(--cb-ink) 6%,var(--cb-panel))}}
+@media (prefers-reduced-motion:reduce){.mcp-cb-fold>summary .mcp-ico{transition:none}}
 .mcp-cb-new{display:inline-flex;align-items:center;height:18px;padding:0 6px;background:var(--cb-ink);color:var(--cb-panel);font:600 11px/1 var(--font-text);align-self:center}
 /* ResultCard */
 .mcp-cb-result-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px}
