@@ -18,7 +18,7 @@ const GSC_CB_SEARCH = [gscU('Ask Maeve Doyle where she was at ten'),
 const GSC_CB_LIE = [gscU('Show Maeve the bar ledger'),
   gscAi('casebook', '“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”', [{ type: 'clues', groups: [{ kind: 'Evidence', facts: ['The bar ledger'] }, { kind: 'Statements', facts: [{ text: 'Maeve Doyle: lie exposed', new: true }] }] }, { type: 'stats', items: [{ label: 'Turn', value: '5 of 16' }] }])];
 
-// Delve's fight chat, written for the page from the same playtest; every event is true to it and no edition secret appears. Shared with the page-copy playground.
+// Delve's fight chat, written for the page from the same playtest; every event is true to it and no edition secret appears.
 export const GSC_DV_FIGHT_CAP = 'Say how you want to fight the guards.';
 export const GSC_DV_FIGHT = [gscU('I somersault over the first guard and kick him'),
   gscAi('delve', 'You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.', null, [{ type: 'roll', label: 'Somersault', roll: 16, mod: 3, target: 13, result: 'hit', outcome: 'Hit · one guard falls' }])];
