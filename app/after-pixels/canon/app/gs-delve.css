@@ -85,6 +85,8 @@
 .dv3-dl dd span { font-weight: 400; color: var(--muted); }
 /* KEEP: a "vs 12" or "vs defence 13" never splits, so a number never ends up alone on a line; the whole unit drops to the next line instead (280px: "Dexterity 6" then "vs 12"). */
 .dv3-dl dd span { white-space: nowrap; }
+/* KEEP: what a used ability or gear does is a muted second line under its name that wraps inside the held roll, so a long line never runs past the box at 280px. */
+.dv3-dl dd span.is-does { display: block; white-space: normal; }
 .dv3-dl dd[class*="is-"] { color: var(--tc); }
 /* The foe's roll in the held roll: its diamond (DelveFoeDie), what it did, the defence; then the foe's health as a meter. */
 .dv3-foe dd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
