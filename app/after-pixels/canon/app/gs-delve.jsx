@@ -7,7 +7,7 @@
 // ============================================================================
 
 // SAMPLE: the stats a check adds are read from the records (Bryn Str +3, Dex +1, Wis 0; Wren Dex +3, Int +1, Wis +1, Str 0);
-// Con and Cha, the abilities and the starting gear are invented. The Warren's carry limit is three. The foes below, their health and
+// Con and Cha, the abilities and the starting gear are invented (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three. The foes below, their health and
 // the 13 their d20 must reach are invented too: the record names no foe and writes no foe health, only the struck-back part of a roll's line.
 const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
 import React from 'react';
@@ -21,10 +21,10 @@ const DL_CARRY = 3;
 const DL_HEROES = {
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 },
     abilities: [{ name: 'Shield bash', of: 2, does: 'Strikes at once, no roll' }],
-    gear: [{ name: 'Chain shirt', kind: 'armour', does: 'Every hit on you costs one less' }, { name: 'Pepper pouch', kind: 'once', does: 'Flung in a face, it blinds for a blow' }] },
+    gear: [{ name: 'Pepper pouch', kind: 'once', does: 'Flung in a face, it blinds for a blow' }] },
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 0, Intelligence: 1, Wisdom: 1, Charisma: 2 },
     abilities: [{ name: 'Backstab', of: 2, does: 'Strikes from behind at once, no roll' }],
-    gear: [{ name: 'Leather coat', kind: 'armour', does: 'Every hit on you costs one less' }, { name: 'Smoke pellet', kind: 'once', does: 'Burst underfoot, it hides you for a breath' }] },
+    gear: [{ name: 'Smoke pellet', kind: 'once', does: 'Burst underfoot, it hides you for a breath' }] },
 };
 const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 

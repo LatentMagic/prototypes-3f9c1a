@@ -2630,14 +2630,14 @@
       cls: "Fighter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 },
       abilities: [{ name: "Shield bash", of: 2, does: "Strikes at once, no roll" }],
-      gear: [{ name: "Chain shirt", kind: "armour", does: "Every hit on you costs one less" }, { name: "Pepper pouch", kind: "once", does: "Flung in a face, it blinds for a blow" }]
+      gear: [{ name: "Pepper pouch", kind: "once", does: "Flung in a face, it blinds for a blow" }]
     },
     "Wren the Rogue": {
       name: "Wren",
       cls: "Rogue",
       stats: { Strength: 0, Dexterity: 3, Constitution: 0, Intelligence: 1, Wisdom: 1, Charisma: 2 },
       abilities: [{ name: "Backstab", of: 2, does: "Strikes from behind at once, no roll" }],
-      gear: [{ name: "Leather coat", kind: "armour", does: "Every hit on you costs one less" }, { name: "Smoke pellet", kind: "once", does: "Burst underfoot, it hides you for a breath" }]
+      gear: [{ name: "Smoke pellet", kind: "once", does: "Burst underfoot, it hides you for a breath" }]
     }
   };
   const DL_GEAR_DOES = { "Iron key": "Opens the lock it fits" };
