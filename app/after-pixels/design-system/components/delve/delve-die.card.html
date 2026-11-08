@@ -1,0 +1,35 @@
+<!-- @dsCard group="Components · Delve" viewport="860x420" name="DelveDie" subtitle="A turn on the route: strong, weak, miss, natural 20 and 1, two dice, a use; the foe's red hex; selected; in the held roll" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page);margin:0}.cap{font:400 12px/1.3 var(--font-text);color:var(--muted);margin:6px 0 0}.row{display:flex;flex-wrap:wrap;gap:20px 28px;align-items:end}.cell{display:grid;gap:4px;justify-items:center}.pan{background:var(--card);padding:16px}.pop{background:var(--popup);padding:16px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const {DelveDie,DelveUseDie}=window.MCPGameStoreDesignSystem_ef1abd;
+const C=({cap,children})=><div className="cell">{children}<span className="cap">{cap}</span></div>;
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{display:'grid',gap:24}}>
+ <div className="pan"><div className="row">
+  <C cap="strong"><DelveDie kind="strong" value={14} size={40}/></C>
+  <C cap="weak"><DelveDie kind="weak" value={9} size={40}/></C>
+  <C cap="miss"><DelveDie kind="miss" value={5} size={40}/></C>
+  <C cap="natural 20"><DelveDie kind="strong" value={20} crit size={40}/></C>
+  <C cap="natural 1"><DelveDie kind="miss" value={1} fumble size={40}/></C>
+  <C cap="two dice"><DelveDie kind="strong" value={15} other={6} size={40}/></C>
+  <C cap="use"><DelveUseDie size={40}/></C>
+ </div></div>
+ <div className="pan"><div className="row">
+  <C cap="foe struck back"><DelveDie kind="miss" value={5} foe size={40}/></C>
+  <C cap="foe, two dice"><DelveDie kind="strong" value={15} other={6} foe size={40}/></C>
+  <C cap="foe, natural 20"><DelveDie kind="strong" value={20} crit foe size={40}/></C>
+  <C cap="use, foe struck back"><DelveUseDie foe size={40}/></C>
+  <C cap="selected"><DelveDie kind="weak" value={9} selected size={40}/></C>
+  <C cap="use, selected"><DelveUseDie selected size={40}/></C>
+ </div></div>
+ <div className="pop"><div className="row">
+  <C cap="held roll, 72px"><DelveDie kind="miss" value={5} surface="popup" size={72}/></C>
+  <C cap="two dice, 72px"><DelveDie kind="strong" value={15} other={6} surface="popup" size={72}/></C>
+  <C cap="use, 72px"><DelveUseDie surface="popup" size={72}/></C>
+ </div></div>
+</div>);
+</script></body></html>

@@ -205,6 +205,24 @@
         return cbPress(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
       })));
     }
+    const HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
+    const RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
+    const SPARKLE = "M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z";
+    const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-7, -6.5] : adv ? [-7, -6] : [-3.5, -3];
+    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+      const big = size >= 64;
+      const adv = other != null && !big && !selected;
+      const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
+      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", fumble && "is-fumble", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
+    }
+    function DelveUseDie({ foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+      return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", foe, selected, surface, size, className });
+    }
+    function DelveFoeDie({ value, hit = false, surface = "card", size = 34, className = "" }) {
+      const cls = ["mcp-dl-foe", hit && "is-hit", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-2 -2 40 44", width: size, height: Math.round(size * 44 / 40), "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("polygon", { className: "fx", points: "18,0 36,20 18,40 0,20" }), /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value));
+    }
     function Loader({ size = 64, label = "Loading" }) {
       return /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader", role: "status", "aria-label": label, style: { width: size, height: size } }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader-m", style: { zoom: size / 120 } }, /* @__PURE__ */ React2.createElement("i", { className: "tl" }), /* @__PURE__ */ React2.createElement("i", { className: "tr" }), /* @__PURE__ */ React2.createElement("i", { className: "br" }), /* @__PURE__ */ React2.createElement("i", { className: "bl" })));
     }
@@ -929,6 +947,9 @@
     ns.TileGrid = TileGrid;
     ns.Track = Track;
     ns.WordBoard = WordBoard;
+    ns.DelveDie = DelveDie;
+    ns.DelveUseDie = DelveUseDie;
+    ns.DelveFoeDie = DelveFoeDie;
     ns.Loader = Loader;
     ns.ProgressBar = ProgressBar;
     ns.StatusMessage = StatusMessage;
