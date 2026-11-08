@@ -466,7 +466,7 @@ Object.assign(GS_PAGES, {
       steps: [GS_STEP_CONNECT, dpStep('Find today’s country.', ' You get six guesses.'), dpSeeResult], small: GS_NAME.where + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Which country is hidden? Each guess shows how far off you are.', ps: [
-      'Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.',
+      'Name any country in the world, and you’ll see how far it is from the hidden one.',
       'One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess.'] },
     who: { ai: 'Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.', server: 'Keeps the country secret, measures every distance and works out which way the hint points.' },
     week: { title: 'Today’s country', line: 'You get six guesses and one hint.', session: 'where-today' },
