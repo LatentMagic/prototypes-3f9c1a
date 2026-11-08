@@ -142,7 +142,7 @@ export const DlStopHead = ({ st, named }) => (
     <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
 const DlRoute = ({ m, act, on }) => { const sel = act ? m.rolls[act - 1].stop : null;
   return (<div className="dvE-main">
-    <div className="dvA2-route is-e is-cols-between" aria-label="The way you went">{m.stops.map((st) => (
+    <div className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': m.stops.length }} aria-label="The way you went">{m.stops.map((st) => (
       <div key={st.i} className={'dvA2-stop' + (sel === st.i ? ' is-on' : '')}>
         <DlStopHead st={st} named />
         <div className="dvA2-dice">{st.rolls.length ? st.rolls.map((r) => (m.mom[r.n]

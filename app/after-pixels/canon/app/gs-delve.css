@@ -16,6 +16,10 @@
 /* ---- The die (v2, agreed). ---- */
 .dv2-dbtn { position: relative; z-index: 1; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: grid; place-items: center; color: inherit; }
 .dv2-dbtn:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
+/* KEEP: a die is drawn 24-40px but its tap target is 44px tall and as wide as a room's column allows (44px at most), centred on the die, so it meets the 44px touch floor wherever the page has the room. A target never reaches past its column, so it never covers a neighbouring die: where 9-11 rooms share a 280-390px phone, a column is 27-42px wide and the target is that wide. */
+.dv2-dbtn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, var(--hit-w, 44px)); height: max(100%, 44px); transform: translate(-50%, -50%); }
+.dvA2-route { container: dvr / inline-size; }
+.dvA2-route .dv2-dbtn { --hit-w: min(44px, calc(100cqw / var(--dv-stops, 1))); }
 .dv2-die { display: block; overflow: visible; flex: none; }
 /* KEEP: a miss is an empty hex with a visible edge, so it holds 3:1 against the card as a shape. */
 .dv2-die .hx { fill: var(--card); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
