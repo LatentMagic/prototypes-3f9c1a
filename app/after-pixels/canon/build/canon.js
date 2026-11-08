@@ -1917,7 +1917,7 @@
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
       ],
       // Delve: the product page's four chats, written for the page from a real playtest (2026-11-06) and the game spec: every turn shows something the game really does, and no edition secret appears.
-      // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track.
+      // Each block is the design system's part for what the game's script has the AI draw: entities, roll, stats (health and threat tiles, as a real app draws them).
       delve: [
         { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
           gscU("Play Delve on After Pixels."),
@@ -1932,7 +1932,7 @@
         ] },
         { cap: "A miss costs you health. Spend your inspiration on the retry.", turns: [
           gscU("I wait for a gap in the moving walls, then dart through."),
-          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Health", value: 17, max: 21, tone: "health" }] }]),
+          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "stats", items: [{ label: "Ione’s health", value: "17 of 21" }, { label: "Threat", value: "1 of 12" }] }]),
           gscU("I try again and spend my inspiration."),
           gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "roll", label: "Agility, best of 1 and 15", die: "d20s", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }])
         ] },
