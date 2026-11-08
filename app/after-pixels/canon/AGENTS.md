@@ -118,11 +118,11 @@ The top section is the platform's and the same for every game; below it the play
 </important>
 
 <important if="you are changing the library game page">
-Four cards on one grid: the **now card** (the current or latest edition, carrying down the game's result statement, the element that states the outcome outright) and the **streak card** (the run of days or weeks played) above Achievements and Your plays. Never break, reorder or restack the rows on desktop. Cards in a row end level by arranging what is inside, never by stretching; check each card with its fewest and most items. On a phone they stack in the same order.
+The now card carries down the game's **result statement**, the element that states the outcome outright.
 </important>
 
 <important if="you are changing the product page">
-It tells a stranger what they will do and why they would want it, using only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
+Use only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
 </important>
 
 <important if="your change makes a situation hard to reach (an account state, a failed play, a game mid-run)">
