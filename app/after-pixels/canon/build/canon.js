@@ -1868,9 +1868,9 @@
         ] },
         { cap: "Each guess builds on the letters the one before it found.", turns: [
           gscU("Spray"),
-          gscAi("guess", ["R and A are in the word, both in other places.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
+          gscAi("guess", ["R and A are in the word, both in other places."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
           gscU("Guard"),
-          gscAi("guess", ["A is in place now.", "You have 4 guesses left."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
+          gscAi("guess", ["A is in place now."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
         ] },
         { cap: "Your shared result shows how you did and hides every letter.", turns: [
           gscU("Share my result"),
@@ -1917,11 +1917,11 @@
         ] },
         { cap: "When you’re stuck, a hint shows you the next step toward the answer.", turns: [
           gscU("A hint, please"),
-          gscAi("accuse", ["Madame Zara was not in the costume tent.", "You have 1 hint left."], null, [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }])
+          gscAi("accuse", ["Madame Zara was not in the costume tent."], null, [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }])
         ] },
         { cap: "You get the verdict on your accusation, and a short ending.", turns: [
           gscU("Madame Zara, the brass bugle, the big top"),
-          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?", note: "This is the one accusation in this case.", confirm: "Confirm accusation", cancel: "Cancel" }]),
+          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?", confirm: "Confirm accusation", cancel: "Cancel" }]),
           gscU("Confirm accusation"),
           gscAi("accuse", ["Solved: suspect, weapon and place were all right.", "Madame Zara did it, with the brass bugle, in the big top. She left incense behind."]),
           gscU("Share my result"),
@@ -1969,9 +1969,9 @@
         ] },
         { cap: "A miss costs you health. Spend your inspiration on the retry.", turns: [
           gscU("I wait for a gap in the moving walls, then dart through"),
-          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }, { label: "The monster’s waking", value: 1, max: 15, tone: "threat" }] }]),
+          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }] }]),
           gscU("I try again and spend my inspiration"),
-          gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "roll", label: "Agility, best of 1 and 15", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }])
+          gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "roll", label: "Agility", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }])
         ] },
         { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
         { cap: "Your result is ready to post, with one mark for every roll you made.", turns: [
@@ -4848,8 +4848,8 @@
     return out;
   };
   const SV_CHAT_SEA = { cols: { B: 2, D: 2, E: 1, F: 3 }, rows: { 1: 4, 3: 1, 6: 1, 7: 1 } };
-  const svGrid = (miss, hit, raised, swept = {}) => {
-    const cnt = { cols: { ...SV_CHAT_SEA.cols, ...swept.cols }, rows: { ...SV_CHAT_SEA.rows, ...swept.rows } };
+  const svGrid = (miss, hit, raised) => {
+    const cnt = SV_CHAT_SEA;
     const mark = {};
     miss.forEach((sq) => {
       mark[sq] = ["○", ""];
@@ -4866,7 +4866,6 @@
     const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: "x" }, ...cols.map((c) => ({ l: (mark[c + r] || [" "])[0], m: (mark[c + r] || [" ", " "])[1] || " " })), { l: String(cnt.rows[r] || "-"), m: "x" }]);
     return { type: "tilegrid", length: 10, rows: [head, letters, ...body].map((r) => ({ letters: r.map((x) => x.l).join(""), marks: r.map((x) => x.m).join("") })) };
   };
-  const svStats = (dives, tools) => ({ type: "stats", items: [{ label: "Dives left", value: dives }, { label: "Tools left", value: tools }, { label: "Wrecks to find", value: "4 3 3 2 2" }] });
   const SV_WRECK_SQUARES = ["D1", "E1", "F1", "G1", "B5", "C5", "D5", "A8", "B8", "C8", "F6", "F7", "A2", "A3"];
   const svSunk = (log) => log.filter((l) => l[1] === "sunk").length;
   const dpSvHead = (n, log, hint) => "Salvage #" + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of " + SLV_DIVES + " dives";
@@ -5128,12 +5127,8 @@
   let DP_PZ;
   const dpStep = (b, rest) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, b), rest);
   let dpSeeResult;
-  const chStats = (left, wrong) => ({ type: "stats", items: [{ label: "Words left", value: left }, { label: "Wrong guesses", value: wrong }] });
   const chBoard = (words, open) => ({ type: "facts", items: words.map((w, i) => ({ label: String(i + 1), value: (w.length < 3 ? w + "…" : "**" + w + "**") + (open.includes(i) ? "  ← open" : "") })) });
-  const cmBoard = (thread, items, left, pts) => [
-    { type: "facts", items: items.map((w, i) => ({ label: String(i + 1), value: "**" + w + "**" })) },
-    { type: "stats", items: [{ label: "Thread", value: thread + " of 3" }, { label: "Guesses left", value: left }, { label: "Right guess scores", value: pts }] }
-  ];
+  const cmBoard = (items) => [{ type: "facts", items: items.map((w, i) => ({ label: String(i + 1), value: "**" + w + "**" })) }];
   const dpSessAt = (k) => k === "chain" ? ["Screens", "7. Session page: "] : ["Daily puzzles 1213", "Session page: "];
   const dpEarlier = (k, ok) => () => {
     const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok);
@@ -5598,26 +5593,25 @@
         week: { title: "Today’s threads", line: "You get three threads of four items.", session: "common-today" }
       }
     });
-    const WH_STATS = (guesses, hints) => ({ type: "stats", items: [{ label: "Guesses left", value: guesses }, { label: "Hints left", value: hints }] });
     Object.assign(GS_CHATS, {
       // Where: the product page's three chats, written for the page from a real play (2026-11-08) and the game spec (where.md §4, §5). The case is not
       // a real edition: Austria, No. 112 (the scheduled editions run to 45 and never name Austria), with distances from the shipped atlas to the nearest 10 km.
       where: [
         { cap: "You get six guesses and one hint.", turns: [
           gscU("Play Where on After Pixels"),
-          gscAi("where", ["Where No. 112 is ready: find today’s country in six guesses. Each miss comes back as a border-to-border distance, and 0 means the two touch. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?"])
+          gscAi("where", ["Where No. 112 is ready: find today’s country in six guesses. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?"])
         ] },
         { cap: "Each guess comes back as a distance from the country.", turns: [
           gscU("Brazil"),
-          gscAi("where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }, WH_STATS(5, 1)]),
+          gscAi("where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }]),
           gscU("Give me the hint"),
-          gscAi("where", "From Brazil, today’s country lies northeast.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }, WH_STATS(5, 0)]),
+          gscAi("where", "From Brazil, today’s country lies northeast.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }]),
           gscU("France"),
-          gscAi("where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }, WH_STATS(4, 0)])
+          gscAi("where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }])
         ] },
         { cap: "A guess at 0 km means the answer is one of its neighbours.", turns: [
           gscU("Germany"),
-          gscAi("where", "Germany shares a border with today’s country.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }, WH_STATS(3, 0)]),
+          gscAi("where", "Germany shares a border with today’s country.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }]),
           gscU("Austria"),
           gscAi("where", ["Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
           gscU("Share my result"),
@@ -5630,19 +5624,19 @@
       chain: [
         { cap: "You get both ends and each word’s first letter. Only a word marked open can be guessed.", turns: [
           gscU("Play Chain on After Pixels"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "W", "P", "B", "TRACK"], [1, 3]), chStats(3, 0)])
+          gscAi("chain", null, null, [chBoard(["CROSS", "W", "P", "B", "TRACK"], [1, 3])])
         ] },
         { cap: "A wrong guess shows the next letter of that word.", turns: [
           gscU("Wire"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "WO", "P", "B", "TRACK"], [1, 3]), chStats(3, 1)]),
+          gscAi("chain", null, null, [chBoard(["CROSS", "WO", "P", "B", "TRACK"], [1, 3])]),
           gscU("Word"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "B", "TRACK"], [2, 3]), chStats(2, 1)])
+          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "B", "TRACK"], [2, 3])])
         ] },
         { cap: "Once it is solved, you get every link and a result that names no word.", turns: [
           gscU("Back"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "BACK", "TRACK"], [2]), chStats(1, 1)]),
+          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "BACK", "TRACK"], [2])]),
           gscU("Play"),
-          gscAi("chain", "The links are crossword, wordplay, playback and backtrack.", null, [chBoard(["CROSS", "WORD", "PLAY", "BACK", "TRACK"], []), chStats(0, 1)]),
+          gscAi("chain", "The links are crossword, wordplay, playback and backtrack.", null, [chBoard(["CROSS", "WORD", "PLAY", "BACK", "TRACK"], [])]),
           gscU("Share my result"),
           gscAi("chain", null, null, [{ type: "mono", text: "Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain" }])
         ] }
@@ -5652,15 +5646,15 @@
       salvage: [
         { cap: "Five wrecks lie hidden, and the margins count some rows and columns.", turns: [
           gscU("Play Salvage on After Pixels"),
-          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.", [svGrid([], [], []), svStats(20, 3)])
+          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.", [svGrid([], [], [])])
         ] },
         { cap: "A dragnet snags the first wreck square on a line.", turns: [
           gscU("Row 1 counts 4, so dragnet along it from the left"),
-          gscAi("salvage", "The dragnet snagged at D1, a hit.", [svGrid([], ["D1"], []), svStats(20, 2)])
+          gscAi("salvage", "The dragnet snagged at D1, a hit.", [svGrid([], ["D1"], [])])
         ] },
         { cap: "The last wreck raised wins the day.", turns: [
           gscU("D5 to finish it"),
-          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
+          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
           gscU("Share my result"),
           gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
         ] }
@@ -5671,13 +5665,13 @@
       common: [
         { cap: "Each thread opens with a single item.", turns: [
           gscU("Play Common on After Pixels"),
-          gscAi("common", null, null, cmBoard(1, ["A RIVER"], 5, 5))
+          gscAi("common", null, null, cmBoard(["A RIVER"]))
         ] },
         { cap: "Every extra item you see lowers what a right guess scores.", turns: [
           gscU("Another item"),
-          gscAi("common", null, null, cmBoard(1, ["A RIVER", "A BOTTLE"], 5, 3)),
+          gscAi("common", null, null, cmBoard(["A RIVER", "A BOTTLE"])),
           gscU("Things that hold water"),
-          gscAi("common", "“Things that hold water” wasn’t it.", null, cmBoard(1, ["A RIVER", "A BOTTLE", "A CAVE"], 4, 2))
+          gscAi("common", "“Things that hold water” wasn’t it.", null, cmBoard(["A RIVER", "A BOTTLE", "A CAVE"]))
         ] },
         { cap: "When a thread closes, your AI gives the connection and how each item fits.", turns: [
           gscU("Things with a hinge"),
