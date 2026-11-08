@@ -433,7 +433,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-row>span{width:28px;height:28px;display:grid;place-items:center;border-radius:5px;font-weight:700;font-size:14px;background:var(--c-tile);color:var(--c-tile-fg)}
 .mcp-chat-row>.is-g{background:var(--c-g);color:var(--success-on)}.mcp-chat-row>.is-y{background:var(--c-y);color:var(--warning-on)}
 .mcp-chat-list{padding-left:18px;display:grid;gap:2px}
-.mcp-chat-mono{font:400 13px/1.4 var(--font-mono,ui-monospace,Menlo,monospace);background:var(--c-me);border-radius:8px;padding:8px 10px;white-space:pre-wrap;max-width:100%}
+.mcp-chat-mono{font:400 13px/1.4 var(--font-mono,ui-monospace,Menlo,monospace);background:var(--c-me);border-radius:8px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;max-width:100%}
 .mcp-chat-comp{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 12px 12px;min-height:44px;padding:0 6px 0 16px;border:1px solid var(--c-edge);border-radius:22px;color:var(--c-fg2)}
 .mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
 .mcp-chat-body.is-auto{overflow:visible}
