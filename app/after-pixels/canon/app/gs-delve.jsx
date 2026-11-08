@@ -30,6 +30,7 @@ const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 
 // ---- The model: the record's lines read into the rooms stood in (going back included), the rolls and the gear. ----
 const DL_TIER = { strong: 'Strong hit', weak: 'Weak hit', miss: 'Miss' };
+// A heavy attack names itself ("Heavy attack: Cleave") and is an attack on the foe, not an option.
 // A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "Rolled 14 + 3 = 17 against DC 12", "HP 9/13"].
 // A foe roll grades Strong hit, Weak hit or Miss; an option roll Success, Partial success or Failure (delve.md).
 const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
@@ -44,7 +45,7 @@ const dlRoll = (l) => {
   const crit = /Natural 20/.test(t); const fumble = /Natural 1\b/.test(t);
   const tier = fumble ? 'miss' : /Weak hit|Partial success/.test(t) ? 'weak' : /\bMiss\b|Failure/.test(t) ? 'miss' : (/Strong hit|\bSuccess\b/.test(t) || crit) ? 'strong' : 'miss';
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
-  return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? '' : parts[0] };
+  return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
 // A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Gear · Used a pepper pouch · Snaggle: track 3 → 1 · Struck back: d20 15 vs 13, hit, 1 damage, HP 8/13").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
@@ -86,7 +87,7 @@ export const dlBuild = (s) => {
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20). Its roll back, where the line holds one, rides on the roll.
-    if (fo && !r.action) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1));
+    if (fo && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1));
       if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] }; }
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
@@ -129,7 +130,7 @@ const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r
     <dl className="dv3-dl">
       <div><dt>Room</dt><dd>{(r.back ? 'Back in ' : '') + r.room}</dd></div>
       {r.use && <div><dt>Used</dt><dd>{r.name} <span className="is-does">{[r.what.toLowerCase(), r.does].filter(Boolean).join(', ')}</span></dd></div>}
-      {!r.use && r.action && <div><dt>Action</dt><dd>{r.action}</dd></div>}
+      {!r.use && r.action && <div><dt>Action</dt><dd>{r.action}{r.move && <> <span>{r.move}</span></>}</dd></div>}
       {!r.use && <div><dt>Roll</dt><dd>{r.stat} {r.total} <span>vs {r.dc}</span></dd></div>}
       {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{DL_TIER[r.tier]}</dd></div>}
       {foeRow}

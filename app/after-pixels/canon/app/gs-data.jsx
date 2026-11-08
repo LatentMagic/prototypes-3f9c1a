@@ -138,7 +138,7 @@ export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin cha
 const GS_DV_WON = [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 0 = 1 against DC 12', 'HP 12/13'],
   ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 9 + 1 = 10 against DC 12', 'Struck back: d20 14, the higher of 14 and 6, vs 13, hit, 1 damage, HP 11/13'],
+  ['Strength', 'Heavy attack: Cleave', 'Miss', 'Rolled 9 + 3 = 12 against DC 14', 'Struck back: d20 14, the higher of 14 and 6, vs 13, hit, 1 damage, HP 11/13'],
   ['Dexterity', 'Weak hit', 'Rolled 11 + 1 = 12 against DC 12', 'Struck back: d20 6 vs 13, missed'],
   ['Dexterity', 'Strong hit', 'Rolled 18 + 1 = 19 against DC 12'],
   ['Room', 'Entered the warren'],
@@ -245,7 +245,7 @@ export const GS_SESSIONS = {
   // Delve run 1 won, Bryn the Fighter.
   delve: {
     kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Elsie rescued', date: 'Monday 5 October',
-    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 9/13'],
+    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 8/13'],
     tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
     lines: GS_DV_WON,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
