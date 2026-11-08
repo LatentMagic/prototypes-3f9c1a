@@ -1,4 +1,4 @@
-<!-- @dsCard group="Components · Delve" viewport="860x200" name="DelveFoeDie" subtitle="The foe's roll in the held roll: filled red when it hit, an outline when it missed" -->
+<!-- @dsCard group="Components · Delve" viewport="860x300" name="DelveFoeDie" subtitle="The foe's roll in the held roll: filled red when it hit, an outline when it missed" -->
 <!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -8,10 +8,12 @@
 <script type="text/babel">
 const {DelveFoeDie}=window.MCPGameStoreDesignSystem_ef1abd;
 const C=({cap,children})=><div className="cell">{children}<span className="cap">{cap}</span></div>;
-ReactDOM.createRoot(document.getElementById('root')).render(<div className="pop"><div className="row">
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{display:'grid',gap:24}}><div className="pop"><div className="row">
   <C cap="hit"><DelveFoeDie value={15} hit surface="popup"/></C>
   <C cap="missed"><DelveFoeDie value={7} surface="popup"/></C>
+</div></div>
+<div className="pan"><div className="row">
   <C cap="hit, on a card"><DelveFoeDie value={15} hit/></C>
   <C cap="missed, on a card"><DelveFoeDie value={7}/></C>
-</div></div>);
+</div></div></div>);
 </script></body></html>
