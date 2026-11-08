@@ -3865,11 +3865,6 @@
     live: [{ sonar: { axis: "col", name: "A" } }, ...slvDive("A5 B5 C5 D5"), { detector: "E4" }, ...slvDive("D3 E3 F3 G3 C1")]
   };
   const SLV_PLAYS = Object.fromEntries(Object.entries(SLV_MOVES).map(([fx, moves]) => [fx, slvRunPlay(moves)]));
-  const slvPlayAt = (fx, n) => {
-    let c = 0;
-    const at = SLV_MOVES[fx].findIndex((m) => m.dive && ++c === n);
-    return slvRunPlay(SLV_MOVES[fx].slice(0, at + 1));
-  };
   const slvShareLinesOf = (p) => {
     const wrecks = p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks";
     const rows = [];
@@ -4828,20 +4823,27 @@
     for (let k = 0; k < m.length; k += 10) out.push(m.slice(k, k + 10));
     return out;
   };
-  const svBoard = (p) => {
+  const SV_CHAT_SEA = { cols: { B: 2, D: 2, E: 1, F: 3 }, rows: { 1: 4, 3: 1, 6: 1, 7: 1 } };
+  const svGrid = (miss, hit, raised, swept = {}) => {
+    const cnt = { cols: { ...SV_CHAT_SEA.cols, ...swept.cols }, rows: { ...SV_CHAT_SEA.rows, ...swept.rows } };
     const mark = {};
-    p.miss.forEach((sq) => {
-      mark[sq] = "○";
+    miss.forEach((sq) => {
+      mark[sq] = ["○", ""];
     });
-    p.hit.forEach((sq) => {
-      mark[sq] = p.raised.has(slvWreckOf(sq)) ? "■" : "✕";
+    hit.forEach((sq) => {
+      mark[sq] = ["✕", "n"];
     });
-    return ["  " + SV_COLS.split("").join(" "), ...[1, 2, 3, 4, 5, 6, 7, 8].map((r) => r + " " + SV_COLS.split("").map((c) => mark[c + r] || "·").join(" "))].join("\n");
+    raised.forEach((sq) => {
+      mark[sq] = ["■", "h"];
+    });
+    const cols = "ABCDEFGH".split("");
+    const head = [{ l: " ", m: " " }, ...cols.map((c) => ({ l: String(cnt.cols[c] || "-"), m: "x" })), { l: " ", m: " " }];
+    const letters = [{ l: " ", m: " " }, ...cols.map((c) => ({ l: c, m: "x" })), { l: " ", m: " " }];
+    const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: "x" }, ...cols.map((c) => ({ l: (mark[c + r] || [" "])[0], m: (mark[c + r] || [" ", " "])[1] || " " })), { l: String(cnt.rows[r] || "-"), m: "x" }]);
+    return { type: "tilegrid", length: 10, rows: [head, letters, ...body].map((r) => ({ letters: r.map((x) => x.l).join(""), marks: r.map((x) => x.m).join("") })) };
   };
-  const svDive = (fx, n, board) => {
-    const [, sq, res] = SLV_PLAYS[fx].lines.filter((l) => /^Dive /.test(l[0]))[n - 1];
-    return [gscU(sq), gscAi("salvage", (res.startsWith("raised") ? "Sunk" + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + ". " + (SLV_DIVES - n) + " dives left.", null, board && [dpMono(board)])];
-  };
+  const svStats = (dives, tools) => ({ type: "stats", items: [{ label: "Dives left", value: dives }, { label: "Tools left", value: tools }, { label: "Wrecks to find", value: "4 3 3 2 2" }] });
+  const SV_WRECK_SQUARES = ["D1", "E1", "F1", "G1", "B5", "C5", "D5", "A8", "B8", "C8", "F6", "F7", "A2", "A3"];
   const svSunk = (log) => log.filter((l) => l[1] === "sunk").length;
   const dpSvHead = (n, log, hint) => "Salvage #" + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of " + SLV_DIVES + " dives";
   const svSea = () => SLV_WRECKS.map((w) => w.map((sq) => [SV_COLS.indexOf(sq[0]), +sq.slice(1) - 1]));
@@ -5538,10 +5540,10 @@
         facts: { often: "New every day" },
         tags: [],
         pitch: { h: "Five wrecks lie somewhere under you. Find them in twenty dives.", ps: [
-          "Call a square from A1 to H8 and dive. Each dive comes back as a hit, a miss or sunk.",
-          "Your AI reads the sea back to you after every dive, row by row. The game engine holds the wrecks. Call your first square."
+          "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.",
+          "You also get three tools that cost no dive: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools."
         ] },
-        who: { ai: "Reads the sea back to you after every dive, row by row.", server: "Holds the wrecks, answers every dive and counts the dives you have left." },
+        who: { ai: "Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.", server: "Keeps the wrecks secret, answers every dive and tool, and counts what you have left." },
         week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
       },
       common: {
@@ -5611,13 +5613,23 @@
           gscAi("chain", null, null, [{ type: "mono", text: "Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain" }])
         ] }
       ],
+      // Salvage: the product page's three chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (salvage.md §1 to §5). The sea is not a real
+      // edition (see SV_CHAT_SEA): the real play mirrored left to right, as No. 112. The sea is drawn as the deployed script has the AI draw it each turn (svGrid).
       salvage: [
-        { cap: "Five wrecks lie somewhere under an eight-by-eight sea.", turns: [
+        { cap: "Five wrecks lie hidden, and the margins count some rows and columns.", turns: [
           gscU("Play Salvage on After Pixels"),
-          gscAi("salvage", ["Salvage #" + DP_NO + ". Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.", "You have " + SLV_DIVES + " dives. Call your first square."], null, [dpMono(svBoard(slvPlayAt("won", 0)))])
+          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching, and three tools cost no dive.", [svGrid([], [], []), svStats(20, 3)])
         ] },
-        { cap: "Each dive comes back as a hit, a miss or sunk.", turns: [...svDive("won", 1), ...svDive("won", 2)] },
-        { cap: "The board is redrawn after every dive, so your AI can read it aloud.", turns: svDive("won", 4, svBoard(slvPlayAt("won", 4))) }
+        { cap: "A dragnet snags the first wreck square on a line, and costs no dive.", turns: [
+          gscU("Row 1 counts 4, so dragnet along it from the left"),
+          gscAi("salvage", "The dragnet snagged at D1, a hit.", [svGrid([], ["D1"], []), svStats(20, 2)])
+        ] },
+        { cap: "The last wreck raised wins the day.", turns: [
+          gscU("D5 to finish it"),
+          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
+          gscU("Share my result"),
+          gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
+        ] }
       ],
       // Common: the product page's three chats, written for the page from a real play (2026-11-08, No. 35) and the game spec (common.md §2, §4, §5).
       // The day is not a real edition: No. 112 (the scheduled editions run to 63), with threads the link pool holds no copy of. The board is the design
