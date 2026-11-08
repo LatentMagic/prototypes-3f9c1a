@@ -1977,7 +1977,7 @@
           gscU("Finish it with the somersault"),
           gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
           gscU("Share my result"),
-          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ the Minotaur beaten · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
+          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ out of the Labyrinth alive · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
         ] }
       ],
       barrow: [
