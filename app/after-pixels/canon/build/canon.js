@@ -5104,7 +5104,6 @@
   let DP_PZ;
   const dpStep = (b, rest) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, b), rest);
   let dpSeeResult;
-  const dpMono = (text) => ({ type: "mono", text });
   const chStats = (left, wrong) => ({ type: "stats", items: [{ label: "Words left", value: left }, { label: "Wrong guesses", value: wrong }] });
   const chBoard = (words, open) => ({ type: "facts", items: words.map((w, i) => ({ label: String(i + 1), value: (w.length < 3 ? w + "…" : "**" + w + "**") + (open.includes(i) ? "  ← open" : "") })) });
   const cmBoard = (thread, items, left, pts) => [
