@@ -18,7 +18,7 @@ import { pgRegister, usePgSetting } from './playground.jsx';
 // ---- The copy, as the proposal file lists it. A line left out (null, or no entry) stays canon's. `blurb: 'h'` means the
 // card line is the pitch heading. A `ps` shorter than canon's drops the paragraphs past its length. ----
 const PGC_DELVE = {
-  h: 'Lead a hero room by room through a new world to its final foe.', blurb: 'h',
+  h: 'A new world every week: fight room by room to the villain at its heart.', blurb: 'h',
   ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
   caps: ['See each hero’s strengths, health and defence side by side before you pick.', 'A miss costs you health. Spend your inspiration on the retry.', GSC_DV_FIGHT_CAP, 'Your result is ready to post, with one mark for every roll you made.'],
   // The four chats, written for the page from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md) and the game spec.

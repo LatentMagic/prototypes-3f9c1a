@@ -1051,7 +1051,7 @@
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
-    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Lead a hero room by room through a new world to its final foe.", tags: ["Weekly"], size: "small" },
+    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "A new world every week: fight room by room to the villain at its heart.", tags: ["Weekly"], size: "small" },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
     barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
     hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
@@ -6722,7 +6722,7 @@
         },
         facts: { often: "New every week" },
         tags: [],
-        pitch: { h: "Lead a hero room by room through a new world to its final foe.", ps: [
+        pitch: { h: "A new world every week: fight room by room to the villain at its heart.", ps: [
           "One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.",
           "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."
         ] },
@@ -10717,7 +10717,7 @@
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
   const PGC_DELVE = {
-    h: "Lead a hero room by room through a new world to its final foe.",
+    h: "A new world every week: fight room by room to the villain at its heart.",
     blurb: "h",
     ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
     caps: ["See each hero’s strengths, health and defence side by side before you pick.", "A miss costs you health. Spend your inspiration on the retry.", GSC_DV_FIGHT_CAP, "Your result is ready to post, with one mark for every roll you made."],
