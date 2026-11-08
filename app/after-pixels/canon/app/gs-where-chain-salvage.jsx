@@ -466,8 +466,8 @@ Object.assign(GS_PAGES, {
       steps: [GS_STEP_CONNECT, dpStep('Find today’s country.', ' You get six guesses.'), dpSeeResult], small: GS_NAME.where + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'One country hides on the map each day: find it in six guesses.', ps: [
-      'Your first guess is a stab in the dark: any country in the world could be it. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.',
-      'One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. A guess that lands next door is a gift, because the answer is one of its neighbours. Your one hint points the compass from your latest guess, and you choose when to spend it.'] },
+      'Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.',
+      'One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess.'] },
     who: { ai: 'Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.', server: 'Keeps the country secret, measures every distance and works out which way the hint points.' },
     week: { title: 'Today’s country', line: 'You get six guesses and one hint.', session: 'where-today' },
   },
@@ -506,16 +506,16 @@ Object.assign(GS_CHATS, {
   // Where: the product page's three chats, written for the page from a real play (2026-11-08) and the game spec (where.md §4, §5). The case is not
   // a real edition: Austria, No. 112 (the scheduled editions run to 45 and never name Austria), with distances from the shipped atlas to the nearest 10 km.
   where: [
-    { cap: 'You start with six guesses and nothing to go on.', turns: [gscU('Play Where on After Pixels.'),
+    { cap: 'You get six guesses and one hint.', turns: [gscU('Play Where on After Pixels.'),
       gscAi('where', ['Where No. 112 is ready. You have six guesses to find today’s country.', 'Each miss comes back as its distance from it, border to border, and 0 means the two touch. Your one hint points the compass from your latest guess. Which country first?'])] },
-    { cap: 'Each guess comes back as a distance, and the hint tells you which way to head.', turns: [gscU('Brazil.'),
+    { cap: 'Each guess comes back as a distance from the country.', turns: [gscU('Brazil.'),
       gscAi('where', 'Brazil is 7,290 km away. You have 5 guesses and 1 hint left.'),
       gscU('Give me the hint.'),
       gscAi('where', 'From Brazil, today’s country lies northeast. That was your one hint.'),
       gscU('France.'),
       gscAi('where', 'France is 140 km away. You have 4 guesses left.')] },
-    { cap: 'Land next door and the answer is one of its neighbours. Your result is one mark per guess.', turns: [gscU('Germany.'),
-      gscAi('where', 'Germany comes back at 0 km, so it shares a border with today’s country. You have 3 guesses left.', null, [{ type: 'mono', text: 'Brazil: 7,290 km away\nFrance: 140 km away\nGermany: 0 km, shares a border' }]),
+    { cap: 'A guess at 0 km means the answer is one of its neighbours.', turns: [gscU('Germany.'),
+      gscAi('where', 'Germany is on the board. You have 3 guesses left.', null, [{ type: 'mono', text: 'Brazil: 7,290 km away\nFrance: 140 km away\nGermany: 0 km, shares a border' }]),
       gscU('Austria.'),
       gscAi('where', ['Found it in 4 of 6, with the hint. Today’s country is Austria.', 'It sits in the Alps, and Vienna is its capital.']),
       gscU('Share my result.'),
