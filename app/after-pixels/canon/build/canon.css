@@ -712,31 +712,6 @@ button.mcp-cb-ent{cursor:pointer}
 .dv2-dbtn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, var(--hit-w, 44px)); height: max(100%, 44px); transform: translate(-50%, -50%); }
 .dvA2-route { container: dvr / inline-size; }
 .dvA2-route .dv2-dbtn { --hit-w: min(44px, calc(100cqw / var(--dv-stops, 1))); }
-.dv2-die { display: block; overflow: visible; flex: none; }
-/* KEEP: a miss is an empty hex with a visible edge, so it holds 3:1 against the card as a shape. */
-.dv2-die .hx { fill: var(--card); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-.dv2-die.is-strong .hx { fill: var(--success); stroke: none; }
-.dv2-die.is-weak .hx { fill: var(--warning); stroke: none; }
-.dv2-die .nm { font: 700 15px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
-.dv2-die.is-strong .nm { fill: var(--success-on); }
-.dv2-die.is-weak .nm { fill: var(--warning-on); }
-.dv2-die .rim { fill: none; stroke: var(--success); stroke-width: 1.75; vector-effect: non-scaling-stroke; }
-/* KEEP: a natural 1 is a miss with a red edge, heavier than a miss's grey one; no rim, so only the natural 20 has one. */
-.dv2-die.is-fumble .hx { stroke: var(--error); stroke-width: 2.25; }
-.dv2-die.is-fumble .nm { fill: var(--error); }
-/* KEEP: under 64px a two-d20 roll shows a second hex behind its die; from 64px the small numbered die at its corner. */
-.dv2-die .gh { fill: var(--card); stroke: var(--muted); stroke-width: 1; vector-effect: non-scaling-stroke; }
-/* The foe's roll: a red hex behind the die, outside the advantage hex. */
-.dv2-die .fo { fill: color-mix(in srgb, var(--error) 50%, var(--card)); stroke: var(--error); stroke-opacity: .9; stroke-width: 1; vector-effect: non-scaling-stroke; }
-.dv2-die .tw polygon { fill: var(--card); stroke: var(--muted); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
-.dv2-die .tw text { font: 700 17px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; }
-/* KEEP: the picked die gets an off-white ring outside its own rim, so a natural's rim still shows. */
-.dv2-die .sl { fill: none; stroke: var(--off-white); stroke-width: 2.5; vector-effect: non-scaling-stroke; display: none; transform: scale(1.12); transform-origin: 18px 20px; }
-.dv2-die.is-sel .sl { display: inline; }
-/* KEEP: inside the held roll, which sits on the pop-up fill, a miss's hex takes that fill so it reads as empty there too. */
-.dv3-held .dv2-die .hx, .dv3-held .dv2-die .gh, .dv3-held .dv2-die .tw polygon { fill: var(--popup); }
-.dv3-held .dv2-die.is-strong .hx { fill: var(--success); }
-.dv3-held .dv2-die.is-weak .hx { fill: var(--warning); }
 /* ---- The route (v2's E). ---- */
 .dv2-num { position: relative; z-index: 1; flex: none; min-width: 28px; height: 28px; padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
 .dv2-num.is-back { box-shadow: inset 0 0 0 1.5px var(--muted); color: var(--muted); }
@@ -803,15 +778,10 @@ button.mcp-cb-ent{cursor:pointer}
 /* KEEP: a "vs 12" or "vs defence 13" never splits, so a number never ends up alone on a line; the whole unit drops to the next line instead (280px: "Dexterity 6" then "vs 12"). */
 .dv3-dl dd span { white-space: nowrap; }
 .dv3-dl dd[class*="is-"] { color: var(--tc); }
-/* The foe's roll in the held roll: its diamond (filled red when it hit), what it did, the defence; then the foe's health as a meter. */
+/* The foe's roll in the held roll: its diamond (DelveFoeDie), what it did, the defence; then the foe's health as a meter. */
 .dv3-foe dd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .dv3-foe dd b { color: var(--text); }
 .dv3-foe dd b.is-err { color: var(--error); }
-.dv3-fd { display: inline-block; overflow: visible; flex: none; }
-.dv3-fd .fx { fill: var(--popup); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-.dv3-fd.is-hit .fx { fill: var(--error); stroke: none; }
-.dv3-fd .nm { font: 700 15px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
-.dv3-fd.is-hit .nm { fill: var(--error-on); }
 .dv3-dl > .dv3-fm { grid-template-columns: minmax(0, 1fr); align-items: center; }
 /* KEEP: at the narrowest width (a 280px window) the foe roll's label sits above its row instead of beside it, so the diamond and "Hit you for 2" share a line and "vs defence 13" is the second, not three stacked lines. */
 @container dv2 (max-width: 240px) {
@@ -1041,9 +1011,9 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 .dl-now-mark.is-weak { background: var(--warning); }
 .dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
 /* Hover or focus rings a key moment's die as the session page rings the held roll; a press opens the session page on that roll. */
-.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .dv2-die .sl { display: inline; }
+.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .sl { display: inline; }
 /* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
-.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .dv2-die .gh { display: none; }
+.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .gh { display: none; }
 .dl-now-route .dv2-dbtn:focus-visible { outline: 0; }
 /* KEEP: on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
 @container gs (max-width: 300px) {
