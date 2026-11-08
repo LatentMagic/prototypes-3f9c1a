@@ -57,8 +57,8 @@ const PGC_COPY = {
   },
   where: {
     job: {
-      h: 'Find today’s country in six guesses.', blurb: 'h',
-      ps: ['Name any country. The game tells you how far it lies from today’s, border to border.', 'Zero means the two touch. You get one hint: the compass direction from your last guess.'] },
+      h: 'One country hides on the map each day: find it in six guesses.', blurb: 'h',
+      ps: ['Your first guess is a stab in the dark: any country in the world could be it. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.', 'One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. A guess that lands next door is a gift, because the answer is one of its neighbours. Your one hint points the compass from your latest guess, and you choose when to spend it.'] },
     situation: { h: null, blurb: 'A daily geography puzzle. Six guesses.' },
   },
 };

@@ -5100,7 +5100,7 @@
         edLine: "You get six guesses to find the country.",
         daily: true,
         once: true,
-        blurb: "Today’s country is somewhere on the map. Find it in six guesses.",
+        blurb: "One country hides on the map each day: find it in six guesses.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5473,11 +5473,11 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "Today’s country is out there. Find it in six guesses.", ps: [
-          "Name any country. The game tells you how far it lies from today’s, border to border. Zero means the two touch.",
-          "You get one hint: the compass direction from your last guess. Your AI isn’t told the answer until you finish. Name your first country."
+        pitch: { h: "One country hides on the map each day: find it in six guesses.", ps: [
+          "Your first guess is a stab in the dark: any country in the world could be it. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.",
+          "One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. A guess that lands next door is a gift, because the answer is one of its neighbours. Your one hint points the compass from your latest guess, and you choose when to spend it."
         ] },
-        who: { ai: "Passes on your guesses and tells you about the country once you’ve found it.", server: "Holds the country, measures every distance and counts your guesses." },
+        who: { ai: "Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.", server: "Keeps the country secret, measures every distance and works out which way the hint points." },
         week: { title: "Today’s country", line: "You get six guesses and one hint.", session: "where-today" }
       },
       chain: {
@@ -5533,22 +5533,28 @@
       }
     });
     Object.assign(GS_CHATS, {
+      // Where: the product page's three chats, written for the page from a real play (2026-11-08) and the game spec (where.md §4, §5). The case is not
+      // a real edition: Austria, No. 112 (the scheduled editions run to 45 and never name Austria), with distances from the shipped atlas to the nearest 10 km.
       where: [
-        { cap: "Name a country. Everyone hunts the same one today.", turns: [
+        { cap: "You start with six guesses and nothing to go on.", turns: [
           gscU("Play Where on After Pixels."),
-          gscAi("where", ["Where #" + DP_NO + ". Today’s country is hidden, and you have six guesses.", "Each miss tells you how far it is from today’s country, border to border. Name your first country."])
+          gscAi("where", ["Where No. 112 is ready. You have six guesses to find today’s country.", "Each miss comes back as its distance from it, border to border, and 0 means the two touch. Your one hint points the compass from your latest guess. Which country first?"])
         ] },
-        { cap: "Every miss comes back as a distance, measured border to border.", turns: [
-          gscU("Spain."),
-          gscAi("where", "Spain is " + dpKm(1110) + " from today’s country. 5 guesses left."),
-          gscU("Poland."),
-          gscAi("where", "Poland is " + dpKm(80) + " away. 4 guesses left.")
-        ] },
-        { cap: "You get one hint: the compass direction from your last guess.", turns: [
+        { cap: "Each guess comes back as a distance, and the hint tells you which way to head.", turns: [
+          gscU("Egypt."),
+          gscAi("where", "Egypt is 1,850 km away. You have 5 guesses and 1 hint left."),
           gscU("Give me the hint."),
-          gscAi("where", "From Poland, today’s country lies south. That was your one hint."),
-          gscU("Hungary."),
-          gscAi("where", ["Found in 3 of 6, with the hint.", "Hungary sits in the Carpathian Basin, and the Danube runs through Budapest."])
+          gscAi("where", "From Egypt, today’s country lies northwest. That was your one hint."),
+          gscU("France."),
+          gscAi("where", "France is 140 km away. You have 4 guesses left.")
+        ] },
+        { cap: "Land next door and the answer is one of its neighbours. Your result is one mark per guess.", turns: [
+          gscU("Germany."),
+          gscAi("where", "Germany comes back at 0 km, so it shares a border with today’s country. You have 3 guesses left.", null, [{ type: "mono", text: "Egypt: 1,850 km away\nFrance: 140 km away\nGermany: 0 km, shares a border" }]),
+          gscU("Austria."),
+          gscAi("where", ["Found it in 4 of 6, with the hint. Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."]),
+          gscU("Share my result."),
+          gscAi("where", null, null, [{ type: "mono", text: "Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where" }])
         ] }
       ],
       chain: [
@@ -10770,9 +10776,9 @@
     },
     where: {
       job: {
-        h: "Find today’s country in six guesses.",
+        h: "One country hides on the map each day: find it in six guesses.",
         blurb: "h",
-        ps: ["Name any country. The game tells you how far it lies from today’s, border to border.", "Zero means the two touch. You get one hint: the compass direction from your last guess."]
+        ps: ["Your first guess is a stab in the dark: any country in the world could be it. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.", "One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. A guess that lands next door is a gift, because the answer is one of its neighbours. Your one hint points the compass from your latest guess, and you choose when to spend it."]
       },
       situation: { h: null, blurb: "A daily geography puzzle. Six guesses." }
     }
