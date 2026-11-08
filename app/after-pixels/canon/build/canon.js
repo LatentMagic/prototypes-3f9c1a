@@ -219,9 +219,9 @@
     function DelveUseDie({ foe = false, selected = false, surface = "card", size = 36, className = "" }) {
       return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", foe, selected, surface, size, className });
     }
-    function DelveFoeDie({ value, hit = false, surface = "card", size = 34, className = "" }) {
-      const cls = ["mcp-dl-foe", hit && "is-hit", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
-      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-2 -2 40 44", width: size, height: Math.round(size * 44 / 40), "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("polygon", { className: "fx", points: "18,0 36,20 18,40 0,20" }), /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value));
+    function DelveFoeDie({ value, other, hit = false, surface = "card", size = 34, className = "" }) {
+      const cls = ["mcp-dl-foe", other != null && "has-other", hit && "is-hit", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-2 -2 40 44", width: size, height: Math.round(size * 44 / 40), "aria-hidden": "true" }, other != null && /* @__PURE__ */ React2.createElement("polygon", { className: "gf", points: "18,0 36,20 18,40 0,20", transform: "translate(-3.5 -4.5)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "fx", points: "18,0 36,20 18,40 0,20" }), /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value));
     }
     function Loader({ size = 64, label = "Loading" }) {
       return /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader", role: "status", "aria-label": label, style: { width: size, height: size } }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader-m", style: { zoom: size / 120 } }, /* @__PURE__ */ React2.createElement("i", { className: "tl" }), /* @__PURE__ */ React2.createElement("i", { className: "tr" }), /* @__PURE__ */ React2.createElement("i", { className: "br" }), /* @__PURE__ */ React2.createElement("i", { className: "bl" })));
@@ -1159,7 +1159,7 @@
   const GS_DV_WON = [
     ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "Rolled 1 + 0 = 1 against DC 12", "HP 12/13"],
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Miss", "Rolled 9 + 1 = 10 against DC 12", "Struck back: d20 14 vs 13, hit, 1 damage, HP 11/13"],
+    ["Dexterity", "Miss", "Rolled 9 + 1 = 10 against DC 12", "Struck back: d20 14, the higher of 14 and 6, vs 13, hit, 1 damage, HP 11/13"],
     ["Dexterity", "Weak hit", "Rolled 11 + 1 = 12 against DC 12", "Struck back: d20 6 vs 13, missed"],
     ["Dexterity", "Strong hit", "Rolled 18 + 1 = 19 against DC 12"],
     ["Room", "Entered the warren"],
@@ -2666,8 +2666,11 @@
   const DL_TIER = { strong: "Strong hit", weak: "Weak hit", miss: "Miss" };
   const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
   const dlStruck = (parts) => {
-    const sb = /^Struck back: d20 (\d+) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
-    return sb ? { roll: +sb[1], dc: +sb[2], hit: sb[3] === "hit", dmg: sb[4] ? +sb[4] : 0 } : null;
+    const sb = /^Struck back: d20 (?:(\d+), the higher of (\d+) and (\d+),|(\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
+    if (!sb) return null;
+    const roll = +(sb[1] || sb[4]);
+    const two = sb[1] != null;
+    return { roll, other: two ? +sb[2] === roll ? +sb[3] : +sb[2] : null, dc: +sb[5], hit: sb[6] === "hit", dmg: sb[7] ? +sb[7] : 0 };
   };
   const dlRoll = (l) => {
     const parts = l.slice(1).map(String);
@@ -2799,7 +2802,7 @@
     const line = m.end === "live" ? null : s.result;
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
   };
-  const DlFoeDie = ({ f }) => /* @__PURE__ */ React$1.createElement(DS.DelveFoeDie, { value: f.roll, hit: f.hit, surface: "popup" });
+  const DlFoeDie = ({ f }) => /* @__PURE__ */ React$1.createElement(DS.DelveFoeDie, { value: f.roll, other: f.other != null ? f.other : void 0, hit: f.hit, surface: "popup" });
   const DlHeld = ({ m, act }) => {
     const r = act ? m.turns[act - 1] : null;
     if (!r) return null;

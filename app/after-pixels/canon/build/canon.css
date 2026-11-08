@@ -685,6 +685,9 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-dl-die.is-sel .sl{display:inline}
 .mcp-dl-foe{display:inline-block;overflow:visible;flex:none}
 .mcp-dl-foe .fx{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.mcp-dl-foe .gf{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke}
+/* KEEP: the empty diamond behind the foe's die reaches 3.5 and 4.5 units out, so a die with it takes that room as margin and its neighbours stay clear. */
+.mcp-dl-foe.has-other{margin:3.8px 0 0 3px}
 .mcp-dl-foe.is-hit .fx{fill:var(--error);stroke:none}
 .mcp-dl-foe .nm{font:700 15px var(--font-heading);fill:var(--muted);text-anchor:middle;dominant-baseline:central;font-variant-numeric:tabular-nums}
 .mcp-dl-foe.is-hit .nm{fill:var(--error-on)}

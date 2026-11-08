@@ -138,7 +138,7 @@ export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin cha
 const GS_DV_WON = [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 0 = 1 against DC 12', 'HP 12/13'],
   ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 9 + 1 = 10 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 11/13'],
+  ['Dexterity', 'Miss', 'Rolled 9 + 1 = 10 against DC 12', 'Struck back: d20 14, the higher of 14 and 6, vs 13, hit, 1 damage, HP 11/13'],
   ['Dexterity', 'Weak hit', 'Rolled 11 + 1 = 12 against DC 12', 'Struck back: d20 6 vs 13, missed'],
   ['Dexterity', 'Strong hit', 'Rolled 18 + 1 = 19 against DC 12'],
   ['Room', 'Entered the warren'],

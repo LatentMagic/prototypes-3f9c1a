@@ -33,9 +33,10 @@ const DL_TIER = { strong: 'Strong hit', weak: 'Weak hit', miss: 'Miss' };
 // A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "Rolled 14 + 3 = 17 against DC 12", "HP 9/13"].
 // A foe roll grades Strong hit, Weak hit or Miss; an option roll Success, Partial success or Failure (delve.md).
 const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
-const dlStruck = (parts) => { const sb = /^Struck back: d20 (\d+) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
-  return sb ? { roll: +sb[1], dc: +sb[2], hit: sb[3] === 'hit', dmg: sb[4] ? +sb[4] : 0 } : null; };
-// The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 13, hit, 1 damage, HP 11/13" or "..., missed".
+const dlStruck = (parts) => { const sb = /^Struck back: d20 (?:(\d+), the higher of (\d+) and (\d+),|(\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
+  if (!sb) return null; const roll = +(sb[1] || sb[4]); const two = sb[1] != null;
+  return { roll, other: two ? (+sb[2] === roll ? +sb[3] : +sb[2]) : null, dc: +sb[5], hit: sb[6] === 'hit', dmg: sb[7] ? +sb[7] : 0 }; };
+// The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 13, hit, 1 damage, HP 11/13" or "..., missed"; with advantage, "d20 14, the higher of 14 and 6, vs 13".
 const dlRoll = (l) => {
   const parts = l.slice(1).map(String); const t = parts.join(' · ');
   const m = /Rolled (?:(\d+), the higher of (\d+) and (\d+), |(\d+) )\+ (-?\d+) = (-?\d+) against DC (\d+)/.exec(t); if (!m) return null;
@@ -119,7 +120,7 @@ export const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s
 // advantage hex, and in a fight the foe's red hex outside it, both cleared on the selected die; never a notch or a mark on the room (owner, 2026-11-08, replacing 2026-10-28's "never marked").
 // The foe's roll is one row of the held roll: its diamond, what it did and the defence, then the foe's health as the hero's meters are drawn; no Result row.
 // The foe's diamond is DS.DelveFoeDie: a diamond, never the hero's hex, so it cannot read as a second hero roll.
-const DlFoeDie = ({ f }) => <DS.DelveFoeDie value={f.roll} hit={f.hit} surface="popup" />;
+const DlFoeDie = ({ f }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" />;
 const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
   const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier;
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
