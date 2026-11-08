@@ -44,7 +44,7 @@ const dpWhere = (t, ok) => {
   if (!ok) lines.push(['Answer', t.a]);
   return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(' ') };
 };
-const dpWhHead = (n, r, ok) => 'Where #' + n + ' · ' + (ok ? 'found in ' + r.guesses + ' of 6' : 'not found') + (r.hints ? ' · 1 hint' : '');
+const dpWhHead = (n, r, ok) => 'Where No. ' + n + ' · ' + (ok ? 'found in ' + r.guesses + ' of 6' : 'not found') + (r.hints ? ' · 1 hint' : '');
 let WH_TODAY;
 let WH_OK;
 let WH_FAIL;
