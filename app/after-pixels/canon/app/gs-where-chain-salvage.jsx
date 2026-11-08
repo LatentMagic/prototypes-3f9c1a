@@ -267,7 +267,10 @@ let dpSeeResult;
 
 // ---- In your chat: text only, as the player's own AI tells it. Each follows today's play above. ----
 const dpMono = (text) => ({ type: 'mono', text });
-const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + ' …'), t.w[t.w.length - 1]].join('\n');
+// Chain's drawn board for a chat turn: one numbered row per word. `words` holds each word as the game shows it: a whole word (an end, a found word) or the one or two
+// letters shown so far (this chain's words run four letters or more, so under three letters means hidden); `open` lists the rows the game marks open. Whole words are bold, hidden letters end in an ellipsis.
+const chStats = (left, wrong) => ({ type: 'stats', items: [{ label: 'Words left', value: left }, { label: 'Wrong guesses', value: wrong }] });
+const chBoard = (words, open) => ({ type: 'facts', items: words.map((w, i) => ({ label: String(i + 1), value: (w.length < 3 ? w + '…' : '**' + w + '**') + (open.includes(i) ? '  ← open' : '') })) });
 
 
 // ---- Staged states (app/states.jsx spreads them into its register). ----
@@ -476,9 +479,9 @@ Object.assign(GS_PAGES, {
       steps: [GS_STEP_CONNECT, dpStep('Fill in today’s chain', ', working in from either end.'), dpSeeResult], small: GS_NAME.chain + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Fire joins house, and house joins plant. Find the words in between.', ps: [
-      'You see both ends of the line and the first letter of every word between. Guess inward from either end, one word at a time.',
-      'A wrong guess shows you the next letter of that word. Run out of letters and the word is given away. Make your first guess.'] },
-    who: { ai: 'Passes on your guesses and explains every link once the chain is done.', server: 'Holds the chain, checks every guess and shows a letter for each miss.' },
+      'A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.',
+      'Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word.'] },
+    who: { ai: 'Draws the whole line after every guess, with the words you can try next marked, and goes through every link once the chain is solved.', server: 'Keeps the chain secret, shows only the letters you’ve earned, and gives a word away once its letters run out.' },
     week: { title: 'Today’s chain', line: 'You get both ends and every first letter.', session: 'chain-today' },
   },
   salvage: {
@@ -522,13 +525,22 @@ Object.assign(GS_CHATS, {
       gscU('Share my result'),
       gscAi('where', null, null, [{ type: 'mono', text: 'Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where' }])] },
   ],
+  // Chain: the product page's four chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (chain.md §2 to §5).
+  // The chain is not a real edition: CROSS, WORD, PLAY, BACK, TRACK, "No. 112" (scheduled editions run to 45; none holds this line), every link in the shipped link list.
+  // The board is the design system's FactRows, as the deployed script has the AI draw it each turn: every word numbered, hidden words as the letters shown, open words marked.
   chain: [
-    { cap: 'You get both ends of the line and every first letter.', turns: [gscU('Play Chain on After Pixels'),
-      gscAi('chain', ['Chain #' + DP_NO + '. Six words, each joined to the next. Guess inward from either end.'], null, [dpMono(dpChEnds(CH_TODAY))])] },
-    { cap: 'A wrong guess shows you the next letter.', turns: [gscU('Ball'), gscAi('chain', 'Ball is right: snowball.'),
-      gscU('Race'), gscAi('chain', 'Not race. The next word starts RO.')] },
-    { cap: 'Afterwards, your AI explains every link.', turns: [gscU('Service'),
-      gscAi('chain', ['Service is right. The chain is done, with 2 wrong guesses.', 'Snowball, ballroom, room service, service station, station wagon.'])] },
+    { cap: 'You get both ends and the first letter of every word between.', turns: [gscU('Play Chain on After Pixels'),
+      gscAi('chain', ['Chain No. 112 is ready. Each word joins the next, as RAIN, BOW and TIE make rainbow and bow tie. Only a word marked open can be guessed.', 'Which one first?'], null, [chBoard(['CROSS', 'W', 'P', 'B', 'TRACK'], [1, 3]), chStats(3, 0)])] },
+    { cap: 'A wrong guess shows the next letter of that word.', turns: [gscU('Wire'),
+      gscAi('chain', 'WIRE is wrong.', null, [chBoard(['CROSS', 'WO', 'P', 'B', 'TRACK'], [1, 3]), chStats(3, 1)]),
+      gscU('Word'),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'WORD', 'P', 'B', 'TRACK'], [2, 3]), chStats(2, 1)])] },
+    { cap: 'Once the chain is solved, you get every link.', turns: [gscU('Back'),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'WORD', 'P', 'BACK', 'TRACK'], [2]), chStats(1, 1)]),
+      gscU('Play'),
+      gscAi('chain', ['PLAY fits, and the chain is solved.', 'The links are crossword, wordplay, playback and backtrack.'], null, [chBoard(['CROSS', 'WORD', 'PLAY', 'BACK', 'TRACK'], []), chStats(0, 1)])] },
+    { cap: 'Your result marks how you found each word, and names none.', turns: [gscU('Share my result'),
+      gscAi('chain', null, null, [{ type: 'mono', text: 'Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain' }])] },
   ],
   salvage: [
     { cap: 'Five wrecks lie somewhere under an eight-by-eight sea.', turns: [gscU('Play Salvage on After Pixels'),
