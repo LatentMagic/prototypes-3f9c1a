@@ -5105,6 +5105,10 @@
   const dpMono = (text) => ({ type: "mono", text });
   const chStats = (left, wrong) => ({ type: "stats", items: [{ label: "Words left", value: left }, { label: "Wrong guesses", value: wrong }] });
   const chBoard = (words, open) => ({ type: "facts", items: words.map((w, i) => ({ label: String(i + 1), value: (w.length < 3 ? w + "…" : "**" + w + "**") + (open.includes(i) ? "  ← open" : "") })) });
+  const cmBoard = (thread, items, left, pts) => [
+    { type: "facts", items: items.map((w, i) => ({ label: String(i + 1), value: "**" + w + "**" })) },
+    { type: "stats", items: [{ label: "Thread", value: thread + " of 3" }, { label: "Guesses left", value: left }, { label: "Right guess scores", value: pts }] }
+  ];
   const dpSessAt = (k) => k === "chain" ? ["Screens", "7. Session page: "] : ["Daily puzzles 1213", "Session page: "];
   const dpEarlier = (k, ok) => () => {
     const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok);
@@ -5551,10 +5555,10 @@
         facts: { often: "New every day" },
         tags: [],
         pitch: { h: "An egg, a tortoise and a peanut have something in common. Name it early.", ps: [
-          "Each day brings three threads, the same for every player. A thread is four items that share one hidden connection, and the game shows one at a time.",
-          "The earlier you name the connection, the more it scores: 5 points from one item, then 3, 2 and 1. You have five guesses for the whole day, right or wrong, and a pass spends none. Early items can point at a wrong connection, so the skill is knowing when to commit. When a thread closes, the game shows the connection, so a thread that scored nothing still ends with the answer."
+          "Each day brings three threads, and a thread is four items that share one hidden connection. The game shows them one at a time, starting with a single item that could point several ways.",
+          "The earlier you name the connection, the more it scores, but the first items can point at the wrong one, so the skill is knowing when to commit. However a thread ends, the game shows its connection and how every item fits, so even a thread that scores nothing ends with the answer."
         ] },
-        who: { ai: "Reads out each item, helps only when asked and gives the connection and how each item fits. It has seen only what you have seen.", server: "Holds the items not yet shown and each connection, and marks every guess." },
+        who: { ai: "Shows each item as it arrives, with your guesses left and what a right guess scores, and explains how every item fits once a thread closes.", server: "Keeps every unseen item and each connection secret, and marks every guess." },
         week: { title: "Today’s threads", line: "Three threads, the same for everyone.", session: "common-today" }
       }
     });
@@ -5615,20 +5619,30 @@
         { cap: "Each dive comes back as a hit, a miss or sunk.", turns: [...svDive("won", 1), ...svDive("won", 2)] },
         { cap: "The board is redrawn after every dive, so your AI can read it aloud.", turns: svDive("won", 4, svBoard(slvPlayAt("won", 4))) }
       ],
+      // Common: the product page's three chats, written for the page from a real play (2026-11-08, No. 35) and the game spec (common.md §2, §4, §5).
+      // The day is not a real edition: No. 112 (the scheduled editions run to 63), with threads the link pool holds no copy of. The board is the design
+      // system's FactRows (the items showing, as the game gives them) and StatRow, as the deployed script has the AI read each thread.
       common: [
-        { cap: "The game shows one item at a time.", turns: [
+        { cap: "Each thread opens with a single item.", turns: [
           gscU("Play Common on After Pixels"),
-          gscAi("common", "Common No. " + CM_NO + ". Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.", null, [dpMono("EGG")])
+          gscAi("common", null, null, cmBoard(1, ["A RIVER"], 5, 5))
         ] },
-        { cap: "The earlier you name the connection, the more it scores.", turns: [
+        { cap: "Every extra item you see lowers what a right guess scores.", turns: [
           gscU("Another item"),
-          gscAi("common", "A right guess now scores 3.", null, [dpMono("EGG\nTORTOISE")]),
-          gscU("Things that are slow"),
-          gscAi("common", "Not it, so another item shows. A right guess now scores 2, and you have four guesses left today.", null, [dpMono("EGG\nTORTOISE\nPEANUT")])
+          gscAi("common", null, null, cmBoard(1, ["A RIVER", "A BOTTLE"], 5, 3)),
+          gscU("Things that hold water"),
+          gscAi("common", "“Things that hold water” wasn’t it.", null, cmBoard(1, ["A RIVER", "A BOTTLE", "A CAVE"], 4, 2))
         ] },
         { cap: "When a thread closes, your AI gives the connection and how each item fits.", turns: [
-          gscU("They all have a shell"),
-          gscAi("common", ["Shell is right, for 2 points.", "An egg, a tortoise, a peanut and a hermit crab all have one. On to Thread 2."])
+          gscU("Things with a hinge"),
+          gscAi(
+            "common",
+            "Correct! Thread 3 was Things with a hinge, worth 3 points. A laptop and a door swing on one, a clam’s two shells open on one, and so do the arms of a pair of glasses.",
+            null,
+            [{ type: "result", title: "Common No. 112", status: "Completed", stats: [{ label: "Score", value: "10 of 15" }, { label: "Threads found", value: "3 of 3" }] }]
+          ),
+          gscU("Share my result"),
+          gscAi("common", null, null, [{ type: "mono", text: "Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nafterpixels.com/discover/common" }])
         ] }
       ]
     });
