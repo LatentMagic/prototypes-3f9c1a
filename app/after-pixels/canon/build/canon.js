@@ -5328,7 +5328,7 @@
     const dpChB = dpChain({ ...CH_TODAY, p: [] });
     Object.assign(GS_SESSIONS, {
       "where-begun": { ...GS_SESSIONS["where-live"], figures: ["0 of 6 guesses", "No hints"], lines: [] },
-      "chain-begun": { ...GS_SESSIONS["chain-live"], play: { ...CH_TODAY, p: [] }, figures: [dpChB.found + " of " + dpChB.hidden + " words", dpWrong(dpChB.wrong).replace(/^./, (c) => c.toUpperCase())], lines: dpChB.lines },
+      "chain-begun": { ...GS_SESSIONS["chain-live"], play: { ...CH_TODAY, p: [] }, figures: [dpChB.found + " of " + dpChB.hidden + " words", dpWrong(dpChB.wrong).replace(/^./, (c) => c.toUpperCase())], lines: [] },
       "common-begun": { ...GS_SESSIONS["common-live"], play: { c: CM_C7, m: [] }, figures: ["Thread 1 of 3", "0 points so far"], lines: [] }
     });
     DP_IDS.forEach((k) => {
@@ -5934,6 +5934,7 @@
     PH_PLAYS.push(...e.plays);
   };
   const phSess = (id) => (gs) => gs.go("session", { id });
+  const phLive = (id) => (gs) => gs.go("session", { id: gsLiveSid(id, gs) });
   let PH_LIVE;
   let PH_PAST;
   let PH_LIVE_SID;
@@ -6230,7 +6231,7 @@
       let first;
       if (cur) {
         const s = GS_SESSIONS[c.today];
-        first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } };
+        first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phLive(PH_LIVE_SID[id]) } };
       } else first = { at: phAt(x.d, 7 + (x.i * 5 + c.salt * 3) % 15, (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? "ok" : "bad", label: x.line } };
       first.open = phSess(sid);
       first.sid = sid;
@@ -6248,7 +6249,7 @@
       if (!s.played) return;
       const ed = phParse(s.date);
       const cur = i === 0;
-      const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: "delve", open: phSess("delve"), now: { status: PH_LIVE, open: phSess("delve-live") } } : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
+      const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: "delve", open: phSess("delve"), now: { status: PH_LIVE, open: phLive("delve-live") } } : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
       phEd("delve", s.id, s.title, ed, [first], cur);
     });
     HG_DAYS.forEach((x, i) => {
@@ -6874,7 +6875,8 @@
   const gsEdMine = (gid) => {
     const c = PZ[gid];
     const ids = (GS_ED_SIDS || {})[gid] || {};
-    return [c && (c.todayBase || c.today), gid + "-live", gid + "-begun", ...Object.values(ids), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []].filter(Boolean);
+    const live = c ? c.liveSid.replace(/-begun$/, "-live") : ids.live;
+    return [c && (c.todayBase || c.today), live, live && gsBegunId(live), ...Object.values(ids), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []].filter(Boolean);
   };
   const gsNoPlay = (gs, gid) => {
     if (gsFresh(gs) || gs.review && gs.review.never === gid) return true;

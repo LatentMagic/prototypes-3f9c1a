@@ -10,7 +10,7 @@
 // The line and button a player without the Pass sees on an edition that needs it. Written for that edition, never for the free first one (which never reaches here).
 // text: the line where it isn't the edition's own (a kept session).
 import React from 'react';
-import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsEdPick, gsStartsOver, gsSessDate, gsFresh, GS_BARROW_CREDIT, gsLiveSid } from './gs-data.jsx';
+import { useGs, GS_GAMES, DS, gsLink, GS_SESSIONS, GS_ED_SIDS, gsEdPick, gsStartsOver, gsSessDate, gsFresh, GS_BARROW_CREDIT, gsLiveSid, gsBegunId } from './gs-data.jsx';
 import { GsNotFound } from './gs-site.jsx';
 import { GsCover } from './gs-parts.jsx';
 import { GsGap, gsOr } from './gs-game.jsx';
@@ -141,7 +141,9 @@ export const GsSessResult = ({ s, title }) => (
 // This edition's session ids for a game: the seeded finished play, the ones Config → This edition picks (GS_ED_SIDS), Escape's own finished plays, and the in-progress one.
 const gsEdMine = (gid) => {
   const c = PZ[gid]; const ids = (GS_ED_SIDS || {})[gid] || {};
-  return [c && (c.todayBase || c.today), gid + '-live', gid + '-begun', ...Object.values(ids), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])].filter(Boolean);
+  // c.liveSid reads the begun id while Config has it set, so the live id is taken back from it.
+  const live = c ? c.liveSid.replace(/-begun$/, '-live') : ids.live;
+  return [c && (c.todayBase || c.today), live, live && gsBegunId(live), ...Object.values(ids), ...(gid === 'escape' && typeof ES_SIDS !== 'undefined' ? Object.values(ES_SIDS) : [])].filter(Boolean);
 };
 // This account has no play of this edition, by the library page's own tests (the record's play of it, cprFirstState, review.never, gsFresh): a new account,
 // a game marked never played, a free player's unplayed first Escape room or Delve run, or a game whose play of this edition the record does not hold.

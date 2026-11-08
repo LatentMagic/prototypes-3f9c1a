@@ -381,7 +381,7 @@ Object.assign(GS_SESSIONS, {
 const dpChB = dpChain({ ...CH_TODAY, p: [] });
 Object.assign(GS_SESSIONS, {
   'where-begun': { ...GS_SESSIONS['where-live'], figures: ['0 of 6 guesses', 'No hints'], lines: [] },
-  'chain-begun': { ...GS_SESSIONS['chain-live'], play: { ...CH_TODAY, p: [] }, figures: [dpChB.found + ' of ' + dpChB.hidden + ' words', dpWrong(dpChB.wrong).replace(/^./, (c) => c.toUpperCase())], lines: dpChB.lines },
+  'chain-begun': { ...GS_SESSIONS['chain-live'], play: { ...CH_TODAY, p: [] }, figures: [dpChB.found + ' of ' + dpChB.hidden + ' words', dpWrong(dpChB.wrong).replace(/^./, (c) => c.toUpperCase())], lines: [] },
   'common-begun': { ...GS_SESSIONS['common-live'], play: { c: CM_C7, m: [] }, figures: ['Thread 1 of 3', '0 points so far'], lines: [] },
 });
 DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
