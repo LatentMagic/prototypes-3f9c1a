@@ -5541,16 +5541,16 @@
           gscAi("where", ["Where No. 112 is ready. You have six guesses to find today’s country.", "Each miss comes back as its distance from it, border to border, and 0 means the two touch. Your one hint points the compass from your latest guess. Which country first?"])
         ] },
         { cap: "Each guess comes back as a distance, and the hint tells you which way to head.", turns: [
-          gscU("Egypt."),
-          gscAi("where", "Egypt is 1,850 km away. You have 5 guesses and 1 hint left."),
+          gscU("Brazil."),
+          gscAi("where", "Brazil is 7,290 km away. You have 5 guesses and 1 hint left."),
           gscU("Give me the hint."),
-          gscAi("where", "From Egypt, today’s country lies northwest. That was your one hint."),
+          gscAi("where", "From Brazil, today’s country lies northeast. That was your one hint."),
           gscU("France."),
           gscAi("where", "France is 140 km away. You have 4 guesses left.")
         ] },
         { cap: "Land next door and the answer is one of its neighbours. Your result is one mark per guess.", turns: [
           gscU("Germany."),
-          gscAi("where", "Germany comes back at 0 km, so it shares a border with today’s country. You have 3 guesses left.", null, [{ type: "mono", text: "Egypt: 1,850 km away\nFrance: 140 km away\nGermany: 0 km, shares a border" }]),
+          gscAi("where", "Germany comes back at 0 km, so it shares a border with today’s country. You have 3 guesses left.", null, [{ type: "mono", text: "Brazil: 7,290 km away\nFrance: 140 km away\nGermany: 0 km, shares a border" }]),
           gscU("Austria."),
           gscAi("where", ["Found it in 4 of 6, with the hint. Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."]),
           gscU("Share my result."),
