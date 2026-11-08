@@ -10731,9 +10731,6 @@
   };
   const PG = {};
   const PG_DESK = 1280;
-  const pgRegister = (id, def) => {
-    PG[id] = def;
-  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10749,17 +10746,6 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
-  };
-  const usePgSetting = (key) => {
-    const [, bump] = React$1.useState(0);
-    React$1.useEffect(() => {
-      const f = () => bump((n) => n + 1);
-      pgSubs.add(f);
-      return () => pgSubs.delete(f);
-    }, []);
-    const def = pgActive();
-    const s = def && def.settings.find((x) => x.key === key);
-    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -10844,193 +10830,6 @@
     const concept = shown.find((s) => s.kind === "concept");
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
-  };
-  const PGC_DELVE = {
-    h: "A new world every week: fight room by room to the villain at its heart.",
-    blurb: "h",
-    ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
-    caps: ["See each hero’s strengths, health and defence side by side before you pick.", "A miss costs you health. Spend your inspiration on the retry.", GSC_DV_FIGHT_CAP, "Your result is ready to post, with one mark for every roll you made."],
-    // The four chats, written for the page from the 2026-11-06 playtest (business-ops product-pages _resources/chats/delve-playtest-2026-11-06.md) and the game spec.
-    // Every event is true to the play; no edition secret appears.
-    chats: [
-      [
-        gscU("Play Delve on After Pixels"),
-        gscAi(
-          "delve",
-          ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
-          null,
-          [{ type: "mono", text: "Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12" }]
-        ),
-        gscU("Ione"),
-        gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
-      ],
-      [
-        gscU("I wait for a gap in the moving walls, then dart through"),
-        gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "mono", text: "d20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage" }]),
-        gscU("I try again and spend my inspiration"),
-        gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "mono", text: "d20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent" }])
-      ],
-      GSC_DV_FIGHT,
-      [
-        gscU("Finish it with the somersault"),
-        gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
-        gscU("Share my result"),
-        gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
-      ]
-    ],
-    tags: [],
-    facts: { long: "25–45 min", often: "New every week" },
-    noRun: true,
-    genreOnly: true,
-    ai: "Tells the story as your Game Master, voices everyone you meet, and asks what you do next.",
-    server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in."
-  };
-  const PGC_COPY = {
-    // Delve: the golden sample, from two copywriter drafts (Opus, GPT) finished by an Opus editor: judge-delve-final.md, then
-    // copywriter-delve-rewrite.md (voice-draft.md), in business-ops. One version under both rules for now. PR #1410-only:
-    // caption 1's three ways to fight, caption 3's "scene of its own".
-    delve: { job: PGC_DELVE, situation: PGC_DELVE },
-    mystery: {
-      job: {
-        h: "Work out who did it. You get one accusation.",
-        blurb: "h",
-        ps: ["You get every clue at the start. Together they leave only one answer.", "Two hints help when you’re stuck. Then make one accusation, checked part by part."],
-        caps: ["Every suspect, weapon, place and clue, given once at the start.", "When you’re stuck, take a hint. You get two.", null]
-      },
-      situation: {
-        h: null,
-        blurb: "A daily murder mystery, solved from clues.",
-        caps: ["Every suspect, weapon, place and clue, given once at the start.", null, null]
-      }
-    },
-    where: {
-      job: {
-        h: "Which country is hidden? Each guess shows how far off you are.",
-        blurb: "h",
-        ps: ["Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.", "One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess."]
-      },
-      situation: { h: null, blurb: "A daily geography puzzle. Six guesses." }
-    }
-  };
-  const PGC_GAMES = ["delve", "mystery", "where"];
-  let pgcCanon = null;
-  const pgcRead = () => {
-    if (pgcCanon) return;
-    pgcCanon = {};
-    PGC_GAMES.forEach((id) => {
-      pgcCanon[id] = { h: GS_PAGES[id].pitch.h, ps: GS_PAGES[id].pitch.ps.slice(), caps: GS_CHATS[id].map((x) => x.cap), turns: GS_CHATS[id].map((x) => x.turns), blurb: GS_GAMES[id].blurb, tags: GS_PAGES[id].tags && GS_PAGES[id].tags.slice(), facts: { ...GS_PAGES[id].facts }, ai: GS_PAGES[id].who && GS_PAGES[id].who.ai, server: GS_PAGES[id].who && GS_PAGES[id].who.server };
-    });
-  };
-  const pgcApply = (id, rule) => {
-    pgcRead();
-    PGC_GAMES.forEach((k) => {
-      const c2 = pgcCanon[k];
-      GS_PAGES[k].pitch.h = c2.h;
-      GS_PAGES[k].pitch.ps = c2.ps.slice();
-      GS_GAMES[k].blurb = c2.blurb;
-      if (c2.tags) GS_PAGES[k].tags = c2.tags.slice();
-      GS_PAGES[k].facts = { ...c2.facts };
-      if (GS_PAGES[k].who) {
-        GS_PAGES[k].who.ai = c2.ai;
-        GS_PAGES[k].who.server = c2.server;
-      }
-      GS_CHATS[k].forEach((x, i) => {
-        x.cap = c2.caps[i];
-        x.turns = c2.turns[i];
-      });
-    });
-    const r = PGC_COPY[id][rule];
-    if (!r) return;
-    const c = pgcCanon[id];
-    if (r.h) GS_PAGES[id].pitch.h = r.h;
-    if (r.ps) GS_PAGES[id].pitch.ps = r.ps.map((p, i) => p || c.ps[i]);
-    if (r.caps) GS_CHATS[id].forEach((x, i) => {
-      x.cap = r.caps[i] || c.caps[i];
-    });
-    if (r.chats) GS_CHATS[id].forEach((x, i) => {
-      if (r.chats[i]) x.turns = r.chats[i];
-    });
-    if (r.tags) GS_PAGES[id].tags = r.tags.slice();
-    if (r.facts) GS_PAGES[id].facts = { ...GS_PAGES[id].facts, ...r.facts };
-    if (r.ai) GS_PAGES[id].who.ai = r.ai;
-    if (r.server) GS_PAGES[id].who.server = r.server;
-    if (r.blurb) GS_GAMES[id].blurb = r.blurb === "h" ? GS_PAGES[id].pitch.h : r.blurb;
-  };
-  const PGC_FREE = {
-    current: "The first run is free with an account. Every run after it needs ",
-    old: "Free with an account. Every other run comes with ",
-    b: "Your first run is free with an account. Play every run after it with ",
-    c: "Create an account and the first run is free. After that, runs come with "
-  };
-  const PgcPreview = ({ id }) => {
-    const g = GS_GAMES[id];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev", role: "img", "aria-label": "Link preview: " + g.name + ". " + g.blurb }, /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-art" }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "wide" })), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-prev-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgc-prev-site" }, "afterpixels.com"), /* @__PURE__ */ React$1.createElement("b", null, g.name), /* @__PURE__ */ React$1.createElement("span", null, g.blurb)));
-  };
-  const PgcStrip = ({ id, rule }) => /* @__PURE__ */ React$1.createElement("section", { className: "pgc-strip", "aria-label": "Where the card line also appears" }, /* @__PURE__ */ React$1.createElement(PgcWhy, { rule }), /* @__PURE__ */ React$1.createElement("h2", { className: "pgc-strip-h" }, "Where the card line also appears"), /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig pgc-fig-row" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { className: "gs-row4" }, [.../* @__PURE__ */ new Set(["barrow", id, "escape"])].map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("figcaption", null, "Discover’s Just added row, as it is: the line must fit the height the row’s cards share.")), /* @__PURE__ */ React$1.createElement("div", { className: "pgc-strip-row" }, /* @__PURE__ */ React$1.createElement("figure", { className: "pgc-fig" }, /* @__PURE__ */ React$1.createElement(PgcPreview, { id }), /* @__PURE__ */ React$1.createElement("figcaption", null, "A shared link’s preview"))));
-  const PGC_WHY = {
-    job: {
-      h: "Why the job rule (recommended)",
-      by: "Backed by the product advisor.",
-      for: [
-        "One line to keep true. The heading is also the card line, the link preview and what the AI reads in its library. Those must describe the game plainly, not tease it, so the heading meets that bar too, and nothing drifts.",
-        "A stranger learns what they would do. Games played in your chat are new, so the line says what you do before any story.",
-        "Agents can check it. Every line traces to the game spec, which holds every week.",
-        "Guess already reads this way, and you found its page largely good."
-      ],
-      against: "The heading must fit on a game card, story pages read flatter, and it ends the 6 October “cold open, with a dare” headings."
-    },
-    situation: {
-      h: "Why the situation rule",
-      by: "Backed by the marketing advisor and Gemini.",
-      for: [
-        "The heading can hook. By the time you reach it, the page has said the name, the kind of game, the length and how often, so the heading’s job is pull.",
-        "Links and the AI still get a plain line: the card line is written separately and says what you do.",
-        "Story games keep their pull without selling one week’s plot. For a daily puzzle the two rules nearly meet."
-      ],
-      against: "Two lines per game to write and keep in line, and a hook is harder for an agent to check against the spec."
-    }
-  };
-  const PgcWhy = ({ rule }) => {
-    const w = PGC_WHY[rule];
-    if (!w) return null;
-    return /* @__PURE__ */ React$1.createElement("aside", { className: "pgc-why", "aria-label": w.h }, /* @__PURE__ */ React$1.createElement("h2", { className: "pgc-why-h" }, w.h), /* @__PURE__ */ React$1.createElement("ul", null, w.for.map((x) => /* @__PURE__ */ React$1.createElement("li", { key: x }, x))), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("b", null, "Against:"), " ", w.against), /* @__PURE__ */ React$1.createElement("p", { className: "pgc-why-by" }, w.by, " No study compares the two kinds of heading, so this is judgement, not proof."));
-  };
-  const PgcScreen = () => {
-    const id = usePgSetting("game");
-    const rule = usePgSetting("rule");
-    pgcApply(id, rule);
-    const r = (PGC_COPY[id] || {})[rule] || {};
-    const box = React$1.useRef(null);
-    const free = usePgSetting("freeline");
-    React$1.useLayoutEffect(() => {
-      const line = id === "delve" && box.current && box.current.querySelector(".gs-pu-box p.gs-pu-wrap");
-      const t = line && line.firstChild;
-      if (t && t.nodeType === 3 && Object.values(PGC_FREE).includes(t.data)) t.data = PGC_FREE[free] || PGC_FREE.current;
-      const el = r.genreOnly && box.current && box.current.querySelector(".gs-cover-over .gs-label");
-      if (el) el.textContent = GS_GAMES[id].category;
-    });
-    return /* @__PURE__ */ React$1.createElement("div", { ref: box, className: r.noRun ? "pgc-no-run" : void 0, style: { display: "contents" } }, /* @__PURE__ */ React$1.createElement(GsGamePage, { key: id + rule, id, top: /* @__PURE__ */ React$1.createElement(PgcStrip, { id, rule }) }));
-  };
-  const initPlaygroundPageCopy = () => {
-    pgRegister("page-copy", { title: "Product page copy", settings: [
-      { key: "rule", kind: "concept", label: "Rule", options: [
-        { value: "current", label: "Current" },
-        { value: "job", label: "The job" },
-        { value: "situation", label: "Situation, then verbs" }
-      ] },
-      { key: "game", label: "Game", options: [
-        { value: "delve", label: "Delve" },
-        { value: "mystery", label: "Accuse" },
-        { value: "where", label: "Where" }
-      ] },
-      { key: "freeline", label: "Free line", when: { key: "game", value: "delve" }, options: [
-        { value: "current", label: "Current" },
-        { value: "old", label: "Old" },
-        { value: "b", label: "2 Your first run" },
-        { value: "c", label: "3 Create an account" }
-      ] }
-    ] });
-    if (new URLSearchParams(window.location.search).get("pg") === "page-copy") window.KitCandidate = { Screen: PgcScreen };
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
@@ -11686,5 +11485,4 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
-  initPlaygroundPageCopy();
 })(React, ReactDOM);
