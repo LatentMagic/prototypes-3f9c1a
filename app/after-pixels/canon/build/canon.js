@@ -5538,7 +5538,7 @@
       where: [
         { cap: "You get six guesses and one hint.", turns: [
           gscU("Play Where on After Pixels."),
-          gscAi("where", ["Where No. 112 is ready. You have six guesses to find today’s country.", "Each miss comes back as its distance from it, border to border, and 0 means the two touch. Your one hint points the compass from your latest guess. Which country first?"])
+          gscAi("where", ["Where No. 112 is ready. You have six guesses to find today’s country.", "Each miss comes back as a border-to-border distance, and 0 means the two touch. Your one hint gives the compass direction from your latest guess. Which country first?"])
         ] },
         { cap: "Each guess comes back as a distance from the country.", turns: [
           gscU("Brazil."),
