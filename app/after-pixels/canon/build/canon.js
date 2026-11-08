@@ -10752,7 +10752,7 @@
   const WH_FRESH = { g: [], hint: null, live: true };
   const WhNow = ({ c, done, none, children }) => {
     const gs = useGs();
-    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#" + GS_SESSIONS[c.today].number, result: { kind: "live", label: "New" }, play: () => gs.playReq({ kind: "edition", e: edList(gs, "where")[0] }), next: c.next, className: "wh-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-none" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, "None yet")), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p: WH_FRESH }), /* @__PURE__ */ React$1.createElement(WhChart, { p: WH_FRESH }))));
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#" + GS_SESSIONS[c.today].number, play: () => gs.playReq({ kind: "edition", e: edList(gs, "where")[0] }), next: c.next, className: "wh-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-none" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, "None yet")), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p: WH_FRESH }), /* @__PURE__ */ React$1.createElement(WhChart, { p: WH_FRESH }))));
     const sid = done ? c.today : c.liveSid;
     const s = GS_SESSIONS[sid];
     if (!s) return children;
