@@ -6,7 +6,7 @@
 // Each game is played through text in the player's own AI: the chats carry text and a plain text board, never a picture.
 // ============================================================================
 import React from 'react';
-import { GS_NAME, GS_GAMES, gsAccess, GS_GAME_ORDER, GS_ART, GS_SVG, GS_RESULT, GS_SESSIONS, GS, GS_TODAY_PLAYED, GS_ED_SIDS } from './gs-data.jsx';
+import { GS_NAME, GS_GAMES, gsAccess, GS_GAME_ORDER, GS_ART, GS_SVG, GS_RESULT, GS_SESSIONS, GS, GS_TODAY_PLAYED, GS_ED_SIDS, gsLiveSid } from './gs-data.jsx';
 import { GS_ART_LOCAL, I } from './gs-parts.jsx';
 import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
 import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
@@ -358,7 +358,7 @@ dpSvDay = (() => { const memo = {}; return (i, ok) => {
 dpWhT = dpWhere(WH_TODAY, true); dpCmToday = cmSess(CM_NO, CM_TODAY);
 dpChT = dpChain(CH_TODAY);
 // Salvage's plays are held once, in SLV_PLAYS (gs-salvage.jsx); each session of today's edition is that play's record. The result is the deployed headline.
-const svSession = (fx) => { const p = SLV_PLAYS[fx]; const done = fx !== 'live'; const found = p.raised.size;
+const svSession = (fx) => { const p = SLV_PLAYS[fx]; const done = fx !== 'live' && fx !== 'begun'; const found = p.raised.size;
   const result = done ? GS_RESULT.salvage({ found, dives: p.dives }) : 'In progress';
   return { kind: 'puzzle', gid: 'salvage', game: GS_NAME.salvage, art: 'salvage', number: DP_NO, fx, date: GS.today, ...(done ? { hints: 1 } : { live: true }),
     loss: p.state === 'lost', result, figures: [found + ' of 5 wrecks', p.dives + ' of ' + SLV_DIVES + ' dives'], share: done ? result : null, shareLines: done ? slvShareLinesOf(p) : undefined, lines: p.lines }; };
@@ -372,10 +372,17 @@ Object.assign(GS_SESSIONS, {
     figures: [dpChT.words + ' words', dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())], share: dpChResult(dpChT), shareLines: [dpChHead(DP_NO, dpChT), dpChT.marks], lines: dpChT.lines },
   'chain-live': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: { ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) }, live: true, result: 'In progress', date: GS.today,
     figures: [dpChL.found + ' of ' + dpChL.hidden + ' words', dpWrong(dpChL.wrong).replace(/^./, (c) => c.toUpperCase())], share: null, lines: dpChL.lines },
-  'salvage-today': svSession('won'), 'salvage-live': svSession('live'),
+  'salvage-today': svSession('won'), 'salvage-live': svSession('live'), 'salvage-begun': svSession('begun'),
   'common-today': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', date: GS.today, ...dpCmToday, share: dpCmToday.result, recovered: true },
   'common-live': { kind: 'puzzle', gid: 'common', game: GS_NAME.common, art: 'common', number: CM_NO, play: CM_LIVE, live: true, result: 'In progress', date: GS.today,
     figures: ['Thread 1 of 3', '0 points so far'], share: null, lines: cmPlay(CM_LIVE, true).lines },
+});
+// In progress, nothing played yet (Config → This edition): today's in-progress play with no move made.
+const dpChB = dpChain({ ...CH_TODAY, p: [] });
+Object.assign(GS_SESSIONS, {
+  'where-begun': { ...GS_SESSIONS['where-live'], figures: ['0 of 6 guesses', 'No hints'], lines: [] },
+  'chain-begun': { ...GS_SESSIONS['chain-live'], play: { ...CH_TODAY, p: [] }, figures: [dpChB.found + ' of ' + dpChB.hidden + ' words', dpWrong(dpChB.wrong).replace(/^./, (c) => c.toUpperCase())], lines: dpChB.lines },
+  'common-begun': { ...GS_SESSIONS['common-live'], play: { c: CM_C7, m: [] }, figures: ['Thread 1 of 3', '0 points so far'], lines: [] },
 });
 DP_IDS.forEach((k) => { GS_TODAY_PLAYED.pass[k] = k + '-today'; });
 // ---- This edition as Config → This edition picks it (GS_ED_SIDS). SAMPLES on today's edition: today's number and date. Hard: every guess, dive or
@@ -407,7 +414,7 @@ DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-tod
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
 DP_PZ = {
   where: {
-    count: DP_NO, no: (i) => GS_NAME.where + ' #' + (DP_NO - i), salt: 7, keep: {}, today: 'where-today', liveSid: 'where-live',
+    count: DP_NO, no: (i) => GS_NAME.where + ' #' + (DP_NO - i), salt: 7, keep: {}, today: 'where-today', get liveSid() { return gsLiveSid('where-live'); },
     ok: (i) => GS_RESULT.where({ ok: true, guesses: dpWhere(WH_OK[i % WH_OK.length], true).guesses }), bad: GS_RESULT.where({ ok: false }),
     title: 'Today’s country', next: 'Next country: tomorrow',
     live: { line: 'You’ve used 2 of your 6 guesses. The closer one was ' + dpKm(WH_TODAY.g[1][1]) + ' away.', bar: ['Guess 2 of 6', 2, 6] },
@@ -418,7 +425,7 @@ DP_PZ = {
       { k: 'wh7', n: 'Seven days in a row', how: 'Find the country seven days running.', of: 7 }],
   },
   chain: {
-    count: DP_NO, no: (i) => GS_NAME.chain + ' #' + (DP_NO - i), salt: 8, keep: {}, today: 'chain-today', liveSid: 'chain-live',
+    count: DP_NO, no: (i) => GS_NAME.chain + ' #' + (DP_NO - i), salt: 8, keep: {}, today: 'chain-today', get liveSid() { return gsLiveSid('chain-live'); },
     ok: (i) => dpChResult(dpChain(CH_OK[i % CH_OK.length])), bad: dpChResult(dpChain(CH_FAIL)),
     title: 'Today’s chain', next: 'Next chain: tomorrow',
     live: { line: 'You’ve found ' + dpChL.found + ' of the ' + dpChL.hidden + ' words, with ' + dpWrong(dpChL.wrong).replace(/^1 /, 'one ') + '.', bar: [dpChL.found + ' of ' + dpChL.hidden + ' words', dpChL.found, dpChL.hidden] },
@@ -429,7 +436,7 @@ DP_PZ = {
       { k: 'ch7', n: 'Seven days in a row', how: 'Solve Chain seven days running.', of: 7 }],
   },
   salvage: {
-    count: DP_NO, no: (i) => GS_NAME.salvage + ' #' + (DP_NO - i), salt: 12, keep: {}, today: 'salvage-today', liveSid: 'salvage-live',
+    count: DP_NO, no: (i) => GS_NAME.salvage + ' #' + (DP_NO - i), salt: 12, keep: {}, today: 'salvage-today', get liveSid() { return gsLiveSid('salvage-live'); },
     ok: (i) => GS_RESULT.salvage({ found: 5, dives: dpSvDay(i, true).log.length }), bad: GS_RESULT.salvage({ found: 3 }),
     // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
     title: 'Today’s sea', next: 'Next dive: tomorrow', tag: true,
@@ -442,7 +449,7 @@ DP_PZ = {
       { k: 'sv7', n: 'Seven days in a row', how: 'Find every wreck seven days running.', of: 7 }],
   },
   common: {
-    count: CM_NO, no: (i) => GS_NAME.common + ' #' + (CM_NO - i), salt: 11, keep: {}, alwaysCompletes: true, today: 'common-today', liveSid: 'common-live',
+    count: CM_NO, no: (i) => GS_NAME.common + ' #' + (CM_NO - i), salt: 11, keep: {}, alwaysCompletes: true, today: 'common-today', get liveSid() { return gsLiveSid('common-live'); },
     ok: (i) => cmSess(0, CM_OK[i % CM_OK.length]).result, bad: cmSess(0, CM_FAIL).result,
     title: 'Today’s threads', next: 'Next set: tomorrow',
     live: { line: 'You’re on thread 1 of 3, with 0 points so far.', bar: ['Thread 1 of 3', 1, 3] },

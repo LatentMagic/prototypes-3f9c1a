@@ -130,14 +130,17 @@ Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; th
 </important>
 
 <important if="you are building or testing a game, or adding one">
-Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape cannot fail: its `GS_ED_SIDS` row in `gs-data.jsx` has no `failed`). Make each other state reachable from Config and register it on the library game page, even where a click from the library list reaches it. `library-<game>` opens the game's seeded play, whichever state that is; each other state adds its name: `-not-started`, `-in-progress`, `-completed`, `-failed`, or a variant's own, such as `-hard`. Ids already registered that name a state another way (`library-mystery-solved`, `library-escape-on-par`) stay: ids are public links. Give a new game its row in `GS_ED_SIDS` so the This edition picks reach it, and its Not started entry in the per-game list in `states.jsx`. Where a game has no row (the Barrow) or its row lacks a pick (Escape's Average), that state is staged from the game's own Config group instead. A session-page entry is optional and does not stand in for the library-page entry.
+Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape cannot fail: its `GS_ED_SIDS` row in `gs-data.jsx` has no `failed`). Make each other state reachable from Config and register it on the library game page, even where a click from the library list reaches it. `library-<game>` opens the game's seeded play, whichever state that is; each other state adds its name: `-not-started`, `-in-progress`, `-nothing-played`, `-completed`, `-failed`, or a variant's own, such as `-hard`. Ids already registered that name a state another way (`library-mystery-solved`, `library-escape-on-par`) stay: ids are public links. Give a new game its row in `GS_ED_SIDS` so the This edition picks reach it, and its Not started entry in the per-game list in `states.jsx`. Where a game has no row (the Barrow) or its row lacks a pick (Escape's Average), that state is staged from the game's own Config group instead. A session-page entry is optional and does not stand in for the library-page entry.
 
 | State | Meaning | Config → Editions → This edition |
 |---|---|---|
 | Not started | The edition is unplayed | Not played |
 | In progress | Play has begun and not ended | In progress |
+| In progress, nothing played yet | Play has begun, no move made yet | In progress, nothing played yet |
 | Completed | A finished play that ended well | Average |
 | Failed | Play ended in a loss | Failed |
+
+In progress, nothing played yet is its own state because a game's page can fail on zero moves where In progress, seeded with moves, never does. A game has it where it has an in-progress play: its `<game>-begun` session, beside its `-live` one, is that play with no moves.
 
 Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day's Finished late and In progress are variants: cover them where the game has one. A variant's entry follows its group's ids: `library-delve-hard`, `past-day-word-late-library`.
 </important>

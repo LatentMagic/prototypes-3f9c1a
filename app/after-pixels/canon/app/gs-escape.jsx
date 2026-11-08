@@ -6,7 +6,7 @@
 
 // This week's play: in progress, else the finished play Config picks (This edition: Hard; Escape: par), else the seeded one.
 import React from 'react';
-import { gsEdPick, GS_ES_PARTS, GS_ES1_CLOSED, GS_SESSIONS, GS_ES1_PAR, DS, useGs } from './gs-data.jsx';
+import { gsEdPick, GS_ES_PARTS, GS_ES1_CLOSED, GS_SESSIONS, GS_ES1_PAR, DS, useGs, gsLiveSid } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { GS_SESSION_BODY } from './registry.js';
@@ -14,7 +14,7 @@ import { EsSheet } from './gs-escape-sheet.jsx';
 
 export const ES_SIDS = { under: 'escape-week', par: 'escape-par', over: 'escape-over', hard: 'escape-hard' };
 export const esFinished = (gs) => gsEdPick('escape', gs) || ES_SIDS[gs.review.escape] || 'escape-week';
-const esSid = (gs) => (gs.review.week === 'live' ? 'escape-live' : esFinished(gs));
+const esSid = (gs) => (gs.review.week === 'live' ? gsLiveSid('escape-live', gs) : esFinished(gs));
 
 // ---- The model: the record's lines read as locks, each with its tries and hints in order. A typed lock answers Open or
 // Wrong; a mechanism (Set …) answers with how many of its parts were right. ----
@@ -200,7 +200,7 @@ const EsSessBody = (props) => <EsBody key={props.sid} {...props} />;
 // card's size. A door opens the session page at its lock. No lanes: the session page has them. ----
 // first: a free player's first room, an older edition than this week's, so Config → This edition's pick does not reach it.
 export const EsNow = ({ label, title, next, pass, first }) => {
-  const gs = useGs(); const sid = first ? (gs.review.week === 'live' ? 'escape-live' : ES_SIDS[gs.review.escape] || 'escape-week') : esSid(gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => esBuild(s), [s]);
+  const gs = useGs(); const sid = first ? (gs.review.week === 'live' ? gsLiveSid('escape-live', gs) : ES_SIDS[gs.review.escape] || 'escape-week') : esSid(gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => esBuild(s), [s]);
   const open = (lock) => gs.go('session', lock ? { id: sid, lock } : { id: sid });
   return (
     <LbNowCard gid="escape" className="es-now" label={label} title={title} result={esNowResult(m)} open={() => open()} next={next} pass={pass}>

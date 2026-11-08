@@ -136,7 +136,7 @@ export const WdNow = ({ c, done, none }) => {
   const gs = useGs(); const sid = none || done ? c.today : c.liveSid; const s0 = GS_SESSIONS[sid];
   const s = none ? { ...s0, live: true, loss: false } : s0;
   const p = React.useMemo(() => { if (none) return WD_NONE; const ev = wdRead(s).events; const g = ev.filter((e) => e.kind === 'guess');
-    return { n: g.length, last: g[g.length - 1], hint: ev.find((e) => e.kind === 'hint') || null, won: !s.live && !s.loss }; }, [s, none]);
+    return { n: g.length, last: g[g.length - 1] || WD_NONE.last, hint: ev.find((e) => e.kind === 'hint') || null, won: !s.live && !s.loss }; }, [s, none]);
   const r = wdResult(s);
   return (
     <LbNowCard gid="word" className="wd-now" title={'#' + s.number} result={none ? null : { kind: r.tone, label: r.word }}

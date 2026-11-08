@@ -39,7 +39,7 @@ export const ConfigExtraBase = () => {
   };
   // This edition: one pick over what the page shows: not started, the old week (in progress), or ed (the finished play).
   // A page that is locked or signed out shows no play, so the row shows no pick at all.
-  const edVal = api.view === 'out' || (g && cprLocked(api, gid)) ? null : notStarted() ? 'none' : r.week === 'live' ? 'live' : ['average', 'hard', 'failed'].includes(r.ed) ? r.ed : null;
+  const edVal = api.view === 'out' || (g && cprLocked(api, gid)) ? null : notStarted() ? 'none' : r.week === 'live' ? (r.begun ? 'begun' : 'live') : ['average', 'hard', 'failed'].includes(r.ed) ? r.ed : null;
   const needsPass = !!g && !g.free && !g.first;
   const [forced, setForced] = React.useState(null);
   const edAt = (v) => [v, route.name, route.id, route.page].join('|');
@@ -61,7 +61,7 @@ export const ConfigExtraBase = () => {
     const forced = edForce(v);
     if (forced) api.setDemoView(forced.view);
     setForced(forced ? { text: forced.text, at: edAt(v) } : null);
-    api.setReview({ today: v === 'none' ? 'none' : 'played', week: v === 'live' ? 'live' : 'done', ed: ['average', 'hard', 'failed'].includes(v) ? v : null });
+    api.setReview({ today: v === 'none' ? 'none' : 'played', week: v === 'live' || v === 'begun' ? 'live' : 'done', begun: v === 'begun', ed: ['average', 'hard', 'failed'].includes(v) ? v : null });
     setTimeout(() => gsEdFollow(window.gsApi), 0);
   });
   // The hint says what the pick does not reach, read from the data: which games lack a pick and which have no result for an edition.
@@ -102,7 +102,7 @@ export const ConfigExtraBase = () => {
       </Group>
 
       <Group title="Editions">
-        {R('This edition', edVal, setEd, o([['none', 'Not played'], ['live', 'In progress'], ['average', 'Average'], ['hard', 'Hard'], ['failed', 'Failed']]),
+        {R('This edition', edVal, setEd, o([['none', 'Not played'], ['live', 'In progress'], ['begun', 'In progress, nothing played yet'], ['average', 'Average'], ['hard', 'Hard'], ['failed', 'Failed']]),
           edHint)}
         {edNote ? <p className="kit-config-edwarn" role="status">{edNote}</p> : null}
         {R('Past day', r.pastDay || 'none', (v) => set(() => api.setReview({ pastDay: v })), o([['none', 'None'], ['live', 'In progress'], ['late', 'Finished late']]),

@@ -311,7 +311,7 @@ export const GsDemoBar = () => {
           {[['live', 'in progress'], ['done', daily ? 'day complete' : 'finished']].map(([v, l], i) => (
             <React.Fragment key={v}>
               {i > 0 && <span aria-hidden="true">/</span>}
-              <button type="button" className="gs-demo-opt" aria-pressed={(gs.review.week === 'live' ? 'live' : 'done') === v} onClick={() => gs.setReview({ week: v })}>{l}</button>
+              <button type="button" className="gs-demo-opt" aria-pressed={(gs.review.week === 'live' ? 'live' : 'done') === v} onClick={() => gs.setReview({ week: v, begun: false })}>{l}</button>
             </React.Fragment>
           ))}
         </>}

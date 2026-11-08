@@ -9,7 +9,7 @@
 // SAMPLE: the stats a check adds are read from the records (Bryn Str +3, Dex +1, Wis 0; Wren Dex +3, Int +1, Wis +1, Str 0);
 // Con and Cha, the abilities and the starting gear are invented. The Warren's carry limit is three.
 import React from 'react';
-import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick } from './gs-data.jsx';
+import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
 import { DV_NEXT } from './gs-delve-library.jsx';
@@ -232,7 +232,7 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER }
   })}</div>);
 };
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
-  const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : sids[1]; const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
+  const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
   const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
