@@ -10806,7 +10806,7 @@
   const PDE_ROOMS = 5;
   const PDE_THREAT = 12;
   const pdeSid = (title, hard) => "pde-" + title + (hard ? "-hard" : "");
-  const pdeSet = () => ({ view: usePgSetting("view"), run: usePgSetting("run"), title: usePgSetting("title"), hard: usePgSetting("hard") === "on" });
+  const pdeSet = () => ({ fix: usePgSetting("fix"), view: usePgSetting("view"), run: usePgSetting("run"), title: usePgSetting("title"), hard: usePgSetting("hard") === "on" });
   const pdeSession = (title, hard) => ({
     ...GS_SESSIONS["delve-live"],
     pde: true,
@@ -10842,16 +10842,16 @@
   const PDE_HEROES = [["Fighter", "F"], ["Rogue", "R"], ["Wizard", "W"]];
   const PdeHeroes = ({ started, hard }) => /* @__PURE__ */ React$1.createElement("div", { className: "pde-heroes", role: "img", "aria-label": started ? (hard ? "Rogue" : "Fighter") + " chosen" : "Fighter, Rogue or Wizard to choose" }, PDE_HEROES.map(([n, l]) => /* @__PURE__ */ React$1.createElement("span", { key: n, className: "pde-hero" + (started && n === (hard ? "Rogue" : "Fighter") ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("svg", { className: "pde-hex", viewBox: "-5 -5 46 50", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, l)), /* @__PURE__ */ React$1.createElement("span", null, n))));
   const PDE_NOW = { b: PdeStops, c: PdeRitual, d: PdeStrip, e: PdeHeroes };
-  const PdeNow = ({ title, started, hard, concept, sid }) => {
+  const PdeNow = ({ title, started, hard, concept, sid, fix }) => {
     const gs = useGs();
     const Body = PDE_NOW[concept];
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pde-now pde-" + concept, title: PDE_TITLES[title], result: started ? { kind: "live", label: "In progress" } : void 0, play: started ? void 0 : () => gs.play("Delve"), open: () => gs.go("session", { id: sid }), next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement(Body, { started, hard }));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pde-now pde-" + concept + (concept === "b" && fix !== "now" ? " pde-fix-" + fix : ""), title: PDE_TITLES[title], result: started ? { kind: "live", label: "In progress" } : void 0, play: started ? void 0 : () => gs.play("Delve"), open: () => gs.go("session", { id: sid }), next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement(Body, { started, hard }));
   };
   const PdeLibrary = () => {
     const gs = useGs();
-    const { view, run, title, hard } = pdeSet();
+    const { view, run, title, hard, fix } = pdeSet();
     const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PdeNow, { title, started: run === "live", hard, concept: view.replace("now-", ""), sid: pdeSid(title, hard) }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) })));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PdeNow, { title, started: run === "live", hard, fix, concept: view.replace("now-", ""), sid: pdeSid(title, hard) }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) })));
   };
   const pdeReopen = (gs) => {
     const q = new URLSearchParams(window.location.search);
@@ -10870,6 +10870,7 @@
         { value: "now-e", label: "Now card E: choose a hero", state: "library-delve-in-progress", go: pdeReopen }
       ] },
       { key: "run", label: "Now card state", options: [{ value: "not-started", label: "Not started" }, { value: "live", label: "In progress, nothing played" }] },
+      { key: "fix", label: "Title fix (Now card B)", when: { key: "view", value: "now-b" }, options: [{ value: "now", label: "Now (canon as is)" }, { value: "smaller", label: "Smaller" }, { value: "below", label: "Tag below" }] },
       { key: "title", label: "Title", options: [
         { value: "real", label: "The Goblin Warren beneath Ashford Mill", go: pdeReopen },
         { value: "longest", label: "Longest canon holds", go: pdeReopen },

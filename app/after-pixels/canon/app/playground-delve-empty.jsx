@@ -20,7 +20,7 @@ const PDE_ROOMS = 5;
 const PDE_THREAT = 12;
 // Hard is canon's own: the hard play is Wren (11 hit points); the others are Bryn (13).
 const pdeSid = (title, hard) => 'pde-' + title + (hard ? '-hard' : '');
-const pdeSet = () => ({ view: usePgSetting('view'), run: usePgSetting('run'), title: usePgSetting('title'), hard: usePgSetting('hard') === 'on' });
+const pdeSet = () => ({ fix: usePgSetting('fix'), view: usePgSetting('view'), run: usePgSetting('run'), title: usePgSetting('title'), hard: usePgSetting('hard') === 'on' });
 
 // ---- A run with no rolls: begun, nothing recorded. ----
 const pdeSession = (title, hard) => ({ ...GS_SESSIONS['delve-live'], pde: true, noEd: true, title: PDE_TITLES[title], setting: PDE_TITLES[title], lines: [], hero: hard ? 'Wren the Rogue' : 'Bryn the Fighter',
@@ -71,15 +71,15 @@ const PdeHeroes = ({ started, hard }) => (<div className="pde-heroes" role="img"
   <span key={n} className={'pde-hero' + (started && n === (hard ? 'Rogue' : 'Fighter') ? ' is-on' : '')}><svg className="pde-hex" viewBox="-5 -5 46 50" aria-hidden="true"><polygon points={DL_HEX} /><text x="18" y="21">{l}</text></svg><span>{n}</span></span>))}</div>);
 const PDE_NOW = { b: PdeStops, c: PdeRitual, d: PdeStrip, e: PdeHeroes };
 
-const PdeNow = ({ title, started, hard, concept, sid }) => { const gs = useGs(); const Body = PDE_NOW[concept];
-  return (<LbNowCard gid="delve" className={'dl-now pde-now pde-' + concept} title={PDE_TITLES[title]} result={started ? { kind: 'live', label: 'In progress' } : undefined} play={started ? undefined : () => gs.play('Delve')} open={() => gs.go('session', { id: sid })} next={'Next run: ' + DV_NEXT}>
+const PdeNow = ({ title, started, hard, concept, sid, fix }) => { const gs = useGs(); const Body = PDE_NOW[concept];
+  return (<LbNowCard gid="delve" className={'dl-now pde-now pde-' + concept + (concept === 'b' && fix !== 'now' ? ' pde-fix-' + fix : '')} title={PDE_TITLES[title]} result={started ? { kind: 'live', label: 'In progress' } : undefined} play={started ? undefined : () => gs.play('Delve')} open={() => gs.go('session', { id: sid })} next={'Next run: ' + DV_NEXT}>
     <Body started={started} hard={hard} /></LbNowCard>); };
 
 // The library game page around the card, as canon's (DvLibrary): the card and the streak card beside it.
-const PdeLibrary = () => { const gs = useGs(); const { view, run, title, hard } = pdeSet(); const list = dvRun(gs);
+const PdeLibrary = () => { const gs = useGs(); const { view, run, title, hard, fix } = pdeSet(); const list = dvRun(gs);
   return (<main className="gs-wrap gs-main"><LbHead id="delve" />
     <div className="lb-lay">
-      <PdeNow title={title} started={run === 'live'} hard={hard} concept={view.replace('now-', '')} sid={pdeSid(title, hard)} />
+      <PdeNow title={title} started={run === 'live'} hard={hard} fix={fix} concept={view.replace('now-', '')} sid={pdeSid(title, hard)} />
       <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list)} />
     </div></main>); };
 
@@ -96,6 +96,7 @@ export const initPlaygroundDelveEmpty = () => {
       { value: 'now-d', label: 'Now card D: rooms in a row', state: 'library-delve-in-progress', go: pdeReopen },
       { value: 'now-e', label: 'Now card E: choose a hero', state: 'library-delve-in-progress', go: pdeReopen }] },
     { key: 'run', label: 'Now card state', options: [{ value: 'not-started', label: 'Not started' }, { value: 'live', label: 'In progress, nothing played' }] },
+    { key: 'fix', label: 'Title fix (Now card B)', when: { key: 'view', value: 'now-b' }, options: [{ value: 'now', label: 'Now (canon as is)' }, { value: 'smaller', label: 'Smaller' }, { value: 'below', label: 'Tag below' }] },
     { key: 'title', label: 'Title', options: [
       { value: 'real', label: 'The Goblin Warren beneath Ashford Mill', go: pdeReopen }, { value: 'longest', label: 'Longest canon holds', go: pdeReopen }, { value: 'huge', label: 'Oversized, 70 characters', go: pdeReopen }] },
     { key: 'hard', label: 'Hard', options: [{ value: 'off', label: 'Off', go: pdeReopen }, { value: 'on', label: 'On', go: pdeReopen }] },

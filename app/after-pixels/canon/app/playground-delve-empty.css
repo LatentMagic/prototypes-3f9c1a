@@ -26,3 +26,10 @@
 .pde-hero.is-on { color: var(--text); font-weight: 700; }
 .pde-hero.is-on .pde-hex polygon { stroke: var(--text); stroke-width: 2; opacity: 1; fill: var(--card); }
 .pde-hero.is-on .pde-hex text { fill: var(--text); }
+
+/* Title fix, Now card B. Smaller: the card title one design-system size down (mcp-t-card, 20px) at phone widths only.
+   Tag below: the In progress tag leaves the title's row and sits under the title, so the title takes the card's full width. */
+@media (max-width: 520px) { .pde-fix-smaller .lb-top h2 { font: 700 20px/1.2 var(--font-heading); } }
+.pde-now.pde-fix-below .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { flex-wrap: wrap; }
+.pde-now.pde-fix-below .lb-now-in > .lb-top > .gs-stack-xs { flex: 1 1 100%; }
+.pde-now.pde-fix-below .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { flex: 0 0 100%; max-width: 100%; text-align: left; }
