@@ -137,7 +137,6 @@ export const LbAch = ({ items, badges, access, ended, ed }) => {
   return (
     <section className="lb-card">
       <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{list.length > 0 && <span className="gs-muted">{lbAchEarned(list) + ' of ' + of + ' earned'}</span>}</div>
-      {access === 'first' && <p className="gs-muted">{'These are the achievements the first ' + (ed || ['edition'])[0] + ' can earn. Every ' + (ed || ['edition'])[0] + ' after it needs the Pass.'}</p>}
       {kept && <p className="gs-muted">You can’t earn the rest until the Pass returns.</p>}
       <ul className="lb-ach">
         {list.map((a) => (
