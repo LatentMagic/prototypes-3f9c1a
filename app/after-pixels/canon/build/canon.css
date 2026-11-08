@@ -3076,7 +3076,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* 32px on the right leaves the chevron clear of the heading. */
 .pdh-open .dv7-grp.dv8-adv:last-child { flex: 1 1 auto; padding-left: 12px; padding-right: 32px; justify-content: center; justify-items: center; }
 .pdh-open .dv7-grp.dv8-adv:last-child .dv7-cells { justify-content: center; }
-.pdh-open.is-shut .dv8-meters { justify-content: start !important; }
+/* The meters start 16px after the divider, open or folded, so the gap matches the one before it. */
+.pdh-open .dv8-meters { justify-content: start !important; }
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
    session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 
