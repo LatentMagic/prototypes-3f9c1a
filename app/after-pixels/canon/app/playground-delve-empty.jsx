@@ -96,7 +96,7 @@ export const initPlaygroundDelveEmpty = () => {
       { value: 'now-d', label: 'Now card D: rooms in a row', state: 'library-delve-in-progress', go: pdeReopen },
       { value: 'now-e', label: 'Now card E: choose a hero', state: 'library-delve-in-progress', go: pdeReopen }] },
     { key: 'run', label: 'Now card state', options: [{ value: 'not-started', label: 'Not started' }, { value: 'live', label: 'In progress, nothing played' }] },
-    { key: 'fix', label: 'Title fix (Now card B)', when: { key: 'view', value: 'now-b' }, options: [{ value: 'now', label: 'Now (canon as is)' }, { value: 'smaller', label: 'Smaller' }, { value: 'below', label: 'Tag below' }] },
+    { key: 'fix', label: 'Title fix (Now card B)', when: { key: 'view', value: 'now-b' }, options: [{ value: 'now', label: 'Now (canon as is)' }, { value: 'fill', label: 'Fill each line' }] },
     { key: 'title', label: 'Title', options: [
       { value: 'real', label: 'The Goblin Warren beneath Ashford Mill', go: pdeReopen }, { value: 'longest', label: 'Longest canon holds', go: pdeReopen }, { value: 'huge', label: 'Oversized, 70 characters', go: pdeReopen }] },
     { key: 'hard', label: 'Hard', options: [{ value: 'off', label: 'Off', go: pdeReopen }, { value: 'on', label: 'On', go: pdeReopen }] },

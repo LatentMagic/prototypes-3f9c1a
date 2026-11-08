@@ -10870,7 +10870,7 @@
         { value: "now-e", label: "Now card E: choose a hero", state: "library-delve-in-progress", go: pdeReopen }
       ] },
       { key: "run", label: "Now card state", options: [{ value: "not-started", label: "Not started" }, { value: "live", label: "In progress, nothing played" }] },
-      { key: "fix", label: "Title fix (Now card B)", when: { key: "view", value: "now-b" }, options: [{ value: "now", label: "Now (canon as is)" }, { value: "smaller", label: "Smaller" }, { value: "below", label: "Tag below" }] },
+      { key: "fix", label: "Title fix (Now card B)", when: { key: "view", value: "now-b" }, options: [{ value: "now", label: "Now (canon as is)" }, { value: "fill", label: "Fill each line" }] },
       { key: "title", label: "Title", options: [
         { value: "real", label: "The Goblin Warren beneath Ashford Mill", go: pdeReopen },
         { value: "longest", label: "Longest canon holds", go: pdeReopen },
