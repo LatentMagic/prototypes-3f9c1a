@@ -140,7 +140,7 @@ Build and test every game against the standard states it can have. Skip a state 
 | Completed | A finished play that ended well | Average |
 | Failed | Play ended in a loss | Failed |
 
-It is its own state because a game's page can fail on zero moves where In progress, seeded with moves, never does. A game has it where it has an in-progress play: add its `<game>-begun` session, that play with no moves, beside its `-live` one, and its entries in the per-game lists in `states.jsx`.
+In progress, nothing played yet is its own state because a game's page can fail on zero moves where In progress, seeded with moves, never does. A game has it where it has an in-progress play: add its `<game>-begun` session, that play with no moves, beside its `-live` one, and its entries in the per-game lists in `states.jsx`.
 
 Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day's Finished late and In progress are variants: cover them where the game has one. A variant's entry follows its group's ids: `library-delve-hard`, `past-day-word-late-library`.
 </important>
