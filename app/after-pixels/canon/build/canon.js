@@ -1856,9 +1856,9 @@
         ] },
         { cap: "Each guess builds on the letters the one before it found.", turns: [
           gscU("Spray."),
-          gscAi("guess", "You have 5 guesses left.", [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
+          gscAi("guess", ["R and A are in the word, both in other places.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
           gscU("Guard."),
-          gscAi("guess", "You have 4 guesses left.", [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
+          gscAi("guess", ["A is in place now.", "You have 4 guesses left."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
         ] },
         { cap: "Your shared result shows how you did and hides every letter.", turns: [
           gscU("Share my result."),
