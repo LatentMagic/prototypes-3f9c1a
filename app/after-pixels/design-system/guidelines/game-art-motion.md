@@ -102,7 +102,7 @@ A cigarette beside a ring. An orange ring left of centre and an upright cream ci
 - Hover: the ring shrinks to 45% of its size and becomes a bullseye. The cigarette and its tip round their tops and rise together (capped at 12px), 50ms behind.
 
 ### Daily Word
-Three tiles of a guess, in the game's own marks. Three squares in a row across the middle on forest: green (in place) and amber (in the word) solid, and on the right the block for a letter not in the word, a thin grey outline (control edge) at .625 of its tile.
+Three tiles of a guess, in the game's own marks. Three squares in a row across the middle on forest: green (in place) and amber (in the word) solid, and on the right the block for a letter not in the word, a thin grey outline (control edge), 22 units outside on a 32-unit tile, its stroke 2 units.
 - Always: the three tile boxes are the same size and evenly spaced; green and amber never move. The grey block stays centred in its box.
 - May change: drawn on a centred 4:3 stage, like Daily Mystery.
 - Extends: from the centre.
