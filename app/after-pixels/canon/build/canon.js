@@ -10845,7 +10845,7 @@
   const PdeNow = ({ title, started, hard, concept, sid }) => {
     const gs = useGs();
     const Body = PDE_NOW[concept];
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pde-now pde-" + concept, title: PDE_TITLES[title], play: started ? void 0 : () => gs.play("Delve"), open: () => gs.go("session", { id: sid }), next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement(Body, { started, hard }));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pde-now pde-" + concept, title: PDE_TITLES[title], result: started ? { kind: "live", label: "In progress" } : void 0, play: started ? void 0 : () => gs.play("Delve"), open: () => gs.go("session", { id: sid }), next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement(Body, { started, hard }));
   };
   const PdeLibrary = () => {
     const gs = useGs();

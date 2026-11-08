@@ -52,6 +52,7 @@ const PdeSession = ({ s }) => {
 const PdeBodyOf = (Orig) => (p) => (p.s && p.s.pde ? <PdeSession s={p.s} /> : <Orig {...p} />);
 
 // ---- Now card. One design for both states; the state moves only the button, and which room (or hero) is lit. ----
+// In progress carries canon's In progress tag at the top right; not started has none.
 // B: the run drawn empty, as Where's not-started card draws its board. C: the week's threat at nothing. D: the rooms as one row.
 // E: the three heroes the run can start with. Concept ids are the letters the user is shown.
 const PdeStops = ({ started }) => { const [ref, cols] = useDlNowCols(PDE_ROOMS);
@@ -71,7 +72,7 @@ const PdeHeroes = ({ started, hard }) => (<div className="pde-heroes" role="img"
 const PDE_NOW = { b: PdeStops, c: PdeRitual, d: PdeStrip, e: PdeHeroes };
 
 const PdeNow = ({ title, started, hard, concept, sid }) => { const gs = useGs(); const Body = PDE_NOW[concept];
-  return (<LbNowCard gid="delve" className={'dl-now pde-now pde-' + concept} title={PDE_TITLES[title]} play={started ? undefined : () => gs.play('Delve')} open={() => gs.go('session', { id: sid })} next={'Next run: ' + DV_NEXT}>
+  return (<LbNowCard gid="delve" className={'dl-now pde-now pde-' + concept} title={PDE_TITLES[title]} result={started ? { kind: 'live', label: 'In progress' } : undefined} play={started ? undefined : () => gs.play('Delve')} open={() => gs.go('session', { id: sid })} next={'Next run: ' + DV_NEXT}>
     <Body started={started} hard={hard} /></LbNowCard>); };
 
 // The library game page around the card, as canon's (DvLibrary): the card and the streak card beside it.
