@@ -71,8 +71,8 @@ const dlBuild = (s) => {
     r.n = rolls.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20). Its roll back, where the line holds one, rides on the roll.
-    if (fo && !r.action) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1));
-      if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: fo.f[1] }; }
+    if (fo && !r.action) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1));
+      if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] }; }
     rolls.push(r); cur.rolls.push(r);
   });
   let run = 0; rolls.forEach((r) => { run = r.tier === 'strong' ? run + 1 : 0; });
@@ -80,7 +80,7 @@ const dlBuild = (s) => {
   const moments = dlMoments(rolls, end);
   return { stops, rolls, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
 };
-const dlSay = (r) => 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + DL_TIER[r.tier].toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '');
+const dlSay = (r, foe = true) => 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + DL_TIER[r.tier].toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '');
 
 // ---- The die: strong filled green, weak filled yellow, miss empty, natural 20 rimmed, natural 1 red-edged. A roll the foe answered
 // has the foe's roll as a red hex behind it, outside the advantage hex when there is one. ----
@@ -102,7 +102,7 @@ const DlDie = ({ r, size = 36, sel, foe = true }) => { const gh = r.two && size 
     <polygon className="sl" points={DL_RIM} />
   </svg>); };
 const DlDieBtn = ({ r, size, act, on, foe }) => (
-  <button type="button" className="dv2-dbtn" aria-pressed={act === r.n} aria-label={dlSay(r)} onClick={() => on.sel(r.n)} onMouseEnter={() => on.hov(r.n)} onMouseLeave={() => on.hov(null)}>
+  <button type="button" className="dv2-dbtn" aria-pressed={act === r.n} aria-label={dlSay(r, foe !== false)} onClick={() => on.sel(r.n)} onMouseEnter={() => on.hov(r.n)} onMouseLeave={() => on.hov(null)}>
     <DlDie r={r} size={size} sel={act === r.n} foe={foe} />
   </button>);
 
@@ -282,18 +282,18 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
   ['Strength', 'Miss', 'Rolled 3 + 3 = 6 against DC 12', 'Struck back: d20 17 vs 13, hit, 3 damage, HP 7/13'], ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 5/13'], ['Strength', 'Miss', 'Natural 1', 'Rolled 1 + 3 = 4 against DC 12', 'Struck back: d20 16 vs 13, hit, 3 damage, HP 2/13'],
   ['Strength', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Strength', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 18 vs 13, hit, 2 damage, HP 0/13']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
-  hero: 'Wren the Rogue', hpMax: 11, threat: 12, sheet: { used: { Backstab: 2 }, insp: false }, lines: [
+  hero: 'Wren the Rogue', hpMax: 11, threat: 12, foeMax: { 'the warren': 4, 'the shrine cavern': 5 }, sheet: { used: { Backstab: 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 1 = 2 against DC 12', 'HP 10/11'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'HP 9/11'], ['Dexterity', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
+  ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 9/11'], ['Dexterity', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 7 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12'], ['Dexterity', 'Miss', 'Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12', 'HP 7/11'],
-  ['Strength', 'Weak hit', 'Rolled 12 + 0 = 12 against DC 12', 'HP 6/11'], ['Dexterity', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12'],
+  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12', 'Struck back: d20 11 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12', 'Struck back: d20 15 vs 13, hit, 3 damage, HP 6/11'],
+  ['Strength', 'Weak hit', 'Rolled 12 + 0 = 12 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'Rolled 13 + 1 = 14 against DC 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'HP 5/11'], ['Dexterity', 'Strong hit', 'Natural 20', 'Rolled 20 + 3 = 23 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12'],
+  ['Dexterity', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 13 vs 13, hit, 1 damage, HP 5/11'], ['Dexterity', 'Strong hit', 'Natural 20', 'Rolled 20 + 3 = 23 against DC 12', 'Struck back: d20 8 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
   ['Strength', 'Force the bone gate', 'Failure', 'Rolled 6 + 0 = 6 against DC 12'], ['Strength', 'Force the bone gate', 'Failure', 'Rolled 11 + 0 = 11 against DC 12'], ['Strength', 'Force the bone gate', 'Success', 'Rolled 14 + 0 = 14 against DC 12'],
   ['Lock', 'Forced the bone gate'], ['Room', 'Entered the shrine cavern'],
-  ['Dexterity', 'Weak hit', 'Rolled 10 + 3 = 13 against DC 12', 'HP 3/11'], ['Dexterity', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12'], ['Dexterity', 'Strong hit', 'Rolled 18 + 3 = 21 against DC 12'],
-  ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'HP 2/11'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'HP 1/11']] };
+  ['Dexterity', 'Weak hit', 'Rolled 10 + 3 = 13 against DC 12', 'Struck back: d20 16 vs 13, hit, 2 damage, HP 3/11'], ['Dexterity', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 18 + 3 = 21 against DC 12', 'Struck back: d20 9 vs 13, missed'],
+  ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'Struck back: d20 17 vs 13, hit, 1 damage, HP 2/11'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12', 'Struck back: d20 12 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 16 vs 13, hit, 1 damage, HP 1/11']] };
 }
