@@ -354,6 +354,16 @@ Object.assign(GS_SESSIONS, {
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 11/11'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
     hero: 'Wren the Rogue', hpMax: 11, threat: 3, sheet: { used: { Backstab: 1 }, insp: true } },
 });
+// In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets
+// review.begun beside week 'live'; every surface that opens the in-progress play reads its id through gsLiveSid.
+export const gsBegunId = (sid) => sid.replace(/-live$/, '-begun');
+export const gsLiveSid = (sid, gs) => { gs = gs || window.gsApi; const b = gsBegunId(sid); return gs && gs.review && gs.review.begun && GS_SESSIONS[b] ? b : sid; };
+Object.assign(GS_SESSIONS, {
+  'word-begun': { ...GS_SESSIONS['word-live'], lines: [] },
+  'groups-begun': { ...GS_SESSIONS['groups-live'], figures: ['0 of 4 groups', 'No mistakes'], lines: [] },
+  'escape-begun': { ...GS_SESSIONS['escape-live'], lines: [] },
+  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 11/11'], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, sheet: { used: {}, insp: true } },
+});
 // The old earlier-room id reads this week's.
 GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];
 

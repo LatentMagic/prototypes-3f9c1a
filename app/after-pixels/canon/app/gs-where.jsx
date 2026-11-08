@@ -86,13 +86,13 @@ const WhSessBody = ({ s }) => { const p = whRead(s); return <>
 </>; };
 
 // ---- The now card: the last guess (the hidden country on a loss), then the globe and the chart, one group that never splits.
-// Not yet played, the same card with nothing in it: New where the result goes, no last guess, the globe unlit (0 of 6, grey) and the hint unused. ----
+// Not yet played, the same card with nothing in it: no result tag, no last guess, the globe unlit (0 of 6, grey) and the hint unused. ----
 const WH_NOW_RESULT = { ok: { kind: 'ok', label: 'Solved' }, bad: { kind: 'bad', label: 'Failed' }, live: { kind: 'live', label: 'In progress' } };
 const WH_FRESH = { g: [], hint: null, live: true };
 const WhNow = ({ c, done, none, children }) => {
   const gs = useGs();
   if (none) return (
-    <LbNowCard gid="where" title={'#' + GS_SESSIONS[c.today].number} result={{ kind: 'live', label: 'New' }} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'where')[0] })} next={c.next} className="wh-now">
+    <LbNowCard gid="where" title={'#' + GS_SESSIONS[c.today].number} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'where')[0] })} next={c.next} className="wh-now">
       <div className="wh-row">
         <div className="wh-last is-none"><span className="wh-cap">Last guess</span><b>None yet</b></div>
         <div className="wh-figs"><WhGlobe p={WH_FRESH} /><WhChart p={WH_FRESH} /></div>

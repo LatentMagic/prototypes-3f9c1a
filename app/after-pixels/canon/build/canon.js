@@ -1526,6 +1526,18 @@
       sheet: { used: { Backstab: 1 }, insp: true }
     }
   });
+  const gsBegunId = (sid) => sid.replace(/-live$/, "-begun");
+  const gsLiveSid = (sid, gs) => {
+    gs = gs || window.gsApi;
+    const b = gsBegunId(sid);
+    return gs && gs.review && gs.review.begun && GS_SESSIONS[b] ? b : sid;
+  };
+  Object.assign(GS_SESSIONS, {
+    "word-begun": { ...GS_SESSIONS["word-live"], lines: [] },
+    "groups-begun": { ...GS_SESSIONS["groups-live"], figures: ["0 of 4 groups", "No mistakes"], lines: [] },
+    "escape-begun": { ...GS_SESSIONS["escape-live"], lines: [] },
+    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 11/11"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, sheet: { used: {}, insp: true } }
+  });
   GS_SESSIONS["escape-0928"] = GS_SESSIONS["escape-week"];
   const gsLapsed = (gs) => gs.view !== "pass" && !!gs.sub.hadPass;
   const gsSessDate = (s) => s.date;
@@ -2564,6 +2576,7 @@
   const CB_CAST = ["Maeve Doyle", "Tobias Pike", "Dr. Celia Rourke"];
   let CB_DONE;
   let CB_LIVE;
+  let CB_BEGUN;
   let CB_ALL;
   let CB_BY_SID;
   const cbDone = (gs) => CB_BY_SID[gsEdPick("casebook", gs)] || CB_DONE;
@@ -2581,6 +2594,7 @@
       "casebook-failed": { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, "wrong", 4, GS_CB_FAILED), cast: CB_CAST, places: 4 }
     };
     CB_LIVE = { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, null, 4, GS_CB_REC.filter((r) => r.c !== "A").slice(0, 6)), cast: CB_CAST };
+    CB_BEGUN = { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, null, 4, []), cast: CB_CAST };
     CB_ALL = [CB_LIVE];
     CB_ACH = [
       { k: "first", n: "First lie exposed", how: "Expose a suspect’s lie with proof.", first: true, by: (p) => p.src.lies >= 1 },
@@ -2608,7 +2622,7 @@
   const GS_SESSION_BODY = {};
   const GS_NOW = {};
   const cbGo = (gs, sid) => gs.go("casebook", sid ? { page: "record", sid } : { page: "record" });
-  const cbWeek = (gs) => lbWeekDone(gs) ? cbDone(gs) : CB_LIVE;
+  const cbWeek = (gs) => lbWeekDone(gs) ? cbDone(gs) : gs.review.begun ? CB_BEGUN : CB_LIVE;
   let CB_FIRST;
   const cbFirstOf = (gs) => {
     const st = phFirstSt ? phFirstSt(gs, "casebook") : "done";
@@ -2874,7 +2888,7 @@
   };
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
     const gs = useGs();
-    const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : sids[1];
+    const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const open = (roll) => gs.go("session", roll ? { id: sid, roll } : { id: sid });
@@ -3323,7 +3337,7 @@
   };
   const ES_SIDS = { under: "escape-week", par: "escape-par", over: "escape-over", hard: "escape-hard" };
   const esFinished = (gs) => gsEdPick("escape", gs) || ES_SIDS[gs.review.escape] || "escape-week";
-  const esSid = (gs) => gs.review.week === "live" ? "escape-live" : esFinished(gs);
+  const esSid = (gs) => gs.review.week === "live" ? gsLiveSid("escape-live", gs) : esFinished(gs);
   const esPlural = (n, a, b) => n + " " + (n === 1 ? a : b);
   const esBuild = (s) => {
     const t = s.esTimes || null;
@@ -3526,7 +3540,7 @@
   const EsSessBody = (props) => /* @__PURE__ */ React$1.createElement(EsBody, { key: props.sid, ...props });
   const EsNow = ({ label, title, next, pass, first }) => {
     const gs = useGs();
-    const sid = first ? gs.review.week === "live" ? "escape-live" : ES_SIDS[gs.review.escape] || "escape-week" : esSid(gs);
+    const sid = first ? gs.review.week === "live" ? gsLiveSid("escape-live", gs) : ES_SIDS[gs.review.escape] || "escape-week" : esSid(gs);
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => esBuild(s), [s]);
     const open = (lock) => gs.go("session", lock ? { id: sid, lock } : { id: sid });
@@ -3649,7 +3663,7 @@
       if (none) return WD_NONE;
       const ev = wdRead(s).events;
       const g = ev.filter((e) => e.kind === "guess");
-      return { n: g.length, last: g[g.length - 1], hint: ev.find((e) => e.kind === "hint") || null, won: !s.live && !s.loss };
+      return { n: g.length, last: g[g.length - 1] || WD_NONE.last, hint: ev.find((e) => e.kind === "hint") || null, won: !s.live && !s.loss };
     }, [s, none]);
     const r = wdResult(s);
     return /* @__PURE__ */ React$1.createElement(
@@ -3857,6 +3871,7 @@
     ...slvDive("G6 H6 G7 G8 H8")
   ];
   const SLV_MOVES = {
+    begun: [],
     won: [...SLV_WON_HEAD, ...slvDive("C3 C2 C1")],
     hard: [...SLV_WON_HEAD, ...slvDive("A1 H1 H2 A8 C3 C2 C1")],
     // Lost: all 20 dives spent with two wrecks not raised; the dragnet not used.
@@ -4209,6 +4224,7 @@
       "mystery-today-avg": accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: ACC_TRUTH }),
       "mystery-today-hard": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_CASE_13.truth, cs: ACC_CASE_13 }),
       "mystery-live": accSession({ no: ACC_CASE.no, date: GS.today, hints: 1, pick: null }),
+      "mystery-begun": accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: null }),
       "mystery-1004": accSession({ no: 62, date: "Sunday 4 October", hints: 1, pick: ACC_TRUTH })
     });
   };
@@ -4577,7 +4593,9 @@
         pin: { 2: "word-hard", 4: "word-failed" },
         past: "word-1005",
         today: "word-today",
-        liveSid: "word-live",
+        get liveSid() {
+          return gsLiveSid("word-live");
+        },
         ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + i % 4 }),
         bad: GS_RESULT.word({ ok: false }),
         title: "Today’s word",
@@ -4601,7 +4619,9 @@
         keep: { 1: true },
         past: "groups-1005",
         today: "groups-today",
-        liveSid: "groups-live",
+        get liveSid() {
+          return gsLiveSid("groups-live");
+        },
         ok: (i) => GS_RESULT.groups({ found: 4, mistakes: i === 1 ? 0 : i % 4 }),
         bad: GS_RESULT.groups({ found: 2 }),
         // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
@@ -4623,7 +4643,9 @@
         keep: { 2: true },
         past: "mystery-1004",
         today: "mystery-today",
-        liveSid: "mystery-live",
+        get liveSid() {
+          return gsLiveSid("mystery-live");
+        },
         ok: () => GS_RESULT.mystery({ ok: true }),
         bad: GS_RESULT.mystery({ ok: false }),
         title: "Today’s case",
@@ -4649,7 +4671,9 @@
         keep: {},
         past: "escape-week",
         today: "escape-week",
-        liveSid: "escape-live",
+        get liveSid() {
+          return gsLiveSid("escape-live");
+        },
         ok: () => GS_RESULT.escape({ min: 28, par: "under par" }),
         bad: GS_RESULT.escape({ min: 28, par: "under par" }),
         title: "The Clockmaker’s Study",
@@ -5257,7 +5281,7 @@
     dpChT = dpChain(CH_TODAY);
     const svSession = (fx) => {
       const p = SLV_PLAYS[fx];
-      const done = fx !== "live";
+      const done = fx !== "live" && fx !== "begun";
       const found = p.raised.size;
       const result = done ? GS_RESULT.salvage({ found, dives: p.dives }) : "In progress";
       return {
@@ -5337,6 +5361,7 @@
       },
       "salvage-today": svSession("won"),
       "salvage-live": svSession("live"),
+      "salvage-begun": svSession("begun"),
       "common-today": { kind: "puzzle", gid: "common", game: GS_NAME.common, art: "common", date: GS.today, ...dpCmToday, share: dpCmToday.result, recovered: true },
       "common-live": {
         kind: "puzzle",
@@ -5352,6 +5377,12 @@
         share: null,
         lines: cmPlay(CM_LIVE, true).lines
       }
+    });
+    const dpChB = dpChain({ ...CH_TODAY, p: [] });
+    Object.assign(GS_SESSIONS, {
+      "where-begun": { ...GS_SESSIONS["where-live"], figures: ["0 of 6 guesses", "No hints"], lines: [] },
+      "chain-begun": { ...GS_SESSIONS["chain-live"], play: { ...CH_TODAY, p: [] }, figures: [dpChB.found + " of " + dpChB.hidden + " words", dpWrong(dpChB.wrong).replace(/^./, (c) => c.toUpperCase())], lines: [] },
+      "common-begun": { ...GS_SESSIONS["common-live"], play: { c: CM_C7, m: [] }, figures: ["Thread 1 of 3", "0 points so far"], lines: [] }
     });
     DP_IDS.forEach((k) => {
       GS_TODAY_PLAYED.pass[k] = k + "-today";
@@ -5401,7 +5432,9 @@
         salt: 7,
         keep: {},
         today: "where-today",
-        liveSid: "where-live",
+        get liveSid() {
+          return gsLiveSid("where-live");
+        },
         ok: (i) => GS_RESULT.where({ ok: true, guesses: dpWhere(WH_OK[i % WH_OK.length], true).guesses }),
         bad: GS_RESULT.where({ ok: false }),
         title: "Today’s country",
@@ -5424,7 +5457,9 @@
         salt: 8,
         keep: {},
         today: "chain-today",
-        liveSid: "chain-live",
+        get liveSid() {
+          return gsLiveSid("chain-live");
+        },
         ok: (i) => dpChResult(dpChain(CH_OK[i % CH_OK.length])),
         bad: dpChResult(dpChain(CH_FAIL)),
         title: "Today’s chain",
@@ -5444,7 +5479,9 @@
         salt: 12,
         keep: {},
         today: "salvage-today",
-        liveSid: "salvage-live",
+        get liveSid() {
+          return gsLiveSid("salvage-live");
+        },
         ok: (i) => GS_RESULT.salvage({ found: 5, dives: dpSvDay(i, true).log.length }),
         bad: GS_RESULT.salvage({ found: 3 }),
         // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
@@ -5471,7 +5508,9 @@
         keep: {},
         alwaysCompletes: true,
         today: "common-today",
-        liveSid: "common-live",
+        get liveSid() {
+          return gsLiveSid("common-live");
+        },
         ok: (i) => cmSess(0, CM_OK[i % CM_OK.length]).result,
         bad: cmSess(0, CM_FAIL).result,
         title: "Today’s threads",
@@ -5978,6 +6017,7 @@
     PH_PLAYS.push(...e.plays);
   };
   const phSess = (id) => (gs) => gs.go("session", { id });
+  const phLive = (id) => (gs) => gs.go("session", { id: gsLiveSid(id, gs) });
   let PH_LIVE;
   let PH_PAST;
   let PH_LIVE_SID;
@@ -6274,7 +6314,7 @@
       let first;
       if (cur) {
         const s = GS_SESSIONS[c.today];
-        first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } };
+        first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phLive(PH_LIVE_SID[id]) } };
       } else first = { at: phAt(x.d, 7 + (x.i * 5 + c.salt * 3) % 15, (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? "ok" : "bad", label: x.line } };
       first.open = phSess(sid);
       first.sid = sid;
@@ -6292,7 +6332,7 @@
       if (!s.played) return;
       const ed = phParse(s.date);
       const cur = i === 0;
-      const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: "delve", open: phSess("delve"), now: { status: PH_LIVE, open: phSess("delve-live") } } : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
+      const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: "delve", open: phSess("delve"), now: { status: PH_LIVE, open: phLive("delve-live") } } : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
       phEd("delve", s.id, s.title, ed, [first], cur);
     });
     HG_DAYS.forEach((x, i) => {
@@ -6911,7 +6951,8 @@
   const gsEdMine = (gid) => {
     const c = PZ[gid];
     const ids = (GS_ED_SIDS || {})[gid] || {};
-    return [c && (c.todayBase || c.today), c && c.liveSid, ...Object.values(ids), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []].filter(Boolean);
+    const live = c ? c.liveSid.replace(/-begun$/, "-live") : ids.live;
+    return [c && (c.todayBase || c.today), live, live && gsBegunId(live), ...Object.values(ids), ...gid === "escape" && typeof ES_SIDS !== "undefined" ? Object.values(ES_SIDS) : []].filter(Boolean);
   };
   const gsNoPlay = (gs, gid) => {
     if (gsFresh(gs) || gs.review && gs.review.never === gid) return true;
@@ -6924,7 +6965,7 @@
     const ids = (GS_ED_SIDS || {})[gid] || {};
     const live = gs.review && gs.review.week === "live";
     if (gsNoPlay(gs, gid)) return null;
-    if (live) return c ? c.liveSid : ids.live || null;
+    if (live) return c ? c.liveSid : ids.live ? gsLiveSid(ids.live, gs) : null;
     return c ? c.today : gsEdPick(gid, gs) || ids.average;
   };
   const gsThisEdSid = (gs, sid) => {
@@ -7463,7 +7504,7 @@
     const opts = [["out", "signed out"], ["free", "free"], ["pass", "Pass"]];
     const sw = gsWeekSwitch(gs);
     const daily = gsDailyRoute(gs);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-space" + (sw ? " is-two" : ""), "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo", role: "group", "aria-label": "Demo view, not part of the product" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-in" + (sw ? " is-two" : "") }, /* @__PURE__ */ React$1.createElement("span", null, "Demo view:"), opts.map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": gs.view === v, onClick: () => gs.setDemoView(v) }, l))), sw && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true", className: "gs-demo-sep" }), /* @__PURE__ */ React$1.createElement("span", null, gs.route.name === "history" ? "Today and this week:" : daily ? "Today:" : "This week:"), [["live", "in progress"], ["done", daily ? "day complete" : "finished"]].map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": (gs.review.week === "live" ? "live" : "done") === v, onClick: () => gs.setReview({ week: v }) }, l)))))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-space" + (sw ? " is-two" : ""), "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo", role: "group", "aria-label": "Demo view, not part of the product" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-demo-in" + (sw ? " is-two" : "") }, /* @__PURE__ */ React$1.createElement("span", null, "Demo view:"), opts.map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": gs.view === v, onClick: () => gs.setDemoView(v) }, l))), sw && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true", className: "gs-demo-sep" }), /* @__PURE__ */ React$1.createElement("span", null, gs.route.name === "history" ? "Today and this week:" : daily ? "Today:" : "This week:"), [["live", "in progress"], ["done", daily ? "day complete" : "finished"]].map(([v, l], i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: v }, i > 0 && /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "/"), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-demo-opt", "aria-pressed": (gs.review.week === "live" ? "live" : "done") === v, onClick: () => gs.setReview({ week: v, begun: false }) }, l)))))));
   };
   const GsPlayPopup = () => /* @__PURE__ */ React$1.createElement(GsPlayDialog, null);
   const DL_PHONE = 768;
@@ -8423,6 +8464,35 @@
           c.setView("pass");
           c.setConnected(true);
           c.setReview({ today: "none" });
+          c.go(k, { page: "record" });
+        }
+      })),
+      // In progress, nothing played yet: Config → This edition. A game has it where it has an in-progress play (`<game>-begun`, gs-data.jsx); the nine added games have no in-progress play, and the Barrow and 36,000 Summers Ago have none by design.
+      ...[["word", "Guess"], ["groups", "Daily Groups"], ["mystery", "Accuse"], ["escape", "Escape"], ["delve", "Delve"], ["where", "Where"], ["chain", "Chain"], ["salvage", "Salvage"], ["common", "Common"]].map(([k, name]) => ({
+        group: "Screens",
+        id: "session-" + k + "-nothing-played",
+        label: "7. Session page: " + name + " in progress, nothing played yet",
+        stage: (c) => {
+          c.setView("pass");
+          c.setConnected(true);
+          c.setReview({ week: "live", begun: true });
+          c.go("session", { id: k + "-begun" });
+        }
+      })),
+      { group: "Screens", id: "session-casebook-nothing-played", label: "7. Session page: Casebook in progress, nothing played yet", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ week: "live", begun: true });
+        c.go("casebook", { page: "record", sid: CB_ID });
+      } },
+      ...[["word", "Guess"], ["groups", "Daily Groups"], ["mystery", "Accuse"], ["escape", "Escape"], ["casebook", "Casebook"], ["delve", "Delve"], ["where", "Where"], ["chain", "Chain"], ["salvage", "Salvage"], ["common", "Common"]].map(([k, name]) => ({
+        group: "Library",
+        id: "library-" + k + "-nothing-played",
+        label: name + " in your library, with the Pass, in progress, nothing played yet",
+        stage: (c) => {
+          c.setView("pass");
+          c.setConnected(true);
+          c.setReview({ week: "live", begun: true });
           c.go(k, { page: "record" });
         }
       })),
@@ -9720,7 +9790,7 @@
       if (api.view !== "pass" && CPR_STAGE[gid] === "first") return cprFirstState(api, gid) === "none";
       return !lbNow(api, gid);
     };
-    const edVal = api.view === "out" || g && cprLocked(api, gid) ? null : notStarted() ? "none" : r.week === "live" ? "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
+    const edVal = api.view === "out" || g && cprLocked(api, gid) ? null : notStarted() ? "none" : r.week === "live" ? r.begun ? "begun" : "live" : ["average", "hard", "failed"].includes(r.ed) ? r.ed : null;
     const needsPass = !!g && !g.free && !g.first;
     const [forced, setForced] = React$1.useState(null);
     const edAt = (v) => [v, route.name, route.id, route.page].join("|");
@@ -9745,7 +9815,7 @@
       const forced2 = edForce(v);
       if (forced2) api.setDemoView(forced2.view);
       setForced(forced2 ? { text: forced2.text, at: edAt(v) } : null);
-      api.setReview({ today: v === "none" ? "none" : "played", week: v === "live" ? "live" : "done", ed: ["average", "hard", "failed"].includes(v) ? v : null });
+      api.setReview({ today: v === "none" ? "none" : "played", week: v === "live" || v === "begun" ? "live" : "done", begun: v === "begun", ed: ["average", "hard", "failed"].includes(v) ? v : null });
       setTimeout(() => gsEdFollow(window.gsApi), 0);
     });
     const keys = Object.keys(GS_GAMES);
@@ -9792,7 +9862,7 @@
       "This edition",
       edVal,
       setEd,
-      o([["none", "Not played"], ["live", "In progress"], ["average", "Average"], ["hard", "Hard"], ["failed", "Failed"]]),
+      o([["none", "Not played"], ["live", "In progress"], ["begun", "In progress, nothing played yet"], ["average", "Average"], ["hard", "Hard"], ["failed", "Failed"]]),
       edHint
     ), edNote ? /* @__PURE__ */ React$1.createElement("p", { className: "kit-config-edwarn", role: "status" }, edNote) : null, R(
       "Past day",
@@ -10611,7 +10681,7 @@
     const holds = gs.view === "pass";
     return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React$1.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-pass-price gs-num-text" }, plans.yearly.price, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, " or ", plans.monthly.price)), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.purchase)) })));
   };
-  const CPR_PICKS = [["casebook", "ONE CASE"], ["word", "A NEW WORD EVERY DAY"]];
+  const CPR_PICKS = [["delve", "ONE RUN A WEEK"], ["word", "A NEW WORD EVERY DAY"]];
   const cprSelection = (gs) => {
     const free = gs.view === "pass" ? [] : CPR_SHOWN.filter((k) => CPR_STAGE[k] !== "pass");
     return { free };
@@ -11018,7 +11088,7 @@
   const WH_FRESH = { g: [], hint: null, live: true };
   const WhNow = ({ c, done, none, children }) => {
     const gs = useGs();
-    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#" + GS_SESSIONS[c.today].number, result: { kind: "live", label: "New" }, play: () => gs.playReq({ kind: "edition", e: edList(gs, "where")[0] }), next: c.next, className: "wh-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-none" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, "None yet")), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p: WH_FRESH }), /* @__PURE__ */ React$1.createElement(WhChart, { p: WH_FRESH }))));
+    if (none) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "where", title: "#" + GS_SESSIONS[c.today].number, play: () => gs.playReq({ kind: "edition", e: edList(gs, "where")[0] }), next: c.next, className: "wh-now" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "wh-last is-none" }, /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "Last guess"), /* @__PURE__ */ React$1.createElement("b", null, "None yet")), /* @__PURE__ */ React$1.createElement("div", { className: "wh-figs" }, /* @__PURE__ */ React$1.createElement(WhGlobe, { p: WH_FRESH }), /* @__PURE__ */ React$1.createElement(WhChart, { p: WH_FRESH }))));
     const sid = done ? c.today : c.liveSid;
     const s = GS_SESSIONS[sid];
     if (!s) return children;
@@ -11544,7 +11614,7 @@
     registerEscape();
     registerWord();
     registerDelve();
-    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", today: null, pastDay: "none", several: false, escape: "under", ed: null, cur: GS_CUR_SEED };
+    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", begun: false, today: null, pastDay: "none", several: false, escape: "under", ed: null, cur: GS_CUR_SEED };
     GS_USER_DEFAULT = { username: "MonaLaser", first: "Mona", last: "Lasker", locked: false, since: null, fresh: false, email: "you@example.com" };
     GS_SUB_DEFAULT = { status: "none", plan: "monthly", hadPass: false, pending: null, renew: null };
     GS_BARE = ["signup", "signin", "verify", "username", "recover", "returning", "checkout", "update-card", "loading", "offline", "directory-claude", "directory-chatgpt", ...GS_MORE_IDS || []];

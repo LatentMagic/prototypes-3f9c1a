@@ -118,11 +118,11 @@ The top section is the platform's and the same for every game; below it the play
 </important>
 
 <important if="you are changing the library game page">
-Four cards on one grid: the **now card** (the current or latest edition, carrying down the game's result statement, the element that states the outcome outright) and the **streak card** (the run of days or weeks played) above Achievements and Your plays. Never break, reorder or restack the rows on desktop. Cards in a row end level by arranging what is inside, never by stretching; check each card with its fewest and most items. On a phone they stack in the same order.
+The now card carries down the game's **result statement**, the element that states the outcome outright.
 </important>
 
 <important if="you are changing the product page">
-It tells a stranger what they will do and why they would want it, using only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
+Use only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
 </important>
 
 <important if="your change makes a situation hard to reach (an account state, a failed play, a game mid-run)">
@@ -130,14 +130,17 @@ Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; th
 </important>
 
 <important if="you are building or testing a game, or adding one">
-Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape cannot fail: its `GS_ED_SIDS` row in `gs-data.jsx` has no `failed`). Make each other state reachable from Config and register it on the library game page, even where a click from the library list reaches it. `library-<game>` opens the game's seeded play, whichever state that is; each other state adds its name: `-not-started`, `-in-progress`, `-completed`, `-failed`, or a variant's own, such as `-hard`. Ids already registered that name a state another way (`library-mystery-solved`, `library-escape-on-par`) stay: ids are public links. Give a new game its row in `GS_ED_SIDS` so the This edition picks reach it, and its Not started entry in the per-game list in `states.jsx`. Where a game has no row (the Barrow) or its row lacks a pick (Escape's Average), that state is staged from the game's own Config group instead. A session-page entry is optional and does not stand in for the library-page entry.
+Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape cannot fail: its `GS_ED_SIDS` row in `gs-data.jsx` has no `failed`). Make each other state reachable from Config and register it on the library game page, even where a click from the library list reaches it. `library-<game>` opens the game's seeded play, whichever state that is; each other state adds its name: `-not-started`, `-in-progress`, `-nothing-played`, `-completed`, `-failed`, or a variant's own, such as `-hard`. Ids already registered that name a state another way (`library-mystery-solved`, `library-escape-on-par`) stay: ids are public links. Give a new game its row in `GS_ED_SIDS` so the This edition picks reach it, and its Not started entry in the per-game list in `states.jsx`. Where a game has no row (the Barrow) or its row lacks a pick (Escape's Average), that state is staged from the game's own Config group instead. A session-page entry is optional and does not stand in for the library-page entry.
 
 | State | Meaning | Config → Editions → This edition |
 |---|---|---|
 | Not started | The edition is unplayed | Not played |
-| In progress | Play has begun and not ended | In progress |
+| In progress | Play has begun and not ended, with moves made | In progress |
+| In progress, nothing played yet | Play has begun, no move made yet | In progress, nothing played yet |
 | Completed | A finished play that ended well | Average |
 | Failed | Play ended in a loss | Failed |
+
+In progress, nothing played yet is its own state because a game's page can fail on zero moves where In progress, seeded with moves, never does. A game has it where it has an in-progress play: add its `<game>-begun` session, that play with no moves, beside its `-live` one, and its entries in the per-game lists in `states.jsx`.
 
 Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day's Finished late and In progress are variants: cover them where the game has one. A variant's entry follows its group's ids: `library-delve-hard`, `past-day-word-late-library`.
 </important>

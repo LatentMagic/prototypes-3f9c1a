@@ -7,7 +7,7 @@
 // ============================================================================
 // ---- Dates ----
 import React from 'react';
-import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED_SIDS, gsEndedOn, GS_TODAY_PLAYED, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
+import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED_SIDS, gsLiveSid, gsEndedOn, GS_TODAY_PLAYED, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, LbChoice } from './gs-library.jsx';
@@ -104,6 +104,8 @@ const phEd = (gid, ed, edTitle, edDate, plays, cur) => {
   PH_EDS[ed] = e; PH_PLAYS.push(...e.plays);
 };
 const phSess = (id) => (gs) => gs.go('session', { id });
+// The in-progress play's page, or its begun form while Config → This edition is In progress, nothing played yet.
+const phLive = (id) => (gs) => gs.go('session', { id: gsLiveSid(id, gs) });
 let PH_LIVE;
 let PH_PAST;
 let PH_LIVE_SID;
@@ -401,7 +403,7 @@ Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
   if (!x.played) return;
   const cur = x.i === 0; const sid = cur ? c.today : x.sid;
   let first;
-  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
+  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phLive(PH_LIVE_SID[id]) } }; }
   else first = { at: phAt(x.d, 7 + ((x.i * 5 + c.salt * 3) % 15), (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? 'ok' : 'bad', label: x.line } };
   first.open = phSess(sid); first.sid = sid; first.src = x;
   phEd(id, x.id, x.title, x.d, [first], cur);
@@ -417,7 +419,7 @@ CB_ALL.forEach((cb, k) => {
 DV_ALL.forEach((s, i) => {
   if (!s.played) return;
   const ed = phParse(s.date); const cur = i === 0;
-  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phSess('delve-live') } }
+  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phLive('delve-live') } }
     : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
   phEd('delve', s.id, s.title, ed, [first], cur);
 });

@@ -204,6 +204,7 @@ export const initGsAccuse = () => {
     'mystery-today-avg': accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: ACC_TRUTH }),
     'mystery-today-hard': accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_CASE_13.truth, cs: ACC_CASE_13 }),
     'mystery-live': accSession({ no: ACC_CASE.no, date: GS.today, hints: 1, pick: null }),
+    'mystery-begun': accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: null }),
     'mystery-1004': accSession({ no: 62, date: 'Sunday 4 October', hints: 1, pick: ACC_TRUTH }),
   });
 };

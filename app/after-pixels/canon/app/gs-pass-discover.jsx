@@ -13,7 +13,7 @@ import { gsFind, gsKinds, gsKind } from './gs-discover.jsx';
 import { CPR_SHOWN, CPR_STAGE, cprLocked, cprFirstFree } from './gs-pass-store.jsx';
 import { GsCard, GsPick } from './gs-pass-home.jsx';
 
-const CPR_PICKS = [['casebook', 'ONE CASE'], ['word', 'A NEW WORD EVERY DAY']];
+const CPR_PICKS = [['delve', 'ONE RUN A WEEK'], ['word', 'A NEW WORD EVERY DAY']];
 // The selection: Free to play (every game with free play, picks included; gone with the Pass). A row with nothing in it isn't shown.
 // Just added is off while the catalogue is small; GS_ADDED (gs-discover.jsx) still holds its games for when it returns.
 const cprSelection = (gs) => {
