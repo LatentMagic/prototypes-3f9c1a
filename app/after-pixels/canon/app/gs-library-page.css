@@ -263,6 +263,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 @container gs (max-width: 479px) {
   .lb-runbody .lb-run { grid-template-columns: repeat(6, 32.6px) !important; }
+  .lb-runbody .lb-run > .is-cut > i::before { content: none; }
 }
 @container gs (min-width: 900px) {
   .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }

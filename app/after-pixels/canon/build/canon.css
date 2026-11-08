@@ -1757,6 +1757,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 @container gs (max-width: 479px) {
   .lb-runbody .lb-run { grid-template-columns: repeat(6, 32.6px) !important; }
+  .lb-runbody .lb-run > .is-cut > i::before { content: none; }
 }
 @container gs (min-width: 900px) {
   .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }
@@ -3353,10 +3354,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acn .acc-blank { width: min(160px, 80%); }
 .acn .acc-blank.is-s { width: min(190px, 92%); }
 
-/* KEEP: on a card 675px wide inside its padding (about 725px across) or more the pair is one group centred on the whole card, head and action row included, with the body at the
-   standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's and
-   action row's height, so it needs a card wide enough for its 360px to clear the head's "#64" on the left and the action row's button and
-   "Next case" line on the right. Below that it stays the phone row between them. */
+/* KEEP: on a card whose content box is 675px wide or more (the card's padding is 24px on pages from 720px and 16px below, so a card of
+   about 725px across at a 1160px page) the pair is one group centred on the whole card, head and action row included, with the body at
+   the standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's
+   and action row's height, so it needs a card wide enough for its 360px to clear the head's "#64" on the left and the action row's
+   button and "Next case" line on the right. Below that it stays the phone row between them. A single-column page from about 757px
+   therefore gets the centred group. */
 @container acn (min-width: 675px) {
   .acn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .acn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max-content; pointer-events: none; }
