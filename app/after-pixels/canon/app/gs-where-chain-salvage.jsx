@@ -503,9 +503,9 @@ Object.assign(GS_PAGES, {
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'An egg, a tortoise and a peanut have something in common. Name it early.', ps: [
       'Each day brings three threads, and a thread is four items that share one hidden connection. The game shows them one at a time, starting with a single item that could point several ways.',
-      'The earlier you name the connection, the more it scores, but the first items can point at the wrong one, so the skill is knowing when to commit. However a thread ends, the game shows its connection and how every item fits, so even a thread that scores nothing ends with the answer.'] },
+      'The earlier you name the connection, the more it scores, so the skill is knowing when to commit. However a thread ends, the game shows its connection and how every item fits, so even a thread that scores nothing ends with the answer.'] },
     who: { ai: 'Shows each item as it arrives, with your guesses left and what a right guess scores, and explains how every item fits once a thread closes.', server: 'Keeps every unseen item and each connection secret, and marks every guess.' },
-    week: { title: 'Today’s threads', line: 'Three threads, the same for everyone.', session: 'common-today' },
+    week: { title: 'Today’s threads', line: 'You get three threads of four items.', session: 'common-today' },
   },
 });
 const WH_STATS = (guesses, hints) => ({ type: 'stats', items: [{ label: 'Guesses left', value: guesses }, { label: 'Hints left', value: hints }] });
