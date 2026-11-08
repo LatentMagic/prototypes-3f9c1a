@@ -1011,6 +1011,8 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 @container gs (max-width: 300px) {
   .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }
 }
+/* KEEP: Delve's now card label balances its lines, so the free first run's "THE FIRST RUN · FREE" at 320px breaks as "THE FIRST" over "RUN · FREE" and never leaves "FREE" alone on a line. */
+.dl-now .gs-label { text-wrap: balance; }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
 /* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).

@@ -346,3 +346,5 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 @container gs (max-width: 300px) {
   .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }
 }
+/* KEEP: Delve's now card label balances its lines, so the free first run's "THE FIRST RUN · FREE" at 320px breaks as "THE FIRST" over "RUN · FREE" and never leaves "FREE" alone on a line. */
+.dl-now .gs-label { text-wrap: balance; }
