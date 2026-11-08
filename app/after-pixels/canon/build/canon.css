@@ -786,7 +786,7 @@ button.mcp-cb-ent{cursor:pointer}
 .dv3-fd.is-hit .nm { fill: var(--error-on); }
 .dv3-dl > .dv3-fm { grid-template-columns: minmax(0, 1fr); align-items: center; }
 /* KEEP: at the narrowest width (a 280px window) the foe roll's label sits above its row instead of beside it, so the diamond and "Hit you for 2" share a line and "vs defence 13" is the second, not three stacked lines. */
-@container dv2 (max-width: 260px) {
+@container dv2 (max-width: 240px) {
   .dv3-dl > .dv3-foe { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
 /* KEEP: under 800px the held roll sits above the route, so it is kept short: the ledger's die moves beside its name, the big figures shrink. */
