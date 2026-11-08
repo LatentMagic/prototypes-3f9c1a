@@ -5568,17 +5568,17 @@
         ] },
         { cap: "Each guess comes back as a distance from the country.", turns: [
           gscU("Brazil."),
-          gscAi("where", "Brazil is 7,290 km away. You have 5 guesses and 1 hint left.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }, WH_STATS(5, 1)]),
+          gscAi("where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }, WH_STATS(5, 1)]),
           gscU("Give me the hint."),
-          gscAi("where", "From Brazil, today’s country lies northeast. That was your one hint.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }, WH_STATS(5, 0)]),
+          gscAi("where", "That was your one hint.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }, WH_STATS(5, 0)]),
           gscU("France."),
-          gscAi("where", "France is 140 km away. You have 4 guesses left.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }, WH_STATS(4, 0)])
+          gscAi("where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }, WH_STATS(4, 0)])
         ] },
         { cap: "A guess at 0 km means the answer is one of its neighbours.", turns: [
           gscU("Germany."),
-          gscAi("where", "Germany is on the board. You have 3 guesses left.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }, WH_STATS(3, 0)]),
+          gscAi("where", "Germany is on the board.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }, WH_STATS(3, 0)]),
           gscU("Austria."),
-          gscAi("where", ["Found it in 4 of 6, with the hint. Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
+          gscAi("where", ["Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
           gscU("Share my result."),
           gscAi("where", null, null, [{ type: "mono", text: "Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where" }])
         ] }
