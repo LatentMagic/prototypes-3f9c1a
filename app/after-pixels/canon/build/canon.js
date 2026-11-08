@@ -10937,6 +10937,124 @@
     GS_SESSION_BODY.delve = PdeBodyOf(GS_SESSION_BODY.delve);
     GS_LIBRARY.delve = PdeLibrary;
   };
+  const PDH_HEROES = {
+    "Bryn the Fighter": { defence: 10, armour: 2, heavy: { name: "Cleave", needs: 14, dmg: 7 }, ultimate: { name: "Rending blow", dmg: 8 }, spot: "Lockpicks" },
+    "Wren the Rogue": { defence: 14, armour: 1, heavy: { name: "Low blow", needs: 13, dmg: 6 }, ultimate: { name: "Killing stroke", dmg: 8 }, spot: "Grappling hook" }
+  };
+  const PDH_FIGHT_NAMES = { combat: "Combat", battle: "Battle", defences: "Defences" };
+  const PDH_WIDE = 780;
+  const pdhModel = (s, c) => {
+    const x = PDH_HEROES[s.hero] || PDH_HEROES["Wren the Rogue"];
+    const used = (s.sheet || {}).used || {};
+    const ult = { name: x.ultimate.name, kind: "Ultimate", of: 1, left: used[x.ultimate.name] ? 0 : 1, does: "One sure blow a run, no roll, " + x.ultimate.dmg + " damage. Fights only." };
+    const abilities = [...c.abilities.map((a) => ({ ...a, kind: "Ability" })), ult];
+    const slots = Math.max(c.carry, c.gear.length);
+    const fight = [
+      { key: "def", label: "Defence", fig: /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, x.defence), text: "A foe’s d20 must reach " + x.defence + " to hit you." },
+      { key: "arm", label: "Armour", fig: /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, x.armour), text: "Takes " + x.armour + " damage off blows each fight, full again at the next." },
+      { key: "heavy", label: x.heavy.name, kind: "Heavy attack", fig: /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, x.heavy.needs), text: "Needs " + x.heavy.needs + " to hit, " + x.heavy.dmg + " damage. A miss leaves you open." },
+      { key: "spot", label: "Spotlight", fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: "key" }), text: x.spot + ": an option only " + c.name + " can try." }
+    ];
+    return {
+      abilities,
+      fight,
+      slots,
+      def: x.defence,
+      packN: c.gear.length,
+      packOf: slots,
+      usesLeft: abilities.reduce((n, a) => n + a.left, 0),
+      usesOf: abilities.reduce((n, a) => n + a.of, 0)
+    };
+  };
+  const PdhLabel = ({ name, kind }) => kind ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, name, /* @__PURE__ */ React$1.createElement("small", { className: "pdh-kind" }, kind)) : name;
+  const PdhOpen = ({ c, m, streak, head }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-pack pdh-og", head: "Pack" }, Array.from({ length: m.slots }, (_, i) => c.gear[i] || null).map((g, i) => g ? /* @__PURE__ */ React$1.createElement(DlCell, { key: g.name, label: g.name, used: g.state === "used", title: g.name + " · " + g.label }, /* @__PURE__ */ React$1.createElement(DlBox, { k: g.kind, state: g.state }), g.kind === "armour" && /* @__PURE__ */ React$1.createElement("i", { className: "dv7-arm", "aria-label": "Armour plus 1" }, "+1")) : /* @__PURE__ */ React$1.createElement(DlCell, { key: "free" + i, label: "Free", used: true, title: "Room for one more" }, /* @__PURE__ */ React$1.createElement(DlBox, { k: null })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "is-r pdh-og", head: "Abilities" }, m.abilities.map((a) => /* @__PURE__ */ React$1.createElement(DlCell, { key: a.name, label: /* @__PURE__ */ React$1.createElement(PdhLabel, { name: a.name, kind: a.kind === "Ultimate" ? "Ultimate" : null }), used: !a.left, title: a.left + " of " + a.of + " left. " + a.does }, /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-adv pdh-og pdh-fight", head }, m.fight.map((f) => /* @__PURE__ */ React$1.createElement(DlCell, { key: f.key, label: /* @__PURE__ */ React$1.createElement(PdhLabel, { name: f.label, kind: f.kind }), title: f.text }, f.fig))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-adv", head: "Advantage" }, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Strong hits in a row" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak))));
+  const PdhRow = ({ fig, name, kind, tag, text }) => /* @__PURE__ */ React$1.createElement("div", { className: "pdh-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "pdh-fig" }, fig), /* @__PURE__ */ React$1.createElement("div", { className: "pdh-tx" }, /* @__PURE__ */ React$1.createElement("p", { className: "pdh-nm" }, /* @__PURE__ */ React$1.createElement("b", null, name), kind && /* @__PURE__ */ React$1.createElement("span", null, kind), tag && /* @__PURE__ */ React$1.createElement("span", null, tag)), /* @__PURE__ */ React$1.createElement("p", { className: "pdh-does" }, text)));
+  const pdhGroups = (c, m, head) => {
+    const free = m.slots - c.gear.length;
+    return [
+      {
+        key: "pack",
+        head: "Pack",
+        n: m.packN,
+        of: m.packOf,
+        say: m.packN + " of " + m.packOf + " carried",
+        rows: [
+          ...c.gear.map((g) => ({ key: g.name, fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: g.kind, state: g.state }), name: g.name, tag: g.label, text: g.does })),
+          ...free > 0 ? [{ key: "free", fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: null }), name: "Free", text: "Room for " + (free === 1 ? "one more" : free + " more") + "." }] : []
+        ]
+      },
+      {
+        key: "abilities",
+        head: "Abilities",
+        n: m.usesLeft,
+        of: m.usesOf,
+        say: m.usesLeft + " of " + m.usesOf + " uses left",
+        rows: m.abilities.map((a) => ({ key: a.name, fig: /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of }), name: a.name, kind: a.kind === "Ultimate" ? "Ultimate" : null, tag: a.left + " of " + a.of + " left", text: a.does }))
+      },
+      {
+        key: "fight",
+        head,
+        n: m.def,
+        say: "defence " + m.def,
+        rows: m.fight.map((f) => ({ key: f.key, fig: f.fig, name: f.label, kind: f.kind, text: f.text }))
+      }
+    ];
+  };
+  const PdhTap = ({ groups, openKey }) => {
+    const [open, setOpen] = React$1.useState(openKey);
+    React$1.useEffect(() => {
+      setOpen(openKey);
+    }, [openKey]);
+    const grp = groups.find((g) => g.key === open);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pdh-tap" }, /* @__PURE__ */ React$1.createElement("div", { className: "esx-cards" }, groups.map((g) => /* @__PURE__ */ React$1.createElement("button", { key: g.key, type: "button", className: "esx-card" + (open === g.key ? " is-open" : ""), "aria-expanded": open === g.key, "aria-label": g.head + ", " + g.say, onClick: () => setOpen(open === g.key ? null : g.key) }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-hole", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "esx-cl1" }, /* @__PURE__ */ React$1.createElement("span", null, g.head)), /* @__PURE__ */ React$1.createElement("b", { className: "esx-num" }, g.n, g.of != null && /* @__PURE__ */ React$1.createElement("i", null, "/" + g.of))))), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "pdh-rows esx-in", role: "group", "aria-label": grp.head }, grp.rows.map((r) => /* @__PURE__ */ React$1.createElement(PdhRow, { key: r.key, ...r })))));
+  };
+  const PdhSheet = ({ c, s, streak }) => {
+    const layout = usePgSetting("layout");
+    const head = PDH_FIGHT_NAMES[usePgSetting("fightname")];
+    const openKey = usePgSetting("open");
+    const ref = React$1.useRef(null);
+    const [w, setW] = React$1.useState(null);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const ro = new ResizeObserver((es) => setW(es[0].contentRect.width));
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, []);
+    const mode = layout === "auto" ? w != null && w < PDH_WIDE ? "cards" : "open" : layout;
+    const m = React$1.useMemo(() => pdhModel(s, c), [s, c]);
+    const stats = /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-stats pdh-stats", head: "Stats" }, c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x }))));
+    const meters = /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }));
+    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv4 dv5 is-tight dv7 is-band pdh pdh-" + mode + (mode === "open" ? " fold-none dv8 is-3b" : ""), "aria-label": "Character sheet" }, mode === "open" ? /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), meters, stats, /* @__PURE__ */ React$1.createElement("i", { className: "pdh-break", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(PdhOpen, { c, m, streak, head }))) : /* @__PURE__ */ React$1.createElement("div", { className: "pdh-stack" }, /* @__PURE__ */ React$1.createElement("p", { className: "pdh-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls)), meters, stats, /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-adv pdh-adv", head: "Advantage" }, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Strong hits in a row" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak))), /* @__PURE__ */ React$1.createElement(PdhTap, { groups: pdhGroups(c, m, head), openKey: openKey === "none" ? null : openKey })));
+  };
+  const PdhBody = ({ s }) => {
+    const gs = useGs();
+    const m = React$1.useMemo(() => dlBuild(s), [s]);
+    const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(PdhSheet, { c, s, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const initPlaygroundDelveHero = () => {
+    pgRegister("delve-hero", { title: "Delve hero sheet", settings: [
+      { key: "layout", kind: "concept", label: "Layout", options: [
+        { value: "auto", label: "By width: open on desktop, cards on a phone", state: "session-delve" },
+        { value: "open", label: "Everything open", state: "session-delve" },
+        { value: "cards", label: "Tap cards", state: "session-delve" }
+      ] },
+      { key: "fightname", label: "Fight group name", options: [
+        { value: "combat", label: "Combat" },
+        { value: "battle", label: "Battle" },
+        { value: "defences", label: "Defences" }
+      ] },
+      { key: "open", label: "Open group (tap cards)", options: [
+        { value: "none", label: "None" },
+        { value: "pack", label: "Pack" },
+        { value: "abilities", label: "Abilities" },
+        { value: "fight", label: "Fight group" }
+      ] }
+    ] });
+    if (!pgActive()) return;
+    GS_SESSION_BODY.delve = PdhBody;
+  };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
   const whBand = (km) => km === null ? "found" : km >= 1e3 ? "far" : km >= 100 ? "mid" : "near";
@@ -11592,4 +11710,5 @@
   initGsCommon();
   initGsSalvage();
   initPlaygroundDelveEmpty();
+  initPlaygroundDelveHero();
 })(React, ReactDOM);

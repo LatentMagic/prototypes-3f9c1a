@@ -1,0 +1,59 @@
+/* Playground delve-hero (candidate/delve-hero-sheet): Delve's hero sheet with every spec fact. Nothing here applies without ?pg=delve-hero. */
+
+/* Wide: a named thing says what it is under its name. */
+.pdh .pdh-kind { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
+.pdh .dv7-lb { text-wrap: balance; overflow-wrap: break-word; }
+
+/* KEEP: a sheet narrower than 1040px breaks the open row after the stats: hero, meters and stats above, then pack, abilities, the fight group and advantage under a hairline, so no cell clips or scrolls sideways. */
+.pdh-break { display: none; }
+@container dv4 (max-width: 1039.98px) {
+  .pdh-open .dv7-band { flex-wrap: wrap !important; row-gap: 12px; }
+  .pdh-open .pdh-break { display: block; flex: 0 0 100%; height: 1px; background: var(--line); margin: 0; }
+  .pdh-open .dv8-stats { flex: 1 1 0; }
+  .pdh-open .dv7-grp.dv8-pack { border-left: 0 !important; padding-left: 0 !important; }
+  .pdh-open .dv7-grp.dv8-pack, .pdh-open .dv7-grp.is-r, .pdh-open .dv7-grp.pdh-fight, .pdh-open .dv7-grp.dv8-adv:last-child { flex: 1 1 auto; }
+}
+
+/* Narrow (tap cards): a stack, hero, meters, stats, advantage, then Escape's cards and the fold under them. */
+.pdh-cards .pdh-stack { display: grid; gap: 0; min-width: 0; }
+.pdh-cards .pdh-stack > * { min-width: 0; }
+.pdh-cards .pdh-stack > * + * { border-top: 1px solid var(--line); }
+.pdh-cards .pdh-hero { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; padding: 0 0 12px; }
+.pdh-cards .pdh-hero b { font: 700 18px/1.1 var(--font-heading); letter-spacing: -.01em; color: var(--text); text-wrap: balance; overflow-wrap: break-word; }
+.pdh-cards .pdh-hero span { font: 600 14px/1.2 var(--font-text); color: var(--muted); }
+.pdh-cards .dv8-meters { padding: 12px 0; justify-items: stretch; }
+.pdh-cards .pdh-stack > .dv7-grp { padding: 12px 0; justify-items: center; border-left: 0; }
+.pdh-cards .dv7-grp .dv7-h { justify-content: center; }
+.pdh-cards .pdh-stats .dv7-cells { gap: 6px; }
+.pdh-cards .dv7-cell .dv7-fig > svg { width: 28px; height: auto; }
+.pdh-cards .dv7-cell .dv4-sx text { font-size: 18px; }
+.pdh-cards .pdh-adv .dv7-cells { grid-auto-columns: auto; gap: 24px; }
+.pdh-tap { padding: 12px 0 0; }
+.pdh-cards .esx-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pdh-cards .esx-card { height: 80px; padding: 8px; }
+.pdh-cards .esx-num { font-size: 24px; line-height: 24px; height: 24px; }
+.pdh-cards .esx-cl1 { height: auto; min-height: 16px; }
+
+/* A fold's rows: the figure on the left, the name and its line on the right. */
+.pdh-rows { display: grid; margin-top: 8px; }
+.pdh-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 0; }
+.pdh-row + .pdh-row { border-top: 1px solid var(--line); }
+.pdh-fig { display: grid; place-items: center; min-height: 32px; }
+.pdh-tx { min-width: 0; display: grid; gap: 2px; }
+.pdh-nm { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
+.pdh-nm b { font: 700 16px/1.25 var(--font-heading); color: var(--text); text-wrap: balance; overflow-wrap: break-word; }
+.pdh-nm span { font: 600 13px/1.3 var(--font-text); color: var(--muted); }
+.pdh-does { margin: 0; font: 400 14px/1.4 var(--font-text); color: var(--muted); text-wrap: pretty; overflow-wrap: break-word; }
+/* KEEP: in a sheet whose content is 280px wide or less (a 320px window and narrower) the three cards stack as full-width rows, name on the left and numeral on the right, because three in a row leave ABILITIES 64px or less. */
+@container dv4 (max-width: 280px) {
+  .pdh-cards .esx-cards { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .pdh-cards .esx-card { height: 48px; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto; align-items: center; padding: 0 12px; }
+  .pdh-cards .esx-hole { display: none; }
+  .pdh-cards .esx-cl1 { height: auto; }
+  .pdh-cards .esx-num { align-self: center; justify-self: end; }
+}
+@container dv4 (max-width: 240px) {
+  .pdh-row { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
+  .pdh-cards .pdh-stats .dv7-cells { gap: 2px; }
+  .pdh-cards .dv7-cell .dv7-fig > svg { width: 26px; }
+}
