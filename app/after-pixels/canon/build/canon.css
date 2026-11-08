@@ -2927,6 +2927,34 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pg-config-label { font: 600 13px/1.2 var(--font-text); color: var(--muted); margin-bottom: 8px; }
 .pg-config-opts { display: flex; flex-wrap: wrap; gap: 8px; }
 .pg-config-opt { text-align: left; }
+/* Playground delve-empty (candidate/delve-fight): Delve before anything is played. Nothing here applies without ?pg=delve-empty. */
+.pde-hex { display: block; width: 30px; height: 33px; flex: none; }
+.pde-hex polygon { fill: none; stroke: var(--control-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: .6; }
+.pde-hex text { font: 700 15px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; }
+
+/* Rooms not yet reached: a dim number, no name, an empty hex where their dice will go. */
+.dvA2-stop.pde-far .dv2-num, .dl-now-stop.pde-far .dv2-num, .pde-far-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
+.dvA2-stop.pde-far .dv2-sname { visibility: hidden; }
+
+/* Session page: the quiet box in the held roll's place. */
+.pde-wait { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line); }
+.pde-wait b { font: 700 16px/1.25 var(--font-heading); color: var(--muted); }
+.pde-wait .pde-hex { width: 46px; height: 50px; }
+
+/* Now card. The title wraps in full whatever its length; nothing sits beside it to squeeze it. */
+.pde-now .lb-top h2 { overflow-wrap: anywhere; }
+.pde-ritual { display: grid; gap: 8px; }
+.pde-ritual p { margin: 0; font-size: 14px; }
+.pde-strip { display: grid; gap: 8px; }
+.pde-strip p { margin: 0; font-size: 14px; }
+.pde-strip-row { display: flex; align-items: center; min-width: 0; }
+.pde-link { flex: 1 1 4px; min-width: 4px; max-width: 28px; height: 0; border-top: 1.5px solid var(--line); }
+.pde-heroes { display: flex; gap: 20px; }
+.pde-hero { display: grid; justify-items: center; gap: 4px; font-size: 13px; color: var(--muted); }
+.pde-hero .pde-hex { width: 36px; height: 40px; }
+.pde-hero.is-on { color: var(--text); font-weight: 700; }
+.pde-hero.is-on .pde-hex polygon { stroke: var(--text); stroke-width: 2; opacity: 1; fill: var(--card); }
+.pde-hero.is-on .pde-hex text { fill: var(--text); }
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
    session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 

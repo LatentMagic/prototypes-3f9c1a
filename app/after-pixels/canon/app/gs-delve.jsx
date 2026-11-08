@@ -57,7 +57,7 @@ const dlMoments = (R, end) => {
   return out.sort((a, b) => a.r.n - b.r.n);
 };
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
-const dlBuild = (s) => {
+export const dlBuild = (s) => {
   const stops = []; const rolls = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {};
   const foeOf = () => { const f = cur && DL_FOES[cur.name.toLowerCase()]; return f ? { f, k: cur.key } : null; };
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
@@ -84,7 +84,7 @@ const dlSay = (r, foe = true) => 'Roll ' + r.n + ', ' + r.room + ': ' + (r.actio
 
 // ---- The die: strong filled green, weak filled yellow, miss empty, natural 20 rimmed, natural 1 red-edged. A roll the foe answered
 // has the foe's roll as a red hex behind it, outside the advantage hex when there is one. ----
-const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
+export const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
 // KEEP: the foe's red hex sits one step out from whatever is behind the die (nothing, the advantage hex, or a natural 20's rim), and is
 // cleared on the selected die and on the held roll's large die, as the advantage hex is (owner, 2026-11-08).
 const dlFoeAt = (r, gh) => (r.crit ? (gh ? [-10, -9.5] : [-7, -6.5]) : gh ? [-7, -6] : [-3.5, -3]);
@@ -109,7 +109,7 @@ const DlDieBtn = ({ r, size, act, on, foe }) => (
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
 const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
 const dlTone = (m) => (m.end === 'won' ? 'ok' : m.end === 'live' ? 'live' : 'bad');
-const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result;
+export const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result;
   return (<div className="dv7r-band"><h2 className={'dv7r-word is-' + dlTone(m)}>{dlWord(m)}</h2>{line && <p className="dv7r-line">{line}</p>}</div>); };
 
 // ---- The held roll: the die large, its kicker, then a labelled row per fact. The two-dice row is left out: the die shows both. ----
@@ -137,7 +137,7 @@ const DlHeld = ({ m, act }) => { const r = act ? m.rolls[act - 1] : null; if (!r
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
 const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
   <path d="M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
-const DlStopHead = ({ st, named }) => (
+export const DlStopHead = ({ st, named }) => (
   <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
     <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
 const DlRoute = ({ m, act, on }) => { const sel = act ? m.rolls[act - 1].stop : null;
@@ -161,7 +161,7 @@ const DlCard = ({ s, m, roll }) => {
 
 // ---- The character sheet, read from the hero's sheet and the record's lines: gear taken, used, or a key that opened its lock. ----
 const DL_STATE = { worn: 'Worn', held: 'Held', used: 'Used' };
-const dlSheet = (s, m) => {
+export const dlSheet = (s, m) => {
   const h = DL_HEROES[s.hero] || DL_HEROES['Wren the Rogue']; const sh = s.sheet || {}; const used = sh.used || {};
   const gear = h.gear.map((g) => ({ ...g, state: g.kind === 'armour' ? 'worn' : 'held' }));
   const find = (name) => { const n = dlCap(name.replace(/^(a|an|the)\s+/i, '')); let g = gear.find((x) => x.name === n);
@@ -188,12 +188,12 @@ const DlHex = ({ x }) => (<svg className="dv4-sx" viewBox="-5 -5 46 50" width="3
 const DlCell = ({ label, used, title, children }) => (<div className={'dv7-cell' + (used ? ' is-used' : '')} title={title}><span className="dv7-fig">{children}</span><span className="dv7-lb">{label}</span></div>);
 const DlGrp = ({ k, head, children }) => <div className={'dv7-grp' + (k ? ' ' + k : '')}><div className="dv7-h"><span>{head}</span></div><div className="dv7-cells">{children}</div></div>;
 // KEEP: a meter's count is written 9/13, the short form, so the meters' column stays narrow (owner, 2026-10-29).
-const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
+export const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
 
 // 3B (owner, 2026-10-29): one row on desktop. The hero; hit points and threat stacked on one grid; stats; the pack with its free slots;
 // abilities; Advantage (inspiration and the current run of strong hits). The torch, clues and the bargain join this row once the
 // record holds them. On a phone the sheet opens folded to the hero and the meters; the whole hero row opens the rest.
-const DlSheet = ({ c, streak }) => { const [open, setOpen] = React.useState(false);
+export const DlSheet = ({ c, streak }) => { const [open, setOpen] = React.useState(false);
   const slots = Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
   return (<section className={'dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b' + (open ? '' : ' is-shut')} aria-label="Character sheet"><div className="dv8-rows"><div className="dv7-band">
     <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
@@ -232,7 +232,7 @@ const DL_NO_HOVER = () => {};
 // (8 rooms where 7 fit go 4 and 4; 5 where 4 fit go 3 and 2) (owner, 2026-10-30). The line joining the rooms runs along each row and
 // stops at its ends, so a wrapped row never leaves a stub.
 const DL_NOW_COL = 44;
-const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
+export const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return;
     const read = () => { const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL)); setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit))); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
