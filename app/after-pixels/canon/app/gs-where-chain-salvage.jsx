@@ -510,7 +510,7 @@ Object.assign(GS_PAGES, {
     box: { label: 'ONLY WITH THE PASS', heading: 'Three new threads every day', button: 'Play today’s threads',
       steps: [GS_STEP_CONNECT, dpStep('Ask for another item', ', guess, or pass.'), dpSeeResult], small: GS_NAME.common + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'An egg, a tortoise and a peanut have something in common. Name it early.', ps: [
+    pitch: { h: 'An egg, a tortoise and a peanut share something. Guess it early for more points.', ps: [
       'Each day brings three threads, and a thread is four items that share one hidden connection. The game shows them one at a time, starting with a single item that could point several ways.',
       'The earlier you name the connection, the more it scores, so the skill is knowing when to commit. However a thread ends, the game shows its connection and how every item fits, so even a thread that scores nothing ends with the answer.'] },
     who: { ai: 'Shows each item as it arrives, with your guesses left and what a right guess scores, and explains how every item fits once a thread closes.', server: 'Keeps every unseen item and each connection secret, and marks every guess.' },

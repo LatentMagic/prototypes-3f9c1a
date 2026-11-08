@@ -5555,7 +5555,7 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "An egg, a tortoise and a peanut have something in common. Name it early.", ps: [
+        pitch: { h: "An egg, a tortoise and a peanut share something. Guess it early for more points.", ps: [
           "Each day brings three threads, and a thread is four items that share one hidden connection. The game shows them one at a time, starting with a single item that could point several ways.",
           "The earlier you name the connection, the more it scores, so the skill is knowing when to commit. However a thread ends, the game shows its connection and how every item fits, so even a thread that scores nothing ends with the answer."
         ] },
