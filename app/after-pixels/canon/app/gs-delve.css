@@ -103,7 +103,8 @@
 /* 1 · Ledger: the die and its name centred, then a labelled row per fact. */
 .dv3-lh { display: grid; justify-items: center; gap: 10px; text-align: center; }
 .dv3-dl { margin: 0; display: grid; border-top: 1px solid var(--line); }
-.dv3-dl > div { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+/* KEEP: every label in the held roll (Used, Foe roll and the rest) sits centred on its row's height, so a row that wraps to two lines, or holds the foe's die, keeps its label in the middle, not at the top. */
+.dv3-dl > div { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .dv3-dl dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
 .dv3-dl dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dv3-dl dd span { font-weight: 400; color: var(--muted); }
@@ -120,8 +121,6 @@
 .dv3-fd .nm { font: 700 15px var(--font-heading); fill: var(--muted); text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
 .dv3-fd.is-hit .nm { fill: var(--error-on); }
 .dv3-dl > .dv3-fm { grid-template-columns: minmax(0, 1fr); align-items: center; }
-/* KEEP: the foe roll's label sits centred against the foe die and the text beside it, not at the top of the row. */
-.dv3-dl > .dv3-foe { align-items: center; }
 /* KEEP: at the narrowest width (a 280px window) the foe roll's label sits above its row instead of beside it, so the diamond and "Hit you for 2" share a line and "vs defence 13" is the second, not three stacked lines. */
 @container dv2 (max-width: 240px) {
   .dv3-dl > .dv3-foe { grid-template-columns: minmax(0, 1fr); gap: 2px; }
