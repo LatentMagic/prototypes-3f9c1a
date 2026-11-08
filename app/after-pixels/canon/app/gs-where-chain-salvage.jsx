@@ -286,7 +286,7 @@ export function initGsWhereChainSalvage() {
 Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage', common: 'Common' });
 Object.assign(GS_GAMES, {
   where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], edLine: 'You get six guesses to find the country.', daily: true, once: true,
-    blurb: 'One hidden country a day: find it in six guesses.', tags: ['Daily'], size: 'tiny' }),
+    blurb: 'Which country is hidden? Each guess shows how far off you are.', tags: ['Daily'], size: 'tiny' }),
   chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], edLine: 'You get both ends. Find the words between.', daily: true, once: true,
     blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily'], size: 'tiny' }),
   salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], edLine: 'You get twenty dives to find five wrecks.', daily: true, once: true,
@@ -465,7 +465,7 @@ Object.assign(GS_PAGES, {
     box: { label: 'ONLY WITH THE PASS', heading: 'A new country every day', button: 'Play today’s country',
       steps: [GS_STEP_CONNECT, dpStep('Find today’s country.', ' You get six guesses.'), dpSeeResult], small: GS_NAME.where + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'One hidden country a day: find it in six guesses.', ps: [
+    pitch: { h: 'Which country is hidden? Each guess shows how far off you are.', ps: [
       'Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.',
       'One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess.'] },
     who: { ai: 'Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.', server: 'Keeps the country secret, measures every distance and works out which way the hint points.' },

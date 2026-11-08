@@ -113,7 +113,7 @@ GS_PAGES = {
     box: { label: 'FREE WITH AN ACCOUNT', small: gsFreeSmall('Today’s case'), heading: 'Play it in your own AI chat', button: 'Play today’s case',
       steps: [GS_STEP_CONNECT, <><b>Work it out from the clues</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'One murder a day: work out who did it, with what, and where.', ps: [
+    pitch: { h: 'Four suspects, four weapons, four places. Who do you accuse?', ps: [
       'A body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.',
       'At first the clues are loose facts, and none of them settles the case on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold.'] },
     who: { ai: 'Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.', server: 'Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong.' },
@@ -150,7 +150,7 @@ GS_PAGES = {
       small: 'The first run is free with an account. Every run after it needs the Pass.' },
     facts: { often: 'New every week' },
     tags: [],
-    pitch: { h: 'A new world every week: fight room by room to the villain at its heart.', ps: [
+    pitch: { h: 'Lead a hero room by room through a new world to its final foe.', ps: [
       'One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.',
       'Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can.'] },
     who: { ai: 'Tells the story as your Game Master, voices everyone you meet, and asks what you do next.', server: 'Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in.' },

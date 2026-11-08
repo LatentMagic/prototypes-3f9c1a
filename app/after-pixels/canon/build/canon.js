@@ -1047,11 +1047,11 @@
   const GS_GAMES = {
     word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
     groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "One murder a day: work out who did it, with what, and where.", tags: ["Daily"], size: "tiny" },
+    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "Four suspects, four weapons, four places. Who do you accuse?", tags: ["Daily"], size: "tiny" },
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
-    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "A new world every week: fight room by room to the villain at its heart.", tags: ["Weekly"], size: "small" },
+    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Lead a hero room by room through a new world to its final foe.", tags: ["Weekly"], size: "small" },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
     barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
     hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
@@ -5100,7 +5100,7 @@
         edLine: "You get six guesses to find the country.",
         daily: true,
         once: true,
-        blurb: "One hidden country a day: find it in six guesses.",
+        blurb: "Which country is hidden? Each guess shows how far off you are.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5473,7 +5473,7 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "One hidden country a day: find it in six guesses.", ps: [
+        pitch: { h: "Which country is hidden? Each guess shows how far off you are.", ps: [
           "Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.",
           "One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess."
         ] },
@@ -6667,7 +6667,7 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "One murder a day: work out who did it, with what, and where.", ps: [
+        pitch: { h: "Four suspects, four weapons, four places. Who do you accuse?", ps: [
           "A body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.",
           "At first the clues are loose facts, and none of them settles the case on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold."
         ] },
@@ -6722,7 +6722,7 @@
         },
         facts: { often: "New every week" },
         tags: [],
-        pitch: { h: "A new world every week: fight room by room to the villain at its heart.", ps: [
+        pitch: { h: "Lead a hero room by room through a new world to its final foe.", ps: [
           "One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.",
           "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."
         ] },
@@ -10717,7 +10717,7 @@
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
   const PGC_DELVE = {
-    h: "A new world every week: fight room by room to the villain at its heart.",
+    h: "Lead a hero room by room through a new world to its final foe.",
     blurb: "h",
     ps: ["One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.", "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."],
     caps: ["See each hero’s strengths, health and defence side by side before you pick.", "A miss costs you health. Spend your inspiration on the retry.", GSC_DV_FIGHT_CAP, "Your result is ready to post, with one mark for every roll you made."],
@@ -10776,7 +10776,7 @@
     },
     where: {
       job: {
-        h: "One hidden country a day: find it in six guesses.",
+        h: "Which country is hidden? Each guess shows how far off you are.",
         blurb: "h",
         ps: ["Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.", "One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess."]
       },
