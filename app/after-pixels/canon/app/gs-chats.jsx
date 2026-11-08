@@ -21,7 +21,7 @@ const GSC_CB_LIE = [gscU('Show Maeve the bar ledger.'),
 // Delve's fight chat, written for the page from the same playtest; every event is true to it and no edition secret appears. Shared with the page-copy playground.
 export const GSC_DV_FIGHT_CAP = 'Say how you want to fight the guards.';
 export const GSC_DV_FIGHT = [gscU('I somersault over the first guard and kick him.'),
-  gscAi('delve', 'You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze. The second guard swings his spear at you, but you’re no longer where you were, and the point scrapes stone.', null, [{ type: 'mono', text: 'Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls' }])];
+  gscAi('delve', 'You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.', null, [{ type: 'mono', text: 'Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls' }])];
 
 export let GS_CHATS;
 export let GS_HERO_CHAT;
