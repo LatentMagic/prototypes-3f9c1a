@@ -1814,7 +1814,7 @@
   const GSC_DV_FIGHT_CAP = "Say how you want to fight the guards.";
   const GSC_DV_FIGHT = [
     gscU("I somersault over the first guard and kick him."),
-    gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.", null, [{ type: "mono", text: "Somersault: d20 16 +3 Agility = 19 against DC 13\nHit · one guard falls" }])
+    gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.", null, [{ type: "roll", label: "Somersault", roll: 16, mod: 3, target: 13, result: "hit", outcome: "Hit · one guard falls" }])
   ];
   let GS_CHATS;
   let GS_HERO_CHAT;
@@ -1917,7 +1917,7 @@
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
       ],
       // Delve: the product page's four chats, written for the page from a real playtest (2026-11-06) and the game spec: every turn shows something the game really does, and no edition secret appears.
-      // Each block is the design system's mono block, one line per row.
+      // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track.
       delve: [
         { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
           gscU("Play Delve on After Pixels."),
@@ -1925,16 +1925,16 @@
             "delve",
             ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
             null,
-            [{ type: "mono", text: "Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12" }]
+            [{ type: "entities", title: "Heroes", items: [{ name: "Leon, the Wrestler", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Ione, the Bull-leaper", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Mira, the Temple scholar", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
           ),
           gscU("Ione."),
           gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
         ] },
         { cap: "A miss costs you health. Spend your inspiration on the retry.", turns: [
           gscU("I wait for a gap in the moving walls, then dart through."),
-          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "mono", text: "d20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage" }]),
+          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Health", value: 17, max: 21, tone: "health" }] }]),
           gscU("I try again and spend my inspiration."),
-          gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "mono", text: "d20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent" }])
+          gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "roll", label: "Agility, best of 1 and 15", die: "d20s", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }])
         ] },
         { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
         { cap: "Your result is ready to post, with one mark for every roll you made.", turns: [
