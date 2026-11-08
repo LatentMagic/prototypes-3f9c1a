@@ -24,7 +24,8 @@ function Tiles({rows}){
 function Block({b}){
   if(b.type==='tiles') return <Tiles rows={b.rows}/>;
   if(b.type==='list') return <ul className="mcp-chat-list">{b.items.map((t,i)=><li key={i}>{t}</li>)}</ul>;
-  if(b.type==='mono') return <pre className="mcp-chat-mono">{b.text}</pre>;
+  // A link breaks at a "/", never mid-word; the CSS wrap is only the fallback for a run with no "/".
+  if(b.type==='mono') return <pre className="mcp-chat-mono">{b.text.split(/(\/(?!\/))/).map((t,i)=>t==='/'?<React.Fragment key={i}>/<wbr/></React.Fragment>:t)}</pre>;
   const P=PARTS[b.type];
   if(P){const {type,...p}=b; return <P {...p}/>;}
   return null;

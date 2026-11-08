@@ -266,7 +266,7 @@
     function Block({ b }) {
       if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles, { rows: b.rows });
       if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, t)));
-      if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text);
+      if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
       const P = PARTS[b.type];
       if (P) {
         const { type, ...p } = b;
