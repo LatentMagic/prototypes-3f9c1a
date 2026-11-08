@@ -118,7 +118,7 @@
           "summary",
           { className: "mcp-cb-fold-s" },
           React2.createElement("span", { className: "mcp-cb-fold-t" }, title),
-          count2 != null && React2.createElement("span", { className: "mcp-cb-fold-n" }, count2),
+          count2 != null && React2.createElement("span", { className: "mcp-cb-fold-n" }, React2.createElement("span", { "aria-hidden": "true" }, "·"), count2),
           React2.createElement(Icon2, { name: "down", size: 16 })
         ),
         React2.createElement("div", { className: "mcp-cb-fold-b" + (pad ? " is-pad" : "") }, children)
@@ -132,19 +132,19 @@
         return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), t));
       }));
     }
-    function ClueCards({ groups = [], newLabel = "New", title, collapsible = false, collapsed = false, className = "" }) {
-      const fold = collapsible || collapsed, solo = fold && groups.length === 1;
+    function ClueCards({ groups = [], newLabel = "New", title, fold, className = "" }) {
+      const folded = !!fold, solo = folded && groups.length === 1;
       const sections = groups.map((g, i) => /* @__PURE__ */ React2.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, !solo && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React2.createElement("ul", null, g.facts.map((f, k) => {
         const t = typeof f === "string" ? { text: f } : f;
         return /* @__PURE__ */ React2.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React2.createElement("span", null, cbRich(t.text)), t.new && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-new" }, newLabel));
       }))));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, fold ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: collapsed }, sections) : sections);
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
     }
-    function FactRows({ items = [], plain = false, label, title, collapsible = false, collapsed = false, className = "" }) {
-      const fold = collapsible || collapsed;
-      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || fold ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
-      if (!fold) return rows;
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: collapsed, pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
+    function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+      const folded = !!fold;
+      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
+      if (!folded) return rows;
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
     }
     function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
       const done = answer === "confirm" || answer === "cancel";
@@ -154,13 +154,13 @@
       };
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
     }
-    function EntityCards({ title, items = [], onPick, collapsible = false, collapsed = false, className = "" }) {
-      const fold = collapsible || collapsed;
+    function EntityCards({ title, items = [], onPick, fold, className = "" }) {
+      const folded = !!fold;
       const list = /* @__PURE__ */ React2.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
         const pic = it.pic ? /* @__PURE__ */ React2.createElement("img", { src: it.pic, alt: "" }) : it.icon ? /* @__PURE__ */ React2.createElement(Icon2, { name: it.icon, size: 16 }) : null;
         return /* @__PURE__ */ React2.createElement("li", { key: i }, cbPress(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, pic && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line)))));
       }));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (fold ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, fold ? cbFold({ title: title || "In the game", count: items.length, closed: collapsed, pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
     }
     function StatusTag({ tone = "live", label, children, className = "" }) {
       return /* @__PURE__ */ React2.createElement("span", { className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim() }, label ?? children);
@@ -1899,7 +1899,7 @@
               { type: "entities", className: "is-compact", title: "Suspects", items: [{ name: "Coco" }, { name: "Bella Flint" }, { name: "Ivan the Mighty" }, { name: "Madame Zara" }] },
               { type: "entities", className: "is-compact", title: "Weapons", items: [{ name: "Poisoned toffee apple" }, { name: "Iron tent peg" }, { name: "Sleeping draught" }, { name: "Brass bugle" }] },
               { type: "entities", className: "is-compact", title: "Places", items: [{ name: "Big top" }, { name: "Cook tent" }, { name: "Generator truck" }, { name: "Costume tent" }] },
-              { type: "clues", collapsed: true, groups: [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }] }
+              { type: "clues", fold: "closed", groups: [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }] }
             ]
           )
         ] },
@@ -5570,13 +5570,13 @@
           gscU("Brazil."),
           gscAi("where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }, WH_STATS(5, 1)]),
           gscU("Give me the hint."),
-          gscAi("where", "That was your one hint.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }, WH_STATS(5, 0)]),
+          gscAi("where", "From Brazil, today’s country lies northeast.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }, WH_STATS(5, 0)]),
           gscU("France."),
           gscAi("where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }, WH_STATS(4, 0)])
         ] },
         { cap: "A guess at 0 km means the answer is one of its neighbours.", turns: [
           gscU("Germany."),
-          gscAi("where", "Germany is on the board.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }, WH_STATS(3, 0)]),
+          gscAi("where", "Germany shares a border with today’s country.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }, WH_STATS(3, 0)]),
           gscU("Austria."),
           gscAi("where", ["Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
           gscU("Share my result."),

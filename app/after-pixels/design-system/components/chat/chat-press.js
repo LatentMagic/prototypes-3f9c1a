@@ -16,7 +16,7 @@ export function cbFold({title,count,closed,pad},children){
   return React.createElement('details',{className:'mcp-cb-fold',open:!closed},
     React.createElement('summary',{className:'mcp-cb-fold-s'},
       React.createElement('span',{className:'mcp-cb-fold-t'},title),
-      count!=null&&React.createElement('span',{className:'mcp-cb-fold-n'},count),
+      count!=null&&React.createElement('span',{className:'mcp-cb-fold-n'},React.createElement('span',{'aria-hidden':'true'},'\u00b7'),count),
       React.createElement(Icon,{name:'down',size:16})),
     React.createElement('div',{className:'mcp-cb-fold-b'+(pad?' is-pad':'')},children));
 }

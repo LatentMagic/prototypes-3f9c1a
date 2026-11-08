@@ -2,15 +2,13 @@
 export interface FactRowsProps{
   /** value accepts **bold**. */
   items:{label:string;value:string}[];
-  /** No fence, for use inside another part. */
+  /** No fence, for use inside another part. In a fold it drops the fence around the folded card too. */
   plain?:boolean;
   label?:string;
-  /** Fold title (falls back to label). The count is the number of rows. */
+  /** Fold title (falls back to label, then "Details"); the count is the number of rows. */
   title?:string;
-  /** Opt in: the card sits behind a disclosure headed by its title, a count and a chevron. Starts open. */
-  collapsible?:boolean;
-  /** Opt in and start closed. Implies collapsible. */
-  collapsed?:boolean;
+  /** Puts the card behind a disclosure headed by its title, a count and a chevron: 'open' starts it open, 'closed' starts it closed. Absent: no fold. */
+  fold?:'open'|'closed';
   className?:string;
 }
 export declare function FactRows(props:FactRowsProps):JSX.Element;

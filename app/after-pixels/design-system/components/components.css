@@ -451,13 +451,14 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-cb-fold>summary::-webkit-details-marker{display:none}
 .mcp-cb-fold-t{font:700 13.5px/1.3 var(--font-text);color:var(--cb-ink)}
 .mcp-cb-fold-n{font:600 12px/1 var(--font-text);color:var(--cb-ink2);font-variant-numeric:tabular-nums}
-.mcp-cb-fold-n::before{content:"\00b7";margin-right:8px}
+.mcp-cb-fold-n>span{margin-right:8px}
 .mcp-cb-fold>summary .mcp-ico{margin-left:auto;flex:none;color:var(--cb-ink2);transition:transform var(--time-dropdown) var(--ease)}
 .mcp-cb-fold[open]>summary .mcp-ico{transform:rotate(180deg)}
 .mcp-cb-fold[open]>summary{border-bottom:1px solid var(--cb-edge)}
 .mcp-cb-fold>summary:focus-visible{outline:2px solid var(--cb-ink);outline-offset:-2px}
 .mcp-cb-fold-b.is-pad{padding:8px 10px 10px}
 @media (hover:hover){.mcp-cb-fold>summary:hover{background:color-mix(in srgb,var(--cb-ink) 6%,var(--cb-panel))}}
+.mcp-cb-fold>summary:active{background:color-mix(in srgb,var(--cb-ink) 10%,var(--cb-panel))}
 @media (prefers-reduced-motion:reduce){.mcp-cb-fold>summary .mcp-ico{transition:none}}
 .mcp-cb-new{display:inline-flex;align-items:center;height:18px;padding:0 6px;background:var(--cb-ink);color:var(--cb-panel);font:600 11px/1 var(--font-text);align-self:center}
 /* ResultCard */
