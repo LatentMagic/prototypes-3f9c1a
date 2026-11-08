@@ -734,6 +734,14 @@ button.mcp-cb-ent{cursor:pointer}
   .dvA2-route.is-e .dvA2-dice { grid-auto-rows: 46px; gap: 2px; align-items: center; }
   .dvA2-route.is-e .dvE-mom { margin: 0; }
 }
+/* KEEP: a card narrower than 260px (a 280px window) fits up to nine rooms, so a die is 2px narrower than its room's column and a room number is a 22px box: dice and numbers stay clear of their neighbours instead of overlapping them, and a held moment's bigger die overhangs by 2px a side at most. */
+@container dv2 (max-width: 260px) {
+  .dvA2-head { padding: 0; }
+  .dv2-num { min-width: 22px; }
+  .dvA2-route .dv2-dbtn { width: 100%; }
+  .dvA2-dice svg { width: min(30px, calc(100% - 2px)); height: auto; }
+  .dvE-mom svg { width: min(40px, calc(100% + 4px)); height: auto; }
+}
 .dvE-main { display: grid; gap: 16px; min-width: 0; }
 /* KEEP: on desktop the held roll is as tall as the route beside it, so the two end level. Under 800px it sits above the route. */
 @container dv2 (min-width: 800px) {
@@ -945,6 +953,10 @@ the two end groups grow by half as much and hug the card's edge, so their one in
   .dv8.is-3b .dv8-meters { justify-items: stretch !important; grid-template-columns: max-content minmax(0, 1fr) max-content; }
   .dv8.is-3b .dv8-stats .dv7-cells { gap: 6px; }
   .dv8.is-3b .dv7-cell .dv7-fig > svg { width: 28px; }
+}
+/* KEEP: a card narrower than 240px (a 280px window) is too narrow for Pack's three boxes beside Ability, so the boxes wrap two to a row, a lone last one centred, instead of spilling past the card's left edge. */
+@container dv4 (max-width: 240px) {
+  .dv8.is-3b .dv8-pack .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 4px; }
 }
 /* ---- from delve-v9.html ---- */
 /* KEEP: the hero's name wraps to balanced lines instead of holding one line, so a long name never widens the band past the card. */
