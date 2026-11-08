@@ -529,17 +529,17 @@ Object.assign(GS_CHATS, {
   // The chain is not a real edition: CROSS, WORD, PLAY, BACK, TRACK, "No. 112" (scheduled editions run to 45; none holds this line), every link in the shipped link list.
   // The board is the design system's FactRows, as the deployed script has the AI draw it each turn: every word numbered, hidden words as the letters shown, open words marked.
   chain: [
-    { cap: 'You get both ends and the first letter of every word between.', turns: [gscU('Play Chain on After Pixels'),
-      gscAi('chain', ['Chain No. 112 is ready. Each word joins the next, as RAIN, BOW and TIE make rainbow and bow tie. Only a word marked open can be guessed.', 'Which one first?'], null, [chBoard(['CROSS', 'W', 'P', 'B', 'TRACK'], [1, 3]), chStats(3, 0)])] },
+    { cap: 'You get both ends and each word’s first letter. Only a word marked open can be guessed.', turns: [gscU('Play Chain on After Pixels'),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'W', 'P', 'B', 'TRACK'], [1, 3]), chStats(3, 0)])] },
     { cap: 'A wrong guess shows the next letter of that word.', turns: [gscU('Wire'),
-      gscAi('chain', 'WIRE is wrong.', null, [chBoard(['CROSS', 'WO', 'P', 'B', 'TRACK'], [1, 3]), chStats(3, 1)]),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'WO', 'P', 'B', 'TRACK'], [1, 3]), chStats(3, 1)]),
       gscU('Word'),
       gscAi('chain', null, null, [chBoard(['CROSS', 'WORD', 'P', 'B', 'TRACK'], [2, 3]), chStats(2, 1)])] },
-    { cap: 'Once the chain is solved, you get every link.', turns: [gscU('Back'),
+    { cap: 'Once it is solved, you get every link and a result that names no word.', turns: [gscU('Back'),
       gscAi('chain', null, null, [chBoard(['CROSS', 'WORD', 'P', 'BACK', 'TRACK'], [2]), chStats(1, 1)]),
       gscU('Play'),
-      gscAi('chain', ['PLAY fits, and the chain is solved.', 'The links are crossword, wordplay, playback and backtrack.'], null, [chBoard(['CROSS', 'WORD', 'PLAY', 'BACK', 'TRACK'], []), chStats(0, 1)])] },
-    { cap: 'Your result marks how you found each word, and names none.', turns: [gscU('Share my result'),
+      gscAi('chain', 'The links are crossword, wordplay, playback and backtrack.', null, [chBoard(['CROSS', 'WORD', 'PLAY', 'BACK', 'TRACK'], []), chStats(0, 1)]),
+      gscU('Share my result'),
       gscAi('chain', null, null, [{ type: 'mono', text: 'Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain' }])] },
   ],
   salvage: [
