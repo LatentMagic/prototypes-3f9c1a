@@ -1823,18 +1823,18 @@
   const gscAi = (tool, text, blocks, after) => ({ from: "ai", tool, text, blocks, after });
   const GSC_WIN = [{ label: "Share result", icon: "share" }, { label: "Back to the games", icon: "list" }];
   const GSC_CB_SEARCH = [
-    gscU("Ask Maeve Doyle where she was at ten."),
+    gscU("Ask Maeve Doyle where she was at ten"),
     gscAi("casebook", "“In the bar, all evening. Ask anyone.” Maeve doesn’t look up from her glass."),
-    gscU("Search the bar."),
+    gscU("Search the bar"),
     gscAi("casebook", "The last drink on Maeve’s tab was poured at 9.40.", [{ type: "clues", groups: [{ kind: "Evidence", facts: [{ text: "The bar ledger", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "4 of 16" }] }])
   ];
   const GSC_CB_LIE = [
-    gscU("Show Maeve the bar ledger."),
+    gscU("Show Maeve the bar ledger"),
     gscAi("casebook", "“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”", [{ type: "clues", groups: [{ kind: "Evidence", facts: ["The bar ledger"] }, { kind: "Statements", facts: [{ text: "Maeve Doyle: lie exposed", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "5 of 16" }] }])
   ];
   const GSC_DV_FIGHT_CAP = "Say how you want to fight the guards.";
   const GSC_DV_FIGHT = [
-    gscU("I somersault over the first guard and kick him."),
+    gscU("I somersault over the first guard and kick him"),
     gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.", null, [{ type: "roll", label: "Somersault", roll: 16, mod: 3, target: 13, result: "hit", outcome: "Hit · one guard falls" }])
   ];
   let GS_CHATS;
@@ -1851,33 +1851,33 @@
       // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives No. 34's word away.
       word: [
         { cap: "Ask for today’s word and the board opens on your first guess.", turns: [
-          gscU("Play Guess on After Pixels."),
+          gscU("Play Guess on After Pixels"),
           gscAi("guess", ["Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
         { cap: "Each guess builds on the letters the one before it found.", turns: [
-          gscU("Spray."),
+          gscU("Spray"),
           gscAi("guess", ["R and A are in the word, both in other places.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
-          gscU("Guard."),
+          gscU("Guard"),
           gscAi("guess", ["A is in place now.", "You have 4 guesses left."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
         ] },
         { cap: "Your shared result shows how you did and hides every letter.", turns: [
-          gscU("Share my result."),
+          gscU("Share my result"),
           gscAi("guess", "You found it in 3 of 6 guesses, and you didn’t use your hint.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
         ] }
       ],
       groups: [
         { cap: "Sixteen words hide four groups of four.", turns: [
-          gscU("Play Daily Groups on After Pixels."),
+          gscU("Play Daily Groups on After Pixels"),
           gscAi("daily-groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Each set of four goes to the engine, which checks it and counts your mistakes.", turns: [
-          gscU("Bass, pike, carp, sole."),
+          gscU("Bass, pike, carp, sole"),
           gscAi("daily-groups", "One away. 3 mistakes left."),
-          gscU("Pike, carp, sole, perch."),
+          gscU("Pike, carp, sole, perch"),
           gscAi("daily-groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Afterwards, your AI explains the groups.", turns: [
-          gscU("Rail, gate, post, panel."),
+          gscU("Rail, gate, post, panel"),
           gscAi("daily-groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
@@ -1886,7 +1886,7 @@
       // The clues settle Madame Zara, the brass bugle and the big top; the hint is that solver's first step. The share link is a literal: the build's init-order check rejects gsLink here.
       mystery: [
         { cap: "You can set the clues against each other before you commit to anything.", turns: [
-          gscU("Play Accuse on After Pixels."),
+          gscU("Play Accuse on After Pixels"),
           gscAi(
             "accuse",
             [
@@ -1904,38 +1904,38 @@
           )
         ] },
         { cap: "When you’re stuck, a hint shows you the next step toward the answer.", turns: [
-          gscU("A hint, please."),
+          gscU("A hint, please"),
           gscAi("accuse", ["Madame Zara was not in the costume tent.", "You have 1 hint left."], null, [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }])
         ] },
         { cap: "You get the verdict on your accusation, and a short ending.", turns: [
-          gscU("Madame Zara, the brass bugle, the big top."),
+          gscU("Madame Zara, the brass bugle, the big top"),
           gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?", note: "This is the one accusation in this case.", confirm: "Confirm accusation", cancel: "Cancel" }]),
-          gscU("Confirm accusation."),
+          gscU("Confirm accusation"),
           gscAi("accuse", ["Solved: suspect, weapon and place were all right.", "Madame Zara did it, with the brass bugle, in the big top. She left incense behind."]),
-          gscU("Share my result."),
+          gscU("Share my result"),
           gscAi("accuse", null, null, [{ type: "mono", text: "Accuse No. 112 · solved · 1 hint 💡\nhttps://afterpixels.com/discover/accuse" }])
         ] }
       ],
       // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
       escape: [
         { cap: "The door locks behind you. Look around.", turns: [
-          gscU("Play Escape on After Pixels."),
+          gscU("Play Escape on After Pixels"),
           gscAi("escape", ["Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
         ] },
         { cap: "Every lock has three hints. A hint never costs a try.", turns: [
-          gscU("Examine the workbench."),
+          gscU("Examine the workbench"),
           gscAi("escape", GS_ES1.bench),
-          gscU("Give me a hint for the drawer."),
+          gscU("Give me a hint for the drawer"),
           gscAi("escape", "Count the gears’ teeth, and read each count as a letter.", [{ type: "facts", items: [{ label: "Lock", value: "The workbench drawer" }, { label: "Hint", value: "1 of 3" }] }])
         ] },
         { cap: "Out, with your time against par.", turns: [
-          gscU("I try my answer on the oak door lock."),
+          gscU("I try my answer on the oak door lock"),
           gscAi("escape", "The lock gives and the oak door swings open. Escaped in 28 min, under par, with 1 hint and 2 wrong tries.", null, [{ type: "result", title: "The Clockmaker’s Study", status: "Escaped", stats: [{ label: "Time", value: "28 min, under par" }, { label: "Hints", value: 1 }, { label: "Wrong tries", value: 2 }], actions: GSC_WIN }])
         ] }
       ],
       casebook: [
         { cap: "Three guests were still up. Sixteen turns to find out why.", turns: [
-          gscU("Play Casebook on After Pixels."),
+          gscU("Play Casebook on After Pixels"),
           gscAi("casebook", ["The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
         ] },
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
@@ -1945,55 +1945,55 @@
       // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
       delve: [
         { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
-          gscU("Play Delve on After Pixels."),
+          gscU("Play Delve on After Pixels"),
           gscAi(
             "delve",
             ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
             null,
             [{ type: "entities", title: "Heroes", items: [{ name: "Leon, the Wrestler", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Ione, the Bull-leaper", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Mira, the Temple scholar", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
           ),
-          gscU("Ione."),
+          gscU("Ione"),
           gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
         ] },
         { cap: "A miss costs you health. Spend your inspiration on the retry.", turns: [
-          gscU("I wait for a gap in the moving walls, then dart through."),
+          gscU("I wait for a gap in the moving walls, then dart through"),
           gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }, { label: "The monster’s waking", value: 1, max: 15, tone: "threat" }] }]),
-          gscU("I try again and spend my inspiration."),
+          gscU("I try again and spend my inspiration"),
           gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "roll", label: "Agility, best of 1 and 15", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }])
         ] },
         { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
         { cap: "Your result is ready to post, with one mark for every roll you made.", turns: [
-          gscU("Finish it with the somersault."),
+          gscU("Finish it with the somersault"),
           gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
-          gscU("Share my result."),
+          gscU("Share my result"),
           gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
         ] }
       ],
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
-          gscU("Play The Barrow of Hollowmere on After Pixels."),
+          gscU("Play The Barrow of Hollowmere on After Pixels"),
           gscAi("hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
-          gscU("I attack the skeleton with my longsword."),
+          gscU("I attack the skeleton with my longsword"),
           gscAi("hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
         ] },
         { cap: "Stop when you like. Your hero carries on to the next chapter.", turns: [
-          gscU("I ring the bell in the chapel tower."),
+          gscU("I ring the bell in the chapel tower"),
           gscAi("hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
         ] }
       ],
       hunter: [
         { cap: "Grey dawn. The band sets out without waiting.", turns: [
-          gscU("Play 36,000 Summers Ago on After Pixels."),
+          gscU("Play 36,000 Summers Ago on After Pixels"),
           gscAi("summers", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
         ] },
         { cap: "The engine rolls the dice and keeps the time.", turns: [
-          gscU("I follow the gatherers up to the plateau."),
+          gscU("I follow the gatherers up to the plateau"),
           gscAi("summers", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
         ] },
         { cap: "At the fire you hear what you missed.", turns: [
-          gscU("I head back to the fire at dusk."),
+          gscU("I head back to the fire at dusk"),
           gscAi("summers", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
         ] }
       ]
@@ -4840,7 +4840,7 @@
   };
   const svDive = (fx, n, board) => {
     const [, sq, res] = SLV_PLAYS[fx].lines.filter((l) => /^Dive /.test(l[0]))[n - 1];
-    return [gscU(sq + "."), gscAi("salvage", (res.startsWith("raised") ? "Sunk" + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + ". " + (SLV_DIVES - n) + " dives left.", null, board && [dpMono(board)])];
+    return [gscU(sq), gscAi("salvage", (res.startsWith("raised") ? "Sunk" + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + ". " + (SLV_DIVES - n) + " dives left.", null, board && [dpMono(board)])];
   };
   const svSunk = (log) => log.filter((l) => l[1] === "sunk").length;
   const dpSvHead = (n, log, hint) => "Salvage #" + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of " + SLV_DIVES + " dives";
@@ -5563,45 +5563,45 @@
       // a real edition: Austria, No. 112 (the scheduled editions run to 45 and never name Austria), with distances from the shipped atlas to the nearest 10 km.
       where: [
         { cap: "You get six guesses and one hint.", turns: [
-          gscU("Play Where on After Pixels."),
+          gscU("Play Where on After Pixels"),
           gscAi("where", ["Where No. 112 is ready: find today’s country in six guesses. Each miss comes back as a border-to-border distance, and 0 means the two touch. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?"])
         ] },
         { cap: "Each guess comes back as a distance from the country.", turns: [
-          gscU("Brazil."),
+          gscU("Brazil"),
           gscAi("where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }, WH_STATS(5, 1)]),
-          gscU("Give me the hint."),
+          gscU("Give me the hint"),
           gscAi("where", "From Brazil, today’s country lies northeast.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }, WH_STATS(5, 0)]),
-          gscU("France."),
+          gscU("France"),
           gscAi("where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }, WH_STATS(4, 0)])
         ] },
         { cap: "A guess at 0 km means the answer is one of its neighbours.", turns: [
-          gscU("Germany."),
+          gscU("Germany"),
           gscAi("where", "Germany shares a border with today’s country.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }, WH_STATS(3, 0)]),
-          gscU("Austria."),
+          gscU("Austria"),
           gscAi("where", ["Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
-          gscU("Share my result."),
+          gscU("Share my result"),
           gscAi("where", null, null, [{ type: "mono", text: "Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where" }])
         ] }
       ],
       chain: [
         { cap: "You get both ends of the line and every first letter.", turns: [
-          gscU("Play Chain on After Pixels."),
+          gscU("Play Chain on After Pixels"),
           gscAi("chain", ["Chain #" + DP_NO + ". Six words, each joined to the next. Guess inward from either end."], null, [dpMono(dpChEnds(CH_TODAY))])
         ] },
         { cap: "A wrong guess shows you the next letter.", turns: [
-          gscU("Ball."),
+          gscU("Ball"),
           gscAi("chain", "Ball is right: snowball."),
-          gscU("Race."),
+          gscU("Race"),
           gscAi("chain", "Not race. The next word starts RO.")
         ] },
         { cap: "Afterwards, your AI explains every link.", turns: [
-          gscU("Service."),
+          gscU("Service"),
           gscAi("chain", ["Service is right. The chain is done, with 2 wrong guesses.", "Snowball, ballroom, room service, service station, station wagon."])
         ] }
       ],
       salvage: [
         { cap: "Five wrecks lie somewhere under an eight-by-eight sea.", turns: [
-          gscU("Play Salvage on After Pixels."),
+          gscU("Play Salvage on After Pixels"),
           gscAi("salvage", ["Salvage #" + DP_NO + ". Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.", "You have " + SLV_DIVES + " dives. Call your first square."], null, [dpMono(svBoard(slvPlayAt("won", 0)))])
         ] },
         { cap: "Each dive comes back as a hit, a miss or sunk.", turns: [...svDive("won", 1), ...svDive("won", 2)] },
@@ -5609,17 +5609,17 @@
       ],
       common: [
         { cap: "The game shows one item at a time.", turns: [
-          gscU("Play Common on After Pixels."),
+          gscU("Play Common on After Pixels"),
           gscAi("common", "Common No. " + CM_NO + ". Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.", null, [dpMono("EGG")])
         ] },
         { cap: "The earlier you name the connection, the more it scores.", turns: [
-          gscU("Another item."),
+          gscU("Another item"),
           gscAi("common", "A right guess now scores 3.", null, [dpMono("EGG\nTORTOISE")]),
-          gscU("Things that are slow."),
+          gscU("Things that are slow"),
           gscAi("common", "Not it, so another item shows. A right guess now scores 2, and you have four guesses left today.", null, [dpMono("EGG\nTORTOISE\nPEANUT")])
         ] },
         { cap: "When a thread closes, your AI gives the connection and how each item fits.", turns: [
-          gscU("They all have a shell."),
+          gscU("They all have a shell"),
           gscAi("common", ["Shell is right, for 2 points.", "An egg, a tortoise, a peanut and a hermit crab all have one. On to Thread 2."])
         ] }
       ]
@@ -10351,7 +10351,7 @@
         ai: "Takes your letter swaps and reads the line back to you.",
         server: "Holds the key, checks every swap and counts your hints."
       },
-      chat: ["Swap a letter and the whole line changes.", "Play Daily Cipher on After Pixels.", ["Daily Cipher No. 41. One line, every letter swapped for another.", "QEB NRFZH YOLTK CLU. Which letter first?"]]
+      chat: ["Swap a letter and the whole line changes.", "Play Daily Cipher on After Pixels", ["Daily Cipher No. 41. One line, every letter swapped for another.", "QEB NRFZH YOLTK CLU. Which letter first?"]]
     },
     {
       k: "nighttrain",
@@ -10375,7 +10375,7 @@
         ai: "Plays every passenger and the guard, and narrates the train.",
         server: "Holds every statement and timetable, counts your stops and checks your accusation."
       },
-      chat: ["Eight passengers, one corridor, no stops until dawn.", "Knock on compartment 4.", ["A tired voice: “I was asleep by eleven. I heard nothing.”", "Her shoes are wet. It hasn’t rained since the last station."]]
+      chat: ["Eight passengers, one corridor, no stops until dawn.", "Knock on compartment 4", ["A tired voice: “I was asleep by eleven. I heard nothing.”", "Her shoes are wet. It hasn’t rained since the last station."]]
     },
     {
       k: "saltmarsh",
@@ -10398,7 +10398,7 @@
         ai: "Tells the crossing, voices your crew and the excise men.",
         server: "Rolls every die, keeps the tide clock and the cargo, and records your voyage."
       },
-      chat: ["Every channel is a roll against the tide.", "Take the north channel.", ["You slip past the reed bank. The cutter’s lamp swings your way, then on.", "Tide: 3 of 6. Two channels to the drop."]]
+      chat: ["Every channel is a roll against the tide.", "Take the north channel", ["You slip past the reed bank. The cutter’s lamp swings your way, then on.", "Tide: 3 of 6. Two channels to the drop."]]
     },
     {
       k: "heist",
@@ -10421,7 +10421,7 @@
         ai: "Briefs you on the job and plays your crew.",
         server: "Runs the guards and the clock, and decides what each move does."
       },
-      chat: ["One floor plan, three crew, one way out.", "Send Ines to the loading bay at 2.10.", ["Ines is in. The guard is early: he’s back at 2.14, not 2.20.", "You have one move before he turns the corner."]]
+      chat: ["One floor plan, three crew, one way out.", "Send Ines to the loading bay at 2.10", ["Ines is in. The guard is early: he’s back at 2.14, not 2.20.", "You have one move before he turns the corner."]]
     },
     {
       k: "winter",
@@ -10443,7 +10443,7 @@
         ai: "Speaks for the settlement and tells you how each week went.",
         server: "Keeps the stores, the weather and everyone’s strength, and carries them between chapters."
       },
-      chat: ["What you ration now decides who sees the thaw.", "Send the two eldest sons to hunt.", ["They come back on the third day with a deer and frostbitten hands.", "Grain: 41 days. Firewood: 18 days."]]
+      chat: ["What you ration now decides who sees the thaw.", "Send the two eldest sons to hunt", ["They come back on the third day with a deer and frostbitten hands.", "Grain: 41 days. Firewood: 18 days."]]
     },
     {
       k: "farside",
@@ -10465,7 +10465,7 @@
         ai: "Plays mission control and explains the why behind each burn.",
         server: "Flies the spacecraft, keeps the fuel and the clock, and records your mission."
       },
-      chat: ["Every burn is worked out by the engine.", "Burn for 40 seconds.", ["Good burn. You’re on the way out of Earth orbit.", "Fuel: 72%. Next window in 3 hours."]]
+      chat: ["Every burn is worked out by the engine.", "Burn for 40 seconds", ["Good burn. You’re on the way out of Earth orbit.", "Fuel: 72%. Next window in 3 hours."]]
     },
     {
       k: "ashcourt",
@@ -10487,7 +10487,7 @@
         ai: "Plays the whole court and narrates the castle.",
         server: "Picks the culprit, keeps every statement and checks your verdict."
       },
-      chat: ["Everyone at court has something to hide.", "Ask the chancellor where he was at midnight.", ["“In the chapel, praying for His Majesty.”", "The bishop says the chapel was locked at eleven."]]
+      chat: ["Everyone at court has something to hide.", "Ask the chancellor where he was at midnight", ["“In the chapel, praying for His Majesty.”", "The bishop says the chapel was locked at eleven."]]
     },
     {
       k: "tidepool",
@@ -10509,7 +10509,7 @@
         ai: "Describes what you find and answers your questions about it.",
         server: "Keeps the tide, decides what each pool holds and records what you found."
       },
-      chat: ["Every pool holds something different.", "Lift the flat stone by the big pool.", ["Two shore crabs scatter sideways. Under them, a cluster of tiny white eggs.", "Tide: 40 minutes until it turns."]]
+      chat: ["Every pool holds something different.", "Lift the flat stone by the big pool", ["Two shore crabs scatter sideways. Under them, a cluster of tiny white eggs.", "Tide: 40 minutes until it turns."]]
     },
     {
       k: "clockwork",
@@ -10531,7 +10531,7 @@
         ai: "Describes the workbench and what your machine does when it runs.",
         server: "Runs every gear and spring, and decides whether the vault opens."
       },
-      chat: ["Fit a part, set it going, see what moves.", "Put the large gear on the left spindle and wind it.", ["The large gear turns the small one three times. The lock moves one notch.", "Ten notches to go."]]
+      chat: ["Fit a part, set it going, see what moves.", "Put the large gear on the left spindle and wind it", ["The large gear turns the small one three times. The lock moves one notch.", "Ten notches to go."]]
     }
   ];
   const GS_MORE_IDS = GS_MORE.map((d) => d.k);
@@ -10751,27 +10751,27 @@
     // Every event is true to the play; no edition secret appears.
     chats: [
       [
-        gscU("Play Delve on After Pixels."),
+        gscU("Play Delve on After Pixels"),
         gscAi(
           "delve",
           ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
           null,
           [{ type: "mono", text: "Leon, the Wrestler\nBest at Strength, Toughness · 23 HP · Defence 10\nIone, the Bull-leaper\nBest at Agility, Charm · 21 HP · Defence 14\nMira, the Temple scholar\nBest at Wits, Wisdom · 17 HP · Defence 12" }]
         ),
-        gscU("Ione."),
+        gscU("Ione"),
         gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
       ],
       [
-        gscU("I wait for a gap in the moving walls, then dart through."),
+        gscU("I wait for a gap in the moving walls, then dart through"),
         gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "mono", text: "d20 7 +3 Agility = 10 against DC 12\nFailure · 4 damage" }]),
-        gscU("I try again and spend my inspiration."),
+        gscU("I try again and spend my inspiration"),
         gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "mono", text: "d20s 1 and 15, kept 15 +3 Agility = 18 against DC 12\nSuccess · inspiration spent" }])
       ],
       GSC_DV_FIGHT,
       [
-        gscU("Finish it with the somersault."),
+        gscU("Finish it with the somersault"),
         gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
-        gscU("Share my result."),
+        gscU("Share my result"),
         gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
       ]
     ],

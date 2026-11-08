@@ -88,7 +88,7 @@ const svBoard = (p) => {
 };
 // What the AI says to dive n of a play: its square, and the answer with the dives left.
 const svDive = (fx, n, board) => { const [, sq, res] = SLV_PLAYS[fx].lines.filter((l) => /^Dive /.test(l[0]))[n - 1];
-  return [gscU(sq + '.'), gscAi('salvage', (res.startsWith('raised') ? 'Sunk' + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + '. ' + (SLV_DIVES - n) + ' dives left.', null, board && [dpMono(board)])]; };
+  return [gscU(sq), gscAi('salvage', (res.startsWith('raised') ? 'Sunk' + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + '. ' + (SLV_DIVES - n) + ' dives left.', null, board && [dpMono(board)])]; };
 const svSunk = (log) => log.filter((l) => l[1] === 'sunk').length;
 const dpSvHead = (n, log, hint) => 'Salvage #' + n + ' · ' + (svSunk(log) === 5 ? 'all 5 wrecks' : svSunk(log) + ' of 5 wrecks') + ' · ' + log.length + ' of ' + SLV_DIVES + ' dives' + (hint ? ' · 1 hint' : '');
 // Today's sea, as the earlier seas' [x, y] squares: the sea of SLV_PLAYS (gs-salvage.jsx), the only one.
@@ -507,43 +507,43 @@ Object.assign(GS_CHATS, {
   // Where: the product page's three chats, written for the page from a real play (2026-11-08) and the game spec (where.md §4, §5). The case is not
   // a real edition: Austria, No. 112 (the scheduled editions run to 45 and never name Austria), with distances from the shipped atlas to the nearest 10 km.
   where: [
-    { cap: 'You get six guesses and one hint.', turns: [gscU('Play Where on After Pixels.'),
+    { cap: 'You get six guesses and one hint.', turns: [gscU('Play Where on After Pixels'),
       gscAi('where', ['Where No. 112 is ready: find today’s country in six guesses. Each miss comes back as a border-to-border distance, and 0 means the two touch. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?'])] },
-    { cap: 'Each guess comes back as a distance from the country.', turns: [gscU('Brazil.'),
+    { cap: 'Each guess comes back as a distance from the country.', turns: [gscU('Brazil'),
       gscAi('where', 'Brazil is 7,290 km away.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }] }, WH_STATS(5, 1)]),
-      gscU('Give me the hint.'),
+      gscU('Give me the hint'),
       gscAi('where', 'From Brazil, today’s country lies northeast.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }, { label: 'Hint', value: 'Northeast of Brazil' }] }, WH_STATS(5, 0)]),
-      gscU('France.'),
+      gscU('France'),
       gscAi('where', 'France is 140 km away.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }, { label: 'France', value: '140 km' }] }, WH_STATS(4, 0)])] },
-    { cap: 'A guess at 0 km means the answer is one of its neighbours.', turns: [gscU('Germany.'),
+    { cap: 'A guess at 0 km means the answer is one of its neighbours.', turns: [gscU('Germany'),
       gscAi('where', 'Germany shares a border with today’s country.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }, { label: 'France', value: '140 km' }, { label: 'Germany', value: '0 km, shares a border' }] }, WH_STATS(3, 0)]),
-      gscU('Austria.'),
+      gscU('Austria'),
       gscAi('where', ['Today’s country is Austria.', 'It sits in the Alps, and Vienna is its capital.'], [{ type: 'result', title: 'Where No. 112', status: 'Found', stats: [{ label: 'Guesses', value: '4 of 6' }, { label: 'Hints used', value: 1 }] }]),
-      gscU('Share my result.'),
+      gscU('Share my result'),
       gscAi('where', null, null, [{ type: 'mono', text: 'Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where' }])] },
   ],
   chain: [
-    { cap: 'You get both ends of the line and every first letter.', turns: [gscU('Play Chain on After Pixels.'),
+    { cap: 'You get both ends of the line and every first letter.', turns: [gscU('Play Chain on After Pixels'),
       gscAi('chain', ['Chain #' + DP_NO + '. Six words, each joined to the next. Guess inward from either end.'], null, [dpMono(dpChEnds(CH_TODAY))])] },
-    { cap: 'A wrong guess shows you the next letter.', turns: [gscU('Ball.'), gscAi('chain', 'Ball is right: snowball.'),
-      gscU('Race.'), gscAi('chain', 'Not race. The next word starts RO.')] },
-    { cap: 'Afterwards, your AI explains every link.', turns: [gscU('Service.'),
+    { cap: 'A wrong guess shows you the next letter.', turns: [gscU('Ball'), gscAi('chain', 'Ball is right: snowball.'),
+      gscU('Race'), gscAi('chain', 'Not race. The next word starts RO.')] },
+    { cap: 'Afterwards, your AI explains every link.', turns: [gscU('Service'),
       gscAi('chain', ['Service is right. The chain is done, with 2 wrong guesses.', 'Snowball, ballroom, room service, service station, station wagon.'])] },
   ],
   salvage: [
-    { cap: 'Five wrecks lie somewhere under an eight-by-eight sea.', turns: [gscU('Play Salvage on After Pixels.'),
+    { cap: 'Five wrecks lie somewhere under an eight-by-eight sea.', turns: [gscU('Play Salvage on After Pixels'),
       gscAi('salvage', ['Salvage #' + DP_NO + '. Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.', 'You have ' + SLV_DIVES + ' dives. Call your first square.'], null, [dpMono(svBoard(slvPlayAt('won', 0)))])] },
     { cap: 'Each dive comes back as a hit, a miss or sunk.', turns: [...svDive('won', 1), ...svDive('won', 2)] },
     { cap: 'The board is redrawn after every dive, so your AI can read it aloud.', turns: svDive('won', 4, svBoard(slvPlayAt('won', 4))) },
   ],
   common: [
-    { cap: 'The game shows one item at a time.', turns: [gscU('Play Common on After Pixels.'),
+    { cap: 'The game shows one item at a time.', turns: [gscU('Play Common on After Pixels'),
       gscAi('common', 'Common No. ' + CM_NO + '. Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.', null, [dpMono('EGG')])] },
-    { cap: 'The earlier you name the connection, the more it scores.', turns: [gscU('Another item.'),
+    { cap: 'The earlier you name the connection, the more it scores.', turns: [gscU('Another item'),
       gscAi('common', 'A right guess now scores 3.', null, [dpMono('EGG\nTORTOISE')]),
-      gscU('Things that are slow.'),
+      gscU('Things that are slow'),
       gscAi('common', 'Not it, so another item shows. A right guess now scores 2, and you have four guesses left today.', null, [dpMono('EGG\nTORTOISE\nPEANUT')])] },
-    { cap: 'When a thread closes, your AI gives the connection and how each item fits.', turns: [gscU('They all have a shell.'),
+    { cap: 'When a thread closes, your AI gives the connection and how each item fits.', turns: [gscU('They all have a shell'),
       gscAi('common', ['Shell is right, for 2 points.', 'An egg, a tortoise, a peanut and a hermit crab all have one. On to Thread 2.'])] },
   ],
 });
