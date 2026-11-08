@@ -44,13 +44,12 @@ export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // size: 'tiny' or 'small', mirroring the game spec's size line. A sized game's time chip is derived from it (gsAccess), never typed in tags or a page's facts.long. A game with no size types its own time once.
 // edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups).
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups).
-// edLine: no longer shown. The edition panel shows titles only, no line under each edition.
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
 // soon: the game is out for now and coming back. Every card, pick and tile shows it Coming soon, dimmed, with no way in.
 export const GS_GAMES = {
-  word: { access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], edLine: 'Five letters. Six guesses.', daily: true, once: true, blurb: 'One hidden word a day: find it in six guesses.', tags: ['Daily'], size: 'tiny' },
-  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', edLine: 'Sixteen words hide four groups. Find all four.', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
-  mystery: { access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], edLine: 'One suspect, one weapon, one room. One accusation.', daily: true, once: true, blurb: 'Four suspects, four weapons, four places. Who do you accuse?', tags: ['Daily'], size: 'tiny' },
+  word: { access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], daily: true, once: true, blurb: 'One hidden word a day: find it in six guesses.', tags: ['Daily'], size: 'tiny' },
+  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
+  mystery: { access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], daily: true, once: true, blurb: 'Four suspects, four weapons, four places. Who do you accuse?', tags: ['Daily'], size: 'tiny' },
   escape: { access: 'first', soon: true, name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly'], size: 'small' },
   // Casebook is episodic: cases are its editions, with no schedule.
   casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },

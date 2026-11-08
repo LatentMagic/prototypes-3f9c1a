@@ -9,7 +9,7 @@ import React from 'react';
 import { GS_NAME, DS, useGs, GS_GAMES, GS_BARROW_CREDIT, GS_SOON } from './gs-data.jsx';
 import { GsCover, GsWhoCols, GsSoonCard } from './gs-parts.jsx';
 import { GsChatRow } from './gs-chats.jsx';
-import { GS_HOME_GAMES } from './gs-home.jsx';
+import { GS_MORE_GAMES } from './gs-home.jsx';
 import { GsGameCard } from './gs-pass-home.jsx';
 import { GsPlayBox } from './gs-pass-game.jsx';
 
@@ -41,7 +41,7 @@ const GsFacts = ({ id }) => {
 export const GsGamePage = ({ id, top }) => {
   const gs = useGs();
   const g = GS_GAMES[id]; const p = GS_PAGES[id];
-  const others = GS_HOME_GAMES.filter((k) => k !== id);   return (
+  const others = GS_MORE_GAMES.filter((k) => k !== id);   return (
     <main className="gs-wrap gs-main">
       {top}
 
@@ -74,7 +74,7 @@ export const GsGamePage = ({ id, top }) => {
         {id === 'barrow' && <p className="gs-small gs-muted gs-credit" style={{ overflowWrap: 'anywhere', maxWidth: '72ch' }}>{GS_BARROW_CREDIT}</p>}
       </section>
 
-      {/* More games is the home page's card row (GS_HOME_GAMES) without this game, then the soon cards and a link to the store. */}
+      {/* More games is the launch games list (GS_MORE_GAMES) without this game, then the soon cards and a link to the store. */}
       <section className="gs-stack-md">
         <DS.CardRow title="More games" className="gs-row4">
           {others.map((k) => <GsGameCard key={k} id={k} />)}

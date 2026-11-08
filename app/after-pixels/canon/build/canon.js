@@ -1066,9 +1066,9 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
-    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "Four suspects, four weapons, four places. Who do you accuse?", tags: ["Daily"], size: "tiny" },
+    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
+    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
+    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], daily: true, once: true, blurb: "Four suspects, four weapons, four places. Who do you accuse?", tags: ["Daily"], size: "tiny" },
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
@@ -5152,7 +5152,6 @@
         art: "where",
         route: "where",
         ed: ["country", "countries"],
-        edLine: "You get six guesses to find the country.",
         daily: true,
         once: true,
         blurb: "Which country is hidden? Each guess shows how far off you are.",
@@ -5166,7 +5165,6 @@
         art: "chain",
         route: "chain",
         ed: ["chain", "chains"],
-        edLine: "You get both ends. Find the words between.",
         daily: true,
         once: true,
         blurb: "Work out the missing words in a chain where each joins the next.",
@@ -5180,7 +5178,6 @@
         art: "salvage",
         route: "salvage",
         ed: ["sea", "seas"],
-        edLine: "You get twenty dives to find five wrecks.",
         daily: true,
         once: true,
         blurb: "Five wrecks lie somewhere on the sea bed. Find them in twenty dives.",
@@ -5194,7 +5191,6 @@
         art: "common",
         route: "common",
         ed: ["day", "days"],
-        edLine: "You get three threads of four items. Name each connection early.",
         daily: true,
         once: true,
         blurb: "An egg, a tortoise and a peanut share something. Guess it early for more points.",
@@ -6571,7 +6567,8 @@
     CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === "pass").map((k) => k === "salvage" ? "word" : k).slice(0, 8));
   }
   const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
-  const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter", "common"];
+  const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
+  const GS_MORE_GAMES = ["word", "chain", "salvage", "mystery", "common", "where", "delve"];
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
     { v: "1.8", d: "24 September 2026", t: "Streaks carry across devices", x: "Your daily streak and record now follow your account, so they stay intact wherever you connect your AI." },
@@ -6717,7 +6714,7 @@
     const gs = useGs();
     const g = GS_GAMES[id];
     const p = GS_PAGES[id];
-    const others = GS_HOME_GAMES.filter((k) => k !== id);
+    const others = GS_MORE_GAMES.filter((k) => k !== id);
     return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id })), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
   };
   function initGsGame() {
