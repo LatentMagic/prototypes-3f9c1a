@@ -307,7 +307,7 @@ Object.assign(GS_GAMES, {
   salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], edLine: 'You get twenty dives to find five wrecks.', daily: true, once: true,
     blurb: 'Five wrecks lie under today’s sea. Find them in twenty dives.', tags: ['Daily'], size: 'tiny' }),
   common: gsAccess({ access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], edLine: 'You get three threads of four items. Name each connection early.', daily: true, once: true,
-    blurb: 'Name the hidden connection between four items, as early as you dare.', tags: ['Daily'], size: 'tiny' }),
+    blurb: 'An egg, a tortoise and a peanut share something. Guess it early for more points.', tags: ['Daily'], size: 'tiny' }),
 });
 GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);
 // ---- Art. The static cover is the moving piece's rest pose on its 160 by 120 stage (the same numbers as the CSS in index.html).
@@ -585,9 +585,9 @@ Object.assign(GS_CHATS, {
       gscAi('common', '“Things that hold water” wasn’t it.', null, cmBoard(1, ['A RIVER', 'A BOTTLE', 'A CAVE'], 4, 2))] },
     { cap: 'When a thread closes, your AI gives the connection and how each item fits.', turns: [gscU('Things with a hinge'),
       gscAi('common', 'Correct! Thread 3 was Things with a hinge, worth 3 points. A laptop and a door swing on one, a clam’s two shells open on one, and so do the arms of a pair of glasses.',
-        null, [{ type: 'result', title: 'Common No. 112', status: 'Completed', stats: [{ label: 'Score', value: '10 of 15' }, { label: 'Threads found', value: '3 of 3' }] }]),
+        null, [{ type: 'result', title: 'Common No. 112', status: 'Completed', stats: [{ label: 'Score', value: '10 of 15' }, { label: 'Connections found', value: '3 of 3' }] }]),
       gscU('Share my result'),
-      gscAi('common', null, null, [{ type: 'mono', text: 'Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nafterpixels.com/discover/common' }])] },
+      gscAi('common', null, null, [{ type: 'mono', text: 'Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nhttps://afterpixels.com/discover/common' }])] },
   ],
 });
 DP_SESSION_STATES = ['where', 'chain', 'salvage'].flatMap((k) => { const n = GS_NAME[k]; const [g, sp] = dpSessAt(k);

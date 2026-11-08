@@ -11,7 +11,7 @@ export const GsFeature = ({ id }) => <GsCard id={id} />;
 // of what exists; the whole library is on Discover. A game is added here only on the owner's approval: this row is what we highlight.
 // More games on each game's page uses this same list, minus the page's own game.
 // It already holds too much and needs revisiting.
-export const GS_HOME_GAMES = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter'];
+export const GS_HOME_GAMES = ['word', 'mystery', 'escape', 'delve', 'barrow', 'hunter', 'common'];
 
 const GS_WHATSNEW = [
   { v: '1.9', d: '1 October 2026', t: 'Copy any result as text', x: 'You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page.' },

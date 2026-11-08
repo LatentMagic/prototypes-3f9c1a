@@ -44,7 +44,7 @@ export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // size: 'tiny' or 'small', mirroring the game spec's size line. A sized game's time chip is derived from it (gsAccess), never typed in tags or a page's facts.long. A game with no size types its own time once.
 // edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups).
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups).
-// edLine: SAMPLE, the line every edition's panel prints about it (the editions list, gs-editions.jsx). Optional.
+// edLine: no longer shown. The edition panel shows titles only, no line under each edition.
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
 // soon: the game is out for now and coming back. Every card, pick and tile shows it Coming soon, dimmed, with no way in.
 export const GS_GAMES = {

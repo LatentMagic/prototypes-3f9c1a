@@ -5197,7 +5197,7 @@
         edLine: "You get three threads of four items. Name each connection early.",
         daily: true,
         once: true,
-        blurb: "Name the hidden connection between four items, as early as you dare.",
+        blurb: "An egg, a tortoise and a peanut share something. Guess it early for more points.",
         tags: ["Daily"],
         size: "tiny"
       })
@@ -5689,10 +5689,10 @@
             "common",
             "Correct! Thread 3 was Things with a hinge, worth 3 points. A laptop and a door swing on one, a clam’s two shells open on one, and so do the arms of a pair of glasses.",
             null,
-            [{ type: "result", title: "Common No. 112", status: "Completed", stats: [{ label: "Score", value: "10 of 15" }, { label: "Threads found", value: "3 of 3" }] }]
+            [{ type: "result", title: "Common No. 112", status: "Completed", stats: [{ label: "Score", value: "10 of 15" }, { label: "Connections found", value: "3 of 3" }] }]
           ),
           gscU("Share my result"),
-          gscAi("common", null, null, [{ type: "mono", text: "Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nafterpixels.com/discover/common" }])
+          gscAi("common", null, null, [{ type: "mono", text: "Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nhttps://afterpixels.com/discover/common" }])
         ] }
       ]
     });
@@ -6571,7 +6571,7 @@
     CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === "pass").map((k) => k === "salvage" ? "word" : k).slice(0, 8));
   }
   const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
-  const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
+  const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter", "common"];
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
     { v: "1.8", d: "24 September 2026", t: "Streaks carry across devices", x: "Your daily streak and record now follow your account, so they stay intact wherever you connect your AI." },
@@ -7023,7 +7023,7 @@
   const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
   const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== "daily";
   const pgeRowTitle = (gid, e) => pgeNoNum(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + " " + e.n + " · " + e.title : e.title ? "#" + e.n + " · " + e.name : e.name;
-  const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || "", len: gsGameTime(e.gid), who: null });
+  const pgeInfo = (e) => ({ len: gsGameTime(e.gid), who: null });
   const pgeDated = (gid) => !!gsRhythm(gid);
   const pgePlayed = (e) => !!e.status && e.status.kind !== "none" && e.status.kind !== "live";
   const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({
@@ -7100,7 +7100,7 @@
     const when = !pgeDated(gid) ? null : gsRhythm(gid) === "weekly" ? "week of " + e.date : e.date;
     const hist = e.played && /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => pgeHistory(gs, gid, e) }, "See in History");
     const acts = prompt && e.played ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { display: "grid", width: "100%" } }, /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }), hist) : prompt ? /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }) : void 0;
-    return /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React$1.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.line && /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, e.info.line), e.info.who && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React$1.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text }))));
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React$1.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.who && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React$1.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text }))));
   };
   function initGsEditions() {
     pgeOnceText = GS_ONCE_LINE;
