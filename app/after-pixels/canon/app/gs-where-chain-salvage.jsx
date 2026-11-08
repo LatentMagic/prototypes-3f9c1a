@@ -44,7 +44,7 @@ const dpWhere = (t, ok) => {
   if (!ok) lines.push(['Answer', t.a]);
   return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(' ') };
 };
-const dpWhHead = (n, r, ok) => 'Where #' + n + ' · ' + (ok ? 'found in ' + r.guesses + ' of 6' : 'not found') + (r.hints ? ' · 1 hint' : '');
+const dpWhHead = (n, r, ok) => 'Where No. ' + n + ' · ' + (ok ? 'found in ' + r.guesses + ' of 6' : 'not found') + (r.hints ? ' · 1 hint' : '');
 let WH_TODAY;
 let WH_OK;
 let WH_FAIL;
@@ -66,7 +66,7 @@ const dpChain = (t) => {
   return { lines, words: t.w.length, hidden, found, given, wrong: miss.reduce((a, b) => a + b, 0), marks };
 };
 const dpChResult = (r) => GS_RESULT.chain(r.given ? { given: true, found: r.found, of: r.hidden } : { wrong: r.wrong });
-const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' + r.hidden + ' words found' : 'solved · ' + dpWrong(r.wrong));
+const dpChHead = (n, r) => 'Chain No. ' + n + ' · ' + (r.given ? r.found + ' of ' + r.hidden + ' words found' : 'solved · ' + dpWrong(r.wrong));
 // Chain's sample plays, read by its session body (gs-chain.jsx) too.
 export let CH_TODAY;
 export let CH_OK;
@@ -85,8 +85,9 @@ const svMarks = (log) => { const m = log.map(([, r]) => (r === 'miss' ? '○' : 
 // a shown count over each column and after each row, and a - where none is shown. A dived square is ○ a miss, ✕ a hit not yet raised (amber) or ■ part of a wreck raised (green).
 // The chats' sea is not a real edition: wrecks D1 to G1, B5 to D5, A8 to C8, F6 to F7 and A2 to A3, with the margins of four columns (B, D, E, F) and four rows (1, 3, 6, 7).
 const SV_CHAT_SEA = { cols: { B: 2, D: 2, E: 1, F: 3 }, rows: { 1: 4, 3: 1, 6: 1, 7: 1 } };
-const svGrid = (miss, hit, raised) => {
-  const cnt = SV_CHAT_SEA;
+// `swept` adds the counts a sonar sweep gives to the margin, as { cols: { A: 3 } }.
+const svGrid = (miss, hit, raised, swept = {}) => {
+  const cnt = { cols: { ...SV_CHAT_SEA.cols, ...swept.cols }, rows: { ...SV_CHAT_SEA.rows, ...swept.rows } };
   const mark = {};
   miss.forEach((sq) => { mark[sq] = ['○', '']; }); hit.forEach((sq) => { mark[sq] = ['✕', 'n']; }); raised.forEach((sq) => { mark[sq] = ['■', 'h']; });
   const cols = 'ABCDEFGH'.split('');
@@ -97,7 +98,7 @@ const svGrid = (miss, hit, raised) => {
 };
 const SV_WRECK_SQUARES = ['D1', 'E1', 'F1', 'G1', 'B5', 'C5', 'D5', 'A8', 'B8', 'C8', 'F6', 'F7', 'A2', 'A3'];
 const svSunk = (log) => log.filter((l) => l[1] === 'sunk').length;
-const dpSvHead = (n, log, hint) => 'Salvage #' + n + ' · ' + (svSunk(log) === 5 ? 'all 5 wrecks' : svSunk(log) + ' of 5 wrecks') + ' · ' + log.length + ' of ' + SLV_DIVES + ' dives' + (hint ? ' · 1 hint' : '');
+const dpSvHead = (n, log, hint) => 'Salvage No. ' + n + ' · ' + (svSunk(log) === 5 ? 'all 5 wrecks' : svSunk(log) + ' of 5 wrecks') + ' · ' + log.length + ' of ' + SLV_DIVES + ' dives' + (hint ? ' · 1 hint' : '');
 // Today's sea, as the earlier seas' [x, y] squares: the sea of SLV_PLAYS (gs-salvage.jsx), the only one.
 const svSea = () => SLV_WRECKS.map((w) => w.map((sq) => [SV_COLS.indexOf(sq[0]), +sq.slice(1) - 1]));
 // Earlier seas: a seeded layout and a seeded player (checkerboard search, then along each hit), so every record agrees with its rules.
@@ -564,7 +565,7 @@ Object.assign(GS_CHATS, {
     { cap: 'A dragnet snags the first wreck square on a line.', turns: [gscU('Row 1 counts 4, so dragnet along it from the left'),
       gscAi('salvage', 'The dragnet snagged at D1, a hit.', [svGrid([], ['D1'], [])])] },
     { cap: 'The last wreck raised wins the day.', turns: [gscU('D5 to finish it'),
-      gscAi('salvage', 'D5 raised the wreck of 3, covering B5 to D5.', [svGrid(['A4'], [], SV_WRECK_SQUARES), { type: 'result', title: 'Salvage No. 112', status: 'All 5 wrecks', stats: [{ label: 'Dives used', value: '14 of 20' }, { label: 'Tools used', value: 3 }] }]),
+      gscAi('salvage', 'D5 raised the wreck of 3, covering B5 to D5.', [svGrid(['A4'], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: 'result', title: 'Salvage No. 112', status: 'All 5 wrecks', stats: [{ label: 'Dives used', value: '14 of 20' }, { label: 'Tools used', value: 3 }] }]),
       gscU('Share my result'),
       gscAi('salvage', null, null, [{ type: 'mono', text: 'Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage' }])] },
   ],

@@ -846,7 +846,6 @@
         warn("parts are plain strings; a part that isn’t is dropped.");
         return false;
       }).map(String);
-      if (!list.length) warn('"' + label + '" has no parts; line two is empty.');
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-move " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-move-label" }, label), list.length > 0 && /* @__PURE__ */ React2.createElement("span", { className: "mcp-move-parts" }, list.map((p, i) => /* @__PURE__ */ React2.createElement("span", { key: i, className: i === 0 ? "mcp-move-lead" : "mcp-move-rest" }, i > 0 && /* @__PURE__ */ React2.createElement("span", { className: "mcp-move-sep" }, ", "), p))));
     }
     const MON = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -1978,7 +1977,7 @@
           gscU("Finish it with the somersault"),
           gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
           gscU("Share my result"),
-          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
+          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ the Minotaur beaten · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
         ] }
       ],
       barrow: [
@@ -4330,7 +4329,7 @@
       const list = dvRun(gs);
       const f = lbFrozen(lbRunOf(list), list, (s) => s.date);
       return /* @__PURE__ */ React$1.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
-    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES.delve.ed[1] + " comes with the Pass." }));
+    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Earlier " + GS_GAMES.delve.ed[1] + " need the Pass." }));
   };
   const CprEsLibrary = () => {
     const gs = useGs();
@@ -4342,7 +4341,7 @@
       const run = pzRun(gs, "escape");
       const f = lbFrozen(lbRunOf(run), run, (y) => y.date);
       return /* @__PURE__ */ React$1.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
-    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items, badges: c.badges, access: lbAccess(gs, "escape"), ed: GS_GAMES.escape.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your rooms", allLabel: "See in History", empty: "Your rooms appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES.escape.ed[1] + " comes with the Pass." }));
+    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items, badges: c.badges, access: lbAccess(gs, "escape"), ed: GS_GAMES.escape.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your rooms", allLabel: "See in History", empty: "Your rooms appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Earlier " + GS_GAMES.escape.ed[1] + " need the Pass." }));
   };
   const CprBwLibrary = () => {
     const gs = useGs();
@@ -4367,7 +4366,7 @@
     const fz = had ? lbFrozen(lbRunOf(run), run, (x) => x.date) : null;
     const n = fz ? fz.n : lbStreak(run);
     const ach = phAch(gs, id, c.ach, n);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, locked ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach, access: "all" }) : /* @__PURE__ */ React$1.createElement(PzNow, { c, done: lbWeekDone(gs), none, id }), /* @__PURE__ */ React$1.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: fz ? fz.weeks : lbRunOf(run) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: recent, allLabel: "See in History", empty: recent + " appear here once you have played one." })), gs.view !== "pass" && !locked && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Playing earlier " + GS_GAMES[id].ed[1] + " comes with the Pass." }));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, locked ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach, access: "all" }) : /* @__PURE__ */ React$1.createElement(PzNow, { c, done: lbWeekDone(gs), none, id }), /* @__PURE__ */ React$1.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: fz ? fz.weeks : lbRunOf(run) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: recent, allLabel: "See in History", empty: recent + " appear here once you have played one." })), gs.view !== "pass" && !locked && /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Earlier " + GS_GAMES[id].ed[1] + " need the Pass." }));
   };
   const cprRow = (result, tone, when, at) => ({ result, tone, when, at });
   let CPR_FREE_READY;
@@ -4796,7 +4795,7 @@
     if (!ok) lines.push(["Answer", t.a]);
     return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(" ") };
   };
-  const dpWhHead = (n, r, ok) => "Where #" + n + " · " + (ok ? "found in " + r.guesses + " of 6" : "not found") + (r.hints ? " · 1 hint" : "");
+  const dpWhHead = (n, r, ok) => "Where No. " + n + " · " + (ok ? "found in " + r.guesses + " of 6" : "not found") + (r.hints ? " · 1 hint" : "");
   let WH_TODAY;
   let WH_OK;
   let WH_FAIL;
@@ -4826,7 +4825,7 @@
     return { lines, words: t.w.length, hidden, found, given, wrong: miss.reduce((a, b) => a + b, 0), marks };
   };
   const dpChResult = (r) => GS_RESULT.chain(r.given ? { given: true, found: r.found, of: r.hidden } : { wrong: r.wrong });
-  const dpChHead = (n, r) => "Chain #" + n + " · " + (r.given ? r.found + " of " + r.hidden + " words found" : "solved · " + dpWrong(r.wrong));
+  const dpChHead = (n, r) => "Chain No. " + n + " · " + (r.given ? r.found + " of " + r.hidden + " words found" : "solved · " + dpWrong(r.wrong));
   let CH_TODAY;
   let CH_OK;
   let CH_FAIL;
@@ -4848,8 +4847,8 @@
     return out;
   };
   const SV_CHAT_SEA = { cols: { B: 2, D: 2, E: 1, F: 3 }, rows: { 1: 4, 3: 1, 6: 1, 7: 1 } };
-  const svGrid = (miss, hit, raised) => {
-    const cnt = SV_CHAT_SEA;
+  const svGrid = (miss, hit, raised, swept = {}) => {
+    const cnt = { cols: { ...SV_CHAT_SEA.cols, ...swept.cols }, rows: { ...SV_CHAT_SEA.rows, ...swept.rows } };
     const mark = {};
     miss.forEach((sq) => {
       mark[sq] = ["○", ""];
@@ -4868,7 +4867,7 @@
   };
   const SV_WRECK_SQUARES = ["D1", "E1", "F1", "G1", "B5", "C5", "D5", "A8", "B8", "C8", "F6", "F7", "A2", "A3"];
   const svSunk = (log) => log.filter((l) => l[1] === "sunk").length;
-  const dpSvHead = (n, log, hint) => "Salvage #" + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of " + SLV_DIVES + " dives";
+  const dpSvHead = (n, log, hint) => "Salvage No. " + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of " + SLV_DIVES + " dives";
   const svSea = () => SLV_WRECKS.map((w) => w.map((sq) => [SV_COLS.indexOf(sq[0]), +sq.slice(1) - 1]));
   const svRng = (seed) => {
     let s = seed * 9301 + 49297;
@@ -5654,7 +5653,7 @@
         ] },
         { cap: "The last wreck raised wins the day.", turns: [
           gscU("D5 to finish it"),
-          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
+          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
           gscU("Share my result"),
           gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
         ] }
@@ -7188,7 +7187,7 @@
     const list = lbAchView(items, access, gs);
     const kept = list.some((a) => a.state === "kept");
     const of = kept ? items.length : list.length;
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Achievements"), list.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, lbAchEarned(list) + " of " + of + " earned")), access === "first" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "These are the achievements the first " + (ed || ["edition"])[0] + " can earn. Every other " + (ed || ["edition"])[0] + " comes with the Pass."), kept && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "You can’t earn the rest until the Pass returns."), /* @__PURE__ */ React$1.createElement("ul", { className: "lb-ach" }, list.map((a) => /* @__PURE__ */ React$1.createElement("li", { key: a.k }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lb-achbtn", onClick: () => setOpen(a) }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[a.k], got: !!a.got }), /* @__PURE__ */ React$1.createElement("span", { className: "lb-achtx" }, /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-n" }, a.n), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-sub" }, a.how), !a.got && /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-st" }, lbAchLine(a))))))), /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!open, onClose: () => setOpen(null), title: open ? open.n : "", actions: /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(null) }, "Close") }, open && /* @__PURE__ */ React$1.createElement("div", { className: "lb-achpop" }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[open.k], got: !!open.got }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("p", null, open.how), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, lbAchLine(open))))));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-sechead" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Achievements"), list.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, lbAchEarned(list) + " of " + of + " earned")), access === "first" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "These are the achievements the first " + (ed || ["edition"])[0] + " can earn. Every " + (ed || ["edition"])[0] + " after it needs the Pass."), kept && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "You can’t earn the rest until the Pass returns."), /* @__PURE__ */ React$1.createElement("ul", { className: "lb-ach" }, list.map((a) => /* @__PURE__ */ React$1.createElement("li", { key: a.k }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "lb-achbtn", onClick: () => setOpen(a) }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[a.k], got: !!a.got }), /* @__PURE__ */ React$1.createElement("span", { className: "lb-achtx" }, /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-n" }, a.n), /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-sub" }, a.how), !a.got && /* @__PURE__ */ React$1.createElement("span", { className: "lb-ach-st" }, lbAchLine(a))))))), /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!open, onClose: () => setOpen(null), title: open ? open.n : "", actions: /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setOpen(null) }, "Close") }, open && /* @__PURE__ */ React$1.createElement("div", { className: "lb-achpop" }, /* @__PURE__ */ React$1.createElement(LbBadge, { art: badges[open.k], got: !!open.got }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("p", null, open.how), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, lbAchLine(open))))));
   };
   const lbDate = (d) => d.getDate() + " " + d.toLocaleString("en-GB", { month: "long" }) + (d.getFullYear() !== 2026 ? " " + d.getFullYear() : "");
   const lbMonth = (d) => d.toLocaleString("en-GB", { month: "long" }) + (d.getFullYear() !== 2026 ? " " + d.getFullYear() : "");
