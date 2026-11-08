@@ -252,13 +252,18 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .lb-runbody { align-items: center; }
   .lb-runbody .lb-run { grid-template-columns: repeat(10, 32.6px) !important; }
   .lb-runbody .lb-legend { justify-content: center; }
-  /* KEEP: Stacked, the card need not match a row, so it is trimmed: square slots (30.6px box in a 32.6px column), the card's own padding, and tighter gaps, all from the spacing tokens. */
+  /* KEEP: Stacked, the card need not match a row, so it is trimmed: square slots (a 30.6px box in a 32.6px column), the card's own padding, and tighter gaps, all from the spacing tokens. */
   .lb-runcard { padding: var(--space-4); }
   .lb-runbody { gap: var(--space-3); padding-block: var(--space-2); }
   .lb-runbody .lb-wk { grid-template-rows: 17px 30.6px auto; }
+  /* KEEP: Every slot is the same 30.6px square, centred in its 32.6px column, joined or not; a joined slot reaches back over the 2px gap (and 1px into the slot before) so a run of completed days still reads as one bar. */
+  .lb-runbody .lb-run .lb-wk > i { width: 30.6px; margin: 0; justify-self: center; }
+  .lb-runbody .lb-run .lb-wk.is-join > i { position: relative; }
+  .lb-runbody .lb-run .lb-wk.is-join > i::before { content: ''; position: absolute; top: 0; bottom: 0; left: -3px; width: 3px; background: inherit; }
 }
 @container gs (max-width: 479px) {
   .lb-runbody .lb-run { grid-template-columns: repeat(6, 32.6px) !important; }
+  .lb-runbody .lb-run > .is-cut > i::before { content: none; }
 }
 @container gs (min-width: 900px) {
   .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }
@@ -274,7 +279,6 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 
 /* C2: achievement items align to the top */
 .lb-achbtn { align-items: start; }
-/* KEEP: C1, reversed by the owner 2026-10-13: cards side by side on the library game page end level; the shorter one takes the spare space at its foot */
 /* KEEP: C1, C2: beside the plays card the achievements wrap into as many columns as fit, each at least 260px wide, so a description wraps to two lines at most and every achievement shows (Common has eight) */
 @container gs (min-width: 900px) { .lb-lay .lb-card > .lb-ach { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); } }
 
