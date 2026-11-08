@@ -21,7 +21,7 @@ export const GS = {
 // bottom when the shapes stand on the bottom edge, centre when they float. { ground, extend, svg }
 export const GS_SVG = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + '</svg>';
 export const GS_ART = {
-  delve: { ground: 'wine', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="29" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="32" cy="54" r="8" fill="#D66847"/><rect x="125" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="128" cy="54" r="8" fill="#D66847"/>') },
+  delve: { ground: 'wine', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="29" y="46" width="6" height="30" fill="#F2EBE0"/><circle cx="32" cy="38" r="8" fill="#D66847"/><rect x="125" y="46" width="6" height="30" fill="#F2EBE0"/><circle cx="128" cy="38" r="8" fill="#D66847"/>') },
   escape: { ground: 'indigo', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>') },
   murder: { ground: 'wine', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>') },
   // Daily Groups: four rows of four, one colour a group, as a solved board.
@@ -37,24 +37,23 @@ export const GS_ART = {
 export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
-// category: one per game, printed before the rhythm in the product page's label (proposed values).
+// category: one per game, printed as the product page’s cover label (proposed values).
 // access: who plays what, held here once. 'daily' free to play (the current edition, a streak, its achievements); 'first' a free player
 // gets the game's one first edition; 'pass' only with the Pass. free, first and the card's access tag are derived from it (gsAccess); never type them.
 // once: the game has a fixed answer, so a finished play is never started again, with or without a schedule. Read it through gsStartsOver only.
 // size: 'tiny' or 'small', mirroring the game spec's size line. A sized game's time chip is derived from it (gsAccess), never typed in tags or a page's facts.long. A game with no size types its own time once.
 // edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups).
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups).
-// edLine: SAMPLE, the line every edition's panel prints about it (the editions list, gs-editions.jsx). Optional.
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
 // soon: the game is out for now and coming back. Every card, pick and tile shows it Coming soon, dimmed, with no way in.
 export const GS_GAMES = {
-  word: { access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], edLine: 'Five letters. Six guesses.', daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily'], size: 'tiny' },
-  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', edLine: 'Sixteen words hide four groups. Find all four.', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
-  mystery: { access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], edLine: 'One suspect, one weapon, one room. One accusation.', daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily'], size: 'tiny' },
+  word: { access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], daily: true, once: true, blurb: 'One hidden word a day: find it in six guesses.', tags: ['Daily'], size: 'tiny' },
+  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
+  mystery: { access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], daily: true, once: true, blurb: 'Four suspects, four weapons, four places. Who do you accuse?', tags: ['Daily'], size: 'tiny' },
   escape: { access: 'first', soon: true, name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly'], size: 'small' },
   // Casebook is episodic: cases are its editions, with no schedule.
   casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
-  delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'Get her out before the ritual is complete.', tags: ['Weekly'], size: 'small' },
+  delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'A new world every week: fight room by room to the villain at its heart.', tags: ['Weekly'], size: 'small' },
   // Chapters are its editions; a free player gets chapter 1. Sample content.
   barrow: { access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
   hunter: { access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', ed: ['summer', 'summers'], blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
@@ -255,19 +254,19 @@ export const GS_SESSIONS = {
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 34, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     share: 'Solved in 3 of 6',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STILL']),
   },
-  // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
-  // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
+  // Sample plays for the session page (1236). No. 32, the hard play: solved on the fifth guess with the hint; after ROBOT only
+  // letter 4 was green, so the hint gave letter 1. No. 30, lost: the SHA_E trap, four letters in place from guess 2 to 6.
   'word-hard': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 32, answer: 'FLOOR', hints: 1, result: 'Solved in 5 of 6', date: 'Sunday 4 October',
     share: 'Solved in 5 of 6',
     lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOUR', 'FLOOR']),
   },
   'word-failed': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 30, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
     share: 'Failed',
     lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 4 is A.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
   },
@@ -279,7 +278,7 @@ export const GS_SESSIONS = {
     lines: GS_ES1_LINES,
   },
   'word-1005': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 33, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
     share: 'Solved in 4 of 6',
     lines: gsWordLines('CHAIN', ['CRANE', 'CHANT', 'CHAIR', 'CHAIN']),
   },
@@ -344,7 +343,7 @@ export const gsSessStatus = (s) => ({ kind: s.loss ? 'bad' : 'ok', label: s.resu
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
-  'word-live': { kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
+  'word-live': { kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 34, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
     lines: gsWordLines('STILL', ['CRANE', 'SLATE']) },
   'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },

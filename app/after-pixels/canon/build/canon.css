@@ -408,7 +408,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat{--c-bg:var(--off-white);--c-fg:oklch(23% .01 95);--c-fg2:oklch(50% .01 95);--c-me:oklch(from var(--c-bg) calc(l - .055) c h);--c-edge:oklch(from var(--c-bg) calc(l - .075) c h);--c-tile:oklch(62% .01 95);--c-tile-fg:#fff;--c-g:var(--cover-green);--c-y:var(--cover-amber);--c-send:var(--control-edge);--c-send-fg:#fff;display:flex;flex-direction:column;background:var(--c-bg);color:var(--c-fg);border-radius:16px;overflow:hidden;position:relative;font:400 15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;border:1px solid var(--c-edge)}
 .mcp-chat p,.mcp-chat ul,.mcp-chat pre{margin:0}
 .mcp-chat-head{padding:9px 16px;border-bottom:1px solid var(--c-edge);font:600 15px/1.2 var(--font-heading);text-align:center;flex:none}
-.mcp-chat-body{overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;justify-content:flex-start;gap:14px;padding:12px 16px 14px;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 36px);mask-image:linear-gradient(to bottom,transparent,#000 36px)}
+.mcp-chat-body{overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;justify-content:flex-start;gap:14px;padding:12px 16px 14px}
 .mcp-chat-body>:first-child{margin-top:auto}
 .mcp-chat-body[data-more="up"]{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 56px);mask-image:linear-gradient(to bottom,transparent 0,#000 56px)}
 .mcp-chat-body:focus-visible{outline:2px solid var(--page);outline-offset:-2px}
@@ -433,10 +433,11 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-row>span{width:28px;height:28px;display:grid;place-items:center;border-radius:5px;font-weight:700;font-size:14px;background:var(--c-tile);color:var(--c-tile-fg)}
 .mcp-chat-row>.is-g{background:var(--c-g);color:var(--success-on)}.mcp-chat-row>.is-y{background:var(--c-y);color:var(--warning-on)}
 .mcp-chat-list{padding-left:18px;display:grid;gap:2px}
-.mcp-chat-mono{font:400 13px/1.4 var(--font-mono,ui-monospace,Menlo,monospace);background:var(--c-me);border-radius:8px;padding:8px 10px;white-space:pre-wrap;max-width:100%}
+/* KEEP: Share text in a chat keeps its line breaks and wraps inside the chat, never widening it. A link breaks only after a slash (a <wbr> in ChatPicture), so the game's name is never split; the anywhere wrap catches only a run with no slash. */
+.mcp-chat-mono{font:400 13px/1.4 var(--font-mono,ui-monospace,Menlo,monospace);background:var(--c-me);border-radius:8px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;max-width:100%}
 .mcp-chat-comp{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 12px 12px;min-height:44px;padding:0 6px 0 16px;border:1px solid var(--c-edge);border-radius:22px;color:var(--c-fg2)}
 .mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
-.mcp-chat-body.is-auto{overflow:visible;-webkit-mask-image:none;mask-image:none}
+.mcp-chat-body.is-auto{overflow:visible}
 .mcp-chat-ai>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
 /* ChatPlayback: a piece entering is wrapped so it can fade; the wrapper keeps the part's own width rules */
 .mcp-chat-fx{display:grid;justify-items:start;justify-self:stretch;min-width:0}.mcp-chat-fx>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
@@ -471,6 +472,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-cb-tiles-in.mcp-cb-fence{padding:6px}
 .mcp-cb-tiles-row{display:flex;gap:4px}
 .mcp-cb-tile{position:relative;width:var(--t);height:var(--t);display:grid;place-items:center;border:1px solid var(--cb-line);background:var(--cb-panel);color:var(--cb-ink);font:700 calc(var(--t) * .5)/1 var(--font-text);text-transform:uppercase;overflow:hidden}
+/* KEEP: A blank tile (mark _) draws nothing, no edge and no fill, but keeps its slot so the columns around it stay aligned. It is for a grid's corner where a header row meets a side column; a tile with no letter and no mark is still an empty square. */
+.mcp-cb-tile.is-blank{visibility:hidden;border:0;background:none}
 .mcp-cb-tile.is-filled{border:1.5px solid var(--cb-ink)}
 .mcp-cb-tile.is-hit{background:var(--cover-green);border-color:var(--cover-green);color:var(--success-on)}
 .mcp-cb-tile.is-near{background:var(--cover-amber);border-color:var(--cover-amber);color:var(--warning-on)}
@@ -520,6 +523,8 @@ button.mcp-cb-chip{cursor:pointer;transition:transform var(--time-press) var(--e
 /* EntityCards */
 .mcp-cb-ents{display:grid;gap:6px;width:100%}
 .mcp-cb-ents-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,156px),1fr));gap:4px}
+/* KEEP: Compact entity cards: the cards fit two to a row in a 308px chat (120px tracks, not 156px). It is a modifier, so cards outside a chat, such as Delve's hero cards, keep their width. */
+.mcp-cb-ents.is-compact .mcp-cb-ents-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,120px),1fr));gap:4px}
 .mcp-cb-ent{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;column-gap:8px;width:100%;height:100%;margin:0;padding:5px 8px 5px 5px;background:var(--cb-panel);border:1px solid var(--cb-edge);color:var(--cb-ink);font:inherit;text-align:left}
 .mcp-cb-ent:has(>.mcp-cb-ent-pic){grid-template-columns:28px minmax(0,1fr);padding-left:5px}.mcp-cb-ent:not(:has(>.mcp-cb-ent-pic)){padding:7px 10px}
 button.mcp-cb-ent{cursor:pointer}
@@ -544,17 +549,34 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-cb-clue li+li{border-top:1px solid color-mix(in srgb,var(--cb-edge) 70%,transparent)}
 .mcp-cb-clue li.is-new{margin:0 -8px;padding-inline:8px;background:color-mix(in srgb,var(--cb-tone) 55%,var(--cb-panel))}
 .mcp-cb-clue li.is-new::before{background:var(--cb-ink)}
+/* KEEP: Chat fold: a card-style part can sit behind a native details, closed or open to start. The whole summary row is the 44px tap target, the chevron turns when open, and a picture inside opens with no script. */
+/* Optional fold on a card-style part (collapsible / collapsed): a native details, so it opens with no handler, a picture included. The summary is the whole tap target (44px) and the chevron turns as the Disclosure's does. */
+.mcp-cb-fold{display:block;min-width:0}
+.mcp-cb-fold>summary{list-style:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.mcp-cb-fold>summary::-webkit-details-marker{display:none}
+.mcp-cb-fold-t{font:700 13.5px/1.3 var(--font-text);color:var(--cb-ink)}
+.mcp-cb-fold-n{font:600 12px/1 var(--font-text);color:var(--cb-ink2);font-variant-numeric:tabular-nums}
+.mcp-cb-fold-n>span{margin-right:8px}
+.mcp-cb-fold>summary .mcp-ico{margin-left:auto;flex:none;color:var(--cb-ink2);transition:transform var(--time-dropdown) var(--ease)}
+.mcp-cb-fold[open]>summary .mcp-ico{transform:rotate(180deg)}
+.mcp-cb-fold[open]>summary{border-bottom:1px solid var(--cb-edge)}
+.mcp-cb-fold>summary:focus-visible{outline:2px solid var(--cb-ink);outline-offset:-2px}
+.mcp-cb-fold-b.is-pad{padding:8px 10px 10px}
+@media (hover:hover){.mcp-cb-fold>summary:hover{background:color-mix(in srgb,var(--cb-ink) 6%,var(--cb-panel))}}
+.mcp-cb-fold>summary:active{background:color-mix(in srgb,var(--cb-ink) 10%,var(--cb-panel))}
+@media (prefers-reduced-motion:reduce){.mcp-cb-fold>summary .mcp-ico{transition:none}}
 .mcp-cb-new{display:inline-flex;align-items:center;height:18px;padding:0 6px;background:var(--cb-ink);color:var(--cb-panel);font:600 11px/1 var(--font-text);align-self:center}
 /* ResultCard */
 .mcp-cb-result-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px}
 /* Track */
-.mcp-cb-track{display:grid;gap:6px;width:100%}
-.mcp-cb-track-row{display:grid;grid-template-columns:5.5em minmax(0,max-content) auto;justify-content:start;column-gap:10px;align-items:center;--cb-on:var(--cb-ink)}
+.mcp-cb-track{display:grid;grid-template-columns:fit-content(7.5em) minmax(3em,1fr) auto;column-gap:10px;row-gap:6px;width:100%}
+/* KEEP: Track rows share one label column (subgrid), so every bar starts at the same edge, and a label wraps to two lines at most, then clips. Both keep a long label from pushing the bars out of line. */
+.mcp-cb-track-row{grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;--cb-on:var(--cb-ink)}
 .mcp-cb-track-row.is-threat{--cb-on:oklch(from var(--error) calc(l - .14) c h)}.mcp-cb-track-row.is-health{--cb-on:oklch(from var(--success) calc(l - .22) c h)}
-.mcp-cb-track-l{font:600 13px/1.3 var(--font-text)}.mcp-cb-track-n{font-size:12px;color:var(--cb-ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mcp-cb-track-l{font:600 13px/1.3 var(--font-text);text-wrap:balance;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}.mcp-cb-track-n{font-size:12px;color:var(--cb-ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mcp-cb-steps{display:flex;gap:3px;min-width:0}
 .mcp-cb-steps>i{flex:0 1 18px;width:18px;min-width:5px;height:10px;border:1px solid var(--cb-line)}.mcp-cb-steps>i.is-on{background:var(--cb-on);border-color:var(--cb-on)}
-.mcp-cb-bar{display:block;height:8px;background:var(--cb-tone);width:200px;max-width:100%}.mcp-cb-bar>i{display:block;height:100%;background:var(--cb-on)}
+.mcp-cb-bar{display:block;height:8px;background:var(--cb-tone);width:200px;max-width:100%}.mcp-cb-track .mcp-cb-bar{width:100%}.mcp-cb-bar>i{display:block;height:100%;background:var(--cb-on)}
 /* RollLine */
 .mcp-cb-roll{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;position:relative}
 .mcp-cb-roll-in{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-variant-numeric:tabular-nums}
@@ -1370,7 +1392,6 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .gs-label { font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; color: var(--off-white); }
 .gs-h1 { margin: 0; font: 700 clamp(28px, 8cqi, 34px)/1.08 var(--font-heading); letter-spacing: -.01em; text-wrap: balance; }
 .gs-figure { font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
-.gs-measure { max-width: 68ch; }
 .gs-center { display: flex; justify-content: center; text-align: center; }
 .gs-ico-row { display: inline-flex; align-items: center; gap: 8px; }
 .gs-rule { height: 1px; background: var(--line); }
@@ -2110,9 +2131,9 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .gs-wide-only { display: flex; }
   .gs-narrow-only { display: none; }
 }
-/* KEEP: product page head: two columns (2fr art, 1fr play box) from 720px, so the cover is never the full-width 4:3 hero above the play box on a tablet */
+/* KEEP: product page head: two columns (3fr art, 2fr play box) from 720px, so the cover is never the full-width 4:3 hero above the play box on a tablet */
 @container gs (min-width: 720px) {
-  .gs-head-split { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+  .gs-head-split { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; }
 }
 @container gs (min-width: 900px) {
   .gs-hero2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: stretch; padding-top: 36px; }

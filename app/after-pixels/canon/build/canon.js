@@ -110,6 +110,20 @@
       if (typeof t !== "string") return t;
       return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React2.createElement("b", { key: i }, s) : s);
     }
+    function cbFold({ title, count: count2, closed, pad }, children) {
+      return React2.createElement(
+        "details",
+        { className: "mcp-cb-fold", open: !closed },
+        React2.createElement(
+          "summary",
+          { className: "mcp-cb-fold-s" },
+          React2.createElement("span", { className: "mcp-cb-fold-t" }, title),
+          count2 != null && React2.createElement("span", { className: "mcp-cb-fold-n" }, React2.createElement("span", { "aria-hidden": "true" }, "·"), count2),
+          React2.createElement(Icon2, { name: "down", size: 16 })
+        ),
+        React2.createElement("div", { className: "mcp-cb-fold-b" + (pad ? " is-pad" : "") }, children)
+      );
+    }
     function ChoiceButtons({ items = [], picked, onChoose, label, className = "" }) {
       const done = picked != null;
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-choices " + className).trim(), role: "group", "aria-label": label || "Moves" }, items.map((it, i) => {
@@ -118,14 +132,19 @@
         return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), t));
       }));
     }
-    function ClueCards({ groups = [], newLabel = "New", className = "" }) {
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, groups.map((g, i) => /* @__PURE__ */ React2.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React2.createElement("ul", null, g.facts.map((f, k) => {
+    function ClueCards({ groups = [], newLabel = "New", title, fold, className = "" }) {
+      const folded = !!fold, solo = folded && groups.length === 1;
+      const sections = groups.map((g, i) => /* @__PURE__ */ React2.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, !solo && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React2.createElement("ul", null, g.facts.map((f, k) => {
         const t = typeof f === "string" ? { text: f } : f;
         return /* @__PURE__ */ React2.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React2.createElement("span", null, cbRich(t.text)), t.new && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-new" }, newLabel));
-      })))));
+      }))));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
     }
-    function FactRows({ items = [], plain = false, label, className = "" }) {
-      return /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
+    function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+      const folded = !!fold;
+      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
+      if (!folded) return rows;
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
     }
     function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
       const done = answer === "confirm" || answer === "cancel";
@@ -135,11 +154,13 @@
       };
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
     }
-    function EntityCards({ title, items = [], onPick, className = "" }) {
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents " + className).trim(), role: "group", "aria-label": title || "In the game" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), /* @__PURE__ */ React2.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
+    function EntityCards({ title, items = [], onPick, fold, className = "" }) {
+      const folded = !!fold;
+      const list = /* @__PURE__ */ React2.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
         const pic = it.pic ? /* @__PURE__ */ React2.createElement("img", { src: it.pic, alt: "" }) : it.icon ? /* @__PURE__ */ React2.createElement(Icon2, { name: it.icon, size: 16 }) : null;
         return /* @__PURE__ */ React2.createElement("li", { key: i }, cbPress(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, pic && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line)))));
-      })));
+      }));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
     }
     function StatusTag({ tone = "live", label, children, className = "" }) {
       return /* @__PURE__ */ React2.createElement("span", { className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim() }, label ?? children);
@@ -183,11 +204,11 @@
       while (count2 && all.length < count2) all.push({ letters: "" });
       const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
         const c = ((r.letters || "")[i] || " ").trim();
-        const s = c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
+        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
         return { c, s };
       }));
-      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty") ? " empty" : ": " + row.map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s }, x.c))))));
+      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s, "aria-hidden": x.s === "blank" || void 0 }, x.s === "blank" ? null : x.c))))));
     }
     function Track({ items = [], className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-track " + className).trim() }, items.map((t, i) => {
@@ -245,7 +266,7 @@
     function Block({ b }) {
       if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles, { rows: b.rows });
       if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, t)));
-      if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text);
+      if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
       const P = PARTS[b.type];
       if (P) {
         const { type, ...p } = b;
@@ -1032,7 +1053,7 @@
   };
   const GS_SVG = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + "</svg>";
   const GS_ART = {
-    delve: { ground: "wine", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="29" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="32" cy="54" r="8" fill="#D66847"/><rect x="125" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="128" cy="54" r="8" fill="#D66847"/>') },
+    delve: { ground: "wine", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="29" y="46" width="6" height="30" fill="#F2EBE0"/><circle cx="32" cy="38" r="8" fill="#D66847"/><rect x="125" y="46" width="6" height="30" fill="#F2EBE0"/><circle cx="128" cy="38" r="8" fill="#D66847"/>') },
     escape: { ground: "indigo", extend: "bottom", svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>') },
     murder: { ground: "wine", extend: "centre", svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>') },
     // Daily Groups: four rows of four, one colour a group, as a solved board.
@@ -1045,13 +1066,13 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], edLine: "Five letters. Six guesses.", daily: true, once: true, blurb: "Six guesses to find today’s five-letter word.", tags: ["Daily"], size: "tiny" },
-    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", edLine: "Sixteen words hide four groups. Find all four.", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], edLine: "One suspect, one weapon, one room. One accusation.", daily: true, once: true, blurb: "There’s a body and a story that doesn’t add up.", tags: ["Daily"], size: "tiny" },
+    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
+    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
+    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], daily: true, once: true, blurb: "Four suspects, four weapons, four places. Who do you accuse?", tags: ["Daily"], size: "tiny" },
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
     casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
-    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "Get her out before the ritual is complete.", tags: ["Weekly"], size: "small" },
+    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "A new world every week: fight room by room to the villain at its heart.", tags: ["Weekly"], size: "small" },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
     barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
     hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
@@ -1260,7 +1281,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 212,
+      number: 34,
       answer: "STILL",
       hints: 1,
       result: "Solved in 3 of 6",
@@ -1268,14 +1289,14 @@
       share: "Solved in 3 of 6",
       lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STILL"])
     },
-    // Sample plays for the session page (1236). No. 210, the hard play: solved on the fifth guess with the hint; after ROBOT only
-    // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
+    // Sample plays for the session page (1236). No. 32, the hard play: solved on the fifth guess with the hint; after ROBOT only
+    // letter 4 was green, so the hint gave letter 1. No. 30, lost: the SHA_E trap, four letters in place from guess 2 to 6.
     "word-hard": {
       kind: "puzzle",
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 210,
+      number: 32,
       answer: "FLOOR",
       hints: 1,
       result: "Solved in 5 of 6",
@@ -1288,7 +1309,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 208,
+      number: 30,
       answer: "STEAL",
       loss: true,
       hints: 1,
@@ -1315,7 +1336,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 211,
+      number: 33,
       answer: "CHAIN",
       result: "Solved in 4 of 6",
       date: "Monday 5 October",
@@ -1457,7 +1478,7 @@
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 212,
+      number: 34,
       answer: "STILL",
       live: true,
       result: "In progress",
@@ -1814,14 +1835,19 @@
   const gscAi = (tool, text, blocks, after) => ({ from: "ai", tool, text, blocks, after });
   const GSC_WIN = [{ label: "Share result", icon: "share" }, { label: "Back to the games", icon: "list" }];
   const GSC_CB_SEARCH = [
-    gscU("Ask Maeve Doyle where she was at ten."),
+    gscU("Ask Maeve Doyle where she was at ten"),
     gscAi("casebook", "“In the bar, all evening. Ask anyone.” Maeve doesn’t look up from her glass."),
-    gscU("Search the bar."),
+    gscU("Search the bar"),
     gscAi("casebook", "The last drink on Maeve’s tab was poured at 9.40.", [{ type: "clues", groups: [{ kind: "Evidence", facts: [{ text: "The bar ledger", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "4 of 16" }] }])
   ];
   const GSC_CB_LIE = [
-    gscU("Show Maeve the bar ledger."),
+    gscU("Show Maeve the bar ledger"),
     gscAi("casebook", "“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”", [{ type: "clues", groups: [{ kind: "Evidence", facts: ["The bar ledger"] }, { kind: "Statements", facts: [{ text: "Maeve Doyle: lie exposed", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "5 of 16" }] }])
+  ];
+  const GSC_DV_FIGHT_CAP = "Say how you want to fight the guards.";
+  const GSC_DV_FIGHT = [
+    gscU("I somersault over the first guard and kick him"),
+    gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.", null, [{ type: "roll", label: "Somersault", roll: 16, mod: 3, target: 13, result: "hit", outcome: "Hit · one guard falls" }])
   ];
   let GS_CHATS;
   let GS_HERO_CHAT;
@@ -1832,134 +1858,154 @@
   };
   function initGsChats() {
     GS_CHATS = {
+      // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
+      // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, GUARD, then the word)
+      // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives No. 34's word away.
       word: [
-        { cap: "Say you want to play. Everyone gets the same word today.", turns: [
-          gscU("Play Guess on After Pixels."),
-          gscAi("guess", ["Guess No. 212 is ready. You have six tries to find the hidden five-letter word.", "What’s your first guess?"])
+        { cap: "Ask for today’s word and the board opens on your first guess.", turns: [
+          gscU("Play Guess on After Pixels"),
+          gscAi("guess", ["Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
-        { cap: "Green: right place. Amber: in the word, wrong place. Grey: not in it.", turns: [
-          gscU("crane"),
-          gscAi("guess", "No letters in the word. 5 guesses left."),
-          gscU("slate"),
-          gscAi("guess", "S is in place. L and T are in the word. 4 guesses left.", [{ type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xxxxx" }, { letters: "SLATE", marks: "hnxnx" }] }])
+        { cap: "Each guess builds on the letters the one before it found.", turns: [
+          gscU("Spray"),
+          gscAi("guess", ["R and A are in the word, both in other places.", "You have 5 guesses left."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
+          gscU("Guard"),
+          gscAi("guess", ["A is in place now.", "You have 4 guesses left."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
         ] },
-        { cap: "Ask for a hint and the engine places a letter. One a day.", turns: [
-          gscU("Give me a hint."),
-          gscAi("guess", "Letter 3 is I. No hints left today.")
+        { cap: "Your shared result shows how you did and hides every letter.", turns: [
+          gscU("Share my result"),
+          gscAi("guess", "You found it in 3 of 6 guesses, and you didn’t use your hint.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
         ] }
       ],
       groups: [
         { cap: "Sixteen words hide four groups of four.", turns: [
-          gscU("Play Daily Groups on After Pixels."),
+          gscU("Play Daily Groups on After Pixels"),
           gscAi("daily-groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Each set of four goes to the engine, which checks it and counts your mistakes.", turns: [
-          gscU("Bass, pike, carp, sole."),
+          gscU("Bass, pike, carp, sole"),
           gscAi("daily-groups", "One away. 3 mistakes left."),
-          gscU("Pike, carp, sole, perch."),
+          gscU("Pike, carp, sole, perch"),
           gscAi("daily-groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Afterwards, your AI explains the groups.", turns: [
-          gscU("Rail, gate, post, panel."),
+          gscU("Rail, gate, post, panel"),
           gscAi("daily-groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
-      // Accuse as the logic case, with the approved chat change (not yet deployed): the case once, then only what changes; no notebook in chat.
+      // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
+      // edition: the monorepo case generator's deal for an unused seed (900001), dressed in the circus cast, numbered 112 to clear every real edition.
+      // The clues settle Madame Zara, the brass bugle and the big top; the hint is that solver's first step. The share link is a literal: the build's init-order check rejects gsLink here.
       mystery: [
-        { cap: "The case once: suspects, weapons, places and every clue.", turns: [
-          gscU("I want to play Accuse."),
-          gscAi("accuse", [
-            "Accuse No. 64. A storm-bound weekend at Hollowmere House. Sir Edmund Hale, the host, is dead.",
-            "Each suspect was in a different place with a different weapon. One of them is the killer.",
-            "Suspects: Nora Finch, the housekeeper. Sebastian Wyle, the nephew. Colonel Ashby, the old soldier. Mrs Dorothy Vane, the neighbour.",
-            "Weapons: the candlestick, the iron poker, the curtain cord, the letter opener.",
-            "Places: the library, the conservatory, the wine cellar, the music room.",
-            "Clues:",
-            "1. Nora Finch carried the letter opener.",
-            "2. Whoever was in the wine cellar carried the curtain cord.",
-            "3. Colonel Ashby was not in the wine cellar.",
-            "4. The killer was in the wine cellar.",
-            "5. Mrs Dorothy Vane never carried the curtain cord.",
-            "Every clue is given. Work out from them who did it, with what, and where.",
-            "You have 2 hints and one accusation."
-          ])
+        { cap: "You can set the clues against each other before you commit to anything.", turns: [
+          gscU("Play Accuse on After Pixels"),
+          gscAi(
+            "accuse",
+            [
+              "The Marvello Circus has played its last show, and Signor Marvello, the ringmaster, is dead.",
+              "Each suspect was in a different place with a different weapon. One of them is the killer.",
+              "Every clue is given. You have 2 hints and one accusation."
+            ],
+            null,
+            [
+              { type: "entities", className: "is-compact", title: "Suspects", items: [{ name: "Coco" }, { name: "Bella Flint" }, { name: "Ivan the Mighty" }, { name: "Madame Zara" }] },
+              { type: "entities", className: "is-compact", title: "Weapons", items: [{ name: "Poisoned toffee apple" }, { name: "Iron tent peg" }, { name: "Sleeping draught" }, { name: "Brass bugle" }] },
+              { type: "entities", className: "is-compact", title: "Places", items: [{ name: "Big top" }, { name: "Cook tent" }, { name: "Generator truck" }, { name: "Costume tent" }] },
+              { type: "clues", fold: "closed", groups: [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }] }
+            ]
+          )
         ] },
-        { cap: "Your AI never solves the case for you. When you’re stuck, take a hint.", turns: [
-          gscU("Who had the curtain cord? Just tell me."),
-          gscAi("accuse", "That’s yours to work out, but a hint can help. You have 2 hints left. Shall I take one?"),
-          gscU("Yes, give me a hint."),
-          gscAi("accuse", ["Colonel Ashby never carried the curtain cord.", "Hints left: 1"])
+        { cap: "When you’re stuck, a hint shows you the next step toward the answer.", turns: [
+          gscU("A hint, please"),
+          gscAi("accuse", ["Madame Zara was not in the costume tent.", "You have 1 hint left."], null, [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }])
         ] },
-        { cap: "One accusation, checked part by part.", turns: [
-          gscU("It was Sebastian Wyle, with the curtain cord, in the wine cellar."),
-          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Sebastian Wyle**, with the **curtain cord**, in the **wine cellar**?", facts: [{ label: "Suspect", value: "Sebastian Wyle" }, { label: "Weapon", value: "Curtain cord" }, { label: "Place", value: "Wine cellar" }], note: "This is the one accusation in this case.", confirm: "Confirm accusation", cancel: "Cancel" }])
+        { cap: "You get the verdict on your accusation, and a short ending.", turns: [
+          gscU("Madame Zara, the brass bugle, the big top"),
+          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?", note: "This is the one accusation in this case.", confirm: "Confirm accusation", cancel: "Cancel" }]),
+          gscU("Confirm accusation"),
+          gscAi("accuse", ["Solved: suspect, weapon and place were all right.", "Madame Zara did it, with the brass bugle, in the big top. She left incense behind."]),
+          gscU("Share my result"),
+          gscAi("accuse", null, null, [{ type: "mono", text: "Accuse No. 112 · solved · 1 hint 💡\nhttps://afterpixels.com/discover/accuse" }])
         ] }
       ],
       // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
       escape: [
         { cap: "The door locks behind you. Look around.", turns: [
-          gscU("Play Escape on After Pixels."),
+          gscU("Play Escape on After Pixels"),
           gscAi("escape", ["Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
         ] },
         { cap: "Every lock has three hints. A hint never costs a try.", turns: [
-          gscU("Examine the workbench."),
+          gscU("Examine the workbench"),
           gscAi("escape", GS_ES1.bench),
-          gscU("Give me a hint for the drawer."),
+          gscU("Give me a hint for the drawer"),
           gscAi("escape", "Count the gears’ teeth, and read each count as a letter.", [{ type: "facts", items: [{ label: "Lock", value: "The workbench drawer" }, { label: "Hint", value: "1 of 3" }] }])
         ] },
         { cap: "Out, with your time against par.", turns: [
-          gscU("I try my answer on the oak door lock."),
+          gscU("I try my answer on the oak door lock"),
           gscAi("escape", "The lock gives and the oak door swings open. Escaped in 28 min, under par, with 1 hint and 2 wrong tries.", null, [{ type: "result", title: "The Clockmaker’s Study", status: "Escaped", stats: [{ label: "Time", value: "28 min, under par" }, { label: "Hints", value: 1 }, { label: "Wrong tries", value: 2 }], actions: GSC_WIN }])
         ] }
       ],
       casebook: [
         { cap: "Three guests were still up. Sixteen turns to find out why.", turns: [
-          gscU("Play Casebook on After Pixels."),
+          gscU("Play Casebook on After Pixels"),
           gscAi("casebook", ["The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
         ] },
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
       ],
-      // Delve: the deployed product page's chats. Each block is the design system's mono block, one line per row.
+      // Delve: the product page's four chats, written for the page from a real playtest (2026-11-06) and the game spec: every turn shows something the game really does, and no edition secret appears.
+      // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
       delve: [
-        { cap: "The run opens: the first room, its ways on, and the numbers.", turns: [
-          gscU("Delve, as Bryn the Fighter."),
-          gscAi("delve", "Knee-deep water, a chant far off. Crawl upstream, or search the niche first?", [{ type: "mono", text: "The flooded tunnel\nWays on    Upstream crawl\nThe ritual 0/12 (low)\nBryn       13/13 hit points" }])
+        { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
+          gscU("Play Delve on After Pixels"),
+          gscAi(
+            "delve",
+            ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
+            null,
+            [{ type: "entities", title: "Heroes", items: [{ name: "Leon, the Wrestler", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Ione, the Bull-leaper", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Mira, the Temple scholar", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
+          ),
+          gscU("Ione"),
+          gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
         ] },
-        { cap: "A weak hit: the sentries give ground, at a cost the game draws.", turns: [
-          gscU("I charge the sentries, sword first."),
-          gscAi("delve", "One sentry tumbles, but his friend squeals for help. The ritual is at 2 of 12.", [{ type: "mono", text: "d20 10+3 = 13 vs DC 12\nWeak hit\nGoblin sentries: 4 → 3\nCost: an alarm · ritual +1" }])
+        { cap: "A miss costs you health. Spend your inspiration on the retry.", turns: [
+          gscU("I wait for a gap in the moving walls, then dart through"),
+          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }, { label: "The monster’s waking", value: 1, max: 15, tone: "threat" }] }]),
+          gscU("I try again and spend my inspiration"),
+          gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "roll", label: "Agility, best of 1 and 15", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }])
         ] },
-        { cap: "The ending, with a link back to your full session.", turns: [
-          gscU("I hurl the lamp oil into his brazier."),
-          gscAi("delve", "Grizzletooth flees, and you lead Elsie out into the moonlight. Every roll is on your session page.", [{ type: "mono", text: "Grizzletooth: defeated\nBryn the Fighter\n✅ Elsie rescued · 13 rolls" }])
+        { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
+        { cap: "Your result is ready to post, with one mark for every roll you made.", turns: [
+          gscU("Finish it with the somersault"),
+          gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
+          gscU("Share my result"),
+          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ won · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
         ] }
       ],
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
-          gscU("Play The Barrow of Hollowmere on After Pixels."),
+          gscU("Play The Barrow of Hollowmere on After Pixels"),
           gscAi("hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
-          gscU("I attack the skeleton with my longsword."),
+          gscU("I attack the skeleton with my longsword"),
           gscAi("hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
         ] },
         { cap: "Stop when you like. Your hero carries on to the next chapter.", turns: [
-          gscU("I ring the bell in the chapel tower."),
+          gscU("I ring the bell in the chapel tower"),
           gscAi("hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
         ] }
       ],
       hunter: [
         { cap: "Grey dawn. The band sets out without waiting.", turns: [
-          gscU("Play 36,000 Summers Ago on After Pixels."),
+          gscU("Play 36,000 Summers Ago on After Pixels"),
           gscAi("summers", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
         ] },
         { cap: "The engine rolls the dice and keeps the time.", turns: [
-          gscU("I follow the gatherers up to the plateau."),
+          gscU("I follow the gatherers up to the plateau"),
           gscAi("summers", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
         ] },
         { cap: "At the fire you hear what you missed.", turns: [
-          gscU("I head back to the fire at dusk."),
+          gscU("I head back to the fire at dusk"),
           gscAi("summers", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
         ] }
       ]
@@ -3834,11 +3880,6 @@
     live: [{ sonar: { axis: "col", name: "A" } }, ...slvDive("A5 B5 C5 D5"), { detector: "E4" }, ...slvDive("D3 E3 F3 G3 C1")]
   };
   const SLV_PLAYS = Object.fromEntries(Object.entries(SLV_MOVES).map(([fx, moves]) => [fx, slvRunPlay(moves)]));
-  const slvPlayAt = (fx, n) => {
-    let c = 0;
-    const at = SLV_MOVES[fx].findIndex((m) => m.dive && ++c === n);
-    return slvRunPlay(SLV_MOVES[fx].slice(0, at + 1));
-  };
   const slvShareLinesOf = (p) => {
     const wrecks = p.raised.size === 5 ? "all 5 wrecks" : p.raised.size + " of 5 wrecks";
     const rows = [];
@@ -4466,7 +4507,7 @@
       const answer = PZ_WORDS[i % PZ_WORDS.length];
       const n = x.ok ? 3 + i % 4 : 6;
       const guesses = Array.from({ length: n }, (_, k) => x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]);
-      s = { ...base, number: 212 - i, answer, share: x.line, lines: guesses.map((g, k) => ["Guess " + (k + 1), g, ...gsGuessParts(g, answer)]) };
+      s = { ...base, number: 34 - i, answer, share: x.line, lines: guesses.map((g, k) => ["Guess " + (k + 1), g, ...gsGuessParts(g, answer)]) };
     } else if (id === "groups") {
       const mis = x.ok ? i === 1 ? 0 : i % 4 : 4;
       const found = x.ok ? 4 : 2;
@@ -4545,7 +4586,8 @@
     pzMis = gsMis;
     PZ = {
       word: {
-        no: (i) => "Guess #" + (212 - i),
+        no: (i) => "Guess #" + (34 - i),
+        count: 34,
         salt: 0,
         keep: { 1: true },
         pin: { 2: "word-hard", 4: "word-failed" },
@@ -4805,20 +4847,27 @@
     for (let k = 0; k < m.length; k += 10) out.push(m.slice(k, k + 10));
     return out;
   };
-  const svBoard = (p) => {
+  const SV_CHAT_SEA = { cols: { B: 2, D: 2, E: 1, F: 3 }, rows: { 1: 4, 3: 1, 6: 1, 7: 1 } };
+  const svGrid = (miss, hit, raised, swept = {}) => {
+    const cnt = { cols: { ...SV_CHAT_SEA.cols, ...swept.cols }, rows: { ...SV_CHAT_SEA.rows, ...swept.rows } };
     const mark = {};
-    p.miss.forEach((sq) => {
-      mark[sq] = "○";
+    miss.forEach((sq) => {
+      mark[sq] = ["○", ""];
     });
-    p.hit.forEach((sq) => {
-      mark[sq] = p.raised.has(slvWreckOf(sq)) ? "■" : "✕";
+    hit.forEach((sq) => {
+      mark[sq] = ["✕", "n"];
     });
-    return ["  " + SV_COLS.split("").join(" "), ...[1, 2, 3, 4, 5, 6, 7, 8].map((r) => r + " " + SV_COLS.split("").map((c) => mark[c + r] || "·").join(" "))].join("\n");
+    raised.forEach((sq) => {
+      mark[sq] = ["■", "h"];
+    });
+    const cols = "ABCDEFGH".split("");
+    const head = [{ l: " ", m: "_" }, ...cols.map((c) => ({ l: String(cnt.cols[c] || "-"), m: "x" })), { l: " ", m: "_" }];
+    const letters = [{ l: " ", m: "_" }, ...cols.map((c) => ({ l: c, m: "x" })), { l: " ", m: "_" }];
+    const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: "x" }, ...cols.map((c) => ({ l: (mark[c + r] || [" "])[0], m: (mark[c + r] || [" ", " "])[1] || " " })), { l: String(cnt.rows[r] || "-"), m: "x" }]);
+    return { type: "tilegrid", length: 10, rows: [head, letters, ...body].map((r) => ({ letters: r.map((x) => x.l).join(""), marks: r.map((x) => x.m).join("") })) };
   };
-  const svDive = (fx, n, board) => {
-    const [, sq, res] = SLV_PLAYS[fx].lines.filter((l) => /^Dive /.test(l[0]))[n - 1];
-    return [gscU(sq + "."), gscAi("salvage", (res.startsWith("raised") ? "Sunk" + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + ". " + (SLV_DIVES - n) + " dives left.", null, board && [dpMono(board)])];
-  };
+  const svStats = (dives, tools) => ({ type: "stats", items: [{ label: "Dives left", value: dives }, { label: "Tools left", value: tools }, { label: "Wrecks to find", value: "4 3 3 2 2" }] });
+  const SV_WRECK_SQUARES = ["D1", "E1", "F1", "G1", "B5", "C5", "D5", "A8", "B8", "C8", "F6", "F7", "A2", "A3"];
   const svSunk = (log) => log.filter((l) => l[1] === "sunk").length;
   const dpSvHead = (n, log, hint) => "Salvage #" + n + " · " + (svSunk(log) === 5 ? "all 5 wrecks" : svSunk(log) + " of 5 wrecks") + " · " + log.length + " of " + SLV_DIVES + " dives";
   const svSea = () => SLV_WRECKS.map((w) => w.map((sq) => [SV_COLS.indexOf(sq[0]), +sq.slice(1) - 1]));
@@ -5070,7 +5119,7 @@
       return { ...base, ...own, share: x.line };
     }
     const d = dpSvDay(i, x.ok);
-    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of " + SLV_DIVES + " dives"], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
+    return { ...base, number: n, figures: [svSunk(d.log) + " of 5 wrecks", d.log.length + " of " + SLV_DIVES + " dives"], share: x.line, shareLines: [dpSvHead(n, d.log), "", ...svMarks(d.log)], lines: svLines(d.log) };
   };
   const cmFoundIn = (p) => {
     const m = /^(\d) of 3 connections found$/.exec(((GS_SESSIONS[p.sid] || {}).figures || [])[1] || "");
@@ -5079,8 +5128,12 @@
   let DP_PZ;
   const dpStep = (b, rest) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, b), rest);
   let dpSeeResult;
-  const dpMono = (text) => ({ type: "mono", text });
-  const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + " …"), t.w[t.w.length - 1]].join("\n");
+  const chStats = (left, wrong) => ({ type: "stats", items: [{ label: "Words left", value: left }, { label: "Wrong guesses", value: wrong }] });
+  const chBoard = (words, open) => ({ type: "facts", items: words.map((w, i) => ({ label: String(i + 1), value: (w.length < 3 ? w + "…" : "**" + w + "**") + (open.includes(i) ? "  ← open" : "") })) });
+  const cmBoard = (thread, items, left, pts) => [
+    { type: "facts", items: items.map((w, i) => ({ label: String(i + 1), value: "**" + w + "**" })) },
+    { type: "stats", items: [{ label: "Thread", value: thread + " of 3" }, { label: "Guesses left", value: left }, { label: "Right guess scores", value: pts }] }
+  ];
   const dpSessAt = (k) => k === "chain" ? ["Screens", "7. Session page: "] : ["Daily puzzles 1213", "Session page: "];
   const dpEarlier = (k, ok) => () => {
     const x = PZ[k].all.find((e) => e.i > 0 && e.played && e.ok === ok);
@@ -5099,10 +5152,9 @@
         art: "where",
         route: "where",
         ed: ["country", "countries"],
-        edLine: "You get six guesses to find the country.",
         daily: true,
         once: true,
-        blurb: "Today’s country is somewhere on the map. Find it in six guesses.",
+        blurb: "Which country is hidden? Each guess shows how far off you are.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5113,10 +5165,9 @@
         art: "chain",
         route: "chain",
         ed: ["chain", "chains"],
-        edLine: "You get both ends. Find the words between.",
         daily: true,
         once: true,
-        blurb: "Every word in the line joins the next. Find the ones in between.",
+        blurb: "Work out the missing words in a chain where each joins the next.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5127,10 +5178,9 @@
         art: "salvage",
         route: "salvage",
         ed: ["sea", "seas"],
-        edLine: "You get twenty dives to find five wrecks.",
         daily: true,
         once: true,
-        blurb: "Five wrecks lie under today’s sea. Find them in twenty dives.",
+        blurb: "Five wrecks lie somewhere on the sea bed. Find them in twenty dives.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5141,10 +5191,9 @@
         art: "common",
         route: "common",
         ed: ["day", "days"],
-        edLine: "You get three threads of four items. Name each connection early.",
         daily: true,
         once: true,
-        blurb: "Name the hidden connection between four items, as early as you dare.",
+        blurb: "An egg, a tortoise and a peanut share something. Guess it early for more points.",
         tags: ["Daily"],
         size: "tiny"
       })
@@ -5481,7 +5530,6 @@
     dpSeeResult = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.");
     Object.assign(GS_PAGES, {
       where: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A new country every day",
@@ -5491,15 +5539,14 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "Today’s country is out there. Find it in six guesses.", ps: [
-          "Name any country. The game tells you how far it lies from today’s, border to border. Zero means the two touch.",
-          "You get one hint: the compass direction from your last guess. Your AI isn’t told the answer until you finish. Name your first country."
+        pitch: { h: "Which country is hidden? Each guess shows how far off you are.", ps: [
+          "A different country is hidden every day, and you have six guesses to find it. Name any country in the world, and you’re told how far it lies from the hidden one.",
+          "A guess on the far side of the world still helps, because it tells you where the country isn’t. Each distance rules out more of the world, so every guess closes in on where it’s hiding. When you’re torn between places, your one hint gives the compass direction from your latest guess."
         ] },
-        who: { ai: "Passes on your guesses and tells you about the country once you’ve found it.", server: "Holds the country, measures every distance and counts your guesses." },
+        who: { ai: "Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.", server: "Keeps the country secret, measures every distance and works out which way the hint points." },
         week: { title: "Today’s country", line: "You get six guesses and one hint.", session: "where-today" }
       },
       chain: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A new chain every day",
@@ -5509,15 +5556,14 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "Fire joins house, and house joins plant. Find the words in between.", ps: [
-          "You see both ends of the line and the first letter of every word between. Guess inward from either end, one word at a time.",
-          "A wrong guess shows you the next letter of that word. Run out of letters and the word is given away. Make your first guess."
+        pitch: { h: "Work out the missing words in a chain where each joins the next.", ps: [
+          "A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.",
+          "Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word."
         ] },
-        who: { ai: "Passes on your guesses and explains every link once the chain is done.", server: "Holds the chain, checks every guess and shows a letter for each miss." },
+        who: { ai: "Draws the whole line after every guess, with the words you can try next marked, and goes through every link once the chain is solved.", server: "Keeps the chain secret, shows only the letters you’ve earned, and gives a word away once its letters run out." },
         week: { title: "Today’s chain", line: "You get both ends and every first letter.", session: "chain-today" }
       },
       salvage: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A new sea every day",
@@ -5527,15 +5573,14 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "Five wrecks lie somewhere under you. Find them in twenty dives.", ps: [
-          "Call a square from A1 to H8 and dive. Each dive comes back as a hit, a miss or sunk.",
-          "Your AI reads the sea back to you after every dive, row by row. The game engine holds the wrecks. Call your first square."
+        pitch: { h: "Five wrecks lie somewhere on the sea bed. Find them in twenty dives.", ps: [
+          "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.",
+          "You also get three tools: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools."
         ] },
-        who: { ai: "Reads the sea back to you after every dive, row by row.", server: "Holds the wrecks, answers every dive and counts the dives you have left." },
+        who: { ai: "Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.", server: "Keeps the wrecks secret, answers every dive and tool, and counts what you have left." },
         week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
       },
       common: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "Three new threads every day",
@@ -5545,71 +5590,105 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "An egg, a tortoise and a peanut have something in common. Name it early.", ps: [
-          "Each day brings three threads, the same for every player. A thread is four items that share one hidden connection, and the game shows one at a time.",
-          "The earlier you name the connection, the more it scores: 5 points from one item, then 3, 2 and 1. You have five guesses for the whole day, right or wrong, and a pass spends none. Early items can point at a wrong connection, so the skill is knowing when to commit. When a thread closes, the game shows the connection, so a thread that scored nothing still ends with the answer."
+        pitch: { h: "An egg, a tortoise and a peanut share something. Guess it early for more points.", ps: [
+          "Each day brings three threads, and a thread is four items that share one hidden connection. The game shows them one at a time, starting with a single item that could point several ways.",
+          "The earlier you name the connection, the more it scores, so the skill is knowing when to commit. However a thread ends, the game shows its connection and how every item fits, so even a thread that scores nothing ends with the answer."
         ] },
-        who: { ai: "Reads out each item, helps only when asked and gives the connection and how each item fits. It has seen only what you have seen.", server: "Holds the items not yet shown and each connection, and marks every guess." },
-        week: { title: "Today’s threads", line: "Three threads, the same for everyone.", session: "common-today" }
+        who: { ai: "Shows each item as it arrives, with your guesses left and what a right guess scores, and explains how every item fits once a thread closes.", server: "Keeps every unseen item and each connection secret, and marks every guess." },
+        week: { title: "Today’s threads", line: "You get three threads of four items.", session: "common-today" }
       }
     });
+    const WH_STATS = (guesses, hints) => ({ type: "stats", items: [{ label: "Guesses left", value: guesses }, { label: "Hints left", value: hints }] });
     Object.assign(GS_CHATS, {
+      // Where: the product page's three chats, written for the page from a real play (2026-11-08) and the game spec (where.md §4, §5). The case is not
+      // a real edition: Austria, No. 112 (the scheduled editions run to 45 and never name Austria), with distances from the shipped atlas to the nearest 10 km.
       where: [
-        { cap: "Name a country. Everyone hunts the same one today.", turns: [
-          gscU("Play Where on After Pixels."),
-          gscAi("where", ["Where #" + DP_NO + ". Today’s country is hidden, and you have six guesses.", "Each miss tells you how far it is from today’s country, border to border. Name your first country."])
+        { cap: "You get six guesses and one hint.", turns: [
+          gscU("Play Where on After Pixels"),
+          gscAi("where", ["Where No. 112 is ready: find today’s country in six guesses. Each miss comes back as a border-to-border distance, and 0 means the two touch. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?"])
         ] },
-        { cap: "Every miss comes back as a distance, measured border to border.", turns: [
-          gscU("Spain."),
-          gscAi("where", "Spain is " + dpKm(1110) + " from today’s country. 5 guesses left."),
-          gscU("Poland."),
-          gscAi("where", "Poland is " + dpKm(80) + " away. 4 guesses left.")
+        { cap: "Each guess comes back as a distance from the country.", turns: [
+          gscU("Brazil"),
+          gscAi("where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }, WH_STATS(5, 1)]),
+          gscU("Give me the hint"),
+          gscAi("where", "From Brazil, today’s country lies northeast.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }, WH_STATS(5, 0)]),
+          gscU("France"),
+          gscAi("where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }, WH_STATS(4, 0)])
         ] },
-        { cap: "You get one hint: the compass direction from your last guess.", turns: [
-          gscU("Give me the hint."),
-          gscAi("where", "From Poland, today’s country lies south. That was your one hint."),
-          gscU("Hungary."),
-          gscAi("where", ["Found in 3 of 6, with the hint.", "Hungary sits in the Carpathian Basin, and the Danube runs through Budapest."])
+        { cap: "A guess at 0 km means the answer is one of its neighbours.", turns: [
+          gscU("Germany"),
+          gscAi("where", "Germany shares a border with today’s country.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }, WH_STATS(3, 0)]),
+          gscU("Austria"),
+          gscAi("where", ["Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
+          gscU("Share my result"),
+          gscAi("where", null, null, [{ type: "mono", text: "Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where" }])
         ] }
       ],
+      // Chain: the product page's four chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (chain.md §2 to §5).
+      // The chain is not a real edition: CROSS, WORD, PLAY, BACK, TRACK, "No. 112" (scheduled editions run to 45; none holds this line), every link in the shipped link list.
+      // The board is the design system's FactRows, as the deployed script has the AI draw it each turn: every word numbered, hidden words as the letters shown, open words marked.
       chain: [
-        { cap: "You get both ends of the line and every first letter.", turns: [
-          gscU("Play Chain on After Pixels."),
-          gscAi("chain", ["Chain #" + DP_NO + ". Six words, each joined to the next. Guess inward from either end."], null, [dpMono(dpChEnds(CH_TODAY))])
+        { cap: "You get both ends and each word’s first letter. Only a word marked open can be guessed.", turns: [
+          gscU("Play Chain on After Pixels"),
+          gscAi("chain", null, null, [chBoard(["CROSS", "W", "P", "B", "TRACK"], [1, 3]), chStats(3, 0)])
         ] },
-        { cap: "A wrong guess shows you the next letter.", turns: [
-          gscU("Ball."),
-          gscAi("chain", "Ball is right: snowball."),
-          gscU("Race."),
-          gscAi("chain", "Not race. The next word starts RO.")
+        { cap: "A wrong guess shows the next letter of that word.", turns: [
+          gscU("Wire"),
+          gscAi("chain", null, null, [chBoard(["CROSS", "WO", "P", "B", "TRACK"], [1, 3]), chStats(3, 1)]),
+          gscU("Word"),
+          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "B", "TRACK"], [2, 3]), chStats(2, 1)])
         ] },
-        { cap: "Afterwards, your AI explains every link.", turns: [
-          gscU("Service."),
-          gscAi("chain", ["Service is right. The chain is done, with 2 wrong guesses.", "Snowball, ballroom, room service, service station, station wagon."])
+        { cap: "Once it is solved, you get every link and a result that names no word.", turns: [
+          gscU("Back"),
+          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "BACK", "TRACK"], [2]), chStats(1, 1)]),
+          gscU("Play"),
+          gscAi("chain", "The links are crossword, wordplay, playback and backtrack.", null, [chBoard(["CROSS", "WORD", "PLAY", "BACK", "TRACK"], []), chStats(0, 1)]),
+          gscU("Share my result"),
+          gscAi("chain", null, null, [{ type: "mono", text: "Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain" }])
         ] }
       ],
+      // Salvage: the product page's three chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (salvage.md §1 to §5). The sea is not a real
+      // edition (see SV_CHAT_SEA): the real play mirrored left to right, as No. 112. The sea is drawn as the deployed script has the AI draw it each turn (svGrid).
       salvage: [
-        { cap: "Five wrecks lie somewhere under an eight-by-eight sea.", turns: [
-          gscU("Play Salvage on After Pixels."),
-          gscAi("salvage", ["Salvage #" + DP_NO + ". Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.", "You have " + SLV_DIVES + " dives. Call your first square."], null, [dpMono(svBoard(slvPlayAt("won", 0)))])
+        { cap: "Five wrecks lie hidden, and the margins count some rows and columns.", turns: [
+          gscU("Play Salvage on After Pixels"),
+          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.", [svGrid([], [], []), svStats(20, 3)])
         ] },
-        { cap: "Each dive comes back as a hit, a miss or sunk.", turns: [...svDive("won", 1), ...svDive("won", 2)] },
-        { cap: "The board is redrawn after every dive, so your AI can read it aloud.", turns: svDive("won", 4, svBoard(slvPlayAt("won", 4))) }
+        { cap: "A dragnet snags the first wreck square on a line.", turns: [
+          gscU("Row 1 counts 4, so dragnet along it from the left"),
+          gscAi("salvage", "The dragnet snagged at D1, a hit.", [svGrid([], ["D1"], []), svStats(20, 2)])
+        ] },
+        { cap: "The last wreck raised wins the day.", turns: [
+          gscU("D5 to finish it"),
+          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
+          gscU("Share my result"),
+          gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
+        ] }
       ],
+      // Common: the product page's three chats, written for the page from a real play (2026-11-08, No. 35) and the game spec (common.md §2, §4, §5).
+      // The day is not a real edition: No. 112 (the scheduled editions run to 63), with threads the link pool holds no copy of. The board is the design
+      // system's FactRows (the items showing, as the game gives them) and StatRow, as the deployed script has the AI read each thread.
       common: [
-        { cap: "The game shows one item at a time.", turns: [
-          gscU("Play Common on After Pixels."),
-          gscAi("common", "Common No. " + CM_NO + ". Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.", null, [dpMono("EGG")])
+        { cap: "Each thread opens with a single item.", turns: [
+          gscU("Play Common on After Pixels"),
+          gscAi("common", null, null, cmBoard(1, ["A RIVER"], 5, 5))
         ] },
-        { cap: "The earlier you name the connection, the more it scores.", turns: [
-          gscU("Another item."),
-          gscAi("common", "A right guess now scores 3.", null, [dpMono("EGG\nTORTOISE")]),
-          gscU("Things that are slow."),
-          gscAi("common", "Not it, so another item shows. A right guess now scores 2, and you have four guesses left today.", null, [dpMono("EGG\nTORTOISE\nPEANUT")])
+        { cap: "Every extra item you see lowers what a right guess scores.", turns: [
+          gscU("Another item"),
+          gscAi("common", null, null, cmBoard(1, ["A RIVER", "A BOTTLE"], 5, 3)),
+          gscU("Things that hold water"),
+          gscAi("common", "“Things that hold water” wasn’t it.", null, cmBoard(1, ["A RIVER", "A BOTTLE", "A CAVE"], 4, 2))
         ] },
         { cap: "When a thread closes, your AI gives the connection and how each item fits.", turns: [
-          gscU("They all have a shell."),
-          gscAi("common", ["Shell is right, for 2 points.", "An egg, a tortoise, a peanut and a hermit crab all have one. On to Thread 2."])
+          gscU("Things with a hinge"),
+          gscAi(
+            "common",
+            "Correct! Thread 3 was Things with a hinge, worth 3 points. A laptop and a door swing on one, a clam’s two shells open on one, and so do the arms of a pair of glasses.",
+            null,
+            [{ type: "result", title: "Common No. 112", status: "Completed", stats: [{ label: "Score", value: "10 of 15" }, { label: "Connections found", value: "3 of 3" }] }]
+          ),
+          gscU("Share my result"),
+          gscAi("common", null, null, [{ type: "mono", text: "Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nhttps://afterpixels.com/discover/common" }])
         ] }
       ]
     });
@@ -6352,10 +6431,10 @@
     const U = u.toUpperCase();
     if (k === "daily" && id === "groups") return null;
     if (k === "daily") {
-      const no = { word: 212, mystery: 64 }[id];
+      const no = { word: 34, mystery: 64 }[id];
       return ["TODAY’S " + U + " · #" + no, "Free with an account. A new " + u + " every day."];
     }
-    if (k === "first") return [id === "barrow" ? "CHAPTER 1" : "THE FIRST " + U, "Free with an account. Every other " + u + " comes with the Pass."];
+    if (k === "first") return [id === "barrow" ? "CHAPTER 1" : "THE FIRST " + U, "The first " + u + " is free with an account. Every " + u + " after it needs the Pass."];
     if (k === "pass") return ["WITH THE PASS", (GS_NAME[id] || GS_GAMES[id].name) + " comes with the Pass."];
     return null;
   };
@@ -6489,6 +6568,7 @@
   }
   const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
   const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
+  const GS_MORE_GAMES = ["word", "chain", "salvage", "mystery", "common", "where", "delve"];
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
     { v: "1.8", d: "24 September 2026", t: "Streaks carry across devices", x: "Your daily streak and record now follow your account, so they stay intact wherever you connect your AI." },
@@ -6614,9 +6694,10 @@
     const paying = gs.view === "pass";
     const mine = !paying ? cprBoxCopy(id) : null;
     const passOnly = CPR_STAGE[id] === "pass" && !paying;
-    const label = g.first && !paying ? b.button : "Play";
+    const firstFree = g.first && !paying;
+    const label = firstFree ? b.button : "Play";
     const small = paying || passOnly ? null : mine ? mine[1] : b.small;
-    return /* @__PURE__ */ React$1.createElement(DS.Card, { className: "gs-pu-box", style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, !paying && /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, mine ? mine[0] : b.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, b.heading), /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI"), " first. ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), ...b.steps.slice(1).map((s) => gsOr(s))] }), passOnly ? /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.go("pass") }, "Get the Pass") : /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.playReq({ ...gsPlayReq(gs, g.name), page: true }) }, label), small && (small.endsWith(" comes with the Pass.") ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-small gs-pu-wrap", text: small }) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, small)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, GS.works)));
+    return /* @__PURE__ */ React$1.createElement(DS.Card, { className: "gs-pu-box", style: { gap: 16, justifyItems: "stretch", alignContent: "start" } }, !paying && /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, mine ? mine[0] : b.label), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, b.heading), /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI"), " first. ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), ...b.steps.slice(1).map((s, i) => gsOr(i === 0 && firstFree && b.firstStep ? b.firstStep : s))] }), passOnly ? /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.go("pass") }, "Get the Pass") : /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: () => gs.playReq({ ...gsPlayReq(gs, g.name), page: true }) }, label), small && (/ (comes with|needs) the Pass\.$/.test(small) ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-small gs-pu-wrap", text: small }) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, small)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-rule" }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, GS.works)));
   };
   const GsGap = () => /* @__PURE__ */ React$1.createElement("span", { className: "gs-gap", title: "Not decided yet" }, "—");
   const gsOr = (v) => v == null ? /* @__PURE__ */ React$1.createElement(GsGap, null) : v;
@@ -6633,13 +6714,12 @@
     const gs = useGs();
     const g = GS_GAMES[id];
     const p = GS_PAGES[id];
-    const others = GS_HOME_GAMES.filter((k) => k !== id);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category + " · " + p.rhythm), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id })), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md gs-measure" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), id === "delve" && /* @__PURE__ */ React$1.createElement("section", { className: "gs-grid3" }, /* @__PURE__ */ React$1.createElement(GsStat, { label: "IN A RUN", figure: "5 rooms", line: "This week: flooded tunnel to shrine cavern." }), /* @__PURE__ */ React$1.createElement(GsStat, { label: "TYPICAL RUN", figure: "10–14 rolls", line: "Every one listed on your session page afterwards." }), /* @__PURE__ */ React$1.createElement(GsStat, { label: "ENDINGS", figure: "4 ways out", line: "Win, turn back early, fall, or run out of time." })), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
+    const others = GS_MORE_GAMES.filter((k) => k !== id);
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id })), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
   };
   function initGsGame() {
     GS_PAGES = {
       word: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "FREE WITH AN ACCOUNT",
           small: gsFreeSmall("Today’s word"),
@@ -6649,15 +6729,14 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "Six guesses to find today’s five-letter word.", ps: [
-          "Each guess comes back marked letter by letter: right place, wrong place, or not in the word. Stuck? You get one hint a day, and it places a letter for you.",
-          "Your AI runs the game but isn’t told the word until it’s over, so it can’t give it away. Solve it to keep your streak, then share your grid."
+        pitch: { h: "One hidden word a day: find it in six guesses.", ps: [
+          "The word is five letters long, and you have one hint, which shows you where a letter goes. It can be over on your first guess or come down to your last.",
+          "The first word you try is a shot in the dark. Each row after it shrinks the alphabet in your head, until the gaps start to look like words. Then comes the squeeze: four letters sit in place, and light, might, night, sight and tight all fit, with too few guesses left to try them all. Your hint would settle it, unless you spent it earlier."
         ] },
-        who: { ai: "Takes your guesses and shows you how each one scored.", server: "Holds the word, marks every guess and keeps the count." },
+        who: { ai: "Draws the whole board after every guess, so you can watch the word take shape.", server: "Keeps the word secret, marks every letter of every guess, counts your guesses and picks the letter a hint gives you." },
         week: { title: "Today’s word", line: "Five letters. Six guesses.", session: "word-today" }
       },
       groups: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "ONLY WITH THE PASS",
           small: gsFreeSmall("Today’s groups"),
@@ -6675,7 +6754,6 @@
         week: { title: "Today’s groups", line: "Four groups. Four mistakes to spare.", session: "groups-today" }
       },
       mystery: {
-        rhythm: "NEW EVERY DAY",
         box: {
           label: "FREE WITH AN ACCOUNT",
           small: gsFreeSmall("Today’s case"),
@@ -6685,19 +6763,17 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "There’s a body and a story that doesn’t add up.", ps: [
-          "You get every clue at the start. Together they leave only one answer: who did it, with what, and where.",
-          "Reason it out from the clues. Two hints help when you’re stuck, and you get one accusation.",
-          "Your AI sets the scene and gives you every clue, but never solves the case for you. The game engine holds the answer. Make your move."
+        pitch: { h: "Four suspects, four weapons, four places. Who do you accuse?", ps: [
+          "A body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.",
+          "At first the clues are loose facts, and none of them settles the case on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold."
         ] },
-        who: { ai: "Sets the scene, gives every clue, and offers a hint when you’re stuck. It never solves the case for you.", server: "Holds the answer and every clue, works out each hint from the clues itself and checks your accusation part by part." },
+        who: { ai: "Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.", server: "Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong." },
         week: { title: "Today’s case", line: "Four suspects, four weapons, four places. One accusation.", session: "mystery-today" }
       },
       escape: {
-        rhythm: "A NEW ROOM EVERY WEEK",
         box: {
           label: "FIRST ROOM FREE",
-          small: "The first room is free with an account. Every other room comes with the After Pixels Pass.",
+          small: "The first room is free with an account. Every room after it needs the Pass.",
           heading: "A new room every week",
           button: "Play the first room",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the first room."), " Every lock has three hints if you need them."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
@@ -6713,7 +6789,6 @@
         week: { title: "This week’s room", line: "Find the way out.", session: "escape-week" }
       },
       casebook: {
-        rhythm: "ONE CASE",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "Sixteen turns. One accusation.",
@@ -6732,32 +6807,31 @@
         week: { label: "A CASE", title: "Sixteen turns, then one accusation", line: "Ask the question they haven’t prepared for.", session: "casebook" }
       },
       delve: {
-        rhythm: "ONE RUN A WEEK",
         box: {
           label: "FIRST RUN FREE",
           heading: "One run every week",
           session: "delve",
           button: "Play the first run",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play this week’s run"), ", from the first room to its ending."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
-          small: "The first run is free with an account. Every other run comes with the After Pixels Pass."
+          firstStep: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the first run"), ", from the first room to its ending."),
+          small: "The first run is free with an account. Every run after it needs the Pass."
         },
-        facts: { often: "One run every week" },
-        tags: ["Adventure", "One run a week · five rooms"],
-        pitch: { h: "Get her out before the ritual is complete", ps: [
-          "Goblins have dragged the miller’s daughter into the tunnels beneath Ashford Mill, and their shaman means to offer her to his idol at moonrise. Pick a fighter, a rogue or a wizard and make your way room by room: past bone chimes and goblin sentries, through choices about what to search and what to carry, to the shrine where the ritual is under way.",
-          "Every risky move is a d20 roll, made by the game where nobody can fudge it. Each foe has a track you wear down, your hit points run out if you are careless, and the ritual creeps on with every slip. Your AI tells the story around the dice."
+        facts: { often: "New every week" },
+        tags: [],
+        pitch: { h: "A new world every week: fight room by room to the villain at its heart.", ps: [
+          "One week it’s a goblin warren, the next a ship adrift in space, then a neon tower or a maze out of Greek myth. Each is a handful of rooms and one villain, won or lost in about half an hour. Pick a hero who can take a blow, slip out of reach, or deal big damage before going down.",
+          "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."
         ] },
-        who: { ai: "Narrates the warren, voices the goblins and the captive, and asks what you do next.", server: "Rolls every die, keeps the score of foes, hit points and threat, decides each outcome and records your session." },
+        who: { ai: "Tells the story as your Game Master, voices everyone you meet, and asks what you do next.", server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in." },
         week: { title: "This week’s run", line: "Get Elsie out of the warren beneath Ashford Mill before the ritual is complete.", session: "delve" }
       },
       barrow: {
-        rhythm: "A BARROW CAMPAIGN",
         box: {
           label: "FIRST CHAPTER FREE",
           heading: "A campaign in two chapters",
           button: "Play Chapter 1",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Choose a hero"), ", then play at your own pace."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your hero."), " They carry on into the next chapter.")],
-          small: "The first chapter is free with an account. Every other chapter comes with the After Pixels Pass."
+          small: "The first chapter is free with an account. Every chapter after it needs the Pass."
         },
         facts: { long: "Several sessions", often: "Two chapters, played at your own pace over several sessions" },
         tags: ["Adventure", "Mist, old stone and honest dice"],
@@ -6772,7 +6846,6 @@
         week2: { label: "A QUEST", title: "The chalice is in the abbey", line: "Bring the Chalice of St. Ebba home from the drowned abbey, and stop whenever you like." }
       },
       hunter: {
-        rhythm: "ONE DAY",
         box: {
           label: "ONLY WITH THE PASS",
           heading: "A different day every time",
@@ -6947,7 +7020,7 @@
   const pgeW = (gid, n = 0) => GS_GAMES[gid].ed[n];
   const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== "daily";
   const pgeRowTitle = (gid, e) => pgeNoNum(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + " " + e.n + " · " + e.title : e.title ? "#" + e.n + " · " + e.name : e.name;
-  const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || "", len: gsGameTime(e.gid), who: null });
+  const pgeInfo = (e) => ({ len: gsGameTime(e.gid), who: null });
   const pgeDated = (gid) => !!gsRhythm(gid);
   const pgePlayed = (e) => !!e.status && e.status.kind !== "none" && e.status.kind !== "live";
   const pgeEds = (gs, gid) => edList(gs, gid).map((e) => ({
@@ -7024,7 +7097,7 @@
     const when = !pgeDated(gid) ? null : gsRhythm(gid) === "weekly" ? "week of " + e.date : e.date;
     const hist = e.played && /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", block: true, onClick: () => pgeHistory(gs, gid, e) }, "See in History");
     const acts = prompt && e.played ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm", style: { display: "grid", width: "100%" } }, /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }), hist) : prompt ? /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text, block: true }) : void 0;
-    return /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React$1.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.line && /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, e.info.line), e.info.who && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React$1.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text }))));
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { kind: "panel", open: !!e0, onClose, title: e.title || edLabel(e), actions: acts }, /* @__PURE__ */ React$1.createElement("div", { className: "pge-panel" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, [e.title && (pgeNoNum(gid) ? g.name : g.name + " #" + e.n), when, e.info.len].filter(Boolean).join(" · ").toUpperCase()), e.info.who && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, e.info.who), done ? /* @__PURE__ */ React$1.createElement("div", { className: "pge-done" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: e.status }), /* @__PURE__ */ React$1.createElement("p", { style: { margin: 0 } }, pgeOnceText), hist) : e.played && /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted", style: { margin: 0 } }, pgePlayedText(e)), done ? null : e.held ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", style: { marginTop: e.played ? 0 : -8 } }, /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid }), hist) : prompt && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small", style: { margin: 0 } }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text }))));
   };
   function initGsEditions() {
     pgeOnceText = GS_ONCE_LINE;
@@ -7296,7 +7369,6 @@
   ];
   const GsCmpMark = ({ on }) => on ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Included")) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell gs-muted" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "–"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Not included"));
   const GsCompare = ({ foot }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-cmp", "aria-labelledby": "gs-cmp-h" }, /* @__PURE__ */ React$1.createElement("h2", { id: "gs-cmp-h", className: "mcp-t-sec gs-cmp-h" }, "What you get"), /* @__PURE__ */ React$1.createElement("div", { role: "table", "aria-labelledby": "gs-cmp-h", className: "gs-cmp-t" }, /* @__PURE__ */ React$1.createElement("div", { role: "row", className: "gs-cmp-tr is-head" }, /* @__PURE__ */ React$1.createElement("span", { role: "columnheader" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "What you get")), /* @__PURE__ */ React$1.createElement("span", { role: "columnheader", className: "gs-cmp-cell mcp-t-card" }, "Free"), /* @__PURE__ */ React$1.createElement("span", { role: "columnheader", className: "gs-cmp-cell gs-cmp-band mcp-t-card" }, "Pass")), GS_COMPARE.map((r) => /* @__PURE__ */ React$1.createElement("div", { role: "row", key: r.name, className: "gs-cmp-tr" }, /* @__PURE__ */ React$1.createElement("span", { role: "rowheader", className: "gs-cmp-label" }, /* @__PURE__ */ React$1.createElement("b", null, r.name), r.sub && /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, r.sub)), /* @__PURE__ */ React$1.createElement("span", { role: "cell" }, /* @__PURE__ */ React$1.createElement(GsCmpMark, { on: r.free })), /* @__PURE__ */ React$1.createElement("span", { role: "cell", className: "gs-cmp-band" }, /* @__PURE__ */ React$1.createElement(GsCmpMark, { on: true })))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cmp-tr is-foot", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-band" }))), foot);
-  const GsStat = ({ label, figure, line }) => /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 8, alignContent: "start" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label), /* @__PURE__ */ React$1.createElement("span", { className: "gs-figure" }, figure), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, line));
   const GsSoonCard = ({ g }) => {
     const gs = useGs();
     const a = GS_ART[g.art] || {};
@@ -9597,7 +9669,7 @@
   KIT_QA.unshift({
     key: "audit-fixes",
     title: "Audit fixes, 18 October: one play record",
-    note: "Every play, date, count and earned achievement comes from the play log. Check that the head card, the list of plays, History, the Library row, the editions list and achievements agree, that no date falls after Tue 6 Oct, and that a Pass-ended player has no Pass-only play or earned date after 18 Sep (later days are frozen). Groups, free: the never-had card alone. Summers Ago: a day with no ending reads Not finished; the head matches day 18. Library: Escape reads Today. Also: Account has no Your data or Notifications card; the play box reads #212; the Barrow panel ends on See in History; an empty editions search reads Nothing matches that. with Clear all (search zzzz).",
+    note: "Every play, date, count and earned achievement comes from the play log. Check that the head card, the list of plays, History, the Library row, the editions list and achievements agree, that no date falls after Tue 6 Oct, and that a Pass-ended player has no Pass-only play or earned date after 18 Sep (later days are frozen). Groups, free: the never-had card alone. Summers Ago: a day with no ending reads Not finished; the head matches day 18. Library: Escape reads Today. Also: Account has no Your data or Notifications card; the play box reads #34; the Barrow panel ends on See in History; an empty editions search reads Nothing matches that. with Clear all (search zzzz).",
     steps: ["library-groups-free", "pur-pass-ended-every", "library-pass-ended", "library-casebook-pass-ended", "library-delve-pass-ended", "library-hunter-pass-ended", "pur-first-done", "library-word", "history", "lapsed-history", "session-barrow", "library-barrow", "edition-barrow-done", "edition-barrow-done-free", "library-hunter", "session-hunter", "history-hunter", "library", "session-kept-pass-ended", "word-free", "library-casebook-editions", "editions-word-free", "edition-delve-in-progress", "escape-free", "account-email"]
   });
   const kitQaShown = () => KIT_QA.filter((w) => !w.only || !!window[w.only]);
@@ -10371,7 +10443,6 @@
       ready: "Today’s cipher is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="80" cy="60" r="38" fill="none" stroke="#A390B2" stroke-width="12"/><circle cx="80" cy="60" r="16" fill="#E5A63B"/><rect x="74" y="10" width="12" height="12" fill="#F2EBE0"/>'],
       page: {
-        rhythm: "NEW EVERY DAY",
         heading: "A new cipher every day",
         step: cprStep("Crack today’s cipher.", " Ask for a letter if you’re stuck."),
         often: "New every day",
@@ -10380,7 +10451,7 @@
         ai: "Takes your letter swaps and reads the line back to you.",
         server: "Holds the key, checks every swap and counts your hints."
       },
-      chat: ["Swap a letter and the whole line changes.", "Play Daily Cipher on After Pixels.", ["Daily Cipher No. 41. One line, every letter swapped for another.", "QEB NRFZH YOLTK CLU. Which letter first?"]]
+      chat: ["Swap a letter and the whole line changes.", "Play Daily Cipher on After Pixels", ["Daily Cipher No. 41. One line, every letter swapped for another.", "QEB NRFZH YOLTK CLU. Which letter first?"]]
     },
     {
       k: "nighttrain",
@@ -10396,7 +10467,6 @@
       ready: "This week’s case is ready",
       art: ["indigo", "bottom", '<rect width="160" height="120" fill="#1D1B3A"/><rect x="22" y="62" width="116" height="36" fill="#D66847"/><rect x="30" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="58" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="86" y="70" width="16" height="12" fill="#1D1B3A"/><rect x="114" y="70" width="16" height="12" fill="#F2EBE0"/><rect x="0" y="106" width="160" height="6" fill="#E5A63B"/><circle cx="128" cy="28" r="10" fill="#A390B2"/>'],
       page: {
-        rhythm: "A NEW CASE EVERY WEEK",
         heading: "A new case every week",
         step: cprStep("Work one full case", ", from the first stop to the last."),
         often: "A new case every week",
@@ -10405,7 +10475,7 @@
         ai: "Plays every passenger and the guard, and narrates the train.",
         server: "Holds every statement and timetable, counts your stops and checks your accusation."
       },
-      chat: ["Eight passengers, one corridor, no stops until dawn.", "Knock on compartment 4.", ["A tired voice: “I was asleep by eleven. I heard nothing.”", "Her shoes are wet. It hasn’t rained since the last station."]]
+      chat: ["Eight passengers, one corridor, no stops until dawn.", "Knock on compartment 4", ["A tired voice: “I was asleep by eleven. I heard nothing.”", "Her shoes are wet. It hasn’t rained since the last station."]]
     },
     {
       k: "saltmarsh",
@@ -10420,7 +10490,6 @@
       ready: "This week’s voyage is ready",
       art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><path d="M76 24L76 84L40 84Z" fill="#F2EBE0"/><rect x="34" y="88" width="72" height="12" fill="#D66847"/><rect x="0" y="104" width="160" height="16" fill="#328A88"/><circle cx="126" cy="34" r="14" fill="#E5A63B"/>'],
       page: {
-        rhythm: "A NEW VOYAGE EVERY WEEK",
         heading: "A new voyage every week",
         step: cprStep("Sail one voyage", ", from the quay to the drop."),
         often: "A new voyage every week",
@@ -10429,7 +10498,7 @@
         ai: "Tells the crossing, voices your crew and the excise men.",
         server: "Rolls every die, keeps the tide clock and the cargo, and records your voyage."
       },
-      chat: ["Every channel is a roll against the tide.", "Take the north channel.", ["You slip past the reed bank. The cutter’s lamp swings your way, then on.", "Tide: 3 of 6. Two channels to the drop."]]
+      chat: ["Every channel is a roll against the tide.", "Take the north channel", ["You slip past the reed bank. The cutter’s lamp swings your way, then on.", "Tide: 3 of 6. Two channels to the drop."]]
     },
     {
       k: "heist",
@@ -10444,7 +10513,6 @@
       ready: "This week’s job is ready",
       art: ["wine", "centre", '<rect width="160" height="120" fill="#421A28"/><rect x="44" y="24" width="72" height="72" fill="#A390B2"/><circle cx="80" cy="60" r="20" fill="#F2EBE0"/><rect x="76" y="44" width="8" height="32" fill="#E5A63B"/>'],
       page: {
-        rhythm: "A NEW JOB EVERY WEEK",
         heading: "A new job every week",
         step: cprStep("Plan this week’s job", ", then pull it off."),
         often: "A new job every week",
@@ -10453,7 +10521,7 @@
         ai: "Briefs you on the job and plays your crew.",
         server: "Runs the guards and the clock, and decides what each move does."
       },
-      chat: ["One floor plan, three crew, one way out.", "Send Ines to the loading bay at 2.10.", ["Ines is in. The guard is early: he’s back at 2.14, not 2.20.", "You have one move before he turns the corner."]]
+      chat: ["One floor plan, three crew, one way out.", "Send Ines to the loading bay at 2.10", ["Ines is in. The guard is early: he’s back at 2.14, not 2.20.", "You have one move before he turns the corner."]]
     },
     {
       k: "winter",
@@ -10467,7 +10535,6 @@
       ready: "Chapter 1 is ready",
       art: ["indigo", "bottom", '<rect width="160" height="120" fill="#1D1B3A"/><rect x="0" y="92" width="160" height="28" fill="#F2EBE0"/><rect x="58" y="60" width="44" height="32" fill="#D66847"/><path d="M52 62L80 38L108 62Z" fill="#E5A63B"/><circle cx="30" cy="30" r="4" fill="#A390B2"/><circle cx="130" cy="22" r="4" fill="#A390B2"/><circle cx="118" cy="48" r="4" fill="#A390B2"/>'],
       page: {
-        rhythm: "ONE CHAPTER",
         heading: "A winter told in chapters",
         step: cprStep("Play chapter 1", ", from first snow to the frozen river."),
         often: "At your own pace",
@@ -10476,7 +10543,7 @@
         ai: "Speaks for the settlement and tells you how each week went.",
         server: "Keeps the stores, the weather and everyone’s strength, and carries them between chapters."
       },
-      chat: ["What you ration now decides who sees the thaw.", "Send the two eldest sons to hunt.", ["They come back on the third day with a deer and frostbitten hands.", "Grain: 41 days. Firewood: 18 days."]]
+      chat: ["What you ration now decides who sees the thaw.", "Send the two eldest sons to hunt", ["They come back on the third day with a deer and frostbitten hands.", "Grain: 41 days. Firewood: 18 days."]]
     },
     {
       k: "farside",
@@ -10490,7 +10557,6 @@
       ready: "Mission 1 is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="62" cy="66" r="38" fill="#F2EBE0"/><circle cx="128" cy="28" r="12" fill="#328A88"/><rect x="108" y="74" width="12" height="12" fill="#E5A63B"/>'],
       page: {
-        rhythm: "ONE MISSION",
         heading: "A flight told in missions",
         step: cprStep("Fly mission 1", ", from launch to splashdown."),
         often: "At your own pace",
@@ -10499,7 +10565,7 @@
         ai: "Plays mission control and explains the why behind each burn.",
         server: "Flies the spacecraft, keeps the fuel and the clock, and records your mission."
       },
-      chat: ["Every burn is worked out by the engine.", "Burn for 40 seconds.", ["Good burn. You’re on the way out of Earth orbit.", "Fuel: 72%. Next window in 3 hours."]]
+      chat: ["Every burn is worked out by the engine.", "Burn for 40 seconds", ["Good burn. You’re on the way out of Earth orbit.", "Fuel: 72%. Next window in 3 hours."]]
     },
     {
       k: "ashcourt",
@@ -10513,7 +10579,6 @@
       ready: "The court is ready",
       art: ["wine", "bottom", '<rect width="160" height="120" fill="#421A28"/><rect x="56" y="30" width="48" height="90" fill="#A390B2"/><path d="M50 56L50 34L64 46L80 28L96 46L110 34L110 56Z" fill="#E5A63B"/><rect x="72" y="70" width="16" height="16" fill="#F2EBE0"/>'],
       page: {
-        rhythm: "ONE NIGHT",
         heading: "A different court every time",
         step: cprStep("Play the night", ", from the bell to the dawn."),
         often: "A different culprit every time you start",
@@ -10522,7 +10587,7 @@
         ai: "Plays the whole court and narrates the castle.",
         server: "Picks the culprit, keeps every statement and checks your verdict."
       },
-      chat: ["Everyone at court has something to hide.", "Ask the chancellor where he was at midnight.", ["“In the chapel, praying for His Majesty.”", "The bishop says the chapel was locked at eleven."]]
+      chat: ["Everyone at court has something to hide.", "Ask the chancellor where he was at midnight", ["“In the chapel, praying for His Majesty.”", "The bishop says the chapel was locked at eleven."]]
     },
     {
       k: "tidepool",
@@ -10536,7 +10601,6 @@
       ready: "Low tide is ready",
       art: ["forest", "bottom", '<rect width="160" height="120" fill="#163328"/><rect x="0" y="84" width="160" height="36" fill="#328A88"/><rect x="24" y="66" width="40" height="22" fill="#A390B2"/><circle cx="104" cy="96" r="12" fill="#D66847"/><circle cx="124" cy="24" r="14" fill="#E5A63B"/>'],
       page: {
-        rhythm: "ONE TIDE",
         heading: "A different shore every time",
         step: cprStep("Explore the shore", " until the water comes back."),
         often: "A different shore every time you start",
@@ -10545,7 +10609,7 @@
         ai: "Describes what you find and answers your questions about it.",
         server: "Keeps the tide, decides what each pool holds and records what you found."
       },
-      chat: ["Every pool holds something different.", "Lift the flat stone by the big pool.", ["Two shore crabs scatter sideways. Under them, a cluster of tiny white eggs.", "Tide: 40 minutes until it turns."]]
+      chat: ["Every pool holds something different.", "Lift the flat stone by the big pool", ["Two shore crabs scatter sideways. Under them, a cluster of tiny white eggs.", "Tide: 40 minutes until it turns."]]
     },
     {
       k: "clockwork",
@@ -10559,7 +10623,6 @@
       ready: "The workshop is ready",
       art: ["indigo", "centre", '<rect width="160" height="120" fill="#1D1B3A"/><circle cx="64" cy="64" r="28" fill="none" stroke="#E5A63B" stroke-width="10"/><circle cx="110" cy="44" r="16" fill="none" stroke="#328A88" stroke-width="8"/><circle cx="64" cy="64" r="6" fill="#F2EBE0"/><circle cx="110" cy="44" r="4" fill="#F2EBE0"/>'],
       page: {
-        rhythm: "ONE MACHINE",
         heading: "A different vault every time",
         step: cprStep("Build the machine", ", one part at a time."),
         often: "A different vault every time you start",
@@ -10568,7 +10631,7 @@
         ai: "Describes the workbench and what your machine does when it runs.",
         server: "Runs every gear and spring, and decides whether the vault opens."
       },
-      chat: ["Fit a part, set it going, see what moves.", "Put the large gear on the left spindle and wind it.", ["The large gear turns the small one three times. The lock moves one notch.", "Ten notches to go."]]
+      chat: ["Fit a part, set it going, see what moves.", "Put the large gear on the left spindle and wind it", ["The large gear turns the small one three times. The lock moves one notch.", "Ten notches to go."]]
     }
   ];
   const GS_MORE_IDS = GS_MORE.map((d) => d.k);
@@ -10585,7 +10648,6 @@
       GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
       GS_GAMES[d.k] = gsAccess({ access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
       GS_PAGES[d.k] = {
-        rhythm: d.page.rhythm,
         box: {
           label: "ONLY WITH THE PASS",
           heading: d.page.heading,
