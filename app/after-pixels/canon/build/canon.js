@@ -4824,7 +4824,8 @@
     return out;
   };
   const SV_CHAT_SEA = { cols: { B: 2, D: 2, E: 1, F: 3 }, rows: { 1: 4, 3: 1, 6: 1, 7: 1 } };
-  const svGrid = (miss, hit, raised) => {
+  const svGrid = (miss, hit, raised, swept = {}) => {
+    const cnt = { cols: { ...SV_CHAT_SEA.cols, ...swept.cols }, rows: { ...SV_CHAT_SEA.rows, ...swept.rows } };
     const mark = {};
     miss.forEach((sq) => {
       mark[sq] = ["○", ""];
@@ -4836,9 +4837,9 @@
       mark[sq] = ["■", "h"];
     });
     const cols = "ABCDEFGH".split("");
-    const head = [{ l: " ", m: " " }, ...cols.map((c) => ({ l: String(SV_CHAT_SEA.cols[c] || "-"), m: "x" })), { l: " ", m: " " }];
+    const head = [{ l: " ", m: " " }, ...cols.map((c) => ({ l: String(cnt.cols[c] || "-"), m: "x" })), { l: " ", m: " " }];
     const letters = [{ l: " ", m: " " }, ...cols.map((c) => ({ l: c, m: "x" })), { l: " ", m: " " }];
-    const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: "x" }, ...cols.map((c) => ({ l: (mark[c + r] || [" "])[0], m: (mark[c + r] || [" ", " "])[1] || " " })), { l: String(SV_CHAT_SEA.rows[r] || "-"), m: "x" }]);
+    const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: "x" }, ...cols.map((c) => ({ l: (mark[c + r] || [" "])[0], m: (mark[c + r] || [" ", " "])[1] || " " })), { l: String(cnt.rows[r] || "-"), m: "x" }]);
     return { type: "tilegrid", length: 10, rows: [head, letters, ...body].map((r) => ({ letters: r.map((x) => x.l).join(""), marks: r.map((x) => x.m).join("") })) };
   };
   const svStats = (dives, tools) => ({ type: "stats", items: [{ label: "Dives left", value: dives }, { label: "Tools left", value: tools }, { label: "Wrecks to find", value: "4 3 3 2 2" }] });
@@ -5535,7 +5536,7 @@
         facts: { often: "New every day" },
         tags: [],
         pitch: { h: "Five wrecks lie somewhere under you. Find them in twenty dives.", ps: [
-          "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the rest must lie.",
+          "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.",
           "You also get three tools that cost no dive: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools."
         ] },
         who: { ai: "Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.", server: "Keeps the wrecks secret, answers every dive and tool, and counts what you have left." },
@@ -5613,7 +5614,7 @@
       salvage: [
         { cap: "Five wrecks lie hidden, and the margins count some rows and columns.", turns: [
           gscU("Play Salvage on After Pixels"),
-          gscAi("salvage", "The bell goes down over a grey, quiet sea. Five wrecks of 4, 3, 3, 2 and 2 squares lie hidden, none touching, and you have 20 dives and three tools that cost none.", [svGrid([], [], []), svStats(20, 3)])
+          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching, and three tools cost no dive.", [svGrid([], [], []), svStats(20, 3)])
         ] },
         { cap: "A dragnet snags the first wreck square on a line, and costs no dive.", turns: [
           gscU("Row 1 counts 4, so dragnet along it from the left"),
@@ -5621,7 +5622,7 @@
         ] },
         { cap: "The last wreck raised wins the day.", turns: [
           gscU("D5 to finish it"),
-          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
+          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
           gscU("Share my result"),
           gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
         ] }
