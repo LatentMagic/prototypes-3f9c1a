@@ -5100,7 +5100,7 @@
         edLine: "You get six guesses to find the country.",
         daily: true,
         once: true,
-        blurb: "One country hides on the map each day: find it in six guesses.",
+        blurb: "One hidden country a day: find it in six guesses.",
         tags: ["Daily"],
         size: "tiny"
       }),
@@ -5473,9 +5473,9 @@
         },
         facts: { often: "New every day" },
         tags: [],
-        pitch: { h: "One country hides on the map each day: find it in six guesses.", ps: [
+        pitch: { h: "One hidden country a day: find it in six guesses.", ps: [
           "Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.",
-          "One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess."
+          "One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess."
         ] },
         who: { ai: "Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.", server: "Keeps the country secret, measures every distance and works out which way the hint points." },
         week: { title: "Today’s country", line: "You get six guesses and one hint.", session: "where-today" }
@@ -5538,7 +5538,7 @@
       where: [
         { cap: "You get six guesses and one hint.", turns: [
           gscU("Play Where on After Pixels."),
-          gscAi("where", ["Where No. 112 is ready. You have six guesses to find today’s country.", "Each miss comes back as a border-to-border distance, and 0 means the two touch. Your one hint gives the compass direction from your latest guess. Which country first?"])
+          gscAi("where", ["Where No. 112 is ready: find today’s country in six guesses. Each miss comes back as a border-to-border distance, and 0 means the two touch. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?"])
         ] },
         { cap: "Each guess comes back as a distance from the country.", turns: [
           gscU("Brazil."),
@@ -10776,9 +10776,9 @@
     },
     where: {
       job: {
-        h: "One country hides on the map each day: find it in six guesses.",
+        h: "One hidden country a day: find it in six guesses.",
         blurb: "h",
-        ps: ["Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.", "One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess."]
+        ps: ["Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.", "One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess."]
       },
       situation: { h: null, blurb: "A daily geography puzzle. Six guesses." }
     }

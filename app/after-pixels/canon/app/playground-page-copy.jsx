@@ -57,8 +57,8 @@ const PGC_COPY = {
   },
   where: {
     job: {
-      h: 'One country hides on the map each day: find it in six guesses.', blurb: 'h',
-      ps: ['Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.', 'One distance puts the country somewhere on a ring around your guess. A second draws another ring, and the country sits where the two cross; by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess.'] },
+      h: 'One hidden country a day: find it in six guesses.', blurb: 'h',
+      ps: ['Your first guess could be any country in the world. What comes back is how far the country you named lies from the hidden country, border to border, and a 0 means the two touch.', 'One distance puts the country somewhere on a ring around your guess. A second narrows it to where the two rings cross, and by the third guess you usually have it pinned. One hint gives the compass direction from your latest guess.'] },
     situation: { h: null, blurb: 'A daily geography puzzle. Six guesses.' },
   },
 };
