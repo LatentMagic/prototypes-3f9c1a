@@ -3070,11 +3070,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pdh-open .dv7-hero b { text-align: left; }
 .pdh-open .dv8-meters { padding-left: 16px !important; }
 .pdh-open .dv7-grp.is-hero { flex: 0 0 auto !important; }
-.pdh-open.is-shut .dv8-meters { flex: 0 1 440px !important; }
 .pdh-open .dv7-grp.dv8-adv:last-child { flex: 1 1 auto; padding-left: 12px; justify-content: center; justify-items: center; }
 .pdh-open .dv7-grp.dv8-adv:last-child .dv7-cells { justify-content: center; }
-/* The meters start 16px after the divider, open or folded, so the gap matches the one before it. */
-.pdh-open .dv8-meters { justify-content: start !important; }
+/* Two rows: the meters block (bars 160px wide at most) is centred between the name's divider and the Stats divider, folded or open. The one-line sheet has no spare room in that cell, so it keeps its own padding. */
+.pdh-open:not(.pdh-one) .dv8-meters { justify-content: center !important; grid-template-columns: max-content minmax(32px, 160px) max-content; padding: 0 17px 0 16px !important; }
+.pdh-one .dv8-meters { justify-content: start !important; }
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
    session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 

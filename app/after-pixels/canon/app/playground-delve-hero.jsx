@@ -98,9 +98,9 @@ const PdhSheet = ({ c, s, streak }) => {
   const [picked, setPicked] = React.useState(null);
   React.useEffect(() => { setPicked(null); }, [openKey]);
   const shut = !oneLine && (picked != null ? picked : mode === 'cards' && openKey === 'none');
-  const stats = <DlGrp k="dv8-stats pdh-stats pdh-more" head="Stats">{c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>)}</DlGrp>;
+  const stats = <DlGrp k="dv8-stats pdh-stats" head="Stats">{c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>)}</DlGrp>;
   const meters = <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>;
-  // KEEP: where the open sheet fits on one line (1060px of sheet content and over) it is open, has no chevron and cannot fold. Where it wraps to two rows it starts open and the chevron, centred in the first row, folds it to the hero and the meters; the tap-card layout (a phone) starts folded and keeps the chevron at the top right.
+  // KEEP: where the open sheet fits on one line (1060px of sheet content and over) it is open, has no chevron and cannot fold. Where it wraps to two rows it starts open and the chevron, centred in the first row, hides the second row (pack, abilities, the fight group and advantage) and leaves the first row, the hero, meters, stats and chevron, exactly where it was; the tap-card layout (a phone) starts folded and keeps the chevron at the top right.
   const tog = oneLine ? null : <button type="button" className="pdh-tog" aria-expanded={!shut} aria-label={shut ? 'Show the whole character sheet' : 'Fold the character sheet'} onClick={() => setPicked(!shut)}><DS.Icon name="next" size={20} /></button>;
   return (<section ref={ref} className={'dv4 dv5 is-tight dv7 is-band pdh pdh-' + mode + (shut ? ' is-shut' : '') + (oneLine ? ' pdh-one' : '') + (mode === 'open' ? ' fold-none dv8 is-3b' : '')} aria-label="Character sheet">
     {mode === 'cards' && tog}
