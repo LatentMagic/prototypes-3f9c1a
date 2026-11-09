@@ -4265,14 +4265,14 @@
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
     if (id === "delve" && st !== "none") {
       const sids = ["delve-first", "delve-first-live"];
-      const card = /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids, next: null, pass });
+      const card2 = /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids, next: null, pass });
       const Pg = GS_NOW.delve;
-      return Pg && done && pass ? /* @__PURE__ */ React$1.createElement(Pg, { s: DV_DONE, label: f.label, sids }, card) : card;
+      return Pg && done && pass ? /* @__PURE__ */ React$1.createElement(Pg, { s: DV_DONE, label: f.label, sids }, card2) : card2;
     }
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
     if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "barrow", label: GS_PAGES.barrow.week2.label, title: BW_CH2.title, play: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }), next: soon, span: true }, /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line));
-    return /* @__PURE__ */ React$1.createElement(
+    const card = /* @__PURE__ */ React$1.createElement(
       LbNowCard,
       {
         gid: id,
@@ -4289,6 +4289,8 @@
       /* @__PURE__ */ React$1.createElement("p", null, st === "live" ? f.live : done ? f.done : f.none),
       bar && /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label: bar[0], value: bar[1], max: bar[2], showValue: false })
     );
+    const PgBefore = id === "delve" && st === "none" && gs.view !== "pass" ? GS_NOW.delve : null;
+    return PgBefore ? /* @__PURE__ */ React$1.createElement(PgBefore, { before: true, label: f.label, title: f.title, play: f.play }, card) : card;
   };
   const cprIso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const LbNeedsPass = ({ id, had, ach, access }) => {
@@ -10846,19 +10848,36 @@
   };
   const PGD_GET = ["Play every weekly run.", "Earn achievements and streaks."];
   const PGD_PLAIN = "Your free run is done.";
-  const PgdCard = ({ s, label, sids, children }) => {
+  const PgdCard = ({ s, label, sids, before, title: t0, play, children }) => {
     const gs = useGs();
     const v = usePgSetting("version");
-    if (!pgActive() || v === "today") return children;
+    const moment = usePgSetting("moment");
+    if (!pgActive() || moment === "before" !== !!before) return children;
+    if (before) return /* @__PURE__ */ React$1.createElement(PgdBefore, { label, title: t0, play });
+    if (v === "today") return children;
     const { result } = dlNowRun(s, gs, sids);
     const run = v === "2" || v === "3";
     const bullets = v === "3" || v === "4";
     const title = run ? s.title : PGD_PLAIN;
     return /* @__PURE__ */ React$1.createElement("section", { className: "pgd-card", "aria-label": run ? s.title + ", " + result.label : PGD_PLAIN }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label" }, label), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title), run && /* @__PURE__ */ React$1.createElement("p", { className: "pgd-res" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: result }))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side-in" }, /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "pgd-line", text: "Keep playing with the Pass." }), bullets && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label pgd-get" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement("ul", { className: "pgd-list" }, PGD_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t)))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("pass") }, "Get the Pass")))));
   };
+  const PGD_ROOMS = 5;
+  const PgdHex = () => /* @__PURE__ */ React$1.createElement("svg", { className: "pgd-hex", viewBox: "-5 -5 46 50", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }));
+  const PgdRooms = () => {
+    const [ref, cols] = useDlNowCols(PGD_ROOMS);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, "aria-label": "Rooms not yet reached" }, Array.from({ length: PGD_ROOMS }, (_, i) => {
+      const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === PGD_ROOMS - 1 ? " is-row-end" : "");
+      return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "dl-now-stop pgd-far" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st: { num: i + 1, name: i === 0 ? "First room" : "Not yet reached", back: false } }), /* @__PURE__ */ React$1.createElement(PgdHex, null));
+    })));
+  };
+  const PgdBefore = ({ label, title, play }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pgd-now", label, title, play, pass: true }, /* @__PURE__ */ React$1.createElement(PgdRooms, null));
   function initPlaygroundDelveFreeNowCard() {
-    pgRegister("delve-free-now-card", { title: "Delve free Now card, after the free run", settings: [
-      { key: "version", kind: "concept", label: "Version", options: [
+    pgRegister("delve-free-now-card", { title: "Delve free Now card", settings: [
+      { key: "moment", label: "Moment", options: [
+        { value: "after", label: "After the free run", state: "library-delve-no-pass", go: (api) => api.setReview({ today: "played", week: "done", begun: false, ed: null }) },
+        { value: "before", label: "Before the free run", state: "library-delve-no-pass", go: (api) => api.setReview({ today: "none", week: "done", begun: false, ed: null }) }
+      ] },
+      { key: "version", kind: "concept", label: "Version", when: { key: "moment", value: "after" }, options: [
         { value: "3", label: "3 · Your run + what you get", state: "library-delve-no-pass" },
         { value: "1", label: "1 · Plain", state: "library-delve-no-pass" },
         { value: "2", label: "2 · Your run", state: "library-delve-no-pass" },

@@ -57,13 +57,15 @@ const CprFirst = ({ id }) => {
       <p>{BW_CH2.line}</p>
     </LbNowCard>
   );
-  return (
+  const card = (
     <LbNowCard gid={id} label={f.label} title={f.title} result={st === 'live' ? { kind: 'live', label: 'In progress' } : done ? f.result : null} tag={f.tag}
       play={st === 'none' ? f.play : null} open={f.open} next={soon} pass={pass} span={id === 'barrow' || id === 'casebook'}>
       <p>{st === 'live' ? f.live : done ? f.done : f.none}</p>
       {bar && <DS.ProgressBar label={bar[0]} value={bar[1]} max={bar[2]} showValue={false} />}
     </LbNowCard>
   );
+  const PgBefore = id === 'delve' && st === 'none' && gs.view !== 'pass' ? GS_NOW.delve : null; // a playground's card before the free run, registered only under ?pg=
+  return PgBefore ? <PgBefore before label={f.label} title={f.title} play={f.play}>{card}</PgBefore> : card;
 };
 
 // ---- Needs the Pass: the design system's card wherever the play control would be and this player can't play without the Pass.

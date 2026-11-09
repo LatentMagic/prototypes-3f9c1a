@@ -2957,6 +2957,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pgd-side-in { padding: var(--space-4) 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .pgd-act, .pgd-act .mcp-btn { align-self: stretch; }
 }
+
+/* Before the free run: the rooms drawn empty, as concept B of the delve-empty playground (prototypes candidate/delve-fight). */
+.pgd-hex { display: block; width: 30px; height: 33px; flex: none; }
+.pgd-hex polygon { fill: none; stroke: var(--control-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: .6; }
+.pgd-now .lb-top h2 { overflow-wrap: anywhere; }
+.dl-now-stop.pgd-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
    session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 
