@@ -53,7 +53,7 @@ const dlMoments = (R, end) => {
   return out.sort((a, b) => a.r.n - b.r.n);
 };
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
-export const dlBuild = (s) => {
+const dlBuild = (s) => {
   const stops = []; const rolls = []; const order = []; let cur = null; let hp = s.hpMax;
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [] }; stops.push(cur); };
@@ -73,7 +73,7 @@ export const dlBuild = (s) => {
 const dlSay = (r) => 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + DL_TIER[r.tier].toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '');
 
 // ---- The die: strong filled green, weak filled yellow, miss empty, natural 20 rimmed, natural 1 red-edged. ----
-export const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
+const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
 const DlDie = ({ r, size = 36, sel }) => (
   <svg className={'dv2-die is-' + r.tier + (r.crit ? ' is-crit' : '') + (r.fumble ? ' is-fumble' : '') + (sel ? ' is-sel' : '')} viewBox="-5 -5 46 50" width={size} height={Math.round(size * 50 / 46)} aria-hidden="true">
     {/* KEEP: on a natural 20 the hex behind moves out past the rim, so the two lines never run together. */}
@@ -91,7 +91,7 @@ const DlDieBtn = ({ r, size, act, on }) => (
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
-export const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
+const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
 const dlTone = (m) => (m.end === 'won' ? 'ok' : m.end === 'live' ? 'live' : 'bad');
 const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result;
   return (<div className="dv7r-band"><h2 className={'dv7r-word is-' + dlTone(m)}>{dlWord(m)}</h2>{line && <p className="dv7r-line">{line}</p>}</div>); };
@@ -115,7 +115,7 @@ const DlHeld = ({ m, act }) => { const r = act ? m.rolls[act - 1] : null; if (!r
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
 const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
   <path d="M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
-export const DlStopHead = ({ st, named }) => (
+const DlStopHead = ({ st, named }) => (
   <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
     <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
 const DlRoute = ({ m, act, on }) => { const sel = act ? m.rolls[act - 1].stop : null;
@@ -210,7 +210,7 @@ const DL_NO_HOVER = () => {};
 // (8 rooms where 7 fit go 4 and 4; 5 where 4 fit go 3 and 2) (owner, 2026-10-30). The line joining the rooms runs along each row and
 // stops at its ends, so a wrapped row never leaves a stub.
 const DL_NOW_COL = 44;
-export const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
+const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return;
     const read = () => { const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL)); setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit))); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
