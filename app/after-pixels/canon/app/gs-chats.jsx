@@ -18,10 +18,10 @@ const GSC_CB_SEARCH = [gscU('Ask Maeve Doyle where she was at ten'),
 const GSC_CB_LIE = [gscU('Show Maeve the bar ledger'),
   gscAi('casebook', '“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”', [{ type: 'clues', groups: [{ kind: 'Evidence', facts: ['The bar ledger'] }, { kind: 'Statements', facts: [{ text: 'Maeve Doyle: lie exposed', new: true }] }] }, { type: 'stats', items: [{ label: 'Turn', value: '5 of 16' }] }])];
 
-// Delve's fight chat, written for the page from a real play of edition 3, The Briar Keep; every event is true to it and no edition secret appears.
-export const GSC_DV_FIGHT_CAP = 'Say how you want to fight, and spend your inspiration when it counts.';
-export const GSC_DV_FIGHT = [gscU('Use my inspiration on a Beakjab'),
-  gscAi('delve', 'The gamble pays off. A shrill whistle, and the goose that sulked in the corner comes back in a flap of wings. It takes the witch squarely on the ankle, and she hops and howls.', null, [{ type: 'roll', label: 'Beakjab', roll: 12, mod: 3, target: 13, result: 'hit', outcome: 'Hit · inspiration spent' }])];
+// Delve's fight chat, written for the page from an invented edition (Delve #40, a number clear of every real edition's): the figures follow one worked run of a Knight, and no edition secret appears.
+export const GSC_DV_FIGHT_CAP = 'Every hero has a big swing of their own. Call it by name.';
+export const GSC_DV_FIGHT = [gscU('I use Sunder on the troll'),
+  gscAi('delve', 'Your blade bites deep, and the troll roars loud enough to shake dust from the roof. Its club swings round in answer, and your shield takes the worst of it.', null, [{ type: 'roll', label: 'Sunder', roll: 13, mod: 3, target: 14, result: 'hit', outcome: 'Hit · 7 damage' }])];
 
 export let GS_CHATS;
 export let GS_HERO_CHAT;
@@ -107,23 +107,24 @@ GS_CHATS = {
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
   ],
-  // Delve: the product page's four chats, written for the page from a real play of edition 3, The Briar Keep, and the game spec: every turn shows something the game really does, and no edition secret appears.
+  // Delve: the product page's four chats, written for the page from an invented edition (Delve #40, The Orc Caves under Raven Hill) and the game spec: the figures follow one worked run of a Knight, every turn shows something the game really does, and no edition secret appears.
   // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health).
   delve: [
     { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('Play Delve on After Pixels'),
-      gscAi('delve', ['Delve #3: The Briar Keep', 'A hundred years ago the Briar Witch was not invited to Prince Aurel’s christening. In her anger she put the whole keep to sleep and grew a forest of thorns around it.', 'Which hero will you take?'],
-        null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Hal, the Woodcutter', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Elfa, the Goose-girl', line: 'Best at Nimbleness, Charm · 21 HP · Defence 14' }, { name: 'Bram, the Hedge-witch', line: 'Best at Learning, Good sense · 17 HP · Defence 12' }]}]),
-      gscU('Goose-girl'),
-      gscAi('delve', 'You are Elfa, the goose-girl, a quick, cheeky girl who can talk her way round anyone and climb anything.')] },
-    { cap: 'A miss costs you health. Roll again to get past it.', turns: [gscU('One more cut'),
-      gscAi('delve', 'Your foot slips on a mossy step and the cut goes wide. The last tangle whips back and rakes your arm.', null, [{ type: 'roll', label: 'Nimbleness', roll: 1, mod: 3, target: 12, result: 'miss', outcome: 'Failure · 2 damage' }, { type: 'track', items: [{ label: 'Elfa’s health', value: 15, max: 21, tone: 'health' }] }]),
-      gscU('Try again'),
-      gscAi('delve', 'You plant your feet and cut. The last tangle falls away, though a thorn rakes your sleeve and arm on its way down.', null, [{ type: 'roll', label: 'Nimbleness', roll: 11, mod: 3, target: 12, result: 'weak', outcome: 'Partial success · 2 damage' }, { type: 'track', items: [{ label: 'Elfa’s health', value: 13, max: 21, tone: 'health' }] }])] },
+      gscAi('delve', ['Delve #40: The Orc Caves under Raven Hill', 'Orcs have come up out of the caves under Raven Hill and burned the watchtower above the village of Brackenford. Tonight their war drums beat, and at dawn they march on the village.', 'Which hero will you take?'],
+        null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Garrick, the Knight', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Tamsin, the Ranger', line: 'Best at Agility, Charm · 21 HP · Defence 14' }, { name: 'Selwyn, the Wizard', line: 'Best at Wits, Wisdom · 17 HP · Defence 12' }]}]),
+      gscU('Knight'),
+      gscAi('delve', 'You are Garrick, the last knight of Brackenford’s watch, with a broadsword and a shield scarred by a hundred fights. Your heaviest swing, Sunder, can split a door in two.')] },
+    { cap: 'A slip costs you health. Then try it another way.', turns: [gscU('I cross slowly and test every plank'),
+      gscAi('delve', 'The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back to where you started. Deep in the hill, the drums beat faster.', null, [{ type: 'roll', label: 'Agility', roll: 6, mod: 1, target: 12, result: 'miss', outcome: 'Failure · 4 damage' }, { type: 'track', items: [{ label: 'Garrick’s health', value: 19, max: 23, tone: 'health' }] }]),
+      gscU('I haul myself along the ropes'),
+      gscAi('delve', 'You grip the ropes and haul yourself across, hand over hand, to the far side.', null, [{ type: 'roll', label: 'Strength', roll: 15, mod: 3, target: 12, result: 'hit', outcome: 'Success' }])] },
     { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
-    { cap: 'Your result is ready to post, with one mark for every roll you made.', turns: [gscU('Beakjab to finish her'),
-      gscAi('delve', ['The Briar Keep: Won', 'The briars at the windows turn brown and fall away, and the last of the candlelight turns to morning.', 'Prince Aurel opens his eyes, looks at you, and asks what he has missed. All through the keep, the sleepers begin to wake.']),
+    { cap: 'Your result is ready to post, with one mark for every roll you made.', turns: [gscU('Sunder, to finish him'),
+      gscAi('delve', ['The Orc Caves under Raven Hill: Won', 'Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.', 'You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe.'],
+        [{ type: 'roll', label: 'Sunder', roll: 20, mod: 3, target: 14, result: 'hit', outcome: 'Critical hit · 14 damage' }]),
       gscU('Can I get the share card?'),
-      gscAi('delve', 'Here’s your share card:', null, [{ type: 'mono', text: 'The Briar Keep\nElfa the Goose-girl · ✅ Prince Aurel is awake · 20 rolls · longest streak 4\n🟨🟥🟥🟩✨🟨🟩🟨🟩🟨🟨🟩💀🟨🟥🟥🟩🟩🟩🟩\nhttps://afterpixels.com/discover/delve' }])] },
+      gscAi('delve', 'Here’s your share card:', null, [{ type: 'mono', text: 'The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\n🟨🟥🟩🟩🟩🟥🟩🟩🟨🟩🟩🟥🟩🟩🟥🟩✨\nhttps://afterpixels.com/discover/delve' }])] },
   ],
   barrow: [
     { cap: 'Choose a hero. The engine sets the world.', turns: [gscU('Play The Barrow of Hollowmere on After Pixels'),
