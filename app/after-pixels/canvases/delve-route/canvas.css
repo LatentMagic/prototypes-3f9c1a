@@ -62,9 +62,12 @@ body { font: 400 16px/1.5 var(--font-text); }
 
 /* Tab 7: key moments on a closed line */
 .cv-chead.is-wrap { flex-wrap: wrap; padding: 4px 0; }
-.cv-chead.is-wrap .cv-vname { flex: 1 1 100%; }
-.cv-chead.is-wrap .cv-chev { margin-left: auto; }
+.cv-chead.is-wrap { row-gap: 2px; }
+.cv-chead.is-wrap .cv-tl { flex: 1 1 100%; }
 .cv-km { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .cv-km.cv-dots { gap: 4px; }
 .cv-km .dl-now-mark.cv-kdot { width: 12px; height: 12px; box-shadow: 0 0 0 2px var(--surface, #222), 0 0 0 3.5px currentColor; }
 .cv-km .dl-now-mark.is-use { background: var(--control-edge, #888); }
+.cv-tl { display: inline-flex; }
+.cv-chead:not(.is-wrap) .cv-tl { order: 2; }
+.cv-chead:not(.is-wrap) .cv-chev { order: 3; }

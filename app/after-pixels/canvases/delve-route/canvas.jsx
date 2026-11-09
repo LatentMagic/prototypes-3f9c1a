@@ -121,15 +121,15 @@ const VList = ({ m, act, on, inline }) => (
 
 // Closed rooms (lo-fi round pick, 2026-11-09): every room is one line on the path with a tally of its dice; tapping the line opens that
 // room (one open at a time), its dice on one row, the big moment dice too, and a pressed die's held roll opens right under them.
-const CTally = ({ m, st, act, on, mode }) => {
+const CTally = ({ m, st, act, on, mode, ks = 34 }) => {
   const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
   const dot = (r, big) => <i key={r.t} className={'dl-now-mark is-' + r.tier + (big ? ' cv-kdot' : '')} />;
   if (mode === 'dots') return <span className="cv-km">{st.turns.map((r) => dot(r, !r.use && m.mom[r.n]))}</span>;
   if (mode === 'hex') return <span className="cv-km cv-hexes">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 30 : 18} />)}</span>;
-  if (mode === 'now') return <span className="cv-km">{keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={34} />)}{rest.length > 0 && <span className="cv-km cv-dots">{rest.map((r) => dot(r))}</span>}</span>;
+  if (mode === 'now') return <span className="cv-km">{keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={ks} />)}{rest.length > 0 && <span className="cv-km cv-dots">{rest.map((r) => dot(r))}</span>}</span>;
   return <span className="cv-tally" aria-label={st.turns.length + ' rolls'}>{st.turns.map((r) => <i key={r.t} className={'is-' + (r.tier || 'use')} />)}</span>;
 };
-const CRow = ({ m, st, act, on, open, setOpen, first, last, mode }) => {
+const CRow = ({ m, st, act, on, open, setOpen, first, last, mode, ks }) => {
   const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null;
   const onT = React.useMemo(() => ({ ...on, sel: (t) => { setOpen(st.i); on.sel(t); } }), [on, st.i]);
   return (
@@ -138,20 +138,20 @@ const CRow = ({ m, st, act, on, open, setOpen, first, last, mode }) => {
       <div className="cv-vbody">
         <div className={'cv-chead' + (mode === 'now' || mode === 'hex' ? ' is-wrap' : '')} role="button" tabIndex={st.turns.length ? 0 : -1} aria-expanded={isOpen} onClick={() => st.turns.length && setOpen(isOpen ? null : st.i)}>
           <span className="cv-vname dv2-sname">{st.name}</span>
-          {st.turns.length ? (!isOpen || !mode ? <span onClick={(e) => e.stopPropagation()}><CTally m={m} st={st} act={act} on={onT} mode={mode} /></span> : null) : <i className="dv2-pass" aria-label="No rolls" />}
           {st.turns.length > 0 && <span className="cv-chev" aria-hidden="true">{isOpen ? '\u25BE' : '\u25B8'}</span>}
+          {st.turns.length ? (!isOpen || !mode ? <span className="cv-tl" onClick={(e) => e.stopPropagation()}><CTally m={m} st={st} act={act} on={onT} mode={mode} ks={ks} /></span> : null) : <i className="dv2-pass" aria-label="No rolls" />}
         </div>
         {isOpen && <div className="cv-cdice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>}
         {isOpen && sel === st.i && <div className="cv-vheld"><DlHeld m={m} act={act} /></div>}
       </div>
     </div>);
 };
-const CList = ({ m, initial, mode }) => {
+const CList = ({ m, initial, mode, ks }) => {
   const [act, on] = useActive(m, initial);
   const [open, setOpen] = React.useState(m.turns[initial - 1].stop);
   return (
     <section className="dv2 dv7r is-3" aria-label="How the run went">
-      <div className="cv-vlist" aria-label="The way you went">{m.stops.map((st, i) => <CRow key={st.i} m={m} st={st} act={act} on={on} open={open} setOpen={setOpen} mode={mode} first={i === 0} last={i === m.stops.length - 1} />)}</div>
+      <div className="cv-vlist" aria-label="The way you went">{m.stops.map((st, i) => <CRow key={st.i} m={m} st={st} act={act} on={on} open={open} setOpen={setOpen} mode={mode} ks={ks} first={i === 0} last={i === m.stops.length - 1} />)}</div>
     </section>);
 };
 
@@ -242,6 +242,12 @@ const VERSIONS = [
   { id: 'km-hex', tab: '7c · Tiny dice', n: '7c', title: 'Key moments on a closed line: tiny dice',
     cap: 'Every roll a tiny die (18 px) and a key moment a bigger one (30 px), all pressable. Most Delve-looking, busiest; numbers at 18 px are hard to read.',
     frames: () => [<Frame key="390" w={390} card={358} note="a 390 phone"><CList m={M10} initial={press10} mode="hex" /></Frame>] },
+  { id: 'km-28', tab: '7d · Now rule, 28', n: '7d', title: 'The Now card rule with smaller key dice: 28 px',
+    cap: '7a with the key-moment dice a step smaller (28 px against 34), so each closed room is shorter; numbers still read.',
+    frames: () => [<Frame key="390" w={390} card={358} note="a 390 phone"><CList m={M10} initial={press10} mode="now" ks={28} /></Frame>] },
+  { id: 'km-24', tab: '7e · Now rule, 24', n: '7e', title: 'The Now card rule with smaller key dice: 24 px',
+    cap: 'Smaller again (24 px), to see where the numbers stop reading.',
+    frames: () => [<Frame key="390" w={390} card={358} note="a 390 phone"><CList m={M10} initial={press10} mode="now" ks={24} /></Frame>] },
 ];
 
 const App = () => {
