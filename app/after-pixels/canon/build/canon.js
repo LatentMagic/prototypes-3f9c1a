@@ -10888,9 +10888,6 @@
   };
   const PG = {};
   const PG_DESK = 1280;
-  const pgRegister = (id, def) => {
-    PG[id] = def;
-  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10906,17 +10903,6 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
-  };
-  const usePgSetting = (key) => {
-    const [, bump] = React$1.useState(0);
-    React$1.useEffect(() => {
-      const f = () => bump((n) => n + 1);
-      pgSubs.add(f);
-      return () => pgSubs.delete(f);
-    }, []);
-    const def = pgActive();
-    const s = def && def.settings.find((x) => x.key === key);
-    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -11001,89 +10987,6 @@
     const concept = shown.find((s) => s.kind === "concept");
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
-  };
-  const PDE_TITLES = { real: "The Goblin Warren beneath Ashford Mill", longest: "The Drowned Chapel under Fenwick Marsh", huge: "The Forgotten Goblin Warren beneath Ashford Mill and the Fenwick Marsh" };
-  const PDE_ROOMS = 5;
-  const PDE_THREAT = 12;
-  const pdeSid = (title, hard) => "pde-" + title + (hard ? "-hard" : "");
-  const pdeSet = () => ({ fix: usePgSetting("fix"), view: usePgSetting("view"), run: usePgSetting("run"), title: usePgSetting("title"), hard: usePgSetting("hard") === "on" });
-  const pdeSession = (title, hard) => ({
-    ...GS_SESSIONS["delve-live"],
-    pde: true,
-    noEd: true,
-    title: PDE_TITLES[title],
-    setting: PDE_TITLES[title],
-    lines: [],
-    hero: hard ? "Wren the Rogue" : "Bryn the Fighter",
-    hpMax: hard ? 11 : 13,
-    threat: 0,
-    threatMax: PDE_THREAT,
-    figures: ["Threat 0/" + PDE_THREAT, "0 rolls", "HP " + (hard ? 11 : 13) + "/" + (hard ? 11 : 13)],
-    tracks: { progress: 1, rooms: PDE_ROOMS, threat: 0, threatMax: PDE_THREAT },
-    sheet: { used: {}, insp: true }
-  });
-  const PdeHex = ({ cls = "" }) => /* @__PURE__ */ React$1.createElement("svg", { className: "pde-hex " + cls, viewBox: "-5 -5 46 50", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }));
-  const pdeStops = (reached) => Array.from({ length: PDE_ROOMS }, (_, i) => ({ i, num: i + 1, name: i === 0 ? "First room" : "Not yet reached", back: false, far: i > 0 || !reached }));
-  const PdeSession = ({ s }) => {
-    const m = React$1.useMemo(() => dlBuild(s), [s]);
-    const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: 0 }), /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", "aria-label": "The way you went" }, pdeStops(true).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (st.far ? " pde-far" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named: true }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.far ? /* @__PURE__ */ React$1.createElement(PdeHex, null) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement("div", { className: "pde-wait" }, /* @__PURE__ */ React$1.createElement(PdeHex, null), /* @__PURE__ */ React$1.createElement("b", null, "No rolls yet")))))));
-  };
-  const PdeBodyOf = (Orig) => (p) => p.s && p.s.pde ? /* @__PURE__ */ React$1.createElement(PdeSession, { s: p.s }) : /* @__PURE__ */ React$1.createElement(Orig, { ...p });
-  const PdeStops = ({ started }) => {
-    const [ref, cols] = useDlNowCols(PDE_ROOMS);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, "aria-label": "The way you went" }, pdeStops(started).map((st, i) => {
-      const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === PDE_ROOMS - 1 ? " is-row-end" : "");
-      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge + (st.far ? " pde-far" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), st.far ? /* @__PURE__ */ React$1.createElement(PdeHex, null) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }));
-    })));
-  };
-  const PdeRitual = () => /* @__PURE__ */ React$1.createElement("div", { className: "pde-ritual" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: 0, of: PDE_THREAT }), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, PDE_ROOMS, " rooms"));
-  const PdeStrip = ({ started }) => /* @__PURE__ */ React$1.createElement("div", { className: "pde-strip", role: "img", "aria-label": PDE_ROOMS + " rooms, " + (started ? "in the first" : "none reached") }, /* @__PURE__ */ React$1.createElement("div", { className: "pde-strip-row", "aria-hidden": "true" }, pdeStops(started).map((st, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: st.i }, i > 0 && /* @__PURE__ */ React$1.createElement("i", { className: "pde-link" }), /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.far ? " pde-far-num" : "") }, st.num)))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, PDE_ROOMS, " rooms"));
-  const PDE_HEROES = [["Fighter", "F"], ["Rogue", "R"], ["Wizard", "W"]];
-  const PdeHeroes = ({ started, hard }) => /* @__PURE__ */ React$1.createElement("div", { className: "pde-heroes", role: "img", "aria-label": started ? (hard ? "Rogue" : "Fighter") + " chosen" : "Fighter, Rogue or Wizard to choose" }, PDE_HEROES.map(([n, l]) => /* @__PURE__ */ React$1.createElement("span", { key: n, className: "pde-hero" + (started && n === (hard ? "Rogue" : "Fighter") ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("svg", { className: "pde-hex", viewBox: "-5 -5 46 50", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, l)), /* @__PURE__ */ React$1.createElement("span", null, n))));
-  const PDE_NOW = { b: PdeStops, c: PdeRitual, d: PdeStrip, e: PdeHeroes };
-  const PdeNow = ({ title, started, hard, concept, sid, fix }) => {
-    const gs = useGs();
-    const Body = PDE_NOW[concept];
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pde-now pde-" + concept + (concept === "b" && fix !== "now" ? " pde-fix-" + fix : ""), title: PDE_TITLES[title], result: started ? { kind: "live", label: "In progress" } : void 0, play: started ? void 0 : () => gs.play("Delve"), open: () => gs.go("session", { id: sid }), next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement(Body, { started, hard }));
-  };
-  const PdeLibrary = () => {
-    const gs = useGs();
-    const { view, run, title, hard, fix } = pdeSet();
-    const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PdeNow, { title, started: run === "live", hard, fix, concept: view.replace("now-", ""), sid: pdeSid(title, hard) }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) })));
-  };
-  const pdeReopen = (gs) => {
-    const q = new URLSearchParams(window.location.search);
-    const title = q.get("title") || "real";
-    const hard = q.get("hard") === "on";
-    if ((q.get("view") || "session") === "session") gs.go("session", { id: pdeSid(title, hard) });
-    else gs.go("delve", { page: "record" });
-  };
-  const initPlaygroundDelveEmpty = () => {
-    pgRegister("delve-empty", { title: "Delve empty states", settings: [
-      { key: "view", kind: "concept", label: "Page / Now card concept", options: [
-        { value: "session", label: "Session page (C)", state: "session-delve-in-progress", go: pdeReopen },
-        { value: "now-b", label: "Now card B: run drawn empty", state: "library-delve-in-progress", go: pdeReopen },
-        { value: "now-c", label: "Now card C: threat at nothing", state: "library-delve-in-progress", go: pdeReopen },
-        { value: "now-d", label: "Now card D: rooms in a row", state: "library-delve-in-progress", go: pdeReopen },
-        { value: "now-e", label: "Now card E: choose a hero", state: "library-delve-in-progress", go: pdeReopen }
-      ] },
-      { key: "run", label: "Now card state", options: [{ value: "not-started", label: "Not started" }, { value: "live", label: "In progress, nothing played" }] },
-      { key: "fix", label: "Title fix (Now card B)", when: { key: "view", value: "now-b" }, options: [{ value: "now", label: "Now (canon as is)" }, { value: "fill", label: "Fill each line" }] },
-      { key: "title", label: "Title", options: [
-        { value: "real", label: "The Goblin Warren beneath Ashford Mill", go: pdeReopen },
-        { value: "longest", label: "Longest canon holds", go: pdeReopen },
-        { value: "huge", label: "Oversized, 70 characters", go: pdeReopen }
-      ] },
-      { key: "hard", label: "Hard", options: [{ value: "off", label: "Off", go: pdeReopen }, { value: "on", label: "On", go: pdeReopen }] }
-    ] });
-    if (!pgActive()) return;
-    ["real", "longest", "huge"].forEach((t) => [false, true].forEach((h) => {
-      GS_SESSIONS[pdeSid(t, h)] = pdeSession(t, h);
-    }));
-    GS_SESSION_BODY.delve = PdeBodyOf(GS_SESSION_BODY.delve);
-    GS_LIBRARY.delve = PdeLibrary;
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
@@ -11739,5 +11642,4 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
-  initPlaygroundDelveEmpty();
 })(React, ReactDOM);
