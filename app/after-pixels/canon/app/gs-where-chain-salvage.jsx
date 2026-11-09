@@ -11,7 +11,7 @@ import { GS_ART_LOCAL, I } from './gs-parts.jsx';
 import { GS_CHATS, gscU, gscAi } from './gs-chats.jsx';
 import { GS_PAGES, GS_STEP_CONNECT } from './gs-game.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
-import { SLV_DIVES, SLV_PLAYS, SLV_WRECKS, slvPlayAt, slvShareLinesOf, slvWreckOf } from './gs-salvage.jsx';
+import { SLV_DIVES, SLV_PLAYS, SLV_WRECKS, slvShareLinesOf } from './gs-salvage.jsx';
 
 export const DP_IDS = ['where', 'chain', 'salvage', 'common'];
 const DP_NO = 21; // today's edition of Where, Chain and Salvage: the three games are three weeks old in the seed
@@ -44,7 +44,7 @@ const dpWhere = (t, ok) => {
   if (!ok) lines.push(['Answer', t.a]);
   return { lines, guesses: rows.length, hints: t.hint ? 1 : 0, marks: rows.map((r) => r[2]).join(' ') };
 };
-const dpWhHead = (n, r, ok) => 'Where #' + n + ' · ' + (ok ? 'found in ' + r.guesses + ' of 6' : 'not found') + (r.hints ? ' · 1 hint' : '');
+const dpWhHead = (n, r, ok) => 'Where No. ' + n + ' · ' + (ok ? 'found in ' + r.guesses + ' of 6' : 'not found') + (r.hints ? ' · 1 hint' : '');
 let WH_TODAY;
 let WH_OK;
 let WH_FAIL;
@@ -66,7 +66,7 @@ const dpChain = (t) => {
   return { lines, words: t.w.length, hidden, found, given, wrong: miss.reduce((a, b) => a + b, 0), marks };
 };
 const dpChResult = (r) => GS_RESULT.chain(r.given ? { given: true, found: r.found, of: r.hidden } : { wrong: r.wrong });
-const dpChHead = (n, r) => 'Chain #' + n + ' · ' + (r.given ? r.found + ' of ' + r.hidden + ' words found' : 'solved · ' + dpWrong(r.wrong));
+const dpChHead = (n, r) => 'Chain No. ' + n + ' · ' + (r.given ? r.found + ' of ' + r.hidden + ' words found' : 'solved · ' + dpWrong(r.wrong));
 // Chain's sample plays, read by its session body (gs-chain.jsx) too.
 export let CH_TODAY;
 export let CH_OK;
@@ -81,16 +81,24 @@ const svAt = (ships) => { const at = {}; ships.forEach((s, i) => s.forEach(([x, 
 const svLines = (log) => log.map(([c, r, n], k) => ['Dive ' + (k + 1), svCell(c), r === 'miss' ? 'Miss' : r === 'hit' ? 'Hit' : 'Sunk: the wreck of ' + n]);
 // Share marks, one per dive in order, ten to a line: miss ○, hit ✕, the dive that sinks a wreck ■. No square is named.
 const svMarks = (log) => { const m = log.map(([, r]) => (r === 'miss' ? '○' : r === 'hit' ? '✕' : '■')).join(''); const out = []; for (let k = 0; k < m.length; k += 10) out.push(m.slice(k, k + 10)); return out; };
-// The board as the AI redraws it after every dive of a play: not dived ·, miss ○, hit ✕, a raised wreck ■.
-const svBoard = (p) => {
-  const mark = {}; p.miss.forEach((sq) => { mark[sq] = '○'; }); p.hit.forEach((sq) => { mark[sq] = p.raised.has(slvWreckOf(sq)) ? '■' : '✕'; });
-  return ['  ' + SV_COLS.split('').join(' '), ...[1, 2, 3, 4, 5, 6, 7, 8].map((r) => r + ' ' + SV_COLS.split('').map((c) => mark[c + r] || '·').join(' '))].join('\n');
+// Salvage's drawn sea for a chat turn, as the deployed script has the AI draw it: a tile per square with column letters over it, row numbers before each row,
+// a shown count over each column and after each row, and a - where none is shown. A dived square is ○ a miss, ✕ a hit not yet raised (amber) or ■ part of a wreck raised (green).
+// The chats' sea is not a real edition: wrecks D1 to G1, B5 to D5, A8 to C8, F6 to F7 and A2 to A3, with the margins of four columns (B, D, E, F) and four rows (1, 3, 6, 7).
+const SV_CHAT_SEA = { cols: { B: 2, D: 2, E: 1, F: 3 }, rows: { 1: 4, 3: 1, 6: 1, 7: 1 } };
+// `swept` adds the counts a sonar sweep gives to the margin, as { cols: { A: 3 } }.
+const svGrid = (miss, hit, raised, swept = {}) => {
+  const cnt = { cols: { ...SV_CHAT_SEA.cols, ...swept.cols }, rows: { ...SV_CHAT_SEA.rows, ...swept.rows } };
+  const mark = {};
+  miss.forEach((sq) => { mark[sq] = ['○', '']; }); hit.forEach((sq) => { mark[sq] = ['✕', 'n']; }); raised.forEach((sq) => { mark[sq] = ['■', 'h']; });
+  const cols = 'ABCDEFGH'.split('');
+  const head = [{ l: ' ', m: '_' }, ...cols.map((c) => ({ l: String(cnt.cols[c] || '-'), m: 'x' })), { l: ' ', m: '_' }];
+  const letters = [{ l: ' ', m: '_' }, ...cols.map((c) => ({ l: c, m: 'x' })), { l: ' ', m: '_' }];
+  const body = [1, 2, 3, 4, 5, 6, 7, 8].map((r) => [{ l: String(r), m: 'x' }, ...cols.map((c) => ({ l: (mark[c + r] || [' '])[0], m: (mark[c + r] || [' ', ' '])[1] || ' ' })), { l: String(cnt.rows[r] || '-'), m: 'x' }]);
+  return { type: 'tilegrid', length: 10, rows: [head, letters, ...body].map((r) => ({ letters: r.map((x) => x.l).join(''), marks: r.map((x) => x.m).join('') })) };
 };
-// What the AI says to dive n of a play: its square, and the answer with the dives left.
-const svDive = (fx, n, board) => { const [, sq, res] = SLV_PLAYS[fx].lines.filter((l) => /^Dive /.test(l[0]))[n - 1];
-  return [gscU(sq + '.'), gscAi('salvage', (res.startsWith('raised') ? 'Sunk' + res.slice(6) : res[0].toUpperCase() + res.slice(1)) + '. ' + (SLV_DIVES - n) + ' dives left.', null, board && [dpMono(board)])]; };
+const SV_WRECK_SQUARES = ['D1', 'E1', 'F1', 'G1', 'B5', 'C5', 'D5', 'A8', 'B8', 'C8', 'F6', 'F7', 'A2', 'A3'];
 const svSunk = (log) => log.filter((l) => l[1] === 'sunk').length;
-const dpSvHead = (n, log, hint) => 'Salvage #' + n + ' · ' + (svSunk(log) === 5 ? 'all 5 wrecks' : svSunk(log) + ' of 5 wrecks') + ' · ' + log.length + ' of ' + SLV_DIVES + ' dives' + (hint ? ' · 1 hint' : '');
+const dpSvHead = (n, log, hint) => 'Salvage No. ' + n + ' · ' + (svSunk(log) === 5 ? 'all 5 wrecks' : svSunk(log) + ' of 5 wrecks') + ' · ' + log.length + ' of ' + SLV_DIVES + ' dives' + (hint ? ' · 1 hint' : '');
 // Today's sea, as the earlier seas' [x, y] squares: the sea of SLV_PLAYS (gs-salvage.jsx), the only one.
 const svSea = () => SLV_WRECKS.map((w) => w.map((sq) => [SV_COLS.indexOf(sq[0]), +sq.slice(1) - 1]));
 // Earlier seas: a seeded layout and a seeded player (checkerboard search, then along each hit), so every record agrees with its rules.
@@ -253,7 +261,7 @@ export const dpSession = (id, c, x, base) => {
     return { ...base, ...own, share: x.line };
   }
   const d = dpSvDay(i, x.ok);
-  return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of ' + SLV_DIVES + ' dives'], share: x.line, shareLines: [dpSvHead(n, d.log), ...svMarks(d.log)], lines: svLines(d.log) };
+  return { ...base, number: n, figures: [svSunk(d.log) + ' of 5 wrecks', d.log.length + ' of ' + SLV_DIVES + ' dives'], share: x.line, shareLines: [dpSvHead(n, d.log), '', ...svMarks(d.log)], lines: svLines(d.log) };
 };
 // Connections found in a play, read from its session's figures.
 const cmFoundIn = (p) => { const m = /^(\d) of 3 connections found$/.exec(((GS_SESSIONS[p.sid] || {}).figures || [])[1] || ''); return m ? +m[1] : 0; };
@@ -267,7 +275,11 @@ let dpSeeResult;
 
 // ---- In your chat: text only, as the player's own AI tells it. Each follows today's play above. ----
 const dpMono = (text) => ({ type: 'mono', text });
-const dpChEnds = (t) => [t.w[0], ...t.w.slice(1, -1).map((w) => w[0] + ' …'), t.w[t.w.length - 1]].join('\n');
+// Chain's drawn board for a chat turn: one numbered row per word. `words` holds each word as the game shows it: a whole word (an end, a found word) or the one or two
+// letters shown so far (this chain's words run four letters or more, so under three letters means hidden); `open` lists the rows the game marks open. Whole words are bold, hidden letters end in an ellipsis.
+const chBoard = (words, open) => ({ type: 'facts', items: words.map((w, i) => ({ label: String(i + 1), value: (w.length < 3 ? w + '…' : '**' + w + '**') + (open.includes(i) ? '  ← open' : '') })) });
+// Common's drawn thread for a chat turn: the items showing, numbered as the game gives them.
+const cmBoard = (items) => [{ type: 'facts', items: items.map((w, i) => ({ label: String(i + 1), value: '**' + w + '**' })) }];
 
 
 // ---- Staged states (app/states.jsx spreads them into its register). ----
@@ -285,14 +297,14 @@ export let DP_STATES;
 export function initGsWhereChainSalvage() {
 Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage', common: 'Common' });
 Object.assign(GS_GAMES, {
-  where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], edLine: 'You get six guesses to find the country.', daily: true, once: true,
-    blurb: 'Today’s country is somewhere on the map. Find it in six guesses.', tags: ['Daily'], size: 'tiny' }),
-  chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], edLine: 'You get both ends. Find the words between.', daily: true, once: true,
-    blurb: 'Every word in the line joins the next. Find the ones in between.', tags: ['Daily'], size: 'tiny' }),
-  salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], edLine: 'You get twenty dives to find five wrecks.', daily: true, once: true,
-    blurb: 'Five wrecks lie under today’s sea. Find them in twenty dives.', tags: ['Daily'], size: 'tiny' }),
-  common: gsAccess({ access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], edLine: 'You get three threads of four items. Name each connection early.', daily: true, once: true,
-    blurb: 'Name the hidden connection between four items, as early as you dare.', tags: ['Daily'], size: 'tiny' }),
+  where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], daily: true, once: true,
+    blurb: 'Which country is hidden? Each guess shows how far off you are.', tags: ['Daily'], size: 'tiny' }),
+  chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], daily: true, once: true,
+    blurb: 'Work out the missing words in a chain where each joins the next.', tags: ['Daily'], size: 'tiny' }),
+  salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], daily: true, once: true,
+    blurb: 'Five wrecks lie somewhere on the sea bed. Find them in twenty dives.', tags: ['Daily'], size: 'tiny' }),
+  common: gsAccess({ access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], daily: true, once: true,
+    blurb: 'An egg, a tortoise and a peanut share something. Guess it early for more points.', tags: ['Daily'], size: 'tiny' }),
 });
 GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);
 // ---- Art. The static cover is the moving piece's rest pose on its 160 by 120 stage (the same numbers as the CSS in index.html).
@@ -469,82 +481,109 @@ DP_PZ = {
 dpSeeResult = <><b>See your result</b> on your session page.</>;
 Object.assign(GS_PAGES, {
   where: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new country every day', button: 'Play today’s country',
       steps: [GS_STEP_CONNECT, dpStep('Find today’s country.', ' You get six guesses.'), dpSeeResult], small: GS_NAME.where + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'Today’s country is out there. Find it in six guesses.', ps: [
-      'Name any country. The game tells you how far it lies from today’s, border to border. Zero means the two touch.',
-      'You get one hint: the compass direction from your last guess. Your AI isn’t told the answer until you finish. Name your first country.'] },
-    who: { ai: 'Passes on your guesses and tells you about the country once you’ve found it.', server: 'Holds the country, measures every distance and counts your guesses.' },
+    pitch: { h: 'Which country is hidden? Each guess shows how far off you are.', ps: [
+      'A different country is hidden every day, and you have six guesses to find it. Name any country in the world, and you’re told how far it lies from the hidden one.',
+      'A guess on the far side of the world still helps, because it tells you where the country isn’t. Each distance rules out more of the world, so every guess closes in on where it’s hiding. When you’re torn between places, your one hint gives the compass direction from your latest guess.'] },
+    who: { ai: 'Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.', server: 'Keeps the country secret, measures every distance and works out which way the hint points.' },
     week: { title: 'Today’s country', line: 'You get six guesses and one hint.', session: 'where-today' },
   },
   chain: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new chain every day', button: 'Play today’s chain',
       steps: [GS_STEP_CONNECT, dpStep('Fill in today’s chain', ', working in from either end.'), dpSeeResult], small: GS_NAME.chain + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'Fire joins house, and house joins plant. Find the words in between.', ps: [
-      'You see both ends of the line and the first letter of every word between. Guess inward from either end, one word at a time.',
-      'A wrong guess shows you the next letter of that word. Run out of letters and the word is given away. Make your first guess.'] },
-    who: { ai: 'Passes on your guesses and explains every link once the chain is done.', server: 'Holds the chain, checks every guess and shows a letter for each miss.' },
+    pitch: { h: 'Work out the missing words in a chain where each joins the next.', ps: [
+      'A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.',
+      'Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word.'] },
+    who: { ai: 'Draws the whole line after every guess, with the words you can try next marked, and goes through every link once the chain is solved.', server: 'Keeps the chain secret, shows only the letters you’ve earned, and gives a word away once its letters run out.' },
     week: { title: 'Today’s chain', line: 'You get both ends and every first letter.', session: 'chain-today' },
   },
   salvage: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'A new sea every day', button: 'Play today’s sea',
       steps: [GS_STEP_CONNECT, dpStep('Find today’s five wrecks.', ' You get twenty dives.'), dpSeeResult], small: GS_NAME.salvage + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'Five wrecks lie somewhere under you. Find them in twenty dives.', ps: [
-      'Call a square from A1 to H8 and dive. Each dive comes back as a hit, a miss or sunk.',
-      'Your AI reads the sea back to you after every dive, row by row. The game engine holds the wrecks. Call your first square.'] },
-    who: { ai: 'Reads the sea back to you after every dive, row by row.', server: 'Holds the wrecks, answers every dive and counts the dives you have left.' },
+    pitch: { h: 'Five wrecks lie somewhere on the sea bed. Find them in twenty dives.', ps: [
+      'Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.',
+      'You also get three tools: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools.'] },
+    who: { ai: 'Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.', server: 'Keeps the wrecks secret, answers every dive and tool, and counts what you have left.' },
     week: { title: 'Today’s sea', line: 'You get twenty dives to find five wrecks.', session: 'salvage-today' },
   },
   common: {
-    rhythm: 'NEW EVERY DAY',
     box: { label: 'ONLY WITH THE PASS', heading: 'Three new threads every day', button: 'Play today’s threads',
       steps: [GS_STEP_CONNECT, dpStep('Ask for another item', ', guess, or pass.'), dpSeeResult], small: GS_NAME.common + ' comes only with the After Pixels Pass.' },
     facts: { often: 'New every day' }, tags: [],
-    pitch: { h: 'An egg, a tortoise and a peanut have something in common. Name it early.', ps: [
-      'Each day brings three threads, the same for every player. A thread is four items that share one hidden connection, and the game shows one at a time.',
-      'The earlier you name the connection, the more it scores: 5 points from one item, then 3, 2 and 1. You have five guesses for the whole day, right or wrong, and a pass spends none. Early items can point at a wrong connection, so the skill is knowing when to commit. When a thread closes, the game shows the connection, so a thread that scored nothing still ends with the answer.'] },
-    who: { ai: 'Reads out each item, helps only when asked and gives the connection and how each item fits. It has seen only what you have seen.', server: 'Holds the items not yet shown and each connection, and marks every guess.' },
-    week: { title: 'Today’s threads', line: 'Three threads, the same for everyone.', session: 'common-today' },
+    pitch: { h: 'An egg, a tortoise and a peanut share something. Guess it early for more points.', ps: [
+      'Each day brings three threads, and a thread is four items that share one hidden connection. The game shows them one at a time, starting with a single item that could point several ways.',
+      'The earlier you name the connection, the more it scores, so the skill is knowing when to commit. However a thread ends, the game shows its connection and how every item fits, so even a thread that scores nothing ends with the answer.'] },
+    who: { ai: 'Shows each item as it arrives, with your guesses left and what a right guess scores, and explains how every item fits once a thread closes.', server: 'Keeps every unseen item and each connection secret, and marks every guess.' },
+    week: { title: 'Today’s threads', line: 'You get three threads of four items.', session: 'common-today' },
   },
 });
 Object.assign(GS_CHATS, {
+  // Where: the product page's three chats, written for the page from a real play (2026-11-08) and the game spec (where.md §4, §5). The case is not
+  // a real edition: Austria, No. 112 (the scheduled editions run to 45 and never name Austria), with distances from the shipped atlas to the nearest 10 km.
   where: [
-    { cap: 'Name a country. Everyone hunts the same one today.', turns: [gscU('Play Where on After Pixels.'),
-      gscAi('where', ['Where #' + DP_NO + '. Today’s country is hidden, and you have six guesses.', 'Each miss tells you how far it is from today’s country, border to border. Name your first country.'])] },
-    { cap: 'Every miss comes back as a distance, measured border to border.', turns: [gscU('Spain.'), gscAi('where', 'Spain is ' + dpKm(1110) + ' from today’s country. 5 guesses left.'),
-      gscU('Poland.'), gscAi('where', 'Poland is ' + dpKm(80) + ' away. 4 guesses left.')] },
-    { cap: 'You get one hint: the compass direction from your last guess.', turns: [gscU('Give me the hint.'), gscAi('where', 'From Poland, today’s country lies south. That was your one hint.'),
-      gscU('Hungary.'), gscAi('where', ['Found in 3 of 6, with the hint.', 'Hungary sits in the Carpathian Basin, and the Danube runs through Budapest.'])] },
+    { cap: 'You get six guesses and one hint.', turns: [gscU('Play Where on After Pixels'),
+      gscAi('where', ['Where No. 112 is ready: find today’s country in six guesses. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?'])] },
+    { cap: 'Each guess comes back as a distance from the country.', turns: [gscU('Brazil'),
+      gscAi('where', 'Brazil is 7,290 km away.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }] }]),
+      gscU('Give me the hint'),
+      gscAi('where', 'From Brazil, today’s country lies northeast.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }, { label: 'Hint', value: 'Northeast of Brazil' }] }]),
+      gscU('France'),
+      gscAi('where', 'France is 140 km away.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }, { label: 'France', value: '140 km' }] }])] },
+    { cap: 'A guess at 0 km means the answer is one of its neighbours.', turns: [gscU('Germany'),
+      gscAi('where', 'Germany shares a border with today’s country.', [{ type: 'facts', items: [{ label: 'Brazil', value: '7,290 km' }, { label: 'France', value: '140 km' }, { label: 'Germany', value: '0 km, shares a border' }] }]),
+      gscU('Austria'),
+      gscAi('where', ['Today’s country is Austria.', 'It sits in the Alps, and Vienna is its capital.'], [{ type: 'result', title: 'Where No. 112', status: 'Found', stats: [{ label: 'Guesses', value: '4 of 6' }, { label: 'Hints used', value: 1 }] }]),
+      gscU('Share my result'),
+      gscAi('where', null, null, [{ type: 'mono', text: 'Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where' }])] },
   ],
+  // Chain: the product page's four chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (chain.md §2 to §5).
+  // The chain is not a real edition: CROSS, WORD, PLAY, BACK, TRACK, "No. 112" (scheduled editions run to 45; none holds this line), every link in the shipped link list.
+  // The board is the design system's FactRows, as the deployed script has the AI draw it each turn: every word numbered, hidden words as the letters shown, open words marked.
   chain: [
-    { cap: 'You get both ends of the line and every first letter.', turns: [gscU('Play Chain on After Pixels.'),
-      gscAi('chain', ['Chain #' + DP_NO + '. Six words, each joined to the next. Guess inward from either end.'], null, [dpMono(dpChEnds(CH_TODAY))])] },
-    { cap: 'A wrong guess shows you the next letter.', turns: [gscU('Ball.'), gscAi('chain', 'Ball is right: snowball.'),
-      gscU('Race.'), gscAi('chain', 'Not race. The next word starts RO.')] },
-    { cap: 'Afterwards, your AI explains every link.', turns: [gscU('Service.'),
-      gscAi('chain', ['Service is right. The chain is done, with 2 wrong guesses.', 'Snowball, ballroom, room service, service station, station wagon.'])] },
+    { cap: 'You get both ends and each word’s first letter. Only a word marked open can be guessed.', turns: [gscU('Play Chain on After Pixels'),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'W', 'P', 'B', 'TRACK'], [1, 3])])] },
+    { cap: 'A wrong guess shows the next letter of that word.', turns: [gscU('Wire'),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'WO', 'P', 'B', 'TRACK'], [1, 3])]),
+      gscU('Word'),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'WORD', 'P', 'B', 'TRACK'], [2, 3])])] },
+    { cap: 'Once it is solved, you get every link and a result that names no word.', turns: [gscU('Back'),
+      gscAi('chain', null, null, [chBoard(['CROSS', 'WORD', 'P', 'BACK', 'TRACK'], [2])]),
+      gscU('Play'),
+      gscAi('chain', 'The links are crossword, wordplay, playback and backtrack.', null, [chBoard(['CROSS', 'WORD', 'PLAY', 'BACK', 'TRACK'], [])]),
+      gscU('Share my result'),
+      gscAi('chain', null, null, [{ type: 'mono', text: 'Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain' }])] },
   ],
+  // Salvage: the product page's three chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (salvage.md §1 to §5). The sea is not a real
+  // edition (see SV_CHAT_SEA): the real play mirrored left to right, as No. 112. The sea is drawn as the deployed script has the AI draw it each turn (svGrid).
   salvage: [
-    { cap: 'Five wrecks lie somewhere under an eight-by-eight sea.', turns: [gscU('Play Salvage on After Pixels.'),
-      gscAi('salvage', ['Salvage #' + DP_NO + '. Five wrecks lie below: one of 4 squares, two of 3 and two of 2. None of them touch.', 'You have ' + SLV_DIVES + ' dives. Call your first square.'], null, [dpMono(svBoard(slvPlayAt('won', 0)))])] },
-    { cap: 'Each dive comes back as a hit, a miss or sunk.', turns: [...svDive('won', 1), ...svDive('won', 2)] },
-    { cap: 'The board is redrawn after every dive, so your AI can read it aloud.', turns: svDive('won', 4, svBoard(slvPlayAt('won', 4))) },
+    { cap: 'Five wrecks lie hidden, and the margins count some rows and columns.', turns: [gscU('Play Salvage on After Pixels'),
+      gscAi('salvage', 'The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.', [svGrid([], [], [])])] },
+    { cap: 'A dragnet snags the first wreck square on a line.', turns: [gscU('Row 1 counts 4, so dragnet along it from the left'),
+      gscAi('salvage', 'The dragnet snagged at D1, a hit.', [svGrid([], ['D1'], [])])] },
+    { cap: 'The last wreck raised wins the day.', turns: [gscU('D5 to finish it'),
+      gscAi('salvage', 'D5 raised the wreck of 3, covering B5 to D5.', [svGrid(['A4'], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: 'result', title: 'Salvage No. 112', status: 'All 5 wrecks', stats: [{ label: 'Dives used', value: '14 of 20' }, { label: 'Tools used', value: 3 }] }]),
+      gscU('Share my result'),
+      gscAi('salvage', null, null, [{ type: 'mono', text: 'Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage' }])] },
   ],
+  // Common: the product page's three chats, written for the page from a real play (2026-11-08, No. 35) and the game spec (common.md §2, §4, §5).
+  // The day is not a real edition: No. 112 (the scheduled editions run to 63), with threads the link pool holds no copy of. The board is the design
+  // system's FactRows (the items showing, as the game gives them) and StatRow, as the deployed script has the AI read each thread.
   common: [
-    { cap: 'The game shows one item at a time.', turns: [gscU('Play Common on After Pixels.'),
-      gscAi('common', 'Common No. ' + CM_NO + '. Thread 1 of 3. Name the connection now for 5 points, ask for another item, or pass.', null, [dpMono('EGG')])] },
-    { cap: 'The earlier you name the connection, the more it scores.', turns: [gscU('Another item.'),
-      gscAi('common', 'A right guess now scores 3.', null, [dpMono('EGG\nTORTOISE')]),
-      gscU('Things that are slow.'),
-      gscAi('common', 'Not it, so another item shows. A right guess now scores 2, and you have four guesses left today.', null, [dpMono('EGG\nTORTOISE\nPEANUT')])] },
-    { cap: 'When a thread closes, your AI gives the connection and how each item fits.', turns: [gscU('They all have a shell.'),
-      gscAi('common', ['Shell is right, for 2 points.', 'An egg, a tortoise, a peanut and a hermit crab all have one. On to Thread 2.'])] },
+    { cap: 'Each thread opens with a single item.', turns: [gscU('Play Common on After Pixels'),
+      gscAi('common', null, null, cmBoard(['A RIVER']))] },
+    { cap: 'Every extra item you see lowers what a right guess scores.', turns: [gscU('Another item'),
+      gscAi('common', null, null, cmBoard(['A RIVER', 'A BOTTLE'])),
+      gscU('Things that hold water'),
+      gscAi('common', '“Things that hold water” wasn’t it.', null, cmBoard(['A RIVER', 'A BOTTLE', 'A CAVE']))] },
+    { cap: 'When a thread closes, your AI gives the connection and how each item fits.', turns: [gscU('Things with a hinge'),
+      gscAi('common', 'Correct! Thread 3 was Things with a hinge, worth 3 points. A laptop and a door swing on one, a clam’s two shells open on one, and so do the arms of a pair of glasses.',
+        null, [{ type: 'result', title: 'Common No. 112', status: 'Completed', stats: [{ label: 'Score', value: '10 of 15' }, { label: 'Connections found', value: '3 of 3' }] }]),
+      gscU('Share my result'),
+      gscAi('common', null, null, [{ type: 'mono', text: 'Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nhttps://afterpixels.com/discover/common' }])] },
   ],
 });
 DP_SESSION_STATES = ['where', 'chain', 'salvage'].flatMap((k) => { const n = GS_NAME[k]; const [g, sp] = dpSessAt(k);

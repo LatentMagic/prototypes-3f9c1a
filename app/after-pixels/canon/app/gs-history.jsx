@@ -33,8 +33,8 @@ const phTime = (d) => String(d.getHours()).padStart(2, '0') + ':' + String(d.get
 const phShort = (d) => lbShort(lbDate(d));
 
 // An edition's name, as a History row and the session page write it: the edition's name where it has one ("The Clockmaker’s Study"),
-// the number where it has none ("#212"). A named edition shows no number. edLabel puts the game's name first:
-// "Guess #212", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
+// the number where it has none ("#34"). A named edition shows no number. edLabel puts the game's name first:
+// "Guess #34", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
 export const edName = (e) => (e.title ? e.title : '#' + e.n);
 export const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #' + e.n);
 let ED_NONE;
@@ -300,7 +300,7 @@ export const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
 // listed on its own page). Search and one Filters panel that only narrows: Genre, Schedule, Game, Order.
 // When nothing matches, Clear all clears search and narrowing. Narrowed to a game when the library game page's "See in History" opens it.
 // Every row opens its session page. No Pass mark on any row or filter.
-// A row's title comes from its edition: edLabel ("Guess #212"), or edName in a one-game list ("#212").
+// A row's title comes from its edition: edLabel ("Guess #34"), or edName in a one-game list ("#34").
 const phTitle = (p, one) => { const m = phMeta()[p.ed]; if (m) return one ? edName(m) : edLabel(m);
   return one || (p.edTitle.includes(GS_GAMES[p.gid].name) && p.gid !== 'barrow') ? p.edTitle : GS_GAMES[p.gid].name + ' · ' + p.edTitle; };
 // A row's parts: the edition's own name, and the game's name for a list that mixes games (ListRow joins them).
