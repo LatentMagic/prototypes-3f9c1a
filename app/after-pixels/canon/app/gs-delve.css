@@ -157,16 +157,10 @@
 .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px 12px; }
 .dv7-cell { display: grid; grid-template-rows: 36px auto; justify-items: center; align-items: center; align-content: start; gap: 6px; min-width: 32px; }
 .dv7-fig { position: relative; display: grid; place-items: center; }
-/* KEEP: armour carries its +1 on the box's corner, so what it does is seen without a tap. */
-.dv7-arm { position: absolute; top: -6px; right: -12px; min-width: 18px; padding: 2px 3px; background: var(--off-white); color: var(--page); font: 700 11px/1 var(--font-text); font-style: normal; text-align: center; font-variant-numeric: tabular-nums; }
-.dv7-cell.is-used .dv7-arm { background: var(--muted); }
 /* KEEP: a name wraps to at most two balanced lines inside its cell, so a long one never runs into the next box. */
 .dv7-lb { max-width: 88px; align-self: start; text-align: center; text-wrap: balance; font: 600 12px/1.2 var(--font-text); color: var(--text); font-variant-numeric: tabular-nums; }
 .dv7-cell.is-used .dv7-lb { color: var(--muted); }
 .dv7 .dv7-cell .dv4-sx text { font-size: 20px; }
-.dv7 .dv7-cell .dv4-g { width: 32px; height: 32px; }
-.dv7 .dv7-cell .dv4-uses { gap: 4px; }
-.dv7 .dv7-cell .dv4-uses i { width: 14px; height: 14px; }
 .dv7-h { display: flex; align-items: baseline; gap: 8px; font: 600 13px/1.2 var(--font-text); color: var(--muted); }
 .dv7-h b { font: 600 13px/1.2 var(--font-text); color: var(--text); font-variant-numeric: tabular-nums; }
 .dv7 .mcp-prog-top { display: none; }
@@ -224,7 +218,6 @@
   .dv8.is-3b .dv8-stats .dv7-cell .dv7-fig > svg { width: 32px; }
   .dv8.is-3b .dv8-stats .dv7-cells { gap: 6px; }
 }
-.dv8.is-3b .dv7-cell .dv4-g { width: 28px; height: 28px; }
 .dv8.is-3b .dv7-cell .dv4-sx text { font-size: 18px; }
 /* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length; labels never wrap. */
 .dv8-meters { display: grid !important; grid-template-columns: max-content minmax(32px, 1fr) max-content; gap: 12px 6px; align-content: center; align-items: center; justify-items: stretch !important; }
@@ -235,19 +228,14 @@
 .dv8-sub { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 /* The streak is a count, not slots: a figure in the cell's 36px row. */
 .dv8-num { font: 700 22px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
-/* KEEP: a pack name wraps to two lines at most (a label is 88px wide at most), and a pack cell is as wide as its figure or its name, never wider, so the visible content ends where the group's does. */
-/* KEEP: Advantage's two cells take their own widths, not equal columns, since "Inspiration" would double the streak's cell. Pack and Fight do the same, so the group's visible content,
-   not a stretched grid, is what sits centred between its dividers (a long name beside a short one would otherwise leave more space at one end). */
-.dv8.is-3b .dv8-adv .dv7-cells, .dv8.is-3b .dv8-fight .dv7-cells, .dv8.is-3b .dv8-pack .dv7-cells { grid-auto-columns: auto; }
+/* KEEP: Advantage's two cells take their own widths, not equal columns, since "Inspiration" would double the streak's cell, so the group's visible content, not a stretched grid, sits centred between its dividers. */
+.dv8.is-3b .dv8-adv .dv7-cells { grid-auto-columns: auto; }
 
-/* ---- the desktop sheet (a card 560px wide or more; narrower is the phone sheet below) ---- */
-/* KEEP: the sheet is two rows at every desktop width, because with the Fight group in, one line needs about 1140px of card and the page stops at 1118px without crushing labels.
-   Row 1 is hero, meters, Stats, Advantage and the chevron, centred in the row at its right end. Row 2, under a hairline, is Pack, Ability and Fight; the chevron folds it (canon's EsxFold),
-   and it starts open, so row 1 never moves. */
+/* ---- the desktop sheet (a card 824px wide or more; narrower is the phone sheet below) ---- */
+/* KEEP: the sheet is one row at every width it holds: hero, meters, then Stats and Advantage beside Pack, Ability and Fight as tabs (from 958px), or the five as tabs (from 824px), so the row never wraps; the open tab's panel opens under it. */
 .dv8.is-3b .dv7-band { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; min-width: 0; }
 .dv8.is-3b .dv8-r1 { display: flex; align-items: stretch; min-width: 0; }
 .dv8.is-3b .esx-fold > div { display: block; }
-.dv8.is-3b .dv8-r2i { display: flex; align-items: stretch; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
 /* KEEP: every group centres its content between its two dividers and grows by the same amount, so the space either side of the content is equal at every width. */
 .dv8.is-3b .dv7-grp { flex: 1 0 auto; min-width: min-content; padding: 0 6px; gap: 12px; }
 /* KEEP: the name and class share one left edge at the card's edge, with 16px either side of the divider after them: the meters take 16px each side and never grow, so the bars
@@ -256,20 +244,8 @@
 .dv8.is-3b .dv7-hero { justify-items: start; text-align: left; }
 .dv8.is-3b .dv7-hero b { white-space: nowrap; text-align: left; }
 .dv8.is-3b .dv8-meters { flex: 0 100 auto; padding: 0 16px; grid-template-columns: max-content minmax(80px, 160px) max-content; justify-content: center; }
-.dv8.is-3b .dv8-pack { flex: 1 1 auto; }
-.dv8-tog { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; align-self: center; background: none; border: 0; color: var(--text); cursor: pointer; }
-.dv8-tog svg { transform: rotate(-90deg); transition: transform var(--dur-fast, .15s); }
-.dv8.is-3b.is-shut .dv8-tog svg { transform: rotate(90deg); }
-.dv8-tog:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
-@media (hover: hover) { .dv8-tog:hover { background: var(--popup); } }
-.dv8.is-3b .dv8-adv.is-a2 { display: none; }
-/* KEEP: where row 1 cannot hold Advantage beside the Stats (a card narrower than 660px; row 1 needs 643px), Advantage moves to the end of row 2. */
-@container dv4 (max-width: 659.98px) {
-  .dv8.is-3b .dv8-adv.is-a1 { display: none; }
-  .dv8.is-3b .dv8-adv.is-a2 { display: grid; }
-}
 
-/* ---- the phone sheet (a card under 560px): the hero row folds, the meters stay, Stats and Advantage, then tap cards ---- */
+/* ---- the phone sheet (a card under 824px): the hero row folds, the meters stay, Stats and Advantage, then the three tabs ---- */
 .dv4.dvp { gap: 0; }
 .dvp .dv7-grp { flex: none; padding: 12px 0; border-left: 0; justify-items: center; gap: 8px; }
 .dvp .dv7-grp .dv7-h { justify-content: center; }
