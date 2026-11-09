@@ -3498,3 +3498,18 @@ body { font: 400 16px/1.5 var(--font-text); }
 .cv-vkey { display: grid; justify-items: start; padding-left: 4px; }
 .cv-vheld { padding-top: 6px; }
 @container dv2 (max-width: 260px) { .cv-vrow .dv2-num.cv-vnum { min-width: 22px; } .cv-vrow { column-gap: 8px; } }
+
+/* Closed rooms (tab 6) */
+.cv-crow .cv-vbody { min-width: 0; }
+.cv-chead { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; cursor: pointer; }
+.cv-chead:disabled { cursor: default; }
+.cv-chead:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.cv-chead .cv-vname { flex: 1; min-width: 0; margin: 0; }
+.cv-tally { display: flex; gap: 3px; flex: none; }
+.cv-tally i { width: 6px; height: 6px; border-radius: 1px; background: var(--dv-mute, #8a8577); opacity: .7; }
+.cv-chev { flex: none; width: 16px; text-align: center; opacity: .7; }
+.cv-crow.is-on .cv-chead .cv-vname { font-weight: 700; }
+.cv-cdice { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 4px 0 10px; }
+.cv-tally i.is-strong { background: #6cc28a; opacity: 1; }
+.cv-tally i.is-weak { background: #f2cc5c; opacity: 1; }
+.cv-tally i.is-miss { background: transparent; box-shadow: inset 0 0 0 1px #8a8577; }

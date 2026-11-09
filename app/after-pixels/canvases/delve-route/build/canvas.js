@@ -1946,6 +1946,16 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "cv-vrow" + (sel === st.i ? " is-on" : "") + (first ? " is-first" : "") + (last ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num cv-vnum" + (st.back ? " is-back" : ""), "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("div", { className: "cv-vbody" }, /* @__PURE__ */ React$1.createElement("p", { className: "cv-vname dv2-sname" }, st.name, !st.turns.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass cv-vpass", "aria-label": "No rolls" })), rest.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "cv-vdice", ref: dref, style: { "--cv-dcols": dcols } }, rest.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: 30 }))), keys.map((r) => /* @__PURE__ */ React$1.createElement("div", { key: r.t, className: "cv-vkey" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 }))), inline && sel === st.i && /* @__PURE__ */ React$1.createElement("div", { className: "cv-vheld" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act }))));
   };
   const VList = ({ m, act, on, inline }) => /* @__PURE__ */ React$1.createElement("div", { className: "cv-vlist", "aria-label": "The way you went" }, m.stops.map((st, i) => /* @__PURE__ */ React$1.createElement(VRow, { key: st.i, m, st, act, on, inline, first: i === 0, last: i === m.stops.length - 1 })));
+  const CRow = ({ m, st, act, on, open, setOpen, first, last }) => {
+    const isOpen = open === st.i;
+    const sel = act ? m.turns[act - 1].stop : null;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cv-vrow cv-crow" + (isOpen ? " is-on" : "") + (first ? " is-first" : "") + (last ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num cv-vnum" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("div", { className: "cv-vbody" }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "cv-chead", "aria-expanded": isOpen, disabled: !st.turns.length, onClick: () => setOpen(isOpen ? null : st.i) }, /* @__PURE__ */ React$1.createElement("span", { className: "cv-vname dv2-sname" }, st.name), st.turns.length ? /* @__PURE__ */ React$1.createElement("span", { className: "cv-tally", "aria-label": st.turns.length + " rolls" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "is-" + (r.tier || "use") }))) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), st.turns.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "cv-chev", "aria-hidden": "true" }, isOpen ? "▾" : "▸")), isOpen && /* @__PURE__ */ React$1.createElement("div", { className: "cv-cdice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: !r.use && m.mom[r.n] ? 44 : 30 }))), isOpen && sel === st.i && /* @__PURE__ */ React$1.createElement("div", { className: "cv-vheld" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act }))));
+  };
+  const CList = ({ m, initial }) => {
+    const [act, on] = useActive(m, initial);
+    const [open, setOpen] = React$1.useState(m.turns[initial - 1].stop);
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement("div", { className: "cv-vlist", "aria-label": "The way you went" }, m.stops.map((st, i) => /* @__PURE__ */ React$1.createElement(CRow, { key: st.i, m, st, act, on, open, setOpen, first: i === 0, last: i === m.stops.length - 1 }))));
+  };
   const Card = ({ m, kind, initial }) => {
     const [act, on] = useActive(m, initial);
     let route;
@@ -2051,6 +2061,14 @@
       title: "A at 12 stops, 280 px",
       cap: "Headroom: 12 rooms in the vertical list on the narrowest phone; the page grows downward and nothing breaks.",
       frames: () => [/* @__PURE__ */ React$1.createElement(Frame, { key: "12", w: 280, card: 248, note: "12 rooms" }, /* @__PURE__ */ React$1.createElement(Card, { m: M12, kind: "list", initial: M12.turns.length }))]
+    },
+    {
+      id: "closed",
+      tab: "6 · Closed rooms",
+      n: "6",
+      title: "Closed rooms: tap a room on the path to open it",
+      cap: "Quick and dirty, from the low-fi pick. Every room is one line with a tally of its dice; tap a line to open that room (one at a time), tap a die and its roll opens under it. Starts with the last room open.",
+      frames: () => [/* @__PURE__ */ React$1.createElement(Frame, { key: "390", w: 390, card: 358, note: "a 390 phone" }, /* @__PURE__ */ React$1.createElement(CList, { m: M10, initial: press10 })), /* @__PURE__ */ React$1.createElement(Frame, { key: "280", w: 280, card: 248, note: "a 280 phone" }, /* @__PURE__ */ React$1.createElement(CList, { m: M10, initial: press10 }))]
     }
   ];
   const App = () => {
