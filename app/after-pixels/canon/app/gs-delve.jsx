@@ -6,8 +6,8 @@
 // The hero sheets (stats, abilities, starting gear) and the carry limit are SAMPLE, invented to delve.md's words.
 // ============================================================================
 
-// SAMPLE: the stats a check adds are read from the records (Bryn Str +3, Dex +1, Wis 0; Wren Dex +3, Int +1, Wis +1, Str 0);
-// Con and Cha, the abilities and the starting gear are invented (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three. The foes below, their health and
+// SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
+// and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three. The foes below, their health and
 // the 13 their d20 must reach are invented too: the record names no foe and writes no foe health, only the struck-back part of a roll's line.
 const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
 import React from 'react';
@@ -21,14 +21,16 @@ import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 const DL_CARRY = 3;
 const DL_HEROES = {
   // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
-  // the starting gear a healing draught and a crowbar (a key). Wren's fight numbers are not in the sample yet, so her sheet has no Fight group.
-  'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 },
+  // the starting gear a healing draught and a crowbar (a key), 23 health, stats as the archetype sets them.
+  'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     abilities: [{ name: 'Shield bash', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 10, armour: 2, armourName: 'ox shield', heavy: { name: 'Cleave', needs: 14, dmg: 7 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: '' }, { name: 'Crowbar', kind: 'key', does: '' }] },
-  'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 0, Intelligence: 1, Wisdom: 1, Charisma: 2 },
-    abilities: [{ name: 'Backstab', of: 2, does: 'Strikes from behind at once, no roll' }],
-    gear: [{ name: 'Smoke pellet', kind: 'once', does: 'Burst underfoot, it hides you for a breath' }] },
+  // Wren, from the same source (rogue): defence 14, protection 1 (a leather jerkin), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
+  'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
+    abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: 'Strikes at once, no roll' }],
+    fight: { defence: 14, armour: 1, armourName: 'leather jerkin', heavy: { name: 'Flurry', needs: 13, dmg: 6 } },
+    gear: [{ name: 'Healing draught', kind: 'once', does: '' }, { name: 'Rope', kind: 'key', does: '' }] },
 };
 const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 
@@ -356,18 +358,18 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
   ['Strength', 'Miss', 'Rolled 3 + 3 = 6 against DC 12', 'Struck back: d20 17 vs 13, hit, 3 damage, HP 17/23'], ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 15/23'], ['Strength', 'Miss', 'Natural 1', 'Rolled 1 + 3 = 4 against DC 12', 'Struck back: d20 16 vs 13, hit, 3 damage, HP 12/23'],
   ['Strength', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Strength', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 18 vs 13, hit, 2 damage, HP 10/23']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
-  hero: 'Wren the Rogue', hpMax: 11, threat: 12, foeMax: { 'the warren': 4, 'the shrine cavern': 5 }, sheet: { used: { Backstab: 2 }, insp: false }, lines: [
-  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 1 = 2 against DC 12', 'HP 10/11'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 9/11'], ['Dexterity', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 7 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
+  hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the warren': 4, 'the shrine cavern': 5 }, sheet: { used: { 'Sneak attack': 1 }, insp: false }, lines: [
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 1 = 2 against DC 12', 'HP 20/21'], ['Room', 'Entered the chime run'],
+  ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 19/21'], ['Dexterity', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 7 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12', 'Struck back: d20 11 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12', 'Struck back: d20 15 vs 13, hit, 3 damage, HP 6/11'],
+  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12', 'Struck back: d20 11 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12', 'Struck back: d20 15 vs 13, hit, 3 damage, HP 16/21'],
   ['Strength', 'Weak hit', 'Rolled 12 + 0 = 12 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'Rolled 13 + 1 = 14 against DC 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 13 vs 13, hit, 1 damage, HP 5/11'], ['Dexterity', 'Strong hit', 'Natural 20', 'Rolled 20 + 3 = 23 against DC 12', 'Struck back: d20 8 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12'],
+  ['Dexterity', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 13 vs 13, hit, 1 damage, HP 15/21'], ['Dexterity', 'Strong hit', 'Natural 20', 'Rolled 20 + 3 = 23 against DC 12', 'Struck back: d20 8 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
   ['Strength', 'Force the bone gate', 'Failure', 'Rolled 6 + 0 = 6 against DC 12'], ['Strength', 'Force the bone gate', 'Failure', 'Rolled 11 + 0 = 11 against DC 12'], ['Strength', 'Force the bone gate', 'Success', 'Rolled 14 + 0 = 14 against DC 12'],
   ['Lock', 'Forced the bone gate'], ['Room', 'Entered the shrine cavern'],
-  ['Dexterity', 'Weak hit', 'Rolled 10 + 3 = 13 against DC 12', 'Struck back: d20 16 vs 13, hit, 2 damage, HP 3/11'], ['Dexterity', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 18 + 3 = 21 against DC 12', 'Struck back: d20 9 vs 13, missed'],
-  ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'Struck back: d20 17 vs 13, hit, 1 damage, HP 2/11'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12', 'Struck back: d20 12 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 16 vs 13, hit, 1 damage, HP 1/11']] };
+  ['Dexterity', 'Weak hit', 'Rolled 10 + 3 = 13 against DC 12', 'Struck back: d20 16 vs 13, hit, 2 damage, HP 13/21'], ['Dexterity', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 18 + 3 = 21 against DC 12', 'Struck back: d20 9 vs 13, missed'],
+  ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'Struck back: d20 17 vs 13, hit, 1 damage, HP 12/21'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12', 'Struck back: d20 12 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 16 vs 13, hit, 1 damage, HP 11/21']] };
 }

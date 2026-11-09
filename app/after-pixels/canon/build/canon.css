@@ -952,8 +952,7 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8-sub { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 /* The streak is a count, not slots: a figure in the cell's 36px row. */
 .dv8-num { font: 700 22px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
-/* KEEP: a pack name wraps to two lines at most, so its cell never narrows below the width two lines need. */
-.dv8.is-3b .dv8-pack .dv7-cell { min-width: 44px; }
+/* KEEP: a pack name wraps to two lines at most (a label is 88px wide at most), and a pack cell is as wide as its figure or its name, never wider, so the visible content ends where the group's does. */
 /* KEEP: Advantage's two cells take their own widths, not equal columns, since "Inspiration" would double the streak's cell. Pack and Fight do the same, so the group's visible content,
    not a stretched grid, is what sits centred between its dividers (a long name beside a short one would otherwise leave more space at one end). */
 .dv8.is-3b .dv8-adv .dv7-cells, .dv8.is-3b .dv8-fight .dv7-cells, .dv8.is-3b .dv8-pack .dv7-cells { grid-auto-columns: auto; }
