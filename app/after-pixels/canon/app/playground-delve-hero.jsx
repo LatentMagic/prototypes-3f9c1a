@@ -24,6 +24,7 @@ const PDH_HEROES = {
 // The fight group's name: three from tabletop sheets (a Combat block, a Battle block, a Defences block).
 const PDH_FIGHT_NAMES = { combat: 'Combat', battle: 'Battle', defences: 'Defences' };
 const PDH_WIDE = 780;
+const PDH_ONE_LINE = 1060;
 
 // One model both layouts read: the groups, each with its cells (the wide row) and its rows (the folds).
 const pdhModel = (s, c) => {
@@ -86,25 +87,27 @@ const PdhTap = ({ groups, openKey }) => {
   </div>);
 };
 
-// The sheet. KEEP: below 1040px the open row breaks after the stats into two rows, so nothing clips or scrolls sideways. "auto" opens every fact at a sheet whose content is 780px wide or more (the two-row layout needs about 800px) and shows the cards under that.
+// The sheet. KEEP: below 1060px of sheet content (a window of about 1150px) the open row breaks after the stats into two rows, so nothing clips or scrolls sideways; at 1060px and over it is one line, which needs 1053px. "auto" opens every fact at a sheet whose content is 780px wide or more (the two-row layout needs about 800px) and shows the cards under that.
 const PdhSheet = ({ c, s, streak }) => {
   const layout = usePgSetting('layout'); const head = PDH_FIGHT_NAMES[usePgSetting('fightname')]; const openKey = usePgSetting('open');
   const ref = React.useRef(null); const [w, setW] = React.useState(null);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined; const ro = new ResizeObserver((es) => setW(es[0].contentRect.width)); ro.observe(el); return () => ro.disconnect(); }, []);
   const mode = layout === 'auto' ? (w != null && w < PDH_WIDE ? 'cards' : 'open') : layout;
+  const oneLine = mode === 'open' && w != null && w >= PDH_ONE_LINE;
   const m = React.useMemo(() => pdhModel(s, c), [s, c]);
-  const [shut, setShut] = React.useState(openKey === 'none');
-  React.useEffect(() => { if (openKey !== 'none') setShut(false); }, [openKey]);
+  const [picked, setPicked] = React.useState(null);
+  React.useEffect(() => { setPicked(null); }, [openKey]);
+  const shut = !oneLine && (picked != null ? picked : mode === 'cards' && openKey === 'none');
   const stats = <DlGrp k="dv8-stats pdh-stats pdh-more" head="Stats">{c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>)}</DlGrp>;
   const meters = <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>;
-  // KEEP: the sheet starts folded to the hero and the meters, at every width, and the chevron (top right) opens the rest, as canon's phone sheet does.
-  const tog = <button type="button" className="pdh-tog" aria-expanded={!shut} aria-label={shut ? 'Show the whole character sheet' : 'Fold the character sheet'} onClick={() => setShut((x) => !x)}><DS.Icon name="next" size={20} /></button>;
-  return (<section ref={ref} className={'dv4 dv5 is-tight dv7 is-band pdh pdh-' + mode + (shut ? ' is-shut' : '') + (mode === 'open' ? ' fold-none dv8 is-3b' : '')} aria-label="Character sheet">
-    {tog}
+  // KEEP: where the open sheet fits on one line (1060px of sheet content and over) it is open, has no chevron and cannot fold. Where it wraps to two rows it starts open and the chevron, centred in the first row, folds it to the hero and the meters; the tap-card layout (a phone) starts folded and keeps the chevron at the top right.
+  const tog = oneLine ? null : <button type="button" className="pdh-tog" aria-expanded={!shut} aria-label={shut ? 'Show the whole character sheet' : 'Fold the character sheet'} onClick={() => setPicked(!shut)}><DS.Icon name="next" size={20} /></button>;
+  return (<section ref={ref} className={'dv4 dv5 is-tight dv7 is-band pdh pdh-' + mode + (shut ? ' is-shut' : '') + (oneLine ? ' pdh-one' : '') + (mode === 'open' ? ' fold-none dv8 is-3b' : '')} aria-label="Character sheet">
+    {mode === 'cards' && tog}
     {mode === 'open'
       ? <div className="dv8-rows"><div className="dv7-band">
         <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
-        {meters}{stats}<i className="pdh-break pdh-more" aria-hidden="true" /><PdhOpen c={c} m={m} streak={streak} head={head} />
+        {meters}{stats}{tog}<i className="pdh-break pdh-more" aria-hidden="true" /><PdhOpen c={c} m={m} streak={streak} head={head} />
       </div></div>
       : <div className="pdh-stack">
         <p className="pdh-hero"><b>{c.name}</b><span>{c.cls}</span></p>

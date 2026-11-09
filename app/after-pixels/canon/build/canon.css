@@ -2993,15 +2993,13 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pdh .pdh-kind { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 .pdh .dv7-lb { text-wrap: balance; overflow-wrap: break-word; }
 
-/* KEEP: a sheet narrower than 1040px breaks the open row after the stats: hero, meters and stats above, then pack, abilities, the fight group and advantage under a hairline, so no cell clips or scrolls sideways. */
+/* KEEP: below 1060px of sheet content (a window of about 1150px; one line needs 1053px) the open row breaks after the stats: hero, meters, stats and the chevron above, then pack, abilities, the fight group and advantage under a hairline, so no cell clips or scrolls sideways. The sheet's .pdh-one class marks the one-line width. */
 .pdh-break { display: none; }
-@container dv4 (max-width: 1039.98px) {
-  .pdh-open .dv7-band { flex-wrap: wrap !important; row-gap: 12px; }
-  .pdh-open .pdh-break { display: block; flex: 0 0 100%; height: 1px; background: var(--line); margin: 0; }
-  .pdh-open .dv8-stats { flex: 1 1 0; }
-  .pdh-open .dv7-grp.dv8-pack { border-left: 0 !important; padding-left: 0 !important; }
-  .pdh-open .dv7-grp.dv8-pack, .pdh-open .dv7-grp.is-r, .pdh-open .dv7-grp.pdh-fight, .pdh-open .dv7-grp.dv8-adv:last-child { flex: 1 1 auto; }
-}
+.pdh-open:not(.pdh-one) .dv7-band { flex-wrap: wrap !important; row-gap: 12px; align-items: center; }
+.pdh-open:not(.pdh-one) .pdh-break { display: block; flex: 0 0 100%; height: 1px; background: var(--line); margin: 0; }
+.pdh-open:not(.pdh-one) .dv8-stats { flex: 1 1 0; }
+.pdh-open:not(.pdh-one) .dv7-grp.dv8-pack { border-left: 0 !important; padding-left: 0 !important; }
+.pdh-open:not(.pdh-one) .dv7-grp.dv8-pack, .pdh-open:not(.pdh-one) .dv7-grp.is-r, .pdh-open:not(.pdh-one) .dv7-grp.pdh-fight, .pdh-open:not(.pdh-one) .dv7-grp.dv8-adv:last-child { flex: 1 1 auto; }
 
 /* Narrow (tap cards): a stack, hero, meters, stats, advantage, then Escape's cards and the fold under them. */
 .pdh-cards .pdh-stack { display: grid; gap: 0; min-width: 0; }
@@ -3047,15 +3045,15 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .pdh-cards .dv7-cell .dv7-fig > svg { width: 26px; }
 }
 
-/* The fold (every width): the sheet starts folded to the hero and the meters; the chevron at the top right opens the rest. */
+/* The fold: tap cards start folded and the chevron sits at the top right; the open row's chevron is a flex item at the end of its first row, centred in it. */
 .pdh { position: relative; }
 .pdh-tog { position: absolute; top: 6px; right: 6px; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; background: none; border: 0; color: var(--text); cursor: pointer; }
 .pdh-tog svg { transform: rotate(-90deg); transition: transform var(--dur-fast, .15s); }
 .pdh.is-shut .pdh-tog svg { transform: rotate(90deg); }
+.pdh-open .pdh-tog { position: static; flex: 0 0 auto; align-self: center; margin-left: auto; }
 .pdh-tog:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
 @media (hover: hover) { .pdh-tog:hover { background: var(--popup); } }
 .pdh.is-shut .pdh-more { display: none !important; }
-.pdh-open.is-shut .dv8-meters { padding-right: 44px !important; }
 
 /* Tap cards at their widest (a sheet 460px wide or more): Stats and Advantage side by side in one row. */
 .pdh-pair { display: grid; grid-template-columns: minmax(0, 1fr); }
@@ -3073,8 +3071,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pdh-open .dv8-meters { padding-left: 16px !important; }
 .pdh-open .dv7-grp.is-hero { flex: 0 0 auto !important; }
 .pdh-open.is-shut .dv8-meters { flex: 0 1 440px !important; }
-/* 32px on the right leaves the chevron clear of the heading. */
-.pdh-open .dv7-grp.dv8-adv:last-child { flex: 1 1 auto; padding-left: 12px; padding-right: 32px; justify-content: center; justify-items: center; }
+.pdh-open .dv7-grp.dv8-adv:last-child { flex: 1 1 auto; padding-left: 12px; justify-content: center; justify-items: center; }
 .pdh-open .dv7-grp.dv8-adv:last-child .dv7-cells { justify-content: center; }
 /* The meters start 16px after the divider, open or folded, so the gap matches the one before it. */
 .pdh-open .dv8-meters { justify-content: start !important; }
