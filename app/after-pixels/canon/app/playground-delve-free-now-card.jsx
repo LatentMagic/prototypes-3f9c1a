@@ -16,21 +16,17 @@ import { pgRegister, pgActive, usePgSetting } from './playground.jsx';
 // Not in canon's data: the Pass's two reasons, as the never-played card lists them (the first reworded for a weekly game).
 const PGD_GET = ['Play every weekly run.', 'Earn achievements and streaks.'];
 const PGD_PLAIN = 'Your free run is done.';
-// The run's name and a win's word exactly as the signed-off canvas draws them (the platform's seed run). Canon's own data reads
-// 'The Goblin Warren beneath Ashford Mill' and 'Triumphed' / 'Elsie rescued', which the canvas does not show.
-const PGD_RUN = 'Beneath Gallows Hill';
-const PGD_WON = 'Rescued';
 
 // Two halves, a short divider. Left: the chip (the card's label) and a plain title, or the run's own name and result.
 // Right: the Pass line, WHAT YOU GET bullets in versions 3 and 4, and the Get the Pass button.
 const PgdCard = ({ s, label, sids, children }) => {
   const gs = useGs(); const v = usePgSetting('version');
   if (!pgActive() || v === 'today') return children;
-  const run0 = dlNowRun(s, gs, sids).result; const result = run0.kind === 'ok' ? { ...run0, label: PGD_WON } : run0;
+  const { result } = dlNowRun(s, gs, sids);
   const run = v === '2' || v === '3'; const bullets = v === '3' || v === '4';
-  const title = run ? PGD_RUN : PGD_PLAIN;
+  const title = run ? s.title : PGD_PLAIN;
   return (
-    <section className="pgd-card" aria-label={run ? PGD_RUN + ', ' + result.label : PGD_PLAIN}>
+    <section className="pgd-card" aria-label={run ? s.title + ', ' + result.label : PGD_PLAIN}>
       <div className="pgd-fill">
         <span className="pgd-label">{label}</span>
         <h3 className="mcp-t-sec">{title}</h3>

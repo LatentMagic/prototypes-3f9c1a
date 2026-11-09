@@ -10846,18 +10846,15 @@
   };
   const PGD_GET = ["Play every weekly run.", "Earn achievements and streaks."];
   const PGD_PLAIN = "Your free run is done.";
-  const PGD_RUN = "Beneath Gallows Hill";
-  const PGD_WON = "Rescued";
   const PgdCard = ({ s, label, sids, children }) => {
     const gs = useGs();
     const v = usePgSetting("version");
     if (!pgActive() || v === "today") return children;
-    const run0 = dlNowRun(s, gs, sids).result;
-    const result = run0.kind === "ok" ? { ...run0, label: PGD_WON } : run0;
+    const { result } = dlNowRun(s, gs, sids);
     const run = v === "2" || v === "3";
     const bullets = v === "3" || v === "4";
-    const title = run ? PGD_RUN : PGD_PLAIN;
-    return /* @__PURE__ */ React$1.createElement("section", { className: "pgd-card", "aria-label": run ? PGD_RUN + ", " + result.label : PGD_PLAIN }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label" }, label), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title), run && /* @__PURE__ */ React$1.createElement("p", { className: "pgd-res" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: result }))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side-in" }, /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "pgd-line", text: "Keep playing with the Pass." }), bullets && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label pgd-get" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement("ul", { className: "pgd-list" }, PGD_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t)))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("pass") }, "Get the Pass")))));
+    const title = run ? s.title : PGD_PLAIN;
+    return /* @__PURE__ */ React$1.createElement("section", { className: "pgd-card", "aria-label": run ? s.title + ", " + result.label : PGD_PLAIN }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label" }, label), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title), run && /* @__PURE__ */ React$1.createElement("p", { className: "pgd-res" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: result }))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side-in" }, /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "pgd-line", text: "Keep playing with the Pass." }), bullets && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label pgd-get" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement("ul", { className: "pgd-list" }, PGD_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t)))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("pass") }, "Get the Pass")))));
   };
   function initPlaygroundDelveFreeNowCard() {
     pgRegister("delve-free-now-card", { title: "Delve free Now card, after the free run", settings: [
