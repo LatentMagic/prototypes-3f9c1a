@@ -135,19 +135,19 @@ const gsDvName = (n) => n.replace(/^The /, 'the ');
 // ---- Delve run 1, The Goblin Warren beneath Ashford Mill: two recorded plays of the deployed engine. ----
 export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.';
 const GS_DV_WON = [
-  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 0 = 1 against DC 12', 'HP 12/13'],
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 0 = 1 against DC 12', 'HP 21/23'],
   ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 9 + 1 = 10 against DC 12', 'HP 11/13'],
+  ['Dexterity', 'Miss', 'Rolled 9 + 1 = 10 against DC 12', 'HP 19/23'],
   ['Dexterity', 'Weak hit', 'Rolled 11 + 1 = 12 against DC 12'],
   ['Dexterity', 'Strong hit', 'Rolled 18 + 1 = 19 against DC 12'],
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12'],
-  ['Strength', 'Weak hit', 'Rolled 13 + 3 = 16 against DC 12', 'HP 9/13'],
+  ['Strength', 'Weak hit', 'Rolled 13 + 3 = 16 against DC 12', 'HP 14/23'],
   ['Strength', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12'],
   ['Dexterity', 'Rifle the stolen sacks', 'Success', 'Natural 20', 'Rolled 20 + 1 = 21 against DC 12'],
   ['Room', 'Entered Snaggle\'s den'],
-  ['Gear', 'Used a pepper pouch', 'Snaggle: track 3 → 1'],
+  ['Gear', 'Used a healing draught'],
   ['Strength', 'Strong hit', 'Rolled 18, the higher of 15 and 18, + 3 = 21 against DC 12'],
   ['Gear', 'Took the iron key'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
@@ -243,12 +243,12 @@ export const GS_SESSIONS = {
   // Delve run 1 won, Bryn the Fighter.
   delve: {
     kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Elsie rescued', date: 'Monday 5 October',
-    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 9/13'],
+    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 14/23'],
     tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
     lines: GS_DV_WON,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
-    setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 13, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
+    setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
     share: 'Elsie rescued',
     shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5', '💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩'],
   },
