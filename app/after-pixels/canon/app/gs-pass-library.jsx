@@ -43,7 +43,11 @@ const CprFirst = ({ id }) => {
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
   if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} first />;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
-  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass} />;
+  if (id === 'delve' && st !== 'none') {
+    const sids = ['delve-first', 'delve-first-live']; const card = <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={sids} next={null} pass={pass} />;
+    const Pg = GS_NOW.delve; // a playground's card for the finished free run, registered only under ?pg=
+    return Pg && done && pass ? <Pg s={DV_DONE} label={f.label} sids={sids}>{card}</Pg> : card;
+  }
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? 'Chapter 3: coming soon' : null;

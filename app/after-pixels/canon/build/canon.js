@@ -2885,13 +2885,17 @@
       return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34 }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
     }));
   };
-  const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
-    const gs = useGs();
+  const dlNowRun = (wk, gs, sids = ["delve", "delve-live"]) => {
     const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
     const s = GS_SESSIONS[sid];
+    const m = dlBuild(s);
+    return { sid, s, m, result: m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) } };
+  };
+  const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
+    const gs = useGs();
+    const { sid, s, result } = dlNowRun(wk, gs, sids);
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const open = (roll) => gs.go("session", roll ? { id: sid, roll } : { id: sid });
-    const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open })));
   };
   const registerDelve = () => {
@@ -4259,7 +4263,12 @@
     const done = st === "done";
     const pass = done && gs.view !== "pass";
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
-    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass });
+    if (id === "delve" && st !== "none") {
+      const sids = ["delve-first", "delve-first-live"];
+      const card = /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids, next: null, pass });
+      const Pg = GS_NOW.delve;
+      return Pg && done && pass ? /* @__PURE__ */ React$1.createElement(Pg, { s: DV_DONE, label: f.label, sids }, card) : card;
+    }
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
     if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "barrow", label: GS_PAGES.barrow.week2.label, title: BW_CH2.title, play: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }), next: soon, span: true }, /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line));
@@ -10721,6 +10730,9 @@
   };
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10736,6 +10748,17 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
+  };
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -10821,6 +10844,33 @@
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
+  const PGD_GET = ["Play every weekly run.", "Earn achievements and streaks."];
+  const PGD_PLAIN = "Your free run is done.";
+  const PGD_RUN = "Beneath Gallows Hill";
+  const PGD_WON = "Rescued";
+  const PgdCard = ({ s, label, sids, children }) => {
+    const gs = useGs();
+    const v = usePgSetting("version");
+    if (!pgActive() || v === "today") return children;
+    const run0 = dlNowRun(s, gs, sids).result;
+    const result = run0.kind === "ok" ? { ...run0, label: PGD_WON } : run0;
+    const run = v === "2" || v === "3";
+    const bullets = v === "3" || v === "4";
+    const title = run ? PGD_RUN : PGD_PLAIN;
+    return /* @__PURE__ */ React$1.createElement("section", { className: "pgd-card", "aria-label": run ? PGD_RUN + ", " + result.label : PGD_PLAIN }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label" }, label), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title), run && /* @__PURE__ */ React$1.createElement("p", { className: "pgd-res" }, /* @__PURE__ */ React$1.createElement(LbResult, { s: result }))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgd-side-in" }, /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "pgd-line", text: "Keep playing with the Pass." }), bullets && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "pgd-label pgd-get" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement("ul", { className: "pgd-list" }, PGD_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t)))), /* @__PURE__ */ React$1.createElement("div", { className: "pgd-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("pass") }, "Get the Pass")))));
+  };
+  function initPlaygroundDelveFreeNowCard() {
+    pgRegister("delve-free-now-card", { title: "Delve free Now card, after the free run", settings: [
+      { key: "version", kind: "concept", label: "Version", options: [
+        { value: "3", label: "3 · Your run + what you get", state: "library-delve-no-pass" },
+        { value: "1", label: "1 · Plain", state: "library-delve-no-pass" },
+        { value: "2", label: "2 · Your run", state: "library-delve-no-pass" },
+        { value: "4", label: "4 · Plain + what you get", state: "library-delve-no-pass" },
+        { value: "today", label: "Today’s card", state: "library-delve-no-pass" }
+      ] }
+    ] });
+    if (pgActive()) GS_NOW.delve = PgdCard;
+  }
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
   const whBand = (km) => km === null ? "found" : km >= 1e3 ? "far" : km >= 100 ? "mid" : "near";
@@ -11475,4 +11525,5 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
+  initPlaygroundDelveFreeNowCard();
 })(React, ReactDOM);

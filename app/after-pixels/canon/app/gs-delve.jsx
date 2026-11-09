@@ -231,10 +231,12 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER }
     </div>);
   })}</div>);
 };
+// The run a now card shows, and its result word: { kind, label }. A finished run follows Config → This edition; a live one, the begun play.
+export const dlNowRun = (wk, gs, sids = ['delve', 'delve-live']) => { const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = dlBuild(s);
+  return { sid, s, m, result: m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) } }; };
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
-  const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
+  const gs = useGs(); const { sid, s, result } = dlNowRun(wk, gs, sids); const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
-  const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
     <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
       <div className="dl-now-route"><DlNowRoute m={m} open={open} /></div>
