@@ -10837,30 +10837,26 @@
   };
   const PGN_IDS = ["where", "chain", "salvage", "common"];
   const PGN_GET = ["Play every daily edition.", "Earn achievements and streaks."];
-  const PGN_ICONS = ["list", "check"];
-  const PgnGet = ({ mode }) => {
-    if (mode === "sentence") return /* @__PURE__ */ React$1.createElement("p", { className: "pgn-sentence" }, "Play every daily edition and earn achievements and streaks.");
-    if (mode === "icons") return /* @__PURE__ */ React$1.createElement("ul", { className: "pgn-list is-icons" }, PGN_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-ic" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: PGN_ICONS[i], size: 20 })), t)));
-    return /* @__PURE__ */ React$1.createElement("ul", { className: "pgn-list" }, PGN_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t)));
-  };
-  const PgnCard = ({ id, shape, get, onGet }) => {
+  const PgnCard = ({ id, line, onGet }) => {
     const title = GS_NAME[id] + " comes only with the Pass.";
-    const button = /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: onGet }, "Get the Pass");
-    if (shape === "slim") return /* @__PURE__ */ React$1.createElement("section", { className: "pgn-card pgn-slim", "aria-label": title }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-main" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "PASS GAME"), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title), /* @__PURE__ */ React$1.createElement(PgnGet, { mode: get })), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-act" }, button));
-    return /* @__PURE__ */ React$1.createElement("section", { className: "pgn-card pgn-half", "aria-label": title }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "PASS GAME"), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-side" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement(PgnGet, { mode: get }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-act" }, button)));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "pgn-card pgn-half is-line-" + line, "aria-label": title }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "PASS GAME"), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-side" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-side-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement("ul", { className: "pgn-list" }, PGN_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t))), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: onGet }, "Get the Pass")))));
   };
   const pgnWrap = (id, Base) => function PgnPage(props) {
     const gs = useGs();
-    const shape = usePgSetting("shape");
-    const get = usePgSetting("get");
+    const page = usePgSetting("page");
+    const line = usePgSetting("line");
     const never = cprLocked(gs, id) && !(gsLapsed(gs) && phVisible(gs).some((p) => p.gid === id));
     if (!pgActive() || !never) return /* @__PURE__ */ React$1.createElement(Base, { ...props });
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PgnCard, { id, shape, get, onGet: () => gs.go("pass") })));
+    const c = PZ[id];
+    const run = pzRun(gs, id);
+    const n = lbStreak(run);
+    const ach = phAch(gs, id, c.ach, n);
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PgnCard, { id, line, onGet: () => gs.go("pass") }), page === "full" && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(LbRun, { n, unit: c.weekly ? "weeks" : "days", weeks: lbRunOf(run) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: c.badges, access: "all" }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: c.recent, allLabel: "See in History", empty: c.recent + " appear here once you have played one." }))));
   };
   function initPlaygroundNoPassNowCard() {
     pgRegister("no-pass-now-card", { title: "Now card without the Pass", settings: [
-      { key: "shape", kind: "concept", label: "Shape", options: [{ value: "half", label: "3 · two halves" }, { value: "slim", label: "5 · slim row" }] },
-      { key: "get", label: "What you get", options: [{ value: "sentence", label: "Sentence" }, { value: "bullets", label: "Bullets" }, { value: "icons", label: "Bullets with icons" }] }
+      { key: "page", kind: "concept", label: "Page around the card", options: [{ value: "bare", label: "Bare, as today" }, { value: "full", label: "With Streak, Achievements and history" }] },
+      { key: "line", label: "Divider", options: [{ value: "full", label: "Full line" }, { value: "short", label: "Short line" }, { value: "none", label: "No line" }] }
     ] });
     PGN_IDS.forEach((id) => {
       GS_LIBRARY[id] = pgnWrap(id, GS_LIBRARY[id]);

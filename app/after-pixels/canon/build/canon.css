@@ -2936,8 +2936,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pg-config-label { font: 600 13px/1.2 var(--font-text); color: var(--muted); margin-bottom: 8px; }
 .pg-config-opts { display: flex; flex-wrap: wrap; gap: 8px; }
 .pg-config-opt { text-align: left; }
-/* Playground: the Now card without the Pass (app/playground-no-pass-now-card.jsx). Two shapes on the design system's own tokens
-   and its secondary Button. */
+/* Playground: the Now card without the Pass (app/playground-no-pass-now-card.jsx). Two halves on the design system's own tokens
+   and its secondary Button; no colour. */
 .pgn-card { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); color: var(--text); min-width: 0; }
 .pgn-label { display: block; font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; color: var(--off-white); }
 .pgn-card .mcp-t-sec { margin: 0; }
@@ -2945,29 +2945,23 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pgn-list { list-style: none; padding: 0; display: grid; gap: var(--space-2); }
 .pgn-list li { position: relative; padding-left: var(--space-4); }
 .pgn-list li::before { content: ''; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; background: currentColor; }
-.pgn-list.is-icons li { display: flex; align-items: center; gap: var(--space-3); padding-left: 0; }
-.pgn-list.is-icons li::before { content: none; }
-.pgn-ic { display: inline-flex; flex: none; color: var(--muted); }
 
-/* 3 · two halves: today's two halves with a line between; the card is as tall as its content. */
+/* The card is as tall as its content. The divider is the right half's left edge (full), the left edge of its content (short), or absent. */
 .pgn-half { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
-.pgn-half > div { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-5); min-width: 0; }
-.pgn-half .pgn-side { border-left: 1px solid var(--line); }
+.pgn-fill { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-5); min-width: 0; }
+.pgn-side { padding: var(--space-5) var(--space-5) var(--space-5) 0; min-width: 0; }
+.pgn-side-in { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding-left: var(--space-5); }
 .pgn-half .pgn-act { margin-top: var(--space-3); }
+.pgn-half.is-line-full .pgn-side { border-left: 1px solid var(--line); }
+.pgn-half.is-line-short .pgn-side-in { border-left: 1px solid var(--line); }
 @container gs (max-width: 639.98px) {
   .pgn-half { grid-template-columns: minmax(0, 1fr); }
-  .pgn-half > div { padding: var(--space-4); }
-  .pgn-half .pgn-side { border-left: 0; border-top: 1px solid var(--line); }
+  .pgn-fill { padding: var(--space-4); }
+  .pgn-side { padding: 0 var(--space-4) var(--space-4); }
+  .pgn-side-in { padding: var(--space-4) 0 0; }
+  .pgn-half.is-line-full .pgn-side { border-left: 0; border-top: 1px solid var(--line); padding-top: 0; }
+  .pgn-half.is-line-short .pgn-side-in { border-left: 0; border-top: 1px solid var(--line); }
   .pgn-half .pgn-act, .pgn-half .pgn-act .mcp-btn { align-self: stretch; }
-}
-
-/* 5 · slim row: title and what you get on the left, the button on the right; stacks on a phone. */
-.pgn-slim { display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); padding: var(--space-5); }
-.pgn-slim .pgn-main { display: grid; gap: var(--space-2); min-width: 0; }
-.pgn-slim .pgn-main .pgn-sentence, .pgn-slim .pgn-main .pgn-list { margin-top: var(--space-1); }
-.pgn-slim .pgn-act { flex: none; }
-@container gs (max-width: 639.98px) {
-  .pgn-slim { flex-direction: column; align-items: stretch; padding: var(--space-4); gap: var(--space-4); }
 }
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
    session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
