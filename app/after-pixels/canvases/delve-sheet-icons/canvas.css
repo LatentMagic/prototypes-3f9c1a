@@ -1,0 +1,31 @@
+/* The Delve sheet icons canvas: the page around the cells, and the icons' own drawing. A cell, its figure row and its label are canon's (gs-delve.css). Reads on a phone, scrolls down only. */
+html, body { margin: 0; background: var(--page); color: var(--text); }
+body { font: 400 16px/1.5 var(--font-text); }
+.cv { max-width: 760px; margin: 0 auto; padding: 0 0 64px; overflow-x: hidden; }
+.cv-head, .cv-ver { padding-left: 16px; padding-right: 16px; }
+.cv-head h1 { font: 700 22px/1.25 var(--font-heading); margin: 20px 0 6px; text-wrap: balance; }
+.cv-head p { margin: 0; color: var(--muted); font-size: 14px; }
+.cv-ver { margin-top: 28px; }
+.cv-ver > h2 { display: flex; gap: 10px; align-items: center; font: 700 18px/1.3 var(--font-heading); margin: 0 0 4px; }
+.cv-n { flex: none; min-width: 28px; height: 28px; box-sizing: border-box; display: inline-grid; place-items: center; box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); }
+.cv-cap { margin: 0 0 12px; font-size: 14px; color: var(--muted); text-wrap: pretty; }
+/* The options of one fact, side by side; each is its tag, a card holding its cell(s), then its caption. */
+.cvi-opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.cvi-opt { margin: 0; min-width: 0; display: grid; gap: 8px; }
+.cvi-opt figcaption { font: 600 13px/1.3 var(--font-text); color: var(--muted); }
+.cvi-opt figcaption b { color: var(--text); font: 700 14px/1 var(--font-heading); margin-right: 4px; }
+.cvi-opt > p { margin: 0; font-size: 13px; line-height: 1.4; color: var(--muted); text-wrap: pretty; }
+.cvi-card.dv4 { padding: 16px 8px; }
+.cvi-cells { display: flex; justify-content: center; gap: 12px; }
+@media (max-width: 420px) { .cvi-cells { gap: 14px; } .cvi-card.dv4 { padding-inline: 4px; } }
+/* The figures: the sheet's line language (1.5 stroke, mitred joins, hairlines non-scaling), at 33 px wide. */
+.dv8.is-3b .dv7-cell .dv7-fig > svg.ic { width: 33px; height: auto; display: block; overflow: visible; }
+.ic .ic-o, .ic .ic-f, .ic .ic-x { fill: none; stroke: var(--control-edge); stroke-width: 1.5; stroke-linejoin: miter; stroke-linecap: square; vector-effect: non-scaling-stroke; }
+.ic .ic-f { stroke: var(--muted); stroke-width: 1; }
+.ic .ic-s { fill: var(--off-white); stroke: none; }
+.ic .ic-d { fill: var(--off-white); stroke: none; }
+.ic .ic-n { fill: var(--text); stroke: var(--card); stroke-width: 3px; paint-order: stroke; stroke-linejoin: round; font-family: var(--font-heading); font-weight: 700; text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
+/* A spent figure goes quiet and is struck through, as a used glyph box is. */
+.ic .ic-o.is-used { stroke: var(--muted); stroke-width: 1; }
+.ic .ic-s.is-used { fill: none; stroke: var(--muted); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.ic .ic-x { stroke: var(--muted); stroke-width: 1.5; }
