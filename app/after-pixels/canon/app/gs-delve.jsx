@@ -14,14 +14,18 @@ import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
 import { LbNowCard } from './gs-library.jsx';
+import { EsxFold } from './gs-escape-sheet.jsx';
 import { DV_NEXT } from './gs-delve-library.jsx';
 import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
 const DL_CARRY = 3;
 const DL_HEROES = {
+  // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
+  // the starting gear a healing draught and a crowbar (a key). Wren's fight numbers are not in the sample yet, so her sheet has no Fight group.
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 },
-    abilities: [{ name: 'Shield bash', of: 2, does: 'Strikes at once, no roll' }],
-    gear: [{ name: 'Pepper pouch', kind: 'once', does: 'Flung in a face, it blinds for a blow' }] },
+    abilities: [{ name: 'Shield bash', of: 1, ult: true, does: 'Strikes at once, no roll' }],
+    fight: { defence: 10, armour: 2, armourName: 'ox shield', heavy: { name: 'Cleave', needs: 14, dmg: 7 } },
+    gear: [{ name: 'Healing draught', kind: 'once', does: '' }, { name: 'Crowbar', kind: 'key', does: '' }] },
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 0, Intelligence: 1, Wisdom: 1, Charisma: 2 },
     abilities: [{ name: 'Backstab', of: 2, does: 'Strikes from behind at once, no roll' }],
     gear: [{ name: 'Smoke pellet', kind: 'once', does: 'Burst underfoot, it hides you for a breath' }] },
@@ -31,13 +35,13 @@ const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 // ---- The model: the record's lines read into the rooms stood in (going back included), the rolls and the gear. ----
 const DL_TIER = { strong: 'Strong hit', weak: 'Weak hit', miss: 'Miss' };
 // A heavy attack names itself ("Heavy attack: Cleave") and is an attack on the foe, not an option.
-// A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "Rolled 14 + 3 = 17 against DC 12", "HP 9/13"].
+// A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "Rolled 14 + 3 = 17 against DC 12", "HP 19/23"].
 // A foe roll grades Strong hit, Weak hit or Miss; an option roll Success, Partial success or Failure (delve.md).
 const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
 const dlStruck = (parts) => { const sb = /^Struck back: d20 (?:(\d+), the higher of (\d+) and (\d+),|(\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
   if (!sb) return null; const roll = +(sb[1] || sb[4]); const two = sb[1] != null;
   return { roll, other: two ? (+sb[2] === roll ? +sb[3] : +sb[2]) : null, dc: +sb[5], hit: sb[6] === 'hit', dmg: sb[7] ? +sb[7] : 0 }; };
-// The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 13, hit, 1 damage, HP 11/13" or "..., missed"; with advantage, "d20 14, the higher of 14 and 6, vs 13".
+// The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 13, hit, 1 damage, HP 21/23" or "..., missed"; with advantage, "d20 14, the higher of 14 and 6, vs 13".
 const dlRoll = (l) => {
   const parts = l.slice(1).map(String); const t = parts.join(' · ');
   const m = /Rolled (?:(\d+), the higher of (\d+) and (\d+), |(\d+) )\+ (-?\d+) = (-?\d+) against DC (\d+)/.exec(t); if (!m) return null;
@@ -47,7 +51,7 @@ const dlRoll = (l) => {
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
   return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
-// A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Gear · Used a pepper pouch · Snaggle: track 3 → 1 · Struck back: d20 15 vs 13, hit, 1 damage, HP 8/13").
+// A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Gear · Used a pepper pouch · Snaggle: track 3 → 1 · Struck back: d20 15 vs 13, hit, 1 damage, HP 18/23").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
 const DL_USE_KINDS = /^(Ability|Ultimate|Gear)$/;
 const dlUse = (l, hero) => { const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
@@ -180,7 +184,7 @@ export const dlSheet = (s, m) => {
   gear.forEach((g) => { g.label = g.note || DL_STATE[g.state]; });
   return { name: h.name, cls: h.cls, hp: m.hp, hpMax: s.hpMax, threat: s.threat, threatMax: s.threatMax, carry: DL_CARRY, gear,
     abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })), insp: !!sh.insp,
-    stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? '−' : '+') + Math.abs(n) })) };
+    fight: h.fight || null, stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? '−' : '+') + Math.abs(n) })) };
 };
 // Glyphs, line-drawn as the shop's icons (1.75 stroke, square caps, mitred joins). Armour has its own: a shield.
 const DL_G = { armour: 'M5 4h14v8l-7 8-7-8z', once: 'M9 3h6M10 3v6l-5 11h14l-5-11V3', key: 'M3 9h7v6H3zM10 12h11M17 12v4M20 12v3' };
@@ -196,25 +200,89 @@ const DlGrp = ({ k, head, children }) => <div className={'dv7-grp' + (k ? ' ' + 
 // KEEP: a meter's count is written 9/13, the short form, so the meters' column stays narrow (owner, 2026-10-29).
 export const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
 
-// 3B (owner, 2026-10-29): one row on desktop. The hero; hit points and threat stacked on one grid; stats; the pack with its free slots;
-// abilities; Advantage (inspiration and the current run of strong hits). The torch, clues and the bargain join this row once the
-// record holds them. On a phone the sheet opens folded to the hero and the meters; the whole hero row opens the rest.
-export const DlSheet = ({ c, streak }) => { const [open, setOpen] = React.useState(false);
-  const slots = Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
-  return (<section className={'dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b' + (open ? '' : ' is-shut')} aria-label="Character sheet"><div className="dv8-rows"><div className="dv7-band">
-    <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
-    {/* Shown on a phone card only. */}
-    <button type="button" className="dv8-tog" aria-expanded={open} aria-label={open ? 'Fold the character sheet' : 'Show the whole character sheet'} onClick={() => setOpen((o) => !o)}><DS.Icon name="next" size={20} /></button>
-    <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>
-    <DlGrp k="dv8-stats" head="Stats">{c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>)}</DlGrp>
-    {/* KEEP: the pack shows its room as empty Free slots, so it needs no count. */}
-    <DlGrp k="dv8-pack" head="Pack">{slots.map((g, i) => (g ? <DlCell key={g.name} label={g.name} used={g.state === 'used'} title={g.name + ' · ' + g.label}><DlBox k={g.kind} state={g.state} />{g.kind === 'armour' && <i className="dv7-arm" aria-label="Armour plus 1">+1</i>}</DlCell>
-      : <DlCell key={'free' + i} label="Free" used title="Room for one more"><DlBox k={null} /></DlCell>))}</DlGrp>
-    {/* is-r marks the second group of a phone pair (pack | abilities), which takes a hairline on its left. */}
-    <DlGrp k="is-r" head={c.abilities.length > 1 ? 'Abilities' : 'Ability'}>{c.abilities.map((a) => <DlCell key={a.name} label={a.name} used={!a.left} title={a.left + ' of ' + a.of + ' left. ' + a.does}><DlUses left={a.left} of={a.of} /></DlCell>)}</DlGrp>
-    <DlGrp k="dv8-adv" head="Advantage"><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
-      <DlCell label="Streak" title="Strong hits in a row"><span className="dv8-num">{streak}</span></DlCell></DlGrp>
-  </div></div></section>);
+// 3B (owner, 2026-10-29): the hero; hit points and threat stacked on one grid; stats; the pack with its free slots; abilities; Advantage
+// (inspiration and the current run of strong hits). The torch, clues and the bargain join once the record holds them.
+// Desktop: two rows, the second collapsible and starting open (owner, 2026-11-09). A phone card has tap cards.
+const DL_CARD_PHONE = 560;
+// The sheet's content width, read as the CSS container reads it, before paint and on every resize.
+const useDlCardPhone = (ref) => { const [phone, setPhone] = React.useState(false);
+  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
+    const read = () => { const cs = getComputedStyle(el); setPhone(el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) < DL_CARD_PHONE); };
+    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
+  return phone; };
+const DlStats = ({ c, k }) => <DlGrp k={k} head="Stats">{c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>)}</DlGrp>;
+const DlAdv = ({ c, streak, k }) => (<DlGrp k={k} head="Advantage"><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
+  <DlCell label="Streak" title="Strong hits in a row"><span className="dv8-num">{streak}</span></DlCell></DlGrp>);
+const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>;
+// The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
+const dlFight = (c) => { const f = c.fight; if (!f) return [];
+  return [{ key: 'def', label: 'Defence', num: f.defence, text: 'A foe’s d20 must reach ' + f.defence + ' to hit you.' },
+    { key: 'arm', label: 'Armour', num: f.armour, tip: f.armourName, text: 'The ' + f.armourName + ': takes ' + f.armour + ' damage off blows each fight, full again at the next.' },
+    { key: 'heavy', label: f.heavy.name, kind: 'Heavy attack', num: f.heavy.needs, text: 'Needs ' + f.heavy.needs + ' to hit, ' + f.heavy.dmg + ' damage.' }]; };
+const DlLabel = ({ name, kind }) => (kind ? <>{name}<small className="dv8-sub">{kind}</small></> : name);
+const DlFightGrp = ({ c }) => { const rows = dlFight(c); if (!rows.length) return null;
+  return <DlGrp k="dv8-fight" head="Fight">{rows.map((f) => <DlCell key={f.key} label={<DlLabel name={f.label} kind={f.kind} />} title={f.tip || f.text}><span className="dv8-num">{f.num}</span></DlCell>)}</DlGrp>; };
+const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
+
+// KEEP: Advantage is drawn twice (is-a1 in the first row, is-a2 at the end of the second) and CSS shows one: first row where it fits beside the stats, second row where it does not.
+const DlDesk = ({ c, streak, open, setOpen }) => { const slots = dlSlots(c);
+  return (<div className="dv8-rows"><div className="dv7-band">
+    <div className="dv8-r1">
+      <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
+      <DlMeters c={c} />
+      <DlStats c={c} k="dv8-stats" />
+      <DlAdv c={c} streak={streak} k="dv8-adv is-a1" />
+      <button type="button" className="dv8-tog" aria-expanded={open} aria-label={open ? 'Fold the character sheet' : 'Show the whole character sheet'} onClick={() => setOpen((o) => !o)}><DS.Icon name="next" size={20} /></button>
+    </div>
+    <EsxFold open={open}><div className="dv8-r2i">
+      {/* KEEP: the pack shows its room as empty Free slots, so it needs no count. */}
+      <DlGrp k="dv8-pack" head="Pack">{slots.map((g, i) => (g ? <DlCell key={g.name} label={g.name} used={g.state === 'used'} title={g.name + ' · ' + g.label}><DlBox k={g.kind} state={g.state} />{g.kind === 'armour' && <i className="dv7-arm" aria-label="Armour plus 1">+1</i>}</DlCell>
+        : <DlCell key={'free' + i} label="Free" used title="Room for one more"><DlBox k={null} /></DlCell>))}</DlGrp>
+      <DlGrp k="is-r" head={c.abilities.length > 1 ? 'Abilities' : 'Ability'}>{c.abilities.map((a) => <DlCell key={a.name} label={<DlLabel name={a.name} kind={a.ult ? 'Ultimate' : null} />} used={!a.left} title={a.left + ' of ' + a.of + ' left. ' + a.does}><DlUses left={a.left} of={a.of} /></DlCell>)}</DlGrp>
+      <DlFightGrp c={c} />
+      <DlAdv c={c} streak={streak} k="dv8-adv is-a2" />
+    </div></EsxFold>
+  </div></div>);
+};
+
+// Phone card: tap cards for Pack and Abilities, Escape's mechanism (esx-cards, EsxFold). One card is open at a time; a second tap shuts it.
+const dlTapGroups = (c, slots) => {
+  const free = slots.length - c.gear.length; const left = c.abilities.reduce((n, a) => n + a.left, 0); const of = c.abilities.reduce((n, a) => n + a.of, 0);
+  return [
+    { key: 'pack', head: 'Pack', n: c.gear.length, of: slots.length, say: c.gear.length + ' of ' + slots.length + ' carried',
+      rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
+        ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
+    { key: 'abilities', head: c.abilities.length > 1 ? 'Abilities' : 'Ability', n: left, of, say: left + ' of ' + of + ' uses left',
+      rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: (a.ult ? 'Ultimate · ' : '') + a.left + ' of ' + a.of + ' left', text: a.does })) },
+    ...(c.fight ? [{ key: 'fight', head: 'Fight', n: c.fight.defence, of: null, say: 'defence ' + c.fight.defence,
+      rows: dlFight(c).map((f) => ({ key: f.key, fig: <span className="dv8-num">{f.num}</span>, name: f.label, tag: f.kind || f.tip, text: f.text })) }] : []),
+  ];
+};
+const DlTapRow = ({ fig, name, tag, text }) => (<div className="dvp-row"><span className="dvp-fig">{fig}</span>
+  <div className="dvp-tx"><p className="dvp-nm"><b>{name}</b>{tag && <span>{tag}</span>}</p>{text && <p className="dvp-does">{text}</p>}</div></div>);
+const DlPhone = ({ c, streak }) => { const [open, setOpen] = React.useState(false); const [card, setCard] = React.useState(null);
+  const groups = dlTapGroups(c, dlSlots(c)); const grp = groups.find((g) => g.key === card);
+  return (<>
+    {/* KEEP: the phone sheet opens folded to the hero and the meters; the whole hero row is the fold control, its chevron at the top right. */}
+    <button type="button" className="dvp-head" aria-expanded={open} aria-label={open ? 'Fold the character sheet' : 'Show the whole character sheet'} onClick={() => setOpen((o) => !o)}>
+      <span className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></span><DS.Icon name="next" size={20} /></button>
+    <DlMeters c={c} />
+    <EsxFold open={open}><div className="dvp-more">
+      <div className="dvp-pair"><DlStats c={c} k="dv8-stats" /><DlAdv c={c} streak={streak} k="dv8-adv" /></div>
+      <div className="dvp-tap">
+        <div className="esx-cards">{groups.map((g) => (
+          <button key={g.key} type="button" className={'esx-card' + (card === g.key ? ' is-open' : '')} aria-expanded={card === g.key} aria-label={g.head + ', ' + g.say} onClick={() => setCard(card === g.key ? null : g.key)}>
+            <span className="esx-hole" aria-hidden="true" /><span className="esx-cl1"><span>{g.head}</span></span><b className="esx-num">{g.n}{g.of != null && <i>{'/' + g.of}</i>}</b>
+          </button>))}</div>
+        <EsxFold open={!!grp}>{grp && <div key={grp.key} className="dvp-rows esx-in" role="group" aria-label={grp.head}>{grp.rows.map((r) => <DlTapRow key={r.key} {...r} />)}</div>}</EsxFold>
+      </div>
+    </div></EsxFold>
+  </>);
+};
+export const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const phone = useDlCardPhone(ref); const [open, setOpen] = React.useState(true);
+  // The phone and desktop sheets are different trees under one section, which holds the width observer.
+  return (<section ref={ref} className={phone ? 'dv4 dv5 is-tight dv7 dvp' : 'dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b' + (open ? '' : ' is-shut')} aria-label="Character sheet">
+    {phone ? <DlPhone c={c} streak={streak} /> : <DlDesk c={c} streak={streak} open={open} setOpen={setOpen} />}</section>);
 };
 
 // ---- The session page's own part, under the shared head. Every move is the store's plain list, collapsed. ----
@@ -283,10 +351,10 @@ export function initGsDelve() {
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
   sheet: { used: { 'Shield bash': 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'Rolled 14 + 0 = 14 against DC 12'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 5 + 1 = 6 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 11/13'], ['Dexterity', 'Weak hit', 'Rolled 12 + 1 = 13 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 10/13'], ['Dexterity', 'Strong hit', 'Rolled 19 + 1 = 20 against DC 12'],
+  ['Dexterity', 'Miss', 'Rolled 5 + 1 = 6 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 21/23'], ['Dexterity', 'Weak hit', 'Rolled 12 + 1 = 13 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 20/23'], ['Dexterity', 'Strong hit', 'Rolled 19 + 1 = 20 against DC 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Strength', 'Miss', 'Rolled 3 + 3 = 6 against DC 12', 'Struck back: d20 17 vs 13, hit, 3 damage, HP 7/13'], ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 5/13'], ['Strength', 'Miss', 'Natural 1', 'Rolled 1 + 3 = 4 against DC 12', 'Struck back: d20 16 vs 13, hit, 3 damage, HP 2/13'],
-  ['Strength', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Strength', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 18 vs 13, hit, 2 damage, HP 0/13']] };
+  ['Strength', 'Miss', 'Rolled 3 + 3 = 6 against DC 12', 'Struck back: d20 17 vs 13, hit, 3 damage, HP 17/23'], ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 15/23'], ['Strength', 'Miss', 'Natural 1', 'Rolled 1 + 3 = 4 against DC 12', 'Struck back: d20 16 vs 13, hit, 3 damage, HP 12/23'],
+  ['Strength', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Strength', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 18 vs 13, hit, 2 damage, HP 10/23']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 11, threat: 12, foeMax: { 'the warren': 4, 'the shrine cavern': 5 }, sheet: { used: { Backstab: 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 1 = 2 against DC 12', 'HP 10/11'], ['Room', 'Entered the chime run'],
