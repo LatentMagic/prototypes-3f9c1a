@@ -24,7 +24,12 @@
       settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
       mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
       logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
-      card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>'
+      card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+      stats: "<g " + A + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
+      advantage: "<g " + A + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
+      pack: "<g " + A + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
+      ability: "<g " + A + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
+      fight: "<g " + A + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
     };
     const UI = {
       check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
