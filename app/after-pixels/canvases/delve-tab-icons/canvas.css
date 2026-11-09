@@ -1,0 +1,38 @@
+/* The Delve tab-icons canvas: the page around the tabs, and the tab itself as the hero sheet draws it (a box, the icon centred above the word).
+   Colours, type and the icon's line come from the design system. Reads on a phone, scrolls down only. */
+html, body { margin: 0; background: var(--page); color: var(--text); }
+body { font: 400 16px/1.5 var(--font-text); }
+.cv { max-width: 1240px; margin: 0 auto; padding: 0 0 64px; overflow-x: hidden; }
+.cv-head, .cv-tabs, .cv-ver > h2, .cv-ver > .cv-cap, .cv-ver > div { padding-left: 16px; padding-right: 16px; }
+.cv-head h1 { font: 700 22px/1.25 var(--font-heading); margin: 20px 0 6px; text-wrap: balance; }
+.cv-head p { margin: 0; color: var(--muted); font-size: 14px; }
+.cv-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+.cv-tabs button { min-height: 44px; padding: 0 14px; font: 700 14px/1 var(--font-heading); color: var(--text); background: var(--card); border: 0; box-shadow: inset 0 0 0 1.5px var(--control-edge); cursor: pointer; }
+.cv-tabs button.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
+.cv-tabs button:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
+.cv-ver > h2 { font: 700 18px/1.3 var(--font-heading); margin: 20px 0 4px; }
+.cv-cap { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+
+/* The tab: 76 px wide at least, 80 px tall, the icon centred above the word. */
+.cv-tab { box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 76px; height: 80px; padding: 8px 4px; background: var(--page); color: var(--text); box-shadow: inset 0 0 0 1.5px var(--control-edge); }
+.cv-tab.is-open { background: var(--off-white); color: var(--page); box-shadow: none; }
+.cv-ico { display: grid; place-items: center; width: 24px; height: 24px; }
+.cv-ico svg { display: block; }
+.cv-word { font: 600 12px/1.2 var(--font-text); text-align: center; overflow-wrap: anywhere; }
+
+/* A tab's options: a card each, the tab closed and open. */
+.cv-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
+.cv-opt, .cv-set { margin: 0; background: var(--card); border: 1px solid var(--line); padding: 16px; min-width: 0; }
+.cv-opt figcaption, .cv-set figcaption { margin-bottom: 12px; }
+.cv-opt figcaption b, .cv-set figcaption b { display: block; font: 700 15px/1.3 var(--font-heading); }
+.cv-opt figcaption span, .cv-set figcaption span { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.cv-opt em { font-style: normal; font-weight: 600; }
+.cv-opt em.is-new { color: var(--warning); }
+.cv-opt em.is-ds { color: var(--success); }
+.cv-pair { display: grid; grid-template-columns: repeat(2, minmax(76px, 100px)); gap: 8px; }
+
+/* A set: all five tabs in a row; on a phone three and two, as the sheet folds its tabs. */
+.cv-sets { display: grid; gap: 16px; margin-top: 16px; }
+.cv-row { display: grid; grid-template-columns: repeat(5, minmax(76px, 1fr)); gap: 8px; }
+@media (max-width: 520px) { .cv-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.cv-ver > .cv-set { margin: 16px 16px 0; }
