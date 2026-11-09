@@ -257,18 +257,13 @@ const DlPanel = ({ groups, card }) => { const grp = groups.find((g) => g.key ===
   return (<EsxFold open={!!grp}>{grp && (grp.rows
     ? <div key={grp.key} className="dvp-rows dl-panel esx-in" role="group" aria-label={grp.head}>{grp.rows.map((r) => <DlTapRow key={r.key} {...r} />)}</div>
     : <div key={grp.key} className={'dl-panel dl-cellpanel esx-in ' + grp.cls} role="group" aria-label={grp.head}><div className="dv7-cells">{grp.cells}</div></div>)}</EsxFold>); };
-const DlPhone = ({ c, streak, groups, card, setCard }) => { const [open, setOpen] = React.useState(false);
-  return (<>
-    {/* KEEP: the phone sheet opens folded to the hero and the meters; the whole hero row is the fold control, its chevron at the top right. */}
-    <button type="button" className="dvp-head" aria-expanded={open} aria-label={open ? 'Fold the character sheet' : 'Show the whole character sheet'} onClick={() => setOpen((o) => !o)}>
-      <span className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></span><DS.Icon name="next" size={20} /></button>
-    <DlMeters c={c} />
-    <EsxFold open={open}><div className="dvp-more">
-      <div className="dvp-pair"><DlStats c={c} k="dv8-stats" /><DlAdv c={c} streak={streak} k="dv8-adv" /></div>
-      <div className="dvp-tap"><DlTabs groups={groups} card={card} setCard={setCard} /><DlPanel groups={groups} card={card} /></div>
-    </div></EsxFold>
-  </>);
-};
+// KEEP: below 824px the sheet shows at once, with no fold: hero, meters, Stats beside Advantage, then the three tabs, every tab closed.
+const DlPhone = ({ c, streak, groups, card, setCard }) => (<>
+  <div className="dvp-head"><span className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></span></div>
+  <DlMeters c={c} />
+  <div className="dvp-pair"><DlStats c={c} k="dv8-stats" /><DlAdv c={c} streak={streak} k="dv8-adv" /></div>
+  <div className="dvp-tap"><DlTabs groups={groups} card={card} setCard={setCard} /><DlPanel groups={groups} card={card} /></div>
+</>);
 // KEEP: one row at every width the phone layout does not take: hero, meters, then Stats and Advantage beside the three tabs, or (five) the two as tabs too; the open tab's panel opens under the row.
 const DlRow = ({ c, streak, five, groups, card, setCard }) => (
   <div className="dv8-rows"><div className="dv7-band">
