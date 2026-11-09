@@ -10838,7 +10838,7 @@
   const PGN_IDS = ["where", "chain", "salvage", "common"];
   const PGN_GET = ["Play every daily edition.", "Earn achievements and streaks."];
   const PgnCard = ({ id, line, onGet }) => {
-    const title = GS_NAME[id] + " comes only with the Pass.";
+    const title = GS_NAME[id] + " comes only with the Pass.";
     return /* @__PURE__ */ React$1.createElement("section", { className: "pgn-card pgn-half is-line-" + line, "aria-label": title }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "PASS GAME"), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-side" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-side-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement("ul", { className: "pgn-list" }, PGN_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t))), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: onGet }, "Get the Pass")))));
   };
   const pgnWrap = (id, Base) => function PgnPage(props) {

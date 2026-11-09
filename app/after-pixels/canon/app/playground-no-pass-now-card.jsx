@@ -21,7 +21,7 @@ const PGN_GET = ['Play every daily edition.', 'Earn achievements and streaks.'];
 // Shape 3, two halves: label and title at the top of the left half; what you get, the bullets and the button in the right.
 // line: full (the card's whole height), short (only the right half's content), none.
 const PgnCard = ({ id, line, onGet }) => {
-  const title = GS_NAME[id] + ' comes only with the Pass.';
+  const title = GS_NAME[id] + ' comes only\u00a0with the\u00a0Pass.';
   return (
     <section className={'pgn-card pgn-half is-line-' + line} aria-label={title}>
       <div className="pgn-fill">
