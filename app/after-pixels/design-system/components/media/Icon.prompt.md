@@ -1,4 +1,4 @@
-Icon renders one of the hand-off's own 24px glyphs (search, back, close, lock, play, settings, mail, logout, card, plus check/warn/error/down); use it anywhere a glyph is needed instead of an outside icon set.
+Icon renders one of the hand-off's own 24px glyphs (search, back, close, lock, play, settings, mail, logout, card, stats, advantage, pack, ability, fight, plus check/warn/error/down); use it anywhere a glyph is needed instead of an outside icon set.
 
 ```jsx
 <Icon name="search"/>
