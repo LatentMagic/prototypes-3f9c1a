@@ -10721,6 +10721,9 @@
   };
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -10736,6 +10739,17 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
+  };
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -10821,6 +10835,37 @@
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
+  const PGN_IDS = ["where", "chain", "salvage", "common"];
+  const PGN_GET = ["Play every daily edition.", "Earn achievements and streaks."];
+  const PGN_ICONS = ["list", "check"];
+  const PgnGet = ({ mode }) => {
+    if (mode === "sentence") return /* @__PURE__ */ React$1.createElement("p", { className: "pgn-sentence" }, "Play every daily edition and earn achievements and streaks.");
+    if (mode === "icons") return /* @__PURE__ */ React$1.createElement("ul", { className: "pgn-list is-icons" }, PGN_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-ic" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: PGN_ICONS[i], size: 20 })), t)));
+    return /* @__PURE__ */ React$1.createElement("ul", { className: "pgn-list" }, PGN_GET.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, t)));
+  };
+  const PgnCard = ({ id, shape, get, onGet }) => {
+    const title = GS_NAME[id] + " comes only with the Pass.";
+    const button = /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: onGet }, "Get the Pass");
+    if (shape === "slim") return /* @__PURE__ */ React$1.createElement("section", { className: "pgn-card pgn-slim", "aria-label": title }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-main" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "PASS GAME"), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title), /* @__PURE__ */ React$1.createElement(PgnGet, { mode: get })), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-act" }, button));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "pgn-card pgn-half", "aria-label": title }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn-fill" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "PASS GAME"), /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-sec" }, title)), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-side" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgn-label" }, "WHAT YOU GET"), /* @__PURE__ */ React$1.createElement(PgnGet, { mode: get }), /* @__PURE__ */ React$1.createElement("div", { className: "pgn-act" }, button)));
+  };
+  const pgnWrap = (id, Base) => function PgnPage(props) {
+    const gs = useGs();
+    const shape = usePgSetting("shape");
+    const get = usePgSetting("get");
+    const never = cprLocked(gs, id) && !(gsLapsed(gs) && phVisible(gs).some((p) => p.gid === id));
+    if (!pgActive() || !never) return /* @__PURE__ */ React$1.createElement(Base, { ...props });
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PgnCard, { id, shape, get, onGet: () => gs.go("pass") })));
+  };
+  function initPlaygroundNoPassNowCard() {
+    pgRegister("no-pass-now-card", { title: "Now card without the Pass", settings: [
+      { key: "shape", kind: "concept", label: "Shape", options: [{ value: "half", label: "3 · coloured half" }, { value: "slim", label: "5 · slim row" }] },
+      { key: "get", label: "What you get", options: [{ value: "sentence", label: "Sentence" }, { value: "bullets", label: "Bullets" }, { value: "icons", label: "Bullets with icons" }] }
+    ] });
+    PGN_IDS.forEach((id) => {
+      GS_LIBRARY[id] = pgnWrap(id, GS_LIBRARY[id]);
+    });
+  }
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
   const whBand = (km) => km === null ? "found" : km >= 1e3 ? "far" : km >= 100 ? "mid" : "near";
@@ -11475,4 +11520,5 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
+  initPlaygroundNoPassNowCard();
 })(React, ReactDOM);
