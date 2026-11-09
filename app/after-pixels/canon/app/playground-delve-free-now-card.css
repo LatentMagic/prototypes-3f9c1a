@@ -1,7 +1,6 @@
 /* Playground: Delve's Now card for a free player after the free run (app/playground-delve-free-now-card.jsx). Two halves, a short
    divider, no colour, on the design system's own tokens and its secondary Button. */
-.pgd-card { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); color: var(--text); min-width: 0; }
-.pgd-label { display: block; font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; color: var(--off-white); }
+.pgd-card { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); padding: 0; gap: 0; color: var(--text); }
 .pgd-card .mcp-t-sec { margin: 0; text-wrap: wrap; }
 .pgd-card p, .pgd-card ul { margin: 0; }
 .pgd-list { list-style: none; padding: 0; display: grid; gap: var(--space-2); }
@@ -13,7 +12,7 @@
 .pgd-get { margin-top: var(--space-3); }
 .pgd-act { margin-top: var(--space-3); }
 @container gs (max-width: 639.98px) {
-  .pgd-card { grid-template-columns: minmax(0, 1fr); }
+  .pgd-card { grid-template-columns: minmax(0, 1fr); padding: 0; }
   .pgd-fill { padding: var(--space-4); }
   .pgd-side { padding: 0 var(--space-4) var(--space-4); }
   .pgd-side-in { padding: var(--space-4) 0 0; border-left: 0; border-top: 1px solid var(--line); }

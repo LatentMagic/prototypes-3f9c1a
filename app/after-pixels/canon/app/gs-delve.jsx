@@ -53,7 +53,7 @@ const dlMoments = (R, end) => {
   return out.sort((a, b) => a.r.n - b.r.n);
 };
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
-const dlBuild = (s) => {
+export const dlBuild = (s) => {
   const stops = []; const rolls = []; const order = []; let cur = null; let hp = s.hpMax;
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [] }; stops.push(cur); };
@@ -91,7 +91,7 @@ const DlDieBtn = ({ r, size, act, on }) => (
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
-const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
+export const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
 const dlTone = (m) => (m.end === 'won' ? 'ok' : m.end === 'live' ? 'live' : 'bad');
 const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result;
   return (<div className="dv7r-band"><h2 className={'dv7r-word is-' + dlTone(m)}>{dlWord(m)}</h2>{line && <p className="dv7r-line">{line}</p>}</div>); };
@@ -231,12 +231,10 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: open, hov: DL_NO_HOVER }
     </div>);
   })}</div>);
 };
-// The run a now card shows, and its result word: { kind, label }. A finished run follows Config → This edition; a live one, the begun play.
-export const dlNowRun = (wk, gs, sids = ['delve', 'delve-live']) => { const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = dlBuild(s);
-  return { sid, s, m, result: m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) } }; };
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
-  const gs = useGs(); const { sid, s, result } = dlNowRun(wk, gs, sids); const m = React.useMemo(() => dlBuild(s), [s]);
+  const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
+  const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
     <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
       <div className="dl-now-route"><DlNowRoute m={m} open={open} /></div>
