@@ -278,8 +278,8 @@ const DlRow = ({ c, streak, five, groups, card, setCard }) => (
   </div></div>);
 const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const step = useDlStep(ref); const [card, setCard] = React.useState(null);
   const groups = dlTabGroups(c, dlSlots(c), streak, step === 'five');
-  // A step change can take the open tab away (Stats and Advantage are tabs only in the five-tab step): shut it rather than reopen it later.
-  React.useEffect(() => { if (card && !groups.some((g) => g.key === card)) setCard(null); }, [card, groups.length]);
+  // KEEP: no tab is open at first in a new layout: a change of step (three, five, phone) shuts the open tab.
+  React.useEffect(() => { setCard(null); }, [step]);
   // The phone and desktop sheets are different trees under one section, which holds the width observer.
   return (<section ref={ref} className={step === 'phone' ? 'dv4 dv5 is-tight dv7 dvp' : 'dv4 dv5 is-tight dv7 is-band dv8 is-3b'} aria-label="Character sheet">
     {step === 'phone' ? <DlPhone c={c} streak={streak} groups={groups} card={card} setCard={setCard} /> : <DlRow c={c} streak={streak} five={step === 'five'} groups={groups} card={card} setCard={setCard} />}</section>);

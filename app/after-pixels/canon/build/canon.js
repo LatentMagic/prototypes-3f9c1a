@@ -3242,8 +3242,8 @@
     const [card, setCard] = React$1.useState(null);
     const groups = dlTabGroups(c, dlSlots(c), streak, step === "five");
     React$1.useEffect(() => {
-      if (card && !groups.some((g) => g.key === card)) setCard(null);
-    }, [card, groups.length]);
+      setCard(null);
+    }, [step]);
     return /* @__PURE__ */ React$1.createElement("section", { ref, className: step === "phone" ? "dv4 dv5 is-tight dv7 dvp" : "dv4 dv5 is-tight dv7 is-band dv8 is-3b", "aria-label": "Character sheet" }, step === "phone" ? /* @__PURE__ */ React$1.createElement(DlPhone, { c, streak, groups, card, setCard }) : /* @__PURE__ */ React$1.createElement(DlRow, { c, streak, five: step === "five", groups, card, setCard }));
   };
   const DlBody = ({ s }) => {
