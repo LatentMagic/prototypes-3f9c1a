@@ -1177,42 +1177,41 @@
   const GS_ES_DIG3 = ["123", "482", "907", "256"];
   const GS_DV_TURNCOAT = "As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.";
   const GS_DV_WON = [
-    ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "Rolled 1 + 0 = 1 against DC 12", "HP 22/23"],
+    ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 22/23"],
     ["Room", "Entered the chime run"],
-    ["Strength", "Heavy attack: Cleave", "Miss", "Rolled 9 + 3 = 12 against DC 14", "Struck back: d20 14, the higher of 14 and 6, vs 13, hit, 1 damage, HP 21/23"],
-    ["Dexterity", "Weak hit", "Rolled 11 + 1 = 12 against DC 12", "Struck back: d20 6 vs 13, missed"],
-    ["Dexterity", "Strong hit", "Rolled 18 + 1 = 19 against DC 12"],
+    ["Strength", "Heavy attack: Cleave", "Miss", "d20 9 + 3 = 12 vs 14", "Struck back: d20s 14 and 6, kept 14 vs 10, hit, 1 damage, HP 21/23"],
+    ["Dexterity", "Hit", "d20 11 + 1 = 12 vs 12", "Struck back: d20 6 vs 10, missed"],
+    ["Dexterity", "Hit", "d20 18 + 1 = 19 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Ability", "Used shield bash", "Warren guard: track 3 → 2", "Struck back: d20 7 vs 13, missed"],
-    ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12", "Struck back: d20 8 vs 13, missed"],
-    ["Strength", "Weak hit", "Rolled 13 + 3 = 16 against DC 12", "Struck back: d20 15 vs 13, hit, 2 damage, HP 19/23"],
-    ["Strength", "Strong hit", "Rolled 17 + 3 = 20 against DC 12"],
-    ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "Rolled 20 + 1 = 21 against DC 12"],
+    ["Ability", "Used shield bash", "Warren guard: health 3 → 2", "Struck back: d20 7 vs 10, missed"],
+    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 8 vs 10, missed"],
+    ["Strength", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
+    ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"],
+    ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Gear", "Used a healing draught", "Snaggle: track 3 → 1", "Struck back: d20 15 vs 13, hit, 1 damage, HP 18/23"],
-    ["Strength", "Strong hit", "Rolled 18, the higher of 15 and 18, + 3 = 21 against DC 12"],
+    ["Gear", "Used a healing draught", "Healed 4, HP 22/23", "Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23"],
+    ["Strength", "Hit", "d20s 15 and 18, kept 18 + 3 = 21 vs 12"],
     ["Gear", "Took the iron key"],
     ["Room", "Doubled back to the warren", "The ritual +1"],
     ["Lock", "Opened the bone gate with the iron key"],
     ["Room", "Entered the shrine cavern"],
-    ["Strength", "Strong hit", "Rolled 19, the higher of 11 and 19, + 3 = 22 against DC 12", "Struck back: d20 5 vs 13, missed"],
-    ["Strength", "Strong hit", "Rolled 17, the higher of 17 and 9, + 3 = 20 against DC 12"]
+    ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
+    ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"]
   ];
   const GS_DV_LIVE = [
-    ["Oracle", "Is anyone awake down here?", "Yes", "Rolled d100 23 against 25"],
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Weak hit", "Rolled 13 + 3 = 16 against DC 12", "Struck back: d20 7 vs 13, missed"],
-    ["Dexterity", "Strong hit", "Rolled 16 + 3 = 19 against DC 12"],
+    ["Dexterity", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 7 vs 14, missed"],
+    ["Dexterity", "Hit", "d20 16 + 3 = 19 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Dexterity", "Strong hit", "Rolled 14 + 3 = 17 against DC 12", "Struck back: d20 3 vs 13, missed"],
-    ["Dexterity", "Strong hit", "Rolled 14, the higher of 8 and 14, + 3 = 17 against DC 12", "Struck back: d20 10 vs 13, missed"],
-    ["Intelligence", "Study the wall scratchings", "Success", "Rolled 19, the higher of 19 and 15, + 1 = 20 against DC 12"],
+    ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12", "Struck back: d20 10 vs 14, missed"],
+    ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Dexterity", "Strong hit", "Rolled 14, the higher of 14 and 5, + 3 = 17 against DC 12", "Struck back: d20 9 vs 13, missed"],
-    ["Dexterity", "Strong hit", "Rolled 18, the higher of 18 and 7, + 3 = 21 against DC 12", "Struck back: d20 12 vs 13, missed"],
-    ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "Rolled 20, the higher of 20 and 6, + 3 = 23 against DC 12"],
+    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12", "Struck back: d20 12 vs 14, missed"],
+    ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 12"],
     ["Room", "Doubled back to the warren", "The ritual +1"]
   ];
   const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the ritual was completed", "Fell in the warren"];
@@ -1280,7 +1279,7 @@
       art: "delve",
       result: "Elsie rescued",
       date: "Monday 5 October",
-      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 18/23"],
+      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 22/23"],
       tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
       lines: GS_DV_WON,
       endings: GS_DV_ENDINGS,
@@ -2928,7 +2927,7 @@
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       abilities: [{ name: "Shield bash", of: 1, ult: true, does: "Strikes at once, no roll" }],
       fight: { defence: 10, armour: 2, armourName: "ox shield", heavy: { name: "Cleave", needs: 14, dmg: 7 } },
-      gear: [{ name: "Healing draught", kind: "once", does: "" }, { name: "Crowbar", kind: "key", does: "" }]
+      gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
     },
     // Wren, from the same source (rogue): defence 14, protection 1 (a leather jerkin), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
     "Wren the Rogue": {
@@ -2937,32 +2936,34 @@
       stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
       abilities: [{ name: "Sneak attack", of: 1, ult: true, does: "Strikes at once, no roll" }],
       fight: { defence: 14, armour: 1, armourName: "leather jerkin", heavy: { name: "Flurry", needs: 13, dmg: 6 } },
-      gear: [{ name: "Healing draught", kind: "once", does: "" }, { name: "Rope", kind: "key", does: "" }]
+      gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Rope", kind: "key", does: "" }]
     }
   };
   const DL_GEAR_DOES = { "Iron key": "Opens the lock it fits" };
-  const DL_TIER = { strong: "Strong hit", weak: "Weak hit", miss: "Miss" };
-  const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
+  const dlGrade = (r) => (r.fight ? { strong: "Hit", miss: "Miss" } : { strong: "Success", weak: "Partial success", miss: "Failure" })[r.tier];
+  const DL_GRADE = /^(Hit|Miss)$/;
   const dlStruck = (parts) => {
-    const sb = /^Struck back: d20 (?:(\d+), the higher of (\d+) and (\d+),|(\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
+    const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
     if (!sb) return null;
-    const roll = +(sb[1] || sb[4]);
     const two = sb[1] != null;
-    return { roll, other: two ? +sb[2] === roll ? +sb[3] : +sb[2] : null, dc: +sb[5], hit: sb[6] === "hit", dmg: sb[7] ? +sb[7] : 0 };
+    const roll = +(sb[3] || sb[4]);
+    return { roll, other: two ? +sb[1] === roll ? +sb[2] : +sb[1] : null, dc: +sb[5], hit: sb[6] === "hit", dmg: sb[7] ? +sb[7] : 0 };
   };
   const dlRoll = (l) => {
     const parts = l.slice(1).map(String);
     const t = parts.join(" · ");
-    const m = /Rolled (?:(\d+), the higher of (\d+) and (\d+), |(\d+) )\+ (-?\d+) = (-?\d+) against DC (\d+)/.exec(t);
+    const m = /(?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+)) ([+-]) (\d+) = (-?\d+) vs (\d+)/.exec(t);
     if (!m) return null;
-    const kept = +(m[1] || m[4]);
+    const kept = +(m[3] || m[4]);
     const two = m[1] != null;
-    const other = two ? +m[2] === kept ? +m[3] : +m[2] : null;
+    const other = two ? +m[1] === kept ? +m[2] : +m[1] : null;
+    const mod = (m[5] === "-" ? -1 : 1) * +m[6];
     const crit = /Natural 20/.test(t);
     const fumble = /Natural 1\b/.test(t);
-    const tier = fumble ? "miss" : /Weak hit|Partial success/.test(t) ? "weak" : /\bMiss\b|Failure/.test(t) ? "miss" : /Strong hit|\bSuccess\b/.test(t) || crit ? "strong" : "miss";
+    const fight = DL_GRADE.test(parts[0]) || /^Heavy attack/.test(parts[0]);
+    const tier = fumble ? "miss" : /Partial success/.test(t) ? "weak" : /\bMiss\b|Failure/.test(t) ? "miss" : /\bHit\b|\bSuccess\b/.test(t) || crit ? "strong" : "miss";
     const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
-    return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
+    return { stat: l[0], fight, kept, other, mod, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
   };
   const DL_USE_KINDS = /^(Ability|Ultimate|Gear)$/;
   const dlUse = (l, hero) => {
@@ -3005,6 +3006,7 @@
     let cur = null;
     let hp = s.hpMax;
     const foeHp = {};
+    let run = 0;
     const foeOf = () => {
       const f = cur && DL_FOES[cur.name.toLowerCase()];
       return f ? { f, k: cur.key } : null;
@@ -3015,6 +3017,7 @@
       if (!order.includes(key)) order.push(key);
       cur = { i: stops.length, key, name: name || "First room", back, num: order.indexOf(key) + 1, rolls: [], turns: [] };
       stops.push(cur);
+      if (DL_FOES[(name || "").toLowerCase()]) run = 0;
     };
     (s.lines || []).forEach((l) => {
       if (l[0] === "Room") {
@@ -3056,20 +3059,18 @@
         foeHp[fo.k] = r.tier === "miss" ? left : Math.max(0, left - (r.crit ? 2 : 1));
         if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] };
       }
+      run = r.tier === "strong" ? run + 1 : 0;
+      if (fo && foeHp[fo.k] === 0) run = 0;
       rolls.push(r);
       turns.push(r);
       cur.rolls.push(r);
       cur.turns.push(r);
     });
-    let run = 0;
-    rolls.forEach((r) => {
-      run = r.tier === "strong" ? run + 1 : 0;
-    });
     const end = s.live ? "live" : s.end;
     const moments = dlMoments(rolls, end);
     return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
   };
-  const dlSay = (r, foe = true) => r.use ? r.what + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + DL_TIER[r.tier].toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "");
+  const dlSay = (r, foe = true) => r.use ? r.what + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
   const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
@@ -3087,7 +3088,7 @@
     const x = r.use ? null : m.mom[r.n];
     const tcls = r.fumble ? "fumble" : r.tier;
     const foeRow = r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc)));
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? r.what + " used" : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, [r.what.toLowerCase(), r.does].filter(Boolean).join(", ")))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, DL_TIER[r.tier])), foeRow, r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")), r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: r.foe.name, n: r.foe.health, of: r.foe.max })))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? r.what + " used" : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, [r.what.toLowerCase(), r.does].filter(Boolean).join(", ")))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")), r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: r.foe.name, n: r.foe.health, of: r.foe.max })))));
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
   const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
@@ -3171,7 +3172,7 @@
     return phone;
   };
   const DlStats = ({ c, k }) => /* @__PURE__ */ React$1.createElement(DlGrp, { k, head: "Stats" }, c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x }))));
-  const DlAdv = ({ c, streak, k }) => /* @__PURE__ */ React$1.createElement(DlGrp, { k, head: "Advantage" }, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Strong hits in a row" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak)));
+  const DlAdv = ({ c, streak, k }) => /* @__PURE__ */ React$1.createElement(DlGrp, { k, head: "Advantage" }, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Hits or successes in a row. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak)));
   const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }));
   const dlFight = (c) => {
     const f = c.fight;
@@ -3275,7 +3276,7 @@
       const keys = st.rolls.filter((r) => m.mom[r.n]);
       const rest = st.rolls.filter((r) => !m.mom[r.n]);
       const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === m.stops.length - 1 ? " is-row-end" : "");
-      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34, foe: false }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
+      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34, foe: false }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => dlGrade(r).toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
     }));
   };
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
@@ -3302,18 +3303,18 @@
       threat: 7,
       sheet: { used: { "Shield bash": 2 }, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Success", "Rolled 14 + 0 = 14 against DC 12"],
+        ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 14 + 0 = 14 vs 12"],
         ["Room", "Entered the chime run"],
-        ["Dexterity", "Miss", "Rolled 5 + 1 = 6 against DC 12", "Struck back: d20 15 vs 13, hit, 2 damage, HP 21/23"],
-        ["Dexterity", "Weak hit", "Rolled 12 + 1 = 13 against DC 12", "Struck back: d20 14 vs 13, hit, 1 damage, HP 20/23"],
-        ["Dexterity", "Strong hit", "Rolled 19 + 1 = 20 against DC 12"],
+        ["Dexterity", "Miss", "d20 5 + 1 = 6 vs 12", "Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23"],
+        ["Dexterity", "Hit", "d20 12 + 1 = 13 vs 12", "Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23"],
+        ["Dexterity", "Hit", "d20 19 + 1 = 20 vs 12"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Strength", "Miss", "Rolled 3 + 3 = 6 against DC 12", "Struck back: d20 17 vs 13, hit, 3 damage, HP 17/23"],
-        ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12", "Struck back: d20 15 vs 13, hit, 2 damage, HP 15/23"],
-        ["Strength", "Miss", "Natural 1", "Rolled 1 + 3 = 4 against DC 12", "Struck back: d20 16 vs 13, hit, 3 damage, HP 12/23"],
-        ["Strength", "Strong hit", "Rolled 15 + 3 = 18 against DC 12", "Struck back: d20 4 vs 13, missed"],
-        ["Strength", "Miss", "Rolled 7 + 3 = 10 against DC 12", "Struck back: d20 18 vs 13, hit, 2 damage, HP 10/23"]
+        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 5 damage, HP 12/23"],
+        ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 4 damage, HP 8/23"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 5 damage, HP 3/23"],
+        ["Strength", "Hit", "d20 15 + 3 = 18 vs 12", "Struck back: d20 4 vs 10, missed"],
+        ["Strength", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 18 vs 10, hit, 3 damage, HP 0/23"]
       ]
     };
     GS_SESSIONS["delve-hard"] = {
@@ -3330,37 +3331,37 @@
       foeMax: { "the warren": 4, "the shrine cavern": 5 },
       sheet: { used: { "Sneak attack": 1 }, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "Rolled 1 + 1 = 2 against DC 12", "HP 20/21"],
+        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 20/21"],
         ["Room", "Entered the chime run"],
-        ["Dexterity", "Miss", "Rolled 8 + 3 = 11 against DC 12", "Struck back: d20 14 vs 13, hit, 1 damage, HP 19/21"],
-        ["Dexterity", "Weak hit", "Rolled 9 + 3 = 12 against DC 12", "Struck back: d20 7 vs 13, missed"],
-        ["Dexterity", "Strong hit", "Rolled 16 + 3 = 19 against DC 12"],
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 14 vs 14, hit, 1 damage, HP 19/21"],
+        ["Dexterity", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 7 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 16 + 3 = 19 vs 12"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Dexterity", "Strong hit", "Rolled 14 + 3 = 17 against DC 12", "Struck back: d20 6 vs 13, missed"],
-        ["Dexterity", "Strong hit", "Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12", "Struck back: d20 11 vs 13, missed"],
-        ["Dexterity", "Miss", "Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12", "Struck back: d20 15 vs 13, hit, 3 damage, HP 16/21"],
-        ["Strength", "Weak hit", "Rolled 12 + 0 = 12 against DC 12", "Struck back: d20 4 vs 13, missed"],
-        ["Dexterity", "Strong hit", "Rolled 15 + 3 = 18 against DC 12"],
+        ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
+        ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 3 = 18 vs 12", "Struck back: d20 11 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 vs 14, hit, 3 damage, HP 16/21"],
+        ["Strength", "Hit", "d20 12 + 0 = 12 vs 12", "Struck back: d20 4 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 15 + 3 = 18 vs 12"],
         ["Room", "Doubled back to the chime run", "The ritual +1"],
-        ["Intelligence", "Read the chime wires", "Partial success", "Rolled 13 + 1 = 14 against DC 12"],
+        ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Entered Snaggle's den"],
-        ["Dexterity", "Miss", "Rolled 7 + 3 = 10 against DC 12", "Struck back: d20 13 vs 13, hit, 1 damage, HP 15/21"],
-        ["Dexterity", "Strong hit", "Natural 20", "Rolled 20 + 3 = 23 against DC 12", "Struck back: d20 8 vs 13, missed"],
-        ["Dexterity", "Strong hit", "Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12"],
+        ["Dexterity", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 13 vs 14, missed"],
+        ["Dexterity", "Hit", "Natural 20", "d20 20 + 3 = 23 vs 12", "Struck back: d20 8 vs 14, missed"],
+        ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
-        ["Strength", "Force the bone gate", "Failure", "Rolled 6 + 0 = 6 against DC 12"],
-        ["Strength", "Force the bone gate", "Failure", "Rolled 11 + 0 = 11 against DC 12"],
-        ["Strength", "Force the bone gate", "Success", "Rolled 14 + 0 = 14 against DC 12"],
+        ["Strength", "Force the bone gate", "Failure", "d20 6 + 0 = 6 vs 12"],
+        ["Strength", "Force the bone gate", "Failure", "d20 11 + 0 = 11 vs 12"],
+        ["Strength", "Force the bone gate", "Success", "d20 14 + 0 = 14 vs 12"],
         ["Lock", "Forced the bone gate"],
         ["Room", "Entered the shrine cavern"],
-        ["Dexterity", "Weak hit", "Rolled 10 + 3 = 13 against DC 12", "Struck back: d20 16 vs 13, hit, 2 damage, HP 13/21"],
-        ["Dexterity", "Strong hit", "Rolled 17 + 3 = 20 against DC 12", "Struck back: d20 6 vs 13, missed"],
-        ["Dexterity", "Strong hit", "Rolled 18 + 3 = 21 against DC 12", "Struck back: d20 9 vs 13, missed"],
-        ["Dexterity", "Miss", "Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12", "Struck back: d20 17 vs 13, hit, 1 damage, HP 12/21"],
-        ["Dexterity", "Weak hit", "Rolled 11 + 3 = 14 against DC 12", "Struck back: d20 12 vs 13, missed"],
-        ["Dexterity", "Miss", "Rolled 8 + 3 = 11 against DC 12", "Struck back: d20 16 vs 13, hit, 1 damage, HP 11/21"]
+        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
+        ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 9 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 5 and 7, kept 7 + 3 = 10 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
+        ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 12 vs 14, missed"],
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
       ]
     };
   }
@@ -6459,7 +6460,7 @@
       endings: null,
       reached: null,
       shareLines: null,
-      lines: [["Room", "Entered the flooded nave"], ["Dexterity", "Cross the sunken pews", "Success", "Rolled 14 + 2 = 16 against DC 12"], ["Room", "Entered the bell loft"]]
+      lines: [["Room", "Entered the flooded nave"], ["Dexterity", "Cross the sunken pews", "Success", "d20 14 + 2 = 16 vs 12"], ["Room", "Entered the bell loft"]]
     };
     PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + "-0", at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
     Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {

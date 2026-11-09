@@ -8,7 +8,7 @@
 
 // SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
 // and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three. The foes below, their health and
-// the 13 their d20 must reach are invented too: the record names no foe and writes no foe health, only the struck-back part of a roll's line.
+// are invented too: the record names no foe and writes no foe health, only the struck-back part of a roll's line, whose target is the hero's defence (10 the fighter, 14 the rogue).
 const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
@@ -25,35 +25,37 @@ const DL_HEROES = {
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     abilities: [{ name: 'Shield bash', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 10, armour: 2, armourName: 'ox shield', heavy: { name: 'Cleave', needs: 14, dmg: 7 } },
-    gear: [{ name: 'Healing draught', kind: 'once', does: '' }, { name: 'Crowbar', kind: 'key', does: '' }] },
+    gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Crowbar', kind: 'key', does: '' }] },
   // Wren, from the same source (rogue): defence 14, protection 1 (a leather jerkin), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
     abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 14, armour: 1, armourName: 'leather jerkin', heavy: { name: 'Flurry', needs: 13, dmg: 6 } },
-    gear: [{ name: 'Healing draught', kind: 'once', does: '' }, { name: 'Rope', kind: 'key', does: '' }] },
+    gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Rope', kind: 'key', does: '' }] },
 };
 const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 
 // ---- The model: the record's lines read into the rooms stood in (going back included), the rolls and the gear. ----
-const DL_TIER = { strong: 'Strong hit', weak: 'Weak hit', miss: 'Miss' };
+// A fight roll is a hit or a miss (delve.md: Check); an option or an obstacle is a success, a partial success or a failure. A fight die is never the middle tone.
+const dlGrade = (r) => (r.fight ? { strong: 'Hit', miss: 'Miss' } : { strong: 'Success', weak: 'Partial success', miss: 'Failure' })[r.tier];
 // A heavy attack names itself ("Heavy attack: Cleave") and is an attack on the foe, not an option.
-// A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "Rolled 14 + 3 = 17 against DC 12", "HP 19/23"].
-// A foe roll grades Strong hit, Weak hit or Miss; an option roll Success, Partial success or Failure (delve.md).
-const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
-const dlStruck = (parts) => { const sb = /^Struck back: d20 (?:(\d+), the higher of (\d+) and (\d+),|(\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
-  if (!sb) return null; const roll = +(sb[1] || sb[4]); const two = sb[1] != null;
-  return { roll, other: two ? (+sb[2] === roll ? +sb[3] : +sb[2]) : null, dc: +sb[5], hit: sb[6] === 'hit', dmg: sb[7] ? +sb[7] : 0 }; };
-// The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 13, hit, 1 damage, HP 21/23" or "..., missed"; with advantage, "d20 14, the higher of 14 and 6, vs 13".
+// A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "d20 14 + 3 = 17 vs 12", "HP 19/23"], the dice as the deployed record writes them (monorepo scene session-record.ts diceOf).
+// A fight roll's line opens with Hit or Miss (or "Heavy attack: Cleave"); an option's with its name, then Success, Partial success or Failure.
+const DL_GRADE = /^(Hit|Miss)$/;
+const dlStruck = (parts) => { const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
+  if (!sb) return null; const two = sb[1] != null; const roll = +(sb[3] || sb[4]);
+  return { roll, other: two ? (+sb[1] === roll ? +sb[2] : +sb[1]) : null, dc: +sb[5], hit: sb[6] === 'hit', dmg: sb[7] ? +sb[7] : 0 }; };
+// The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 10, hit, 1 damage, HP 21/23" or "..., missed"; with advantage, "d20s 14 and 6, kept 14 vs 10". Its target is the hero's defence.
 const dlRoll = (l) => {
   const parts = l.slice(1).map(String); const t = parts.join(' · ');
-  const m = /Rolled (?:(\d+), the higher of (\d+) and (\d+), |(\d+) )\+ (-?\d+) = (-?\d+) against DC (\d+)/.exec(t); if (!m) return null;
-  const kept = +(m[1] || m[4]); const two = m[1] != null; const other = two ? (+m[2] === kept ? +m[3] : +m[2]) : null;
+  const m = /(?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+)) ([+-]) (\d+) = (-?\d+) vs (\d+)/.exec(t); if (!m) return null;
+  const kept = +(m[3] || m[4]); const two = m[1] != null; const other = two ? (+m[1] === kept ? +m[2] : +m[1]) : null; const mod = (m[5] === '-' ? -1 : 1) * +m[6];
   const crit = /Natural 20/.test(t); const fumble = /Natural 1\b/.test(t);
-  const tier = fumble ? 'miss' : /Weak hit|Partial success/.test(t) ? 'weak' : /\bMiss\b|Failure/.test(t) ? 'miss' : (/Strong hit|\bSuccess\b/.test(t) || crit) ? 'strong' : 'miss';
+  const fight = DL_GRADE.test(parts[0]) || /^Heavy attack/.test(parts[0]);
+  const tier = fumble ? 'miss' : /Partial success/.test(t) ? 'weak' : /\bMiss\b|Failure/.test(t) ? 'miss' : (/\bHit\b|\bSuccess\b/.test(t) || crit) ? 'strong' : 'miss';
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
-  return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
+  return { stat: l[0], fight, kept, other, mod, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
-// A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Gear · Used a pepper pouch · Snaggle: track 3 → 1 · Struck back: d20 15 vs 13, hit, 1 damage, HP 18/23").
+// A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Ability · Used shield bash · Warren guard: health 3 → 2 · Struck back: d20 7 vs 10, missed").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
 const DL_USE_KINDS = /^(Ability|Ultimate|Gear)$/;
 const dlUse = (l, hero) => { const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
@@ -74,14 +76,16 @@ const dlMoments = (R, end) => {
 };
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 export const dlBuild = (s) => {
-  const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {};
+  const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {}; let run = 0;
   const foeOf = () => { const f = cur && DL_FOES[cur.name.toLowerCase()]; return f ? { f, k: cur.key } : null; };
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
-    cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [], turns: [] }; stops.push(cur); };
+    cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [], turns: [] }; stops.push(cur);
+    // KEEP: the streak starts again from 0 when a fight begins (delve.md: Streak); it also does when the fight ends, below.
+    if (DL_FOES[(name || '').toLowerCase()]) run = 0; };
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
     if (!cur) open(null, false);
-    // A gear line that wears a foe down names its health before and after ("Snaggle: track 3 → 1").
+    // A gear line that wears a foe down names its health before and after ("Snaggle: health 3 → 1").
     const wear = DL_USE_KINDS.test(l[0]) && /→ (\d+)$/.exec(String(l[2] || '')); const fo = foeOf(); if (wear && fo) foeHp[fo.k] = +wear[1];
     const u = dlUse(l, s.hero);
     // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number, is no key moment, and breaks no streak.
@@ -95,14 +99,14 @@ export const dlBuild = (s) => {
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20). Its roll back, where the line holds one, rides on the roll.
     if (fo && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1));
       if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] }; }
+    run = r.tier === 'strong' ? run + 1 : 0; if (fo && foeHp[fo.k] === 0) run = 0;
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
-  let run = 0; rolls.forEach((r) => { run = r.tier === 'strong' ? run + 1 : 0; });
   const end = s.live ? 'live' : s.end;
   const moments = dlMoments(rolls, end);
   return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
 };
-const dlSay = (r, foe = true) => r.use ? r.what + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + DL_TIER[r.tier].toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '');
+const dlSay = (r, foe = true) => r.use ? r.what + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
@@ -138,7 +142,7 @@ const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r
       {r.use && <div><dt>Used</dt><dd>{r.name} <span className="is-does">{[r.what.toLowerCase(), r.does].filter(Boolean).join(', ')}</span></dd></div>}
       {!r.use && r.action && <div><dt>Action</dt><dd>{r.action}{r.move && <> <span>{r.move}</span></>}</dd></div>}
       {!r.use && <div><dt>Roll</dt><dd>{r.stat} {r.total} <span>vs {r.dc}</span></dd></div>}
-      {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{DL_TIER[r.tier]}</dd></div>}
+      {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{dlGrade(r)}</dd></div>}
       {foeRow}
       {r.harm > 0 && !r.foe && <div><dt>Cost</dt><dd>Lost {r.harm} HP</dd></div>}
       {r.foe && <div className="dv3-fm"><DlMeter label={r.foe.name} n={r.foe.health} of={r.foe.max} /></div>}
@@ -203,7 +207,7 @@ const DlGrp = ({ k, head, children }) => <div className={'dv7-grp' + (k ? ' ' + 
 export const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
 
 // 3B (owner, 2026-10-29): the hero; hit points and threat stacked on one grid; stats; the pack with its free slots; abilities; Advantage
-// (inspiration and the current run of strong hits). The torch, clues and the bargain join once the record holds them.
+// (inspiration and the current streak of hits or successes). The torch, clues and the bargain join once the record holds them.
 // Desktop: two rows, the second collapsible and starting open (owner, 2026-11-09). A phone card has tap cards.
 const DL_CARD_PHONE = 560;
 // The sheet's content width, read as the CSS container reads it, before paint and on every resize.
@@ -214,7 +218,7 @@ const useDlCardPhone = (ref) => { const [phone, setPhone] = React.useState(false
   return phone; };
 const DlStats = ({ c, k }) => <DlGrp k={k} head="Stats">{c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>)}</DlGrp>;
 const DlAdv = ({ c, streak, k }) => (<DlGrp k={k} head="Advantage"><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
-  <DlCell label="Streak" title="Strong hits in a row"><span className="dv8-num">{streak}</span></DlCell></DlGrp>);
+  <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></DlGrp>);
 const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
@@ -324,7 +328,7 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 
       <DlStopHead st={st} />
       {!st.rolls.length && <i className="dv2-pass" aria-label="No rolls" />}
       {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.n} r={r} act={null} on={on} size={34} foe={false} />)}</div>}
-      {rest.length > 0 && <span className="dl-now-marks" style={{ '--dl-marks': dlMarkCols(rest.length) }} role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(', ')}>
+      {rest.length > 0 && <span className="dl-now-marks" style={{ '--dl-marks': dlMarkCols(rest.length) }} role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map((r) => dlGrade(r).toLowerCase()).join(', ')}>
         {rest.map((r) => <i key={r.n} className={'dl-now-mark is-' + r.tier} />)}</span>}
     </div>);
   })}</div>);
@@ -352,24 +356,24 @@ export function initGsDelve() {
 // (every room, going back three times, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
   sheet: { used: { 'Shield bash': 2 }, insp: false }, lines: [
-  ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'Rolled 14 + 0 = 14 against DC 12'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 5 + 1 = 6 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 21/23'], ['Dexterity', 'Weak hit', 'Rolled 12 + 1 = 13 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 20/23'], ['Dexterity', 'Strong hit', 'Rolled 19 + 1 = 20 against DC 12'],
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 14 + 0 = 14 vs 12'], ['Room', 'Entered the chime run'],
+  ['Dexterity', 'Miss', 'd20 5 + 1 = 6 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23'], ['Dexterity', 'Hit', 'd20 12 + 1 = 13 vs 12', 'Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23'], ['Dexterity', 'Hit', 'd20 19 + 1 = 20 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Strength', 'Miss', 'Rolled 3 + 3 = 6 against DC 12', 'Struck back: d20 17 vs 13, hit, 3 damage, HP 17/23'], ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 15 vs 13, hit, 2 damage, HP 15/23'], ['Strength', 'Miss', 'Natural 1', 'Rolled 1 + 3 = 4 against DC 12', 'Struck back: d20 16 vs 13, hit, 3 damage, HP 12/23'],
-  ['Strength', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Strength', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 18 vs 13, hit, 2 damage, HP 10/23']] };
+  ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 5 damage, HP 12/23'], ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 8/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 5 damage, HP 3/23'],
+  ['Strength', 'Hit', 'd20 15 + 3 = 18 vs 12', 'Struck back: d20 4 vs 10, missed'], ['Strength', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 18 vs 10, hit, 3 damage, HP 0/23']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the warren': 4, 'the shrine cavern': 5 }, sheet: { used: { 'Sneak attack': 1 }, insp: false }, lines: [
-  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 1 = 2 against DC 12', 'HP 20/21'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 14 vs 13, hit, 1 damage, HP 19/21'], ['Dexterity', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12', 'Struck back: d20 7 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'd20 1 + 0 = 1 vs 12', 'HP 20/21'], ['Room', 'Entered the chime run'],
+  ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 14 vs 14, hit, 1 damage, HP 19/21'], ['Dexterity', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 7 vs 14, missed'], ['Dexterity', 'Hit', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12', 'Struck back: d20 11 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12', 'Struck back: d20 15 vs 13, hit, 3 damage, HP 16/21'],
-  ['Strength', 'Weak hit', 'Rolled 12 + 0 = 12 against DC 12', 'Struck back: d20 4 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 15 + 3 = 18 against DC 12'],
-  ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'Rolled 13 + 1 = 14 against DC 12'],
+  ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Struck back: d20 11 vs 14, missed'], ['Dexterity', 'Miss', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Struck back: d20 15 vs 14, hit, 3 damage, HP 16/21'],
+  ['Strength', 'Hit', 'd20 12 + 0 = 12 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
+  ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'Miss', 'Rolled 7 + 3 = 10 against DC 12', 'Struck back: d20 13 vs 13, hit, 1 damage, HP 15/21'], ['Dexterity', 'Strong hit', 'Natural 20', 'Rolled 20 + 3 = 23 against DC 12', 'Struck back: d20 8 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12'],
+  ['Dexterity', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 13 vs 14, missed'], ['Dexterity', 'Hit', 'Natural 20', 'd20 20 + 3 = 23 vs 12', 'Struck back: d20 8 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
-  ['Strength', 'Force the bone gate', 'Failure', 'Rolled 6 + 0 = 6 against DC 12'], ['Strength', 'Force the bone gate', 'Failure', 'Rolled 11 + 0 = 11 against DC 12'], ['Strength', 'Force the bone gate', 'Success', 'Rolled 14 + 0 = 14 against DC 12'],
+  ['Strength', 'Force the bone gate', 'Failure', 'd20 6 + 0 = 6 vs 12'], ['Strength', 'Force the bone gate', 'Failure', 'd20 11 + 0 = 11 vs 12'], ['Strength', 'Force the bone gate', 'Success', 'd20 14 + 0 = 14 vs 12'],
   ['Lock', 'Forced the bone gate'], ['Room', 'Entered the shrine cavern'],
-  ['Dexterity', 'Weak hit', 'Rolled 10 + 3 = 13 against DC 12', 'Struck back: d20 16 vs 13, hit, 2 damage, HP 13/21'], ['Dexterity', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12', 'Struck back: d20 6 vs 13, missed'], ['Dexterity', 'Strong hit', 'Rolled 18 + 3 = 21 against DC 12', 'Struck back: d20 9 vs 13, missed'],
-  ['Dexterity', 'Miss', 'Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12', 'Struck back: d20 17 vs 13, hit, 1 damage, HP 12/21'], ['Dexterity', 'Weak hit', 'Rolled 11 + 3 = 14 against DC 12', 'Struck back: d20 12 vs 13, missed'], ['Dexterity', 'Miss', 'Rolled 8 + 3 = 11 against DC 12', 'Struck back: d20 16 vs 13, hit, 1 damage, HP 11/21']] };
+  ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
+  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
 }

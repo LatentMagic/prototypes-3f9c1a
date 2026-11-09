@@ -14,7 +14,7 @@ let DV_ROOMS;
 let DV_RITUAL;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play
-// (Bryn: a streak of five strong hits, HP 14 of 23) meets Hot Streak only. A run counts as completed when its status is a win: Config → This edition: Failed
+// (Bryn: a streak of five strong hits, HP 22 of 23) meets Hot Streak only. A run counts as completed when its status is a win: Config → This edition: Failed
 // or Hard makes this week's a loss (gsSessStatus), so it is not completed.
 const dvEnded = (ps) => ps.filter((p) => p.status.kind === 'ok');
 export let DV_ACH;
