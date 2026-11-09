@@ -322,6 +322,24 @@
   .dvp .dv8-stats .dv7-cells { gap: 2px; }
   .dvp .dv7-cell .dv7-fig > svg { width: 26px; }
 }
+/* ---- the tabs: Escape's tap cards (esx-card), each with its icon centred above its word and no figure ---- */
+/* KEEP: a tab is at least 84px wide, so ADVANTAGE sits on one line; three across on a phone, down to a 240px sheet, with the word's letter-spacing tightened from 280px. */
+.esx-card.dl-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 80px; padding: 8px 2px; text-align: center; }
+.dl-tab-w { font: 600 var(--size-2xs)/1 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.dl-tab.is-open .dl-tab-w { color: var(--text); }
+.esx-cards.dl-tabs { grid-template-columns: repeat(var(--dl-tabs), minmax(0, 1fr)); gap: 8px; }
+.dvp .esx-cards.dl-tabs { grid-template-columns: repeat(var(--dl-tabs), minmax(0, 1fr)); gap: 8px; }
+@container dv4 (max-width: 280px) {
+  .dvp .esx-cards.dl-tabs { gap: 6px; }
+  .dvp .esx-card.dl-tab { height: 80px; padding: 8px 2px; }
+  .dl-tab-w { letter-spacing: .02em; }
+}
+.dv8.is-3b .dl-tabgrp { flex: 1 1 auto; min-width: 0; padding: 0 0 0 16px; justify-items: stretch; align-content: center; }
+.dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: repeat(var(--dl-tabs), minmax(84px, 120px)); justify-content: center; }
+/* The open tab's panel, under the row. */
+.dv8.is-3b .dl-panel { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.dl-cellpanel { padding: 16px 0; }
+.dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
 /* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
 moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
 .dl-now-route { min-width: 0; }

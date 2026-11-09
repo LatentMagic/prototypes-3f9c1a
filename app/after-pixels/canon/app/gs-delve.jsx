@@ -208,17 +208,20 @@ const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</s
 
 // 3B (owner, 2026-10-29): the hero; hit points and threat stacked on one grid; stats; the pack with its free slots; abilities; Advantage
 // (inspiration and the current streak of hits or successes). The torch, clues and the bargain join once the record holds them.
-// Desktop: two rows, the second collapsible and starting open (owner, 2026-11-09). A phone card has tap cards.
-const DL_CARD_PHONE = 560;
+// The sheet is a row of tabs at every width the phone layout does not take. A tap card is Escape's mechanism (esx-cards, EsxFold); a tab adds only its icon.
+// KEEP: the step is chosen by the sheet's own content width, never the window: three tabs (Pack, Ability, Fight) beside Stats and Advantage from 958px, five tabs (Stats and Advantage too) from 824px, the phone layout below 824px; the row never wraps and no text shrinks to fit.
+const DL_STEP_FIVE = 824; const DL_STEP_THREE = 958;
 // The sheet's content width, read as the CSS container reads it, before paint and on every resize.
-const useDlCardPhone = (ref) => { const [phone, setPhone] = React.useState(false);
+const useDlStep = (ref) => { const [step, setStep] = React.useState('phone');
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => { const cs = getComputedStyle(el); setPhone(el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) < DL_CARD_PHONE); };
+    const read = () => { const cs = getComputedStyle(el); const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setStep(w < DL_STEP_FIVE ? 'phone' : w < DL_STEP_THREE ? 'five' : 'three'); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
-  return phone; };
-const DlStats = ({ c, k }) => <DlGrp k={k} head="Stats">{c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>)}</DlGrp>;
-const DlAdv = ({ c, streak, k }) => (<DlGrp k={k} head="Advantage"><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
-  <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></DlGrp>);
+  return step; };
+const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
+const DlAdvCells = ({ c, streak }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
+  <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></>);
+const DlStats = ({ c, k }) => <DlGrp k={k} head="Stats"><DlStatCells c={c} /></DlGrp>;
+const DlAdv = ({ c, streak, k }) => <DlGrp k={k} head="Advantage"><DlAdvCells c={c} streak={streak} /></DlGrp>;
 const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
@@ -251,23 +254,34 @@ const DlDesk = ({ c, streak, open, setOpen }) => { const slots = dlSlots(c);
   </div></div>);
 };
 
-// Phone card: tap cards for Pack and Abilities, Escape's mechanism (esx-cards, EsxFold). One card is open at a time; a second tap shuts it.
-const dlTapGroups = (c, slots) => {
+// The tabs and what each opens: Pack, Ability and Fight everywhere; Stats and Advantage too (five) where the row has no room for them beside the tabs.
+const dlTabGroups = (c, slots, streak, five) => {
   const free = slots.length - c.gear.length; const left = c.abilities.reduce((n, a) => n + a.left, 0); const of = c.abilities.reduce((n, a) => n + a.of, 0);
   return [
-    { key: 'pack', head: 'Pack', n: c.gear.length, of: slots.length, say: c.gear.length + ' of ' + slots.length + ' carried',
+    ...(five ? [{ key: 'stats', head: 'Stats', icon: 'stats', cells: <DlStatCells c={c} />, cls: 'dv8-stats' },
+      { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} streak={streak} />, cls: 'dv8-adv' }] : []),
+    { key: 'pack', head: 'Pack', icon: 'pack', say: c.gear.length + ' of ' + slots.length + ' carried',
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
         ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
-    { key: 'abilities', head: c.abilities.length > 1 ? 'Abilities' : 'Ability', n: left, of, say: left + ' of ' + of + ' uses left',
+    { key: 'abilities', head: c.abilities.length > 1 ? 'Abilities' : 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
       rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: (a.ult ? 'Ultimate · ' : '') + a.left + ' of ' + a.of + ' left', text: a.does })) },
-    ...(c.fight ? [{ key: 'fight', head: 'Fight', n: c.fight.defence, of: null, say: 'defence ' + c.fight.defence,
+    ...(c.fight ? [{ key: 'fight', head: 'Fight', icon: 'fight', say: 'defence ' + c.fight.defence,
       rows: dlFight(c).map((f) => ({ key: f.key, fig: <span className="dv8-num">{f.num}</span>, name: f.label, tag: f.kind || f.tip, text: f.text })) }] : []),
   ];
 };
 const DlTapRow = ({ fig, name, tag, text }) => (<div className="dvp-row"><span className="dvp-fig">{fig}</span>
   <div className="dvp-tx"><p className="dvp-nm"><b>{name}</b>{tag && <span>{tag}</span>}</p>{text && <p className="dvp-does">{text}</p>}</div></div>);
-const DlPhone = ({ c, streak }) => { const [open, setOpen] = React.useState(false); const [card, setCard] = React.useState(null);
-  const groups = dlTapGroups(c, dlSlots(c)); const grp = groups.find((g) => g.key === card);
+// One tab: its icon centred above its word, no figure. Nothing is open at first; a second tap on the open tab shuts it.
+const DlTabs = ({ groups, card, setCard }) => (<div className="esx-cards dl-tabs" style={{ '--dl-tabs': groups.length }}>{groups.map((g) => (
+  <button key={g.key} type="button" className={'esx-card dl-tab' + (card === g.key ? ' is-open' : '')} aria-expanded={card === g.key} aria-label={g.say ? g.head + ', ' + g.say : g.head} onClick={() => setCard(card === g.key ? null : g.key)}>
+    <DS.Icon name={g.icon} size={24} /><span className="dl-tab-w">{g.head}</span>
+  </button>))}</div>);
+// The open tab's contents under the row: rows for Pack, Ability and Fight, the sheet's own cells for Stats and Advantage.
+const DlPanel = ({ groups, card }) => { const grp = groups.find((g) => g.key === card);
+  return (<EsxFold open={!!grp}>{grp && (grp.rows
+    ? <div key={grp.key} className="dvp-rows dl-panel esx-in" role="group" aria-label={grp.head}>{grp.rows.map((r) => <DlTapRow key={r.key} {...r} />)}</div>
+    : <div key={grp.key} className={'dl-panel dl-cellpanel esx-in ' + grp.cls} role="group" aria-label={grp.head}><div className="dv7-cells">{grp.cells}</div></div>)}</EsxFold>); };
+const DlPhone = ({ c, streak, groups, card, setCard }) => { const [open, setOpen] = React.useState(false);
   return (<>
     {/* KEEP: the phone sheet opens folded to the hero and the meters; the whole hero row is the fold control, its chevron at the top right. */}
     <button type="button" className="dvp-head" aria-expanded={open} aria-label={open ? 'Fold the character sheet' : 'Show the whole character sheet'} onClick={() => setOpen((o) => !o)}>
@@ -275,20 +289,29 @@ const DlPhone = ({ c, streak }) => { const [open, setOpen] = React.useState(fals
     <DlMeters c={c} />
     <EsxFold open={open}><div className="dvp-more">
       <div className="dvp-pair"><DlStats c={c} k="dv8-stats" /><DlAdv c={c} streak={streak} k="dv8-adv" /></div>
-      <div className="dvp-tap">
-        <div className="esx-cards">{groups.map((g) => (
-          <button key={g.key} type="button" className={'esx-card' + (card === g.key ? ' is-open' : '')} aria-expanded={card === g.key} aria-label={g.head + ', ' + g.say} onClick={() => setCard(card === g.key ? null : g.key)}>
-            <span className="esx-hole" aria-hidden="true" /><span className="esx-cl1"><span>{g.head}</span></span><b className="esx-num">{g.n}{g.of != null && <i>{'/' + g.of}</i>}</b>
-          </button>))}</div>
-        <EsxFold open={!!grp}>{grp && <div key={grp.key} className="dvp-rows esx-in" role="group" aria-label={grp.head}>{grp.rows.map((r) => <DlTapRow key={r.key} {...r} />)}</div>}</EsxFold>
-      </div>
+      <div className="dvp-tap"><DlTabs groups={groups} card={card} setCard={setCard} /><DlPanel groups={groups} card={card} /></div>
     </div></EsxFold>
   </>);
 };
-const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const phone = useDlCardPhone(ref); const [open, setOpen] = React.useState(true);
+// KEEP: one row at every width the phone layout does not take: hero, meters, then Stats and Advantage beside the three tabs, or (five) the two as tabs too; the open tab's panel opens under the row.
+const DlRow = ({ c, streak, five, groups, card, setCard }) => (
+  <div className="dv8-rows"><div className="dv7-band">
+    <div className="dv8-r1">
+      <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
+      <DlMeters c={c} />
+      {!five && <DlStats c={c} k="dv8-stats" />}
+      {!five && <DlAdv c={c} streak={streak} k="dv8-adv" />}
+      <div className="dv7-grp dl-tabgrp"><DlTabs groups={groups} card={card} setCard={setCard} /></div>
+    </div>
+    <DlPanel groups={groups} card={card} />
+  </div></div>);
+const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const step = useDlStep(ref); const [card, setCard] = React.useState(null);
+  const groups = dlTabGroups(c, dlSlots(c), streak, step === 'five');
+  // A step change can take the open tab away (Stats and Advantage are tabs only in the five-tab step): shut it rather than reopen it later.
+  React.useEffect(() => { if (card && !groups.some((g) => g.key === card)) setCard(null); }, [card, groups.length]);
   // The phone and desktop sheets are different trees under one section, which holds the width observer.
-  return (<section ref={ref} className={phone ? 'dv4 dv5 is-tight dv7 dvp' : 'dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b' + (open ? '' : ' is-shut')} aria-label="Character sheet">
-    {phone ? <DlPhone c={c} streak={streak} /> : <DlDesk c={c} streak={streak} open={open} setOpen={setOpen} />}</section>);
+  return (<section ref={ref} className={step === 'phone' ? 'dv4 dv5 is-tight dv7 dvp' : 'dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b'} aria-label="Character sheet">
+    {step === 'phone' ? <DlPhone c={c} streak={streak} groups={groups} card={card} setCard={setCard} /> : <DlRow c={c} streak={streak} five={step === 'five'} groups={groups} card={card} setCard={setCard} />}</section>);
 };
 
 // ---- The session page's own part, under the shared head. Every move is the store's plain list, collapsed. ----
