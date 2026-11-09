@@ -3214,7 +3214,7 @@
       },
       {
         key: "abilities",
-        head: c.abilities.length > 1 ? "Abilities" : "Ability",
+        head: "Ability",
         icon: "ability",
         say: left + " of " + of + " uses left",
         rows: c.abilities.map((a) => ({ key: a.name, fig: /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of }), name: a.name, tag: (a.ult ? "Ultimate · " : "") + a.left + " of " + a.of + " left", text: a.does }))

@@ -239,7 +239,7 @@ const dlTabGroups = (c, slots, streak, five) => {
     { key: 'pack', head: 'Pack', icon: 'pack', say: c.gear.length + ' of ' + slots.length + ' carried',
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
         ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
-    { key: 'abilities', head: c.abilities.length > 1 ? 'Abilities' : 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
+    { key: 'abilities', head: 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
       rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: (a.ult ? 'Ultimate · ' : '') + a.left + ' of ' + a.of + ' left', text: a.does })) },
     ...(c.fight ? [{ key: 'fight', head: 'Fight', icon: 'fight', say: 'defence ' + c.fight.defence,
       rows: dlFight(c).map((f) => ({ key: f.key, fig: <span className="dv8-num">{f.num}</span>, name: f.label, tag: f.kind || f.tip, text: f.text })) }] : []),
