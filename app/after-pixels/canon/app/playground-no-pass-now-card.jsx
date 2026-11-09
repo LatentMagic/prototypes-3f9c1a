@@ -1,7 +1,7 @@
 // ============================================================================
 // PLAYGROUND, not canon (branch candidate/no-pass-now-card-playground): the library Now card a player without the Pass sees on a
 // game behind the Pass (Chain, Salvage, Common, Where), never played. Two switches in the settings bar (app/playground.jsx): the shape
-// (3 coloured half, 5 slim row) and what you get (a sentence, bullets, bullets with icons). The game is the library game open:
+// (3 two halves, 5 slim row) and what you get (a sentence, bullets, bullets with icons). The game is the library game open:
 // open it with its state, e.g. ?pg=no-pass-now-card&state=library-where-free (-chain-, -salvage-, -common-). Without ?pg= canon's own
 // page shows. To remove it: delete this file and playground-no-pass-now-card.css, and their lines in main.jsx and canon.css.
 // ============================================================================
@@ -68,7 +68,7 @@ const pgnWrap = (id, Base) => function PgnPage(props) {
 
 export function initPlaygroundNoPassNowCard() {
   pgRegister('no-pass-now-card', { title: 'Now card without the Pass', settings: [
-    { key: 'shape', kind: 'concept', label: 'Shape', options: [{ value: 'half', label: '3 · coloured half' }, { value: 'slim', label: '5 · slim row' }] },
+    { key: 'shape', kind: 'concept', label: 'Shape', options: [{ value: 'half', label: '3 · two halves' }, { value: 'slim', label: '5 · slim row' }] },
     { key: 'get', label: 'What you get', options: [{ value: 'sentence', label: 'Sentence' }, { value: 'bullets', label: 'Bullets' }, { value: 'icons', label: 'Bullets with icons' }] },
   ] });
   PGN_IDS.forEach((id) => { GS_LIBRARY[id] = pgnWrap(id, GS_LIBRARY[id]); });

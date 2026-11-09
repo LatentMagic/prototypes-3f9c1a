@@ -10859,7 +10859,7 @@
   };
   function initPlaygroundNoPassNowCard() {
     pgRegister("no-pass-now-card", { title: "Now card without the Pass", settings: [
-      { key: "shape", kind: "concept", label: "Shape", options: [{ value: "half", label: "3 · coloured half" }, { value: "slim", label: "5 · slim row" }] },
+      { key: "shape", kind: "concept", label: "Shape", options: [{ value: "half", label: "3 · two halves" }, { value: "slim", label: "5 · slim row" }] },
       { key: "get", label: "What you get", options: [{ value: "sentence", label: "Sentence" }, { value: "bullets", label: "Bullets" }, { value: "icons", label: "Bullets with icons" }] }
     ] });
     PGN_IDS.forEach((id) => {
