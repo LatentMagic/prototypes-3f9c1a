@@ -18,10 +18,10 @@ const GSC_CB_SEARCH = [gscU('Ask Maeve Doyle where she was at ten'),
 const GSC_CB_LIE = [gscU('Show Maeve the bar ledger'),
   gscAi('casebook', '“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”', [{ type: 'clues', groups: [{ kind: 'Evidence', facts: ['The bar ledger'] }, { kind: 'Statements', facts: [{ text: 'Maeve Doyle: lie exposed', new: true }] }] }, { type: 'stats', items: [{ label: 'Turn', value: '5 of 16' }] }])];
 
-// Delve's fight chat, written for the page from the same playtest; every event is true to it and no edition secret appears.
-export const GSC_DV_FIGHT_CAP = 'Say how you want to fight the guards.';
-export const GSC_DV_FIGHT = [gscU('I somersault over the first guard and kick him'),
-  gscAi('delve', 'You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.', null, [{ type: 'roll', label: 'Somersault', roll: 16, mod: 3, target: 13, result: 'hit', outcome: 'Hit · one guard falls' }])];
+// Delve's fight chat, written for the page from a real play of edition 3, The Briar Keep; every event is true to it and no edition secret appears.
+export const GSC_DV_FIGHT_CAP = 'Say how you want to fight, and spend your inspiration when it counts.';
+export const GSC_DV_FIGHT = [gscU('Use my inspiration on a Beakjab'),
+  gscAi('delve', 'The gamble pays off. A shrill whistle, and the goose that sulked in the corner comes back in a flap of wings. It takes the witch squarely on the ankle, and she hops and howls.', null, [{ type: 'roll', label: 'Beakjab', roll: 12, mod: 3, target: 13, result: 'hit', outcome: 'Hit · inspiration spent' }])];
 
 export let GS_CHATS;
 export let GS_HERO_CHAT;
@@ -107,23 +107,23 @@ GS_CHATS = {
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
   ],
-  // Delve: the product page's four chats, written for the page from a real playtest (2026-11-06) and the game spec: every turn shows something the game really does, and no edition secret appears.
-  // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
+  // Delve: the product page's four chats, written for the page from a real play of edition 3, The Briar Keep, and the game spec: every turn shows something the game really does, and no edition secret appears.
+  // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health).
   delve: [
     { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('Play Delve on After Pixels'),
-      gscAi('delve', ['Delve #5: The Labyrinth of Crete', 'Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.', 'Choose your hero:'],
-        null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Leon, the Wrestler', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Ione, the Bull-leaper', line: 'Best at Agility, Charm · 21 HP · Defence 14' }, { name: 'Mira, the Temple scholar', line: 'Best at Wits, Wisdom · 17 HP · Defence 12' }]}]),
-      gscU('Ione'),
-      gscAi('delve', 'You are Ione, a bull-leaper, quick and light and very hard to hit.')] },
-    { cap: 'A miss costs you health. Spend your inspiration on the retry.', turns: [gscU('I wait for a gap in the moving walls, then dart through'),
-      gscAi('delve', 'You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.', null, [{ type: 'roll', label: 'Agility', roll: 7, mod: 3, target: 12, result: 'miss', outcome: 'Failure · 4 damage' }, { type: 'track', items: [{ label: 'Ione’s health', value: 17, max: 21, tone: 'health' }] }]),
-      gscU('I try again and spend my inspiration'),
-      gscAi('delve', 'The stone shudders and then stops, with a straight path laid down the hall.', null, [{ type: 'roll', label: 'Agility', roll: 15, mod: 3, target: 12, result: 'hit', outcome: 'Success · inspiration spent' }])] },
+      gscAi('delve', ['Delve #3: The Briar Keep', 'A hundred years ago the Briar Witch was not invited to Prince Aurel’s christening. In her anger she put the whole keep to sleep and grew a forest of thorns around it.', 'Which hero will you take?'],
+        null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Hal, the Woodcutter', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Elfa, the Goose-girl', line: 'Best at Nimbleness, Charm · 21 HP · Defence 14' }, { name: 'Bram, the Hedge-witch', line: 'Best at Learning, Good sense · 17 HP · Defence 12' }]}]),
+      gscU('Goose-girl'),
+      gscAi('delve', 'You are Elfa, the goose-girl, a quick, cheeky girl who can talk her way round anyone and climb anything.')] },
+    { cap: 'A miss costs you health. Roll again to get past it.', turns: [gscU('One more cut'),
+      gscAi('delve', 'Your foot slips on a mossy step and the cut goes wide. The last tangle whips back and rakes your arm.', null, [{ type: 'roll', label: 'Nimbleness', roll: 1, mod: 3, target: 12, result: 'miss', outcome: 'Failure · 2 damage' }, { type: 'track', items: [{ label: 'Elfa’s health', value: 15, max: 21, tone: 'health' }] }]),
+      gscU('Try again'),
+      gscAi('delve', 'You plant your feet and cut. The last tangle falls away, though a thorn rakes your sleeve and arm on its way down.', null, [{ type: 'roll', label: 'Nimbleness', roll: 11, mod: 3, target: 12, result: 'weak', outcome: 'Partial success · 2 damage' }, { type: 'track', items: [{ label: 'Elfa’s health', value: 13, max: 21, tone: 'health' }] }])] },
     { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
-    { cap: 'Your result is ready to post, with one mark for every roll you made.', turns: [gscU('Finish it with the somersault'),
-      gscAi('delve', ['The Minotaur goes down, and this time it does not get up. The den goes quiet at last.', 'You won Delve #5. The next run opens next week.']),
-      gscU('Share my result'),
-      gscAi('delve', 'Here’s your result, ready to copy:', null, [{ type: 'mono', text: 'The Labyrinth of Crete\nIone the Bull-leaper · ✅ out of the Labyrinth alive · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve' }])] },
+    { cap: 'Your result is ready to post, with one mark for every roll you made.', turns: [gscU('Beakjab to finish her'),
+      gscAi('delve', ['The Briar Keep: Won', 'The briars at the windows turn brown and fall away, and the last of the candlelight turns to morning.', 'Prince Aurel opens his eyes, looks at you, and asks what he has missed. All through the keep, the sleepers begin to wake.']),
+      gscU('Can I get the share card?'),
+      gscAi('delve', 'Here’s your share card:', null, [{ type: 'mono', text: 'The Briar Keep\nElfa the Goose-girl · ✅ Prince Aurel is awake · 20 rolls · longest streak 4\n🟨🟥🟥🟩✨🟨🟩🟨🟩🟨🟨🟩💀🟨🟥🟥🟩🟩🟩🟩\nhttps://afterpixels.com/discover/delve' }])] },
   ],
   barrow: [
     { cap: 'Choose a hero. The engine sets the world.', turns: [gscU('Play The Barrow of Hollowmere on After Pixels'),
