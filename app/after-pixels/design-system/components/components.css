@@ -596,4 +596,5 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-card.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-row.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-art-host:is(:active,.is-on) .mcp-tag-daily{background:color-mix(in srgb,var(--text) 24%,var(--page))}
 /* SpeechBubble: the words a player types, inline, as a sent message. The one round shape on the shop's own surface. */
 .mcp-say{display:inline;padding:.15em .6em;border-radius:1em 1em .2em 1em;background:var(--off-white);color:var(--page);font-family:var(--font-text);font-weight:500;white-space:nowrap;-webkit-box-decoration-break:clone;box-decoration-break:clone;cursor:inherit}
-.mcp-say.is-wrap{white-space:normal}
+/* KEEP: a long bubble that does not fit moves to the next line whole, and breaks inside itself only when one line is too narrow for it; its line height is trimmed by its padding so it adds no height to the line. */
+.mcp-say.is-wrap{display:inline-block;max-width:100%;white-space:normal;line-height:calc(1lh - .3em)}

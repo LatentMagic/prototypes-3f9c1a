@@ -2,7 +2,7 @@
 export interface SpeechBubbleProps{
   /** The exact words the player types. */
   children:React.ReactNode;
-  /** Let a long bubble break inside itself on a narrow phone. A short bubble never breaks. */
+  /** A long bubble: when it does not fit the rest of the line it moves to the next line whole, and breaks inside itself only when a line is too narrow for it. A short bubble never breaks. */
   wrap?:boolean;
   className?:string;
 }

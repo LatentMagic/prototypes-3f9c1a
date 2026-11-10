@@ -279,8 +279,7 @@ export const GsConnect = () => {
         <DS.Card className="hw-start">
           <div className="hw-start-half">
             <p className="mcp-t-card hw-start-line">In any chat, type<GsSay text={gsPromptText({ kind: 'games' })} /></p>
-            <p>Your AI shows you the games to pick from.</p>
-            <DS.TextLink onClick={() => gs.go('games')}>See the games</DS.TextLink>
+            <p>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></p>
           </div>
           <div className="hw-start-half hw-start-more">
             <p>To go straight to one, type<GsSay wrap text={gsPromptText({ kind: 'game', gid: 'delve' })} />.{freeView && ' Its first run is free.'}</p>

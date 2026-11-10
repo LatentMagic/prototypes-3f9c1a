@@ -1,4 +1,4 @@
-/** A step of how something goes, as a card: picture at 2:1, name (card title), one muted line. Looks like a GameCard but is never a game: no chips, no Pass mark, no link, never pressable. Put StepCards inside StepCards, which shares their lines. */
+/** A step of how something goes, as a card: picture at 2:1, name (card title), one muted line. Looks like a GameCard but is never a game: no chips, no Pass mark, no link, never pressable. Put StepCard inside StepCards, which shares their lines. */
 export interface StepCardProps{
   /** The step's picture, shown at 2:1 and never stretched. A still image or SVG in cover colours on a cover ground. */
   art:React.ReactNode;

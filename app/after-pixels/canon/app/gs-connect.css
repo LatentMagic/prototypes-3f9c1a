@@ -72,7 +72,6 @@
 .hw-start-half + .hw-start-half { border-top: 1px solid var(--line); }
 .hw-start-line { text-wrap: pretty; }
 .hw-start-more { gap: 12px; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
-.hw-start-half > .mcp-lnk { margin-block: -4px -12px; }
 @media (min-width: 640px) {
   .hw-start.mcp-card { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
   .hw-start-half { padding: 24px; }
