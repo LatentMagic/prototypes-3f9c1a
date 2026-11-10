@@ -1185,8 +1185,8 @@
     ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 17 + 0 = 17 vs 12"],
     ["Room", "Entered the chime run"],
     ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 12", "HP 21/23"],
-    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 11 + 1 = 12 vs 12"],
     ["Strength", "Success", "d20 16 + 3 = 19 vs 12"],
+    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 11 + 1 = 12 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
     ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
@@ -1207,8 +1207,8 @@
   ];
   const GS_DV_LIVE = [
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 3 = 16 vs 12"],
     ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
+    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 3 = 16 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
     ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 vs 14, missed"],
@@ -1304,7 +1304,7 @@
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
       foeMax: { "snaggle's den": 1, "the shrine cavern": 5 },
-      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟨🟩🟩🟩🟩✨🟩🟩🟩"]
+      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
@@ -3055,7 +3055,7 @@
       if (!order.includes(key)) order.push(key);
       cur = { i: stops.length, key, name: name || "First room", back, num: order.indexOf(key) + 1, rolls: [], turns: [] };
       stops.push(cur);
-      if (DL_FOES[(name || "").toLowerCase()]) run = 0;
+      if (DL_FOES[(name || "").toLowerCase()] && !DL_HAZARDS.has((name || "").toLowerCase())) run = 0;
     };
     (s.lines || []).forEach((l) => {
       if (l[0] === "Room") {
@@ -3104,14 +3104,14 @@
         passedRooms.add(cur.key);
         r.passed = obstacle;
       }
-      if (hazard) {
+      if (hazard && graded) {
         const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
         const left = foeHp[fo.k] != null ? foeHp[fo.k] : max;
         foeHp[fo.k] = Math.max(0, left - (r.tier === "strong" ? r.crit ? 4 : 2 : r.tier === "weak" ? 1 : 0));
         r.meter = { name: fo.f[0], health: foeHp[fo.k], max };
         if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
-        r.threat = r.tier === "miss" ? r.fumble ? 2 : 1 : 0;
       }
+      if ((hazard || obstacle) && graded && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
       if (fo && !hazard && (!r.action || r.action === "Heavy attack")) {
         const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
         const dmg = (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1);
@@ -3123,7 +3123,7 @@
         }
       }
       run = r.tier === "strong" ? run + 1 : 0;
-      if (fo && foeHp[fo.k] === 0) run = 0;
+      if (fo && !hazard && foeHp[fo.k] === 0) run = 0;
       rolls.push(r);
       turns.push(r);
       cur.rolls.push(r);
@@ -3556,8 +3556,8 @@
         ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12", "HP 21/23"],
         ["Room", "Entered the chime run"],
         ["Strength", "Failure", "d20 3 + 3 = 6 vs 12", "HP 19/23"],
-        ["Strength", "Failure", "d20 4 + 3 = 7 vs 12", "HP 17/23"],
         ["Strength", "Success", "d20 17 + 3 = 20 vs 12"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 12", "HP 17/23"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23"],
@@ -3589,8 +3589,8 @@
         ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12"],
         ["Room", "Entered the chime run"],
         ["Dexterity", "Failure", "d20 8 + 3 = 11 vs 12", "HP 19/21"],
-        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 12"],
         ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 12"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
@@ -3644,7 +3644,7 @@
       light: 0,
       lightMax: 0,
       foeMax: {},
-      figures: ["Threat 2/14", "10 rolls", "HP 19/23"],
+      figures: ["Threat 2/14", "10 rolls", "HP 20/23"],
       tracks: { progress: 4, rooms: 6, threat: 2, threatMax: 14 },
       sheet: { used: {}, insp: true },
       lines: [
@@ -3655,11 +3655,11 @@
         ["Charisma", "Flatter the witch", "Partial success", "d20 13 + 0 = 13 vs 12"],
         ["Room", "Entered the great hall"],
         ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 vs 10, missed"],
-        ["Strength", "Hit", "d20 12 + 3 = 15 vs 12", "Struck back: d20 12 vs 10, hit, 2 damage, HP 21/23"],
+        ["Strength", "Hit", "d20 12 + 3 = 15 vs 12", "Struck back: d20 12 vs 10, hit, 1 damage, HP 22/23"],
         ["Strength", "Hit", "d20 14 + 3 = 17 vs 12"],
         ["Room", "Entered the thorn stair"],
         ["Strength", "Partial success", "d20 11 + 3 = 14 vs 12"],
-        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 19/23"],
+        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 20/23"],
         ["Strength", "Success", "d20 15 + 3 = 18 vs 12"],
         ["Strength", "Success", "d20 16 + 3 = 19 vs 12"]
       ]

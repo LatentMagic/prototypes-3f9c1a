@@ -104,8 +104,8 @@ const dlBuild = (s) => {
   const foeOf = () => { const f = cur && DL_FOES[cur.name.toLowerCase()]; return f ? { f, k: cur.key } : null; };
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [], turns: [] }; stops.push(cur);
-    // KEEP: the streak starts again from 0 when a fight begins (delve.md: Streak); it also does when the fight ends, below.
-    if (DL_FOES[(name || '').toLowerCase()]) run = 0; };
+    // KEEP: the streak starts again from 0 when a fight with a foe begins (delve.md: Streak); it also does when that fight ends, below. A hazard is no fight: its successes add to the streak.
+    if (DL_FOES[(name || '').toLowerCase()] && !DL_HAZARDS.has((name || '').toLowerCase())) run = 0; };
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
     if (!cur) open(null, false);
@@ -130,14 +130,16 @@ const dlBuild = (s) => {
     const obstacle = DL_OBSTACLES[cur.name.toLowerCase()];
     if (obstacle && graded && !passedRooms.has(cur.key) && r.tier !== 'miss') { passedRooms.add(cur.key); r.passed = obstacle; }
     // KEEP: a hazard's every turn draws its health bar, with no foe roll row; the room's name stays on the bar and at 0 the turn says "<hazard> beaten", as a killed foe does. A failure costs the hero and adds threat.
-    if (hazard) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const left = foeHp[fo.k] != null ? foeHp[fo.k] : max;
+    if (hazard && graded) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const left = foeHp[fo.k] != null ? foeHp[fo.k] : max;
       foeHp[fo.k] = Math.max(0, left - (r.tier === 'strong' ? (r.crit ? 4 : 2) : r.tier === 'weak' ? 1 : 0));
       r.meter = { name: fo.f[0], health: foeHp[fo.k], max }; if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
-      r.threat = r.tier === 'miss' ? (r.fumble ? 2 : 1) : 0; }
+    }
+    // A failed attempt on an obstacle or a hazard adds 1 threat, 2 on a natural 1 (scene-game.ts foeOutcomeOf).
+    if ((hazard || obstacle) && graded && r.tier === 'miss') r.threat = r.fumble ? 2 : 1;
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20); a band takes the hero's damage (DL_HIT). Its roll back, where the line holds one, rides on the roll.
     if (fo && !hazard && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const dmg = (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1); foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - dmg); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
       if (r.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) }; } }
-    run = r.tier === 'strong' ? run + 1 : 0; if (fo && foeHp[fo.k] === 0) run = 0;
+    run = r.tier === 'strong' ? run + 1 : 0; if (fo && !hazard && foeHp[fo.k] === 0) run = 0;
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
   const end = s.live ? 'live' : s.end;
@@ -560,7 +562,7 @@ export function initGsDelve() {
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 6, light: 4,
   figures: ['Threat 6/12', '8 rolls', 'HP 0/23'], tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Partial success', 'd20 14 + 0 = 14 vs 12', 'HP 21/23'], ['Room', 'Entered the chime run'],
-  ['Strength', 'Failure', 'd20 3 + 3 = 6 vs 12', 'HP 19/23'], ['Strength', 'Failure', 'd20 4 + 3 = 7 vs 12', 'HP 17/23'], ['Strength', 'Success', 'd20 17 + 3 = 20 vs 12'],
+  ['Strength', 'Failure', 'd20 3 + 3 = 6 vs 12', 'HP 19/23'], ['Strength', 'Success', 'd20 17 + 3 = 20 vs 12'], ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 13 + 1 = 14 vs 12', 'HP 17/23'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23'], ['Strength', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23'],
   ['Strength', 'Miss', 'd20 6 + 3 = 9 vs 12', 'Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23']] };
@@ -570,7 +572,7 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   lightName: 'the watchman\'s round', light: 0, lightMax: 9,
   figures: ['Threat 12/12', '24 rolls', '1 natural 20', 'HP 14/21'], tracks: { progress: 5, rooms: 5, threat: 12, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'd20 1 + 0 = 1 vs 12'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Failure', 'd20 8 + 3 = 11 vs 12', 'HP 19/21'], ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 9 + 3 = 12 vs 12'], ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'],
+  ['Dexterity', 'Failure', 'd20 8 + 3 = 11 vs 12', 'HP 19/21'], ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'], ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 9 + 3 = 12 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Struck back: d20 11 vs 14, missed'], ['Dexterity', 'Miss', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Struck back: d20 15 vs 14, hit, 1 damage, HP 18/21'],
   ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
@@ -590,12 +592,12 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.
 GS_SESSIONS['delve-hazard'] = { ...GS_SESSIONS.delve, noEd: true, date: 'Monday 12 October', live: true, loss: false, end: 'won', result: 'In progress', reached: null, share: null, shareLines: null,
   setting: 'The Briar Keep', hero: 'Hal the Woodcutter', hpMax: 23, threat: 2, threatMax: 14, lightName: null, light: 0, lightMax: 0, foeMax: {},
-  figures: ['Threat 2/14', '10 rolls', 'HP 19/23'], tracks: { progress: 4, rooms: 6, threat: 2, threatMax: 14 }, sheet: { used: {}, insp: true }, lines: [
+  figures: ['Threat 2/14', '10 rolls', 'HP 20/23'], tracks: { progress: 4, rooms: 6, threat: 2, threatMax: 14 }, sheet: { used: {}, insp: true }, lines: [
   ['Intelligence', 'Read the rhyme on the gatepost', 'Success', 'd20 17 + 0 = 17 vs 12'],
   ['Room', 'Entered the rose walk'], ['Dexterity', 'Climb the garden wall to the sundial', 'Success', 'd20 16 + 1 = 17 vs 12'],
   ['Room', 'Entered the well court'], ['Charisma', 'Flatter the witch', 'Partial success', 'd20 13 + 0 = 13 vs 12'],
   ['Room', 'Entered the great hall'],
-  ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 4 vs 10, missed'], ['Strength', 'Hit', 'd20 12 + 3 = 15 vs 12', 'Struck back: d20 12 vs 10, hit, 2 damage, HP 21/23'], ['Strength', 'Hit', 'd20 14 + 3 = 17 vs 12'],
+  ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 4 vs 10, missed'], ['Strength', 'Hit', 'd20 12 + 3 = 15 vs 12', 'Struck back: d20 12 vs 10, hit, 1 damage, HP 22/23'], ['Strength', 'Hit', 'd20 14 + 3 = 17 vs 12'],
   ['Room', 'Entered the thorn stair'],
-  ['Strength', 'Partial success', 'd20 11 + 3 = 14 vs 12'], ['Strength', 'Failure', 'd20 6 + 3 = 9 vs 12', 'HP 19/23'], ['Strength', 'Success', 'd20 15 + 3 = 18 vs 12'], ['Strength', 'Success', 'd20 16 + 3 = 19 vs 12']] };
+  ['Strength', 'Partial success', 'd20 11 + 3 = 14 vs 12'], ['Strength', 'Failure', 'd20 6 + 3 = 9 vs 12', 'HP 20/23'], ['Strength', 'Success', 'd20 15 + 3 = 18 vs 12'], ['Strength', 'Success', 'd20 16 + 3 = 19 vs 12']] };
 }
