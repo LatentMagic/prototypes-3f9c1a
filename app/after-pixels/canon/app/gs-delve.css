@@ -305,12 +305,12 @@
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
 /* ---- The route as a list of closed rooms (a run card under 610px: gs-delve.jsx, DL_LIST_BELOW). ---- */
-/* Each room is a row: its number on a rule running down the left (the route's 2px control edge), its name and a chevron, then its key moments as 24px dice and its other rolls as dots. */
+/* Each room is one line: its number on a rule running down the left (the route's 2px control edge), its name, its key moments as 24px dice and its other rolls as dots, and a chevron at the right. */
 .dvL-list { position: relative; display: grid; min-width: 0; }
-.dvL-row { position: relative; isolation: isolate; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 6px 8px 8px; }
+.dvL-row { position: relative; isolation: isolate; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 0 8px; }
 .dvL-row::before { content: ''; position: absolute; left: 21px; top: 0; bottom: 0; width: 2px; background: var(--control-edge); }
-.dvL-row.is-first::before { top: 20px; }
-.dvL-row.is-last::before { bottom: auto; height: 20px; }
+.dvL-row.is-first::before { top: 22px; }
+.dvL-row.is-last::before { bottom: auto; height: 22px; }
 .dvL-row.is-first.is-last::before { display: none; }
 .dvL-row.is-on { background: color-mix(in srgb, var(--text) 5%, var(--card)); }
 .dvL-row .dv2-num.dvL-num { justify-self: center; margin-top: 8px; min-width: 24px; padding: 0 2px; font-size: 13px; }
@@ -319,18 +319,20 @@
 .dvL-head { display: flex; align-items: center; gap: 8px; box-sizing: border-box; width: 100%; min-height: 44px; margin: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; }
 button.dvL-head { cursor: pointer; }
 button.dvL-head:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
-.dvL-name { flex: 1; min-width: 0; font-size: 13px; }
-.dvL-row.is-on .dvL-name { font-weight: 700; color: var(--text); }
-/* The tap target is the whole row: the button's ::before fills the row (the row, not the body, is the positioned box) and sits behind the dice, so a hover anywhere on the row tints it edge to edge, as the hero sheet's header does. The chevron is centred on the row's height at 28px from its right edge, as the sheet's is, so a name that wraps or a row with a tally keeps it centred; an open row, tall with its dice and roll, centres it on its 44px head instead (6px row padding + 22px - 10px); the button keeps the name clear of it. Rows with no rolls are not buttons and take no hover. */
-button.dvL-head { padding-right: 48px; }
+/* KEEP: a room's name is the hero sheet's item-name size and colour (16px heading weight, 14px under a phone-width card, not grey), on a line at least 44px tall; the tally sits beside it and drops under it only when it does not fit the line, so no room is taller than it must be and nothing scrolls sideways at 280px. */
+.dvL-line { display: flex; flex-wrap: wrap; align-items: center; column-gap: 10px; min-width: 0; padding-right: 48px; }
+.dvL-line > .dvL-head { width: auto; max-width: 100%; flex: 0 1 auto; }
+.dvL-name { flex: 1; min-width: 0; font: 700 16px/1.25 var(--font-heading); color: var(--text); text-wrap: balance; overflow-wrap: break-word; }
+@container dv2 (max-width: 559.98px) { .dvL-name { font-size: 14px; } }
+/* KEEP: the tap target is the whole row: the button's ::before fills the row (the row, not the body, is the positioned box) and sits behind the dice, so a hover anywhere on the row tints it edge to edge, as the hero sheet's header does. The chevron is centred on the row's height at 28px from its right edge, as the sheet's is, so a row whose tally wraps keeps it centred; an open row, tall with its dice and roll, centres it on its 44px head instead; the line keeps the tally clear of it. Rows with no rolls are not buttons and take no hover. */
 button.dvL-head::before { content: ''; position: absolute; inset: 0; z-index: -1; }
 @media (hover: hover) { button.dvL-head:hover::before { background: var(--popup); } }
 button.dvL-head svg { position: absolute; right: 28px; top: calc(50% - 10px); transform: rotate(90deg); opacity: .7; transition: transform var(--dur-fast, .15s); }
-button.dvL-head[aria-expanded="true"] svg { top: 18px; transform: rotate(-90deg); }
+button.dvL-head[aria-expanded="true"] svg { top: 12px; transform: rotate(-90deg); }
 @media (prefers-reduced-motion: reduce) { button.dvL-head svg { transition: none; } }
 .dvL-head .dv2-pass { margin: 0; flex: none; }
 /* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. */
-.dvL-tally { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-bottom: 6px; }
+.dvL-tally { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; padding: 2px 0; }
 .dvL-tally .dv2-dbtn { --hit-w: 28px; }
 .dvL-dots { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .dvL-dots .dl-now-mark.is-use { background: var(--control-edge); }

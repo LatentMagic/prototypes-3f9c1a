@@ -194,7 +194,7 @@ const DlRoute = ({ m, act, on, beside }) => { const sel = act ? m.turns[act - 1]
   </div>); };
 // KEEP: below a run card 610px wide (its content; the step the hero sheet takes its phone header at, so the page changes once, and the
 // narrowest the 12-room hard run fits at) the route is a list of closed rooms: one line per room on a rule
-// running down the left, its key moments as 24px dice and its other rolls as dots; a tap opens that room (one at a time) with all its dice, and a pressed die's held roll
+// running down the left, its name, key moments as 24px dice, other rolls as dots and a chevron on one line (the tally wraps under the name when it does not fit); a tap opens that room (one at a time) with all its dice, and a pressed die's held roll
 // opens right under them, so the roll is never off screen from the die. From 610px the route is the horizontal one. The switch width is the user's to ratify on the built page.
 const DL_LIST_BELOW = 610;
 const useDlList = (ref) => { const [list, setList] = React.useState(false);
@@ -211,15 +211,17 @@ const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
     <div className={'dvL-row' + (isOpen ? ' is-on' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
       <span className={'dv2-num dvL-num' + (st.back ? ' is-back' : '')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span>
       <div className="dvL-body">
-        {has
-          ? <button type="button" className="dvL-head" aria-expanded={isOpen} aria-label={label} onClick={() => setOpen(isOpen ? null : st.i)}>
-            <span className="dv2-sname dvL-name" aria-hidden="true">{st.name}</span><DS.Icon name="next" size={20} /></button>
-          : <p className="dvL-head dv2-sname dvL-name"><span aria-hidden="true">{st.name}</span><span className="dvL-vh">{label + ', no rolls'}</span><i className="dv2-pass" aria-hidden="true" /></p>}
-        {has && !isOpen && <div className="dvL-tally">
-          {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
-          {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={dlNowMarksSay(rest)}>
-            {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
-        </div>}
+        <div className="dvL-line">
+          {has
+            ? <button type="button" className="dvL-head" aria-expanded={isOpen} aria-label={label} onClick={() => setOpen(isOpen ? null : st.i)}>
+              <span className="dv2-sname dvL-name" aria-hidden="true">{st.name}</span><DS.Icon name="next" size={20} /></button>
+            : <p className="dvL-head dv2-sname dvL-name"><span aria-hidden="true">{st.name}</span><span className="dvL-vh">{label + ', no rolls'}</span><i className="dv2-pass" aria-hidden="true" /></p>}
+          {has && !isOpen && <div className="dvL-tally">
+            {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
+            {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={dlNowMarksSay(rest)}>
+              {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
+          </div>}
+        </div>
         {isOpen && <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>}
         {isOpen && sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} live={false} /></div>}
       </div>
