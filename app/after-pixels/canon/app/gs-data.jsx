@@ -135,7 +135,7 @@ const gsDvName = (n) => n.replace(/^The /, 'the ');
 // ---- Delve run 1, The Goblin Warren beneath Ashford Mill: two recorded plays of the deployed engine. ----
 export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.';
 const GS_DV_WON = [
-  ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 14 + 0 = 14 vs 12'],
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 17 + 0 = 17 vs 12'],
   ['Room', 'Entered the chime run'],
   ['Strength', 'Heavy attack: Cleave', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 14', 'Struck back: d20s 14 and 6, kept 14 vs 10, hit, 2 damage, HP 21/23'],
   ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 6 vs 10, missed'],
