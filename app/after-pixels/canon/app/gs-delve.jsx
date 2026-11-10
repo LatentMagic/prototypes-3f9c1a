@@ -162,14 +162,24 @@ const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hi
 const DlStopHead = ({ st, named }) => (
   <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
     <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
-// KEEP: a room's name is drawn only while its column is at least 64px wide; a long run beside the held roll (12 stops in a card of 800px) has columns near 38px, where names run into each other, so the numbers alone stay and the held roll names the room.
+// KEEP: a room's name is drawn only while its column is at least 64px wide; a long run with the held roll above it (12 stops in a card between 610px and about 768px) has columns of 50 to 63px, where names run into each other, so the numbers alone stay and the held roll names the room.
 const DL_NAME_MIN = 64;
 const useDlNamed = (n) => { const ref = React.useRef(null); const [named, setNamed] = React.useState(true);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
     const read = () => setNamed(el.clientWidth / n >= DL_NAME_MIN); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
   return [ref, named]; };
-const DlRoute = ({ m, act, on }) => { const sel = act ? m.turns[act - 1].stop : null; const [ref, named] = useDlNamed(m.stops.length);
-  return (<div className="dvE-main">
+// KEEP: the held roll sits beside the route only while the run card (its content width) is at least 800px, or 288px (the held roll's 272px
+// and the 16px gap) plus DL_NAME_MIN for each room, whichever is wider: a long run keeps a named column per room, and below that the held roll sits above the route.
+const DL_BESIDE_MIN = 800; const DL_HELD_W = 272; const DL_HELD_GAP = 16;
+const dlBesideMin = (rooms) => Math.max(DL_BESIDE_MIN, DL_HELD_W + DL_HELD_GAP + DL_NAME_MIN * rooms);
+const useDlBeside = (ref, rooms) => { const [beside, setBeside] = React.useState(false);
+  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
+    const read = () => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setBeside(el.getBoundingClientRect().width - pad >= dlBesideMin(rooms)); };
+    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref, rooms]);
+  return beside; };
+const dlMainClass = (beside) => 'dvE-main' + (beside ? ' is-beside' : '');
+const DlRoute = ({ m, act, on, beside }) => { const sel = act ? m.turns[act - 1].stop : null; const [ref, named] = useDlNamed(m.stops.length);
+  return (<div className={dlMainClass(beside)}>
     <div ref={ref} className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': m.stops.length }} aria-label="The way you went">{m.stops.map((st) => (
       <div key={st.i} className={'dvA2-stop' + (sel === st.i ? ' is-on' : '')}>
         <DlStopHead st={st} named={named} />
@@ -228,7 +238,7 @@ const DlEmptyHex = () => (<svg className="dl-empty-hex" viewBox="-5 -5 46 50" ar
 const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: 'Room ' + (i + 1) }));
 // The session page before the first roll (layout C): the run's rooms drawn empty, the first reached, and a "No rolls yet" box where the held roll will open: under the first room in the list, in the held roll's place beside or above the route.
 const DlWait = () => (<div className="dl-wait"><DlEmptyHex /><b>No rolls yet</b></div>);
-const DlEmptyRoute = ({ rooms }) => (<div className="dvE-main">
+const DlEmptyRoute = ({ rooms, beside }) => (<div className={dlMainClass(beside)}>
   <div className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': rooms }} aria-label="The way you went">{dlEmptyStops(rooms).map((st) => (
     <div key={st.i} className={'dvA2-stop' + (st.i === 0 ? ' is-on' : ' is-far')}>
       <span className="dvA2-head" aria-label={'Room ' + st.num + (st.i === 0 ? ', First room' : ', not reached')}><span className="dv2-num">{st.num}</span><span className="dv2-sname">{st.i === 0 ? 'First room' : '\u00a0'}</span></span>
@@ -246,14 +256,14 @@ const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The wa
 // KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
 // now card), else the last roll. In the list a hover changes nothing: the held roll sits under the pressed room only.
 const DlCard = ({ s, m, roll }) => {
-  const ref = React.useRef(null); const list = useDlList(ref);
+  const ref = React.useRef(null); const list = useDlList(ref); const rooms = m.turns.length ? m.stops.length : (s.tracks && s.tracks.rooms) || 5; const beside = useDlBeside(ref, rooms);
   const [sel, setSel] = React.useState(() => (roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
   const on = React.useMemo(() => ({ sel: setSel, hov: setHov }), []);
   const act = list ? sel : hov || sel;
-  if (!m.turns.length) { const rooms = (s.tracks && s.tracks.rooms) || 5;
-    return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyRoute rooms={rooms} />}</section>); }
+  if (!m.turns.length) {
+    return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyRoute rooms={rooms} beside={beside} />}</section>); }
   return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />
-    {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} />}</section>);
+    {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} beside={beside} />}</section>);
 };
 
 // ---- The character sheet, read from the hero's sheet and the record's lines: gear taken, used, or a key that opened its lock. ----

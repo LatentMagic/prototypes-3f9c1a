@@ -757,14 +757,10 @@ button.mcp-cb-ent{cursor:pointer}
 /* Column lines, the study (brief item 0): a rule between rooms, or a line down each room behind its dice. */
 .dvA2-route.is-cols-between .dvA2-stop + .dvA2-stop { box-shadow: inset 1px 0 0 var(--line); }
 .dvE-main { display: grid; gap: 16px; min-width: 0; }
-/* KEEP: on desktop the held roll is as tall as the route beside it, so the two end level. Under 800px it sits above the route. */
-@container dv2 (min-width: 800px) {
-  .dvE-main { grid-template-columns: minmax(0, 1fr) 272px; align-items: stretch; }
-}
+/* KEEP: on desktop the held roll is as tall as the route beside it, so the two end level. It sits beside the route (is-beside) from a run card of 800px, or wider when the run has many rooms (288px for the held roll plus 64px for each room, so every room keeps a named column); the step depends on room count. Below that it sits above the route. */
+.dvE-main.is-beside { grid-template-columns: minmax(0, 1fr) 272px; align-items: stretch; }
 .dvE-side, .dv3-live { display: grid; min-width: 0; }
-@container dv2 (max-width: 799.98px) {
-  .dvE-side { order: -1; }
-}
+.dvE-main:not(.is-beside) > .dvE-side { order: -1; }
 /* ---- The held roll, three designs. Shared: the pop-up fill and edge, the name of the roll, the moment line. ---- */
 .dv3-held { box-sizing: border-box; min-width: 0; display: grid; align-content: start; gap: 12px; padding: 16px; background: var(--popup); border: 1px solid var(--control-edge); }
 .dv3-hk { display: grid; gap: 2px; min-width: 0; }
@@ -798,20 +794,16 @@ button.mcp-cb-ent{cursor:pointer}
 @container dv2 (max-width: 240px) {
   .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
-/* KEEP: under 800px the held roll sits above the route, so it is kept short: the ledger's die moves beside its name, the big figures shrink. */
-@container dv2 (max-width: 799.98px) {
-  .dv3-held { padding: 12px; gap: 8px; }
-  .dv3-lh { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; text-align: left; gap: 12px; }
-  .dv3-lh svg { width: 52px; height: 57px; }
-  .dv3-dl > div { padding: 6px 0; }
-  .dv3-k { font-size: 18px; }
-}
+/* KEEP: when the held roll sits above the route (not beside it, a step that depends on room count) or under a room in the list, it is kept short: the ledger's die moves beside its name, the big figures shrink. */
+.dvL-held .dv3-held, .dvE-main:not(.is-beside) .dv3-held { padding: 12px; gap: 8px; }
+.dvL-held .dv3-lh, .dvE-main:not(.is-beside) .dv3-lh { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; text-align: left; gap: 12px; }
+.dvL-held .dv3-lh svg, .dvE-main:not(.is-beside) .dv3-lh svg { width: 52px; height: 57px; }
+.dvL-held .dv3-dl > div, .dvE-main:not(.is-beside) .dv3-dl > div { padding: 6px 0; }
+.dvL-held .dv3-k, .dvE-main:not(.is-beside) .dv3-k { font-size: 18px; }
+.dvL-held .dv3-mk, .dvE-main:not(.is-beside) .dv3-mk { top: 12px; right: 12px; }
 /* ---- A key moment picked: an off-white diamond in the held box's top right. ---- */
 .dv3-held { position: relative; }
 .dv3-mk { position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; background: var(--off-white); transform: rotate(45deg); }
-@container dv2 (max-width: 799.98px) {
-  .dv3-mk { top: 12px; right: 12px; }
-}
 /* ---- from delve-v4.html ---- */
 /* ---- The sheet card: the session card's surface. ---- */
 .dv4-lay { display: grid; gap: var(--gs-sec-gap); min-width: 0; }
