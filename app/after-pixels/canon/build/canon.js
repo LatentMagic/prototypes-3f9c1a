@@ -6813,7 +6813,7 @@
   };
   const gsStartTag = (g) => {
     const t = g.tags[0];
-    return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "First " + g.ed[0] + " free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "locked" }, "Pass");
+    return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "open", go: false }, "First " + g.ed[0] + " free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "open" }, "Pass");
   };
   const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap: true, copy: true, edge: true, onCopy: (t) => lbCopy([t]) }, say);
   const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
