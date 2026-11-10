@@ -427,8 +427,5 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 .dl-empty-hex { display: block; width: 30px; height: 33px; overflow: visible; }
 .dl-empty-hex polygon { fill: none; stroke: var(--control-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: .6; }
 /* The session page before the first roll: a quiet box in the held roll's place, saying there are none, and the rooms not yet reached dimmed. */
-.dl-wait { box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--popup); border: 1px solid var(--control-edge); font: 700 16px/1.25 var(--font-heading); color: var(--muted); }
-.dl-wait .dl-empty-hex { flex: none; width: 36px; height: 40px; }
-.dvE-side > .dl-wait { align-self: stretch; }
 .dvA2-stop.is-far .dv2-num, .dvL-row.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 .dvL-row.is-far .dvL-head .dl-empty-hex { width: 24px; height: 27px; }
