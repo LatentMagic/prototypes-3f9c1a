@@ -1001,10 +1001,10 @@ button.mcp-cb-ent{cursor:pointer}
   .dv8.is-3b .dv7-hero b { white-space: normal; text-align: center; text-wrap: balance; overflow-wrap: anywhere; }
   .dv8.is-3b .dv8-meters { flex: 1 1 0; min-width: 0; padding: 0 0 0 16px; border-left: 1px solid var(--line); }
 }
-/* From 340.02px to 403.98px: the name and class on one line, a hairline, then the bars; the chevron is centred on the header in the 64px kept clear on its right, so it never reaches the bars. */
+/* Below a 610px sheet: the name and class on one line, 10px of space and no hairline, then the bars; the chevron is centred on the header in the 64px kept clear on its right, so it never reaches the bars. */
 @container dv4 (max-width: calc(609.98px + 32px)) {
   .dl-head { display: block; padding-left: 16px; }
-  .dv8.is-3b .dv7-grp.is-hero { padding: 0 0 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .dv8.is-3b .dv7-grp.is-hero { padding: 0; margin-bottom: 10px; }
   .dv8.is-3b .dv7-hero { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
   .dv8.is-3b .dv7-hero b { white-space: normal; text-wrap: balance; overflow-wrap: break-word; }
   .dv8.is-3b .dv8-meters { padding: 0; border-left: 0; }
