@@ -167,12 +167,52 @@ const DlRoute = ({ m, act, on }) => { const sel = act ? m.turns[act - 1].stop : 
       </div>))}</div>
     <div className="dvE-side"><DlHeld m={m} act={act} /></div>
   </div>); };
+// KEEP: below a run card 720px wide (its content, the width the route starts to name its rooms at) the route is a list of closed rooms: one line per room on a rule
+// running down the left, its key moments as 24px dice and its other rolls as dots; a tap opens that room (one at a time) with all its dice, and a pressed die's held roll
+// opens right under them, so the roll is never off screen from the die. From 720px the route is the horizontal one. The switch width is the user's to ratify on the built page.
+const DL_LIST_BELOW = 720;
+const useDlList = (ref) => { const [list, setList] = React.useState(false);
+  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
+    const read = () => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW); };
+    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
+  return list; };
+const dlDotSay = (r) => (r.use ? 'used' : dlGrade(r).toLowerCase());
+const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
+  const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
+  const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
+  const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
+  const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
+  return (
+    <div className={'dvL-row' + (isOpen ? ' is-on' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
+      <span className={'dv2-num dvL-num' + (st.back ? ' is-back' : '')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span>
+      <div className="dvL-body">
+        {has
+          ? <button type="button" className="dvL-head" aria-expanded={isOpen} aria-label={label} onClick={() => setOpen(isOpen ? null : st.i)}>
+            <span className="dv2-sname dvL-name" aria-hidden="true">{st.name}</span><DS.Icon name="next" size={20} /></button>
+          : <p className="dvL-head dv2-sname dvL-name" aria-label={label + ', no rolls'}>{st.name}<i className="dv2-pass" aria-hidden="true" /></p>}
+        {has && !isOpen && <div className="dvL-tally">
+          {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
+          {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map(dlDotSay).join(', ')}>
+            {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
+        </div>}
+        {isOpen && <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>}
+        {isOpen && sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} /></div>}
+      </div>
+    </div>);
+};
+const DlRoomList = ({ m, act, on }) => {
+  const [open, setOpen] = React.useState(() => (act ? m.turns[act - 1].stop : null));
+  return (<div className="dvL-list" aria-label="The way you went">{m.stops.map((st, i) => <DlRoomRow key={st.i} m={m} st={st} act={act} on={on} open={open} setOpen={setOpen} first={i === 0} last={i === m.stops.length - 1} />)}</div>);
+};
 // KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
-// now card), else the last roll.
+// now card), else the last roll. In the list a hover changes nothing: the held roll sits under the pressed room only.
 const DlCard = ({ s, m, roll }) => {
+  const ref = React.useRef(null); const list = useDlList(ref);
   const [sel, setSel] = React.useState(() => (roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
-  const act = hov || sel;
-  return (<section className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} /><DlRoute m={m} act={act} on={{ sel: setSel, hov: setHov }} /></section>);
+  const on = React.useMemo(() => ({ sel: setSel, hov: setHov }), []);
+  const act = list ? sel : hov || sel;
+  return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />
+    {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} />}</section>);
 };
 
 // ---- The character sheet, read from the hero's sheet and the record's lines: gear taken, used, or a key that opened its lock. ----
