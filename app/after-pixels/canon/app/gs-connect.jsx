@@ -37,7 +37,7 @@ const gsApp = (id) => GS_APPS.find((a) => a.id === id);
 const GS_SUB_LABEL = { grok: 'Grok app', grokbot: 'Grok Bot' };
 // Every logo is drawn in one colour (currentColor), so a picked tile fills it in the page colour. OpenClaw's is its mascot
 // redrawn in one colour from its colour favicon, the eyes cut out. Hermes Agent's wing is its own file, too long to inline,
-// painted through a mask. Grok's and Muse's are the owners' own files, shown unaltered as images.
+// painted through a mask. Grok's is the owner's file, shown unaltered as an image (a light and a dark one); Muse's is painted through its shape.
 const GsOpenClaw = ({ size }) => (
   <svg viewBox="0 0 120 120" width={size} height={size} aria-hidden="true" focusable="false">
     <mask id="hw-oc-eyes"><rect width="120" height="120" fill="#fff" /><circle cx="45" cy="35" r="7" fill="#000" /><circle cx="75" cy="35" r="7" fill="#000" /></mask>
@@ -56,12 +56,13 @@ const GsAiLogo = ({ ai, size = 20 }) => (
   : ai === 'openclaw' ? <GsOpenClaw size={size} />
   // The wing is about twice as tall as it is wide: it takes the logo's height.
   : ai === 'hermes' ? gsMaskLogo('assets/how-it-works/hermes-agent-wing.svg', Math.round(size / 2), size)
-  // Grok's and Muse's marks are the owners' files, shown as they are, never recoloured or redrawn.
+  // Grok's mark is the owner's file, shown as it is (a light and a dark one), never recoloured or redrawn.
   : ai === 'grok' ? <>
       <img className="hw-img hw-img-grok is-off" src="assets/how-it-works/grok-logomark-light.svg" alt="" width={size} height={size} />
       <img className="hw-img hw-img-grok is-on" src="assets/how-it-works/grok-logomark-dark.svg" alt="" width={size} height={size} />
     </>
-  : <img className="hw-img" src="assets/how-it-works/muse-meta-ai.svg" alt="" width={size} height={size} />
+  // Muse shows the Meta AI mark (the Commons file, unaltered) in one colour, painted through its shape like Hermes' wing.
+  : gsMaskLogo('assets/how-it-works/muse-meta-ai.svg', size, size)
 );
 
 // ---- Prompts (drafts, not ratified). A request is { kind: 'games' } | { kind: 'game', gid } | { kind: 'edition', e }. ----
