@@ -165,7 +165,8 @@ const GS_DV_LIVE = [
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 3 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12'],
+  ['Dexterity', 'Hit', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
+  ['Dexterity', 'Hit', 'd20 12 + 3 = 15 vs 12'],
   ['Intelligence', 'Study the wall scratchings', 'Success', 'd20s 19 and 15, kept 19 + 1 = 20 vs 12'],
   ['Room', 'Entered Snaggle\'s den'],
   ['Dexterity', 'Hit', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
@@ -351,7 +352,7 @@ Object.assign(GS_SESSIONS, {
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
-  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 21/21'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
+  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '9 rolls', '1 natural 20', 'HP 21/21'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
     hero: 'Wren the Rogue', hpMax: 21, threat: 3, light: 2, foeMax: { "snaggle's den": 2 }, sheet: { used: {}, insp: true } },
 });
 // In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets

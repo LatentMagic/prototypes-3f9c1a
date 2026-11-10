@@ -1212,7 +1212,8 @@
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
     ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 vs 14, missed"],
-    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12"],
+    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
+    ["Dexterity", "Hit", "d20 12 + 3 = 15 vs 12"],
     ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 12"],
     ["Room", "Entered Snaggle's den"],
     ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
@@ -1544,7 +1545,7 @@
       ...GS_SESSIONS.delve,
       live: true,
       result: "In progress",
-      figures: ["Threat 3/12", "8 rolls", "1 natural 20", "HP 21/21"],
+      figures: ["Threat 3/12", "9 rolls", "1 natural 20", "HP 21/21"],
       tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 },
       lines: GS_DV_LIVE,
       reached: null,
@@ -3119,7 +3120,7 @@
   const DlFoeDie = ({ f }) => /* @__PURE__ */ React$1.createElement(DS.DelveFoeDie, { value: f.roll, other: f.other != null ? f.other : void 0, hit: f.hit, surface: "popup" });
   const dlRoomSaid = (r) => r.back ? "Back in " + r.room.replace(/^The /, "the ") : r.room;
   const dlMeterOf = (r) => {
-    const x = r.foe ? { ...r.foe, health: r.foe.health } : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
+    const x = r.foe ? r.foe : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
     return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing };
   };
   const DlFoeMeter = ({ mt }) => mt.members ? /* @__PURE__ */ React$1.createElement("div", { className: "dv6-band" }, /* @__PURE__ */ React$1.createElement("b", null, mt.name), " ", /* @__PURE__ */ React$1.createElement("span", null, mt.standing, " of ", mt.members, " standing")) : /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of });
@@ -3548,6 +3549,7 @@
       hpMax: 21,
       threat: 12,
       foeMax: { "the shrine cavern": 5 },
+      lightName: "the watchman's round",
       light: 0,
       figures: ["Threat 12/12", "24 rolls", "1 natural 20", "HP 14/21"],
       tracks: { progress: 5, rooms: 5, threat: 12, threatMax: 12 },
