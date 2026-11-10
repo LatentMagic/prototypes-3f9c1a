@@ -3,9 +3,9 @@
 // The store can't know whether your AI is connected, so nothing here shows it.
 // ============================================================================
 import React from 'react';
-import { GS_GAMES, GS_SESSIONS, GS_GAME_ORDER, DS, useGs, GS, gsStartsOver, GS_ONCE_LINE } from './gs-data.jsx';
+import { GS_GAMES, GS_SESSIONS, GS_GAME_ORDER, GS_ART, DS, useGs, GS, gsStartsOver, GS_ONCE_LINE } from './gs-data.jsx';
 import { GS_SUPPORT } from './gs-site.jsx';
-import { GsSteps, GsWhoCols } from './gs-parts.jsx';
+import { GsSteps } from './gs-parts.jsx';
 import { lbCopy } from './gs-library.jsx';
 import { DV_ALL, dvSid } from './gs-delve-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
@@ -252,6 +252,69 @@ const GsSetup = () => {
   );
 };
 
+// Start: two chat windows in one CardRow. The first types "Play After Pixels" and the AI lists the games; the second types
+// "Play Delve on After Pixels" and Delve opens run 1. The replies are examples of what the AI sends: the game rows and their tags
+// are the deployed catalogue's, Delve's opening is its run 1 (title, the premise's first lines, the three heroes).
+// KEEP: from a 640px row the two windows share its width side by side and are as tall as each other, with their captions on one
+// line at the foot; narrower, the CardRow scrolls sideways with the next window peeking. The row's own Previous and Next move it.
+// KEEP: in the narrow row each reply is cut short so a phone sees both the typed line and the answer without scrolling: three
+// games with no lines under their names, and Delve's premise to its first sentence.
+// KEEP: each window's typed line is a copying SpeechBubble; the window itself is inert, a picture of the chat.
+const GS_START_GAMES = ['word', 'mystery', 'delve', 'salvage'];
+const GS_START_DELVE = {
+  title: 'The Goblin Warren beneath Ashford Mill',
+  first: 'Ashford Mill stands silent at dusk, its great wheel locked and still.',
+  rest: ' For three generations it has ground the valley’s grain, and the village has never known it to stop. Tonight the millpond lies black and flat, and the only sound is a thin chant rising through the stones.',
+  heroes: [{ name: 'Bryn', line: 'Fighter' }, { name: 'Wren', line: 'Rogue' }, { name: 'Aldric', line: 'Wizard' }],
+};
+const gsStartTag = (g) => {
+  const t = g.tags[0];
+  return t === 'FREE' ? <DS.Tag kind="free">Free</DS.Tag> : t === 'FIRST' ? <DS.Tag kind="free">{'First ' + g.ed[0] + ' free'}</DS.Tag> : <DS.Tag kind="locked">Pass</DS.Tag>;
+};
+// The window's three rows (the typed line's bar, the chat, the caption) are laid on the row's shared grid, so two windows
+// have the same bar, chat and caption heights.
+const GsChatWindow = ({ bar, say, caption, children }) => (
+  <div className="mcp-card hw-win" role="group" aria-label={bar + ' ' + say}>
+    <h3 className="mcp-t-card hw-win-bar">{bar}</h3>
+    <div className="hw-win-chat">
+      <div className="hw-me"><GsSay wrap copy text={say} /></div>
+      <div className="hw-ai"><p className="gs-label hw-eyebrow">Your AI</p>{children}</div>
+    </div>
+    <div className="hw-win-foot"><p className="gs-small">{caption}</p></div>
+  </div>
+);
+const GsStart = () => {
+  const gs = useGs();
+  const d = GS_START_DELVE;
+  return (
+    <>
+      <DS.CardRow kind="chat" title="Start" className="hw-start">
+        <GsChatWindow bar="In any chat, type" say={gsPromptText({ kind: 'games' })}
+          caption={<>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></>}>
+          <p className="hw-ai-line">Here are today’s games. Pick one, or type a game’s name.</p>
+          <DS.MenuRows label="Today’s games" items={GS_START_GAMES.map((gid) => {
+            const g = GS_GAMES[gid];
+            return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
+          })} />
+        </GsChatWindow>
+        <GsChatWindow bar="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
+          caption="Name a game, or a past edition, and your AI starts it straight away.">
+          <p className="hw-ai-title">{d.title}</p>
+          <p className="hw-ai-line">{d.first}<span className="hw-more-prem">{d.rest}</span> <span aria-hidden="true">…</span></p>
+          <DS.EntityCards items={d.heroes} className="hw-heroes" />
+        </GsChatWindow>
+      </DS.CardRow>
+      <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</span></p>
+    </>
+  );
+};
+// The change-games line's mark, drawn like the system's line icons (1.75 stroke, square caps, mitred joins).
+const GsAgainGlyph = () => (
+  <svg className="mcp-ico hw-chg-ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="square" strokeLinejoin="miter">
+    <path d="M19 12a7 7 0 1 1-2.1-5" /><path d="M17.5 3v4.2h-4.2" />
+  </svg>
+);
+
 // Playing: a game from start to end, one StepCard a step, each with its still picture.
 const GS_HW_PLAY = [
   ['Pick a game', 'Choose from your AI’s list, or ask by name.'],
@@ -262,8 +325,6 @@ const GS_HW_PLAY = [
 
 export const GsConnect = () => {
   const gs = useGs();
-  // Delve's first run is free: named only to the signed-out and free views, so a Pass holder is not told about free play.
-  const freeView = gs.view === 'out' || gs.view === 'free';
   return (
     <main className="gs-wrap gs-main">
       <div className="hw-top">
@@ -285,17 +346,7 @@ export const GsConnect = () => {
         <GsSetup />
       </section>
       <section id="hw-start" className="hw-sec gs-stack-md">
-        <h2 className="mcp-t-sec" tabIndex={-1}>Start</h2>
-        <DS.Card className="hw-start">
-          <div className="hw-start-half">
-            <p className="mcp-t-card hw-start-line">In any chat, type<GsSay copy text={gsPromptText({ kind: 'games' })} /></p>
-            <p>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></p>
-          </div>
-          <div className="hw-start-half hw-start-more">
-            <p>To go straight to one, type<GsSay wrap copy text={gsPromptText({ kind: 'game', gid: 'delve' })} />.{freeView && ' Its first run is free.'}</p>
-            <p>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</p>
-          </div>
-        </DS.Card>
+        <GsStart />
       </section>
       <section id="hw-playing" className="hw-sec gs-stack-md">
         <h2 className="mcp-t-sec" tabIndex={-1}>Playing</h2>
@@ -308,9 +359,8 @@ export const GsConnect = () => {
       <section className="hw-sec gs-stack-md" aria-labelledby="hw-who">
         <h2 id="hw-who" className="mcp-t-sec">Who does what</h2>
         <DS.Card className="hw-who">
-          <GsWhoCols
-            ai="Your AI does the talking, and a more capable model plays better. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage."
-            server="It sets the rules, throws the dice and keeps your results." />
+          <div className="hw-who-row"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">Your AI does the talking, and a more capable model plays better. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.</p></div>
+          <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">It sets the rules, throws the dice and keeps your results.</p></div>
         </DS.Card>
         <p className="gs-small">Your AI never asks you to pay.</p>
       </section>

@@ -84,30 +84,54 @@
 @container hw-card (max-width: 480px) { .hw-pick-card .gs-copy { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
-/* Start: one static card in two parts split by a 1px line, side by side from a 640px window; the typed line is the card's centre piece.
-   A line that holds a speech bubble is as tall as the bubble, so the bubble overhangs nothing and the gaps stay on the 4px grid. */
-.hw-start.mcp-card { padding: 0; gap: 0; grid-template-columns: minmax(0, 1fr); justify-items: stretch; }
-.hw-start-half { display: grid; gap: 8px; align-content: start; justify-items: start; padding: 16px; min-width: 0; }
-.hw-start-half + .hw-start-half { border-top: 1px solid var(--line); }
-.hw-start-line { text-wrap: pretty; line-height: 32px; }
-.hw-start-more p { line-height: 24px; }
-.hw-start-more { gap: 12px; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
-@media (min-width: 640px) {
-  .hw-start.mcp-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .hw-start-half { padding: 24px; }
-  .hw-start-half:first-child { align-content: center; justify-items: center; text-align: center; gap: 12px; }
-  .hw-start-more { align-content: center; }
-  .hw-start-half + .hw-start-half { border-top: 0; border-left: 1px solid var(--line); }
+/* Start: two chat windows in one CardRow (the system's own row: it shares the width when both fit and scrolls when they do not).
+   Each window is a card of three rows (the typed line's bar, the chat, a caption), laid on the row's shared grid so both windows
+   have the same bar, chat and caption heights. The chat parts inside (game rows, hero cards) read the chat's colour variables,
+   set here to the dark card's, so they sit in it as they sit in a ChatPicture on its light ground. */
+.mcp-crow.hw-start .mcp-crow-track { grid-template-rows: auto auto auto; row-gap: 0; }
+@container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
+.hw-win.mcp-card { --c-bg: var(--card); --c-fg: var(--text); --c-fg2: var(--muted); --c-me: color-mix(in srgb, var(--text) 8%, var(--card)); --c-edge: var(--line); padding: 0; gap: 0; justify-items: stretch; grid-row: span 3; grid-template-rows: subgrid; }
+.hw-win-bar { margin: 0; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.hw-win-chat { display: grid; align-content: start; gap: 12px; padding: 16px; min-width: 0; }
+.hw-me { justify-self: end; max-width: 100%; font-size: 20px; line-height: 1.4; text-align: end; }
+.hw-ai { display: grid; gap: 8px; min-width: 0; }
+.hw-ai .hw-eyebrow { text-transform: uppercase; }
+.hw-ai-title { margin: 0; font: 700 16px/1.3 var(--font-heading); letter-spacing: -.01em; }
+.hw-ai-line { margin: 0; font: 400 14px/1.5 var(--font-text); color: var(--muted); text-wrap: pretty; }
+.hw-win-foot { display: flex; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--text) 5%, transparent); }
+.hw-win-foot p { margin: 0; line-height: 20px; }
+/* KEEP: a game row's tag sits beside its name, and the one-line description under both, so a row is two lines tall rather than three. */
+.hw-win .mcp-cb-mtext { grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; align-items: center; }
+.hw-win .mcp-cb-mtext > b { grid-area: 1 / 1; }
+.hw-win .mcp-cb-mmeta { grid-area: 1 / 2; margin: 0; }
+.hw-win .mcp-tag { white-space: nowrap; }
+.hw-win .mcp-cb-mtext > small { grid-area: 2 / 1 / 3 / 3; }
+/* The hero cards in one row of three, name over class. */
+.hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
+.hw-chg-ic { flex: none; align-self: flex-start; }
+/* KEEP: in the narrow row (under 640px, one window at a time) each reply is short: three games with no lines, Delve's premise
+   to its first sentence; the window's padding and typed line shrink with it. */
+@container mcp-crow (max-width: 639px) {
+  .hw-win-bar { padding: 8px 12px; font-size: 16px; }
+  .hw-win-chat { gap: 8px; padding: 12px; }
+  .hw-me { font-size: 17px; }
+  .hw-win-foot { padding: 8px 12px; }
+  .hw-win .mcp-cb-mtext > small, .hw-more-prem { display: none; }
+  .hw-win .mcp-cb-mrow:nth-child(4) { display: none; }
 }
+/* On the narrowest phones the tag drops under the name, so a long tag never squeezes it. */
+@container mcp-crow (max-width: 300px) { .hw-win .mcp-cb-mmeta { grid-area: 2 / 1 / 3 / 3; } }
 
 /* Playing: four StepCards, then the editions and Pass sentences in one paragraph. */
 .hw-more { max-width: 70ch; text-wrap: pretty; }
 
-/* Who does what: the product page's How it plays box, one card in two columns. */
-.hw-who.mcp-card { justify-items: stretch; }
-/* From a 720px page the two texts are sized to their length and ruled apart, as Home's Who does what is. Scoped to this card:
-   the product page's How it plays box is unchanged. */
-@container gs (min-width: 720px) {
-  .hw-who .gs-cols2 { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 36px; }
-  .hw-who .gs-cols2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
-}
+/* Who does what: one card, two ruled rows.
+   KEEP: each row is as tall as its own text, so the card has no dead space at any width; from 640px the name sits beside its text (190px, then
+   the text at most 62 characters wide), under 640px it sits above it. */
+.hw-who.mcp-card { padding: 0; gap: 0; justify-items: stretch; }
+.hw-who-row { display: grid; gap: 4px; padding: 16px; }
+.hw-who-row > * { margin: 0; }
+.hw-who-row p { font: 400 14px/1.5 var(--font-text); text-wrap: pretty; }
+.hw-who-row + .hw-who-row { border-top: 1px solid var(--line); }
+@media (min-width: 640px) { .hw-who-row { grid-template-columns: 190px minmax(0, 62ch); align-items: baseline; gap: 28px; padding: 16px 24px; } }
