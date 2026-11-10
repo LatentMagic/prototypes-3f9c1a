@@ -479,7 +479,7 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 
 // (a tinted room, its number lit, a small square where the dice will go); a run not started marks none.
 const DlNowEmptyRoute = ({ rooms, reached }) => { const [ref, cols] = useDlNowCols(rooms);
   return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} role="img" aria-label={'The run has ' + rooms + ' rooms, ' + (reached ? 'the first reached, no rolls yet' : 'none entered yet')}>{dlEmptyStops(rooms).map((st, i) => (
-    <div key={st.i} className={'dl-now-stop' + (reached && i === 0 ? ' is-on' : '') + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
+    <div key={st.i} className={'dl-now-stop' + (reached ? (i === 0 ? ' is-on' : ' is-far') : '') + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
       <span className="dvA2-head"><span className="dv2-num">{st.num}</span></span>{reached && i === 0 ? <i className="dv2-pass" aria-hidden="true" /> : <DlEmptyHex />}</div>))}</div>);
 };
 // The Now card of a run not started: the week's title, the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
