@@ -3537,7 +3537,6 @@
         ["Strength", "Force the bone gate", "Failure", "d20 6 + 0 = 6 vs 12"],
         ["Strength", "Force the bone gate", "Failure", "d20 11 + 0 = 11 vs 12"],
         ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 12"],
-        ["Lock", "Forced the bone gate"],
         ["Room", "Doubled back to the chime run", "The ritual +1"],
         ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
