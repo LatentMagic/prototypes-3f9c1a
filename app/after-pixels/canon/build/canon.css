@@ -3030,6 +3030,33 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pg-config-label { font: 600 13px/1.2 var(--font-text); color: var(--muted); margin-bottom: 8px; }
 .pg-config-opts { display: flex; flex-wrap: wrap; gap: 8px; }
 .pg-config-opt { text-align: left; }
+/* PLAYGROUND, not canon: Delve's stacked held roll, versions 2 and 3 (app/playground-delve-held.jsx). Delete with that file. */
+.pgh-held { padding: 12px 16px; }
+.pgh-body { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 16px 24px; min-width: 0; }
+.pgh-head { display: flex; align-items: center; gap: 12px; min-width: 0; align-self: center; }
+.pgh-head .dv3-hk { min-width: 120px; }
+.pgh-fact { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.pgh-fact dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
+.pgh-fact dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
+.pgh-fact dd span { font-weight: 400; color: var(--muted); white-space: nowrap; }
+.pgh-fact dd span.is-does { display: block; white-space: normal; }
+.pgh-fact dd[class*="is-"] { color: var(--tc); }
+.pgh-foe { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 400; color: inherit; white-space: normal; }
+.pgh-foe b { color: var(--text); white-space: nowrap; }
+.pgh-foe b.is-err { color: var(--error); }
+.pgh-meter { min-width: 0; }
+/* 2: line 1 the move, line 2 the foe's answer, under a rule of its own. */
+.pgh-lines { display: grid; gap: 10px; min-width: 0; }
+.pgh-line { margin: 0; display: flex; flex-wrap: wrap; align-items: start; gap: 8px 32px; min-width: 0; }
+.pgh-line.is-foe { align-items: center; padding-top: 10px; border-top: 1px solid var(--line); gap: 8px 32px; }
+.pgh-line.is-foe .pgh-meter { flex: 1 1 200px; max-width: 320px; }
+/* 3: three steps, a rule before each after the first; rows line up across them. */
+.pgh-steps { margin: 0; display: grid; grid-template-columns: repeat(var(--pgh-n), minmax(max-content, 1fr)); grid-template-rows: auto auto; min-width: 0; }
+.pgh-step { display: grid; grid-template-rows: subgrid; grid-row: 1 / span 2; gap: 10px 0; align-content: start; padding: 0 20px; min-width: 0; }
+.pgh-step:first-child { padding-left: 0; }
+.pgh-step + .pgh-step { border-left: 1px solid var(--line); }
+
+@media (max-width: 760px) { .pgh-body { grid-template-columns: minmax(0, 1fr); } }
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
    session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 

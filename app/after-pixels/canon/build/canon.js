@@ -151,13 +151,13 @@
       if (!folded) return rows;
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
     }
-    function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
+    function ConfirmCard({ title, question, facts: facts2, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
       const done = answer === "confirm" || answer === "cancel";
       const btn = (k, text, on, main) => {
         const p = answer === k;
         return cbPress(!done && on, { className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), text));
       };
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts2 && facts2.length > 0 && /* @__PURE__ */ React2.createElement(FactRows, { items: facts2, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
     }
     function EntityCards({ title, items = [], onPick, fold, className = "" }) {
       const folded = !!fold;
@@ -3096,13 +3096,15 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
   };
   const DlFoeDie = ({ f }) => /* @__PURE__ */ React$1.createElement(DS.DelveFoeDie, { value: f.roll, other: f.other != null ? f.other : void 0, hit: f.hit, surface: "popup" });
-  const DlHeld = ({ m, act, live = true }) => {
+  const DL_HELD_VIEW = { stacked: null };
+  const DlHeld = ({ m, act, live = true, beside }) => {
     const r = act ? m.turns[act - 1] : null;
     if (!r) return null;
     const x = r.use ? null : m.mom[r.n];
     const tcls = r.fumble ? "fumble" : r.tier;
     const foeRow = r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc)));
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? r.what : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), r.downed && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, r.downed.name, " beaten")))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")), (r.foe || r.downed) && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: (r.foe || r.downed).name, n: r.foe ? r.foe.health : 0, of: (r.foe || r.downed).max })))));
+    const canon = /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? r.what : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), r.downed && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, r.downed.name, " beaten")))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")), (r.foe || r.downed) && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: (r.foe || r.downed).name, n: r.foe ? r.foe.health : 0, of: (r.foe || r.downed).max })))));
+    return beside === false && DL_HELD_VIEW.stacked ? DL_HELD_VIEW.stacked({ r, x, live, canon }) : canon;
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
   const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
@@ -3146,7 +3148,7 @@
   const DlRoute = ({ m, act, on, beside }) => {
     const sel = act ? m.turns[act - 1].stop : null;
     const [ref, named] = useDlNamed(m.stops.length);
-    return /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(beside) }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": m.stops.length }, "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => !r.use && m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(beside) }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": m.stops.length }, "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => !r.use && m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act, beside })));
   };
   const DL_LIST_BELOW = 610;
   const useDlList = (ref) => {
@@ -6109,8 +6111,8 @@
   let HG_BADGES;
   const HgLatest = ({ day, last }) => {
     const gs = useGs();
-    const facts = day.facts.filter(([k]) => ["Slept", "With", "Made"].includes(k));
-    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, (last ? "YOUR LAST DAY · " : "YOUR LATEST DAY · ") + day.date.toUpperCase()), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, day.end || hgStatus(day).label)), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: hgSid(day) }) }, "See the whole day")), /* @__PURE__ */ React$1.createElement("dl", { className: "lb-facts" }, facts.map(([k, v]) => /* @__PURE__ */ React$1.createElement("div", { key: k }, /* @__PURE__ */ React$1.createElement("dt", null, k), /* @__PURE__ */ React$1.createElement("dd", null, v)))));
+    const facts2 = day.facts.filter(([k]) => ["Slept", "With", "Made"].includes(k));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, (last ? "YOUR LAST DAY · " : "YOUR LATEST DAY · ") + day.date.toUpperCase()), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, day.end || hgStatus(day).label)), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("session", { id: hgSid(day) }) }, "See the whole day")), /* @__PURE__ */ React$1.createElement("dl", { className: "lb-facts" }, facts2.map(([k, v]) => /* @__PURE__ */ React$1.createElement("div", { key: k }, /* @__PURE__ */ React$1.createElement("dt", null, k), /* @__PURE__ */ React$1.createElement("dd", null, v)))));
   };
   const hgWeeks = (plays) => Array.from({ length: 10 }, (_, i) => {
     const end = new Date(2026, 9, 11 - 7 * i);
@@ -11034,6 +11036,9 @@
   };
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -11049,6 +11054,17 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
+  };
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -11133,6 +11149,46 @@
     const concept = shown.find((s) => s.kind === "concept");
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
+  };
+  const Fact = ({ label, children, tone }) => /* @__PURE__ */ React$1.createElement("div", { className: "pgh-fact" }, /* @__PURE__ */ React$1.createElement("dt", null, label), /* @__PURE__ */ React$1.createElement("dd", { className: tone ? "is-" + tone : void 0 }, children));
+  const facts = (r) => {
+    const tone = r.fumble ? "fumble" : r.tier;
+    return {
+      room: /* @__PURE__ */ React$1.createElement(Fact, { label: "Room" }, (r.back ? "Back in " : "") + r.room),
+      used: r.use && /* @__PURE__ */ React$1.createElement(Fact, { label: "Used" }, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does))),
+      action: !r.use && r.action && /* @__PURE__ */ React$1.createElement(Fact, { label: "Action" }, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move))),
+      roll: !r.use && /* @__PURE__ */ React$1.createElement(Fact, { label: "Roll" }, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc)),
+      outcome: !r.use && /* @__PURE__ */ React$1.createElement(Fact, { label: "Outcome", tone }, dlGrade(r)),
+      cost: r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement(Fact, { label: "Cost" }, "Lost ", r.harm, " HP"),
+      foe: r.foe && /* @__PURE__ */ React$1.createElement(Fact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "pgh-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))),
+      meter: (r.foe || r.downed) && /* @__PURE__ */ React$1.createElement("div", { className: "pgh-meter" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: (r.foe || r.downed).name, n: r.foe ? r.foe.health : 0, of: (r.foe || r.downed).max }))
+    };
+  };
+  const Head = ({ r, x }) => /* @__PURE__ */ React$1.createElement("div", { className: "pgh-head" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 52, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? r.what : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), r.downed && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, r.downed.name, " beaten")));
+  const View2 = ({ r, x }) => {
+    const f = facts(r);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pgh-body is-v2" }, /* @__PURE__ */ React$1.createElement(Head, { r, x }), /* @__PURE__ */ React$1.createElement("div", { className: "pgh-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-line" }, f.room, f.used, f.action, f.roll, f.outcome, f.cost), (r.foe || r.downed) && /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-line is-foe" }, f.foe, f.meter)));
+  };
+  const View3 = ({ r, x }) => {
+    const f = facts(r);
+    const cols = [[f.room, f.used, f.action], [f.roll, f.outcome], [f.cost, f.foe, f.meter]].map((c) => c.filter(Boolean)).filter((c) => c.length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pgh-body is-v3" }, /* @__PURE__ */ React$1.createElement(Head, { r, x }), /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-steps", style: { "--pgh-n": cols.length } }, cols.map((c, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "pgh-step" }, c.map((n, j) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: j }, n))))));
+  };
+  const Held = ({ v, r, x, live }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held pgh-held" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), v === "2" ? /* @__PURE__ */ React$1.createElement(View2, { r, x }) : /* @__PURE__ */ React$1.createElement(View3, { r, x })));
+  const PgView = ({ canon, ...p }) => {
+    const v = usePgSetting("version");
+    return v === "now" ? canon : /* @__PURE__ */ React$1.createElement(Held, { v, ...p });
+  };
+  const initPlaygroundDelveHeld = () => {
+    pgRegister("delve-held", { title: "Delve held roll", settings: [
+      { key: "version", kind: "concept", label: "Version", options: [{ value: "now", label: "Now (canon)", state: "session-delve-hard" }, { value: "2", label: "2 Two lines with a story", state: "session-delve-hard" }, { value: "3", label: "3 Three steps", state: "session-delve-hard" }] },
+      // The route opens on a roll a die was pressed for (gs.route.roll); these open the hard run on one, to reach a foe or none without a click.
+      { key: "roll", label: "Roll opened", options: [
+        { value: "last", label: "Last roll (24, foe)", state: "session-delve-hard" },
+        ...[[2, "Foe hit back"], [4, "Foe beaten"], [6, "Foe, two dice"], [1, "No foe, natural 1"], [10, "Action, partial"], [14, "Action, success"], [15, "Action, failure"]].map(([n, l]) => ({ value: String(n), label: n + " " + l, state: "session-delve-hard", go: (gs) => gs.go("session", { id: "delve-hard", roll: n }) }))
+      ] }
+    ] });
+    if (pgActive()) DL_HELD_VIEW.stacked = (p) => /* @__PURE__ */ React$1.createElement(PgView, { ...p });
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
@@ -11788,4 +11844,5 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
+  initPlaygroundDelveHeld();
 })(React, ReactDOM);
