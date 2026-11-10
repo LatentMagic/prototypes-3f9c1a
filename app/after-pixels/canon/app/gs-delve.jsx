@@ -389,7 +389,7 @@ const useDlOneRow = (ref) => { const [one, setOne] = React.useState(false);
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
 const DlAdvCells = ({ c, streak }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
   <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></>);
-// The light's label is its module's own name as written with the first letter capitalised, "the torch" → "The torch". Only a run whose edition has the light module carries `lightName`. How the labels lay out is the KEEP in gs-delve.css: they are one line and never wrap, and all of them move above their bars once a bar beside the longest allowed light name (≈20 characters) would fall under ≈100px. One switch for every edition; the editions' name cap is a ticket item.
+// The light's label is its module's own name as written with the first letter capitalised, "the torch" → "The torch". Only a run whose edition has the light module carries `lightName`. How the labels lay out is the KEEP in gs-delve.css: they sit above their bars at every width, one line, never wrapping. The editions' name cap (≈20 characters) is a ticket item.
 const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><div className="dv8-mgrid"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} />
   {c.lightName && <DlMeter label={dlLightLabel(c.lightName)} n={c.light} of={c.lightMax} />}</div></div>;
