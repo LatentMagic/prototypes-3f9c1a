@@ -55,13 +55,16 @@ const dlRoll = (l) => {
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
   return { stat: l[0], fight, kept, other, mod, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
+// KEEP: under a held use's name, the grey words say only what it does ("strikes at once", "heals 10"): the heading already names the kind
+// and the sparkle already says no roll, so both drop there; the hero sheet keeps the full text (owner, 2026-11-10).
+const dlUseDoes = (d) => { const s = d.replace(/,? *no roll$/i, ''); return s.charAt(0).toLowerCase() + s.slice(1); };
 // A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Ability · Used shield bash · Warren guard: health 4 → 3 · Struck back: d20 7 vs 10, missed").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
 const DL_USE_KINDS = /^(Ability|Ultimate|Gear)$/;
 const dlUse = (l, hero) => { const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
   const parts = l.slice(1).map(String); const sheet = DL_HEROES[hero] || DL_HEROES['Wren the Rogue']; const name = dlCap(m[1]);
   const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(' · '));
-  return { use: true, what: l[0], name, does: has ? has.does.charAt(0).toLowerCase() + has.does.slice(1) : '', tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
+  return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : '', tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
 const DL_END = { won: 'The winning blow', fallen: 'The last blow', overrun: 'The last roll', live: 'Latest roll' };
 // The key moments: the best roll, the closest call, the worst roll, and the roll the run ended on.
 const dlMoments = (R, end) => {
@@ -142,7 +145,7 @@ const DlHeld = ({ m, act, live = true }) => { const r = act ? m.turns[act - 1] :
     <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div></div>
     <dl className="dv3-dl">
       <div><dt>Room</dt><dd>{(r.back ? 'Back in ' : '') + r.room}</dd></div>
-      {r.use && <div><dt>Used</dt><dd>{r.name} <span className="is-does">{[r.what.toLowerCase(), r.does].filter(Boolean).join(', ')}</span></dd></div>}
+      {r.use && <div><dt>Used</dt><dd>{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</dd></div>}
       {!r.use && r.action && <div><dt>Action</dt><dd>{r.action}{r.move && <> <span>{r.move}</span></>}</dd></div>}
       {!r.use && <div><dt>Roll</dt><dd>{r.stat} {r.total} <span>vs {r.dc}</span></dd></div>}
       {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{dlGrade(r)}</dd></div>}
