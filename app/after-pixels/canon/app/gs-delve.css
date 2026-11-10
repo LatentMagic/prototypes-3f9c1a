@@ -403,6 +403,9 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 .dl-now-stop.is-row-end .dvA2-head::before { right: 50%; }
 /* The rule between room columns, as the session page's route draws it (is-cols-between); none before a row's first room. */
 .dl-now-stop + .dl-now-stop:not(.is-row-start) { box-shadow: inset 1px 0 0 var(--line); }
+/* The room reached in a run with no rolls yet: the session page's empty route marks room 1 the same way. */
+.dl-now-stop.is-on { background: color-mix(in srgb, var(--text) 5%, var(--card)); }
+.dl-now-stop.is-on .dv2-num { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dl-now-stop .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
 /* KEEP: a room's key moments wrap inside its column, 8px apart so a natural 20's rim and a two-dice die's second hex never touch the next die. */
 .dl-now-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-width: 0; }

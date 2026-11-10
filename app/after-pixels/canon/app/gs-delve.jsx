@@ -475,22 +475,25 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 
     </div>);
   })}</div>);
 };
-// The Now card of a run not started: the week's title, the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
-export const DlNowEmpty = ({ title, rooms, next, onPlay }) => { const [ref, cols] = useDlNowCols(rooms);
-  return (
-    <LbNowCard gid="delve" className="dl-now" title={title} play={onPlay} next={next}>
-      <div className="dl-now-route"><div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} role="img" aria-label={'The run has ' + rooms + ' rooms, none entered yet'}>{dlEmptyStops(rooms).map((st, i) => (
-        <div key={st.i} className={'dl-now-stop' + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
-          <span className="dvA2-head"><span className="dv2-num">{st.num}</span></span><DlEmptyHex /></div>))}</div></div>
-    </LbNowCard>);
+// The Now card's route with nothing rolled: the run's rooms drawn empty. `reached` marks room 1 as the session page's empty route does
+// (a tinted room, its number lit, a small square where the dice will go); a run not started marks none.
+const DlNowEmptyRoute = ({ rooms, reached }) => { const [ref, cols] = useDlNowCols(rooms);
+  return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} role="img" aria-label={'The run has ' + rooms + ' rooms, ' + (reached ? 'the first reached, no rolls yet' : 'none entered yet')}>{dlEmptyStops(rooms).map((st, i) => (
+    <div key={st.i} className={'dl-now-stop' + (reached && i === 0 ? ' is-on' : '') + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
+      <span className="dvA2-head"><span className="dv2-num">{st.num}</span></span>{reached && i === 0 ? <i className="dv2-pass" aria-hidden="true" /> : <DlEmptyHex />}</div>))}</div>);
 };
+// The Now card of a run not started: the week's title, the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
+export const DlNowEmpty = ({ title, rooms, next, onPlay }) => (
+  <LbNowCard gid="delve" className="dl-now" title={title} play={onPlay} next={next}>
+    <div className="dl-now-route"><DlNowEmptyRoute rooms={rooms} /></div>
+  </LbNowCard>);
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
   const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });
   const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
     <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
-      <div className="dl-now-route"><DlNowRoute m={m} open={open} /></div>
+      <div className="dl-now-route">{m.turns.length ? <DlNowRoute m={m} open={open} /> : <DlNowEmptyRoute rooms={(s.tracks && s.tracks.rooms) || 5} reached />}</div>
     </LbNowCard>
   );
 };
