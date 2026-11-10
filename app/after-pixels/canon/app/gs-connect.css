@@ -17,19 +17,20 @@
 /* The Overview: one static card, three lines split by 1px lines, each ending in a text link that jumps to its section. */
 .hw-over-card { container: hw-over / inline-size; padding-block: 4px; justify-items: stretch; }
 .hw-over-list { list-style: none; padding: 0; display: grid; }
-.hw-over-list > li { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 16px; padding-block: 8px; }
+.hw-over-list > li { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; column-gap: 16px; padding-block: 8px; }
 .hw-over-list > li + li { border-top: 1px solid var(--line); }
 /* KEEP: under a 900px page each line is a card title that shrinks from 20px towards 16px with the card's width before it wraps,
    so "Type" and its bubble always share one line (the system's order: size first). */
 .hw-over-line { flex: 1 1 9em; min-width: 0; font: 700 clamp(16px, 7.4cqi, 20px)/1.25 var(--font-heading); letter-spacing: -.01em; text-wrap: pretty; }
-.hw-over-go { flex: none; min-height: 44px; }
+.hw-over-go { flex: none; min-height: 44px; margin-left: auto; }
 /* KEEP: from a 900px page the Overview is one strip of three cells split by 1px lines, read left to right as the sequence it is:
-   the line at the top of its cell and its link under it, so the three links share one line; each line is 20px, shrinking to 16px
+   the line at the top of its cell and its link at the bottom right corner, so the three links share one line; each line is 20px, shrinking to 16px
    with its own cell's width. */
 @container gs (min-width: 900px) {
   .hw-over-card { padding: 0; }
   .hw-over-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .hw-over-list > li { display: grid; align-content: space-between; justify-items: start; gap: 4px; padding: 16px 24px 8px; container-type: inline-size; }
+  .hw-over-go { justify-self: end; margin-left: 0; }
   .hw-over-list > li + li { border-top: 0; border-left: 1px solid var(--line); }
   .hw-over-line { font-size: clamp(16px, 6.4cqi, 20px); }
 }
