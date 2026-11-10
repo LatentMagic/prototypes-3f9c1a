@@ -604,6 +604,9 @@
       });
     }
     ChatPlayback.duration = (turns, { pace, speed = 1, composer = true } = {}) => timeline(turns, { ...pace, speed }, composer).total;
+    function SpeechBubble({ children, wrap = false, className = "" }) {
+      return /* @__PURE__ */ React2.createElement("span", { className: ("mcp-say" + (wrap ? " is-wrap" : "") + " " + className).trim() }, children);
+    }
     function Card({ title, action, children, className = "", style, href, onClick, label, chevron = true }) {
       const { pressed, handlers } = usePress();
       const live = !!(href || onClick);
@@ -930,6 +933,12 @@
       const P = playHref ? "a" : "button";
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-soon " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-art" }, art), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-body" }, label && /* @__PURE__ */ React2.createElement("span", { className: "mcp-soon-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-soon-line" }, line), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-tags" }, /* @__PURE__ */ React2.createElement(Tag, { kind: "daily" }, "Coming soon"), play && /* @__PURE__ */ React2.createElement(P, { className: "mcp-soon-play", href: playHref, type: playHref ? void 0 : "button", onClick: onPlay }, /* @__PURE__ */ React2.createElement(Tag, { kind: "open", icon: "play" }, play)))));
     }
+    function StepCard({ art, title, line, className = "", style }) {
+      return /* @__PURE__ */ React2.createElement("li", { className: ("mcp-card mcp-scard " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-scard-art" }, art), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card mcp-scard-name" }, title), /* @__PURE__ */ React2.createElement("p", { className: "mcp-scard-line" }, line));
+    }
+    function StepCards({ label, children, className = "", style }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-scards-wrap " + className).trim(), style }, /* @__PURE__ */ React2.createElement("ol", { className: "mcp-scards", "aria-label": label }, children));
+    }
     const ns = window.MCPGameStoreDesignSystem_ef1abd = window.MCPGameStoreDesignSystem_ef1abd || {};
     ns.__errors = ns.__errors || [];
     ns.Button = Button;
@@ -963,6 +972,7 @@
     ns.ICON_NAMES = ICON_NAMES;
     ns.Icon = Icon2;
     ns.ChatPlayback = ChatPlayback;
+    ns.SpeechBubble = SpeechBubble;
     ns.Card = Card;
     ns.Heading = Heading;
     ns.CardRow = CardRow;
@@ -980,6 +990,8 @@
     ns.PageGrid = PageGrid;
     ns.Popup = Popup;
     ns.SoonCard = SoonCard;
+    ns.StepCard = StepCard;
+    ns.StepCards = StepCards;
   })(React);
   const KIT_ICONS = {
     check: '<polyline points="20 6 9 17 4 12"></polyline>',
