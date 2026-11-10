@@ -170,6 +170,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 :is(button,a):active>:is(.mcp-tag-locked,.mcp-tag-open){background:color-mix(in srgb,var(--text) 16%,var(--page));transform:scale(.97)}
 @media (hover:hover){:is(button,a):hover>:is(.mcp-tag-locked,.mcp-tag-open){border-color:var(--off-white)}}
 @media (prefers-reduced-motion:reduce){.mcp-tag-locked,.mcp-tag-open{transition:none}:is(button,a):active>:is(.mcp-tag-locked,.mcp-tag-open){transform:none}}
+.mcp-cb .mcp-tag-locked,.mcp-cb .mcp-tag-open{color:var(--cb-ink);border-color:var(--cb-ink2)}
 .mcp-tag-success{background:var(--success);color:var(--success-on)}
 .mcp-tag-warning{background:var(--warning);color:var(--warning-on)}
 .mcp-tag-error{background:var(--error);color:var(--error-on)}
