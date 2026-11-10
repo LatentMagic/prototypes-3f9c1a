@@ -794,6 +794,11 @@ button.mcp-cb-ent{cursor:pointer}
 @container dv2 (max-width: 240px) {
   .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
+/* KEEP: under a room in the phone list the held roll reads its own width, not the run card's (the list drops the card's side padding, so the card never gets narrow enough): below 260px its labels sit above their values, at 280, 300 and 320px windows. */
+.dvL-held { container: dvlh / inline-size; }
+@container dvlh (max-width: 260px) {
+  .dvL-held .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
 /* KEEP: when the held roll sits above the route (not beside it, a step that depends on room count) or under a room in the list, it is kept short: the ledger's die moves beside its name, the big figures shrink. */
 .dvL-held .dv3-held, .dvE-main:not(.is-beside) .dv3-held { padding: 12px; gap: 8px; }
 .dvL-held .dv3-lh, .dvE-main:not(.is-beside) .dv3-lh { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; text-align: left; gap: 12px; }
