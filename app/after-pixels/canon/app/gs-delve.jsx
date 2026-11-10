@@ -533,13 +533,13 @@ export const registerDelve = () => {
 export function initGsDelve() {
 // ---- Sample plays beside the seeded ones, staged by States: a run that fell, and the hard play built to delve.md's limits
 // (every room, going back seven times, twelve stops in all, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
-GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7, light: 4,
-  figures: ['Threat 7/12', '9 rolls', 'HP 0/23'], tracks: { progress: 3, rooms: 5, threat: 7, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
+GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 6, light: 4,
+  figures: ['Threat 6/12', '8 rolls', 'HP 0/23'], tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Partial success', 'd20 14 + 0 = 14 vs 12'], ['Room', 'Entered the chime run'],
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23'], ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23'], ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23'], ['Strength', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 9/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 4 damage, HP 5/23'],
-  ['Strength', 'Miss', 'd20 6 + 3 = 9 vs 12', 'Struck back: d20 12 vs 10, hit, 4 damage, HP 1/23'], ['Strength', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 18 vs 10, hit, 1 damage, HP 0/23']] };
+  ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23'], ['Strength', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23'],
+  ['Strength', 'Miss', 'd20 6 + 3 = 9 vs 12', 'Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 5 },
   // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.

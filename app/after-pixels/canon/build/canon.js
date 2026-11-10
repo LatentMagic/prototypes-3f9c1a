@@ -3517,10 +3517,10 @@
       reached: "Fell in the warren",
       share: "Fell in the warren",
       shareLines: null,
-      threat: 7,
+      threat: 6,
       light: 4,
-      figures: ["Threat 7/12", "9 rolls", "HP 0/23"],
-      tracks: { progress: 3, rooms: 5, threat: 7, threatMax: 12 },
+      figures: ["Threat 6/12", "8 rolls", "HP 0/23"],
+      tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12"],
@@ -3531,10 +3531,9 @@
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23"],
-        ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 4 damage, HP 9/23"],
-        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 4 damage, HP 5/23"],
-        ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 4 damage, HP 1/23"],
-        ["Strength", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 18 vs 10, hit, 1 damage, HP 0/23"]
+        ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
+        ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
       ]
     };
     GS_SESSIONS["delve-hard"] = {
