@@ -303,7 +303,7 @@ export const GsConnect = () => {
           {GS_HW_PLAY.map(([title, line], i) => <DS.StepCard key={title} art={<img src={'assets/how-it-works/step-' + (i + 1) + '.svg'} alt="" />} title={title} line={line} />)}
         </DS.StepCards>
         {/* The editions sentence and the Pass sentence stay in one paragraph: the first alone reads as all free. */}
-        <p className="hw-more">Fresh games daily and weekly, and every past edition is there to play. Play some games free, and the start of others. The rest come with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>
+        <p className="hw-more">Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others let you try the start free. The rest come with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>
       </section>
       <section className="hw-sec gs-stack-md" aria-labelledby="hw-who">
         <h2 id="hw-who" className="mcp-t-sec">Who does what</h2>

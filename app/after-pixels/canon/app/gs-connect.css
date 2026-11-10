@@ -17,7 +17,7 @@
 /* The Overview: one static card, three lines split by 1px lines, each ending in a text link that jumps to its section. */
 .hw-over-card { container: hw-over / inline-size; padding-block: 4px; justify-items: stretch; }
 .hw-over-list { list-style: none; padding: 0; display: grid; }
-.hw-over-list > li { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; column-gap: 16px; padding-block: 8px; }
+.hw-over-list > li { display: flex; flex-wrap: wrap; align-items: last baseline; justify-content: space-between; column-gap: 16px; padding-block: 8px; }
 .hw-over-list > li + li { border-top: 1px solid var(--line); }
 /* KEEP: under a 900px page each line is a card title that shrinks from 20px towards 16px with the card's width before it wraps,
    so "Type" and its bubble always share one line (the system's order: size first). */
