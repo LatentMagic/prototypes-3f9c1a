@@ -36,7 +36,7 @@ const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 
 // ---- The model: the record's lines read into the rooms stood in (going back included), the rolls and the gear. ----
 // A fight roll is a hit or a miss (delve.md: Check); an option or an obstacle is a success, a partial success or a failure. A fight die is never the middle tone.
-export const dlGrade = (r) => (r.fight ? { strong: 'Hit', miss: 'Miss' } : { strong: 'Success', weak: 'Partial success', miss: 'Failure' })[r.tier];
+const dlGrade = (r) => (r.fight ? { strong: 'Hit', miss: 'Miss' } : { strong: 'Success', weak: 'Partial success', miss: 'Failure' })[r.tier];
 // A heavy attack names itself ("Heavy attack: Cleave") and is an attack on the foe, not an option.
 // A roll's line: [stat, the action if it was an option, its grade, "Natural 20" or "Natural 1", "d20 14 + 3 = 17 vs 12", "HP 19/23"], the dice as the deployed record writes them (monorepo scene session-record.ts diceOf).
 // A fight roll's line opens with Hit or Miss (or "Heavy attack: Cleave"); an option's with its name, then Success, Partial success or Failure.
@@ -118,7 +118,7 @@ const dlSay = (r, foe = true) => r.use ? r.what + ' used, ' + r.room + ': ' + r.
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
 // still draw the sheet's hexes (stats, inspiration). ----
 const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
-export const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.use
+const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.use
   ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />
   : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} crit={r.crit} fumble={r.fumble} foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />);
 const DlDieBtn = ({ r, size, act, on, foe, lit }) => (
@@ -137,9 +137,7 @@ const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result
 // advantage hex, and in a fight the foe's red hex outside it, both cleared on the selected die; never a notch or a mark on the room (owner, 2026-11-08, replacing 2026-10-28's "never marked").
 // The foe's roll is one row of the held roll: its diamond, what it did and the defence, then the foe's health as the hero's meters are drawn; no Result row.
 // The foe's diamond is DS.DelveFoeDie: a diamond, never the hero's hex, so it cannot read as a second hero roll.
-export const DlFoeDie = ({ f }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" />;
-// A seam for a prototype aid: when set, the held roll above the route (beside === false) is handed to DL_HELD_VIEW.stacked({ r, x, live, canon }), which returns what to draw, canon's own element included.
-export const DL_HELD_VIEW = { stacked: null };
+const DlFoeDie = ({ f }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" />;
 // "Back in the chime run": the room's name leads with "The", so it drops to lower case mid-sentence.
 const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ') : r.room);
 // KEEP: the held roll above the route is one layout at every width it appears at (no window or container breakpoint): the die and its name in a head column on the left, the roll's facts on the right.
@@ -184,8 +182,7 @@ const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[ac
       {(r.foe || r.downed) && <div className="dv3-fm"><DlMeter label={(r.foe || r.downed).name} n={r.foe ? r.foe.health : 0} of={(r.foe || r.downed).max} /></div>}
     </dl>
   </div></div>);
-  const canon = beside === false ? <DlHeldStacked r={r} x={x} live={live} /> : ledger;
-  return beside === false && DL_HELD_VIEW.stacked ? DL_HELD_VIEW.stacked({ r, x, live, canon }) : canon; };
+  return beside === false ? <DlHeldStacked r={r} x={x} live={live} /> : ledger; };
 
 // ---- The route: a column per room stood in, a rule between rooms; a key moment's die is drawn large. The held roll beside it. ----
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
@@ -351,7 +348,7 @@ const DlHex = ({ x }) => (<svg className="dv4-sx" viewBox="-5 -5 46 50" width="3
 // KEEP: every piece below a group's heading is one cell (a fixed-height figure, one label under it), so the rows line up.
 const DlCell = ({ label, used, title, children }) => (<div className={'dv7-cell' + (used ? ' is-used' : '')} title={title}><span className="dv7-fig">{children}</span><span className="dv7-lb">{label}</span></div>);
 // KEEP: a meter's count is written 9/13, the short form, so the meters' column stays narrow (owner, 2026-10-29).
-export const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
+const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
 
 // 3B (owner, 2026-10-29): the hero; hit points and threat stacked on one grid; then five tabs: Stats, Advantage, Pack (with its free slots), Ability and Fight. The torch, clues and the bargain join once the record holds them.
 // The sheet's tabs are Escape's tap cards (esx-cards, EsxFold); a tab adds only its icon.
