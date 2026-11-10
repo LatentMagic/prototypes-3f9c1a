@@ -386,16 +386,22 @@ const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCo
 // KEEP: a room's marks fold in rows of at most three, balanced, never one left alone below a full row (4 go 2 and 2, 5 go 3 and 2)
 // (owner, 2026-10-30).
 const dlMarkCols = (n) => (n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3)));
+// A use (ability, ultimate, gear) rolled nothing, so it marks the Now card as a small sparkle among the room's dots, as the share line
+// counts it with a sparkle (user, 2026-11-10, "2 - graet question").
+const DlNowUseMark = () => (<svg className="dl-now-mark is-use" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z" /></svg>);
+const dlNowMarksSay = (rest) => { const rolls = rest.filter((r) => !r.use); const uses = rest.length - rolls.length;
+  const said = rolls.length ? rolls.length + (rolls.length === 1 ? ' other roll: ' : ' other rolls: ') + rolls.map((r) => dlGrade(r).toLowerCase()).join(', ') : '';
+  return [said, uses ? (uses === 1 ? 'a use' : uses + ' uses') : ''].filter(Boolean).join(', and '); };
 const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 1].n), hov: DL_NO_HOVER }; const [ref, cols] = useDlNowCols(m.stops.length);
   return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} aria-label="The way you went">{m.stops.map((st, i) => {
-    const keys = st.rolls.filter((r) => m.mom[r.n]); const rest = st.rolls.filter((r) => !m.mom[r.n]);
+    const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
     const edge = (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === m.stops.length - 1 ? ' is-row-end' : '');
     return (<div key={st.i} className={'dl-now-stop' + edge}>
       <DlStopHead st={st} />
-      {!st.rolls.length && <i className="dv2-pass" aria-label="No rolls" />}
+      {!st.turns.length && <i className="dv2-pass" aria-label="No rolls" />}
       {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.n} r={r} act={null} on={on} size={34} foe={false} />)}</div>}
-      {rest.length > 0 && <span className="dl-now-marks" style={{ '--dl-marks': dlMarkCols(rest.length) }} role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map((r) => dlGrade(r).toLowerCase()).join(', ')}>
-        {rest.map((r) => <i key={r.n} className={'dl-now-mark is-' + r.tier} />)}</span>}
+      {rest.length > 0 && <span className="dl-now-marks" style={{ '--dl-marks': dlMarkCols(rest.length) }} role="img" aria-label={dlNowMarksSay(rest)}>
+        {rest.map((r) => (r.use ? <DlNowUseMark key={r.t} /> : <i key={r.t} className={'dl-now-mark is-' + r.tier} />))}</span>}
     </div>);
   })}</div>);
 };

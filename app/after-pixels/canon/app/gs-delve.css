@@ -362,6 +362,7 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 .dl-now-mark.is-strong { background: var(--success); }
 .dl-now-mark.is-weak { background: var(--warning); }
 .dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
+.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--control-edge); }
 /* Hover or focus rings a key moment's die as the session page rings the held roll; a press opens the session page on that roll. */
 .dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .sl { display: inline; }
 /* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
