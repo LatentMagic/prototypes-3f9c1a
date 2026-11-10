@@ -9,7 +9,7 @@
 // SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
 // and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three. The foes below, their health and
 // are invented too: the record names no foe and writes no foe health, only the struck-back part of a roll's line, whose target is the hero's defence (10 the fighter, 14 the rogue).
-const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
+const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
@@ -86,18 +86,21 @@ const dlBuild = (s) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
     if (!cur) open(null, false);
     // A gear line that wears a foe down names its health before and after ("Snaggle: health 3 → 1").
-    const wear = DL_USE_KINDS.test(l[0]) && /→ (\d+)$/.exec(String(l[2] || '')); const fo = foeOf(); if (wear && fo) foeHp[fo.k] = +wear[1];
+    const wear = DL_USE_KINDS.test(l[0]) && /→ (\d+)$/.exec(String(l[2] || '')); const fo = foeOf(); const foeMx = fo ? (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] : 0;
+    const was = fo ? (foeHp[fo.k] != null ? foeHp[fo.k] : foeMx) : 0; if (wear && fo) foeHp[fo.k] = +wear[1];
+    // The turn that takes a foe's health to 0 beats it: its held roll says so and keeps the foe's bar, at 0.
+    const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx } : null;
     const u = dlUse(l, s.hero);
     // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number, is no key moment, and breaks no streak.
     if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
       if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max }; }
-      turns.push(u); cur.turns.push(u); return; }
+      if (downed) u.downed = downed; turns.push(u); cur.turns.push(u); return; }
     const r = dlRoll(l); if (!r) return;
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20). Its roll back, where the line holds one, rides on the roll.
-    if (fo && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1));
+    if (fo && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1)); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx };
       if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] }; }
     run = r.tier === 'strong' ? run + 1 : 0; if (fo && foeHp[fo.k] === 0) run = 0;
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
@@ -106,7 +109,7 @@ const dlBuild = (s) => {
   const moments = dlMoments(rolls, end);
   return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
 };
-const dlSay = (r, foe = true) => r.use ? r.what + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '');
+const dlSay = (r, foe = true) => r.use ? r.what + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
@@ -136,7 +139,7 @@ const DlHeld = ({ m, act, live = true }) => { const r = act ? m.turns[act - 1] :
   const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier;
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
-    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}</div></div></div>
+    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div></div>
     <dl className="dv3-dl">
       <div><dt>Room</dt><dd>{(r.back ? 'Back in ' : '') + r.room}</dd></div>
       {r.use && <div><dt>Used</dt><dd>{r.name} <span className="is-does">{[r.what.toLowerCase(), r.does].filter(Boolean).join(', ')}</span></dd></div>}
@@ -145,7 +148,7 @@ const DlHeld = ({ m, act, live = true }) => { const r = act ? m.turns[act - 1] :
       {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{dlGrade(r)}</dd></div>}
       {foeRow}
       {r.harm > 0 && !r.foe && <div><dt>Cost</dt><dd>Lost {r.harm} HP</dd></div>}
-      {r.foe && <div className="dv3-fm"><DlMeter label={r.foe.name} n={r.foe.health} of={r.foe.max} /></div>}
+      {(r.foe || r.downed) && <div className="dv3-fm"><DlMeter label={(r.foe || r.downed).name} n={r.foe ? r.foe.health : 0} of={(r.foe || r.downed).max} /></div>}
     </dl>
   </div></div>); };
 

@@ -142,7 +142,7 @@ const GS_DV_WON = [
   ['Dexterity', 'Hit', 'd20 18 + 1 = 19 vs 12'],
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Ability', 'Used shield bash', 'Warren guard: health 3 → 2', 'Struck back: d20 7 vs 10, missed'],
+  ['Ability', 'Used shield bash', 'Warren guard: health 4 → 3', 'Struck back: d20 7 vs 10, missed'],
   ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 8 vs 10, missed'],
   ['Strength', 'Hit', 'd20 13 + 3 = 16 vs 12', 'Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23'],
   ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
