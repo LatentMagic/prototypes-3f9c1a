@@ -604,14 +604,14 @@
       });
     }
     ChatPlayback.duration = (turns, { pace, speed = 1, composer = true } = {}) => timeline(turns, { ...pace, speed }, composer).total;
-    function SpeechBubble({ children, wrap = false, copy = false, onCopy, className = "" }) {
+    function SpeechBubble({ children, wrap = false, copy = false, edge = false, onCopy, className = "" }) {
       const [done, setDone] = React2.useState(false);
       React2.useEffect(() => {
         if (!done) return void 0;
         const t = setTimeout(() => setDone(false), 2400);
         return () => clearTimeout(t);
       }, [done]);
-      const cls = ("mcp-say" + (wrap ? " is-wrap" : "") + (copy ? " is-copy" : "") + (copy && done ? " is-done" : "") + " " + className).trim();
+      const cls = ("mcp-say" + (wrap ? " is-wrap" : "") + (edge ? " is-edge" : "") + (copy ? " is-copy" : "") + (copy && done ? " is-done" : "") + " " + className).trim();
       if (!copy) return /* @__PURE__ */ React2.createElement("span", { className: cls }, children);
       const text = React2.Children.toArray(children).filter((c) => typeof c === "string" || typeof c === "number").join("");
       const click = () => {
@@ -6799,32 +6799,30 @@
     const t = g.tags[0];
     return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "First " + g.ed[0] + " free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "locked" }, "Pass");
   };
-  const GsChatWindow = ({ bar, say, caption, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-card hw-win", role: "group", "aria-label": bar + " " + say }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card hw-win-bar" }, bar), /* @__PURE__ */ React$1.createElement("div", { className: "hw-win-chat" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-me" }, /* @__PURE__ */ React$1.createElement(GsSay, { wrap: true, copy: true, text: say })), /* @__PURE__ */ React$1.createElement("div", { className: "hw-ai" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, "Your AI"), children)), /* @__PURE__ */ React$1.createElement("div", { className: "hw-win-foot" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, caption)));
+  const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap: true, copy: true, edge: true, onCopy: (t) => lbCopy([t]) }, say);
+  const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig" }, /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { title, turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
   const GsStart = () => {
     const gs = useGs();
     const d = GS_START_DELVE;
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.CardRow, { kind: "chat", title: "Start", className: "hw-start" }, /* @__PURE__ */ React$1.createElement(
-      GsChatWindow,
+      GsStartChat,
       {
-        bar: "In any chat, type",
+        title: "In any chat, type",
         say: gsPromptText({ kind: "games" }),
-        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI shows you the games to pick from. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("games") }, "See the games"))
-      },
-      /* @__PURE__ */ React$1.createElement("p", { className: "hw-ai-line" }, "Here are today’s games. Pick one, or type a game’s name."),
-      /* @__PURE__ */ React$1.createElement(DS.MenuRows, { label: "Today’s games", items: GS_START_GAMES.map((gid) => {
-        const g = GS_GAMES[gid];
-        return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
-      }) })
+        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI shows you the games to pick from. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("games") }, "See the games")),
+        turns: [{ from: "ai", text: "Here are today’s games. Pick one, or type a game’s name.", after: [{ type: "menu", label: "Today’s games", items: GS_START_GAMES.map((gid) => {
+          const g = GS_GAMES[gid];
+          return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
+        }) }] }]
+      }
     ), /* @__PURE__ */ React$1.createElement(
-      GsChatWindow,
+      GsStartChat,
       {
-        bar: "To go straight to one, type",
+        title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
-        caption: "Name a game, or a past edition, and your AI starts it straight away."
-      },
-      /* @__PURE__ */ React$1.createElement("p", { className: "hw-ai-title" }, d.title),
-      /* @__PURE__ */ React$1.createElement("p", { className: "hw-ai-line" }, d.first, /* @__PURE__ */ React$1.createElement("span", { className: "hw-more-prem" }, d.rest), " ", /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "…")),
-      /* @__PURE__ */ React$1.createElement(DS.EntityCards, { items: d.heroes, className: "hw-heroes" })
+        caption: "Name a game, or a past edition, and your AI starts it straight away.",
+        turns: [{ from: "ai", text: [d.title, d.first + d.rest + " …"], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }]
+      }
     )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.")));
   };
   const GsAgainGlyph = () => /* @__PURE__ */ React$1.createElement("svg", { className: "mcp-ico hw-chg-ic", viewBox: "0 0 24 24", width: "20", height: "20", "aria-hidden": "true", focusable: "false", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: "M19 12a7 7 0 1 1-2.1-5" }), /* @__PURE__ */ React$1.createElement("path", { d: "M17.5 3v4.2h-4.2" }));

@@ -597,6 +597,7 @@ button.mcp-cb-ent{cursor:pointer}
 /* SpeechBubble: the words a player types, inline, as a sent message. The one round shape on the shop's own surface. */
 .mcp-say{display:inline;margin-inline-start:var(--space-1);padding:.15em .6em;border-radius:1em 1em .2em 1em;background:var(--off-white);color:var(--page);font-family:var(--font-text);font-weight:500;white-space:nowrap;-webkit-box-decoration-break:clone;box-decoration-break:clone;cursor:inherit}
 /* KEEP: a long bubble that does not fit moves to the next line whole, and breaks inside itself only when one line is too narrow for it; its line height is trimmed by its padding so it adds no height to the line. */
+.mcp-say.is-edge{box-shadow:inset 0 0 0 1.5px var(--control-edge)}
 .mcp-say.is-wrap{display:inline-block;max-width:100%;white-space:normal;line-height:calc(1lh - .3em)}
 /* KEEP: a copying bubble is a button in the bubble's shape: an inline-block whose line height is trimmed by its padding so it adds no height to its line; the label and the "Copied" label share one grid cell so its width never changes; a 44px-tall ::after is its touch target. */
 .mcp-say.is-copy{position:relative;display:inline-block;max-width:100%;margin-block:0;border:0;font-size:inherit;line-height:calc(1lh - .3em);text-align:start;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;transition:background-color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}

@@ -5,10 +5,10 @@ import React from 'react';
 // breaks inside itself only when a line is too narrow for it.
 // KEEP: a copying bubble keeps its width through the swap to "Copied" (the words stay in place, unseen, and "Copied" is in the page only while it shows) so the line never reflows,
 // and holds "Copied" for 2400ms, as the Copy buttons do. Its touch target is 44px tall whatever the text size (css).
-export function SpeechBubble({children,wrap=false,copy=false,onCopy,className=''}){
+export function SpeechBubble({children,wrap=false,copy=false,edge=false,onCopy,className=''}){
   const [done,setDone]=React.useState(false);
   React.useEffect(()=>{if(!done)return undefined;const t=setTimeout(()=>setDone(false),2400);return()=>clearTimeout(t);},[done]);
-  const cls=('mcp-say'+(wrap?' is-wrap':'')+(copy?' is-copy':'')+(copy&&done?' is-done':'')+' '+className).trim();
+  const cls=('mcp-say'+(wrap?' is-wrap':'')+(edge?' is-edge':'')+(copy?' is-copy':'')+(copy&&done?' is-done':'')+' '+className).trim();
   if(!copy) return <span className={cls}>{children}</span>;
   const text=React.Children.toArray(children).filter(c=>typeof c==='string'||typeof c==='number').join('');
   const click=()=>{

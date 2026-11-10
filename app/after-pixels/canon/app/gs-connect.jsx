@@ -255,11 +255,9 @@ const GsSetup = () => {
 // Start: two chat windows in one CardRow. The first types "Play After Pixels" and the AI lists the games; the second types
 // "Play Delve on After Pixels" and Delve opens run 1. The replies are examples of what the AI sends: the game rows and their tags
 // are the deployed catalogue's, Delve's opening is its run 1 (title, the premise's first lines, the three heroes).
-// KEEP: from a 640px row the two windows share its width side by side and are as tall as each other, with their captions on one
-// line at the foot; narrower, the CardRow scrolls sideways with the next window peeking. The row's own Previous and Next move it.
-// KEEP: in the narrow row each reply is cut short so a phone sees both the typed line and the answer without scrolling: three
-// games with no lines under their names, and Delve's premise to its first sentence.
-// KEEP: each window's typed line is a copying SpeechBubble; the window itself is inert, a picture of the chat.
+// KEEP: the two chats are as tall as each other (one height, the conversation scrolls inside it) and share the row side by side
+// when they fit; narrower, the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
+// KEEP: each chat's typed line is a copying SpeechBubble; the chat itself is inert, a picture.
 const GS_START_GAMES = ['word', 'mystery', 'delve', 'salvage'];
 const GS_START_DELVE = {
   title: 'The Goblin Warren beneath Ashford Mill',
@@ -271,17 +269,15 @@ const gsStartTag = (g) => {
   const t = g.tags[0];
   return t === 'FREE' ? <DS.Tag kind="free">Free</DS.Tag> : t === 'FIRST' ? <DS.Tag kind="free">{'First ' + g.ed[0] + ' free'}</DS.Tag> : <DS.Tag kind="locked">Pass</DS.Tag>;
 };
-// The window's three rows (the typed line's bar, the chat, the caption) are laid on the row's shared grid, so two windows
-// have the same bar, chat and caption heights.
-const GsChatWindow = ({ bar, say, caption, children }) => (
-  <div className="mcp-card hw-win" role="group" aria-label={bar + ' ' + say}>
-    <h3 className="mcp-t-card hw-win-bar">{bar}</h3>
-    <div className="hw-win-chat">
-      <div className="hw-me"><GsSay wrap copy text={say} /></div>
-      <div className="hw-ai"><p className="gs-label hw-eyebrow">Your AI</p>{children}</div>
-    </div>
-    <div className="hw-win-foot"><p className="gs-small">{caption}</p></div>
-  </div>
+// Each chat is the design system's ChatPicture, light as everywhere else, in a CardRow kind="chat" with its caption under it.
+// The two overlays on it: the typed line is a copying SpeechBubble (edge, for the light ground) in place of ChatPicture's own
+// user message, and each game's art is canon's, cropped square by the menu row.
+const gsTyped = (say) => <DS.SpeechBubble wrap copy edge onCopy={(t) => lbCopy([t])}>{say}</DS.SpeechBubble>;
+const GsStartChat = ({ title, say, turns, caption }) => (
+  <figure className="mcp-chatfig">
+    <DS.ChatPicture title={title} turns={[{ from: 'user', text: gsTyped(say) }, ...turns]} label={title + ' ' + say} />
+    <figcaption>{caption}</figcaption>
+  </figure>
 );
 const GsStart = () => {
   const gs = useGs();
@@ -289,20 +285,15 @@ const GsStart = () => {
   return (
     <>
       <DS.CardRow kind="chat" title="Start" className="hw-start">
-        <GsChatWindow bar="In any chat, type" say={gsPromptText({ kind: 'games' })}
-          caption={<>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></>}>
-          <p className="hw-ai-line">Here are today’s games. Pick one, or type a game’s name.</p>
-          <DS.MenuRows label="Today’s games" items={GS_START_GAMES.map((gid) => {
+        <GsStartChat title="In any chat, type" say={gsPromptText({ kind: 'games' })}
+          caption={<>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></>}
+          turns={[{ from: 'ai', text: 'Here are today’s games. Pick one, or type a game’s name.', after: [{ type: 'menu', label: 'Today’s games', items: GS_START_GAMES.map((gid) => {
             const g = GS_GAMES[gid];
             return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
-          })} />
-        </GsChatWindow>
-        <GsChatWindow bar="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
-          caption="Name a game, or a past edition, and your AI starts it straight away.">
-          <p className="hw-ai-title">{d.title}</p>
-          <p className="hw-ai-line">{d.first}<span className="hw-more-prem">{d.rest}</span> <span aria-hidden="true">…</span></p>
-          <DS.EntityCards items={d.heroes} className="hw-heroes" />
-        </GsChatWindow>
+          }) }] }]} />
+        <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
+          caption="Name a game, or a past edition, and your AI starts it straight away."
+          turns={[{ from: 'ai', text: [d.title, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }]} />
       </DS.CardRow>
       <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</span></p>
     </>

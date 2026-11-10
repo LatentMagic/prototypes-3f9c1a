@@ -6,6 +6,8 @@ export interface SpeechBubbleProps{
   wrap?:boolean;
   /** The bubble is a button that copies its words. Looks like the static bubble (pointer and hover only); on press the words swap to "Copied" for 2400ms. Use only where the page's design says the typed line copies. */
   copy?:boolean;
+  /** For a light ground (inside a ChatPicture): a 1.5px warm-grey edge drawn inside the bubble, so the off-white fill reads against the chat's off-white. Same size and shape. */
+  edge?:boolean;
   /** Called with the words when a copying bubble is pressed; without it the bubble writes to the clipboard itself. */
   onCopy?:(text:string)=>void;
   className?:string;
