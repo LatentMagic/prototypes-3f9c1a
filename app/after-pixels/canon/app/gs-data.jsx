@@ -250,7 +250,7 @@ export const GS_SESSIONS = {
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
     setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
     share: 'Elsie rescued',
-    shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5', '💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩'],
+    shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '💀🟥🟩🟩🟩🟩🟩✨🟩🟩🟩'],
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {

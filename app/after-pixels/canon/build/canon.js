@@ -1298,7 +1298,7 @@
       threatMax: 12,
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
-      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5", "💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩"]
+      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "💀🟥🟩🟩🟩🟩🟩✨🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
@@ -3587,7 +3587,7 @@
     DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren beneath Ashford Mill", played: true, end: null };
     DV_ALL = [DV_RUN1];
     DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 8, rooms: 4, ritual: 3 };
-    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 5 };
+    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 3 };
     DV_ROOMS = 5;
     DV_NEXT = "Monday 12 October";
     DV_ACH = [

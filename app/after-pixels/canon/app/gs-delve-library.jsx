@@ -14,7 +14,7 @@ let DV_ROOMS;
 let DV_RITUAL;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play
-// (Bryn: a streak of five strong hits, HP 22 of 23) meets Hot Streak only. A run counts as completed when its status is a win: Config → This edition: Failed
+// (Bryn: a longest streak of three, HP 22 of 23) meets Hot Streak only. A run counts as completed when its status is a win: Config → This edition: Failed
 // or Hard makes this week's a loss (gsSessStatus), so it is not completed.
 const dvEnded = (ps) => ps.filter((p) => p.status.kind === 'ok');
 export let DV_ACH;
@@ -69,8 +69,8 @@ DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'Octob
 // Every run, newest first.
 DV_ALL = [DV_RUN1];
 DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 8, rooms: 4, ritual: 3 };
-// streak: the run's longest run of strong hits (its share card: longest streak 5).
-DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 5 };
+// streak: the run's longest run of strong hits (its share card: longest streak 3).
+DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 3 };
 DV_ROOMS = 5;
 DV_RITUAL = 12;
 DV_NEXT = 'Monday 12 October';
