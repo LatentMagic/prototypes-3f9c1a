@@ -3481,7 +3481,7 @@
       threat: 7,
       sheet: { used: { "Shield bash": 2 }, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 14 + 0 = 14 vs 12"],
+        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12"],
         ["Room", "Entered the chime run"],
         ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23"],
         ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23"],
@@ -3530,11 +3530,11 @@
         ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Doubled back to Snaggle's den", "The ritual +1"],
-        ["Wisdom", "Listen at the den door", "Success", "d20 13 + 1 = 14 vs 12"],
+        ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Strength", "Force the bone gate", "Failure", "d20 6 + 0 = 6 vs 12"],
         ["Strength", "Force the bone gate", "Failure", "d20 11 + 0 = 11 vs 12"],
-        ["Strength", "Force the bone gate", "Success", "d20 14 + 0 = 14 vs 12"],
+        ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 12"],
         ["Lock", "Forced the bone gate"],
         ["Room", "Doubled back to the chime run", "The ritual +1"],
         ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
@@ -6646,7 +6646,7 @@
       endings: null,
       reached: null,
       shareLines: null,
-      lines: [["Room", "Entered the flooded nave"], ["Dexterity", "Cross the sunken pews", "Success", "d20 14 + 2 = 16 vs 12"], ["Room", "Entered the bell loft"]]
+      lines: [["Room", "Entered the flooded nave"], ["Dexterity", "Cross the sunken pews", "Success", "d20 14 + 3 = 17 vs 12"], ["Room", "Entered the bell loft"]]
     };
     PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + "-0", at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
     Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
