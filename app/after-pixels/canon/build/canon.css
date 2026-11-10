@@ -420,6 +420,10 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 /* KEEP: The pill: arrow only, 28px tall, 12px down, centred; ::before keeps the target 44px tall */
 .mcp-chat-up{position:absolute;z-index:2;top:12px;left:50%;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18);transform:translateX(-50%);-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease),transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
 .mcp-chat-up::before{content:"";position:absolute;inset:-8px -2px}
+.mcp-chat-up.is-down{top:auto;bottom:68px}.mcp-chat-up.is-down.is-bare{bottom:12px}
+.mcp-chat-up.is-down[hidden]{transform:translate(-50%,6px)}
+.mcp-chat.is-top .mcp-chat-body>:first-child{margin-top:0}
+.mcp-chat-body[data-more="down"]{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 56px);mask-image:linear-gradient(to top,transparent 0,#000 56px)}
 .mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
 @media (hover:hover){.mcp-chat-up:not([hidden]):hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg));transform:translate(-50%,-1px)}}
 .mcp-chat-up:not([hidden]):active{transform:translateX(-50%) scale(.97)}
@@ -2434,7 +2438,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
 @container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
 .hw-chatfig > h3 { margin: 0; }
-.hw-start .mcp-chat-me { background: none; padding: 0; max-width: 100%; }
+.hw-start .mcp-chat-me { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
 .hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
 .hw-chg-ic { flex: none; align-self: flex-start; }

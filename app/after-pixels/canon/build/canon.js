@@ -275,19 +275,20 @@
       return null;
     }
     const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-    function useChatScroll(body, turns) {
+    function useChatScroll(body, turns, start) {
+      const top = start === "top";
       const [up, setUp] = React2.useState(false);
       React2.useEffect(() => {
         const b = body.current;
         if (!b) return void 0;
         let moved = false;
         const mark = () => {
-          const u = b.scrollTop > 4;
-          b.dataset.more = u ? "up" : "";
+          const u = top ? b.scrollTop + b.clientHeight < b.scrollHeight - 4 : b.scrollTop > 4;
+          b.dataset.more = u ? top ? "down" : "up" : "";
           setUp(u);
         };
         const end = () => {
-          if (!moved) b.scrollTop = b.scrollHeight;
+          if (!moved) b.scrollTop = top ? 0 : b.scrollHeight;
           mark();
         };
         const stop = () => {
@@ -311,7 +312,7 @@
       }, [turns]);
       const toStart = () => {
         const b = body.current;
-        if (b) b.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+        if (b) b.scrollTo({ top: top ? b.scrollHeight : 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
       };
       return [up, toStart];
     }
@@ -338,18 +339,19 @@
       ].filter(Boolean);
       return kids.length ? /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
     }
-    function chatShell({ body, bodyRef, up, toStart, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+    function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
       const name = label || "A game being played in a chat";
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up", hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: { transform: "rotate(180deg)" } })), control, comp);
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
     }
     const chatParas = paras;
-    function ChatPicture({ turns, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = "Back to the start", className = "" }) {
+    function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
       const body = React2.useRef(null);
-      const [up, toStart] = useChatScroll(body, turns);
+      const [up, toStart] = useChatScroll(body, turns, start);
       return chatShell({
         bodyRef: body,
         up,
         toStart,
+        start,
         title,
         height,
         width,
@@ -6800,26 +6802,13 @@
     return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "First " + g.ed[0] + " free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "locked" }, "Pass");
   };
   const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap: true, copy: true, edge: true, onCopy: (t) => lbCopy([t]) }, say);
-  const useGsTall = () => {
-    const qs = React$1.useMemo(() => window.matchMedia ? [window.matchMedia("(min-width: 1280px)"), window.matchMedia("(min-width: 1024px)")] : [], []);
-    const read = () => !qs.length ? void 0 : qs[0].matches ? 450 : qs[1].matches ? 496 : void 0;
-    const [h, set] = React$1.useState(read);
-    React$1.useEffect(() => {
-      const f = () => set(read());
-      qs.forEach((q) => q.addEventListener("change", f));
-      return () => qs.forEach((q) => q.removeEventListener("change", f));
-    }, []);
-    return h;
-  };
-  const GsStartChat = ({ title, say, turns, caption, tall }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { turns: [{ from: "user", text: gsTyped(say) }, ...turns], height: tall, label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
+  const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
   const GsStart = () => {
     const gs = useGs();
     const d = GS_START_DELVE;
-    const tall = useGsTall();
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.CardRow, { kind: "chat", title: "Start", className: "hw-start" }, /* @__PURE__ */ React$1.createElement(
       GsStartChat,
       {
-        tall,
         title: "In any chat, type",
         say: gsPromptText({ kind: "games" }),
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI shows you the games to pick from. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("games") }, "See the games")),
@@ -6831,7 +6820,6 @@
     ), /* @__PURE__ */ React$1.createElement(
       GsStartChat,
       {
-        tall,
         title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
         caption: "Name a game, or a past edition, and your AI starts it straight away.",

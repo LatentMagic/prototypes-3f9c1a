@@ -258,6 +258,7 @@ const GsSetup = () => {
 // are the deployed catalogue's, Delve's opening is its run 1 (title, the premise's first lines, the three heroes).
 // KEEP: from 640px the two pictures share the row equally, side by side;
 // narrower, the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
+// KEEP: each picture opens on its first turn, the typed line (ChatPicture start="top"), at the system's height, and scrolls to the reply.
 // KEEP: each chat's typed line is a copying SpeechBubble; the chat itself is inert, a picture.
 const GS_START_GAMES = ['word', 'mystery', 'delve', 'salvage'];
 const GS_START_DELVE = {
@@ -274,37 +275,26 @@ const gsStartTag = (g) => {
 // The two overlays on it: the typed line is a copying SpeechBubble (edge, for the light ground) in place of ChatPicture's own
 // user message, and each game's art is canon's, cropped square by the menu row.
 const gsTyped = (say) => <DS.SpeechBubble wrap copy edge onCopy={(t) => lbCopy([t])}>{say}</DS.SpeechBubble>;
-// KEEP: from 1024px each picture is tall enough to show its whole exchange, the typed line included, with no scrolling, and both are
-// the same height; narrower they keep the system's 290px and scroll.
-// The height that shows chat 1's whole exchange: 1280px and up the replies are wider and wrap less.
-const useGsTall = () => {
-  const qs = React.useMemo(() => (window.matchMedia ? [window.matchMedia('(min-width: 1280px)'), window.matchMedia('(min-width: 1024px)')] : []), []);
-  const read = () => (!qs.length ? undefined : qs[0].matches ? 450 : qs[1].matches ? 496 : undefined);
-  const [h, set] = React.useState(read);
-  React.useEffect(() => { const f = () => set(read()); qs.forEach((q) => q.addEventListener('change', f)); return () => qs.forEach((q) => q.removeEventListener('change', f)); }, []);
-  return h;
-};
-const GsStartChat = ({ title, say, turns, caption, tall }) => (
+const GsStartChat = ({ title, say, turns, caption }) => (
   <figure className="mcp-chatfig hw-chatfig">
     <h3 className="mcp-t-card">{title}</h3>
-    <DS.ChatPicture turns={[{ from: 'user', text: gsTyped(say) }, ...turns]} height={tall} label={title + ' ' + say} />
+    <DS.ChatPicture start="top" turns={[{ from: 'user', text: gsTyped(say) }, ...turns]} label={title + ' ' + say} />
     <figcaption>{caption}</figcaption>
   </figure>
 );
 const GsStart = () => {
   const gs = useGs();
   const d = GS_START_DELVE;
-  const tall = useGsTall();
   return (
     <>
       <DS.CardRow kind="chat" title="Start" className="hw-start">
-        <GsStartChat tall={tall} title="In any chat, type" say={gsPromptText({ kind: 'games' })}
+        <GsStartChat title="In any chat, type" say={gsPromptText({ kind: 'games' })}
           caption={<>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></>}
           turns={[{ from: 'ai', text: 'Here are today’s games. Pick one, or type a game’s name.', after: [{ type: 'menu', label: 'Today’s games', items: GS_START_GAMES.map((gid) => {
             const g = GS_GAMES[gid];
             return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
           }) }] }]} />
-        <GsStartChat tall={tall} title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
+        <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
           caption="Name a game, or a past edition, and your AI starts it straight away."
           turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }]} />
       </DS.CardRow>
