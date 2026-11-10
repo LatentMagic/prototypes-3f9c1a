@@ -71,6 +71,7 @@ DV_ALL = [DV_RUN1];
 DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 8, rooms: 4, ritual: 3 };
 // streak: the run's longest run of strong hits (its share card: longest streak 3).
 DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 3 };
+// KEEP: the room count, the threat's name and maximum, and the carry limit come from the run's edition (5 or 6 rooms, threat 12 to 24 deployed), never fixed at 5 and 12.
 DV_ROOMS = 5;
 DV_RITUAL = 12;
 DV_NEXT = 'Monday 12 October';

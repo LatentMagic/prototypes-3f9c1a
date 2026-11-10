@@ -9,6 +9,7 @@
 // SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
 // and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three. The foes below, their health and
 // are invented too: the record names no foe and writes no foe health, only the struck-back part of a roll's line, whose target is the hero's defence (10 the fighter, 14 the rogue).
+// KEEP: foe names and health are sample. Deployed foes have health 12 to 24, a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts), and a band counts members standing.
 const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
