@@ -9,7 +9,7 @@
 // and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three.
 // The foes and their health are invented: the record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence (10 the fighter, 14 the rogue).
 // KEEP: foe names and health are sample. Deployed foes have health 12 to 24, a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts), and a band counts members standing.
-const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
+const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 2] };
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
@@ -60,8 +60,11 @@ const dlRoll = (l) => {
 const dlUseDoes = (d) => { const s = d.replace(/,? *no roll$/i, ''); return s.charAt(0).toLowerCase() + s.slice(1); };
 // A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Ability · Used shield bash · Warren guard: health 4 → 3 · Struck back: d20 7 vs 10, missed").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
-const DL_USE_KINDS = /^(Ability|Ultimate|Gear)$/;
-const dlUse = (l, hero) => { const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
+const DL_USE_KINDS = /^(Ability|Ultimate|Gear|Weakness)$/;
+// A weakness strike is a use too: the line is ["Weakness", "A flask of lamp oil", "Grizzletooth: health 24 → 16"], the item named with no "Used", and the foe staggered, so no roll back.
+const DL_WEAK_DOES = 'strikes its weakness, no blow back';
+const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1])); return w ? { use: true, what: 'Weakness', name: dlCap(w[1]), does: DL_WEAK_DOES, tier: 'use', foe: null, hp: null } : null; }
+  const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
   const parts = l.slice(1).map(String); const sheet = DL_HEROES[hero] || DL_HEROES['Wren the Rogue']; const name = dlCap(m[1]);
   const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(' · '));
   return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : '', tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
@@ -89,7 +92,7 @@ const dlBuild = (s) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
     if (!cur) open(null, false);
     // A gear line that wears a foe down names its health before and after ("Snaggle: health 3 → 1").
-    const wear = DL_USE_KINDS.test(l[0]) && /→ (\d+)$/.exec(String(l[2] || '')); const fo = foeOf(); const foeMx = fo ? (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] : 0;
+    const wear = DL_USE_KINDS.test(l[0]) && (/→ (\d+)$/.exec(String(l[2] || '')) || (l[0] === 'Weakness' && /: defeated$/.test(String(l[2] || '')) && [null, 0])); const fo = foeOf(); const foeMx = fo ? (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] : 0;
     const was = fo ? (foeHp[fo.k] != null ? foeHp[fo.k] : foeMx) : 0; if (wear && fo) foeHp[fo.k] = +wear[1];
     // The turn that takes a foe's health to 0 beats it: its held roll says so and keeps the foe's bar, at 0.
     const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx } : null;
@@ -98,6 +101,8 @@ const dlBuild = (s) => {
     if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
       if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max }; }
+      // KEEP: a weakness strike has no foe roll, so its foe health is carried as `meter`, drawn as a kill's is ("health alone"), at the health after the blow.
+      if (fo && l[0] === 'Weakness') u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx };
       if (downed) u.downed = downed; turns.push(u); cur.turns.push(u); return; }
     const r = dlRoll(l); if (!r) return;
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
@@ -143,13 +148,15 @@ const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ')
 // KEEP: the held roll above the route is one layout at every width it appears at (no window or container breakpoint): the die and its name in a head column on the left, the roll's facts on the right.
 // Each fact is its label over its value. Line 1 is the player's move in two groups, so a wrap falls between them: what was tried (room, action or use), then the dice (roll, outcome, cost).
 // Line 2, only when a foe is in it, sits under a rule: the foe's roll, then the foe's health as a fact named for the foe, a bar capped at 240px with its count; a kill with no strike-back shows the health alone, at 0.
+const dlMeterOf = (r) => (r.foe ? { name: r.foe.name, n: r.foe.health, of: r.foe.max } : r.meter ? { name: r.meter.name, n: r.meter.health, of: r.meter.max } : r.downed ? { name: r.downed.name, n: 0, of: r.downed.max } : null);
 const DlFact = ({ label, children, tone }) => (<div className="dvS-fact"><dt>{label}</dt><dd className={tone ? 'is-' + tone : undefined}>{children}</dd></div>);
 const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r.tier;
   const grp = (...c) => { const k = c.filter(Boolean); return k.length ? <div className="dvS-grp">{k.map((n, i) => <React.Fragment key={i}>{n}</React.Fragment>)}</div> : null; };
-  const foe = (r.foe || r.downed) && (
+  const mt = dlMeterOf(r);
+  const foe = mt && (
     <dl className="dvS-line is-foe">
       {r.foe && <DlFact label="Foe roll"><span className="dvS-foe"><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></span></DlFact>}
-      <div className="dvS-meter"><DlMeter label={(r.foe || r.downed).name} n={r.foe ? r.foe.health : 0} of={(r.foe || r.downed).max} /></div>
+      <div className="dvS-meter"><DlMeter label={mt.name} n={mt.n} of={mt.of} /></div>
     </dl>);
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-stacked' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     <div className="dvS-body">
@@ -167,7 +174,7 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
         {foe}
       </div></div></div></div>); };
 const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
-  const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier;
+  const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier; const mt = dlMeterOf(r);
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
   const ledger = (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div></div>
@@ -179,7 +186,7 @@ const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[ac
       {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{dlGrade(r)}</dd></div>}
       {foeRow}
       {r.harm > 0 && !r.foe && <div><dt>Cost</dt><dd>Lost {r.harm} HP</dd></div>}
-      {(r.foe || r.downed) && <div className="dv3-fm"><DlMeter label={(r.foe || r.downed).name} n={r.foe ? r.foe.health : 0} of={(r.foe || r.downed).max} /></div>}
+      {mt && <div className="dv3-fm"><DlMeter label={mt.name} n={mt.n} of={mt.of} /></div>}
     </dl>
   </div></div>);
   return beside === false ? <DlHeldStacked r={r} x={x} live={live} /> : ledger; };
@@ -330,6 +337,7 @@ const dlSheet = (s, m) => {
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Gear') { const t = String(l[1]); if (/^Took /.test(t)) find(t.replace(/^Took /, '')); else if (/^Used /.test(t)) find(t.replace(/^Used /, '')).state = 'used'; }
     // KEEP: a key opens its lock and is kept (delve.md, Gear), so it stays in the pack, noted with the lock it opened.
+    if (l[0] === 'Weakness') { const g = find(String(l[1])); if (g.kind !== 'key') g.state = 'used'; }
     if (l[0] === 'Lock') { const w = /^Opened (.+) with (.+)$/.exec(String(l[1])); if (w) find(w[2]).note = 'Opened ' + w[1]; }
   });
   gear.forEach((g) => { g.label = g.note || DL_STATE[g.state]; });
@@ -377,11 +385,11 @@ const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.length) }, 
 
 // The tabs and what each opens: Stats and Advantage open the sheet's own cells, Pack, Ability and Fight open rows.
 const dlTabGroups = (c, slots, streak) => {
-  const free = slots.length - c.gear.length; const left = c.abilities.reduce((n, a) => n + a.left, 0); const of = c.abilities.reduce((n, a) => n + a.of, 0);
+  const carried = c.gear.filter((g) => g.state !== 'used').length; const free = slots.length - carried; const left = c.abilities.reduce((n, a) => n + a.left, 0); const of = c.abilities.reduce((n, a) => n + a.of, 0);
   return [
     { key: 'stats', head: 'Stats', icon: 'stats', cells: <DlStatCells c={c} />, cls: 'dv8-stats' },
     { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} streak={streak} />, cls: 'dv8-adv' },
-    { key: 'pack', head: 'Pack', icon: 'pack', say: c.gear.length + ' of ' + slots.length + ' carried',
+    { key: 'pack', head: 'Pack', icon: 'pack', say: carried + ' of ' + slots.length + ' carried',
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
         ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
     { key: 'abilities', head: 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
