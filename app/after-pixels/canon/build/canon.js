@@ -6686,10 +6686,24 @@
     s.removeAllRanges();
     s.addRange(r);
   };
-  const gsBreakable = (text) => text.split(/( )/).map((tok, i) => tok === " " ? " " : tok.split(new RegExp("(?<=\\/)")).map((seg, j) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i + "." + j }, j > 0 && /* @__PURE__ */ React$1.createElement("wbr", null), /* @__PURE__ */ React$1.createElement("span", { className: "hw-nb" }, seg))));
   const GsCopyBox = ({ text, label }) => {
     const [done, setDone] = React$1.useState(false);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy" }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": label, onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-wrapbox" }, gsBreakable(text))), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
+    const [more, setMore] = React$1.useState(false);
+    const box = React$1.useRef(null);
+    React$1.useLayoutEffect(() => {
+      const el = box.current;
+      if (!el) return void 0;
+      const read = () => setMore(el.scrollWidth - el.clientWidth - el.scrollLeft > 2);
+      read();
+      el.addEventListener("scroll", read, { passive: true });
+      const ro = window.ResizeObserver ? new ResizeObserver(read) : null;
+      if (ro) ro.observe(el);
+      return () => {
+        el.removeEventListener("scroll", read);
+        if (ro) ro.disconnect();
+      };
+    }, [text]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy-field" + (more ? " has-more" : "") }, /* @__PURE__ */ React$1.createElement("div", { ref: box, className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": label, onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, text)), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
       lbCopy([text]);
       setDone(true);
       setTimeout(() => setDone(false), 2400);

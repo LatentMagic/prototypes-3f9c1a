@@ -2423,15 +2423,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 .hw-eyebrow { text-transform: uppercase; margin: 0; }
 .hw-pick-body { display: grid; gap: 16px; align-items: start; }
-/* KEEP: the card is one column at every width: the title, the switch, the thing to copy full card width, the steps, then the help
-   line straight after them. Nothing in a copy box is cut: its text wraps inside the box instead of scrolling or ending in an ellipsis. */
-.hw-nb { white-space: nowrap; }
-.hw-wrapbox { min-width: 0; }
+/* KEEP: the card is one column at every width: the title, the switch, the thing to copy, the steps, then the help line. A copy box
+   stays one line with Copy beside it at every width; its text scrolls sideways, and a fade at the right edge shows while more is hidden. */
 .hw-pick-card { container: hw-card / inline-size; }
-.hw-pick-card .gs-copy-addr { height: auto; min-height: 48px; padding-block: 10px; line-height: 1.4; white-space: normal; overflow-wrap: break-word; overflow-x: visible; cursor: text; }
-/* KEEP: where a box and its Copy cannot sit on one line comfortably (the card under 480px) Copy goes under its box at full width,
-   and a command wraps at its spaces or after a "/", never inside a "--flag". */
-@container hw-card (max-width: 480px) { .hw-pick-card .gs-copy { grid-template-columns: minmax(0, 1fr); } }
+.gs-copy-field { position: relative; min-width: 0; }
+.gs-copy-field.has-more::after { content: ""; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 40px; pointer-events: none; background: linear-gradient(to right, transparent, var(--card)); }
 @media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
 /* Start: two ChatPictures in the system's CardRow. The typed line is a SpeechBubble in place of ChatPicture's own user message,

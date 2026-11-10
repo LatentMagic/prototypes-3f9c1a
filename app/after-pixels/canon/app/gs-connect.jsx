@@ -100,14 +100,24 @@ export const GsHowLink = ({ label }) => { const gs = useGs(); return <button typ
 // KEEP: the text (the address, a message to send, a command) scrolls sideways under a finger so the whole of it can be read;
 // focus or a tap selects it for copying by hand. A box, not an input: an input's select-on-focus stops the swipe.
 const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
-// KEEP: a copy box's text breaks only at its spaces and after a "/": each piece between is kept whole (nowrap), so a "--flag" or
-// "after-pixels" never splits at its hyphen. The text itself is unchanged, so copying it by hand gets it as it is.
-const gsBreakable = (text) => text.split(/( )/).map((tok, i) => (tok === ' ' ? ' ' : tok.split(/(?<=\/)/).map((seg, j) => <React.Fragment key={i + '.' + j}>{j > 0 && <wbr />}<span className="hw-nb">{seg}</span></React.Fragment>)));
+// KEEP: a copy box is one line at every width, with Copy beside it at its normal size: a long command scrolls sideways inside the box
+// (no wrapping, no ellipsis), with a soft fade at the right edge while there is more to see. Copy copies the whole text.
 const GsCopyBox = ({ text, label }) => {
   const [done, setDone] = React.useState(false);
+  const [more, setMore] = React.useState(false);
+  const box = React.useRef(null);
+  React.useLayoutEffect(() => {
+    const el = box.current; if (!el) return undefined;
+    const read = () => setMore(el.scrollWidth - el.clientWidth - el.scrollLeft > 2);
+    read(); el.addEventListener('scroll', read, { passive: true });
+    const ro = window.ResizeObserver ? new ResizeObserver(read) : null; if (ro) ro.observe(el);
+    return () => { el.removeEventListener('scroll', read); if (ro) ro.disconnect(); };
+  }, [text]);
   return (
     <div className="gs-copy">
-      <div className="mcp-in gs-num-text gs-copy-addr" role="textbox" aria-readonly="true" tabIndex={0} aria-label={label} onFocus={(e) => gsSelectAll(e.currentTarget)} onClick={(e) => gsSelectAll(e.currentTarget)}><span className="hw-wrapbox">{gsBreakable(text)}</span></div>
+      <div className={'gs-copy-field' + (more ? ' has-more' : '')}>
+        <div ref={box} className="mcp-in gs-num-text gs-copy-addr" role="textbox" aria-readonly="true" tabIndex={0} aria-label={label} onFocus={(e) => gsSelectAll(e.currentTarget)} onClick={(e) => gsSelectAll(e.currentTarget)}>{text}</div>
+      </div>
       <DS.Button variant="secondary" done={done} doneLabel="Copied" onClick={() => { lbCopy([text]); setDone(true); setTimeout(() => setDone(false), 2400); }}>Copy</DS.Button>
     </div>
   );
