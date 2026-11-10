@@ -55,7 +55,7 @@ const dlRoll = (l) => {
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
   return { stat: l[0], fight, kept, other, mod, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
-// A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Ability · Used shield bash · Warren guard: health 3 → 2 · Struck back: d20 7 vs 10, missed").
+// A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Ability · Used shield bash · Warren guard: health 4 → 3 · Struck back: d20 7 vs 10, missed").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
 const DL_USE_KINDS = /^(Ability|Ultimate|Gear)$/;
 const dlUse = (l, hero) => { const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
@@ -445,7 +445,7 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 5 damage, HP 12/23'], ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 8/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 5 damage, HP 3/23'],
   ['Strength', 'Hit', 'd20 15 + 3 = 18 vs 12', 'Struck back: d20 4 vs 10, missed'], ['Strength', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 18 vs 10, hit, 3 damage, HP 0/23']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
-  hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the warren': 4, 'the shrine cavern': 5 }, sheet: { used: { 'Sneak attack': 1 }, insp: false }, lines: [
+  hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 5 }, sheet: { used: { 'Sneak attack': 1 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'd20 1 + 0 = 1 vs 12', 'HP 20/21'], ['Room', 'Entered the chime run'],
   ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 14 vs 14, hit, 1 damage, HP 19/21'], ['Dexterity', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 7 vs 14, missed'], ['Dexterity', 'Hit', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],

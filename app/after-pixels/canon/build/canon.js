@@ -3439,7 +3439,7 @@
       hero: "Wren the Rogue",
       hpMax: 21,
       threat: 12,
-      foeMax: { "the warren": 4, "the shrine cavern": 5 },
+      foeMax: { "the shrine cavern": 5 },
       sheet: { used: { "Sneak attack": 1 }, insp: false },
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 20/21"],
