@@ -331,7 +331,7 @@ button.dvL-head:focus-visible { outline: 2px solid var(--focus-ring, var(--off-w
 .dvL-head svg { flex: none; transform: rotate(90deg); opacity: .7; }
 .dvL-head[aria-expanded="true"] svg { transform: rotate(-90deg); }
 .dvL-head .dv2-pass { margin: 0; flex: none; }
-/* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room; a die's tap target is 28px wide so neighbours never overlap, and 44px tall. */
+/* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. */
 .dvL-tally { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-bottom: 6px; }
 .dvL-tally .dv2-dbtn { --hit-w: 28px; }
 .dvL-dots { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
@@ -355,14 +355,14 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 .dl-now-stop .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
 /* KEEP: a room's key moments wrap inside its column, 8px apart so a natural 20's rim and a two-dice die's second hex never touch the next die. */
 .dl-now-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-width: 0; }
-/* KEEP: the other rolls are 8px marks with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring. */
+/* KEEP: the other rolls are 8px marks with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring; a use is a 10px grey sparkle with a -1px margin, so it takes the same 8px slot. */
 /* KEEP: a short last row of marks is centred under the row above (flex, not grid, so a partial row centres). */
 .dl-now-marks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: calc(var(--dl-marks, 3) * 12px - 4px); max-width: 100%; cursor: default; }
 .dl-now-mark { display: block; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
 .dl-now-mark.is-strong { background: var(--success); }
 .dl-now-mark.is-weak { background: var(--warning); }
 .dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--control-edge); }
+svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--control-edge); }
 /* Hover or focus rings a key moment's die as the session page rings the held roll; a press opens the session page on that roll. */
 .dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .sl { display: inline; }
 /* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */

@@ -182,7 +182,6 @@ const useDlList = (ref) => { const [list, setList] = React.useState(false);
     const read = () => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
   return list; };
-const dlDotSay = (r) => (r.use ? 'used' : dlGrade(r).toLowerCase());
 const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
   const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
   const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
@@ -198,7 +197,7 @@ const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
           : <p className="dvL-head dv2-sname dvL-name"><span aria-hidden="true">{st.name}</span><span className="dvL-vh">{label + ', no rolls'}</span><i className="dv2-pass" aria-hidden="true" /></p>}
         {has && !isOpen && <div className="dvL-tally">
           {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
-          {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map(dlDotSay).join(', ')}>
+          {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={dlNowMarksSay(rest)}>
             {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
         </div>}
         {isOpen && <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>}
@@ -386,8 +385,8 @@ const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCo
 // KEEP: a room's marks fold in rows of at most three, balanced, never one left alone below a full row (4 go 2 and 2, 5 go 3 and 2)
 // (owner, 2026-10-30).
 const dlMarkCols = (n) => (n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3)));
-// A use (ability, ultimate, gear) rolled nothing, so it marks the Now card as a small sparkle among the room's dots, as the share line
-// counts it with a sparkle (user, 2026-11-10, "2 - graet question").
+// KEEP: a use (ability, ultimate, gear) is no roll, so it marks the Now card as a small grey sparkle among the room's dots, not a dot,
+// as the share line counts it with a sparkle (owner, 2026-11-10).
 const DlNowUseMark = () => (<svg className="dl-now-mark is-use" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z" /></svg>);
 const dlNowMarksSay = (rest) => { const rolls = rest.filter((r) => !r.use); const uses = rest.length - rolls.length;
   const said = rolls.length ? rolls.length + (rolls.length === 1 ? ' other roll: ' : ' other rolls: ') + rolls.map((r) => dlGrade(r).toLowerCase()).join(', ') : '';
