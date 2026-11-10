@@ -1,10 +1,8 @@
-<!-- Step 3, It saves as you go. Ground: forest #163328. -->
+<!-- Step 3, It saves as you go. Ground: forest #163328. A ring filled from the bottom up, with a pause mark beside it. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid slice">
   <rect width="240" height="120" fill="#163328"/>
-  <rect x="124" y="30" width="10" height="24" fill="#F2EBE0"/>
-  <rect x="138" y="30" width="10" height="24" fill="#F2EBE0"/>
-  <rect x="60" y="66" width="24" height="24" fill="#E5A63B"/>
-  <rect x="92" y="66" width="24" height="24" fill="#E5A63B"/>
-  <rect x="124" y="66" width="24" height="24" fill="#E5A63B"/>
-  <rect x="158" y="68" width="20" height="20" fill="none" stroke="#A390B2" stroke-width="4"/>
+  <path fill-rule="evenodd" fill="#A390B2" d="M104 20a40 40 0 1 1 0 80a40 40 0 1 1 0-80Zm0 22.4a17.6 17.6 0 1 0 0 35.2a17.6 17.6 0 1 0 0-35.2Z"/>
+  <path d="M86.4 60A17.6 17.6 0 0 0 121.6 60Z" fill="#E5A63B"/>
+  <rect x="152" y="46" width="10" height="28" fill="#F2EBE0"/>
+  <rect x="168" y="46" width="10" height="28" fill="#F2EBE0"/>
 </svg>
