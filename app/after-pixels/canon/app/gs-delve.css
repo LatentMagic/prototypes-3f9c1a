@@ -75,9 +75,9 @@
 @container dv2 (max-width: 240px) {
   .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
-/* KEEP: under a room in the phone list the held roll reads its own width, not the run card's (the list drops the card's side padding, so the card never gets narrow enough): below 260px its labels sit above their values, at 280, 300 and 320px windows. */
+/* KEEP: under a room in the phone list the held roll reads its own width, not the run card's (the list drops the card's side padding, so the card never gets narrow enough): below 240px its labels sit above their values: the held roll is 174, 194 and 214px at 280, 300 and 320px windows (stacked), and 254 and 284px at 360 and 390px (two columns). */
 .dvL-held { container: dvlh / inline-size; }
-@container dvlh (max-width: 260px) {
+@container dvlh (max-width: 240px) {
   .dvL-held .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
 /* KEEP: when the held roll sits above the route (not beside it, a step that depends on room count) or under a room in the list, it is kept short: the ledger's die moves beside its name, the big figures shrink. */
