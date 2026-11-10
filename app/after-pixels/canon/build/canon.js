@@ -3632,7 +3632,7 @@
     DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, ritual: { kind: "bad", label: GS_RESULT.delve({ end: "ritual" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
     DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren beneath Ashford Mill", played: true, end: null };
     DV_ALL = [DV_RUN1];
-    DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 8, rooms: 4, ritual: 3 };
+    DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 9, rooms: 4, ritual: 3 };
     DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
     DV_ROOMS = 5;
     DV_NEXT = "Monday 12 October";

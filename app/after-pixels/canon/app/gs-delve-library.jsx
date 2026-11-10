@@ -68,8 +68,8 @@ DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, ritual: 
 DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'October', title: 'The Goblin Warren beneath Ashford Mill', played: true, end: null };
 // Every run, newest first.
 DV_ALL = [DV_RUN1];
-DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 8, rooms: 4, ritual: 3 };
-// streak: the run's longest run of strong hits (its share card: longest streak 3).
+DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 9, rooms: 4, ritual: 3 };
+// streak: the run's longest run of hits or successes (its share card: longest streak 3).
 DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
 // KEEP: the room count, the threat's name and maximum, and the carry limit come from the run's edition (5 or 6 rooms, threat 12 to 24 deployed), never fixed at 5 and 12.
 DV_ROOMS = 5;
