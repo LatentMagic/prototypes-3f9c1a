@@ -3157,31 +3157,27 @@
   const DlInsp = ({ on }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv5-insw", role: "img", "aria-label": "Inspiration, " + (on ? "ready" : "spent") }, /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-insp" + (on ? " is-on" : ""), viewBox: "-5 -5 46 50", width: "28", height: "30", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), on && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM })));
   const DlHex = ({ x }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-sx", viewBox: "-5 -5 46 50", width: "32", height: "35", role: "img", "aria-label": x.say }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "20.5" }, x.say));
   const DlCell = ({ label, used, title, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cell" + (used ? " is-used" : ""), title }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-fig" }, children), /* @__PURE__ */ React$1.createElement("span", { className: "dv7-lb" }, label));
-  const DlGrp = ({ k, head, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp" + (k ? " " + k : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-h" }, /* @__PURE__ */ React$1.createElement("span", null, head)), /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, children));
   const DlMeter = ({ label, n, of }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv6-bar" }, /* @__PURE__ */ React$1.createElement("span", null, label), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label, value: n, max: of, showValue: false }), /* @__PURE__ */ React$1.createElement("small", null, n + "/" + of));
-  const DL_STEP_FIVE = 824;
-  const DL_STEP_THREE = 958;
-  const useDlStep = (ref) => {
-    const [step, setStep] = React$1.useState("phone");
+  const DL_ONE_ROW = 796;
+  const useDlOneRow = (ref) => {
+    const [one, setOne] = React$1.useState(false);
     React$1.useLayoutEffect(() => {
       const el = ref.current;
       if (!el) return void 0;
       const read = () => {
         const cs = getComputedStyle(el);
-        const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-        setStep(w < DL_STEP_FIVE ? "phone" : w < DL_STEP_THREE ? "five" : "three");
+        const edge = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
+        setOne(el.getBoundingClientRect().width - edge >= DL_ONE_ROW);
       };
       read();
       const ro = new ResizeObserver(read);
       ro.observe(el);
       return () => ro.disconnect();
     }, [ref]);
-    return step;
+    return one;
   };
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
   const DlAdvCells = ({ c, streak }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Hits or successes in a row. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak)));
-  const DlStats = ({ c, k }) => /* @__PURE__ */ React$1.createElement(DlGrp, { k, head: "Stats" }, /* @__PURE__ */ React$1.createElement(DlStatCells, { c }));
-  const DlAdv = ({ c, streak, k }) => /* @__PURE__ */ React$1.createElement(DlGrp, { k, head: "Advantage" }, /* @__PURE__ */ React$1.createElement(DlAdvCells, { c, streak }));
   const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }));
   const dlFight = (c) => {
     const f = c.fight;
@@ -3193,15 +3189,13 @@
     ];
   };
   const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
-  const dlTabGroups = (c, slots, streak, five) => {
+  const dlTabGroups = (c, slots, streak) => {
     const free = slots.length - c.gear.length;
     const left = c.abilities.reduce((n, a) => n + a.left, 0);
     const of = c.abilities.reduce((n, a) => n + a.of, 0);
     return [
-      ...five ? [
-        { key: "stats", head: "Stats", icon: "stats", cells: /* @__PURE__ */ React$1.createElement(DlStatCells, { c }), cls: "dv8-stats" },
-        { key: "advantage", head: "Advantage", icon: "advantage", cells: /* @__PURE__ */ React$1.createElement(DlAdvCells, { c, streak }), cls: "dv8-adv" }
-      ] : [],
+      { key: "stats", head: "Stats", icon: "stats", cells: /* @__PURE__ */ React$1.createElement(DlStatCells, { c }), cls: "dv8-stats" },
+      { key: "advantage", head: "Advantage", icon: "advantage", cells: /* @__PURE__ */ React$1.createElement(DlAdvCells, { c, streak }), cls: "dv8-adv" },
       {
         key: "pack",
         head: "Pack",
@@ -3234,17 +3228,22 @@
     const grp = groups.find((g) => g.key === card);
     return /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && (grp.rows ? /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dvp-rows dl-panel esx-in", role: "group", "aria-label": grp.head }, grp.rows.map((r) => /* @__PURE__ */ React$1.createElement(DlTapRow, { key: r.key, ...r }))) : /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dl-panel dl-cellpanel esx-in " + grp.cls, role: "group", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, grp.cells))));
   };
-  const DlPhone = ({ c, streak, groups, card, setCard }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dvp-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), /* @__PURE__ */ React$1.createElement("div", { className: "dvp-pair" }, /* @__PURE__ */ React$1.createElement(DlStats, { c, k: "dv8-stats" }), /* @__PURE__ */ React$1.createElement(DlAdv, { c, streak, k: "dv8-adv" })), /* @__PURE__ */ React$1.createElement("div", { className: "dvp-tap" }, /* @__PURE__ */ React$1.createElement(DlTabs, { groups, card, setCard }), /* @__PURE__ */ React$1.createElement(DlPanel, { groups, card })));
-  const DlRow = ({ c, streak, five, groups, card, setCard }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-r1" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), !five && /* @__PURE__ */ React$1.createElement(DlStats, { c, k: "dv8-stats" }), !five && /* @__PURE__ */ React$1.createElement(DlAdv, { c, streak, k: "dv8-adv" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dl-tabgrp" }, /* @__PURE__ */ React$1.createElement(DlTabs, { groups, card, setCard }))), /* @__PURE__ */ React$1.createElement(DlPanel, { groups, card })));
+  const DlHead = ({ c, one, folded, fold }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-head" + (one ? "" : " is-fold") }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), !one && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dl-fold", "aria-expanded": !folded, "aria-label": folded ? "Show the whole character sheet" : "Fold the character sheet", onClick: fold }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })));
   const DlSheet = ({ c, streak }) => {
     const ref = React$1.useRef(null);
-    const step = useDlStep(ref);
+    const one = useDlOneRow(ref);
     const [card, setCard] = React$1.useState(null);
-    const groups = dlTabGroups(c, dlSlots(c), streak, step === "five");
+    const [folded, setFolded] = React$1.useState(true);
+    const groups = dlTabGroups(c, dlSlots(c), streak);
     React$1.useEffect(() => {
       setCard(null);
-    }, [step]);
-    return /* @__PURE__ */ React$1.createElement("section", { ref, className: step === "phone" ? "dv4 dv5 is-tight dv7 dvp" : "dv4 dv5 is-tight dv7 is-band dv8 is-3b", "aria-label": "Character sheet" }, step === "phone" ? /* @__PURE__ */ React$1.createElement(DlPhone, { c, streak, groups, card, setCard }) : /* @__PURE__ */ React$1.createElement(DlRow, { c, streak, five: step === "five", groups, card, setCard }));
+      setFolded(true);
+    }, [one]);
+    const fold = () => {
+      setFolded(!folded);
+      setCard(null);
+    };
+    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv4 dv5 is-tight dv7 is-band dv8 is-3b dl-sheet" + (one ? " is-one" : ""), "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-r1" }, /* @__PURE__ */ React$1.createElement(DlHead, { c, one, folded, fold }), /* @__PURE__ */ React$1.createElement(EsxFold, { open: one || !folded }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dl-tabgrp" }, /* @__PURE__ */ React$1.createElement(DlTabs, { groups, card, setCard })))), /* @__PURE__ */ React$1.createElement(DlPanel, { groups, card }))));
   };
   const DlBody = ({ s }) => {
     const gs = useGs();

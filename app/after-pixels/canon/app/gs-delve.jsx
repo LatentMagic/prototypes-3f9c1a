@@ -202,25 +202,23 @@ const DlInsp = ({ on }) => (<span className="dv5-insw" role="img" aria-label={'I
 const DlHex = ({ x }) => (<svg className="dv4-sx" viewBox="-5 -5 46 50" width="32" height="35" role="img" aria-label={x.say}><polygon className="hx" points={DL_HEX} /><text x="18" y="20.5">{x.say}</text></svg>);
 // KEEP: every piece below a group's heading is one cell (a fixed-height figure, one label under it), so the rows line up.
 const DlCell = ({ label, used, title, children }) => (<div className={'dv7-cell' + (used ? ' is-used' : '')} title={title}><span className="dv7-fig">{children}</span><span className="dv7-lb">{label}</span></div>);
-const DlGrp = ({ k, head, children }) => <div className={'dv7-grp' + (k ? ' ' + k : '')}><div className="dv7-h"><span>{head}</span></div><div className="dv7-cells">{children}</div></div>;
 // KEEP: a meter's count is written 9/13, the short form, so the meters' column stays narrow (owner, 2026-10-29).
 const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
 
-// 3B (owner, 2026-10-29): the hero; hit points and threat stacked on one grid; stats; Advantage (inspiration and the current streak of hits or successes); then tabs for the pack with its free slots, abilities and the fight. The torch, clues and the bargain join once the record holds them.
-// The sheet is a row of tabs at every width the phone layout does not take. A tap card is Escape's mechanism (esx-cards, EsxFold); a tab adds only its icon.
-// KEEP: the step is chosen by the sheet's own content width, never the window: three tabs (Pack, Ability, Fight) beside Stats and Advantage from 958px, five tabs (Stats and Advantage too) from 824px, the phone layout below 824px; the row never wraps and no text shrinks to fit.
-const DL_STEP_FIVE = 824; const DL_STEP_THREE = 958;
-// The sheet's content width, read as the CSS container reads it, before paint and on every resize.
-const useDlStep = (ref) => { const [step, setStep] = React.useState('phone');
+// 3B (owner, 2026-10-29): the hero; hit points and threat stacked on one grid; then five tabs: Stats, Advantage, Pack (with its free slots), Ability and Fight. The torch, clues and the bargain join once the record holds them.
+// The sheet's tabs are Escape's tap cards (esx-cards, EsxFold); a tab adds only its icon.
+// KEEP: the layout is chosen by the sheet's own content width, never the window, with four steps: one row of name, bars and five tabs from 796px; from 404px the name and bars side by side with the five tabs full width under them; from 340.02px the name line over the bars over the five tabs; at 340px and under the tabs become a list, icon beside word. A step's tabs are as wide as their share of the row, at most 140px, and their words step from 10px to 8px as the sheet narrows.
+// KEEP: every two-row layout opens folded to the name and bars; the whole header is the fold, its chevron centred on it. The one-row layout has no fold.
+const DL_ONE_ROW = 796;
+// Whether the sheet's content is wide enough for one row, read as the CSS container reads it, before paint and on every resize.
+const useDlOneRow = (ref) => { const [one, setOne] = React.useState(false);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => { const cs = getComputedStyle(el); const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); setStep(w < DL_STEP_FIVE ? 'phone' : w < DL_STEP_THREE ? 'five' : 'three'); };
+    const read = () => { const cs = getComputedStyle(el); const edge = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setOne(el.getBoundingClientRect().width - edge >= DL_ONE_ROW); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
-  return step; };
+  return one; };
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
 const DlAdvCells = ({ c, streak }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
   <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></>);
-const DlStats = ({ c, k }) => <DlGrp k={k} head="Stats"><DlStatCells c={c} /></DlGrp>;
-const DlAdv = ({ c, streak, k }) => <DlGrp k={k} head="Advantage"><DlAdvCells c={c} streak={streak} /></DlGrp>;
 const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
@@ -230,12 +228,12 @@ const dlFight = (c) => { const f = c.fight; if (!f) return [];
 const DlLabel = ({ name, kind }) => (kind ? <>{name}<small className="dv8-sub">{kind}</small></> : name);
 const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
 
-// The tabs and what each opens: Pack, Ability and Fight everywhere; Stats and Advantage too (five) where the row has no room for them beside the tabs.
-const dlTabGroups = (c, slots, streak, five) => {
+// The tabs and what each opens: Stats and Advantage open the sheet's own cells, Pack, Ability and Fight open rows.
+const dlTabGroups = (c, slots, streak) => {
   const free = slots.length - c.gear.length; const left = c.abilities.reduce((n, a) => n + a.left, 0); const of = c.abilities.reduce((n, a) => n + a.of, 0);
   return [
-    ...(five ? [{ key: 'stats', head: 'Stats', icon: 'stats', cells: <DlStatCells c={c} />, cls: 'dv8-stats' },
-      { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} streak={streak} />, cls: 'dv8-adv' }] : []),
+    { key: 'stats', head: 'Stats', icon: 'stats', cells: <DlStatCells c={c} />, cls: 'dv8-stats' },
+    { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} streak={streak} />, cls: 'dv8-adv' },
     { key: 'pack', head: 'Pack', icon: 'pack', say: c.gear.length + ' of ' + slots.length + ' carried',
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
         ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
@@ -257,32 +255,25 @@ const DlPanel = ({ groups, card }) => { const grp = groups.find((g) => g.key ===
   return (<EsxFold open={!!grp}>{grp && (grp.rows
     ? <div key={grp.key} className="dvp-rows dl-panel esx-in" role="group" aria-label={grp.head}>{grp.rows.map((r) => <DlTapRow key={r.key} {...r} />)}</div>
     : <div key={grp.key} className={'dl-panel dl-cellpanel esx-in ' + grp.cls} role="group" aria-label={grp.head}><div className="dv7-cells">{grp.cells}</div></div>)}</EsxFold>); };
-// KEEP: below 824px the sheet shows at once, with no fold: hero, meters, Stats beside Advantage, then the three tabs, every tab closed.
-const DlPhone = ({ c, streak, groups, card, setCard }) => (<>
-  <div className="dvp-head"><span className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></span></div>
+// The header: the name, then the bars. Below one row it is the fold: the chevron's button is stretched over the whole header, so a tap anywhere on it folds the tabs, while the bars stay readable to a screen reader.
+const DlHead = ({ c, one, folded, fold }) => (<div className={'dl-head' + (one ? '' : ' is-fold')}>
+  <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
   <DlMeters c={c} />
-  <div className="dvp-pair"><DlStats c={c} k="dv8-stats" /><DlAdv c={c} streak={streak} k="dv8-adv" /></div>
-  <div className="dvp-tap"><DlTabs groups={groups} card={card} setCard={setCard} /><DlPanel groups={groups} card={card} /></div>
-</>);
-// KEEP: one row at every width the phone layout does not take: hero, meters, then Stats and Advantage beside the three tabs, or (five) the two as tabs too; the open tab's panel opens under the row.
-const DlRow = ({ c, streak, five, groups, card, setCard }) => (
-  <div className="dv8-rows"><div className="dv7-band">
-    <div className="dv8-r1">
-      <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
-      <DlMeters c={c} />
-      {!five && <DlStats c={c} k="dv8-stats" />}
-      {!five && <DlAdv c={c} streak={streak} k="dv8-adv" />}
-      <div className="dv7-grp dl-tabgrp"><DlTabs groups={groups} card={card} setCard={setCard} /></div>
-    </div>
-    <DlPanel groups={groups} card={card} />
-  </div></div>);
-const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const step = useDlStep(ref); const [card, setCard] = React.useState(null);
-  const groups = dlTabGroups(c, dlSlots(c), streak, step === 'five');
-  // KEEP: no tab is open at first in a new layout: a change of step (three, five, phone) shuts the open tab.
-  React.useEffect(() => { setCard(null); }, [step]);
-  // The phone and desktop sheets are different trees under one section, which holds the width observer.
-  return (<section ref={ref} className={step === 'phone' ? 'dv4 dv5 is-tight dv7 dvp' : 'dv4 dv5 is-tight dv7 is-band dv8 is-3b'} aria-label="Character sheet">
-    {step === 'phone' ? <DlPhone c={c} streak={streak} groups={groups} card={card} setCard={setCard} /> : <DlRow c={c} streak={streak} five={step === 'five'} groups={groups} card={card} setCard={setCard} />}</section>);
+  {!one && <button type="button" className="dl-fold" aria-expanded={!folded} aria-label={folded ? 'Show the whole character sheet' : 'Fold the character sheet'} onClick={fold}><DS.Icon name="next" size={20} /></button>}
+</div>);
+const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const one = useDlOneRow(ref); const [card, setCard] = React.useState(null); const [folded, setFolded] = React.useState(true);
+  const groups = dlTabGroups(c, dlSlots(c), streak);
+  // KEEP: a new layout opens as a first one does: the tab shut and, in two rows, the sheet folded. Changing between one row and two is the new layout.
+  React.useEffect(() => { setCard(null); setFolded(true); }, [one]);
+  const fold = () => { setFolded(!folded); setCard(null); };
+  return (<section ref={ref} className={'dv4 dv5 is-tight dv7 is-band dv8 is-3b dl-sheet' + (one ? ' is-one' : '')} aria-label="Character sheet">
+    <div className="dv8-rows"><div className="dv7-band">
+      <div className="dv8-r1">
+        <DlHead c={c} one={one} folded={folded} fold={fold} />
+        <EsxFold open={one || !folded}><div className="dv7-grp dl-tabgrp"><DlTabs groups={groups} card={card} setCard={setCard} /></div></EsxFold>
+      </div>
+      <DlPanel groups={groups} card={card} />
+    </div></div></section>);
 };
 
 // ---- The session page's own part, under the shared head. Every move is the store's plain list, collapsed. ----
