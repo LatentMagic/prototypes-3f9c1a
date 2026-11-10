@@ -193,8 +193,9 @@ const DlRoute = ({ m, act, on, beside }) => { const sel = act ? m.turns[act - 1]
     <div className="dvE-side"><DlHeld m={m} act={act} beside={beside} /></div>
   </div>); };
 // KEEP: below a run card 610px wide (its content; the step the hero sheet takes its phone header at, so the page changes once, and the
-// narrowest the 12-room hard run fits at) the route is a list of closed rooms: one line per room on a rule
-// running down the left, its name, key moments as 24px dice, other rolls as dots and a chevron on one line (the tally wraps under the name when it does not fit); a tap opens that room (one at a time) with all its dice, and a pressed die's held roll
+// narrowest the 12-room hard run fits at) the route is a list of closed rooms: one 48px line per room on a rule
+// running down the left: its number, its name, then at the line's right end its key moments as 24px dice and other rolls as dots, and a chevron
+// (the tally drops under the name only when the line is too narrow for both); a tap anywhere on the line opens that room (one at a time) with all its dice, and a pressed die's held roll
 // opens right under them, so the roll is never off screen from the die. From 610px the route is the horizontal one. The switch width is the user's to ratify on the built page.
 const DL_LIST_BELOW = 610;
 const useDlList = (ref) => { const [list, setList] = React.useState(false);
@@ -206,25 +207,29 @@ const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
   const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
   const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
   const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { if (on.focus) on.focus(t); setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
-  const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
+  const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name; const fold = 'dvL-room-' + st.i;
   return (
-    <div className={'dvL-row' + (isOpen ? ' is-on' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
-      <span className={'dv2-num dvL-num' + (st.back ? ' is-back' : '')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span>
-      <div className="dvL-body">
+    <div className={'dvL-row' + (isOpen ? ' is-open' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
+      <div className={'dvL-top' + (has ? ' is-tap' : '')}>
+        <span className={'dv2-num dvL-num' + (st.back ? ' is-back' : '')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span>
         <div className="dvL-line">
           {has
-            ? <button type="button" className="dvL-head" aria-expanded={isOpen} aria-label={label} onClick={() => setOpen(isOpen ? null : st.i)}>
-              <span className="dv2-sname dvL-name" aria-hidden="true">{st.name}</span><DS.Icon name="next" size={20} /></button>
-            : <p className="dvL-head dv2-sname dvL-name"><span aria-hidden="true">{st.name}</span><span className="dvL-vh">{label + ', no rolls'}</span><i className="dv2-pass" aria-hidden="true" /></p>}
-          {has && !isOpen && <div className="dvL-tally">
-            {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
-            {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={dlNowMarksSay(rest)}>
-              {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
-          </div>}
+            ? <button type="button" className="dvL-head" aria-expanded={isOpen} aria-controls={fold} aria-label={label} onClick={() => setOpen(isOpen ? null : st.i)}>
+              <span className="dvL-name" aria-hidden="true">{st.name}</span><DS.Icon name="next" size={20} /></button>
+            : <p className="dvL-head dvL-name is-pass"><span aria-hidden="true">{st.name}</span><span className="dvL-vh">{label + ', no rolls'}</span></p>}
+          {has
+            ? <div className="dvL-tally" aria-hidden={isOpen || undefined}>
+              {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
+              {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={dlNowMarksSay(rest)}>
+                {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
+            </div>
+            : <i className="dv2-pass dvL-pass" aria-hidden="true" />}
         </div>
-        {isOpen && <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>}
-        {isOpen && sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} live={false} /></div>}
       </div>
+      {has && <div id={fold} className="dvL-fold"><EsxFold open={isOpen}>{isOpen && <div className="dvL-open">
+        <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>
+        {sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} live={false} /></div>}
+      </div>}</EsxFold></div>}
     </div>);
 };
 // A die pressed in a closed room unmounts with that room's tally as the room opens, so focus is handed to the same roll's die in the opened room.
@@ -252,11 +257,14 @@ const DlEmptyRoute = ({ rooms, beside }) => (<div className={dlMainClass(beside)
   <div className="dvE-side"><DlWait /></div>
 </div>);
 const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The way you went">{dlEmptyStops(rooms).map((st) => (
-  <div key={st.i} className={'dvL-row' + (st.i === 0 ? ' is-on is-first' : ' is-far') + (st.i === rooms - 1 ? ' is-last' : '')}>
-    <span className="dv2-num dvL-num" aria-hidden="true">{st.num}</span>
-    <div className="dvL-body">{st.i === 0
-      ? <><p className="dvL-head dv2-sname dvL-name"><span aria-hidden="true">First room</span><span className="dvL-vh">Room 1, First room, no rolls</span></p><div className="dvL-held"><DlWait /></div></>
-      : <div className="dvL-head" role="img" aria-label={'Room ' + st.num + ', not reached'}><DlEmptyHex /></div>}</div>
+  <div key={st.i} className={'dvL-row' + (st.i === 0 ? ' is-open is-first' : ' is-far') + (st.i === rooms - 1 ? ' is-last' : '')}>
+    <div className="dvL-top">
+      <span className="dv2-num dvL-num" aria-hidden="true">{st.num}</span>
+      <div className="dvL-line">{st.i === 0
+        ? <p className="dvL-head dvL-name"><span aria-hidden="true">First room</span><span className="dvL-vh">Room 1, First room, no rolls</span></p>
+        : <div className="dvL-head" role="img" aria-label={'Room ' + st.num + ', not reached'}><DlEmptyHex /></div>}</div>
+    </div>
+    {st.i === 0 && <div className="dvL-open"><div className="dvL-held"><DlWait /></div></div>}
   </div>))}</div>);
 // KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
 // now card), else the last roll. In the list a hover changes nothing: the held roll sits under the pressed room only.
@@ -266,8 +274,8 @@ const DlCard = ({ s, m, roll }) => {
   const on = React.useMemo(() => ({ sel: setSel, hov: setHov }), []);
   const act = list ? sel : hov || sel;
   if (!m.turns.length) {
-    return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyRoute rooms={rooms} beside={beside} />}</section>); }
-  return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />
+    return (<section ref={ref} className={'dv2 dv7r is-3' + (list ? ' is-list' : '')} aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyRoute rooms={rooms} beside={beside} />}</section>); }
+  return (<section ref={ref} className={'dv2 dv7r is-3' + (list ? ' is-list' : '')} aria-label="How the run went"><DlResult s={s} m={m} />
     {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} beside={beside} />}</section>);
 };
 
