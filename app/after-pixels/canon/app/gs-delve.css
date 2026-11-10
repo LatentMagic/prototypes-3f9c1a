@@ -245,7 +245,7 @@
 @container dv4 (max-width: calc(795.98px + 32px)) {
   .dl-head { padding: 24px 64px 24px 0; cursor: pointer; }
   @media (hover: hover) { .dl-head:hover { background: var(--popup); } }
-  .dv8.is-3b .dl-tabgrp { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); justify-items: stretch; }
+  .dv8.is-3b .dl-tabgrp { margin: 0 16px; padding: 0 0 12px; justify-items: stretch; }
   .dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: repeat(var(--dl-tabs), minmax(0, 1fr)); gap: clamp(4px, calc(var(--dlw) * .023), 10px); }
   .dv8.is-3b .esx-card.dl-tab { height: clamp(64px, calc(var(--dlw) * .182), 80px); }
   .dv8.is-3b .dl-tab-w { font-size: clamp(8px, calc(var(--dlw) / 44), 10px); letter-spacing: clamp(0px, calc((var(--dlw) - 352px) / 120), .07em); }
