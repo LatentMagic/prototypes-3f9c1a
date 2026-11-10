@@ -85,6 +85,10 @@
 @container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
 .hw-chatfig > h3 { margin: 0; }
 .hw-start .mcp-chat-me { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
+/* KEEP: inside the chat pictures the play prompts are white, so they read on the chat's off-white ground. */
+.hw-start .mcp-chat-me .mcp-say { background: #fff; }
+.hw-start .mcp-chat-me .mcp-say.is-copy:hover { background: color-mix(in srgb, #fff 90%, var(--page)); }
+.hw-start .mcp-chat-me .mcp-say.is-copy:active { background: color-mix(in srgb, #fff 80%, var(--page)); }
 .hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
 .hw-chg-ic { flex: none; align-self: flex-start; }
