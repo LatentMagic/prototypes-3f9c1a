@@ -1,0 +1,8 @@
+<!-- Step 1, Pick a game. Ground: indigo #1D1B3A. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid slice">
+  <rect width="240" height="120" fill="#1D1B3A"/>
+  <rect x="60" y="62" width="24" height="24" fill="#E5A63B"/>
+  <circle cx="104" cy="46" r="12" fill="#D66847"/>
+  <path d="M116 86L128 62L140 86Z" fill="#328A88"/>
+  <polygon points="168,62 180,74 168,86 156,74" fill="#A390B2"/>
+</svg>

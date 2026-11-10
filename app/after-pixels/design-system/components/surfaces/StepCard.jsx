@@ -1,10 +1,12 @@
 import React from 'react';
 // A step of how something goes, as a card: picture (2:1), name, one line. Built from GameCard's parts so it looks like one,
 // but never a game: no chips, no Pass mark, no link, never pressable, so its art stays still.
+// KEEP: a string name keeps its last two words together, so a name that must wrap never leaves one word on its second line.
+const keepLastTwo=(t)=>typeof t==='string'?t.replace(/ (\S+)$/,'\u00a0$1'):t;
 export function StepCard({art,title,line,className='',style}){
   return <li className={('mcp-card mcp-scard '+className).trim()} style={style}>
     <div className="mcp-scard-art">{art}</div>
-    <h3 className="mcp-t-card mcp-scard-name">{title}</h3>
+    <h3 className="mcp-t-card mcp-scard-name">{keepLastTwo(title)}</h3>
     <p className="mcp-scard-line">{line}</p>
   </li>;
 }

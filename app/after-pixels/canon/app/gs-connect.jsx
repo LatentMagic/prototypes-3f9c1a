@@ -5,7 +5,7 @@
 import React from 'react';
 import { GS_GAMES, GS_SESSIONS, GS_GAME_ORDER, DS, useGs, GS, gsStartsOver, GS_ONCE_LINE } from './gs-data.jsx';
 import { GS_SUPPORT } from './gs-site.jsx';
-import { GsSteps } from './gs-parts.jsx';
+import { GsSteps, GsWhoCols } from './gs-parts.jsx';
 import { lbCopy } from './gs-library.jsx';
 import { DV_ALL, dvSid } from './gs-delve-library.jsx';
 import { PZ } from './gs-puzzles-library.jsx';
@@ -19,25 +19,43 @@ const GS_AI_LOGO = {
 };
 // The app picker on How it works, in the owner's order: ChatGPT first, Other last. Each app sets up one of three ways
 // (route): in its settings, by asking in a chat, or by a command. `noun` is the app's own word for where a custom server goes;
-// `look` is the button to look for. Grok is one tile whose card switches between the Grok app and Grok Bot (an AI's agent
+// `look` is the button to look for; `first` is a command run before the one that adds After Pixels. Grok is one tile whose card switches between the Grok app and Grok Bot (an AI's agent
 // version sits under its AI this way). The Grok app's steps are untried; the commands are from each app's docs.
 const GS_APPS = [
   { id: 'chatgpt', name: 'ChatGPT', route: 'settings', noun: 'plugin', look: 'Add custom MCP server' },
   { id: 'claude', name: 'Claude', route: 'settings', noun: 'custom connector', look: 'Add custom connector' },
-  { id: 'gemini', name: 'Gemini', route: 'settings', noun: 'custom app', look: 'Add' },
-  { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'Add custom connector', subs: ['grok', 'grokbot'] },
+  { id: 'gemini', name: 'Gemini', route: 'settings', noun: 'custom app', look: 'Connected Apps' },
+  { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'New Connector', subs: ['grok', 'grokbot'] },
   { id: 'grokbot', name: 'Grok Bot', route: 'chat', sub: true },
   { id: 'muse', name: 'Muse', route: 'chat' },
-  { id: 'openclaw', name: 'OpenClaw', route: 'command', cmd: (url) => 'openclaw mcp add after-pixels --url ' + url + ' --transport streamable-http --auth oauth', login: 'openclaw mcp login after-pixels' },
+  // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command.
+  { id: 'openclaw', name: 'OpenClaw', route: 'command', first: 'openclaw gateway stop', cmd: (url) => 'openclaw mcp add after-pixels --url ' + url + ' --transport streamable-http --auth oauth', login: 'openclaw mcp login after-pixels' },
   { id: 'hermes', name: 'Hermes Agent', route: 'command', cmd: (url) => 'hermes mcp add after-pixels --url ' + url + ' --auth oauth' },
-  { id: 'other', name: 'Other', route: 'settings', noun: 'custom connector or MCP server' },
+  { id: 'other', name: 'Other', route: 'settings' },
 ];
 const gsApp = (id) => GS_APPS.find((a) => a.id === id);
 const GS_SUB_LABEL = { grok: 'Grok app', grokbot: 'Grok Bot' };
-// Grok, Muse, OpenClaw and Hermes Agent have no logo file yet: a marked placeholder ring stands in, at the logo's size.
+// Every logo is drawn in one colour (currentColor), so a picked tile fills it in the page colour. OpenClaw's is its mascot
+// redrawn in one colour from its colour favicon, the eyes cut out. Hermes Agent's wing is its own file, too long to inline,
+// painted through a mask. Grok and Muse have no logo file yet: a marked placeholder ring stands in, at the logo's size.
+const GsOpenClaw = ({ size }) => (
+  <svg viewBox="0 0 120 120" width={size} height={size} aria-hidden="true" focusable="false">
+    <mask id="hw-oc-eyes"><rect width="120" height="120" fill="#fff" /><circle cx="45" cy="35" r="7" fill="#000" /><circle cx="75" cy="35" r="7" fill="#000" /></mask>
+    <g fill="currentColor" mask="url(#hw-oc-eyes)">
+      <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" />
+      <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" />
+      <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" />
+    </g>
+    <path d="M45 15 Q35 5 30 8 M75 15 Q85 5 90 8" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+  </svg>
+);
+const gsMaskLogo = (src, w, h) => <span className="hw-mask" aria-hidden="true" style={{ width: w, height: h, WebkitMaskImage: 'url(' + src + ')', maskImage: 'url(' + src + ')' }} />;
 const GsAiLogo = ({ ai, size = 20 }) => (
   ai === 'other' ? <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="2.5" /></svg>
   : GS_AI_LOGO[ai] ? <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" focusable="false"><path d={GS_AI_LOGO[ai]} /></svg>
+  : ai === 'openclaw' ? <GsOpenClaw size={size} />
+  // The wing is about twice as tall as it is wide: it takes the logo's height.
+  : ai === 'hermes' ? gsMaskLogo('assets/how-it-works/hermes-agent-wing.svg', Math.round(size / 2), size)
   : <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" focusable="false" className="hw-nologo"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" /><text x="16" y="19" textAnchor="middle" fontSize="7" fill="currentColor">no file</text></svg>
 );
 
@@ -102,46 +120,61 @@ export const GsPlayDialog = () => {
   return (
     <DS.Popup open={!!gs.playing} onClose={gs.closePlay} title={'Start ' + gsPromptTitle(r)} actions={<GsCopyPrompt text={gsPromptText(r)} />}>
       <div className="gs-stack-md">
-        <p className="hw-need gs-small"><b>Connect your AI first.</b> <GsHowLink label="How to connect" /></p>
+        <p className="hw-need gs-small"><b>Add After Pixels to your app first.</b> <GsHowLink label="How to set up" /></p>
         <GsPrompt text={gsPromptText(r)} />
-        {gs.view === 'out' && <p className="gs-small">You also need a After Pixels account. <button type="button" className="gs-inlink" onClick={() => { gs.closePlay(); gs.go('signup'); }}>Start free</button></p>}
+        {gs.view === 'out' && <p className="gs-small">You also need a free After Pixels account. <button type="button" className="gs-inlink" onClick={() => { gs.closePlay(); gs.go('signup'); }}>Start free</button></p>}
       </div>
     </DS.Popup>
   );
 };
 
 // ---- How it works ----
-// Overview, then Setup, Start and Playing (each Overview box jumps to its section), then who does what, Disconnecting and Help.
-// No numbers on the Overview boxes or the section headings.
-// KEEP: a jump lands the section's heading just under the sticky top bar (scroll-margin-top 80px, plus the app posture's top inset) and moves focus to it, so a
-// keyboard or screen-reader user carries on from there; with reduced motion it jumps instead of gliding.
+// The head with the Overview beside it, then Setup, Start and Playing, then who does what, with Disconnecting and Help at the
+// foot. No numbers on the Overview lines or the section headings. Each section is a 24px heading and one surface under it.
+// KEEP: each Overview line ends in a text link that jumps to its section, landing the section's heading just under the sticky
+// top bar (scroll-margin-top 80px, plus the app posture's top inset) and moving focus to it, so a keyboard or screen-reader
+// user carries on from there; with reduced motion it jumps instead of gliding. The section ids stay, so other pages can link to one.
 const gsJump = (id) => {
   const el = document.getElementById(id); if (!el) return;
   const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   el.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
-  const h = el.querySelector('h2'); if (h) h.focus({ preventScroll: true });
+  const h = el.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
 };
-// The words a player types to start, drawn as a message in a chat.
-const GsSay = () => <span className="hw-say">{gsPromptText({ kind: 'games' })}</span>;
-const GS_HW_JUMPS = [
-  ['hw-setup', <>Add the game and sign in, once</>],
-  ['hw-start', <>Type <GsSay /></>],
-  ['hw-playing', <>Pick a game and play</>],
+// The words a player types, drawn as a sent message. A non-breaking space joins it to the word before, so "type" and the
+// bubble never split.
+const GsSay = ({ text, wrap }) => <>{' '}<DS.SpeechBubble wrap={wrap}>{text}</DS.SpeechBubble></>;
+const GS_HW_OVERVIEW = [
+  ['hw-setup', 'Setup', <>Add After Pixels to your app once</>],
+  ['hw-start', 'Start', <>Type<GsSay text={gsPromptText({ kind: 'games' })} /></>],
+  ['hw-playing', 'Playing', <>Pick a game and play it in the chat</>],
 ];
 
-const gsAppSteps = (a) => a.route === 'settings' ? [
-  <>{'Add a ' + a.noun + ' to ' + (a.id === 'other' ? 'your app' : a.name)}{a.look && <> <span className="gs-muted">Look for <b>{a.look}</b></span></>}</>,
-  <>Paste the address, and name it <b>After Pixels</b></>,
-  'Connect, then sign in',
-] : a.route === 'chat' ? [
-  <div className="gs-stack-sm"><span>{'In a chat with ' + a.name + ', send'}</span><GsCopyBox text={'Add this MCP server: ' + GS.link} label="The message to send" /></div>,
-  'Sign in when it gives you a link',
-] : [
-  <div className="gs-stack-sm"><span>Run</span><GsCopyBox text={a.cmd(GS.link)} label="The command to run" /></div>,
-  a.login ? <div className="gs-stack-sm"><span>Run</span><GsCopyBox text={a.login} label="The sign-in command" /><span>and open the link it prints</span></div> : 'Open the sign-in link it prints',
+// Every route's last step: the app may ask before each move, and the player may be able to stop that.
+const gsPermStep = (a) => 'If ' + (a.id === 'other' ? 'your AI' : a.name) + ' asks you before each move, you may be able to change that in its permissions.';
+const GS_SIGN_IN = 'sign in with your After Pixels account.';
+// The thing to copy before leaving for the other app: the address, the message or the first command. It sits beside the steps,
+// so a step that uses it names it by its label's noun.
+const gsAppCopy = (a) => a.route === 'settings' ? ['The address to paste', GS.link]
+  : a.route === 'chat' ? ['The message to send', 'Add this MCP server: ' + GS.link]
+  : ['The command to run', a.first || a.cmd(GS.link)];
+const gsAppSteps = (a) => [
+  ...(a.route === 'settings' ? [
+    a.id === 'other' ? 'In your app, find where it adds a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}<b>{a.look}</b>.</>,
+    <>Paste the address and name it <b>After Pixels</b>.</>,
+    'Connect, then ' + GS_SIGN_IN,
+  ] : a.route === 'chat' ? [
+    'In a chat with ' + a.name + ', send the message.',
+    'Open the link ' + a.name + ' sends, and ' + GS_SIGN_IN,
+  ] : [
+    'Run the command.',
+    ...(a.first ? [<div className="gs-stack-sm"><span>Run this command.</span><GsCopyBox text={a.cmd(GS.link)} label="The command to run" /></div>] : []),
+    a.login ? <div className="gs-stack-sm"><span>Run this to sign in, then open the link it prints.</span><GsCopyBox text={a.login} label="The sign-in command" /></div>
+      : 'Open the link it prints, and ' + GS_SIGN_IN,
+  ]),
+  gsPermStep(a),
 ];
 
-// The app picker (a CardRow of logo tiles) and the picked app's card under it.
+// Setup: one CardRow, its heading the section's and its sentence asking for the app; the picked app's card under it.
 // KEEP: the tiles fill the row when all fit (about 700px and up); narrower, about 4½ show and the row swipes, with Previous
 // and Next, so the half tile says there is more. At 420px and under each tile is its logo alone; the card's heading names the
 // pick. A tile picked while partly off the row's edge scrolls fully into view. The card's notch points at the picked tile and
@@ -153,9 +186,11 @@ const gsRevealTile = (el) => {
   if (d) tr.scrollBy({ left: d, behavior: still ? 'auto' : 'smooth' });
 };
 const GsSetup = () => {
+  const gs = useGs();
   const [tile, setTile] = React.useState('chatgpt');
   const [sub, setSub] = React.useState('grok');
   const t = gsApp(tile); const a = gsApp(t.subs ? sub : tile);
+  const [copyLabel, copyText] = gsAppCopy(a);
   const wrap = React.useRef(null), card = React.useRef(null), notch = React.useRef(null), placed = React.useRef(false);
   React.useLayoutEffect(() => {
     const w = wrap.current; if (!w) return undefined;
@@ -174,9 +209,11 @@ const GsSetup = () => {
     const ro = window.ResizeObserver ? new ResizeObserver(refit) : null; if (ro) ro.observe(w);
     return () => { if (track) track.removeEventListener('scroll', follow); if (ro) ro.disconnect(); };
   }, [tile]);
+  // The account sentence shows only to a signed-out visitor: with no account, the games list but every move is refused.
+  const ask = <>Do this once, and the games are there in any chat. {gs.view === 'out' && <>You need a free After Pixels account. <button type="button" className="gs-inlink" onClick={() => gs.go('signup')}>Start free</button> </>}Which app do you use?</>;
   return (
     <div className="gs-stack-md" ref={wrap}>
-      <DS.CardRow title="Which app do you play in?" as="h3" label="Apps" className="hw-apps">
+      <DS.CardRow title="Setup" sub={ask} label="Which app do you use?" className="hw-apps">
         {GS_APPS.filter((x) => !x.sub).map((x) => (
           <button key={x.id} type="button" className="hw-app" aria-pressed={tile === x.id} aria-label={x.name} onClick={(e) => { setTile(x.id); gsRevealTile(e.currentTarget); }}>
             <GsAiLogo ai={x.id} size={32} /><span>{x.name}</span>
@@ -185,73 +222,94 @@ const GsSetup = () => {
       </DS.CardRow>
       <div className="hw-pick" ref={card} aria-live="polite">
         <i className="hw-notch" ref={notch} aria-hidden="true" />
-        <DS.Card style={{ justifyItems: 'stretch' }}>
-          <div className="gs-stack-md">
+        <DS.Card className="hw-pick-card">
+          <div className="hw-pick-head">
+            <h3 className="mcp-t-card">{a.id === 'other' ? 'Add After Pixels to your app' : 'Add After Pixels to ' + a.name}</h3>
             {t.subs && (
               <div className="hw-seg" role="group" aria-label="Which Grok">
                 {t.subs.map((id) => <DS.Button key={id} aria-pressed={sub === id} variant={sub === id ? 'main' : 'secondary'} onClick={() => setSub(id)}>{GS_SUB_LABEL[id]}</DS.Button>)}
               </div>
             )}
-            <h3 className="mcp-t-card">{'Add it in ' + a.name}</h3>
-            {a.route === 'settings' && <GsCopyBox text={GS.link} label="The After Pixels address" />}
+          </div>
+          <div className="hw-pick-body">
+            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} /></div>
             <GsSteps items={gsAppSteps(a)} />
-            <p className="gs-small">You need a free After Pixels account.</p>
           </div>
         </DS.Card>
       </div>
-      <p className="gs-small">Don’t see this option? Not every plan or country offers it yet.</p>
+      <p className="gs-small">If you can’t find it, <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>get in touch</button> and say which app you use.</p>
     </div>
   );
 };
 
-// Playing: a game from start to end. Each step's picture is a new asset still to be made; a marked placeholder holds its place.
+// Playing: a game from start to end, one StepCard a step, each with its still picture.
 const GS_HW_PLAY = [
-  ['Pick a game', 'Your AI lists them, or name one.'],
-  ['Play it in the chat', 'Your AI runs it; the game keeps the rules and dice.'],
-  ['It saves as you go', 'Stop any time; say it again later and it carries on.'],
-  ['When it ends', 'Your record updates on After Pixels. Share it, see your game page, or go back to the games.'],
+  ['Pick a game', 'Choose from your AI’s list, or ask by name.'],
+  ['Play it in the chat', 'Tell your AI your move. The game plays it out.'],
+  ['It saves as you go', 'Stop any time. Come back later and carry on.'],
+  ['When it ends', 'Your result is saved. Share it or pick another.'],
 ];
-const GsHwPic = () => <div className="hw-pic" role="img" aria-label="Picture to come"><span>Picture to come</span></div>;
-const GS_HW_TRUST = ['Your AI runs the chat', 'The game keeps the rules', 'The game throws the dice', 'The game keeps your record'];
 
 export const GsConnect = () => {
   const gs = useGs();
+  // Delve's first run is free: named only to the signed-out and free views, so a Pass holder is not told about free play.
+  const freeView = gs.view === 'out' || gs.view === 'free';
   return (
     <main className="gs-wrap gs-main">
-      <header className="gs-stack-md hw-head">
-        <h1 className="gs-h1">How it works</h1>
-        <p className="gs-lead">You play every game inside your own AI. Connect it to After Pixels once and sign in, and nothing plays until you have.</p>
-      </header>
-      <nav className="hw-jumps" aria-label="On this page">
-        {GS_HW_JUMPS.map(([id, body]) => <DS.Card key={id} onClick={() => gsJump(id)}><span className="hw-jump">{body}</span></DS.Card>)}
-      </nav>
-      <section id="hw-setup" className="hw-sec gs-stack-md">
-        <h2 className="mcp-t-sec" tabIndex={-1}>Setup: add the game and sign in, once</h2>
+      <div className="hw-top">
+        <header className="gs-stack-md hw-head">
+          <h1 className="gs-h1">How it works</h1>
+          <p className="gs-lead">You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.</p>
+        </header>
+        <nav className="hw-over" aria-label="On this page">
+          <DS.Card className="hw-over-card">
+            <ul className="hw-over-list">
+              {GS_HW_OVERVIEW.map(([id, sec, body]) => (
+                <li key={id}><span className="hw-over-line">{body}</span><DS.TextLink className="hw-over-go" onClick={() => gsJump(id)} aria-label={'Go to ' + sec}>{sec}</DS.TextLink></li>
+              ))}
+            </ul>
+          </DS.Card>
+        </nav>
+      </div>
+      <section id="hw-setup" className="hw-sec">
         <GsSetup />
       </section>
       <section id="hw-start" className="hw-sec gs-stack-md">
         <h2 className="mcp-t-sec" tabIndex={-1}>Start</h2>
-        <p className="hw-start">In any chat, type <GsSay /></p>
-        <p className="gs-muted">Your AI lists the games, and you pick one. Or name one straight away: <b>“Play Delve on After Pixels”</b>. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></p>
-        <p className="gs-muted">Switch games whenever you like. Say it again in any new chat, and it carries on an unfinished game.</p>
+        <DS.Card className="hw-start">
+          <div className="hw-start-half">
+            <p className="mcp-t-card hw-start-line">In any chat, type<GsSay text={gsPromptText({ kind: 'games' })} /></p>
+            <p>Your AI shows you the games to pick from.</p>
+            <DS.TextLink onClick={() => gs.go('games')}>See the games</DS.TextLink>
+          </div>
+          <div className="hw-start-half hw-start-more">
+            <p>To go straight to one, type<GsSay wrap text={gsPromptText({ kind: 'game', gid: 'delve' })} />.{freeView && ' Its first run is free.'}</p>
+            <p>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</p>
+          </div>
+        </DS.Card>
       </section>
       <section id="hw-playing" className="hw-sec gs-stack-md">
         <h2 className="mcp-t-sec" tabIndex={-1}>Playing</h2>
-        <ol className="hw-life">
-          {GS_HW_PLAY.map(([title, line]) => (
-            <li key={title}><DS.Card className="hw-life-card"><GsHwPic /><div className="gs-stack-xs"><h3 className="mcp-t-card">{title}</h3><p className="gs-muted">{line}</p></div></DS.Card></li>
-          ))}
-        </ol>
-        <p><b>Fresh games daily and weekly, and every past edition is there to play.</b></p>
-        <p>Some games are free. The rest come with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>See Pricing</button></p>
+        <DS.StepCards>
+          {GS_HW_PLAY.map(([title, line], i) => <DS.StepCard key={title} art={<img src={'assets/how-it-works/step-' + (i + 1) + '.svg'} alt="" />} title={title} line={line} />)}
+        </DS.StepCards>
+        {/* The editions sentence and the Pass sentence stay in one paragraph: the first alone reads as all free. */}
+        <p className="hw-more">Fresh games daily and weekly, and every past edition is there to play. Play some games free, and the start of others. The rest come with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>
       </section>
-      <section className="gs-stack-md" aria-label="Who does what">
-        <ul className="hw-trust">{GS_HW_TRUST.map((x) => <li key={x}><DS.Card><span className="hw-fact">{x}</span></DS.Card></li>)}</ul>
-        <p className="gs-muted">Your AI never asks you to pay. Your AI plan pays for play, and a capable model plays better.</p>
+      <section className="hw-sec gs-stack-md" aria-labelledby="hw-who">
+        <h2 id="hw-who" className="mcp-t-sec">Who does what</h2>
+        <DS.Card className="hw-who">
+          <GsWhoCols
+            ai="Your AI does the talking, and a more capable model plays better. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage."
+            server="It sets the rules, throws the dice and keeps your results." />
+        </DS.Card>
+        <p className="gs-small">Your AI never asks you to pay.</p>
       </section>
-      <div className="gs-grid2">
-        <section className="gs-stack-sm"><h2 className="mcp-t-card">Disconnecting</h2><p className="gs-muted">Remove After Pixels in your AI’s settings, where you added it. Your results and history stay on After Pixels.</p></section>
-        <section className="gs-stack-sm"><h2 className="mcp-t-card">Help</h2><p className="gs-muted">If something doesn’t work, write to <a href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a> and say which AI you use.</p></section>
+      <div className="gs-band">
+        <div className="gs-grid2">
+          <section className="gs-stack-sm"><h2 className="mcp-t-card">Disconnecting</h2><p className="gs-muted">To disconnect, remove After Pixels where you added it. Your results and history stay in your account.</p></section>
+          <section className="gs-stack-sm"><h2 className="mcp-t-card">Help</h2><p className="gs-muted">If something doesn’t work, write to <a href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a> and say which app you use.</p></section>
+        </div>
       </div>
     </main>
   );
