@@ -6800,13 +6800,26 @@
     return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "First " + g.ed[0] + " free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "locked" }, "Pass");
   };
   const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap: true, copy: true, edge: true, onCopy: (t) => lbCopy([t]) }, say);
-  const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig" }, /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { title, turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
+  const useGsTall = () => {
+    const qs = React$1.useMemo(() => window.matchMedia ? [window.matchMedia("(min-width: 1280px)"), window.matchMedia("(min-width: 1024px)")] : [], []);
+    const read = () => !qs.length ? void 0 : qs[0].matches ? 450 : qs[1].matches ? 496 : void 0;
+    const [h, set] = React$1.useState(read);
+    React$1.useEffect(() => {
+      const f = () => set(read());
+      qs.forEach((q) => q.addEventListener("change", f));
+      return () => qs.forEach((q) => q.removeEventListener("change", f));
+    }, []);
+    return h;
+  };
+  const GsStartChat = ({ title, say, turns, caption, tall }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { turns: [{ from: "user", text: gsTyped(say) }, ...turns], height: tall, label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
   const GsStart = () => {
     const gs = useGs();
     const d = GS_START_DELVE;
+    const tall = useGsTall();
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.CardRow, { kind: "chat", title: "Start", className: "hw-start" }, /* @__PURE__ */ React$1.createElement(
       GsStartChat,
       {
+        tall,
         title: "In any chat, type",
         say: gsPromptText({ kind: "games" }),
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI shows you the games to pick from. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("games") }, "See the games")),
@@ -6818,10 +6831,11 @@
     ), /* @__PURE__ */ React$1.createElement(
       GsStartChat,
       {
+        tall,
         title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
         caption: "Name a game, or a past edition, and your AI starts it straight away.",
-        turns: [{ from: "ai", text: [d.title, d.first + d.rest + " …"], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }]
+        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest + " …"], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }]
       }
     )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.")));
   };

@@ -86,6 +86,8 @@
 
 /* Start: two ChatPictures in the system's CardRow. The typed line is a SpeechBubble in place of ChatPicture's own user message,
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
+@container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
+.hw-chatfig > h3 { margin: 0; }
 .hw-start .mcp-chat-me { background: none; padding: 0; max-width: 100%; }
 .hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
