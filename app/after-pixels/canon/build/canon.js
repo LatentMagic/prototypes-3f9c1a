@@ -3158,6 +3158,7 @@
   const DlHex = ({ x }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-sx", viewBox: "-5 -5 46 50", width: "32", height: "35", role: "img", "aria-label": x.say }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "20.5" }, x.say));
   const DlCell = ({ label, used, title, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cell" + (used ? " is-used" : ""), title }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-fig" }, children), /* @__PURE__ */ React$1.createElement("span", { className: "dv7-lb" }, label));
   const DlMeter = ({ label, n, of }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv6-bar" }, /* @__PURE__ */ React$1.createElement("span", null, label), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label, value: n, max: of, showValue: false }), /* @__PURE__ */ React$1.createElement("small", null, n + "/" + of));
+  const DL_GUTTER = 16;
   const DL_ONE_ROW = 796;
   const useDlOneRow = (ref) => {
     const [one, setOne] = React$1.useState(false);
@@ -3166,8 +3167,8 @@
       if (!el) return void 0;
       const read = () => {
         const cs = getComputedStyle(el);
-        const edge = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
-        setOne(el.getBoundingClientRect().width - edge >= DL_ONE_ROW);
+        const edge = ["borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
+        setOne(el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW);
       };
       read();
       const ro = new ResizeObserver(read);
@@ -3228,22 +3229,36 @@
     const grp = groups.find((g) => g.key === card);
     return /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && (grp.rows ? /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dvp-rows dl-panel esx-in", role: "group", "aria-label": grp.head }, grp.rows.map((r) => /* @__PURE__ */ React$1.createElement(DlTapRow, { key: r.key, ...r }))) : /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dl-panel dl-cellpanel esx-in " + grp.cls, role: "group", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, grp.cells))));
   };
-  const DlHead = ({ c, one, folded, fold }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-head" + (one ? "" : " is-fold") }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), !one && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dl-fold", "aria-expanded": !folded, "aria-controls": "dl-sheet-tabs", "aria-label": "Character sheet details", onClick: fold }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })));
+  const DlHead = ({ c, folded, fold }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-head is-fold" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dl-fold", "aria-expanded": !folded, "aria-controls": "dl-sheet-tabs", "aria-label": "Character sheet details", onClick: fold }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })));
   const DlSheet = ({ c, streak }) => {
     const ref = React$1.useRef(null);
     const one = useDlOneRow(ref);
     const [card, setCard] = React$1.useState(null);
     const [folded, setFolded] = React$1.useState(true);
+    const [seen, setSeen] = React$1.useState(one);
+    const [tap, setTap] = React$1.useState(null);
     const groups = dlTabGroups(c, dlSlots(c), streak);
-    React$1.useEffect(() => {
+    if (seen !== one) {
+      setSeen(one);
       setCard(null);
       setFolded(true);
-    }, [one]);
+      setTap(null);
+    }
+    React$1.useEffect(() => {
+      if (!tap) return void 0;
+      const t = setTimeout(() => setTap(null), 600);
+      return () => clearTimeout(t);
+    }, [tap]);
     const fold = () => {
+      setTap({});
       setFolded(!folded);
       setCard(null);
     };
-    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv4 dv5 is-tight dv7 is-band dv8 is-3b", "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-r1" }, /* @__PURE__ */ React$1.createElement(DlHead, { c, one, folded, fold }), /* @__PURE__ */ React$1.createElement("div", { id: "dl-sheet-tabs", className: "dl-tabwrap" }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: one || !folded }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dl-tabgrp" }, /* @__PURE__ */ React$1.createElement(DlTabs, { groups, card, setCard }))))), /* @__PURE__ */ React$1.createElement(DlPanel, { groups, card }))));
+    const pick = (k) => {
+      setTap({});
+      setCard(k);
+    };
+    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv4 dv5 is-tight dv7 is-band dv8 is-3b" + (tap ? " is-tap" : "") + (folded ? "" : " is-unfolded"), "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-r1" }, /* @__PURE__ */ React$1.createElement(DlHead, { c, folded, fold }), /* @__PURE__ */ React$1.createElement("div", { id: "dl-sheet-tabs", className: "dl-tabwrap" }, /* @__PURE__ */ React$1.createElement("div", { className: "esx-fold" + (folded ? "" : " is-open") }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dl-tabgrp" }, /* @__PURE__ */ React$1.createElement(DlTabs, { groups, card, setCard: pick })))))), /* @__PURE__ */ React$1.createElement(DlPanel, { groups, card }))));
   };
   const DlBody = ({ s }) => {
     const gs = useGs();

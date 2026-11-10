@@ -209,11 +209,13 @@ const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</s
 // The sheet's tabs are Escape's tap cards (esx-cards, EsxFold); a tab adds only its icon.
 // KEEP: the layout is chosen by the sheet's own content width, never the window, with four steps: one row of name, bars and five tabs from 796px; from 404px the name and bars side by side with the five tabs full width under them; from 340.02px the name line over the bars over the five tabs; at 340px and under the tabs become a list, icon beside word. A step's tabs are as wide as their share of the row, at most 140px, and their words step from 10px to 8px as the sheet narrows.
 // KEEP: every two-row layout opens folded to the name and bars; the whole header is the fold, its chevron centred on it. The one-row layout has no fold.
+// KEEP: the sheet card has no padding of its own: each part carries the 16px side gutter, so the header's hover tint runs edge to edge of the card. The layout steps are still measured on the card's width less that gutter, 796px and the rest.
+const DL_GUTTER = 16;
 const DL_ONE_ROW = 796;
-// Whether the sheet's content is wide enough for one row, read as the CSS container reads it, before paint and on every resize.
+// Whether the sheet is wide enough for one row, read as the CSS container reads it, before paint and on every resize.
 const useDlOneRow = (ref) => { const [one, setOne] = React.useState(false);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => { const cs = getComputedStyle(el); const edge = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setOne(el.getBoundingClientRect().width - edge >= DL_ONE_ROW); };
+    const read = () => { const cs = getComputedStyle(el); const edge = ['borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setOne(el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
   return one; };
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
@@ -255,22 +257,26 @@ const DlPanel = ({ groups, card }) => { const grp = groups.find((g) => g.key ===
   return (<EsxFold open={!!grp}>{grp && (grp.rows
     ? <div key={grp.key} className="dvp-rows dl-panel esx-in" role="group" aria-label={grp.head}>{grp.rows.map((r) => <DlTapRow key={r.key} {...r} />)}</div>
     : <div key={grp.key} className={'dl-panel dl-cellpanel esx-in ' + grp.cls} role="group" aria-label={grp.head}><div className="dv7-cells">{grp.cells}</div></div>)}</EsxFold>); };
-// The header: the name, then the bars. Below one row it is the fold: the chevron's button is stretched over the whole header, so a tap anywhere on it folds the tabs, while the bars stay readable to a screen reader.
-const DlHead = ({ c, one, folded, fold }) => (<div className={'dl-head' + (one ? '' : ' is-fold')}>
+// The header: the name, then the bars. Below one row it is the fold: the chevron's button is stretched over the whole header, so a tap anywhere on it folds the tabs, while the bars stay readable to a screen reader. One row hides the button in CSS, so the header never waits on a render to change layout.
+const DlHead = ({ c, folded, fold }) => (<div className="dl-head is-fold">
   <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
   <DlMeters c={c} />
-  {!one && <button type="button" className="dl-fold" aria-expanded={!folded} aria-controls="dl-sheet-tabs" aria-label="Character sheet details" onClick={fold}><DS.Icon name="next" size={20} /></button>}
+  <button type="button" className="dl-fold" aria-expanded={!folded} aria-controls="dl-sheet-tabs" aria-label="Character sheet details" onClick={fold}><DS.Icon name="next" size={20} /></button>
 </div>);
 const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const one = useDlOneRow(ref); const [card, setCard] = React.useState(null); const [folded, setFolded] = React.useState(true);
+  const [seen, setSeen] = React.useState(one); const [tap, setTap] = React.useState(null);
   const groups = dlTabGroups(c, dlSlots(c), streak);
   // KEEP: a new layout opens as a first one does: the tab shut and, in two rows, the sheet folded. Changing between one row and two is the new layout.
-  React.useEffect(() => { setCard(null); setFolded(true); }, [one]);
-  const fold = () => { setFolded(!folded); setCard(null); };
-  return (<section ref={ref} className="dv4 dv5 is-tight dv7 is-band dv8 is-3b" aria-label="Character sheet">
+  if (seen !== one) { setSeen(one); setCard(null); setFolded(true); setTap(null); }
+  // KEEP: the fold and the tabs animate only for a tap: `is-tap` is on the sheet from the tap until the motion is over, and CSS gives every fold a transition only then, so a window resize across a breakpoint changes the layout without any motion.
+  React.useEffect(() => { if (!tap) return undefined; const t = setTimeout(() => setTap(null), 600); return () => clearTimeout(t); }, [tap]);
+  const fold = () => { setTap({}); setFolded(!folded); setCard(null); };
+  const pick = (k) => { setTap({}); setCard(k); };
+  return (<section ref={ref} className={'dv4 dv5 is-tight dv7 is-band dv8 is-3b' + (tap ? ' is-tap' : '') + (folded ? '' : ' is-unfolded')} aria-label="Character sheet">
     <div className="dv8-rows"><div className="dv7-band">
       <div className="dv8-r1">
-        <DlHead c={c} one={one} folded={folded} fold={fold} />
-        <div id="dl-sheet-tabs" className="dl-tabwrap"><EsxFold open={one || !folded}><div className="dv7-grp dl-tabgrp"><DlTabs groups={groups} card={card} setCard={setCard} /></div></EsxFold></div>
+        <DlHead c={c} folded={folded} fold={fold} />
+        <div id="dl-sheet-tabs" className="dl-tabwrap"><div className={'esx-fold' + (folded ? '' : ' is-open')}><div><div className="dv7-grp dl-tabgrp"><DlTabs groups={groups} card={card} setCard={pick} /></div></div></div></div>
       </div>
       <DlPanel groups={groups} card={card} />
     </div></div></section>);
