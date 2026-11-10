@@ -1211,11 +1211,11 @@
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
     ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 vs 14, missed"],
-    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12", "Struck back: d20 10 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12"],
     ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 12"],
     ["Room", "Entered Snaggle's den"],
     ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
-    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12", "Struck back: d20 12 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12"],
     ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 12"],
     ["Room", "Doubled back to the warren", "The ritual +1"]
   ];
@@ -1298,6 +1298,7 @@
       threatMax: 12,
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
+      foeMax: { "snaggle's den": 1 },
       shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "💀🟥🟩🟩🟩🟩🟩✨🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
@@ -1548,6 +1549,7 @@
       hero: "Wren the Rogue",
       hpMax: 21,
       threat: 3,
+      foeMax: { "the warren": 2, "snaggle's den": 2 },
       sheet: { used: { "Sneak attack": 1 }, insp: true }
     }
   });

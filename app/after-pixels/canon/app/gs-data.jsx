@@ -164,11 +164,11 @@ const GS_DV_LIVE = [
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 3 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12', 'Struck back: d20 10 vs 14, missed'],
+  ['Dexterity', 'Hit', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12'],
   ['Intelligence', 'Study the wall scratchings', 'Success', 'd20s 19 and 15, kept 19 + 1 = 20 vs 12'],
   ['Room', 'Entered Snaggle\'s den'],
   ['Dexterity', 'Hit', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12', 'Struck back: d20 12 vs 14, missed'],
+  ['Dexterity', 'Hit', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12'],
   ['Dexterity', 'Climb to the skeleton on the high ledge', 'Success', 'Natural 20', 'd20s 20 and 6, kept 20 + 3 = 23 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
 ];
@@ -249,7 +249,7 @@ export const GS_SESSIONS = {
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
     setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
-    share: 'Elsie rescued',
+    share: 'Elsie rescued', foeMax: { "snaggle's den": 1 },
     shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '💀🟥🟩🟩🟩🟩🟩✨🟩🟩🟩'],
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
@@ -351,7 +351,7 @@ Object.assign(GS_SESSIONS, {
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 21/21'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
-    hero: 'Wren the Rogue', hpMax: 21, threat: 3, sheet: { used: { 'Sneak attack': 1 }, insp: true } },
+    hero: 'Wren the Rogue', hpMax: 21, threat: 3, foeMax: { 'the warren': 2, "snaggle's den": 2 }, sheet: { used: { 'Sneak attack': 1 }, insp: true } },
 });
 // In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets
 // review.begun beside week 'live'; every surface that opens the in-progress play reads its id through gsLiveSid.
