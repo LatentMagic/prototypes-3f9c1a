@@ -188,7 +188,8 @@ const gsAppSteps = (a) => [
 // KEEP: the tiles fill the row when all fit (about 700px and up); narrower, about 4½ show and the row swipes, with Previous
 // and Next, so the half tile says there is more. At 420px and under each tile is its logo alone; the card's heading names the
 // pick. A tile picked while partly off the row's edge scrolls fully into view. The card's notch points at the picked tile and
-// follows it as the row scrolls, and hides once that tile is out of view.
+// follows it as the row scrolls, and hides once that tile is out of view. Pressing the picked tile again closes the card and
+// leaves no tile picked; the page opens with the first app picked.
 const gsRevealTile = (el) => {
   const tr = el.parentElement, r = el.getBoundingClientRect(), b = tr.getBoundingClientRect();
   const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
@@ -199,7 +200,7 @@ const GsSetup = () => {
   const gs = useGs();
   const [tile, setTile] = React.useState('chatgpt');
   const [sub, setSub] = React.useState('grok');
-  const t = gsApp(tile); const a = gsApp(t.subs ? sub : tile);
+  const t = gsApp(tile || 'chatgpt'); const a = gsApp(t.subs ? sub : t.id);
   const [copyLabel, copyText] = gsAppCopy(a);
   const wrap = React.useRef(null), card = React.useRef(null), notch = React.useRef(null), placed = React.useRef(false);
   React.useLayoutEffect(() => {
@@ -225,12 +226,12 @@ const GsSetup = () => {
     <div className="gs-stack-md" ref={wrap}>
       <DS.CardRow title="Setup" sub={ask} label="Which app do you use?" className="hw-apps">
         {GS_APPS.filter((x) => !x.sub).map((x) => (
-          <button key={x.id} type="button" className="hw-app" aria-pressed={tile === x.id} aria-label={x.name} onClick={(e) => { setTile(x.id); gsRevealTile(e.currentTarget); }}>
+          <button key={x.id} type="button" className="hw-app" aria-pressed={tile === x.id} aria-expanded={tile === x.id} aria-controls="hw-pick" aria-label={x.name} onClick={(e) => { setTile(tile === x.id ? null : x.id); if (tile !== x.id) gsRevealTile(e.currentTarget); }}>
             <GsAiLogo ai={x.id} size={32} /><span>{x.name}</span>
           </button>
         ))}
       </DS.CardRow>
-      <div className="hw-pick" ref={card} aria-live="polite">
+      <div className="hw-pick" id="hw-pick" ref={card} aria-live="polite" hidden={!tile}>
         <i className="hw-notch" ref={notch} aria-hidden="true" />
         <DS.Card className="hw-pick-card">
           <div className="hw-pick-head">
