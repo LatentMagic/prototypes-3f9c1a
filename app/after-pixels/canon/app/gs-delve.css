@@ -315,7 +315,7 @@
 /* ---- The route as a list of closed rooms (a run card under 720px: gs-delve.jsx, DL_LIST_BELOW). ---- */
 /* Each room is a row: its number on a rule running down the left (the route's 2px control edge), its name and a chevron, then its key moments as 24px dice and its other rolls as dots. */
 .dvL-list { position: relative; display: grid; min-width: 0; }
-.dvL-row { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 6px 8px 8px; }
+.dvL-row { position: relative; isolation: isolate; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 6px 8px 8px; }
 .dvL-row::before { content: ''; position: absolute; left: 21px; top: 0; bottom: 0; width: 2px; background: var(--control-edge); }
 .dvL-row.is-first::before { top: 20px; }
 .dvL-row.is-last::before { bottom: auto; height: 20px; }
@@ -329,8 +329,13 @@ button.dvL-head { cursor: pointer; }
 button.dvL-head:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
 .dvL-name { flex: 1; min-width: 0; font-size: 13px; }
 .dvL-row.is-on .dvL-name { font-weight: 700; color: var(--text); }
-.dvL-head svg { flex: none; transform: rotate(90deg); opacity: .7; }
-.dvL-head[aria-expanded="true"] svg { transform: rotate(-90deg); }
+/* The tap target is the whole row: the button's ::before fills the row (the row, not the body, is the positioned box) and sits behind the dice, so a hover anywhere on the row tints it edge to edge, as the hero sheet's header does. The chevron is centred on the row's height at 28px from its right edge, as the sheet's is, so a name that wraps or a row with a tally keeps it centred; an open row, tall with its dice and roll, centres it on its 44px head instead (6px row padding + 22px - 10px); the button keeps the name clear of it. Rows with no rolls are not buttons and take no hover. */
+button.dvL-head { padding-right: 48px; }
+button.dvL-head::before { content: ''; position: absolute; inset: 0; z-index: -1; }
+@media (hover: hover) { button.dvL-head:hover::before { background: var(--popup); } }
+.dvL-head svg { position: absolute; right: 28px; top: calc(50% - 10px); transform: rotate(90deg); opacity: .7; transition: transform var(--dur-fast, .15s); }
+.dvL-head[aria-expanded="true"] svg { top: 18px; transform: rotate(-90deg); }
+@media (prefers-reduced-motion: reduce) { .dvL-head svg { transition: none; } }
 .dvL-head .dv2-pass { margin: 0; flex: none; }
 /* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. */
 .dvL-tally { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-bottom: 6px; }
