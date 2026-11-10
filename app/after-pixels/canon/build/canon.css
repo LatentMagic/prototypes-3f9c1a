@@ -756,23 +756,6 @@ button.mcp-cb-ent{cursor:pointer}
 .dvE-mom:last-child { margin-bottom: 0; }
 /* Column lines, the study (brief item 0): a rule between rooms, or a line down each room behind its dice. */
 .dvA2-route.is-cols-between .dvA2-stop + .dvA2-stop { box-shadow: inset 1px 0 0 var(--line); }
-/* KEEP: on a phone the route keeps room numbers (a curved arrow in a muted box marks going back) and the held roll names the room; every die takes one fixed row slot so neighbouring columns line up. */
-@container dv2 (max-width: 719.98px) {
-  .dvA2-head .dv2-sname { display: none; }
-  .dvA2-dice svg { width: 30px; height: 33px; }
-  .dv2-num { min-width: 24px; padding: 0 2px; font-size: 13px; }
-  .dvE-mom svg { width: 40px; height: 43px; }
-  .dvA2-route.is-e .dvA2-dice { grid-auto-rows: 46px; gap: 2px; align-items: center; }
-  .dvA2-route.is-e .dvE-mom { margin: 0; }
-}
-/* KEEP: a card narrower than 260px (a 280px window) fits up to nine rooms, so a die is 2px narrower than its room's column and a room number is a 22px box: dice and numbers stay clear of their neighbours instead of overlapping them, and a held moment's bigger die overhangs by 2px a side at most. */
-@container dv2 (max-width: 260px) {
-  .dvA2-head { padding: 0; }
-  .dv2-num { min-width: 22px; }
-  .dvA2-route .dv2-dbtn { width: 100%; }
-  .dvA2-dice svg { width: min(30px, calc(100% - 2px)); height: auto; }
-  .dvE-mom svg { width: min(40px, calc(100% + 4px)); height: auto; }
-}
 .dvE-main { display: grid; gap: 16px; min-width: 0; }
 /* KEEP: on desktop the held roll is as tall as the route beside it, so the two end level. Under 800px it sits above the route. */
 @container dv2 (min-width: 800px) {
@@ -810,9 +793,9 @@ button.mcp-cb-ent{cursor:pointer}
 .dv3-foe dd b { color: var(--text); }
 .dv3-foe dd b.is-err { color: var(--error); }
 .dv3-dl > .dv3-fm { grid-template-columns: minmax(0, 1fr); align-items: center; }
-/* KEEP: at the narrowest width (a 280px window) the foe roll's label sits above its row instead of beside it, so the diamond and "Hit you for 2" share a line and "vs defence 13" is the second, not three stacked lines. */
+/* KEEP: at the narrowest width (a 280px window) every label in the held roll sits above its value instead of beside it: the 76px label column leaves about 50px, so "Dexterity" spills, and the foe roll's diamond and "Hit you for 2" share a line with "vs defence 13" second. */
 @container dv2 (max-width: 240px) {
-  .dv3-dl > .dv3-foe { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
 /* KEEP: under 800px the held roll sits above the route, so it is kept short: the ledger's die moves beside its name, the big figures shrink. */
 @container dv2 (max-width: 799.98px) {
@@ -1047,14 +1030,14 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
 /* ---- The route as a list of closed rooms (a run card under 720px: gs-delve.jsx, DL_LIST_BELOW). ---- */
 /* Each room is a row: its number on a rule running down the left (the route's 2px control edge), its name and a chevron, then its key moments as 24px dice and its other rolls as dots. */
-.dvL-list { display: grid; min-width: 0; }
+.dvL-list { position: relative; display: grid; min-width: 0; }
 .dvL-row { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 6px 8px 8px; }
 .dvL-row::before { content: ''; position: absolute; left: 21px; top: 0; bottom: 0; width: 2px; background: var(--control-edge); }
 .dvL-row.is-first::before { top: 20px; }
 .dvL-row.is-last::before { bottom: auto; height: 20px; }
 .dvL-row.is-first.is-last::before { display: none; }
 .dvL-row.is-on { background: color-mix(in srgb, var(--text) 5%, var(--card)); }
-.dvL-row .dv2-num.dvL-num { justify-self: center; margin-top: 8px; min-width: 24px; }
+.dvL-row .dv2-num.dvL-num { justify-self: center; margin-top: 8px; min-width: 24px; padding: 0 2px; font-size: 13px; }
 .dvL-row.is-on .dv2-num { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dvL-body { display: grid; gap: 4px; min-width: 0; align-content: start; }
 .dvL-head { display: flex; align-items: center; gap: 8px; box-sizing: border-box; width: 100%; min-height: 44px; margin: 0; padding: 0; background: none; border: 0; color: inherit; text-align: left; }
@@ -1073,6 +1056,7 @@ button.dvL-head:focus-visible { outline: 2px solid var(--focus-ring, var(--off-w
 .dvL-dice { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 0 10px; }
 .dvL-dice .dv2-dbtn { --hit-w: 30px; }
 .dvL-held { padding-top: 2px; }
+.dvL-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
 moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
 .dl-now-route { min-width: 0; }

@@ -116,7 +116,7 @@ const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.use
   ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />
   : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} crit={r.crit} fumble={r.fumble} foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />);
 const DlDieBtn = ({ r, size, act, on, foe }) => (
-  <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r, foe !== false)} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
+  <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r, foe !== false)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
     <DlDie r={r} size={size} sel={act === r.t} foe={foe} />
   </button>);
 
@@ -132,10 +132,10 @@ const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result
 // The foe's roll is one row of the held roll: its diamond, what it did and the defence, then the foe's health as the hero's meters are drawn; no Result row.
 // The foe's diamond is DS.DelveFoeDie: a diamond, never the hero's hex, so it cannot read as a second hero roll.
 const DlFoeDie = ({ f }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" />;
-const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
+const DlHeld = ({ m, act, live = true }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
   const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier;
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
-  return (<div className="dv3-live" aria-live="polite"><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
+  return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? r.what + ' used' : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}</div></div></div>
     <dl className="dv3-dl">
       <div><dt>Room</dt><dd>{(r.back ? 'Back in ' : '') + r.room}</dd></div>
@@ -186,7 +186,7 @@ const dlDotSay = (r) => (r.use ? 'used' : dlGrade(r).toLowerCase());
 const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
   const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
   const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
-  const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
+  const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { if (on.focus) on.focus(t); setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
   const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
   return (
     <div className={'dvL-row' + (isOpen ? ' is-on' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
@@ -195,20 +195,27 @@ const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
         {has
           ? <button type="button" className="dvL-head" aria-expanded={isOpen} aria-label={label} onClick={() => setOpen(isOpen ? null : st.i)}>
             <span className="dv2-sname dvL-name" aria-hidden="true">{st.name}</span><DS.Icon name="next" size={20} /></button>
-          : <p className="dvL-head dv2-sname dvL-name" aria-label={label + ', no rolls'}>{st.name}<i className="dv2-pass" aria-hidden="true" /></p>}
+          : <p className="dvL-head dv2-sname dvL-name"><span aria-hidden="true">{st.name}</span><span className="dvL-vh">{label + ', no rolls'}</span><i className="dv2-pass" aria-hidden="true" /></p>}
         {has && !isOpen && <div className="dvL-tally">
           {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
           {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={rest.length + (rest.length === 1 ? ' other roll: ' : ' other rolls: ') + rest.map(dlDotSay).join(', ')}>
             {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
         </div>}
         {isOpen && <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>}
-        {isOpen && sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} /></div>}
+        {isOpen && sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} live={false} /></div>}
       </div>
     </div>);
 };
+// A die pressed in a closed room unmounts with that room's tally as the room opens, so focus is handed to the same roll's die in the opened room.
+// One live region stays mounted for the list and carries the pressed roll's text; a region inserted fresh under each room is not announced.
 const DlRoomList = ({ m, act, on }) => {
   const [open, setOpen] = React.useState(() => (act ? m.turns[act - 1].stop : null));
-  return (<div className="dvL-list" aria-label="The way you went">{m.stops.map((st, i) => <DlRoomRow key={st.i} m={m} st={st} act={act} on={on} open={open} setOpen={setOpen} first={i === 0} last={i === m.stops.length - 1} />)}</div>);
+  const ref = React.useRef(null); const pending = React.useRef(null);
+  const onList = React.useMemo(() => ({ ...on, focus: (t) => { pending.current = t; } }), [on]);
+  React.useLayoutEffect(() => { const t = pending.current; if (t == null) return; pending.current = null;
+    const b = ref.current && ref.current.querySelector('.dvL-dice [data-t="' + t + '"]'); if (b) b.focus(); });
+  const r = act ? m.turns[act - 1] : null;
+  return (<div ref={ref} className="dvL-list" aria-label="The way you went"><p className="dvL-vh" aria-live="polite">{r ? dlSay(r) : ''}</p>{m.stops.map((st, i) => <DlRoomRow key={st.i} m={m} st={st} act={act} on={onList} open={open} setOpen={setOpen} first={i === 0} last={i === m.stops.length - 1} />)}</div>);
 };
 // ---- Before the first roll: the run's rooms drawn empty. A room is its number over an empty hex where its dice will go. ----
 const DlEmptyHex = () => (<svg className="dl-empty-hex" viewBox="-5 -5 46 50" aria-hidden="true" focusable="false"><polygon points={DL_HEX} /></svg>);
@@ -227,7 +234,7 @@ const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The wa
   <div key={st.i} className={'dvL-row' + (st.i === 0 ? ' is-on is-first' : ' is-far') + (st.i === rooms - 1 ? ' is-last' : '')}>
     <span className="dv2-num dvL-num" aria-hidden="true">{st.num}</span>
     <div className="dvL-body">{st.i === 0
-      ? <><p className="dvL-head dv2-sname dvL-name" aria-label="Room 1, First room, no rolls">First room</p><div className="dvL-held"><DlWait /></div></>
+      ? <><p className="dvL-head dv2-sname dvL-name"><span aria-hidden="true">First room</span><span className="dvL-vh">Room 1, First room, no rolls</span></p><div className="dvL-held"><DlWait /></div></>
       : <div className="dvL-head" role="img" aria-label={'Room ' + st.num + ', not reached'}><DlEmptyHex /></div>}</div>
   </div>))}</div>);
 // KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
