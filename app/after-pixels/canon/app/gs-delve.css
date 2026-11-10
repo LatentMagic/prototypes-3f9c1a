@@ -312,7 +312,7 @@
 /* KEEP: in a Pack, Ability or Fight panel the last row ends 24px above the card's edge (its own 12px and the panel's 12px), the same 24px that separates its rows, so no extra space sits under it. Stats and Advantage show their cells instead, which end 12px above the edge. */
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
-/* ---- The route as a list of closed rooms (a run card under 720px: gs-delve.jsx, DL_LIST_BELOW). ---- */
+/* ---- The route as a list of closed rooms (a run card under 610px: gs-delve.jsx, DL_LIST_BELOW). ---- */
 /* Each room is a row: its number on a rule running down the left (the route's 2px control edge), its name and a chevron, then its key moments as 24px dice and its other rolls as dots. */
 .dvL-list { position: relative; display: grid; min-width: 0; }
 .dvL-row { position: relative; isolation: isolate; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 10px; align-items: start; padding: 6px 8px 8px; }
