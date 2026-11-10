@@ -156,11 +156,17 @@ const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hi
 const DlStopHead = ({ st, named }) => (
   <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
     <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
-const DlRoute = ({ m, act, on }) => { const sel = act ? m.turns[act - 1].stop : null;
+// KEEP: a room's name is drawn only while its column is at least 64px wide; a long run beside the held roll (12 stops in a card of 800px) has columns near 38px, where names run into each other, so the numbers alone stay and the held roll names the room.
+const DL_NAME_MIN = 64;
+const useDlNamed = (n) => { const ref = React.useRef(null); const [named, setNamed] = React.useState(true);
+  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
+    const read = () => setNamed(el.clientWidth / n >= DL_NAME_MIN); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
+  return [ref, named]; };
+const DlRoute = ({ m, act, on }) => { const sel = act ? m.turns[act - 1].stop : null; const [ref, named] = useDlNamed(m.stops.length);
   return (<div className="dvE-main">
-    <div className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': m.stops.length }} aria-label="The way you went">{m.stops.map((st) => (
+    <div ref={ref} className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': m.stops.length }} aria-label="The way you went">{m.stops.map((st) => (
       <div key={st.i} className={'dvA2-stop' + (sel === st.i ? ' is-on' : '')}>
-        <DlStopHead st={st} named />
+        <DlStopHead st={st} named={named} />
         <div className="dvA2-dice">{st.turns.length ? st.turns.map((r) => (!r.use && m.mom[r.n]
           ? <span key={r.t} className="dvE-mom"><DlDieBtn r={r} act={act} on={on} size={52} /></span>
           : <DlDieBtn key={r.t} r={r} act={act} on={on} size={30} />)) : <i className="dv2-pass" aria-label="No rolls" />}</div>
@@ -384,7 +390,7 @@ export const registerDelve = () => {
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsDelve() {
 // ---- Sample plays beside the seeded ones, staged by States: a run that fell, and the hard play built to delve.md's limits
-// (every room, going back three times, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
+// (every room, going back seven times, twelve stops in all, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
   sheet: { used: { 'Shield bash': 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 14 + 0 = 14 vs 12'], ['Room', 'Entered the chime run'],
@@ -403,8 +409,12 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
   ['Dexterity', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 13 vs 14, missed'], ['Dexterity', 'Hit', 'Natural 20', 'd20 20 + 3 = 23 vs 12', 'Struck back: d20 8 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
+  ['Room', 'Doubled back to Snaggle\'s den', 'The ritual +1'], ['Wisdom', 'Listen at the den door', 'Success', 'd20 13 + 1 = 14 vs 12'],
+  ['Room', 'Doubled back to the warren', 'The ritual +1'],
   ['Strength', 'Force the bone gate', 'Failure', 'd20 6 + 0 = 6 vs 12'], ['Strength', 'Force the bone gate', 'Failure', 'd20 11 + 0 = 11 vs 12'], ['Strength', 'Force the bone gate', 'Success', 'd20 14 + 0 = 14 vs 12'],
-  ['Lock', 'Forced the bone gate'], ['Room', 'Entered the shrine cavern'],
+  ['Lock', 'Forced the bone gate'],
+  ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
+  ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
   ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
 }

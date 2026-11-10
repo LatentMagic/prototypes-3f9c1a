@@ -3097,9 +3097,25 @@
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
   const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
+  const DL_NAME_MIN = 64;
+  const useDlNamed = (n) => {
+    const ref = React$1.useRef(null);
+    const [named, setNamed] = React$1.useState(true);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => setNamed(el.clientWidth / n >= DL_NAME_MIN);
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [n]);
+    return [ref, named];
+  };
   const DlRoute = ({ m, act, on }) => {
     const sel = act ? m.turns[act - 1].stop : null;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": m.stops.length }, "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named: true }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => !r.use && m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
+    const [ref, named] = useDlNamed(m.stops.length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": m.stops.length }, "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => !r.use && m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
   };
   const DL_LIST_BELOW = 720;
   const useDlList = (ref) => {
@@ -3408,10 +3424,16 @@
         ["Dexterity", "Hit", "Natural 20", "d20 20 + 3 = 23 vs 12", "Struck back: d20 8 vs 14, missed"],
         ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to Snaggle's den", "The ritual +1"],
+        ["Wisdom", "Listen at the den door", "Success", "d20 13 + 1 = 14 vs 12"],
+        ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Strength", "Force the bone gate", "Failure", "d20 6 + 0 = 6 vs 12"],
         ["Strength", "Force the bone gate", "Failure", "d20 11 + 0 = 11 vs 12"],
         ["Strength", "Force the bone gate", "Success", "d20 14 + 0 = 14 vs 12"],
         ["Lock", "Forced the bone gate"],
+        ["Room", "Doubled back to the chime run", "The ritual +1"],
+        ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
+        ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Entered the shrine cavern"],
         ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
         ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
@@ -8469,7 +8491,7 @@
         c.setReview({ ed: "failed" });
         c.go("session", { id: "delve-fallen" });
       } },
-      { group: "Screens", id: "session-delve-hard", label: "7. Session page: Delve, the hard play (overrun, going back three times)", stage: (c) => {
+      { group: "Screens", id: "session-delve-hard", label: "7. Session page: Delve, the hard play (overrun, going back seven times, 12 stops)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ ed: "hard" });
@@ -8591,7 +8613,7 @@
         c.setReview({ week: "live" });
         c.go("delve", { page: "record" });
       } },
-      { group: "Library", id: "library-delve-hard", label: "Delve in your library, the hard play (overrun, going back three times)", stage: (c) => {
+      { group: "Library", id: "library-delve-hard", label: "Delve in your library, the hard play (overrun, going back seven times, 12 stops)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ ed: "hard" });
