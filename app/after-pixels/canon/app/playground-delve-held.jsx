@@ -11,7 +11,7 @@ import { pgRegister, pgActive, usePgSetting } from './playground.jsx';
 const Fact = ({ label, children, tone }) => (<div className="pgh-fact"><dt>{label}</dt><dd className={tone ? 'is-' + tone : undefined}>{children}</dd></div>);
 
 const facts = (r) => { const tone = r.fumble ? 'fumble' : r.tier; return {
-  room: <Fact label="Room">{(r.back ? 'Back in ' : '') + r.room}</Fact>,
+  room: <Fact label="Room">{(r.back ? 'Back in ' + r.room.replace(/^The /, 'the ') : r.room)}</Fact>,
   used: r.use && <Fact label="Used">{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</Fact>,
   action: !r.use && r.action && <Fact label="Action">{r.action}{r.move && <> <span>{r.move}</span></>}</Fact>,
   roll: !r.use && <Fact label="Roll">{r.stat} {r.total} <span>vs {r.dc}</span></Fact>,
@@ -26,10 +26,13 @@ const Head = ({ r, x }) => (
     <div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div>);
 
 // 2 · Two lines with a story: the player's move on line 1, the foe's answer alone on line 2, its diamond leading it under a rule of its own.
-const View2 = ({ r, x }) => { const f = facts(r); return (
+const View2 = ({ r, x }) => { const f = facts(r);
+  // Two groups on line 1, so a wrap falls between them: what was tried, then the dice.
+  const grp = (...c) => { const k = c.filter(Boolean); return k.length ? <div className="pgh-grp">{k.map((n, i) => <React.Fragment key={i}>{n}</React.Fragment>)}</div> : null; };
+  return (
   <div className="pgh-body is-v2"><Head r={r} x={x} />
     <div className="pgh-lines">
-      <dl className="pgh-line">{f.room}{f.used}{f.action}{f.roll}{f.outcome}{f.cost}</dl>
+      <dl className="pgh-line">{grp(f.room, f.used, f.action)}{grp(f.roll, f.outcome, f.cost)}</dl>
       {(r.foe || r.downed) && <dl className="pgh-line is-foe">{f.foe}{f.meter}</dl>}
     </div></div>); };
 
@@ -41,7 +44,7 @@ const View3 = ({ r, x }) => { const f = facts(r);
     <dl className="pgh-steps" style={{ '--pgh-n': cols.length }}>{cols.map((c, i) => <div key={i} className="pgh-step">{c.map((n, j) => <React.Fragment key={j}>{n}</React.Fragment>)}</div>)}</dl></div>); };
 
 const Held = ({ v, r, x, live }) => (
-  <div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held pgh-held' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
+  <div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held pgh-held' + (v === '2' ? ' is-v2' : '') + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     {v === '2' ? <View2 r={r} x={x} /> : <View3 r={r} x={x} />}</div></div>);
 
 // The settings bar changes the version; canon's held roll calls this view only while the playground is open; version "now" hands canon's own element back.

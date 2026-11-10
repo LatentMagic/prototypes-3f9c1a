@@ -11155,7 +11155,7 @@
   const facts = (r) => {
     const tone = r.fumble ? "fumble" : r.tier;
     return {
-      room: /* @__PURE__ */ React$1.createElement(Fact, { label: "Room" }, (r.back ? "Back in " : "") + r.room),
+      room: /* @__PURE__ */ React$1.createElement(Fact, { label: "Room" }, r.back ? "Back in " + r.room.replace(/^The /, "the ") : r.room),
       used: r.use && /* @__PURE__ */ React$1.createElement(Fact, { label: "Used" }, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does))),
       action: !r.use && r.action && /* @__PURE__ */ React$1.createElement(Fact, { label: "Action" }, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move))),
       roll: !r.use && /* @__PURE__ */ React$1.createElement(Fact, { label: "Roll" }, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc)),
@@ -11168,14 +11168,18 @@
   const Head = ({ r, x }) => /* @__PURE__ */ React$1.createElement("div", { className: "pgh-head" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 52, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? r.what : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), r.downed && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, r.downed.name, " beaten")));
   const View2 = ({ r, x }) => {
     const f = facts(r);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "pgh-body is-v2" }, /* @__PURE__ */ React$1.createElement(Head, { r, x }), /* @__PURE__ */ React$1.createElement("div", { className: "pgh-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-line" }, f.room, f.used, f.action, f.roll, f.outcome, f.cost), (r.foe || r.downed) && /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-line is-foe" }, f.foe, f.meter)));
+    const grp = (...c) => {
+      const k = c.filter(Boolean);
+      return k.length ? /* @__PURE__ */ React$1.createElement("div", { className: "pgh-grp" }, k.map((n, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, n))) : null;
+    };
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pgh-body is-v2" }, /* @__PURE__ */ React$1.createElement(Head, { r, x }), /* @__PURE__ */ React$1.createElement("div", { className: "pgh-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-line" }, grp(f.room, f.used, f.action), grp(f.roll, f.outcome, f.cost)), (r.foe || r.downed) && /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-line is-foe" }, f.foe, f.meter)));
   };
   const View3 = ({ r, x }) => {
     const f = facts(r);
     const cols = [[f.room, f.used, f.action], [f.roll, f.outcome], [f.cost, f.foe, f.meter]].map((c) => c.filter(Boolean)).filter((c) => c.length);
     return /* @__PURE__ */ React$1.createElement("div", { className: "pgh-body is-v3" }, /* @__PURE__ */ React$1.createElement(Head, { r, x }), /* @__PURE__ */ React$1.createElement("dl", { className: "pgh-steps", style: { "--pgh-n": cols.length } }, cols.map((c, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "pgh-step" }, c.map((n, j) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: j }, n))))));
   };
-  const Held = ({ v, r, x, live }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held pgh-held" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), v === "2" ? /* @__PURE__ */ React$1.createElement(View2, { r, x }) : /* @__PURE__ */ React$1.createElement(View3, { r, x })));
+  const Held = ({ v, r, x, live }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held pgh-held" + (v === "2" ? " is-v2" : "") + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), v === "2" ? /* @__PURE__ */ React$1.createElement(View2, { r, x }) : /* @__PURE__ */ React$1.createElement(View3, { r, x })));
   const PgView = ({ canon, ...p }) => {
     const v = usePgSetting("version");
     return v === "now" ? canon : /* @__PURE__ */ React$1.createElement(Held, { v, ...p });
