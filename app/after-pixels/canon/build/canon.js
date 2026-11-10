@@ -3557,7 +3557,7 @@
   let DV_DONE;
   let DV_ROOMS;
   let DV_NEXT;
-  const dvEnded = (ps) => ps.filter((p) => p.status.kind === "ok");
+  const dvEnded = (ps) => ps.filter((p) => p.status.kind !== "live");
   let DV_ACH;
   let DV_BADGES;
   const dvStatus = (s) => !s.played ? { kind: "none", label: "Not played" } : !s.end ? { kind: "live", label: "In progress" } : DV_END[s.end];
@@ -3593,7 +3593,7 @@
     DV_NEXT = "Monday 12 October";
     DV_ACH = [
       { k: "untouched", n: "Untouched", how: "Win a run without losing a hit point.", first: true, by: (p) => p.src.end === "won" && !!p.src.unhurt },
-      { k: "streak", n: "Hot Streak", how: "Land three strong hits in a row.", first: true, by: (p) => (p.src.streak || 0) >= 3 },
+      { k: "streak", n: "Hot Streak", how: "Land three hits or successes in a row.", first: true, by: (p) => (p.src.streak || 0) >= 3 },
       { k: "enemy", n: "Know Thy Enemy", how: "Bring down a foe by what it fears.", first: true },
       { k: "regular", n: "Regular", how: "Complete four weeks in a row.", of: 4, count: dvEnded },
       { k: "ten", n: "Ten Runs", how: "Complete ten runs.", of: 10, count: dvEnded }
