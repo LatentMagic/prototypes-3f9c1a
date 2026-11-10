@@ -1297,6 +1297,9 @@
       hpMax: 23,
       threat: 5,
       threatMax: 12,
+      lightName: "the torch",
+      light: 1,
+      lightMax: 6,
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
       foeMax: { "snaggle's den": 1, "the shrine cavern": 5 },
@@ -1550,6 +1553,7 @@
       hero: "Wren the Rogue",
       hpMax: 21,
       threat: 3,
+      light: 2,
       foeMax: { "snaggle's den": 2 },
       sheet: { used: { "Sneak attack": 1 }, insp: true }
     }
@@ -1564,7 +1568,7 @@
     "word-begun": { ...GS_SESSIONS["word-live"], lines: [] },
     "groups-begun": { ...GS_SESSIONS["groups-live"], figures: ["0 of 4 groups", "No mistakes"], lines: [] },
     "escape-begun": { ...GS_SESSIONS["escape-live"], lines: [] },
-    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 21/21"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, sheet: { used: {}, insp: true } }
+    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 21/21"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } }
   });
   GS_SESSIONS["escape-0928"] = GS_SESSIONS["escape-week"];
   const gsLapsed = (gs) => gs.view !== "pass" && !!gs.sub.hadPass;
@@ -3320,6 +3324,9 @@
       hpMax: s.hpMax,
       threat: s.threat,
       threatMax: s.threatMax,
+      lightName: s.lightName,
+      light: s.light,
+      lightMax: s.lightMax,
       carry: DL_CARRY,
       gear,
       abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })),
@@ -3356,7 +3363,11 @@
   };
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
   const DlAdvCells = ({ c, streak }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Hits or successes in a row. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak)));
-  const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }));
+  const dlLightLabel = (name) => {
+    const n = name.replace(/^(the|your)\s+/i, "");
+    return n.charAt(0).toUpperCase() + n.slice(1);
+  };
+  const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }), c.lightName && /* @__PURE__ */ React$1.createElement(DlMeter, { label: dlLightLabel(c.lightName), n: c.light, of: c.lightMax }));
   const dlFight = (c) => {
     const f = c.fight;
     if (!f) return [];
@@ -3509,6 +3520,7 @@
       share: "Fell in the warren",
       shareLines: null,
       threat: 7,
+      light: 4,
       sheet: { used: { "Shield bash": 2 }, insp: false },
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12"],
@@ -3537,6 +3549,7 @@
       hpMax: 21,
       threat: 12,
       foeMax: { "the shrine cavern": 5 },
+      light: 0,
       sheet: { used: { "Sneak attack": 1 }, insp: false },
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 20/21"],
@@ -6671,6 +6684,9 @@
       figures: ["Threat 0/12", "1 roll", "HP 21/21"],
       threat: 0,
       foeMax: {},
+      lightName: void 0,
+      light: void 0,
+      lightMax: void 0,
       sheet: { used: {}, insp: true },
       setting: "The Drowned Chapel under Fenwick Marsh",
       tracks: { progress: 2, rooms: 5, threat: 0, threatMax: 12 },

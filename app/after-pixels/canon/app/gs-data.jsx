@@ -249,7 +249,7 @@ export const GS_SESSIONS = {
     lines: GS_DV_WON,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
-    setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
+    setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, lightName: 'the torch', light: 1, lightMax: 6, sheet: { used: { 'Shield bash': 1 }, insp: true },
     share: 'Elsie rescued', foeMax: { "snaggle's den": 1, 'the shrine cavern': 5 },
     shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '🟩💀🟩🟩🟩🟩🟩✨🟩🟩🟩'],
   },
@@ -352,7 +352,7 @@ Object.assign(GS_SESSIONS, {
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 21/21'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
-    hero: 'Wren the Rogue', hpMax: 21, threat: 3, foeMax: { "snaggle's den": 2 }, sheet: { used: { 'Sneak attack': 1 }, insp: true } },
+    hero: 'Wren the Rogue', hpMax: 21, threat: 3, light: 2, foeMax: { "snaggle's den": 2 }, sheet: { used: { 'Sneak attack': 1 }, insp: true } },
 });
 // In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets
 // review.begun beside week 'live'; every surface that opens the in-progress play reads its id through gsLiveSid.
@@ -362,7 +362,7 @@ Object.assign(GS_SESSIONS, {
   'word-begun': { ...GS_SESSIONS['word-live'], lines: [] },
   'groups-begun': { ...GS_SESSIONS['groups-live'], figures: ['0 of 4 groups', 'No mistakes'], lines: [] },
   'escape-begun': { ...GS_SESSIONS['escape-live'], lines: [] },
-  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 21/21'], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, sheet: { used: {}, insp: true } },
+  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 21/21'], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } },
 });
 // The old earlier-room id reads this week's.
 GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];

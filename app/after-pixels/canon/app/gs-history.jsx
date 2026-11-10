@@ -396,7 +396,7 @@ PH_MORE = {
 GS_SESSIONS['escape-r0-live'] = { ...GS_SESSIONS['escape-live'], edKey: 'escape-r0', __dated: true, date: pzLong(PH_MORE.escape.at) + ', ' + phTime(PH_MORE.escape.at),
   lines: [['Move 1', 'Examined the logbook on the desk', 'The last entry stops mid-sentence, three nights before the storm.'], ['Move 2', 'Examined the lamp room hatch', 'The hatch is bolted from above.']] };
 GS_SESSIONS['delve-r0-live'] = { ...GS_SESSIONS['delve-live'], edKey: 'dv-r0', __dated: true, date: pzLong(PH_MORE.delve.at) + ', ' + phTime(PH_MORE.delve.at),
-  figures: ['Threat 0/12', '1 roll', 'HP 21/21'], threat: 0, foeMax: {}, sheet: { used: {}, insp: true }, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 0, threatMax: 12 }, endings: null, reached: null, shareLines: null,
+  figures: ['Threat 0/12', '1 roll', 'HP 21/21'], threat: 0, foeMax: {}, lightName: undefined, light: undefined, lightMax: undefined, sheet: { used: {}, insp: true }, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 0, threatMax: 12 }, endings: null, reached: null, shareLines: null,
   lines: [['Room', 'Entered the flooded nave'], ['Dexterity', 'Cross the sunken pews', 'Success', 'd20 14 + 3 = 17 vs 12'], ['Room', 'Entered the bell loft']] };
 PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + '-0', at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
 Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {

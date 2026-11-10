@@ -224,9 +224,9 @@
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell .dv7-fig > svg, .dv8.is-3b .dv8-adv .dv5-insw > svg { width: 36px; height: auto; }
 .dv8.is-3b .dv7-cell .dv4-sx text { font-size: 18px; }
 /* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length; labels never wrap. */
-.dv8-meters { display: grid !important; grid-template-columns: max-content minmax(32px, 1fr) max-content; gap: 12px 6px; align-content: center; align-items: center; justify-items: stretch !important; }
+.dv8-meters { display: grid !important; grid-template-columns: fit-content(5.5em) minmax(32px, 1fr) max-content; gap: 12px 6px; align-content: center; align-items: center; justify-items: stretch !important; }
 .dv8-meters .dv6-bar { display: contents; font-size: 13px; }
-.dv8-meters .dv6-bar > span { white-space: nowrap; }
+.dv8-meters .dv6-bar > span { line-height: 1.2; }
 .dv8-meters .dv6-bar small { text-align: left; }
 /* A named cell says what it is on a small line under its name. */
 .dv8-sub { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }

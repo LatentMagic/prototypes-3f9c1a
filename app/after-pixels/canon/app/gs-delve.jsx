@@ -356,7 +356,7 @@ const dlSheet = (s, m) => {
     if (l[0] === 'Lock') { const w = /^Opened (.+) with (.+)$/.exec(String(l[1])); if (w) find(w[2]).note = 'Opened ' + w[1]; }
   });
   gear.forEach((g) => { g.label = g.note || DL_STATE[g.state]; });
-  return { name: h.name, cls: h.cls, hp: m.hp, hpMax: s.hpMax, threat: s.threat, threatMax: s.threatMax, carry: DL_CARRY, gear,
+  return { name: h.name, cls: h.cls, hp: m.hp, hpMax: s.hpMax, threat: s.threat, threatMax: s.threatMax, lightName: s.lightName, light: s.light, lightMax: s.lightMax, carry: DL_CARRY, gear,
     abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })), insp: !!sh.insp,
     fight: h.fight || null, stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? '−' : '+') + Math.abs(n) })) };
 };
@@ -373,7 +373,7 @@ const DlCell = ({ label, used, title, children }) => (<div className={'dv7-cell'
 // KEEP: a meter's count is written 9/13, the short form, so the meters' column stays narrow (owner, 2026-10-29).
 const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
 
-// 3B (owner, 2026-10-29): the hero; hit points and threat stacked on one grid; then five tabs: Stats, Advantage, Pack (with its free slots), Ability and Fight. The torch, clues and the bargain join once the record holds them.
+// 3B (owner, 2026-10-29): the hero; hit points, threat and, where the edition has the light module, its light stacked on one grid; then five tabs: Stats, Advantage, Pack (with its free slots), Ability and Fight. Clues and the bargain join once the record holds them.
 // The sheet's tabs are Escape's tap cards (esx-cards, EsxFold); a tab adds only its icon.
 // KEEP: the layout is chosen by the sheet's own content width, never the window, with four steps: one row of name, bars and five tabs from 796px; from 610px the name and bars side by side with the five tabs full width under them; from 340.02px the name line over the bars over the five tabs; at 340px and under the tabs become a list, icon beside word. A step's tabs are as wide as their share of the row, at most 140px, and their words step from 10px to 8px as the sheet narrows.
 // KEEP: every two-row layout opens folded to the name and bars; the whole header is the fold, its chevron centred on it. The one-row layout has no fold.
@@ -389,7 +389,11 @@ const useDlOneRow = (ref) => { const [one, setOne] = React.useState(false);
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
 const DlAdvCells = ({ c, streak }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
   <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></>);
-const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} /></div>;
+// KEEP: the label column is as wide as "Hit points" and no wider unless a light's name needs it: a long light name (about 20 characters at most, which the editions' check caps) wraps to two lines at most, breaking only between words, and the column is never narrower than the longest single word, so no word runs into its bar. The bars keep their full width.
+// The light's label is its module's own name, "the torch" → "Torch": a leading "the " or "your " dropped, the first letter capitalised. Only a run whose edition has the light module carries `lightName`.
+const dlLightLabel = (name) => { const n = name.replace(/^(the|your)\s+/i, ''); return n.charAt(0).toUpperCase() + n.slice(1); };
+const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} />
+  {c.lightName && <DlMeter label={dlLightLabel(c.lightName)} n={c.light} of={c.lightMax} />}</div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
   return [{ key: 'def', label: 'Defence', num: f.defence, text: 'A foe’s d20 must reach ' + f.defence + ' to hit you.' },
@@ -531,7 +535,7 @@ export const registerDelve = () => {
 export function initGsDelve() {
 // ---- Sample plays beside the seeded ones, staged by States: a run that fell, and the hard play built to delve.md's limits
 // (every room, going back seven times, twelve stops in all, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
-GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
+GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7, light: 4,
   sheet: { used: { 'Shield bash': 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Partial success', 'd20 14 + 0 = 14 vs 12'], ['Room', 'Entered the chime run'],
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23'], ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23'], ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
@@ -539,7 +543,7 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23'], ['Strength', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 9/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 4 damage, HP 5/23'],
   ['Strength', 'Miss', 'd20 6 + 3 = 9 vs 12', 'Struck back: d20 12 vs 10, hit, 4 damage, HP 1/23'], ['Strength', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 18 vs 10, hit, 1 damage, HP 0/23']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
-  hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 5 }, sheet: { used: { 'Sneak attack': 1 }, insp: false }, lines: [
+  hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 5 }, light: 0, sheet: { used: { 'Sneak attack': 1 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'd20 1 + 0 = 1 vs 12', 'HP 20/21'], ['Room', 'Entered the chime run'],
   ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 14 vs 14, hit, 1 damage, HP 19/21'], ['Dexterity', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 7 vs 14, missed'], ['Dexterity', 'Hit', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
