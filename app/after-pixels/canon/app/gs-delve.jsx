@@ -474,7 +474,7 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 
     return (<div key={st.i} className={'dl-now-stop' + edge}>
       <DlStopHead st={st} />
       {!st.turns.length && <i className="dv2-pass" aria-label="No rolls" />}
-      {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.n} r={r} act={null} on={on} size={34} foe={false} />)}</div>}
+      {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.n} r={r} act={null} on={on} size={34} foe />)}</div>}
       {rest.length > 0 && <span className="dl-now-marks" style={{ '--dl-marks': dlMarkCols(rest.length) }} role="img" aria-label={dlNowMarksSay(rest)}>
         {rest.map((r) => (r.use ? <DlNowUseMark key={r.t} /> : <i key={r.t} className={'dl-now-mark is-' + r.tier} />))}</span>}
     </div>);
