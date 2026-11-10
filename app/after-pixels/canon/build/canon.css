@@ -2323,12 +2323,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* How it works */
 .hw-head .gs-lead { max-width: none; }
 @container gs (min-width: 720px) { .hw-head { max-width: 66.667%; } }
-.hw-sec { scroll-margin-top: 80px; }
+.hw-sec { scroll-margin-top: calc(80px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); }
 .hw-sec > h2:focus { outline: none; }
 .hw-sec p, .hw-trust { margin: 0; }
 
-/* The words a player types, as a message in a chat: the chat picture's light ground and dark ink, round like its bubbles. */
-.hw-say { display: inline-block; padding: 2px 12px; border-radius: 18px; background: var(--off-white); color: oklch(23% .01 95); font-weight: 600; white-space: nowrap; }
+/* The words a player types, as a message in a chat: off-white ground and the page's ink, as a main Button, round like the chat picture's bubbles. */
+.hw-say { display: inline-block; padding: 2px 12px; border-radius: 18px; background: var(--off-white); color: var(--page); font-weight: 600; white-space: nowrap; }
 
 /* Overview: three boxes, each jumps to its section; stacked on a phone, side by side from 640px */
 .hw-jumps { display: grid; gap: 8px; }
@@ -2378,7 +2378,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 
 /* Who does what: four short facts */
 .hw-trust { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
-.hw-trust > li { padding: 12px 16px; border: 1px solid var(--line); background: var(--card); font-weight: 600; }
+.hw-trust > li { display: grid; }
+.hw-fact { font-weight: 600; }
 /* Product page: facts, finished play, gaps, the cover beside the play box, pitch (app/gs-game.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
@@ -2410,10 +2411,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .gs-hero-cover { min-height: 320px; }
   .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }
   .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; }
-}
-@container gs (min-width: 1000px) {
-  .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
-  .hw-ai-act { grid-column: auto; }
 }
 
 /* KEEP: Covers on a phone: the head of the product and session pages shows the cover small beside the title, as the library game page does, so the first action is in view; a More games card's art is 2:1 */

@@ -28,8 +28,8 @@ const GS_APPS = [
   { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'Add custom connector', subs: ['grok', 'grokbot'] },
   { id: 'grokbot', name: 'Grok Bot', route: 'chat', sub: true },
   { id: 'muse', name: 'Muse', route: 'chat' },
-  { id: 'openclaw', name: 'OpenClaw', route: 'command', cmd: 'openclaw mcp add after-pixels --url ' + GS.link + ' --transport streamable-http --auth oauth', login: 'openclaw mcp login after-pixels' },
-  { id: 'hermes', name: 'Hermes Agent', route: 'command', cmd: 'hermes mcp add after-pixels --url ' + GS.link + ' --auth oauth' },
+  { id: 'openclaw', name: 'OpenClaw', route: 'command', cmd: (url) => 'openclaw mcp add after-pixels --url ' + url + ' --transport streamable-http --auth oauth', login: 'openclaw mcp login after-pixels' },
+  { id: 'hermes', name: 'Hermes Agent', route: 'command', cmd: (url) => 'hermes mcp add after-pixels --url ' + url + ' --auth oauth' },
   { id: 'other', name: 'Other', route: 'settings', noun: 'custom connector or MCP server' },
 ];
 const gsApp = (id) => GS_APPS.find((a) => a.id === id);
@@ -110,11 +110,10 @@ export const GsPlayDialog = () => {
   );
 };
 
-
 // ---- How it works ----
 // Overview, then Setup, Start and Playing (each Overview box jumps to its section), then who does what, Disconnecting and Help.
 // No numbers on the Overview boxes or the section headings.
-// KEEP: a jump lands the section's heading just under the sticky top bar (scroll-margin-top 80px) and moves focus to it, so a
+// KEEP: a jump lands the section's heading just under the sticky top bar (scroll-margin-top 80px, plus the app posture's top inset) and moves focus to it, so a
 // keyboard or screen-reader user carries on from there; with reduced motion it jumps instead of gliding.
 const gsJump = (id) => {
   const el = document.getElementById(id); if (!el) return;
@@ -138,7 +137,7 @@ const gsAppSteps = (a) => a.route === 'settings' ? [
   <div className="gs-stack-sm"><span>{'In a chat with ' + a.name + ', send'}</span><GsCopyBox text={'Add this MCP server: ' + GS.link} label="The message to send" /></div>,
   'Sign in when it gives you a link',
 ] : [
-  <div className="gs-stack-sm"><span>Run</span><GsCopyBox text={a.cmd} label="The command to run" /></div>,
+  <div className="gs-stack-sm"><span>Run</span><GsCopyBox text={a.cmd(GS.link)} label="The command to run" /></div>,
   a.login ? <div className="gs-stack-sm"><span>Run</span><GsCopyBox text={a.login} label="The sign-in command" /><span>and open the link it prints</span></div> : 'Open the sign-in link it prints',
 ];
 
@@ -157,20 +156,23 @@ const GsSetup = () => {
   const [tile, setTile] = React.useState('chatgpt');
   const [sub, setSub] = React.useState('grok');
   const t = gsApp(tile); const a = gsApp(t.subs ? sub : tile);
-  const wrap = React.useRef(null), card = React.useRef(null), notch = React.useRef(null);
+  const wrap = React.useRef(null), card = React.useRef(null), notch = React.useRef(null), placed = React.useRef(false);
   React.useLayoutEffect(() => {
     const w = wrap.current; if (!w) return undefined;
     const track = w.querySelector('.mcp-crow-track');
-    const place = () => {
+    // KEEP: the notch glides to a newly picked tile, but tracks a scrolling row directly, so it never trails the tile.
+    const place = (glide) => {
       const p = w.querySelector('.hw-app[aria-pressed="true"]'), c = card.current, n = notch.current; if (!p || !c || !n) return;
       const r = p.getBoundingClientRect(), cr = c.getBoundingClientRect(), x = r.left + r.width / 2 - cr.left;
+      if (glide !== undefined) n.style.transition = glide && placed.current ? '' : 'none';
       n.style.visibility = x < 16 || x > cr.width - 16 ? 'hidden' : '';
       n.style.left = x + 'px';
     };
-    place();
-    if (track) track.addEventListener('scroll', place, { passive: true });
-    const ro = window.ResizeObserver ? new ResizeObserver(place) : null; if (ro) ro.observe(w);
-    return () => { if (track) track.removeEventListener('scroll', place); if (ro) ro.disconnect(); };
+    const follow = () => place(false), refit = () => place();
+    place(true); placed.current = true;
+    if (track) track.addEventListener('scroll', follow, { passive: true });
+    const ro = window.ResizeObserver ? new ResizeObserver(refit) : null; if (ro) ro.observe(w);
+    return () => { if (track) track.removeEventListener('scroll', follow); if (ro) ro.disconnect(); };
   }, [tile]);
   return (
     <div className="gs-stack-md" ref={wrap}>
@@ -181,13 +183,13 @@ const GsSetup = () => {
           </button>
         ))}
       </DS.CardRow>
-      <div className="hw-pick" ref={card}>
+      <div className="hw-pick" ref={card} aria-live="polite">
         <i className="hw-notch" ref={notch} aria-hidden="true" />
         <DS.Card style={{ justifyItems: 'stretch' }}>
           <div className="gs-stack-md">
             {t.subs && (
-              <div className="hw-seg" role="radiogroup" aria-label="Which Grok">
-                {t.subs.map((id) => <DS.Button key={id} role="radio" aria-checked={sub === id} variant={sub === id ? 'main' : 'secondary'} onClick={() => setSub(id)}>{GS_SUB_LABEL[id]}</DS.Button>)}
+              <div className="hw-seg" role="group" aria-label="Which Grok">
+                {t.subs.map((id) => <DS.Button key={id} aria-pressed={sub === id} variant={sub === id ? 'main' : 'secondary'} onClick={() => setSub(id)}>{GS_SUB_LABEL[id]}</DS.Button>)}
               </div>
             )}
             <h3 className="mcp-t-card">{'Add it in ' + a.name}</h3>
@@ -244,7 +246,7 @@ export const GsConnect = () => {
         <p>Some games are free. The rest come with the Pass. <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>See Pricing</button></p>
       </section>
       <section className="gs-stack-md" aria-label="Who does what">
-        <ul className="hw-trust">{GS_HW_TRUST.map((x) => <li key={x}>{x}</li>)}</ul>
+        <ul className="hw-trust">{GS_HW_TRUST.map((x) => <li key={x}><DS.Card><span className="hw-fact">{x}</span></DS.Card></li>)}</ul>
         <p className="gs-muted">Your AI never asks you to pay. Your AI plan pays for play, and a capable model plays better.</p>
       </section>
       <div className="gs-grid2">
