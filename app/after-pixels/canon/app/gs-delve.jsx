@@ -121,9 +121,9 @@ const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 
 export const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.use
   ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />
   : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} crit={r.crit} fumble={r.fumble} foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />);
-const DlDieBtn = ({ r, size, act, on, foe }) => (
+const DlDieBtn = ({ r, size, act, on, foe, lit }) => (
   <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r, foe !== false)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
-    <DlDie r={r} size={size} sel={act === r.t} foe={foe} />
+    <DlDie r={r} size={size} sel={act === r.t || lit === r.t} foe={foe} />
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
@@ -200,10 +200,12 @@ const DlRoute = ({ m, act, on, beside }) => { const sel = act ? m.turns[act - 1]
 const DL_LIST_BELOW = 610;
 const useDlList = (ref) => { const [list, setList] = React.useState(false);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW); };
+    // KEEP: the list drops the card's side padding for its own 16px gutters, so the switch reads the list's width less those gutters, the width the route would have; reading the bare card would flip list and route back and forth between windows of about 644 and 676px.
+    const read = () => { const cs = getComputedStyle(el); const sides = el.classList.contains('is-list') ? ['borderLeftWidth', 'borderRightWidth'] : ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'];
+      const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains('is-list') ? 2 * DL_GUTTER : 0); setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
   return list; };
-const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
+const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
   const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
   const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
   const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { if (on.focus) on.focus(t); setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
@@ -219,7 +221,7 @@ const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
             : <p className="dvL-head dvL-name is-pass"><span aria-hidden="true">{st.name}</span><span className="dvL-vh">{label + ', no rolls'}</span></p>}
           {has
             ? <div className="dvL-tally" aria-hidden={isOpen || undefined}>
-              {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={onRoom} size={24} />)}
+              {keys.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={onRoom} size={24} />)}
               {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={dlNowMarksSay(rest)}>
                 {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
             </div>
@@ -227,7 +229,7 @@ const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
         </div>
       </div>
       {has && <div id={fold} className="dvL-fold"><EsxFold open={isOpen}>{isOpen && <div className="dvL-open">
-        <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>
+        <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>
         {sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} live={false} /></div>}
       </div>}</EsxFold></div>}
     </div>);
@@ -237,11 +239,13 @@ const DlRoomRow = ({ m, st, act, on, open, setOpen, first, last }) => {
 const DlRoomList = ({ m, act, on }) => {
   const [open, setOpen] = React.useState(() => (act ? m.turns[act - 1].stop : null));
   const ref = React.useRef(null); const pending = React.useRef(null);
-  const onList = React.useMemo(() => ({ ...on, focus: (t) => { pending.current = t; } }), [on]);
+  // KEEP: a mouse over a die rings it as the route's selected die is ringed (its foe and second hexes cleared), but the held roll stays the pressed one's; touch gives no hover, so a tap never leaves a ring behind.
+  const [lit, setLit] = React.useState(null);
+  const onList = React.useMemo(() => ({ ...on, hov: (t) => { if (t == null || window.matchMedia('(hover: hover)').matches) setLit(t); }, focus: (t) => { pending.current = t; } }), [on]);
   React.useLayoutEffect(() => { const t = pending.current; if (t == null) return; pending.current = null;
     const b = ref.current && ref.current.querySelector('.dvL-dice [data-t="' + t + '"]'); if (b) b.focus(); });
   const r = act ? m.turns[act - 1] : null;
-  return (<div ref={ref} className="dvL-list" aria-label="The way you went"><p className="dvL-vh" aria-live="polite">{r ? dlSay(r) : ''}</p>{m.stops.map((st, i) => <DlRoomRow key={st.i} m={m} st={st} act={act} on={onList} open={open} setOpen={setOpen} first={i === 0} last={i === m.stops.length - 1} />)}</div>);
+  return (<div ref={ref} className="dvL-list" aria-label="The way you went"><p className="dvL-vh" aria-live="polite">{r ? dlSay(r) : ''}</p>{m.stops.map((st, i) => <DlRoomRow key={st.i} m={m} st={st} act={act} on={onList} lit={lit} open={open} setOpen={setOpen} first={i === 0} last={i === m.stops.length - 1} />)}</div>);
 };
 // ---- Before the first roll: the run's rooms drawn empty. A room is its number over an empty hex where its dice will go. ----
 const DlEmptyHex = () => (<svg className="dl-empty-hex" viewBox="-5 -5 46 50" aria-hidden="true" focusable="false"><polygon points={DL_HEX} /></svg>);
@@ -267,7 +271,7 @@ const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The wa
     {st.i === 0 && <div className="dvL-open"><div className="dvL-held"><DlWait /></div></div>}
   </div>))}</div>);
 // KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
-// now card), else the last roll. In the list a hover changes nothing: the held roll sits under the pressed room only.
+// now card), else the last roll. In the list a hover only rings the die: the held roll sits under the pressed room only.
 const DlCard = ({ s, m, roll }) => {
   const ref = React.useRef(null); const list = useDlList(ref); const rooms = m.turns.length ? m.stops.length : (s.tracks && s.tracks.rooms) || 5; const beside = useDlBeside(ref, rooms);
   const [sel, setSel] = React.useState(() => (roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
