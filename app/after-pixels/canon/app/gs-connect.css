@@ -52,7 +52,6 @@
 .hw-img-grok.is-on { display: none; }
 .hw-app[aria-pressed="true"] .hw-img-grok.is-on { display: block; }
 .hw-app[aria-pressed="true"] .hw-img-grok.is-off { display: none; }
-.hw-app[aria-pressed="true"] 
 /* A logo kept as its own file, painted in the tile's text colour through its shape. */
 .hw-mask { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
 
