@@ -205,11 +205,23 @@ const useDlList = (ref) => { const [list, setList] = React.useState(false);
       const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains('is-list') ? 2 * DL_GUTTER : 0); setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
   return list; };
+// KEEP: an open room's dice sit 12px below its line's bottom edge (where the hover band ends), and the next room's line starts 12px below the
+// dice, or below the held roll when one is open; the dice to the held roll is 12px too. The 12px is read from what is drawn (the hexes behind a die
+// and a pressed die's ring), not from the dice boxes, which leave uneven room above and below their drawing; a mouse-over ring is left out, so a hover never moves the room.
+const DL_OPEN_GAP = 12;
+const dlEvenOpen = (el) => { const dice = el && el.querySelector('.dvL-dice'); if (!dice) return;
+  const box = dice.getBoundingClientRect(); const drawn = [...dice.querySelectorAll('svg *')].filter((e) => /^(polygon|path|circle|rect)$/.test(e.tagName)
+    && (!e.classList.contains('sl') || e.closest('[aria-pressed="true"]')) && getComputedStyle(e).display !== 'none').map((e) => e.getBoundingClientRect()).filter((r) => r.height > 0);
+  if (!drawn.length) return;
+  el.style.setProperty('--dvL-up', Math.max(0, DL_OPEN_GAP - (Math.min(...drawn.map((r) => r.top)) - box.top)) + 'px');
+  const bottom = box.bottom - parseFloat(getComputedStyle(dice).paddingBottom); // the row's own padding is what this sets, so it is left out of the reading
+  el.style.setProperty('--dvL-down', Math.max(0, DL_OPEN_GAP - (bottom - Math.max(...drawn.map((r) => r.bottom)))) + 'px'); };
 const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
   const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
   const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
   const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { if (on.focus) on.focus(t); setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
   const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name; const fold = 'dvL-room-' + st.i;
+  const openRef = React.useRef(null); React.useLayoutEffect(() => { if (isOpen) dlEvenOpen(openRef.current); }, [isOpen, act]);
   return (
     <div className={'dvL-row' + (isOpen ? ' is-open' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
       <div className={'dvL-top' + (has ? ' is-tap' : '')}>
@@ -228,7 +240,7 @@ const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
             : <i className="dv2-pass dvL-pass" aria-hidden="true" />}
         </div>
       </div>
-      {has && <div id={fold} className="dvL-fold"><EsxFold open={isOpen}>{isOpen && <div className="dvL-open">
+      {has && <div id={fold} className="dvL-fold"><EsxFold open={isOpen}>{isOpen && <div ref={openRef} className="dvL-open">
         <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>
         {sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} live={false} /></div>}
       </div>}</EsxFold></div>}

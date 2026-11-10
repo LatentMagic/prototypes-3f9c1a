@@ -346,8 +346,9 @@ button.dvL-head[aria-expanded="true"] svg { transform: rotate(270deg); color: va
 .dvL-fold > .esx-fold { visibility: hidden; transition: grid-template-rows var(--time-dropdown) var(--ease), opacity var(--time-dropdown) var(--ease), visibility 0s linear var(--time-dropdown); }
 .dvL-fold > .esx-fold.is-open { visibility: visible; transition-delay: 0s; }
 @media (prefers-reduced-motion: reduce) { .dvL-top, button.dvL-head svg, .dvL-tally, .dvL-row.is-open .dvL-tally, .dvL-fold > .esx-fold { transition: none; } }
-/* KEEP: an open room's dice sit as far below the room's name as the next room's number box sits below them (about 18px each side), so the dice read as the room's, not the next one's. */
-.dvL-open { display: grid; gap: 12px; padding: 4px 16px 8px 56px; }
+.dvL-open { display: grid; padding: var(--dvL-up, 12px) 16px 0 56px; }
+.dvL-open > .dvL-dice { padding-bottom: var(--dvL-down, 12px); }
+.dvL-open > .dvL-held { padding-bottom: 12px; }
 /* KEEP: in a list room's held roll the last row (the foe's meter) has no hairline under it: the box's own edge closes it, 12px below, as its top padding is. */
 .dvL-held .dv3-dl > div:last-child { border-bottom: 0; padding-bottom: 0; }
 .dvL-dice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
