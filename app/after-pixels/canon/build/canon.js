@@ -8728,6 +8728,12 @@
         c.setReview({ ed: "hard" });
         c.go("delve", { page: "record" });
       } },
+      { group: "Library", id: "library-delve-failed", label: "Delve in your library, this week’s run fell", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "failed" });
+        c.go("delve", { page: "record" });
+      } },
       { group: "Library", id: "library-word", label: "Guess in your library, with the Pass", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
