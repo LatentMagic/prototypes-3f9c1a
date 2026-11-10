@@ -1184,7 +1184,7 @@
   const GS_DV_WON = [
     ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 14 + 0 = 14 vs 12"],
     ["Room", "Entered the chime run"],
-    ["Strength", "Heavy attack: Cleave", "Miss", "d20 9 + 3 = 12 vs 14", "Struck back: d20s 14 and 6, kept 14 vs 10, hit, 2 damage, HP 21/23"],
+    ["Strength", "Heavy attack: Cleave", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 14", "Struck back: d20s 14 and 6, kept 14 vs 10, hit, 2 damage, HP 21/23"],
     ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 6 vs 10, missed"],
     ["Strength", "Hit", "d20 16 + 3 = 19 vs 12"],
     ["Room", "Entered the warren"],
@@ -1300,7 +1300,7 @@
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
       foeMax: { "snaggle's den": 1, "the shrine cavern": 5 },
-      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩🟥🟩🟩🟩🟩🟩✨🟩🟩🟩"]
+      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟩🟩🟩🟩✨🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
@@ -2924,7 +2924,7 @@
       );
     })), /* @__PURE__ */ React$1.createElement(EsxLatest, { lt })), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && /* @__PURE__ */ React$1.createElement(EsxChips, { grp, sel, pick: (id) => setSel(sel === id ? null : id) })), /* @__PURE__ */ React$1.createElement(EsxReader, { it }));
   };
-  const DL_FOES = { "the chime run": ["Chime-rat", 2], "the warren": ["Warren guard", 4], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 2] };
+  const DL_FOES = { "the chime run": ["Chime-rat", 2], "the warren": ["Warren guard", 4], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 5] };
   const DL_CARRY = 3;
   const DL_HEROES = {
     // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
@@ -3354,7 +3354,7 @@
       { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.needs, text: "Needs " + f.heavy.needs + " to hit, " + f.heavy.dmg + " damage." }
     ];
   };
-  const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
+  const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== "used").length) }, (_, i) => c.gear[i] || null);
   const dlTabGroups = (c, slots, streak) => {
     const carried = c.gear.filter((g) => g.state !== "used").length;
     const free = slots.length - carried;
@@ -3604,13 +3604,13 @@
     DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren beneath Ashford Mill", played: true, end: null };
     DV_ALL = [DV_RUN1];
     DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 8, rooms: 4, ritual: 3 };
-    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 3 };
+    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
     DV_ROOMS = 5;
     DV_NEXT = "Monday 12 October";
     DV_ACH = [
       { k: "untouched", n: "Untouched", how: "Win a run without losing a hit point.", first: true, by: (p) => p.src.end === "won" && !!p.src.unhurt },
       { k: "streak", n: "Hot Streak", how: "Land three hits or successes in a row.", first: true, by: (p) => (p.src.streak || 0) >= 3 },
-      { k: "enemy", n: "Know Thy Enemy", how: "Bring down a foe by what it fears.", first: true },
+      { k: "enemy", n: "Know Thy Enemy", how: "Bring down a foe by what it fears.", first: true, by: (p) => p.src.end === "won" && (p.src.lines || []).some((l) => l[0] === "Weakness") },
       { k: "regular", n: "Regular", how: "Complete four weeks in a row.", of: 4, count: dvEnded },
       { k: "ten", n: "Ten Runs", how: "Complete ten runs.", of: 10, count: dvEnded }
     ];

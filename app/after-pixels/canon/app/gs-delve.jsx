@@ -9,7 +9,7 @@
 // and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three.
 // The foes and their health are invented: the record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence (10 the fighter, 14 the rogue).
 // KEEP: foe names and health are sample. Deployed foes have health 12 to 24, a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts), and a band counts members standing.
-const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 2] };
+const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 5] };
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
@@ -337,6 +337,7 @@ const dlSheet = (s, m) => {
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Gear') { const t = String(l[1]); if (/^Took /.test(t)) find(t.replace(/^Took /, '')); else if (/^Used /.test(t)) find(t.replace(/^Used /, '')).state = 'used'; }
     // KEEP: a key opens its lock and is kept (delve.md, Gear), so it stays in the pack, noted with the lock it opened.
+    // KEEP: this item branch is for a gear weakness such as edition 1's lamp oil; a prepared-feature weakness (other editions) is not gear and must not be added to the pack.
     if (l[0] === 'Weakness') { const g = find(String(l[1])); if (g.kind !== 'key') g.state = 'used'; }
     if (l[0] === 'Lock') { const w = /^Opened (.+) with (.+)$/.exec(String(l[1])); if (w) find(w[2]).note = 'Opened ' + w[1]; }
   });
@@ -381,7 +382,7 @@ const dlFight = (c) => { const f = c.fight; if (!f) return [];
     { key: 'arm', label: 'Armour', num: f.armour, tip: f.armourName, text: 'The ' + f.armourName + ': takes ' + f.armour + ' damage off blows each fight, full again at the next.' },
     { key: 'heavy', label: f.heavy.name, kind: 'Heavy attack', num: f.heavy.needs, text: 'Needs ' + f.heavy.needs + ' to hit, ' + f.heavy.dmg + ' damage.' }]; };
 const DlLabel = ({ name, kind }) => (kind ? <>{name}<small className="dv8-sub">{kind}</small></> : name);
-const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
+const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== 'used').length) }, (_, i) => c.gear[i] || null);
 
 // The tabs and what each opens: Stats and Advantage open the sheet's own cells, Pack, Ability and Fight open rows.
 const dlTabGroups = (c, slots, streak) => {

@@ -14,7 +14,7 @@ let DV_ROOMS;
 let DV_RITUAL;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play
-// (Bryn: a longest streak of three, HP 22 of 23) meets Hot Streak only. Regular and Ten Runs count finished runs, won or not: a play whose status is not live
+// (Bryn: a longest streak of three, HP 22 of 23) meets Hot Streak, and Know Thy Enemy by the weakness strike on its climax foe. Regular and Ten Runs count finished runs, won or not: a play whose status is not live
 // (Config → This edition: Failed or Hard still counts).
 const dvEnded = (ps) => ps.filter((p) => p.status.kind !== 'live');
 export let DV_ACH;
@@ -70,7 +70,7 @@ DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'Octob
 DV_ALL = [DV_RUN1];
 DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 8, rooms: 4, ritual: 3 };
 // streak: the run's longest run of strong hits (its share card: longest streak 3).
-DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 3 };
+DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
 // KEEP: the room count, the threat's name and maximum, and the carry limit come from the run's edition (5 or 6 rooms, threat 12 to 24 deployed), never fixed at 5 and 12.
 DV_ROOMS = 5;
 DV_RITUAL = 12;
@@ -78,7 +78,7 @@ DV_NEXT = 'Monday 12 October';
 DV_ACH = [
   { k: 'untouched', n: 'Untouched', how: 'Win a run without losing a hit point.', first: true, by: (p) => p.src.end === 'won' && !!p.src.unhurt },
   { k: 'streak', n: 'Hot Streak', how: 'Land three hits or successes in a row.', first: true, by: (p) => (p.src.streak || 0) >= 3 },
-  { k: 'enemy', n: 'Know Thy Enemy', how: 'Bring down a foe by what it fears.', first: true },
+  { k: 'enemy', n: 'Know Thy Enemy', how: 'Bring down a foe by what it fears.', first: true, by: (p) => p.src.end === 'won' && (p.src.lines || []).some((l) => l[0] === 'Weakness') },
   { k: 'regular', n: 'Regular', how: 'Complete four weeks in a row.', of: 4, count: dvEnded },
   { k: 'ten', n: 'Ten Runs', how: 'Complete ten runs.', of: 10, count: dvEnded },
 ];
