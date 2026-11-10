@@ -508,7 +508,7 @@ export function initGsDelve() {
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 7,
   sheet: { used: { 'Shield bash': 2 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 14 + 0 = 14 vs 12'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'd20 5 + 1 = 6 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23'], ['Dexterity', 'Hit', 'd20 12 + 1 = 13 vs 12', 'Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23'], ['Dexterity', 'Hit', 'd20 19 + 1 = 20 vs 12'],
+  ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23'], ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23'], ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 5 damage, HP 12/23'], ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 8/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 5 damage, HP 3/23'],
   ['Strength', 'Hit', 'd20 15 + 3 = 18 vs 12', 'Struck back: d20 4 vs 10, missed'], ['Strength', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 18 vs 10, hit, 3 damage, HP 0/23']] };
@@ -518,7 +518,7 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 14 vs 14, hit, 1 damage, HP 19/21'], ['Dexterity', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 7 vs 14, missed'], ['Dexterity', 'Hit', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Struck back: d20 11 vs 14, missed'], ['Dexterity', 'Miss', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Struck back: d20 15 vs 14, hit, 3 damage, HP 16/21'],
-  ['Strength', 'Hit', 'd20 12 + 0 = 12 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
+  ['Dexterity', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
   ['Dexterity', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 13 vs 14, missed'], ['Dexterity', 'Hit', 'Natural 20', 'd20 20 + 3 = 23 vs 12', 'Struck back: d20 8 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12'],
