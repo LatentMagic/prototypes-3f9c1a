@@ -940,14 +940,14 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell { grid-template-rows: 39px auto; }
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell .dv7-fig > svg, .dv8.is-3b .dv8-adv .dv5-insw > svg { width: 36px; height: auto; }
 .dv8.is-3b .dv7-cell .dv4-sx text { font-size: 18px; }
-/* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length. The label column is as wide as "Hit points" and no wider unless a light's name needs it, up to 8.5em, so "The watchman's" fits on one line; a longer name wraps to a second line and never a third, breaking only between words.
-   KEEP: labels move above their bars once a bar beside the longest label would fall under ≈100px (a meters block 250px wide or less): every meter's label and count then sit on one line over a bar that runs the full width, the same for all three meters so the sheet never mixes the two layouts. */
+/* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length. A label is always one line and never wraps; the label column is as wide as the longest label, so "The watchman's round" (20 characters, the longest light name an edition may give; the cap itself is a ticket item) sits whole beside its bar.
+   KEEP: all labels move above their bars once a bar beside the longest allowed light name (≈20 characters) would fall under ≈100px, a meters block 282px wide or less (that name 132px, the count 35px, the gaps 12px, the bar 100px): every meter's label and count then sit on one line over a bar that runs the full width. One switch for every edition, the same for all three meters so the sheet never mixes the two layouts. In the one-row header the meters block is at least 316px wide so the labels stay beside the bars. */
 .dv8-meters { container: dvm / inline-size; display: grid !important; align-content: center; justify-items: stretch !important; }
-.dv8-mgrid { font-size: 13px; display: grid; grid-template-columns: fit-content(8.5em) minmax(32px, 1fr) max-content; gap: 12px 6px; align-items: center; }
+.dv8-mgrid { font-size: 13px; display: grid; grid-template-columns: max-content minmax(32px, 1fr) max-content; gap: 12px 6px; align-items: center; }
 .dv8-meters .dv6-bar { display: contents; font-size: 13px; }
-.dv8-meters .dv6-bar > span { line-height: 1.2; }
+.dv8-meters .dv6-bar > span { line-height: 1.2; white-space: nowrap; }
 .dv8-meters .dv6-bar small { text-align: left; }
-@container dvm (max-width: 250px) {
+@container dvm (max-width: 282px) {
   .dv8-mgrid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .dv8-meters .dv6-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; row-gap: 2px; align-items: center; }
   .dv8-meters .dv6-bar > span { grid-column: 1; grid-row: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -997,7 +997,7 @@ button.mcp-cb-ent{cursor:pointer}
   .dl-head { display: contents; }
   .dl-fold { display: none; }
   .dv8.is-3b .dv7-grp.is-hero { flex: 0 0 auto; }
-  .dv8.is-3b .dv8-meters { flex: 1 1 280px; min-width: 128px; width: auto; border-left: 1px solid var(--line); }
+  .dv8.is-3b .dv8-meters { flex: 1 1 316px; min-width: 316px; width: auto; border-left: 1px solid var(--line); }
   .dl-tabwrap > .esx-fold { grid-template-rows: 1fr; opacity: 1; visibility: visible; flex: 100 1 0; min-width: 0; max-width: 756px; }
   .dv8.is-3b .dl-tabgrp { padding: 0 0 0 14px; border-left: 1px solid var(--line); justify-items: stretch; align-content: center; }
   .dv8.is-3b .esx-cards.dl-tabs { --f: clamp(8px, calc(8px + (var(--dlw) - 680px) / 60), 10px); grid-template-columns: repeat(var(--dl-tabs), minmax(calc(var(--f) * 6.27 + 8px), 140px)); gap: clamp(4px, calc((var(--dlw) - 560px) / 30), 10px); }
