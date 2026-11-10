@@ -6640,7 +6640,7 @@
       edKey: "dv-r0",
       __dated: true,
       date: pzLong(PH_MORE.delve.at) + ", " + phTime(PH_MORE.delve.at),
-      figures: ["Threat 2/12", "4 rolls", "HP 20/21"],
+      figures: ["Threat 2/12", "1 roll", "HP 21/21"],
       threat: 2,
       setting: "The Drowned Chapel under Fenwick Marsh",
       tracks: { progress: 2, rooms: 5, threat: 2, threatMax: 12 },
