@@ -328,9 +328,9 @@ const GS_HW_PLAY = [
   ['When it ends', 'Your result is saved. Share it or pick another.'],
 ];
 
-// ---- The page's top, under trial (the owner, 2026-11-10: "this is the first thing you land on ... this feels bland"). ----
+// ---- The page's top, under trial: the first thing a visitor lands on, so it shows the games rather than describing them. ----
 // Four versions of one idea, a band of game covers with the phrase to copy on it, picked by ?top=1..4 (default 1);
-// ?top=0 is the Overview card it would replace. None has links: the owner, "Arguably it doesn't need links".
+// ?top=0 is the Overview card it would replace. None has links: Setup follows straight after.
 const gsTopV = () => { const n = parseInt(new URLSearchParams(location.search).get('top') || '1', 10); return n >= 0 && n <= 4 ? n : 1; };
 const GS_TOP_ART = ['word', 'murder', 'delve', 'groups', 'escape', 'casebook', 'barrow', 'hunter', 'derelict'];
 // KEEP: the band is one row of square covers, as many as fit; the row is cut at its edge, never squeezed or wrapped.
@@ -359,9 +359,10 @@ const GsTop = ({ v }) => (
 );
 export const GsConnect = () => {
   const gs = useGs();
+  const top = gsTopV();
   return (
     <main className="gs-wrap gs-main">
-      {gsTopV() === 0 ? (
+      {top === 0 ? (
       <div className="hw-top">
           <header className="gs-stack-md hw-head">
             <h1 className="gs-h1">How it works</h1>
@@ -377,7 +378,7 @@ export const GsConnect = () => {
             </DS.Card>
           </nav>
         </div>
-      ) : <GsTop v={gsTopV()} />}
+      ) : <GsTop v={top} />}
 
       <section id="hw-setup" className="hw-sec">
         <GsSetup />
