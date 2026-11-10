@@ -30,7 +30,7 @@ const DL_HEROES = {
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
     abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 14, armour: 1, armourName: 'leather jerkin', heavy: { name: 'Flurry', needs: 13, dmg: 6 } },
-    gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Rope', kind: 'key', does: '' }] },
+    gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Coil of rope', kind: 'key', does: '' }] },
 };
 const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
 
