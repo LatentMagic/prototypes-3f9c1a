@@ -99,11 +99,14 @@ export const GsHowLink = ({ label }) => { const gs = useGs(); return <button typ
 // KEEP: the text (the address, a message to send, a command) scrolls sideways under a finger so the whole of it can be read;
 // focus or a tap selects it for copying by hand. A box, not an input: an input's select-on-focus stops the swipe.
 const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
+// KEEP: a copy box's text breaks only at its spaces and after a "/": each piece between is kept whole (nowrap), so a "--flag" or
+// "after-pixels" never splits at its hyphen. The text itself is unchanged, so copying it by hand gets it as it is.
+const gsBreakable = (text) => text.split(/( )/).map((tok, i) => (tok === ' ' ? ' ' : tok.split(/(?<=\/)/).map((seg, j) => <React.Fragment key={i + '.' + j}>{j > 0 && <wbr />}<span className="hw-nb">{seg}</span></React.Fragment>)));
 const GsCopyBox = ({ text, label }) => {
   const [done, setDone] = React.useState(false);
   return (
     <div className="gs-copy">
-      <div className="mcp-in gs-num-text gs-copy-addr" role="textbox" aria-readonly="true" tabIndex={0} aria-label={label} onFocus={(e) => gsSelectAll(e.currentTarget)} onClick={(e) => gsSelectAll(e.currentTarget)}>{text}</div>
+      <div className="mcp-in gs-num-text gs-copy-addr" role="textbox" aria-readonly="true" tabIndex={0} aria-label={label} onFocus={(e) => gsSelectAll(e.currentTarget)} onClick={(e) => gsSelectAll(e.currentTarget)}><span className="hw-wrapbox">{gsBreakable(text)}</span></div>
       <DS.Button variant="secondary" done={done} doneLabel="Copied" onClick={() => { lbCopy([text]); setDone(true); setTimeout(() => setDone(false), 2400); }}>Copy</DS.Button>
     </div>
   );
