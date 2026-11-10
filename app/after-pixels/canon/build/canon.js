@@ -3112,6 +3112,7 @@
         if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
       }
       if ((hazard || obstacle) && graded && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
+      if (fo && !hazard && r.fight && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
       if (fo && !hazard && (!r.action || r.action === "Heavy attack")) {
         const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
         const dmg = (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1);
@@ -3153,7 +3154,7 @@
   };
   const DlFoeMeter = ({ mt }) => mt.members ? /* @__PURE__ */ React$1.createElement("div", { className: "dv6-band" }, /* @__PURE__ */ React$1.createElement("b", null, mt.name), " ", /* @__PURE__ */ React$1.createElement("span", null, mt.standing, " of ", mt.members, " standing")) : /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of });
   const dlBeat = (r) => r.downed ? r.downed.name + " beaten" : r.passed ? r.passed + " passed" : "";
-  const dlCost = (r) => r.foe ? "" : [r.harm > 0 && "Lost " + r.harm + " HP", r.threat > 0 && "Threat +" + r.threat].filter(Boolean).join(" · ");
+  const dlCost = (r) => [r.harm > 0 && !r.foe && "Lost " + r.harm + " HP", r.threat > 0 && "Threat +" + r.threat].filter(Boolean).join(" · ");
   const DlFact = ({ label, children, tone }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvS-fact" }, /* @__PURE__ */ React$1.createElement("dt", null, label), /* @__PURE__ */ React$1.createElement("dd", { className: tone ? "is-" + tone : void 0 }, children));
   const DlHeldStacked = ({ r, x, live }) => {
     const tcls = r.fumble ? "fumble" : r.tier;
@@ -3162,7 +3163,7 @@
       return k.length ? /* @__PURE__ */ React$1.createElement("div", { className: "dvS-grp" }, k.map((n, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, n))) : null;
     };
     const mt = dlMeterOf(r);
-    const foe = mt && /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line is-foe" }, r.foe && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvS-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-meter" + (mt.members ? " is-band" : "") }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })));
+    const foe = mt && /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line is-foe" }, r.foe && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvS-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))), r.foe && dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r)), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-meter" + (mt.members ? " is-band" : "") }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })));
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-stacked" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvS-head" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 52, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? dlKindSay(r.what) : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r)))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line" }, grp(
       /* @__PURE__ */ React$1.createElement(DlFact, { label: "Room" }, dlRoomSaid(r)),
       r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Used" }, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does))),
@@ -3170,7 +3171,7 @@
     ), grp(
       !r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Roll" }, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc)),
       !r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Outcome", tone: tcls }, dlGrade(r)),
-      dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r))
+      !r.foe && dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r))
     )), foe))));
   };
   const DlHeld = ({ m, act, live = true, beside }) => {

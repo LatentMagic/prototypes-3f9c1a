@@ -134,9 +134,10 @@ const dlBuild = (s) => {
       foeHp[fo.k] = Math.max(0, left - (r.tier === 'strong' ? (r.crit ? 4 : 2) : r.tier === 'weak' ? 1 : 0));
       r.meter = { name: fo.f[0], health: foeHp[fo.k], max }; if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
     }
-    // A failed attempt on an obstacle or a hazard adds 1 threat, 2 on a natural 1 (scene-game.ts foeOutcomeOf).
+    // A missed attack on a foe adds 1 threat too, 2 on a natural 1, drawn as the Cost under the foe's roll back; a failed attempt on an obstacle or a hazard adds 1 threat, 2 on a natural 1 (scene-game.ts foeOutcomeOf).
     if ((hazard || obstacle) && graded && r.tier === 'miss') r.threat = r.fumble ? 2 : 1;
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20); a band takes the hero's damage (DL_HIT). Its roll back, where the line holds one, rides on the roll.
+    if (fo && !hazard && r.fight && r.tier === 'miss') r.threat = r.fumble ? 2 : 1;
     if (fo && !hazard && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const dmg = (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1); foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - dmg); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
       if (r.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) }; } }
     run = r.tier === 'strong' ? run + 1 : 0; if (fo && !hazard && foeHp[fo.k] === 0) run = 0;
@@ -187,7 +188,7 @@ const DlFoeMeter = ({ mt }) => (mt.members
 // The line under the heading: the foe or hazard a turn took to 0 is beaten, and an obstacle a turn got past is passed.
 const dlBeat = (r) => (r.downed ? r.downed.name + ' beaten' : r.passed ? r.passed + ' passed' : '');
 // The Cost fact lists each part in one form (gate 19): the hero's lost health, and the threat a failed hazard turn added. A foe's turn shows its harm in the foe roll row instead.
-const dlCost = (r) => (r.foe ? '' : [r.harm > 0 && 'Lost ' + r.harm + ' HP', r.threat > 0 && 'Threat +' + r.threat].filter(Boolean).join(' · '));
+const dlCost = (r) => [r.harm > 0 && !r.foe && 'Lost ' + r.harm + ' HP', r.threat > 0 && 'Threat +' + r.threat].filter(Boolean).join(' · ');
 const DlFact = ({ label, children, tone }) => (<div className="dvS-fact"><dt>{label}</dt><dd className={tone ? 'is-' + tone : undefined}>{children}</dd></div>);
 const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r.tier;
   const grp = (...c) => { const k = c.filter(Boolean); return k.length ? <div className="dvS-grp">{k.map((n, i) => <React.Fragment key={i}>{n}</React.Fragment>)}</div> : null; };
@@ -195,6 +196,7 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
   const foe = mt && (
     <dl className="dvS-line is-foe">
       {r.foe && <DlFact label="Foe roll"><span className="dvS-foe"><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></span></DlFact>}
+      {r.foe && dlCost(r) && <DlFact label="Cost">{dlCost(r)}</DlFact>}
       <div className={'dvS-meter' + (mt.members ? ' is-band' : '')}><DlFoeMeter mt={mt} /></div>
     </dl>);
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-stacked' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
@@ -208,7 +210,7 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
             !r.use && r.action && <DlFact label="Action">{r.action}{r.move && <> <span>{r.move}</span></>}</DlFact>)}
           {grp(!r.use && <DlFact label="Roll">{r.stat} {r.total} <span>vs {r.dc}</span></DlFact>,
             !r.use && <DlFact label="Outcome" tone={tcls}>{dlGrade(r)}</DlFact>,
-            dlCost(r) && <DlFact label="Cost">{dlCost(r)}</DlFact>)}
+            !r.foe && dlCost(r) && <DlFact label="Cost">{dlCost(r)}</DlFact>)}
         </dl>
         {foe}
       </div></div></div></div>); };
