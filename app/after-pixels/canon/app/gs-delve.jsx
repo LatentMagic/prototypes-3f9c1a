@@ -181,14 +181,14 @@ const useDlBeside = (ref, rooms) => { const [beside, setBeside] = React.useState
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref, rooms]);
   return beside; };
 const dlMainClass = (beside) => 'dvE-main' + (beside ? ' is-beside' : '');
-const DlRoute = ({ m, act, on, beside }) => { const sel = act ? m.turns[act - 1].stop : null; const [ref, named] = useDlNamed(m.stops.length);
+const DlRoute = ({ m, act, on, beside, lit }) => { const sel = act ? m.turns[act - 1].stop : null; const [ref, named] = useDlNamed(m.stops.length);
   return (<div className={dlMainClass(beside)}>
     <div ref={ref} className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': m.stops.length }} aria-label="The way you went">{m.stops.map((st) => (
       <div key={st.i} className={'dvA2-stop' + (sel === st.i ? ' is-on' : '')}>
         <DlStopHead st={st} named={named} />
         <div className="dvA2-dice">{st.turns.length ? st.turns.map((r) => (!r.use && m.mom[r.n]
-          ? <span key={r.t} className="dvE-mom"><DlDieBtn r={r} act={act} on={on} size={52} /></span>
-          : <DlDieBtn key={r.t} r={r} act={act} on={on} size={30} />)) : <i className="dv2-pass" aria-label="No rolls" />}</div>
+          ? <span key={r.t} className="dvE-mom"><DlDieBtn r={r} act={act} lit={lit} on={on} size={52} /></span>
+          : <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={30} />)) : <i className="dv2-pass" aria-label="No rolls" />}</div>
       </div>))}</div>
     <div className="dvE-side"><DlHeld m={m} act={act} beside={beside} /></div>
   </div>); };
@@ -270,17 +270,18 @@ const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The wa
     </div>
     {st.i === 0 && <div className="dvL-open"><div className="dvL-held"><DlWait /></div></div>}
   </div>))}</div>);
-// KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
-// now card), else the last roll. In the list a hover only rings the die: the held roll sits under the pressed room only.
+// KEEP: a press holds a roll and fills the held roll; it opens on the roll the route names (a die pressed on the now card), else the
+// last roll. Beside the route a hover also fills the held roll. Above the route and in the list a hover only rings the die: a held roll
+// that follows the pointer changes the box's height, moves the route and the die from under the pointer, and the route flickers.
 const DlCard = ({ s, m, roll }) => {
   const ref = React.useRef(null); const list = useDlList(ref); const rooms = m.turns.length ? m.stops.length : (s.tracks && s.tracks.rooms) || 5; const beside = useDlBeside(ref, rooms);
   const [sel, setSel] = React.useState(() => (roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
   const on = React.useMemo(() => ({ sel: setSel, hov: setHov }), []);
-  const act = list ? sel : hov || sel;
+  const stacked = list || !beside; const act = stacked ? sel : hov || sel;
   if (!m.turns.length) {
     return (<section ref={ref} className={'dv2 dv7r is-3' + (list ? ' is-list' : '')} aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyRoute rooms={rooms} beside={beside} />}</section>); }
   return (<section ref={ref} className={'dv2 dv7r is-3' + (list ? ' is-list' : '')} aria-label="How the run went"><DlResult s={s} m={m} />
-    {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} beside={beside} />}</section>);
+    {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} beside={beside} lit={stacked ? hov : null} />}</section>);
 };
 
 // ---- The character sheet, read from the hero's sheet and the record's lines: gear taken, used, or a key that opened its lock. ----

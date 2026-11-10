@@ -3074,7 +3074,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @media (max-width: 760px) { .pgh-body:not(.is-v2) { grid-template-columns: minmax(0, 1fr); } }
 
 /* 2: one layout at every stacked width (no window query). Head column is one value, --pgh-head. Tokens and existing parts only. */
-.pgh-held.is-v2 { --pgh-head: 200px; }
+/* the head column is the die (52), its gap (12) and 104px of text: the widest one-line kicker the runs have is "Closest call" (100px), so "The winning blow" wraps to two lines and no head text is wider than the column */
+.pgh-held.is-v2 { --pgh-head: calc(52px + 12px + 104px); }
 /* the doubled class beats canon's `.dvE-main:not(.is-beside) .dv3-held` (12px) whatever the import order */
 .dvE-main:not(.is-beside) .dv3-held.pgh-held.is-v2 { padding: 16px; }
 .dvE-main:not(.is-beside) .pgh-held.is-v2 .dv3-mk { top: 16px; right: 16px; }
