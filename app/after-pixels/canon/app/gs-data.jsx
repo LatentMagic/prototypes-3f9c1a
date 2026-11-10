@@ -137,9 +137,9 @@ export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin cha
 const GS_DV_WON = [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 17 + 0 = 17 vs 12'],
   ['Room', 'Entered the chime run'],
-  ['Strength', 'Heavy attack: Cleave', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 14', 'Struck back: d20s 14 and 6, kept 14 vs 10, hit, 2 damage, HP 21/23'],
-  ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 6 vs 10, missed'],
-  ['Strength', 'Hit', 'd20 16 + 3 = 19 vs 12'],
+  ['Strength', 'Failure', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'HP 21/23'],
+  ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 11 + 1 = 12 vs 12'],
+  ['Strength', 'Success', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23'],
@@ -160,8 +160,8 @@ const GS_DV_WON = [
 ];
 const GS_DV_LIVE = [
   ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Hit', 'd20 13 + 3 = 16 vs 12', 'Struck back: d20 7 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20 16 + 3 = 19 vs 12'],
+  ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 13 + 3 = 16 vs 12'],
+  ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 3 vs 14, missed'],
@@ -252,7 +252,7 @@ export const GS_SESSIONS = {
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
     setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, lightName: 'the torch', light: 1, lightMax: 6, sheet: { used: { 'Shield bash': 1 }, insp: true },
     share: 'Elsie rescued', foeMax: { "snaggle's den": 1, 'the shrine cavern': 5 },
-    shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '🟩💀🟩🟩🟩🟩🟩✨🟩🟩🟩'],
+    shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '🟩💀🟨🟩🟩🟩🟩✨🟩🟩🟩'],
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
