@@ -8,10 +8,9 @@
 // SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
 // and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three.
 // The record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence (10 the fighter, 14 the rogue).
-// The warren's foe is deployed (content/delve/1.v2.json, room warren): The goblin sentries, a band of 3 on 12 health, each sentry worth 4. The others are invented.
+// The warren's foe is deployed (content/delve/1.v2.json): The goblin sentries, a band of 3 on 12 health. Snaggle and Grizzletooth are deployed names with sample health; the Chime-rat is invented: deployed, the chime run holds an obstacle, the bone chimes, which never strikes back and shows no health.
 // A foe is [name, health, members]; a band has members.
-// KEEP: the invented foes' names and health are sample, and a hit on one takes 1. Deployed foes have health 12 to 24 and a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts),
-// which the band takes here, so its sample hits follow the deployed count of members standing.
+// KEEP: sample health only. Deployed foes have health 12 to 24, a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts), and a weakness strike takes the edition's blow (8 for Grizzletooth); the band takes the hero's real damage here, so its count of members standing follows deployed.
 const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['The goblin sentries', 12, 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 5] };
 const DL_HIT = { 'Bryn the Fighter': 5, 'Wren the Rogue': 4 };
 // How many of a band stand at this health, out of the health it began at (scene-game.ts standingAt): ceil(health x members / max); 0 once beaten.
