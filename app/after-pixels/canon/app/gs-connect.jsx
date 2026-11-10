@@ -57,7 +57,10 @@ const GsAiLogo = ({ ai, size = 20 }) => (
   // The wing is about twice as tall as it is wide: it takes the logo's height.
   : ai === 'hermes' ? gsMaskLogo('assets/how-it-works/hermes-agent-wing.svg', Math.round(size / 2), size)
   // Grok's and Muse's marks are the owners' files, shown as they are, never recoloured or redrawn.
-  : ai === 'grok' ? <img className="hw-img hw-img-grok" src="assets/how-it-works/grok-logomark-light.svg" alt="" width={size} height={size} />
+  : ai === 'grok' ? <>
+      <img className="hw-img hw-img-grok is-off" src="assets/how-it-works/grok-logomark-light.svg" alt="" width={size} height={size} />
+      <img className="hw-img hw-img-grok is-on" src="assets/how-it-works/grok-logomark-dark.svg" alt="" width={size} height={size} />
+    </>
   : <img className="hw-img" src="assets/how-it-works/muse-meta-ai.svg" alt="" width={size} height={size} />
 );
 

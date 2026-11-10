@@ -605,13 +605,13 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-say.is-copy::after{content:"";position:absolute;left:0;right:0;top:calc(50% - 22px);height:44px}
 .mcp-say-in{display:inline-grid;max-width:100%}
 .mcp-say-in>span{grid-area:1/1;transition:opacity var(--time-swap) var(--ease),transform var(--time-swap) var(--ease)}
-.mcp-say-in .b{display:inline-flex;align-items:center;justify-content:center;gap:.3em;opacity:0;transform:translateY(6px);white-space:nowrap}
+.mcp-say-in .b{display:inline-flex;align-items:center;justify-content:center;gap:.3em;white-space:nowrap;animation:mcp-say-rise var(--time-swap) var(--ease) both}
+@keyframes mcp-say-rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .mcp-say-in .b .mcp-ico{width:.8em!important;height:.8em!important}
 .mcp-say.is-copy.is-done .mcp-say-in .a{opacity:0;transform:translateY(-6px)}
-.mcp-say.is-copy.is-done .mcp-say-in .b{opacity:1;transform:none}
 .mcp-say-ico{display:inline-block;width:.8em;height:.8em;margin-inline-start:.45em;vertical-align:-.05em;opacity:.7;transition:opacity var(--time-press) var(--ease)}
 .mcp-say-live{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media (hover:hover){.mcp-say.is-copy:hover{background:color-mix(in srgb,var(--off-white) 87%,var(--page))}.mcp-say.is-copy:hover .mcp-say-ico{opacity:1}}
 .mcp-say.is-copy:active{background:color-mix(in srgb,var(--off-white) 74%,var(--page));transform:scale(.97)}
 .mcp-say.is-copy:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.mcp-say.is-copy,.mcp-say-in>span,.mcp-say-ico{transition:none}}
+@media (prefers-reduced-motion:reduce){.mcp-say.is-copy,.mcp-say-in>span,.mcp-say-ico{transition:none}.mcp-say-in .b{animation:none}}

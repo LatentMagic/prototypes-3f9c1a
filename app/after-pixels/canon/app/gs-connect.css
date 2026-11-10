@@ -48,8 +48,11 @@
 @media (hover: hover) { .hw-app:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
 @container mcp-crow (max-width: 420px) { .hw-app { min-height: 56px; padding: 0; } .hw-app > span:not(.hw-mask) { display: none; } }
 .hw-img { display: block; flex: none; object-fit: contain; }
-/* KEEP: Grok's mark is a white file for a dark page, so on the picked tile (off-white fill) it is shown inverted to stay visible; the file itself is unaltered. */
-.hw-app[aria-pressed="true"] .hw-img-grok { filter: invert(1); }
+/* Grok's mark comes as two files: the light mark on the page, the dark mark on the picked (off-white) tile. */
+.hw-img-grok.is-on { display: none; }
+.hw-app[aria-pressed="true"] .hw-img-grok.is-on { display: block; }
+.hw-app[aria-pressed="true"] .hw-img-grok.is-off { display: none; }
+.hw-app[aria-pressed="true"] 
 /* A logo kept as its own file, painted in the tile's text colour through its shape. */
 .hw-mask { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
 
@@ -70,16 +73,9 @@
 }
 .hw-eyebrow { text-transform: uppercase; margin: 0; }
 .hw-pick-body { display: grid; gap: 16px; align-items: start; }
-/* KEEP: from a 720px page the card is two parts split by a 1px line: the title, the switch, the thing to copy and the help line
-   (at the foot) on the left, the steps from the card's top on the right, so neither part has empty space beside or under it. */
-@container gs (min-width: 720px) {
-  .hw-pick-card.mcp-card { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); grid-template-rows: auto auto 1fr; grid-template-areas: "head steps" "copy steps" "help steps"; column-gap: 24px; row-gap: 16px; }
-  .hw-pick-body { display: contents; }
-  .hw-pick-head { grid-area: head; }
-  .hw-pick-copy { grid-area: copy; }
-  .hw-pick-card .gs-steps { grid-area: steps; border-left: 1px solid var(--line); padding-left: 24px; align-content: start; }
-  .hw-help { grid-area: help; align-self: end; }
-}
+/* KEEP: the card is one column at every width: the title, the switch, the thing to copy full card width, the steps, then the help
+   line straight after them. Nothing in a copy box is cut: its text wraps inside the box instead of scrolling or ending in an ellipsis. */
+.hw-pick-card .gs-copy-addr { height: auto; min-height: 48px; padding-block: 10px; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; overflow-x: visible; cursor: text; }
 @media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
 /* Start: one static card in two parts split by a 1px line, side by side from a 640px window; the typed line is the card's centre piece.
