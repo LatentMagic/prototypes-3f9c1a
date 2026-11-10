@@ -208,7 +208,7 @@
 .dv8.is-3b .dv8-stats .dv7-cells { gap: 2px; }
 /* KEEP: the stat dice and Advantage's inspiration hex are the design system's die at its default 36px, at every width, so they sit in scale with the rows Pack, Ability and Fight open; the cell's figure row is the hex's 39px height. */
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell { grid-template-rows: 39px auto; }
-.dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell .dv7-fig > svg { width: 36px; }
+.dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell .dv7-fig > svg, .dv8.is-3b .dv8-adv .dv5-insw > svg { width: 36px; height: auto; }
 .dv8.is-3b .dv7-cell .dv4-sx text { font-size: 18px; }
 /* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length; labels never wrap. */
 .dv8-meters { display: grid !important; grid-template-columns: max-content minmax(32px, 1fr) max-content; gap: 12px 6px; align-content: center; align-items: center; justify-items: stretch !important; }
@@ -273,18 +273,19 @@
   .dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: repeat(var(--dl-tabs), minmax(0, 1fr)); gap: clamp(4px, calc(var(--dlw) * .023), 10px); }
   .dv8.is-3b .esx-card.dl-tab { height: clamp(64px, calc(var(--dlw) * .182), 80px); }
   .dv8.is-3b .dl-tab-w { font-size: clamp(8px, calc(var(--dlw) / 44), 10px); letter-spacing: clamp(0px, calc((var(--dlw) - 352px) / 120), .07em); }
-  /* A folded sheet shows no panel, so a panel left open by the one-row layout never shows for a frame. */
-  .dv8.is-3b:not(.is-unfolded) .dv7-band > .esx-fold { display: none; }
+  /* A folded sheet shows no panel, so a panel left open by the one-row layout never shows for a frame. A tap that folds it lets the panel close with the tabs, then hides it. */
+  .dv8.is-3b:not(.is-unfolded):not(.is-tap) .dv7-band > .esx-fold { display: none; }
 }
-/* KEEP: from a sheet 404px wide the name sits in its own cell beside the bars, centred between the card's edge and the divider, so the space either side of it is the same. The cell is 112px at 404 (the old 96px plus the 16px gutter now inside it) and grows .35px for each px of sheet up to 216px, so the bars never run long. */
-@container dv4 (min-width: calc(404px + 32px)) and (max-width: calc(795.98px + 32px)) {
+/* KEEP: from a sheet 610px wide the name sits in its own cell beside the bars, centred between the card's edge and the divider, so the space either side of it is the same. The cell is 184px at 610 (152px of name, the gutter and the divider's 16px either side) and grows .35px for each px of sheet up to 216px, so the bars never run long and a name of 11 letters, "Thorgrimson", fits on one line at 22px. A longer name wraps between words, and a word too long for the cell breaks inside it, balanced across the lines. */
+@container dv4 (min-width: calc(610px + 32px)) and (max-width: calc(795.98px + 32px)) {
   .dl-head { display: flex; align-items: stretch; }
-  .dv8.is-3b .dv7-grp.is-hero { flex: 0 0 calc(clamp(96px, calc(96px + (var(--dlw) - 404px) * .35), 200px) + 16px); box-sizing: border-box; padding: 0 16px; justify-items: center; text-align: center; }
+  .dv8.is-3b .dv7-grp.is-hero { flex: 0 0 calc(clamp(168px, calc(168px + (var(--dlw) - 610px) * .35), 200px) + 16px); box-sizing: border-box; padding: 0 16px; justify-items: center; text-align: center; }
   .dv8.is-3b .dv7-hero { justify-items: center; text-align: center; }
+  .dv8.is-3b .dv7-hero b { white-space: normal; text-align: center; text-wrap: balance; overflow-wrap: anywhere; }
   .dv8.is-3b .dv8-meters { flex: 1 1 0; min-width: 0; padding: 0 0 0 16px; border-left: 1px solid var(--line); }
 }
 /* From 340.02px to 403.98px: the name and class on one line, a hairline, then the bars; the chevron is centred on the header in the 64px kept clear on its right, so it never reaches the bars. */
-@container dv4 (max-width: calc(403.98px + 32px)) {
+@container dv4 (max-width: calc(609.98px + 32px)) {
   .dl-head { display: block; padding-left: 16px; }
   .dv8.is-3b .dv7-grp.is-hero { padding: 0 0 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line); }
   .dv8.is-3b .dv7-hero { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
@@ -324,7 +325,7 @@
 .dl-tab-w { font: 600 var(--size-2xs)/1 var(--font-text); text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .dl-tab.is-open .dl-tab-w { color: var(--text); }
 /* The open tab's panel, under the row. */
-/* KEEP: a panel's last row ends 24px above the card's edge (its own 12px and the panel's 12px), the same 24px that separates its rows, so no extra space sits under an open panel. */
+/* KEEP: in a Pack, Ability or Fight panel the last row ends 24px above the card's edge (its own 12px and the panel's 12px), the same 24px that separates its rows, so no extra space sits under it. Stats and Advantage show their cells instead, which end 12px above the edge. */
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
 /* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
