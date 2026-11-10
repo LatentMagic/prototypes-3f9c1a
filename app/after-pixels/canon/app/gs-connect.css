@@ -29,7 +29,7 @@
 @container gs (min-width: 900px) {
   .hw-over-card { padding: 0; }
   .hw-over-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .hw-over-list > li { display: grid; align-items: normal; align-content: space-between; justify-items: start; gap: 4px; padding: 16px 24px 8px; container-type: inline-size; }
+  .hw-over-list > li { display: grid; grid-template-columns: minmax(0, 1fr); align-items: normal; align-content: space-between; justify-items: start; gap: 4px; padding: 16px 24px 8px; container-type: inline-size; }
   .hw-over-go { justify-self: end; margin-left: 0; }
   .hw-over-list > li + li { border-top: 0; border-left: 1px solid var(--line); }
   .hw-over-line { font-size: clamp(16px, 6.4cqi, 20px); }
