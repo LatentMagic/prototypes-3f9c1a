@@ -3540,6 +3540,7 @@
     GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
   };
   function initGsDelve() {
+    GS_SESSIONS["delve-replay"] = { ...GS_SESSIONS.delve, replay: true };
     GS_SESSIONS["delve-fallen"] = {
       ...GS_SESSIONS.delve,
       loss: true,
@@ -7411,7 +7412,7 @@
   const gsHeadGame = (s) => s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
   const gsHeadTitle = (s, ed) => ed ? ed.title || "No. " + ed.n : s.title || (s.number != null ? "No. " + s.number : null);
-  const GsSessHead = ({ art, label, title, actions }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React$1.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-acts" }, actions)));
+  const GsSessHead = ({ art, label, title, actions, replay }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React$1.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-text" }, replay ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-labelrow" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement(DS.StatusTag, { tone: "idle", className: "gs-sess-mark" }, "Replay")) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-acts" }, actions)));
   const GsSessResult = ({ s, title }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, gsOr(s.result)), (s.figures || []).filter((f) => f !== title).length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "gs-figs" }, s.figures.filter((f) => f !== title).map((f, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "gs-fig" }, gsOr(f)))));
   const gsEdMine = (gid) => {
     const c = PZ[gid];
@@ -7470,7 +7471,7 @@
     const title = gsHeadTitle(s, ed);
     const label = gsHeadGame(s) + " · " + gsHeadDay(gsSessDate(s));
     const art = s.art;
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, replay: !!s.replay, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
   };
   const GsSessionGone = ({ gid }) => {
     const gs = useGs();
@@ -8713,6 +8714,11 @@
         c.setConnected(true);
         c.setReview({ week: "live" });
         c.go("session", { id: "escape-live" });
+      } },
+      { group: "Screens", id: "session-delve-replay", label: "7. Session page: Delve, a replay of the won run (Replay tag)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-replay" });
       } },
       { group: "Screens", id: "session-delve-fallen", label: "7. Session page: Delve, a run that fell", stage: (c) => {
         c.setView("pass");

@@ -561,6 +561,8 @@ export const registerDelve = () => {
 export function initGsDelve() {
 // ---- Sample plays beside the seeded ones, staged by States: a run that fell, and the hard play built to delve.md's limits
 // (every room, going back seven times, twelve stops in all, a natural 1 and 20, two-dice rolls, a lock forced on the third try, ended overrun). ----
+// A replay of the won run: the same play, marked so the shared session head carries the Replay tag.
+GS_SESSIONS['delve-replay'] = { ...GS_SESSIONS.delve, replay: true };
 GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, threat: 6, light: 4,
   figures: ['Threat 6/12', '8 rolls', 'HP 0/23'], tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Partial success', 'd20 14 + 0 = 14 vs 12', 'HP 21/23'], ['Room', 'Entered the chime run'],

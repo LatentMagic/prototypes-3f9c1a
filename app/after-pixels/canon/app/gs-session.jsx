@@ -120,11 +120,14 @@ const gsHeadGame = (s) => (s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.g
 const gsHeadDay = (d) => (typeof d === 'string' ? gsShortDay(d.split(',')[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, '$1') : d);
 // The edition as its game names it: a room's name, or a number ("No. 34"). Falls back to the session's own title (a 36,000 Summers Ago day), then its number.
 const gsHeadTitle = (s, ed) => (ed ? (ed.title || 'No. ' + ed.n) : s.title || (s.number != null ? 'No. ' + s.number : null));
-const GsSessHead = ({ art, label, title, actions }) => (
+// A replay (s.replay) carries the design system's status tag, "Replay", on the label line; the head is the same for every game, so any game's replay gets it.
+const GsSessHead = ({ art, label, title, actions, replay }) => (
   <section className="gs-sess-head">
     <GsCover art={art} fill />
     <div className="gs-sess-text">
-      <span className="gs-sess-label">{label}</span>
+      {replay
+        ? <div className="gs-sess-labelrow"><span className="gs-sess-label">{label}</span><DS.StatusTag tone="idle" className="gs-sess-mark">Replay</DS.StatusTag></div>
+        : <span className="gs-sess-label">{label}</span>}
       <h1 className="gs-h1 gs-sess-title">{title}</h1>
       {actions && <div className="gs-sess-acts">{actions}</div>}
     </div>
@@ -207,7 +210,7 @@ const GsSessionRecord = () => {
   return (<>
     {back}
     <main className="gs-wrap gs-main">
-      <GsSessHead art={art} label={label} title={title} actions={
+      <GsSessHead art={art} label={label} title={title} replay={!!s.replay} actions={
         kept ? <GsNeedsPass gid={s.gid} text="This session is kept. Carrying it on comes with the Pass." />
           : s.live ? <DS.Button onClick={() => gs.play(s.game, sid)}>Play</DS.Button>
           : <>{again}{text && <DS.Button onClick={() => setShare(true)}>Share</DS.Button>}</>
