@@ -604,7 +604,6 @@
       });
     }
     ChatPlayback.duration = (turns, { pace, speed = 1, composer = true } = {}) => timeline(turns, { ...pace, speed }, composer).total;
-    const COPY_GLYPH = /* @__PURE__ */ React2.createElement("svg", { className: "mcp-say-ico", viewBox: "0 0 16 16", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React2.createElement("g", { fill: "none", stroke: "currentColor", strokeWidth: "1.75" }, /* @__PURE__ */ React2.createElement("path", { d: "M5.5 5.5H13.5V13.5H5.5Z" }), /* @__PURE__ */ React2.createElement("path", { d: "M10.5 5.5V2.5H2.5V10.5H5.5" })));
     function SpeechBubble({ children, wrap = false, copy = false, onCopy, className = "" }) {
       const [done, setDone] = React2.useState(false);
       React2.useEffect(() => {
@@ -621,7 +620,7 @@
         });
         setDone(true);
       };
-      return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, "aria-label": "Copy: " + text, onClick: click }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-in" }, /* @__PURE__ */ React2.createElement("span", { className: "a" }, children, COPY_GLYPH), done && /* @__PURE__ */ React2.createElement("span", { className: "b", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 16 }), "Copied"))), /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-live", role: "status" }, done ? "Copied" : ""));
+      return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, "aria-label": "Copy: " + text, onClick: click }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-in" }, /* @__PURE__ */ React2.createElement("span", { className: "a" }, children), done && /* @__PURE__ */ React2.createElement("span", { className: "b", "aria-hidden": "true" }, "Copied"))), /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-live", role: "status" }, done ? "Copied" : ""));
     }
     function Card({ title, action, children, className = "", style, href, onClick, label, chevron = true }) {
       const { pressed, handlers } = usePress();
@@ -6725,7 +6724,7 @@
   const GsSay = ({ text, wrap, copy }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy, onCopy: copy ? (t) => lbCopy([t]) : void 0 }, text));
   const GS_HW_OVERVIEW = [
     ["hw-setup", "Setup", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add After Pixels to your app once")],
-    ["hw-start", "Start", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Type", /* @__PURE__ */ React$1.createElement(GsSay, { text: gsPromptText({ kind: "games" }) }))],
+    ["hw-start", "Start", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Type", /* @__PURE__ */ React$1.createElement(GsSay, { copy: true, text: gsPromptText({ kind: "games" }) }))],
     ["hw-playing", "Playing", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Pick a game and play it in the chat")]
   ];
   const gsPermStep = (a) => "If " + (a.id === "other" ? "your AI" : a.name) + " asks you before each move, you may be able to change that in its permissions.";

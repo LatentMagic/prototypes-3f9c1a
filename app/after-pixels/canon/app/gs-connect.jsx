@@ -151,11 +151,11 @@ const gsJump = (id) => {
 };
 // The words a player types, drawn as a sent message. A non-breaking space joins it to the word before, so "type" and the
 // bubble never split.
-// Start's bubbles copy (`copy`); the Overview's stays static, since its row already ends in a jump link.
+// Every bubble on this page copies (`copy`), the Overview's included.
 const GsSay = ({ text, wrap, copy }) => <>{' '}<DS.SpeechBubble wrap={wrap} copy={copy} onCopy={copy ? (t) => lbCopy([t]) : undefined}>{text}</DS.SpeechBubble></>;
 const GS_HW_OVERVIEW = [
   ['hw-setup', 'Setup', <>Add After Pixels to your app once</>],
-  ['hw-start', 'Start', <>Type<GsSay text={gsPromptText({ kind: 'games' })} /></>],
+  ['hw-start', 'Start', <>Type<GsSay copy text={gsPromptText({ kind: 'games' })} /></>],
   ['hw-playing', 'Playing', <>Pick a game and play it in the chat</>],
 ];
 
