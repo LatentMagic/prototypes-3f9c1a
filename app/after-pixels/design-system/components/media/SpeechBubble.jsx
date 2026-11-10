@@ -1,8 +1,24 @@
 import React from 'react';
-// Words the player types into their chat, drawn as a sent message inside a sentence. Not a control.
+import { Icon } from './Icon.jsx';
+// Words the player types into their chat, drawn as a sent message inside a sentence. Static, or with `copy` a button that copies them.
 // KEEP: it sits on the text's baseline and adds no height to its line (inline padding); the corner at the bottom right is the
 // sent message's tail. A short bubble never breaks; with `wrap` a long one that does not fit moves to the next line whole, and
 // breaks inside itself only when a line is too narrow for it.
-export function SpeechBubble({children,wrap=false,className=''}){
-  return <span className={('mcp-say'+(wrap?' is-wrap':'')+' '+className).trim()}>{children}</span>;
+// KEEP: a copying bubble keeps its width through the swap to "Copied" (the words stay in place, unseen) so the line never reflows,
+// and holds "Copied" for 2400ms, as the Copy buttons do. Its touch target is 44px tall whatever the text size (css).
+const COPY_GLYPH=<svg className="mcp-say-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M5.5 5.5H13.5V13.5H5.5Z"/><path d="M10.5 5.5V2.5H2.5V10.5H5.5"/></g></svg>;
+export function SpeechBubble({children,wrap=false,copy=false,onCopy,className=''}){
+  const [done,setDone]=React.useState(false);
+  React.useEffect(()=>{if(!done)return undefined;const t=setTimeout(()=>setDone(false),2400);return()=>clearTimeout(t);},[done]);
+  const cls=('mcp-say'+(wrap?' is-wrap':'')+(copy?' is-copy':'')+(copy&&done?' is-done':'')+' '+className).trim();
+  if(!copy) return <span className={cls}>{children}</span>;
+  const text=React.Children.toArray(children).filter(c=>typeof c==='string'||typeof c==='number').join('');
+  const click=()=>{
+    if(onCopy) onCopy(text); else if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{});
+    setDone(true);
+  };
+  return <button type="button" className={cls} aria-label={'Copy: '+text} onClick={click}>
+    <span className="mcp-say-in"><span className="a">{children}{COPY_GLYPH}</span><span className="b" aria-hidden="true"><Icon name="check" size={16}/>Copied</span></span>
+    <span className="mcp-say-live" role="status">{done?'Copied':''}</span>
+  </button>;
 }

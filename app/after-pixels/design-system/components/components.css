@@ -595,6 +595,23 @@ button.mcp-cb-ent{cursor:pointer}
 /* KEEP: A tag keeps its box while its card or row is pressed: its 14% fill matches the 10% press fill exactly, so it lifts a step for the length of the press. */
 .mcp-card.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-row.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-art-host:is(:active,.is-on) .mcp-tag-daily{background:color-mix(in srgb,var(--text) 24%,var(--page))}
 /* SpeechBubble: the words a player types, inline, as a sent message. The one round shape on the shop's own surface. */
-.mcp-say{display:inline;padding:.15em .6em;border-radius:1em 1em .2em 1em;background:var(--off-white);color:var(--page);font-family:var(--font-text);font-weight:500;white-space:nowrap;-webkit-box-decoration-break:clone;box-decoration-break:clone;cursor:inherit}
+.mcp-say{display:inline;margin-inline-start:var(--space-1);padding:.15em .6em;border-radius:1em 1em .2em 1em;background:var(--off-white);color:var(--page);font-family:var(--font-text);font-weight:500;white-space:nowrap;-webkit-box-decoration-break:clone;box-decoration-break:clone;cursor:inherit}
 /* KEEP: a long bubble that does not fit moves to the next line whole, and breaks inside itself only when one line is too narrow for it; its line height is trimmed by its padding so it adds no height to the line. */
 .mcp-say.is-wrap{display:inline-block;max-width:100%;white-space:normal;line-height:calc(1lh - .3em)}
+/* KEEP: a copying bubble is a button in the bubble's shape: an inline-block whose line height is trimmed by its padding so it adds no height to its line; the label and the "Copied" label share one grid cell so its width never changes; a 44px-tall ::after is its touch target. */
+.mcp-say.is-copy{position:relative;display:inline-block;max-width:100%;margin-block:0;border:0;font-size:inherit;line-height:calc(1lh - .3em);text-align:start;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;transition:background-color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}
+.mcp-say.is-copy:not(.is-wrap){white-space:nowrap}
+.mcp-say.is-copy.is-wrap{white-space:normal}
+.mcp-say.is-copy::after{content:"";position:absolute;left:0;right:0;top:calc(50% - 22px);height:44px}
+.mcp-say-in{display:inline-grid;max-width:100%}
+.mcp-say-in>span{grid-area:1/1;transition:opacity var(--time-swap) var(--ease),transform var(--time-swap) var(--ease)}
+.mcp-say-in .b{display:inline-flex;align-items:center;justify-content:center;gap:.3em;opacity:0;transform:translateY(6px);white-space:nowrap}
+.mcp-say-in .b .mcp-ico{width:.8em!important;height:.8em!important}
+.mcp-say.is-copy.is-done .mcp-say-in .a{opacity:0;transform:translateY(-6px)}
+.mcp-say.is-copy.is-done .mcp-say-in .b{opacity:1;transform:none}
+.mcp-say-ico{display:inline-block;width:.8em;height:.8em;margin-inline-start:.45em;vertical-align:-.05em;opacity:.7;transition:opacity var(--time-press) var(--ease)}
+.mcp-say-live{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media (hover:hover){.mcp-say.is-copy:hover{background:color-mix(in srgb,var(--off-white) 87%,var(--page))}.mcp-say.is-copy:hover .mcp-say-ico{opacity:1}}
+.mcp-say.is-copy:active{background:color-mix(in srgb,var(--off-white) 74%,var(--page));transform:scale(.97)}
+.mcp-say.is-copy:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.mcp-say.is-copy,.mcp-say-in>span,.mcp-say-ico{transition:none}}

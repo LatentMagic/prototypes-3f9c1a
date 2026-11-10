@@ -11,21 +11,28 @@
 .hw-sec h2:focus { outline: none; }
 .hw-sec p, .hw-over-list { margin: 0; }
 
-/* Head and Overview: stacked on a phone; from a 720px page the title and lead on the left, the Overview card on the right,
-   as Home's hero (1.25fr / 1fr). */
+/* Head and Overview: one column at every width, the head across the page and the Overview card under it. */
 .hw-top { display: grid; gap: 24px; }
-.hw-head .gs-lead { text-wrap: pretty; }
-@container gs (min-width: 720px) { .hw-top { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
-@container gs (min-width: 900px) { .hw-top { gap: 36px; } }
+.hw-head .gs-lead { text-wrap: pretty; max-width: 70ch; }
 /* The Overview: one static card, three lines split by 1px lines, each ending in a text link that jumps to its section. */
 .hw-over-card { container: hw-over / inline-size; padding-block: 4px; justify-items: stretch; }
 .hw-over-list { list-style: none; padding: 0; display: grid; }
 .hw-over-list > li { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 16px; padding-block: 8px; }
 .hw-over-list > li + li { border-top: 1px solid var(--line); }
-/* KEEP: each line is a card title that shrinks from 20px towards 16px with the card's width before it wraps, so "Type" and its
-   bubble always share one line (the system's order: size first). */
+/* KEEP: under a 900px page each line is a card title that shrinks from 20px towards 16px with the card's width before it wraps,
+   so "Type" and its bubble always share one line (the system's order: size first). */
 .hw-over-line { flex: 1 1 9em; min-width: 0; font: 700 clamp(16px, 7.4cqi, 20px)/1.25 var(--font-heading); letter-spacing: -.01em; text-wrap: pretty; }
 .hw-over-go { flex: none; min-height: 44px; }
+/* KEEP: from a 900px page the Overview is one strip of three cells split by 1px lines, read left to right as the sequence it is:
+   the line at the top of its cell and its link under it, so the three links share one line; each line is 20px, shrinking to 16px
+   with its own cell's width. */
+@container gs (min-width: 900px) {
+  .hw-over-card { padding: 0; }
+  .hw-over-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hw-over-list > li { display: grid; align-content: space-between; justify-items: start; gap: 4px; padding: 16px 24px 8px; container-type: inline-size; }
+  .hw-over-list > li + li { border-top: 0; border-left: 1px solid var(--line); }
+  .hw-over-line { font-size: clamp(16px, 6.4cqi, 20px); }
+}
 
 /* Setup: the app picker, a CardRow of logo tiles. The picked tile is filled, as a main Button is; the rest are outlined. */
 .hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
@@ -40,15 +47,18 @@
 .hw-app:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
 @media (hover: hover) { .hw-app:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
 @container mcp-crow (max-width: 420px) { .hw-app { min-height: 56px; padding: 0; } .hw-app > span:not(.hw-mask) { display: none; } }
-.hw-nologo { opacity: .6; }
+.hw-img { display: block; flex: none; object-fit: contain; }
+/* KEEP: Grok's mark is a white file for a dark page, so on the picked tile (off-white fill) it is shown inverted to stay visible; the file itself is unaltered. */
+.hw-app[aria-pressed="true"] .hw-img-grok { filter: invert(1); }
 /* A logo kept as its own file, painted in the tile's text colour through its shape. */
 .hw-mask { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
 
 /* The picked app's card, its notch on the top edge pointing at the picked tile. One anatomy for every route: title row,
-   the thing to copy, the steps. */
+   the thing to copy, the steps, and the help line. */
 .hw-pick { position: relative; }
 .hw-notch { position: absolute; z-index: 1; top: -7px; width: 14px; height: 14px; background: var(--card); border-left: 1px solid var(--line); border-top: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); transition: left var(--time-swap) var(--ease); pointer-events: none; }
 .hw-pick-card.mcp-card { justify-items: stretch; gap: 16px; }
+.hw-help { margin: 0; }
 .hw-pick-head { display: grid; gap: 16px; }
 .hw-pick-head > .hw-seg { order: -1; }
 .hw-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -60,21 +70,31 @@
 }
 .hw-eyebrow { text-transform: uppercase; margin: 0; }
 .hw-pick-body { display: grid; gap: 16px; align-items: start; }
-/* KEEP: from a 720px page the thing to copy and the steps are two equal columns that start at the same top; the copy box takes
-   its column's width, never the card's. */
-@container gs (min-width: 720px) { .hw-pick-body { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; } }
-@container gs (min-width: 900px) { .hw-pick-body { gap: 36px; } }
+/* KEEP: from a 720px page the card is two parts split by a 1px line: the title, the switch, the thing to copy and the help line
+   (at the foot) on the left, the steps from the card's top on the right, so neither part has empty space beside or under it. */
+@container gs (min-width: 720px) {
+  .hw-pick-card.mcp-card { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); grid-template-rows: auto auto 1fr; grid-template-areas: "head steps" "copy steps" "help steps"; column-gap: 24px; row-gap: 16px; }
+  .hw-pick-body { display: contents; }
+  .hw-pick-head { grid-area: head; }
+  .hw-pick-copy { grid-area: copy; }
+  .hw-pick-card .gs-steps { grid-area: steps; border-left: 1px solid var(--line); padding-left: 24px; align-content: start; }
+  .hw-help { grid-area: help; align-self: end; }
+}
 @media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
-/* Start: one static card in two parts split by a 1px line, on NeedsPass's layout: 3fr / 2fr side by side from a 640px window. */
+/* Start: one static card in two parts split by a 1px line, side by side from a 640px window; the typed line is the card's centre piece.
+   A line that holds a speech bubble is as tall as the bubble, so the bubble overhangs nothing and the gaps stay on the 4px grid. */
 .hw-start.mcp-card { padding: 0; gap: 0; grid-template-columns: minmax(0, 1fr); justify-items: stretch; }
 .hw-start-half { display: grid; gap: 8px; align-content: start; justify-items: start; padding: 16px; min-width: 0; }
 .hw-start-half + .hw-start-half { border-top: 1px solid var(--line); }
-.hw-start-line { text-wrap: pretty; }
+.hw-start-line { text-wrap: pretty; line-height: 32px; }
+.hw-start-more p { line-height: 24px; }
 .hw-start-more { gap: 12px; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
 @media (min-width: 640px) {
-  .hw-start.mcp-card { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .hw-start.mcp-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .hw-start-half { padding: 24px; }
+  .hw-start-half:first-child { align-content: center; justify-items: center; text-align: center; gap: 12px; }
+  .hw-start-more { align-content: center; }
   .hw-start-half + .hw-start-half { border-top: 0; border-left: 1px solid var(--line); }
 }
 
@@ -83,3 +103,9 @@
 
 /* Who does what: the product page's How it plays box, one card in two columns. */
 .hw-who.mcp-card { justify-items: stretch; }
+/* From a 720px page the two texts are sized to their length and ruled apart, as Home's Who does what is. Scoped to this card:
+   the product page's How it plays box is unchanged. */
+@container gs (min-width: 720px) {
+  .hw-who .gs-cols2 { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 36px; }
+  .hw-who .gs-cols2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
+}

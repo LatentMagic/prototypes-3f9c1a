@@ -37,7 +37,7 @@ const gsApp = (id) => GS_APPS.find((a) => a.id === id);
 const GS_SUB_LABEL = { grok: 'Grok app', grokbot: 'Grok Bot' };
 // Every logo is drawn in one colour (currentColor), so a picked tile fills it in the page colour. OpenClaw's is its mascot
 // redrawn in one colour from its colour favicon, the eyes cut out. Hermes Agent's wing is its own file, too long to inline,
-// painted through a mask. Grok and Muse have no logo file yet: a marked placeholder ring stands in, at the logo's size.
+// painted through a mask. Grok's and Muse's are the owners' own files, shown unaltered as images.
 const GsOpenClaw = ({ size }) => (
   <svg viewBox="0 0 120 120" width={size} height={size} aria-hidden="true" focusable="false">
     <mask id="hw-oc-eyes"><rect width="120" height="120" fill="#fff" /><circle cx="45" cy="35" r="7" fill="#000" /><circle cx="75" cy="35" r="7" fill="#000" /></mask>
@@ -56,7 +56,9 @@ const GsAiLogo = ({ ai, size = 20 }) => (
   : ai === 'openclaw' ? <GsOpenClaw size={size} />
   // The wing is about twice as tall as it is wide: it takes the logo's height.
   : ai === 'hermes' ? gsMaskLogo('assets/how-it-works/hermes-agent-wing.svg', Math.round(size / 2), size)
-  : <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" focusable="false" className="hw-nologo"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" /><text x="16" y="19" textAnchor="middle" fontSize="7" fill="currentColor">no file</text></svg>
+  // Grok's and Muse's marks are the owners' files, shown as they are, never recoloured or redrawn.
+  : ai === 'grok' ? <img className="hw-img hw-img-grok" src="assets/how-it-works/grok-logomark-light.svg" alt="" width={size} height={size} />
+  : <img className="hw-img" src="assets/how-it-works/muse-meta-ai.svg" alt="" width={size} height={size} />
 );
 
 // ---- Prompts (drafts, not ratified). A request is { kind: 'games' } | { kind: 'game', gid } | { kind: 'edition', e }. ----
@@ -142,7 +144,8 @@ const gsJump = (id) => {
 };
 // The words a player types, drawn as a sent message. A non-breaking space joins it to the word before, so "type" and the
 // bubble never split.
-const GsSay = ({ text, wrap }) => <>{' '}<DS.SpeechBubble wrap={wrap}>{text}</DS.SpeechBubble></>;
+// Start's bubbles copy (`copy`); the Overview's stays static, since its row already ends in a jump link.
+const GsSay = ({ text, wrap, copy }) => <>{' '}<DS.SpeechBubble wrap={wrap} copy={copy} onCopy={copy ? (t) => lbCopy([t]) : undefined}>{text}</DS.SpeechBubble></>;
 const GS_HW_OVERVIEW = [
   ['hw-setup', 'Setup', <>Add After Pixels to your app once</>],
   ['hw-start', 'Start', <>Type<GsSay text={gsPromptText({ kind: 'games' })} /></>],
@@ -235,9 +238,9 @@ const GsSetup = () => {
             <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} /></div>
             <GsSteps items={gsAppSteps(a)} />
           </div>
+          <p className="gs-small hw-help">If you can’t find it, <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>get in touch</button> and say which app you use.</p>
         </DS.Card>
       </div>
-      <p className="gs-small">If you can’t find it, <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>get in touch</button> and say which app you use.</p>
     </div>
   );
 };
@@ -278,11 +281,11 @@ export const GsConnect = () => {
         <h2 className="mcp-t-sec" tabIndex={-1}>Start</h2>
         <DS.Card className="hw-start">
           <div className="hw-start-half">
-            <p className="mcp-t-card hw-start-line">In any chat, type<GsSay text={gsPromptText({ kind: 'games' })} /></p>
+            <p className="mcp-t-card hw-start-line">In any chat, type<GsSay copy text={gsPromptText({ kind: 'games' })} /></p>
             <p>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></p>
           </div>
           <div className="hw-start-half hw-start-more">
-            <p>To go straight to one, type<GsSay wrap text={gsPromptText({ kind: 'game', gid: 'delve' })} />.{freeView && ' Its first run is free.'}</p>
+            <p>To go straight to one, type<GsSay wrap copy text={gsPromptText({ kind: 'game', gid: 'delve' })} />.{freeView && ' Its first run is free.'}</p>
             <p>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</p>
           </div>
         </DS.Card>
