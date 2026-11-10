@@ -370,6 +370,18 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 
     </div>);
   })}</div>);
 };
+// ---- Before the first roll: the run's rooms drawn empty. A room is its number over an empty hex where its dice will go. ----
+const DlEmptyHex = () => (<svg className="dl-empty-hex" viewBox="-5 -5 46 50" aria-hidden="true" focusable="false"><polygon points={DL_HEX} /></svg>);
+const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: 'Room ' + (i + 1) }));
+// The Now card of a run not started: the week's title, the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
+export const DlNowEmpty = ({ title, rooms, next, onPlay }) => { const [ref, cols] = useDlNowCols(rooms);
+  return (
+    <LbNowCard gid="delve" className="dl-now" title={title} play={onPlay} next={next}>
+      <div className="dl-now-route"><div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} role="img" aria-label={'The run has ' + rooms + ' rooms, none entered yet'}>{dlEmptyStops(rooms).map((st, i) => (
+        <div key={st.i} className={'dl-now-stop' + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
+          <span className="dvA2-head"><span className="dv2-num">{st.num}</span></span><DlEmptyHex /></div>))}</div></div>
+    </LbNowCard>);
+};
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
   const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
   const open = (roll) => gs.go('session', roll ? { id: sid, roll } : { id: sid });

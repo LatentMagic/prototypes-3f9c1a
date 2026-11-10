@@ -3352,6 +3352,12 @@
       return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34, foe: false }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => dlGrade(r).toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
     }));
   };
+  const DlEmptyHex = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dl-empty-hex", viewBox: "-5 -5 46 50", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }));
+  const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: "Room " + (i + 1) }));
+  const DlNowEmpty = ({ title, rooms, next, onPlay }) => {
+    const [ref, cols] = useDlNowCols(rooms);
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", title, play: onPlay, next }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, role: "img", "aria-label": "The run has " + rooms + " rooms, none entered yet" }, dlEmptyStops(rooms).map((st, i) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === rooms - 1 ? " is-row-end" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num)), /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))))));
+  };
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
     const gs = useGs();
     const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
@@ -3449,6 +3455,7 @@
   let DV_ALL;
   let DV_LIVE;
   let DV_DONE;
+  let DV_ROOMS;
   let DV_NEXT;
   const dvEnded = (ps) => ps.filter((p) => p.status.kind === "ok");
   let DV_ACH;
@@ -3470,7 +3477,7 @@
     const fresh = !lbNow(gs, "delve");
     const ach = phAch(gs, "delve", DV_ACH);
     const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: "delve", title: DV_RUN1.title, line: "You haven’t started this week’s run yet. Get her out before the ritual is complete.", next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: DV_RUN1.title, rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
@@ -3482,6 +3489,7 @@
     DV_ALL = [DV_RUN1];
     DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 8, rooms: 4, ritual: 3 };
     DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 5 };
+    DV_ROOMS = 5;
     DV_NEXT = "Monday 12 October";
     DV_ACH = [
       { k: "untouched", n: "Untouched", how: "Win a run without losing a hit point.", first: true, by: (p) => p.src.end === "won" && !!p.src.unhurt },
