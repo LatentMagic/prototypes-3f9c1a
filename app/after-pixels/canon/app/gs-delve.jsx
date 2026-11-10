@@ -210,6 +210,26 @@ const DlRoomList = ({ m, act, on }) => {
   const [open, setOpen] = React.useState(() => (act ? m.turns[act - 1].stop : null));
   return (<div className="dvL-list" aria-label="The way you went">{m.stops.map((st, i) => <DlRoomRow key={st.i} m={m} st={st} act={act} on={on} open={open} setOpen={setOpen} first={i === 0} last={i === m.stops.length - 1} />)}</div>);
 };
+// ---- Before the first roll: the run's rooms drawn empty. A room is its number over an empty hex where its dice will go. ----
+const DlEmptyHex = () => (<svg className="dl-empty-hex" viewBox="-5 -5 46 50" aria-hidden="true" focusable="false"><polygon points={DL_HEX} /></svg>);
+const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: 'Room ' + (i + 1) }));
+// The session page before the first roll (layout C): the run's rooms drawn empty, the first reached, and a "No rolls yet" box where the held roll will open: under the first room in the list, in the held roll's place beside or above the route.
+const DlWait = () => (<div className="dl-wait"><DlEmptyHex /><b>No rolls yet</b></div>);
+const DlEmptyRoute = ({ rooms }) => (<div className="dvE-main">
+  <div className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': rooms }} aria-label="The way you went">{dlEmptyStops(rooms).map((st) => (
+    <div key={st.i} className={'dvA2-stop' + (st.i === 0 ? ' is-on' : ' is-far')}>
+      <span className="dvA2-head" aria-label={'Room ' + st.num + (st.i === 0 ? ', First room' : ', not reached')}><span className="dv2-num">{st.num}</span><span className="dv2-sname">{st.i === 0 ? 'First room' : '\u00a0'}</span></span>
+      <div className="dvA2-dice">{st.i === 0 ? <i className="dv2-pass" aria-label="No rolls" /> : <DlEmptyHex />}</div>
+    </div>))}</div>
+  <div className="dvE-side"><DlWait /></div>
+</div>);
+const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The way you went">{dlEmptyStops(rooms).map((st) => (
+  <div key={st.i} className={'dvL-row' + (st.i === 0 ? ' is-on is-first' : ' is-far') + (st.i === rooms - 1 ? ' is-last' : '')}>
+    <span className="dv2-num dvL-num" aria-hidden="true">{st.num}</span>
+    <div className="dvL-body">{st.i === 0
+      ? <><p className="dvL-head dv2-sname dvL-name" aria-label="Room 1, First room, no rolls">First room</p><div className="dvL-held"><DlWait /></div></>
+      : <div className="dvL-head" role="img" aria-label={'Room ' + st.num + ', not reached'}><DlEmptyHex /></div>}</div>
+  </div>))}</div>);
 // KEEP: hover lights a roll and fills the held roll; a press holds it; it opens on the roll the route names (a die pressed on the
 // now card), else the last roll. In the list a hover changes nothing: the held roll sits under the pressed room only.
 const DlCard = ({ s, m, roll }) => {
@@ -217,6 +237,8 @@ const DlCard = ({ s, m, roll }) => {
   const [sel, setSel] = React.useState(() => (roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
   const on = React.useMemo(() => ({ sel: setSel, hov: setHov }), []);
   const act = list ? sel : hov || sel;
+  if (!m.turns.length) { const rooms = (s.tracks && s.tracks.rooms) || 5;
+    return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyRoute rooms={rooms} />}</section>); }
   return (<section ref={ref} className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />
     {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} />}</section>);
 };
@@ -370,9 +392,6 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 
     </div>);
   })}</div>);
 };
-// ---- Before the first roll: the run's rooms drawn empty. A room is its number over an empty hex where its dice will go. ----
-const DlEmptyHex = () => (<svg className="dl-empty-hex" viewBox="-5 -5 46 50" aria-hidden="true" focusable="false"><polygon points={DL_HEX} /></svg>);
-const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: 'Room ' + (i + 1) }));
 // The Now card of a run not started: the week's title, the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
 export const DlNowEmpty = ({ title, rooms, next, onPlay }) => { const [ref, cols] = useDlNowCols(rooms);
   return (
