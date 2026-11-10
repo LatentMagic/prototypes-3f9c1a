@@ -3363,11 +3363,8 @@
   };
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
   const DlAdvCells = ({ c, streak }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Hits or successes in a row. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak)));
-  const dlLightLabel = (name) => {
-    const n = name.replace(/^(the|your)\s+/i, "");
-    return n.charAt(0).toUpperCase() + n.slice(1);
-  };
-  const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }), c.lightName && /* @__PURE__ */ React$1.createElement(DlMeter, { label: dlLightLabel(c.lightName), n: c.light, of: c.lightMax }));
+  const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+  const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-mgrid" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }), c.lightName && /* @__PURE__ */ React$1.createElement(DlMeter, { label: dlLightLabel(c.lightName), n: c.light, of: c.lightMax })));
   const dlFight = (c) => {
     const f = c.fight;
     if (!f) return [];

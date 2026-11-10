@@ -156,7 +156,7 @@ const DlFoeDie = ({ f }) => <DS.DelveFoeDie value={f.roll} other={f.other != nul
 const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ') : r.room);
 // KEEP: the held roll above the route is one layout at every width it appears at (no window or container breakpoint): the die and its name in a head column on the left, the roll's facts on the right.
 // Each fact is its label over its value. Line 1 is the player's move in two groups, so a wrap falls between them: what was tried (room, action or use), then the dice (roll, outcome, cost).
-// Line 2, only when a foe is in it, sits under a rule: the foe's roll, then the foe's health as a fact named for the foe, a bar capped at 240px with its count; a kill with no strike-back shows the health alone, at 0.
+// Line 2, only when a foe is in it, sits under a rule: the foe's roll, then the foe's health as a fact named for the foe, a bar capped at 240px with its count a kill with no strike-back shows the health alone, at 0.
 const dlMeterOf = (r) => { const x = r.foe ? { ...r.foe, health: r.foe.health } : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
   return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing }; };
 // KEEP: a band's foe line is its name and "2 of 3 standing" in grey on one line (owner, 2026-11-10), with no bar and never the band's health (delve.md: a band shows how many stand instead); it wraps under the name only when the width gives out.
@@ -389,11 +389,10 @@ const useDlOneRow = (ref) => { const [one, setOne] = React.useState(false);
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
 const DlAdvCells = ({ c, streak }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
   <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></>);
-// KEEP: the label column is as wide as "Hit points" and no wider unless a light's name needs it: a long light name (about 20 characters at most, which the editions' check caps) wraps to two lines at most, breaking only between words, and the column is never narrower than the longest single word, so no word runs into its bar. The bars keep their full width.
-// The light's label is its module's own name, "the torch" → "Torch": a leading "the " or "your " dropped, the first letter capitalised. Only a run whose edition has the light module carries `lightName`.
-const dlLightLabel = (name) => { const n = name.replace(/^(the|your)\s+/i, ''); return n.charAt(0).toUpperCase() + n.slice(1); };
-const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} />
-  {c.lightName && <DlMeter label={dlLightLabel(c.lightName)} n={c.light} of={c.lightMax} />}</div>;
+// The light's label is its module's own name as written with the first letter capitalised, "the torch" → "The torch". Only a run whose edition has the light module carries `lightName`. How the labels lay out is the KEEP in gs-delve.css: they wrap to two lines at most, and a narrow sheet puts them above their bars.
+const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><div className="dv8-mgrid"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} />
+  {c.lightName && <DlMeter label={dlLightLabel(c.lightName)} n={c.light} of={c.lightMax} />}</div></div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
   return [{ key: 'def', label: 'Defence', num: f.defence, text: 'A foe’s d20 must reach ' + f.defence + ' to hit you.' },

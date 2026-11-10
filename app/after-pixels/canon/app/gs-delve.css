@@ -223,11 +223,20 @@
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell { grid-template-rows: 39px auto; }
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell .dv7-fig > svg, .dv8.is-3b .dv8-adv .dv5-insw > svg { width: 36px; height: auto; }
 .dv8.is-3b .dv7-cell .dv4-sx text { font-size: 18px; }
-/* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length; labels never wrap. */
-.dv8-meters { display: grid !important; grid-template-columns: fit-content(5.5em) minmax(32px, 1fr) max-content; gap: 12px 6px; align-content: center; align-items: center; justify-items: stretch !important; }
+/* KEEP: the meters share one grid, so every label, bar and count starts at the same x and every bar is the same length. The label column is as wide as "Hit points" and no wider unless a light's name needs it, up to 8.5em, so "The watchman's" fits on one line; a longer name wraps to a second line and never a third, breaking only between words.
+   KEEP: labels move above their bars once a bar beside the label column would fall under ≈120px (a meters block under 277px wide: 8.5em + 6px + 120px + 6px + the 35px count): every meter's label and count then sit on one line over a bar that runs the full width, the same for all three meters so the sheet never mixes the two layouts. */
+.dv8-meters { container: dvm / inline-size; display: grid !important; align-content: center; justify-items: stretch !important; }
+.dv8-mgrid { font-size: 13px; display: grid; grid-template-columns: fit-content(8.5em) minmax(32px, 1fr) max-content; gap: 12px 6px; align-items: center; }
 .dv8-meters .dv6-bar { display: contents; font-size: 13px; }
 .dv8-meters .dv6-bar > span { line-height: 1.2; }
 .dv8-meters .dv6-bar small { text-align: left; }
+@container dvm (max-width: 276.98px) {
+  .dv8-mgrid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .dv8-meters .dv6-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; row-gap: 2px; align-items: center; }
+  .dv8-meters .dv6-bar > span { grid-column: 1; grid-row: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dv8-meters .dv6-bar small { grid-column: 2; grid-row: 1; }
+  .dv8-meters .dv6-bar > :nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+}
 /* A named cell says what it is on a small line under its name. */
 .dv8-sub { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 /* The streak is a count, not slots: a figure in the cell's 36px row. */
