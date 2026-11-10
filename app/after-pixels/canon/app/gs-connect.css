@@ -107,3 +107,32 @@
 .hw-who-row p { font: 400 14px/1.5 var(--font-text); text-wrap: pretty; }
 .hw-who-row + .hw-who-row { border-top: 1px solid var(--line); }
 @media (min-width: 640px) { .hw-who-row { grid-template-columns: 190px minmax(0, 62ch); align-items: center; gap: 28px; padding: 16px 24px; } }
+
+/* ---- The page's top, under trial (?top=1..4). ---- */
+.hw-top2 { display: grid; gap: 12px; }
+.hw-top2 .gs-lead { text-wrap: pretty; max-width: 75ch; }
+.hw-t-after { margin: 0; color: var(--muted); font: 400 var(--size-small, 14px)/1.4 var(--font-text); }
+/* KEEP: the band is 104px tall on a phone and 128px from 720px, so the top stays no taller than the Overview card it replaces. */
+.hw-band { position: relative; height: 104px; overflow: hidden; display: flex; }
+@media (min-width: 720px) { .hw-band { height: 128px; } }
+.hw-band-games { position: relative; flex: 1 1 auto; min-width: 0; display: flex; }
+.hw-band-covers { display: flex; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.hw-band-cover { flex: none; height: 100%; aspect-ratio: 1; display: block; }
+.hw-band-cover > svg { width: 100%; height: 100%; display: block; }
+.hw-band-on { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 16px; }
+.hw-band-on .mcp-say, .hw-t4-say .mcp-say { font-size: clamp(22px, 6.4vw, 30px); line-height: 1.2; padding: .3em .8em; margin: 0; box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
+/* 2: the apps on a light panel at the band's left, the games after it; the phrase sits where they meet. */
+.hw-band-apps { flex: none; display: grid; grid-template-columns: repeat(4, 26px); grid-auto-rows: 26px; place-content: center; gap: 6px; padding: 0 14px; background: var(--off-white); color: var(--page); }
+@media (min-width: 720px) { .hw-band-apps { grid-template-columns: repeat(7, 30px); grid-auto-rows: 30px; gap: 10px; padding: 0 24px; } }
+.hw-band-app { display: grid; place-items: center; }
+/* KEEP: on the apps panel Grok shows its dark mark, as on a picked tile. */
+.hw-band-apps .hw-img-grok.is-off { display: none; }
+.hw-band-apps .hw-img-grok.is-on { display: block; }
+@media (max-width: 719px) { .hw-band.has-apps { flex-direction: column; height: auto; } .hw-band.has-apps .hw-band-apps { height: 44px; grid-template-columns: repeat(7, 22px); grid-auto-rows: 22px; justify-content: start; } .hw-band.has-apps .hw-band-games { height: 88px; } }
+/* 3: the covers dimmed toward the page, so the phrase carries the band. */
+.hw-band.is-quiet .hw-band-covers { opacity: .4; }
+/* 4: the phrase stands on its own; a thin strip of covers under it. */
+.hw-t4 { display: grid; gap: 12px; }
+.hw-t4-say { margin: 0; }
+.hw-band.is-thin { height: 56px; }
+@media (min-width: 720px) { .hw-t4 { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 24px; } .hw-t4 .gs-lead, .hw-t4 .hw-t-after { grid-column: 1 / -1; } .hw-band.is-thin { height: 72px; } }

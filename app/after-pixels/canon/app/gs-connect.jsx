@@ -328,25 +328,57 @@ const GS_HW_PLAY = [
   ['When it ends', 'Your result is saved. Share it or pick another.'],
 ];
 
+// ---- The page's top, under trial (the owner, 2026-11-10: "this is the first thing you land on ... this feels bland"). ----
+// Four versions of one idea, a band of game covers with the phrase to copy on it, picked by ?top=1..4 (default 1);
+// ?top=0 is the Overview card it would replace. None has links: the owner, "Arguably it doesn't need links".
+const gsTopV = () => { const n = parseInt(new URLSearchParams(location.search).get('top') || '1', 10); return n >= 0 && n <= 4 ? n : 1; };
+const GS_TOP_ART = ['word', 'murder', 'delve', 'groups', 'escape', 'casebook', 'barrow', 'hunter', 'derelict'];
+// KEEP: the band is one row of square covers, as many as fit; the row is cut at its edge, never squeezed or wrapped.
+const GsBandCovers = () => <span className="hw-band-covers" aria-hidden="true">{[...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? <span key={i} className="hw-band-cover" dangerouslySetInnerHTML={{ __html: GS_ART[a].svg }} /> : null)}</span>;
+const GsTopSay = () => <DS.SpeechBubble copy onCopy={(t) => lbCopy([t])}>{gsPromptText({ kind: 'games' })}</DS.SpeechBubble>;
+const GS_TOP_LOGOS = ['chatgpt', 'claude', 'gemini', 'grok', 'muse', 'openclaw', 'hermes'];
+const GsTop = ({ v }) => (
+  <header className={'hw-top2 is-v' + v}>
+    <h1 className="gs-h1">How it works</h1>
+    {v === 4 ? (
+      <div className="hw-t4">
+        <p className="gs-lead">Add After Pixels to ChatGPT, Claude or another AI app once. Then, in any chat, type</p>
+        <p className="hw-t4-say"><GsTopSay /></p>
+        <div className="hw-band is-thin"><GsBandCovers /></div>
+        <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
+      </div>
+    ) : <>
+      <p className="gs-lead">Add After Pixels to {v === 2 ? 'your AI app' : 'ChatGPT, Claude or another AI app'} once. Then, in any chat, type</p>
+      <div className={'hw-band' + (v === 3 ? ' is-quiet' : '') + (v === 2 ? ' has-apps' : '')}>
+        {v === 2 ? <span className="hw-band-apps" aria-hidden="true">{GS_TOP_LOGOS.map((a) => <span key={a} className="hw-band-app"><GsAiLogo ai={a} size={22} /></span>)}</span> : null}
+        <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><GsTopSay /></span></span>
+      </div>
+      <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
+    </>}
+  </header>
+);
 export const GsConnect = () => {
   const gs = useGs();
   return (
     <main className="gs-wrap gs-main">
+      {gsTopV() === 0 ? (
       <div className="hw-top">
-        <header className="gs-stack-md hw-head">
-          <h1 className="gs-h1">How it works</h1>
-          <p className="gs-lead">You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.</p>
-        </header>
-        <nav className="hw-over" aria-label="On this page">
-          <DS.Card className="hw-over-card">
-            <ul className="hw-over-list">
-              {GS_HW_OVERVIEW.map(([id, sec, body]) => (
-                <li key={id}><span className="hw-over-line">{body}</span><DS.TextLink className="hw-over-go" onClick={() => gsJump(id)} aria-label={'Go to ' + sec}>{sec}</DS.TextLink></li>
-              ))}
-            </ul>
-          </DS.Card>
-        </nav>
-      </div>
+          <header className="gs-stack-md hw-head">
+            <h1 className="gs-h1">How it works</h1>
+            <p className="gs-lead">You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.</p>
+          </header>
+          <nav className="hw-over" aria-label="On this page">
+            <DS.Card className="hw-over-card">
+              <ul className="hw-over-list">
+                {GS_HW_OVERVIEW.map(([id, sec, body]) => (
+                  <li key={id}><span className="hw-over-line">{body}</span><DS.TextLink className="hw-over-go" onClick={() => gsJump(id)} aria-label={'Go to ' + sec}>{sec}</DS.TextLink></li>
+                ))}
+              </ul>
+            </DS.Card>
+          </nav>
+        </div>
+      ) : <GsTop v={gsTopV()} />}
+
       <section id="hw-setup" className="hw-sec">
         <GsSetup />
       </section>
