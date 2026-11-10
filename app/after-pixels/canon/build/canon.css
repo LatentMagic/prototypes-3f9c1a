@@ -1050,9 +1050,9 @@ button.dvL-head:focus-visible { outline: 2px solid var(--focus-ring, var(--off-w
 button.dvL-head { padding-right: 48px; }
 button.dvL-head::before { content: ''; position: absolute; inset: 0; z-index: -1; }
 @media (hover: hover) { button.dvL-head:hover::before { background: var(--popup); } }
-.dvL-head svg { position: absolute; right: 28px; top: calc(50% - 10px); transform: rotate(90deg); opacity: .7; transition: transform var(--dur-fast, .15s); }
-.dvL-head[aria-expanded="true"] svg { top: 18px; transform: rotate(-90deg); }
-@media (prefers-reduced-motion: reduce) { .dvL-head svg { transition: none; } }
+button.dvL-head svg { position: absolute; right: 28px; top: calc(50% - 10px); transform: rotate(90deg); opacity: .7; transition: transform var(--dur-fast, .15s); }
+button.dvL-head[aria-expanded="true"] svg { top: 18px; transform: rotate(-90deg); }
+@media (prefers-reduced-motion: reduce) { button.dvL-head svg { transition: none; } }
 .dvL-head .dv2-pass { margin: 0; flex: none; }
 /* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. */
 .dvL-tally { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-bottom: 6px; }
