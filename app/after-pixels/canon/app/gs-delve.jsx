@@ -140,13 +140,41 @@ const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result
 export const DlFoeDie = ({ f }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" />;
 // A seam for a prototype aid: when set, the held roll above the route (beside === false) is handed to DL_HELD_VIEW.stacked({ r, x, live, canon }), which returns what to draw, canon's own element included.
 export const DL_HELD_VIEW = { stacked: null };
+// "Back in the chime run": the room's name leads with "The", so it drops to lower case mid-sentence.
+const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ') : r.room);
+// KEEP: the held roll above the route is one layout at every width it appears at (no window or container breakpoint): the die and its name in a head column on the left, the roll's facts on the right.
+// Each fact is its label over its value. Line 1 is the player's move in two groups, so a wrap falls between them: what was tried (room, action or use), then the dice (roll, outcome, cost).
+// Line 2, only when a foe is in it, sits under a rule: the foe's roll, then the foe's health as a fact named for the foe, a bar capped at 240px with its count; a kill with no strike-back shows the health alone, at 0.
+const DlFact = ({ label, children, tone }) => (<div className="dvS-fact"><dt>{label}</dt><dd className={tone ? 'is-' + tone : undefined}>{children}</dd></div>);
+const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r.tier;
+  const grp = (...c) => { const k = c.filter(Boolean); return k.length ? <div className="dvS-grp">{k.map((n, i) => <React.Fragment key={i}>{n}</React.Fragment>)}</div> : null; };
+  const foe = (r.foe || r.downed) && (
+    <dl className="dvS-line is-foe">
+      {r.foe && <DlFact label="Foe roll"><span className="dvS-foe"><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></span></DlFact>}
+      <div className="dvS-meter"><DlMeter label={(r.foe || r.downed).name} n={r.foe ? r.foe.health : 0} of={(r.foe || r.downed).max} /></div>
+    </dl>);
+  return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-stacked' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
+    <div className="dvS-body">
+      <div className="dvS-head"><DlDie r={r} size={52} surface="popup" />
+        <div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div>
+      <div className="dvS-lines">
+        <dl className="dvS-line">
+          {grp(<DlFact label="Room">{dlRoomSaid(r)}</DlFact>,
+            r.use && <DlFact label="Used">{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</DlFact>,
+            !r.use && r.action && <DlFact label="Action">{r.action}{r.move && <> <span>{r.move}</span></>}</DlFact>)}
+          {grp(!r.use && <DlFact label="Roll">{r.stat} {r.total} <span>vs {r.dc}</span></DlFact>,
+            !r.use && <DlFact label="Outcome" tone={tcls}>{dlGrade(r)}</DlFact>,
+            r.harm > 0 && !r.foe && <DlFact label="Cost">Lost {r.harm} HP</DlFact>)}
+        </dl>
+        {foe}
+      </div></div></div></div>); };
 const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
   const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier;
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
-  const canon = (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
+  const ledger = (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div></div>
     <dl className="dv3-dl">
-      <div><dt>Room</dt><dd>{(r.back ? 'Back in ' : '') + r.room}</dd></div>
+      <div><dt>Room</dt><dd>{dlRoomSaid(r)}</dd></div>
       {r.use && <div><dt>Used</dt><dd>{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</dd></div>}
       {!r.use && r.action && <div><dt>Action</dt><dd>{r.action}{r.move && <> <span>{r.move}</span></>}</dd></div>}
       {!r.use && <div><dt>Roll</dt><dd>{r.stat} {r.total} <span>vs {r.dc}</span></dd></div>}
@@ -156,6 +184,7 @@ const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[ac
       {(r.foe || r.downed) && <div className="dv3-fm"><DlMeter label={(r.foe || r.downed).name} n={r.foe ? r.foe.health : 0} of={(r.foe || r.downed).max} /></div>}
     </dl>
   </div></div>);
+  const canon = beside === false ? <DlHeldStacked r={r} x={x} live={live} /> : ledger;
   return beside === false && DL_HELD_VIEW.stacked ? DL_HELD_VIEW.stacked({ r, x, live, canon }) : canon; };
 
 // ---- The route: a column per room stood in, a rule between rooms; a key moment's die is drawn large. The held roll beside it. ----

@@ -87,6 +87,40 @@
 /* ---- A key moment picked: an off-white diamond in the held box's top right. ---- */
 .dv3-held { position: relative; }
 .dv3-mk { position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; background: var(--off-white); transform: rotate(45deg); }
+/* ---- The held roll above the route (stacked): one layout at every width, no window or container query. Tokens and existing parts only. ---- */
+/* KEEP: the stacked box is padded 16px all round (the key-moment diamond 16px from its top and right), the roomier of the two paddings above; the extra class beats `.dvE-main:not(.is-beside) .dv3-held` (12px) whatever the order. */
+.dv3-held.is-stacked { --dvS-head: fit-content(calc(52px + 12px + 104px)); }
+.dvE-main:not(.is-beside) .dv3-held.is-stacked { padding: 16px; }
+.dvE-main:not(.is-beside) .dv3-held.is-stacked .dv3-mk { top: 16px; right: 16px; }
+/* KEEP: the head column (die and name) is as wide as its title and no wider, so the facts sit 24px after "Roll 2" and shift little as the roll changes; it stops at 168px (the die, a 12px gap and 104px of text, the widest one-line title the runs have being "Closest call" at 100px), past which the title wraps ("The winning blow" on two lines). */
+.dvS-body { display: grid; grid-template-columns: var(--dvS-head) minmax(0, 1fr); gap: 0 24px; align-items: center; min-width: 0; }
+.dvS-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.dvS-head .dv3-hk { min-width: 0; }
+.dvS-head .dv3-k { text-wrap: balance; }
+.dvS-lines { display: grid; gap: 12px; min-width: 0; }
+/* KEEP: line 1 wraps only between its two groups (what was tried; the dice), never inside one: the room never shrinks, and a long action or use wraps inside its own value, never past the box. */
+.dvS-line { margin: 0; display: flex; flex-wrap: wrap; align-items: start; gap: 12px 36px; padding-right: 24px; min-width: 0; }
+.dvS-grp { display: flex; gap: 0 24px; min-width: 0; }
+.dvS-fact { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.dvS-grp > .dvS-fact { flex: 0 1 auto; }
+.dvS-grp > .dvS-fact:first-child { flex-shrink: 0; }
+.dvS-grp > .dvS-fact:first-child dd { white-space: nowrap; }
+.dvS-grp > .dvS-fact + .dvS-fact dd { text-wrap: pretty; }
+.dvS-fact dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
+.dvS-fact dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
+.dvS-fact dd span { font-weight: 400; color: var(--muted); white-space: nowrap; }
+.dvS-fact dd span.is-does { display: inline; white-space: nowrap; }
+.dvS-fact dd[class*="is-"] { color: var(--tc); }
+/* KEEP: line 2 is the foe's answer, under a 1px rule: its roll (a diamond, what it did, the defence), then the foe's health as a fact named for the foe, its bar and count beside it (8px apart). The bar grows to 240px and no further (96px at least), so it never runs to the box's right edge; a foe beaten with no strike-back shows the health fact alone, at 0. No foe, no rule and no line 2. */
+.dvS-line.is-foe { flex-wrap: nowrap; align-items: stretch; padding: 12px 0 0; border-top: 1px solid var(--line); gap: 12px 24px; }
+.dvS-line.is-foe > .dvS-fact { flex: 0 0 auto; }
+.dvS-foe { display: flex; align-items: center; column-gap: 6px; row-gap: 0; flex-wrap: wrap; font-weight: 400; color: inherit; white-space: normal; }
+.dvS-foe b { color: var(--text); white-space: nowrap; }
+.dvS-foe b.is-err { color: var(--error); }
+.dvS-line.is-foe .dvS-meter { display: grid; flex: 1 1 96px; min-width: 96px; max-width: 240px; }
+.dvS-meter .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
+.dvS-meter .dv6-bar > span { grid-column: 1 / -1; align-self: start; font: 600 13px/1.4 var(--font-text); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dvS-meter .dv6-bar small { font: 600 14px/1.4 var(--font-text); color: var(--text); }
 /* ---- from delve-v4.html ---- */
 /* ---- The sheet card: the session card's surface. ---- */
 .dv4-lay { display: grid; gap: var(--gs-sec-gap); min-width: 0; }
