@@ -62,7 +62,7 @@ const dlUseDoes = (d) => { const s = d.replace(/,? *no roll$/i, ''); return s.ch
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
 const DL_USE_KINDS = /^(Ability|Ultimate|Gear|Weakness)$/;
 // A weakness strike is a use too: the line is ["Weakness", "A flask of lamp oil", "Grizzletooth: health 24 → 16"], the item named with no "Used", and the foe staggered, so no roll back.
-const DL_WEAK_DOES = 'strikes its weakness, no blow back';
+const DL_WEAK_DOES = 'no blow back';
 const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1])); return w ? { use: true, what: 'Weakness', name: dlCap(w[1]), does: DL_WEAK_DOES, tier: 'use', foe: null, hp: null } : null; }
   const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
   const parts = l.slice(1).map(String); const sheet = DL_HEROES[hero] || DL_HEROES['Wren the Rogue']; const name = dlCap(m[1]);
@@ -117,7 +117,8 @@ const dlBuild = (s) => {
   const moments = dlMoments(rolls, end);
   return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
 };
-const dlSay = (r, foe = true) => r.use ? r.what + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '');
+const dlKindSay = (k) => (k === 'Weakness' ? 'Weak spot' : k);
+const dlSay = (r, foe = true) => r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
@@ -161,7 +162,7 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-stacked' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     <div className="dvS-body">
       <div className="dvS-head"><DlDie r={r} size={52} surface="popup" />
-        <div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div>
+        <div className="dv3-hk"><p className="dv3-k">{r.use ? dlKindSay(r.what) : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div>
       <div className="dvS-lines">
         <dl className="dvS-line">
           {grp(<DlFact label="Room">{dlRoomSaid(r)}</DlFact>,
@@ -177,7 +178,7 @@ const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[ac
   const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier; const mt = dlMeterOf(r);
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
   const ledger = (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
-    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? r.what : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div></div>
+    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? dlKindSay(r.what) : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{r.downed && <p className="dv3-beat">{r.downed.name} beaten</p>}</div></div></div>
     <dl className="dv3-dl">
       <div><dt>Room</dt><dd>{dlRoomSaid(r)}</dd></div>
       {r.use && <div><dt>Used</dt><dd>{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</dd></div>}
