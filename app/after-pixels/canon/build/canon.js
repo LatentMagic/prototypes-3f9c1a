@@ -3126,7 +3126,7 @@
     const [ref, named] = useDlNamed(m.stops.length);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": m.stops.length }, "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => !r.use && m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
   };
-  const DL_LIST_BELOW = 720;
+  const DL_LIST_BELOW = 610;
   const useDlList = (ref) => {
     const [list, setList] = React$1.useState(false);
     React$1.useLayoutEffect(() => {

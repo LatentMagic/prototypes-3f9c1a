@@ -179,10 +179,11 @@ const DlRoute = ({ m, act, on }) => { const sel = act ? m.turns[act - 1].stop : 
       </div>))}</div>
     <div className="dvE-side"><DlHeld m={m} act={act} /></div>
   </div>); };
-// KEEP: below a run card 720px wide (its content, the width the route starts to name its rooms at) the route is a list of closed rooms: one line per room on a rule
+// KEEP: below a run card 610px wide (its content; the step the hero sheet takes its phone header at, so the page changes once, and the
+// narrowest the 12-room hard run fits at) the route is a list of closed rooms: one line per room on a rule
 // running down the left, its key moments as 24px dice and its other rolls as dots; a tap opens that room (one at a time) with all its dice, and a pressed die's held roll
-// opens right under them, so the roll is never off screen from the die. From 720px the route is the horizontal one. The switch width is the user's to ratify on the built page.
-const DL_LIST_BELOW = 720;
+// opens right under them, so the roll is never off screen from the die. From 610px the route is the horizontal one. The switch width is the user's to ratify on the built page.
+const DL_LIST_BELOW = 610;
 const useDlList = (ref) => { const [list, setList] = React.useState(false);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
     const read = () => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW); };
