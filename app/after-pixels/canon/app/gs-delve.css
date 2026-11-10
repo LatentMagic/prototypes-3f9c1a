@@ -6,8 +6,6 @@
    Every rule here is scoped to a dv class, so nothing reaches another page. Class names keep the playgrounds' dv2- to dv8- prefixes.
    ============================================================================ */
 /* ---- from delve-v3.html ---- */
-/* ---- Playground only (1236, Delve v3). ---- */
-/* KEEP: inside the phone frame the screen scrolls on its own, so the top bar sticks to its top, not under the playground bar. */
 /* ---- The card and its top: result statement, character sheet (v2's, with its heading). ---- */
 .dv2 { container: dv2 / inline-size; display: grid; gap: 24px; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
 @container gs (min-width: 720px) {

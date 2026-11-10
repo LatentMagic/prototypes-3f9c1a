@@ -3,12 +3,11 @@
 // (the result as 3 · Band, the route of rooms and rolls, the held roll), then Every move collapsed. Built from the
 // playgrounds delve-v3 to delve-v9 (owner, 2026-10-29: "integrate this"). Styles: app/gs-delve.css.
 // Reads the run's record (GS_SESSIONS.delve and its copies in app/gs-data.jsx). Loads after app/gs-word.jsx.
-// The hero sheets (stats, abilities, starting gear) and the carry limit are SAMPLE, invented to delve.md's words.
 // ============================================================================
 
 // SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
-// and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three. The foes below, their health and
-// are invented too: the record names no foe and writes no foe health, only the struck-back part of a roll's line, whose target is the hero's defence (10 the fighter, 14 the rogue).
+// and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three.
+// The foes and their health are invented: the record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence (10 the fighter, 14 the rogue).
 // KEEP: foe names and health are sample. Deployed foes have health 12 to 24, a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts), and a band counts members standing.
 const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Ritual priest', 2] };
 import React from 'react';
