@@ -432,3 +432,7 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 /* The session page before the first roll: a quiet box in the held roll's place, saying there are none, and the rooms not yet reached dimmed. */
 .dvA2-stop.is-far .dv2-num, .dvL-row.is-far .dv2-num, .dl-now-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 .dvL-row.is-far .dvL-head .dl-empty-hex { width: 24px; height: 27px; }
+/* A band's foe line: its name, then "N of M standing" in grey, on one line; both wrap as words only when the box is too narrow. */
+.dv6-band { font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
+.dv6-band span { font-weight: 400; color: var(--muted); white-space: nowrap; }
+.dvS-line.is-foe .dvS-meter.is-band { max-width: none; }

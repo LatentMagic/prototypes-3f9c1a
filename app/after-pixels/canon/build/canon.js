@@ -1189,9 +1189,8 @@
     ["Strength", "Hit", "d20 16 + 3 = 19 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Ability", "Used shield bash", "Warren guard: health 4 → 3", "Struck back: d20 7 vs 10, missed"],
-    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 8 vs 10, missed"],
-    ["Strength", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
+    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
+    ["Strength", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 8 vs 10, missed"],
     ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"],
     ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
     ["Room", "Entered Snaggle's den"],
@@ -1202,7 +1201,8 @@
     ["Lock", "Opened the bone gate with the iron key"],
     ["Room", "Entered the shrine cavern"],
     ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
-    ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 1"],
+    ["Ability", "Used shield bash", "Grizzletooth: health 4 → 3", "Struck back: d20 7 vs 10, missed"],
+    ["Weakness", "A flask of lamp oil", "Grizzletooth: health 3 → 1"],
     ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"]
   ];
   const GS_DV_LIVE = [
@@ -1550,7 +1550,7 @@
       hero: "Wren the Rogue",
       hpMax: 21,
       threat: 3,
-      foeMax: { "the warren": 2, "snaggle's den": 2 },
+      foeMax: { "snaggle's den": 2 },
       sheet: { used: { "Sneak attack": 1 }, insp: true }
     }
   });
@@ -2924,7 +2924,9 @@
       );
     })), /* @__PURE__ */ React$1.createElement(EsxLatest, { lt })), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && /* @__PURE__ */ React$1.createElement(EsxChips, { grp, sel, pick: (id) => setSel(sel === id ? null : id) })), /* @__PURE__ */ React$1.createElement(EsxReader, { it }));
   };
-  const DL_FOES = { "the chime run": ["Chime-rat", 2], "the warren": ["Warren guard", 4], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 5] };
+  const DL_FOES = { "the chime run": ["Chime-rat", 2], "the warren": ["The goblin sentries", 12, 3], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 5] };
+  const DL_HIT = { "Bryn the Fighter": 5, "Wren the Rogue": 4 };
+  const dlStanding = (members, health, max) => health <= 0 ? 0 : Math.ceil(health * members / max);
   const DL_CARRY = 3;
   const DL_HEROES = {
     // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
@@ -3014,6 +3016,7 @@
     out.push({ r: last, kicker: DL_END[end] });
     return out.sort((a, b) => a.r.n - b.r.n);
   };
+  const dlBand = (f, health, max) => f[2] ? { members: f[2], standing: dlStanding(f[2], health, max) } : {};
   const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
   const dlBuild = (s) => {
     const stops = [];
@@ -3048,7 +3051,7 @@
       const foeMx = fo ? (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] : 0;
       const was = fo ? foeHp[fo.k] != null ? foeHp[fo.k] : foeMx : 0;
       if (wear && fo) foeHp[fo.k] = +wear[1];
-      const downed = fo && was > 0 && foeHp[fo.k] === 0 ? { name: fo.f[0], max: foeMx } : null;
+      const downed = fo && was > 0 && foeHp[fo.k] === 0 ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
       const u = dlUse(l, s.hero);
       if (u) {
         u.t = turns.length + 1;
@@ -3059,9 +3062,9 @@
         if (u.hp != null) hp = u.hp;
         if (fo && u.foe) {
           const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
-          u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max };
+          u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) };
         }
-        if (fo && l[0] === "Weakness") u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx };
+        if (fo && l[0] === "Weakness") u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
         if (downed) u.downed = downed;
         turns.push(u);
         cur.turns.push(u);
@@ -3078,9 +3081,13 @@
       if (r.hp != null) hp = r.hp;
       if (fo && (!r.action || r.action === "Heavy attack")) {
         const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
-        foeHp[fo.k] = r.tier === "miss" ? left : Math.max(0, left - (r.crit ? 2 : 1));
-        if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx };
-        if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] };
+        const dmg = (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1);
+        foeHp[fo.k] = r.tier === "miss" ? left : Math.max(0, left - dmg);
+        if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
+        if (r.foe) {
+          const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
+          r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) };
+        }
       }
       run = r.tier === "strong" ? run + 1 : 0;
       if (fo && foeHp[fo.k] === 0) run = 0;
@@ -3107,7 +3114,11 @@
   };
   const DlFoeDie = ({ f }) => /* @__PURE__ */ React$1.createElement(DS.DelveFoeDie, { value: f.roll, other: f.other != null ? f.other : void 0, hit: f.hit, surface: "popup" });
   const dlRoomSaid = (r) => r.back ? "Back in " + r.room.replace(/^The /, "the ") : r.room;
-  const dlMeterOf = (r) => r.foe ? { name: r.foe.name, n: r.foe.health, of: r.foe.max } : r.meter ? { name: r.meter.name, n: r.meter.health, of: r.meter.max } : r.downed ? { name: r.downed.name, n: 0, of: r.downed.max } : null;
+  const dlMeterOf = (r) => {
+    const x = r.foe ? { ...r.foe, health: r.foe.health } : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
+    return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing };
+  };
+  const DlFoeMeter = ({ mt }) => mt.members ? /* @__PURE__ */ React$1.createElement("div", { className: "dv6-band" }, /* @__PURE__ */ React$1.createElement("b", null, mt.name), " ", /* @__PURE__ */ React$1.createElement("span", null, mt.standing, " of ", mt.members, " standing")) : /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of });
   const DlFact = ({ label, children, tone }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvS-fact" }, /* @__PURE__ */ React$1.createElement("dt", null, label), /* @__PURE__ */ React$1.createElement("dd", { className: tone ? "is-" + tone : void 0 }, children));
   const DlHeldStacked = ({ r, x, live }) => {
     const tcls = r.fumble ? "fumble" : r.tier;
@@ -3116,7 +3127,7 @@
       return k.length ? /* @__PURE__ */ React$1.createElement("div", { className: "dvS-grp" }, k.map((n, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, n))) : null;
     };
     const mt = dlMeterOf(r);
-    const foe = mt && /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line is-foe" }, r.foe && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvS-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-meter" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of })));
+    const foe = mt && /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line is-foe" }, r.foe && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvS-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-meter" + (mt.members ? " is-band" : "") }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })));
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-stacked" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvS-head" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 52, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? dlKindSay(r.what) : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), r.downed && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, r.downed.name, " beaten"))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line" }, grp(
       /* @__PURE__ */ React$1.createElement(DlFact, { label: "Room" }, dlRoomSaid(r)),
       r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Used" }, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does))),
@@ -3134,7 +3145,7 @@
     const tcls = r.fumble ? "fumble" : r.tier;
     const mt = dlMeterOf(r);
     const foeRow = r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc)));
-    const ledger = /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? dlKindSay(r.what) : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), r.downed && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, r.downed.name, " beaten")))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, dlRoomSaid(r))), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")), mt && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of })))));
+    const ledger = /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, r.use ? dlKindSay(r.what) : x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n), r.downed && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, r.downed.name, " beaten")))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, dlRoomSaid(r))), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, r.harm > 0 && !r.foe && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")), mt && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })))));
     return beside === false ? /* @__PURE__ */ React$1.createElement(DlHeldStacked, { r, x, live }) : ledger;
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
@@ -3507,11 +3518,11 @@
         ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 5 damage, HP 12/23"],
-        ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 4 damage, HP 8/23"],
-        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 5 damage, HP 3/23"],
-        ["Strength", "Hit", "d20 15 + 3 = 18 vs 12", "Struck back: d20 4 vs 10, missed"],
-        ["Strength", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 18 vs 10, hit, 3 damage, HP 0/23"]
+        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23"],
+        ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 4 damage, HP 9/23"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 4 damage, HP 5/23"],
+        ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 4 damage, HP 1/23"],
+        ["Strength", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 18 vs 10, hit, 1 damage, HP 0/23"]
       ]
     };
     GS_SESSIONS["delve-hard"] = {
@@ -3537,8 +3548,8 @@
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
         ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 3 = 18 vs 12", "Struck back: d20 11 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 vs 14, hit, 3 damage, HP 16/21"],
-        ["Dexterity", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 4 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 18/21"],
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
         ["Dexterity", "Hit", "d20 15 + 3 = 18 vs 12"],
         ["Room", "Doubled back to the chime run", "The ritual +1"],
         ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
@@ -3558,12 +3569,12 @@
         ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Entered the shrine cavern"],
-        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
+        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 16/21"],
         ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
         ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 9 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 5 and 7, kept 7 + 3 = 10 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
+        ["Dexterity", "Miss", "d20s 5 and 7, kept 7 + 3 = 10 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 15/21"],
         ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 12 vs 14, missed"],
-        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 14/21"]
       ]
     };
   }

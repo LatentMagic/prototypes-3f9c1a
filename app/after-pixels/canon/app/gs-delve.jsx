@@ -7,9 +7,15 @@
 
 // SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
 // and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three.
-// The foes and their health are invented: the record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence (10 the fighter, 14 the rogue).
-// KEEP: foe names and health are sample. Deployed foes have health 12 to 24, a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts), and a band counts members standing.
-const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['Warren guard', 4], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 5] };
+// The record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence (10 the fighter, 14 the rogue).
+// The warren's foe is deployed (content/delve/1.v2.json, room warren): The goblin sentries, a band of 3 on 12 health, each sentry worth 4. The others are invented.
+// A foe is [name, health, members]; a band has members.
+// KEEP: the invented foes' names and health are sample, and a hit on one takes 1. Deployed foes have health 12 to 24 and a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts),
+// which the band takes here, so its sample hits follow the deployed count of members standing.
+const DL_FOES = { 'the chime run': ['Chime-rat', 2], 'the warren': ['The goblin sentries', 12, 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 5] };
+const DL_HIT = { 'Bryn the Fighter': 5, 'Wren the Rogue': 4 };
+// How many of a band stand at this health, out of the health it began at (scene-game.ts standingAt): ceil(health x members / max); 0 once beaten.
+const dlStanding = (members, health, max) => (health <= 0 ? 0 : Math.ceil((health * members) / max));
 import React from 'react';
 import { DS, useGs, GS_SESSIONS, GS_DV_TURNCOAT, gsEdPick, gsLiveSid } from './gs-data.jsx';
 import { GsMoves } from './gs-session.jsx';
@@ -80,6 +86,8 @@ const dlMoments = (R, end) => {
   out.push({ r: last, kicker: DL_END[end] });
   return out.sort((a, b) => a.r.n - b.r.n);
 };
+// A band's members and how many stand, carried beside its health, which is never drawn for a band.
+const dlBand = (f, health, max) => (f[2] ? { members: f[2], standing: dlStanding(f[2], health, max) } : {});
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 const dlBuild = (s) => {
   const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {}; let run = 0;
@@ -95,21 +103,21 @@ const dlBuild = (s) => {
     const wear = DL_USE_KINDS.test(l[0]) && (/→ (\d+)$/.exec(String(l[2] || '')) || (l[0] === 'Weakness' && /: defeated$/.test(String(l[2] || '')) && [null, 0])); const fo = foeOf(); const foeMx = fo ? (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] : 0;
     const was = fo ? (foeHp[fo.k] != null ? foeHp[fo.k] : foeMx) : 0; if (wear && fo) foeHp[fo.k] = +wear[1];
     // The turn that takes a foe's health to 0 beats it: its held roll says so and keeps the foe's bar, at 0.
-    const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx } : null;
+    const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
     const u = dlUse(l, s.hero);
     // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number, is no key moment, and breaks no streak.
     if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
-      if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max }; }
+      if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) }; }
       // KEEP: a weakness strike has no foe roll, so its foe health is carried as `meter`, drawn as a kill's is ("health alone"), at the health after the blow.
-      if (fo && l[0] === 'Weakness') u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx };
+      if (fo && l[0] === 'Weakness') u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
       if (downed) u.downed = downed; turns.push(u); cur.turns.push(u); return; }
     const r = dlRoll(l); if (!r) return;
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
-    // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20). Its roll back, where the line holds one, rides on the roll.
-    if (fo && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - (r.crit ? 2 : 1)); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx };
-      if (r.foe) r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max: (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] }; }
+    // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20); a band takes the hero's damage (DL_HIT). Its roll back, where the line holds one, rides on the roll.
+    if (fo && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const dmg = (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1); foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - dmg); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
+      if (r.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) }; } }
     run = r.tier === 'strong' ? run + 1 : 0; if (fo && foeHp[fo.k] === 0) run = 0;
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
@@ -149,7 +157,12 @@ const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ')
 // KEEP: the held roll above the route is one layout at every width it appears at (no window or container breakpoint): the die and its name in a head column on the left, the roll's facts on the right.
 // Each fact is its label over its value. Line 1 is the player's move in two groups, so a wrap falls between them: what was tried (room, action or use), then the dice (roll, outcome, cost).
 // Line 2, only when a foe is in it, sits under a rule: the foe's roll, then the foe's health as a fact named for the foe, a bar capped at 240px with its count; a kill with no strike-back shows the health alone, at 0.
-const dlMeterOf = (r) => (r.foe ? { name: r.foe.name, n: r.foe.health, of: r.foe.max } : r.meter ? { name: r.meter.name, n: r.meter.health, of: r.meter.max } : r.downed ? { name: r.downed.name, n: 0, of: r.downed.max } : null);
+const dlMeterOf = (r) => { const x = r.foe ? { ...r.foe, health: r.foe.health } : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
+  return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing }; };
+// KEEP: a band's foe line is its name and "2 of 3 standing" in grey on one line (owner, 2026-11-10), with no bar and never the band's health (delve.md: a band shows how many stand instead); it wraps under the name only when the width gives out.
+const DlFoeMeter = ({ mt }) => (mt.members
+  ? <div className="dv6-band"><b>{mt.name}</b> <span>{mt.standing} of {mt.members} standing</span></div>
+  : <DlMeter label={mt.name} n={mt.n} of={mt.of} />);
 const DlFact = ({ label, children, tone }) => (<div className="dvS-fact"><dt>{label}</dt><dd className={tone ? 'is-' + tone : undefined}>{children}</dd></div>);
 const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r.tier;
   const grp = (...c) => { const k = c.filter(Boolean); return k.length ? <div className="dvS-grp">{k.map((n, i) => <React.Fragment key={i}>{n}</React.Fragment>)}</div> : null; };
@@ -157,7 +170,7 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
   const foe = mt && (
     <dl className="dvS-line is-foe">
       {r.foe && <DlFact label="Foe roll"><span className="dvS-foe"><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></span></DlFact>}
-      <div className="dvS-meter"><DlMeter label={mt.name} n={mt.n} of={mt.of} /></div>
+      <div className={'dvS-meter' + (mt.members ? ' is-band' : '')}><DlFoeMeter mt={mt} /></div>
     </dl>);
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-stacked' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     <div className="dvS-body">
@@ -187,7 +200,7 @@ const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[ac
       {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{dlGrade(r)}</dd></div>}
       {foeRow}
       {r.harm > 0 && !r.foe && <div><dt>Cost</dt><dd>Lost {r.harm} HP</dd></div>}
-      {mt && <div className="dv3-fm"><DlMeter label={mt.name} n={mt.n} of={mt.of} /></div>}
+      {mt && <div className="dv3-fm"><DlFoeMeter mt={mt} /></div>}
     </dl>
   </div></div>);
   return beside === false ? <DlHeldStacked r={r} x={x} live={live} /> : ledger; };
@@ -523,15 +536,15 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Partial success', 'd20 14 + 0 = 14 vs 12'], ['Room', 'Entered the chime run'],
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 19/23'], ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 14 vs 10, hit, 2 damage, HP 17/23'], ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 5 damage, HP 12/23'], ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 8/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 5 damage, HP 3/23'],
-  ['Strength', 'Hit', 'd20 15 + 3 = 18 vs 12', 'Struck back: d20 4 vs 10, missed'], ['Strength', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 18 vs 10, hit, 3 damage, HP 0/23']] };
+  ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23'], ['Strength', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 15 vs 10, hit, 4 damage, HP 9/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 4 damage, HP 5/23'],
+  ['Strength', 'Miss', 'd20 6 + 3 = 9 vs 12', 'Struck back: d20 12 vs 10, hit, 4 damage, HP 1/23'], ['Strength', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 18 vs 10, hit, 1 damage, HP 0/23']] };
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 5 }, sheet: { used: { 'Sneak attack': 1 }, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'd20 1 + 0 = 1 vs 12', 'HP 20/21'], ['Room', 'Entered the chime run'],
   ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 14 vs 14, hit, 1 damage, HP 19/21'], ['Dexterity', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 7 vs 14, missed'], ['Dexterity', 'Hit', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Struck back: d20 11 vs 14, missed'], ['Dexterity', 'Miss', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Struck back: d20 15 vs 14, hit, 3 damage, HP 16/21'],
-  ['Dexterity', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
+  ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Struck back: d20 11 vs 14, missed'], ['Dexterity', 'Miss', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Struck back: d20 15 vs 14, hit, 1 damage, HP 18/21'],
+  ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
   ['Dexterity', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 13 vs 14, missed'], ['Dexterity', 'Hit', 'Natural 20', 'd20 20 + 3 = 23 vs 12', 'Struck back: d20 8 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12'],
@@ -541,6 +554,6 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Strength', 'Force the bone gate', 'Failure', 'd20 6 + 0 = 6 vs 12'], ['Strength', 'Force the bone gate', 'Failure', 'd20 11 + 0 = 11 vs 12'], ['Strength', 'Force the bone gate', 'Partial success', 'd20 14 + 0 = 14 vs 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
-  ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
-  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
+  ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 16/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
+  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 15/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 14/21']] };
 }

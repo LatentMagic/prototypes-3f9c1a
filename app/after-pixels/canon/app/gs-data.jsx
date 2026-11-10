@@ -142,9 +142,8 @@ const GS_DV_WON = [
   ['Strength', 'Hit', 'd20 16 + 3 = 19 vs 12'],
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Ability', 'Used shield bash', 'Warren guard: health 4 → 3', 'Struck back: d20 7 vs 10, missed'],
-  ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 8 vs 10, missed'],
-  ['Strength', 'Hit', 'd20 13 + 3 = 16 vs 12', 'Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23'],
+  ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23'],
+  ['Strength', 'Hit', 'd20 13 + 3 = 16 vs 12', 'Struck back: d20 8 vs 10, missed'],
   ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
   ['Dexterity', 'Rifle the stolen sacks', 'Success', 'Natural 20', 'd20 20 + 1 = 21 vs 12'],
   ['Room', 'Entered Snaggle\'s den'],
@@ -155,7 +154,8 @@ const GS_DV_WON = [
   ['Lock', 'Opened the bone gate with the iron key'],
   ['Room', 'Entered the shrine cavern'],
   ['Strength', 'Hit', 'd20s 11 and 19, kept 19 + 3 = 22 vs 12', 'Struck back: d20 5 vs 10, missed'],
-  ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 4 → 1'],
+  ['Ability', 'Used shield bash', 'Grizzletooth: health 4 → 3', 'Struck back: d20 7 vs 10, missed'],
+  ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 3 → 1'],
   ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12'],
 ];
 const GS_DV_LIVE = [
@@ -352,7 +352,7 @@ Object.assign(GS_SESSIONS, {
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
   'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 21/21'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
-    hero: 'Wren the Rogue', hpMax: 21, threat: 3, foeMax: { 'the warren': 2, "snaggle's den": 2 }, sheet: { used: { 'Sneak attack': 1 }, insp: true } },
+    hero: 'Wren the Rogue', hpMax: 21, threat: 3, foeMax: { "snaggle's den": 2 }, sheet: { used: { 'Sneak attack': 1 }, insp: true } },
 });
 // In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets
 // review.begun beside week 'live'; every surface that opens the in-progress play reads its id through gsLiveSid.
