@@ -33,13 +33,15 @@ function Block({b}){
 const paras=t=>t==null?[]:Array.isArray(t)?t:[t];
 // Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
 // KEEP: Stays at the latest turn while it lays out, until the reader scrolls it themselves.
-function useChatScroll(body,turns){
+// start="top": opens on the first turn instead; the pill then points down and scrolls to the latest turn, and hides once the body is at the bottom.
+function useChatScroll(body,turns,start){
+  const top=start==='top';
   const [up,setUp]=React.useState(false);
   React.useEffect(()=>{
     const b=body.current; if(!b) return undefined;
     let moved=false;
-    const mark=()=>{const u=b.scrollTop>4; b.dataset.more=u?'up':''; setUp(u);};
-    const end=()=>{if(!moved) b.scrollTop=b.scrollHeight; mark();};
+    const mark=()=>{const u=top?b.scrollTop+b.clientHeight<b.scrollHeight-4:b.scrollTop>4; b.dataset.more=u?(top?'down':'up'):''; setUp(u);};
+    const end=()=>{if(!moved) b.scrollTop=top?0:b.scrollHeight; mark();};
     const stop=()=>{moved=true;};
     b.addEventListener('scroll',mark,{passive:true});
     ['wheel','touchstart','keydown'].forEach(t=>b.addEventListener(t,stop,{passive:true}));
@@ -48,7 +50,7 @@ function useChatScroll(body,turns){
     end(); const t=setTimeout(end,600);
     return ()=>{clearTimeout(t); if(ro) ro.disconnect(); b.removeEventListener('scroll',mark); ['wheel','touchstart','keydown'].forEach(t=>b.removeEventListener(t,stop));};
   },[turns]);
-  const toStart=()=>{const b=body.current; if(b) b.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
+  const toStart=()=>{const b=body.current; if(b) b.scrollTo({top:top?b.scrollHeight:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
   return [up,toStart];
 }
 // Shared drawing for ChatPicture and ChatPlayback. Without fx a turn draws whole, exactly as ChatPicture always has.
@@ -75,23 +77,23 @@ export function chatTurn(t,i,{mark,toolBy,fx}){
   return kids.length?<div key={i} className="mcp-chat-ai">{kids}</div>:null;
 }
 // The window around the turns: header, scrolling body, the back-to-the-start pill, the reply box, and an optional control (ChatPlayback's pause).
-export function chatShell({body,bodyRef,up,toStart,title,height,width,fill,label,more,className,comp,control,extraClass}){
+export function chatShell({body,bodyRef,up,toStart,start,title,height,width,fill,label,more,className,comp,control,extraClass}){
   const name=label||'A game being played in a chat';
-  return <div className={('mcp-chat'+(fill?' is-fill':'')+(extraClass?' '+extraClass:'')+' '+className).trim()} style={fill?undefined:{width:'min(100%,'+width+'px)'}} role="group" aria-label={name}>
+  return <div className={('mcp-chat'+(fill?' is-fill':'')+(start==='top'?' is-top':'')+(extraClass?' '+extraClass:'')+' '+className).trim()} style={fill?undefined:{width:'min(100%,'+width+'px)'}} role="group" aria-label={name}>
     {title&&<div className="mcp-chat-head">{title}</div>}
     <div ref={bodyRef} className={'mcp-chat-body'+(height==='auto'&&!fill?' is-auto':'')} style={fill||height==='auto'?undefined:{height}} tabIndex={0} role="region" aria-label={name+', scrolls'}>
       {body}
     </div>
-    <button type="button" className="mcp-chat-up" hidden={!up} onClick={toStart} aria-label={more}><Icon name="down" size={16} style={{transform:'rotate(180deg)'}}/></button>
+    <button type="button" className={'mcp-chat-up'+(start==='top'?(comp?' is-down':' is-down is-bare'):'')} hidden={!up} onClick={toStart} aria-label={more}><Icon name="down" size={16} style={start==='top'?undefined:{transform:'rotate(180deg)'}}/></button>
     {control}
     {comp}
   </div>;
 }
 export const chatParas=paras;
-export function ChatPicture({turns,title,toolBy,mark,height=290,width=360,fill=false,composer=true,placeholder='Reply',label,more='Back to the start',className=''}){
+export function ChatPicture({turns,start,title,toolBy,mark,height=290,width=360,fill=false,composer=true,placeholder='Reply',label,more=start==='top'?'On to the latest':'Back to the start',className=''}){
   const body=React.useRef(null);
-  const [up,toStart]=useChatScroll(body,turns);
-  return chatShell({bodyRef:body,up,toStart,title,height,width,fill,label,more,className,
+  const [up,toStart]=useChatScroll(body,turns,start);
+  return chatShell({bodyRef:body,up,toStart,start,title,height,width,fill,label,more,className,
     body:turns.map((t,i)=>chatTurn(t,i,{mark,toolBy})),
     comp:composer&&<div className="mcp-chat-comp" aria-hidden="true"><span>{placeholder}</span><i><Icon name="send" size={16}/></i></div>});
 }

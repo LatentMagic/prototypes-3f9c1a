@@ -275,19 +275,20 @@
       return null;
     }
     const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-    function useChatScroll(body, turns) {
+    function useChatScroll(body, turns, start) {
+      const top = start === "top";
       const [up, setUp] = React2.useState(false);
       React2.useEffect(() => {
         const b = body.current;
         if (!b) return void 0;
         let moved = false;
         const mark = () => {
-          const u = b.scrollTop > 4;
-          b.dataset.more = u ? "up" : "";
+          const u = top ? b.scrollTop + b.clientHeight < b.scrollHeight - 4 : b.scrollTop > 4;
+          b.dataset.more = u ? top ? "down" : "up" : "";
           setUp(u);
         };
         const end = () => {
-          if (!moved) b.scrollTop = b.scrollHeight;
+          if (!moved) b.scrollTop = top ? 0 : b.scrollHeight;
           mark();
         };
         const stop = () => {
@@ -311,7 +312,7 @@
       }, [turns]);
       const toStart = () => {
         const b = body.current;
-        if (b) b.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+        if (b) b.scrollTo({ top: top ? b.scrollHeight : 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
       };
       return [up, toStart];
     }
@@ -338,18 +339,19 @@
       ].filter(Boolean);
       return kids.length ? /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
     }
-    function chatShell({ body, bodyRef, up, toStart, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+    function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
       const name = label || "A game being played in a chat";
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up", hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: { transform: "rotate(180deg)" } })), control, comp);
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
     }
     const chatParas = paras;
-    function ChatPicture({ turns, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = "Back to the start", className = "" }) {
+    function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
       const body = React2.useRef(null);
-      const [up, toStart] = useChatScroll(body, turns);
+      const [up, toStart] = useChatScroll(body, turns, start);
       return chatShell({
         bodyRef: body,
         up,
         toStart,
+        start,
         title,
         height,
         width,
@@ -604,6 +606,24 @@
       });
     }
     ChatPlayback.duration = (turns, { pace, speed = 1, composer = true } = {}) => timeline(turns, { ...pace, speed }, composer).total;
+    function SpeechBubble({ children, wrap = false, copy = false, edge = false, onCopy, className = "" }) {
+      const [done, setDone] = React2.useState(false);
+      React2.useEffect(() => {
+        if (!done) return void 0;
+        const t = setTimeout(() => setDone(false), 2400);
+        return () => clearTimeout(t);
+      }, [done]);
+      const cls = ("mcp-say" + (wrap ? " is-wrap" : "") + (edge ? " is-edge" : "") + (copy ? " is-copy" : "") + (copy && done ? " is-done" : "") + " " + className).trim();
+      if (!copy) return /* @__PURE__ */ React2.createElement("span", { className: cls }, children);
+      const text = React2.Children.toArray(children).filter((c) => typeof c === "string" || typeof c === "number").join("");
+      const click = () => {
+        if (onCopy) onCopy(text);
+        else if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {
+        });
+        setDone(true);
+      };
+      return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, "aria-label": "Copy: " + text, onClick: click }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-in" }, /* @__PURE__ */ React2.createElement("span", { className: "a" }, children), done && /* @__PURE__ */ React2.createElement("span", { className: "b", "aria-hidden": "true" }, "Copied"))), /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-live", role: "status" }, done ? "Copied" : ""));
+    }
     function Card({ title, action, children, className = "", style, href, onClick, label, chevron = true }) {
       const { pressed, handlers } = usePress();
       const live = !!(href || onClick);
@@ -930,6 +950,13 @@
       const P = playHref ? "a" : "button";
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-soon " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-art" }, art), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-body" }, label && /* @__PURE__ */ React2.createElement("span", { className: "mcp-soon-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-soon-line" }, line), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-tags" }, /* @__PURE__ */ React2.createElement(Tag, { kind: "daily" }, "Coming soon"), play && /* @__PURE__ */ React2.createElement(P, { className: "mcp-soon-play", href: playHref, type: playHref ? void 0 : "button", onClick: onPlay }, /* @__PURE__ */ React2.createElement(Tag, { kind: "open", icon: "play" }, play)))));
     }
+    const keepLastTwo = (t) => typeof t === "string" ? t.replace(/ (\S+)$/, " $1") : t;
+    function StepCard({ art, title, line, className = "", style }) {
+      return /* @__PURE__ */ React2.createElement("li", { className: ("mcp-card mcp-scard " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-scard-art" }, art), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card mcp-scard-name" }, keepLastTwo(title)), /* @__PURE__ */ React2.createElement("p", { className: "mcp-scard-line" }, line));
+    }
+    function StepCards({ label, children, className = "", style }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-scards-wrap " + className).trim(), style }, /* @__PURE__ */ React2.createElement("ol", { className: "mcp-scards", "aria-label": label }, children));
+    }
     const ns = window.MCPGameStoreDesignSystem_ef1abd = window.MCPGameStoreDesignSystem_ef1abd || {};
     ns.__errors = ns.__errors || [];
     ns.Button = Button;
@@ -963,6 +990,7 @@
     ns.ICON_NAMES = ICON_NAMES;
     ns.Icon = Icon2;
     ns.ChatPlayback = ChatPlayback;
+    ns.SpeechBubble = SpeechBubble;
     ns.Card = Card;
     ns.Heading = Heading;
     ns.CardRow = CardRow;
@@ -980,6 +1008,8 @@
     ns.PageGrid = PageGrid;
     ns.Popup = Popup;
     ns.SoonCard = SoonCard;
+    ns.StepCard = StepCard;
+    ns.StepCards = StepCards;
   })(React);
   const KIT_ICONS = {
     check: '<polyline points="20 6 9 17 4 12"></polyline>',
@@ -6580,15 +6610,26 @@
   };
   const GS_AI_LOGO = {
     claude: "m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z",
-    chatgpt: "M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"
+    chatgpt: "M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z",
+    gemini: "M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"
   };
-  const GS_AI_PLUGIN = { claude: ["Claude", "https://claude.ai/settings/connectors"], chatgpt: ["ChatGPT", "https://chatgpt.com/"] };
-  const GS_AI_OTHERS = [
-    ["openclaw", "OpenClaw", ["In a terminal, run openclaw mcp add, name it After Pixels, and give it the address as the URL.", "Approve the connection, then sign in to After Pixels when OpenClaw asks."]],
-    ["gemini", "Gemini", ["In Gemini, open Settings, then Custom apps, and add an app. Name it After Pixels and paste the address.", "Approve the connection, then sign in to After Pixels when Gemini asks."]],
-    ["other", "Other", ["In your AI’s settings, find where it adds MCP connectors or custom apps. Name it After Pixels and paste the address.", "Approve the connection, then sign in to After Pixels when it asks."]]
+  const GS_APPS = [
+    { id: "chatgpt", name: "ChatGPT", route: "settings", noun: "plugin", look: "Add custom MCP server" },
+    { id: "claude", name: "Claude", route: "settings", noun: "custom connector", look: "Add custom connector" },
+    { id: "gemini", name: "Gemini", route: "settings", noun: "custom app", look: "Connected Apps" },
+    { id: "grok", name: "Grok", route: "settings", noun: "custom connector", look: "New Connector", subs: ["grok", "grokbot"] },
+    { id: "grokbot", name: "Grok Bot", route: "chat", sub: true },
+    { id: "muse", name: "Muse", route: "chat" },
+    // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command.
+    { id: "openclaw", name: "OpenClaw", route: "command", first: "openclaw gateway stop", cmd: (url) => "openclaw mcp add after-pixels --url " + url + " --transport streamable-http --auth oauth", login: "openclaw mcp login after-pixels" },
+    { id: "hermes", name: "Hermes Agent", route: "command", cmd: (url) => "hermes mcp add after-pixels --url " + url + " --auth oauth" },
+    { id: "other", name: "Other", route: "settings" }
   ];
-  const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: GS_AI_LOGO[ai] }));
+  const gsApp = (id) => GS_APPS.find((a) => a.id === id);
+  const GS_SUB_LABEL = { grok: "Grok app", grokbot: "Grok Bot" };
+  const GsOpenClaw = ({ size }) => /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", width: size, height: size, "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("mask", { id: "hw-oc-eyes" }, /* @__PURE__ */ React$1.createElement("rect", { width: "120", height: "120", fill: "#fff" }), /* @__PURE__ */ React$1.createElement("circle", { cx: "45", cy: "35", r: "7", fill: "#000" }), /* @__PURE__ */ React$1.createElement("circle", { cx: "75", cy: "35", r: "7", fill: "#000" })), /* @__PURE__ */ React$1.createElement("g", { fill: "currentColor", mask: "url(#hw-oc-eyes)" }, /* @__PURE__ */ React$1.createElement("path", { d: "M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" }), /* @__PURE__ */ React$1.createElement("path", { d: "M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" }), /* @__PURE__ */ React$1.createElement("path", { d: "M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" })), /* @__PURE__ */ React$1.createElement("path", { d: "M45 15 Q35 5 30 8 M75 15 Q85 5 90 8", fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round" }));
+  const gsMaskLogo = (src, w, h) => /* @__PURE__ */ React$1.createElement("span", { className: "hw-mask", "aria-hidden": "true", style: { width: w, height: h, WebkitMaskImage: "url(" + src + ")", maskImage: "url(" + src + ")" } });
+  const GsAiLogo = ({ ai, size = 20 }) => ai === "other" ? /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: size, height: size, "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("circle", { cx: "12", cy: "12", r: "8", fill: "none", stroke: "currentColor", strokeWidth: "2.5" })) : GS_AI_LOGO[ai] ? /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "currentColor", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: GS_AI_LOGO[ai] })) : ai === "openclaw" ? /* @__PURE__ */ React$1.createElement(GsOpenClaw, { size }) : ai === "hermes" ? gsMaskLogo("assets/how-it-works/hermes-agent-wing.svg", Math.round(size / 2), size) : ai === "grok" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("img", { className: "hw-img hw-img-grok is-off", src: "assets/how-it-works/grok-logomark-light.svg", alt: "", width: size, height: size }), /* @__PURE__ */ React$1.createElement("img", { className: "hw-img hw-img-grok is-on", src: "assets/how-it-works/grok-logomark-dark.svg", alt: "", width: size, height: size })) : gsMaskLogo("assets/how-it-works/muse-meta-ai.svg", size, size);
   const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
   const gsPromptText = (r) => r.kind === "games" ? "Play After Pixels" : "Play " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + " on After Pixels";
   const gsPromptTitle = (r) => r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
@@ -6645,17 +6686,28 @@
     s.removeAllRanges();
     s.addRange(r);
   };
-  const GsAddress = () => {
+  const GsCopyBox = ({ text, label }) => {
     const [done, setDone] = React$1.useState(false);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy" }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": "The After Pixels address", onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, GS.link), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
-      lbCopy([GS.link]);
+    const [more, setMore] = React$1.useState(false);
+    const box = React$1.useRef(null);
+    React$1.useLayoutEffect(() => {
+      const el = box.current;
+      if (!el) return void 0;
+      const read = () => setMore(el.scrollWidth - el.clientWidth - el.scrollLeft > 2);
+      read();
+      el.addEventListener("scroll", read, { passive: true });
+      const ro = window.ResizeObserver ? new ResizeObserver(read) : null;
+      if (ro) ro.observe(el);
+      return () => {
+        el.removeEventListener("scroll", read);
+        if (ro) ro.disconnect();
+      };
+    }, [text]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy-field" + (more ? " has-more" : "") }, /* @__PURE__ */ React$1.createElement("div", { ref: box, className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": label, onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, text)), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
+      lbCopy([text]);
       setDone(true);
       setTimeout(() => setDone(false), 2400);
     } }, "Copy"));
-  };
-  const GsOtherSteps = ({ id }) => {
-    const o = GS_AI_OTHERS.find((x) => x[0] === id);
-    return /* @__PURE__ */ React$1.createElement(GsSteps, { items: [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Copy the After Pixels address."), /* @__PURE__ */ React$1.createElement(GsAddress, null)), ...o[2]] });
   };
   const gsReqEd = (gs, r) => r.page ? null : r.e || (r.kind === "game" && gs.view !== "out" ? edList(gs, r.gid)[0] : null);
   const gsReqDone = (gs, r) => {
@@ -6669,16 +6721,136 @@
     const r = last.current;
     if (!r) return null;
     if (r.kind !== "games" && gsReqDone(gs, r)) return /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!gs.playing, onClose: gs.closePlay, title: gsPromptTitle(r) }, /* @__PURE__ */ React$1.createElement("p", null, GS_ONCE_LINE));
-    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!gs.playing, onClose: gs.closePlay, title: "Start " + gsPromptTitle(r), actions: /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text: gsPromptText(r) }) }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small" }, /* @__PURE__ */ React$1.createElement("b", null, "Connect your AI first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to connect" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text: gsPromptText(r) }), gs.view === "out" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "You also need a After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => {
+    return /* @__PURE__ */ React$1.createElement(DS.Popup, { open: !!gs.playing, onClose: gs.closePlay, title: "Start " + gsPromptTitle(r), actions: /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text: gsPromptText(r) }) }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("p", { className: "hw-need gs-small" }, /* @__PURE__ */ React$1.createElement("b", null, "Add After Pixels to your app first."), " ", /* @__PURE__ */ React$1.createElement(GsHowLink, { label: "How to set up" })), /* @__PURE__ */ React$1.createElement(GsPrompt, { text: gsPromptText(r) }), gs.view === "out" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "You also need a free After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => {
       gs.closePlay();
       gs.go("signup");
     } }, "Start free"))));
   };
-  const GsAiCard = ({ k }) => /* @__PURE__ */ React$1.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-ai" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-ai-logo" }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: k, size: 28 })), /* @__PURE__ */ React$1.createElement("div", { className: "hw-ai-tx" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, GS_AI_PLUGIN[k][0]), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Open After Pixels in " + GS_AI_PLUGIN[k][0] + ", press Connect and sign in.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-ai-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => window.open(GS_AI_PLUGIN[k][1], "_blank", "noopener") }, "Connect " + GS_AI_PLUGIN[k][0]))));
+  const gsJump = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+    const h = el.querySelector("h2");
+    if (h) {
+      if (!h.hasAttribute("tabindex")) h.setAttribute("tabindex", "-1");
+      h.focus({ preventScroll: true });
+    }
+  };
+  const GsSay = ({ text, wrap, copy }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy, onCopy: copy ? (t) => lbCopy([t]) : void 0 }, text));
+  const GS_HW_OVERVIEW = [
+    ["hw-setup", "Setup", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add After Pixels to your app once")],
+    ["hw-start", "Start", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Type", /* @__PURE__ */ React$1.createElement(GsSay, { copy: true, text: gsPromptText({ kind: "games" }) }))],
+    ["hw-playing", "Playing", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Pick a game and play it in the chat")]
+  ];
+  const gsPermStep = (a) => "If " + (a.id === "other" ? "your AI" : a.name) + " asks you before each move, you may be able to change that in its permissions.";
+  const GS_SIGN_IN = "sign in with your After Pixels account.";
+  const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : a.route === "chat" ? ["The message to send", "Add this MCP server: " + GS.link] : ["The command to run", a.first || a.cmd(GS.link)];
+  const gsAppSteps = (a) => [
+    ...a.route === "settings" ? [
+      a.id === "other" ? "In your app, find where it adds a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
+      /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Paste the address and name it ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), "."),
+      "Connect, then " + GS_SIGN_IN
+    ] : a.route === "chat" ? [
+      "In a chat with " + a.name + ", send the message.",
+      "Open the link " + a.name + " sends, and " + GS_SIGN_IN
+    ] : [
+      "Run the command.",
+      ...a.first ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this command."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.cmd(GS.link), label: "The command to run" }))] : [],
+      a.login ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this to sign in, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.login, label: "The sign-in command" })) : "Open the link it prints, and " + GS_SIGN_IN
+    ],
+    gsPermStep(a)
+  ];
+  const gsRevealTile = (el) => {
+    const tr = el.parentElement, r = el.getBoundingClientRect(), b = tr.getBoundingClientRect();
+    const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
+    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (d) tr.scrollBy({ left: d, behavior: still ? "auto" : "smooth" });
+  };
+  const GsSetup = () => {
+    const gs = useGs();
+    const [tile, setTile] = React$1.useState("chatgpt");
+    const [sub, setSub] = React$1.useState("grok");
+    const t = gsApp(tile || "chatgpt");
+    const a = gsApp(t.subs ? sub : t.id);
+    const [copyLabel, copyText] = gsAppCopy(a);
+    const wrap = React$1.useRef(null), card = React$1.useRef(null), notch = React$1.useRef(null), placed = React$1.useRef(false);
+    React$1.useLayoutEffect(() => {
+      const w = wrap.current;
+      if (!w) return void 0;
+      const track = w.querySelector(".mcp-crow-track");
+      const place = (glide) => {
+        const p = w.querySelector('.hw-app[aria-pressed="true"]'), c = card.current, n = notch.current;
+        if (!p || !c || !n) return;
+        const r = p.getBoundingClientRect(), cr = c.getBoundingClientRect(), x = r.left + r.width / 2 - cr.left;
+        if (glide !== void 0) n.style.transition = glide && placed.current ? "" : "none";
+        n.style.visibility = x < 16 || x > cr.width - 16 ? "hidden" : "";
+        n.style.left = x + "px";
+      };
+      const follow = () => place(false), refit = () => place();
+      place(true);
+      placed.current = true;
+      if (track) track.addEventListener("scroll", follow, { passive: true });
+      const ro = window.ResizeObserver ? new ResizeObserver(refit) : null;
+      if (ro) ro.observe(w);
+      return () => {
+        if (track) track.removeEventListener("scroll", follow);
+        if (ro) ro.disconnect();
+      };
+    }, [tile]);
+    const ask = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Do this once, and the games are there in any chat. ", gs.view === "out" && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "You need a free After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signup") }, "Start free"), " "), "Which app do you use?");
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", ref: wrap }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Setup", sub: ask, label: "Which app do you use?", className: "hw-apps" }, GS_APPS.filter((x) => !x.sub).map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "hw-app", "aria-pressed": tile === x.id, "aria-expanded": tile === x.id, "aria-controls": "hw-pick", "aria-label": x.name, onClick: (e) => {
+      setTile(tile === x.id ? null : x.id);
+      if (tile !== x.id) gsRevealTile(e.currentTarget);
+    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, a.id === "other" ? "Add After Pixels to your app" : "Add After Pixels to " + a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) })), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small hw-help" }, "If you can’t find it, ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("legal", { doc: "contact" }) }, "get in touch"), " and say which app you use."))));
+  };
+  const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
+  const GS_START_DELVE = {
+    title: "The Goblin Warren beneath Ashford Mill",
+    first: "Ashford Mill stands silent at dusk, its great wheel locked and still.",
+    rest: " For three generations it has ground the valley’s grain, and the village has never known it to stop. Tonight the millpond lies black and flat, and the only sound is a thin chant rising through the stones.",
+    heroes: [{ name: "Bryn", line: "Fighter" }, { name: "Wren", line: "Rogue" }, { name: "Aldric", line: "Wizard" }]
+  };
+  const gsStartTag = (g) => {
+    const t = g.tags[0];
+    return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : t === "FIRST" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "First " + g.ed[0] + " free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "locked" }, "Pass");
+  };
+  const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap: true, copy: true, edge: true, onCopy: (t) => lbCopy([t]) }, say);
+  const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
+  const GsStart = () => {
+    const gs = useGs();
+    const d = GS_START_DELVE;
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.CardRow, { kind: "chat", title: "Start", className: "hw-start" }, /* @__PURE__ */ React$1.createElement(
+      GsStartChat,
+      {
+        title: "In any chat, type",
+        say: gsPromptText({ kind: "games" }),
+        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI shows you the games to pick from. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("games") }, "See the games")),
+        turns: [{ from: "ai", text: "Here are today’s games. Pick one, or type a game’s name.", after: [{ type: "menu", label: "Today’s games", items: GS_START_GAMES.map((gid) => {
+          const g = GS_GAMES[gid];
+          return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
+        }) }] }]
+      }
+    ), /* @__PURE__ */ React$1.createElement(
+      GsStartChat,
+      {
+        title: "To go straight to one, type",
+        say: gsPromptText({ kind: "game", gid: "delve" }),
+        caption: "Name a game, or a past edition, and your AI starts it straight away.",
+        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest + " …"], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }]
+      }
+    )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.")));
+  };
+  const GsAgainGlyph = () => /* @__PURE__ */ React$1.createElement("svg", { className: "mcp-ico hw-chg-ic", viewBox: "0 0 24 24", width: "20", height: "20", "aria-hidden": "true", focusable: "false", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: "M19 12a7 7 0 1 1-2.1-5" }), /* @__PURE__ */ React$1.createElement("path", { d: "M17.5 3v4.2h-4.2" }));
+  const GS_HW_PLAY = [
+    ["Pick a game", "Choose from your AI’s list, or ask by name."],
+    ["Play it in the chat", "Tell your AI your move. The game plays it out."],
+    ["It saves as you go", "Stop any time. Come back later and carry on."],
+    ["When it ends", "Your result is saved. Share it or pick another."]
+  ];
   const GsConnect = () => {
-    const [ai, setAi] = React$1.useState("openclaw");
-    const t = gsPromptText({ kind: "games" });
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-md hw-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "You play every game inside your own AI. Connect it to After Pixels once and sign in, and nothing plays until you have.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-grid2" }, Object.keys(GS_AI_PLUGIN).map((k) => /* @__PURE__ */ React$1.createElement(GsAiCard, { key: k, k }))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { justifyItems: "stretch" } }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-other" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Another AI"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "radiogroup", "aria-label": "Your AI" }, GS_AI_OTHERS.map(([id, l]) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, role: "radio", "aria-checked": ai === id, variant: ai === id ? "main" : "secondary", onClick: () => setAi(id) }, l)))), /* @__PURE__ */ React$1.createElement(GsOtherSteps, { id: ai }))), /* @__PURE__ */ React$1.createElement("section", { className: "hw-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, "Start playing"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Say this to your AI and it lists every game. Pick one and it starts.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-promptrow" }, /* @__PURE__ */ React$1.createElement(GsPrompt, { text: t }), /* @__PURE__ */ React$1.createElement(GsCopyPrompt, { text: t }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Remove After Pixels in your AI’s settings, where you added it. Your results and history stay on After Pixels.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "If something doesn’t work, write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and say which AI you use."))));
+    const gs = useGs();
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-top" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-md hw-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.")), /* @__PURE__ */ React$1.createElement("nav", { className: "hw-over", "aria-label": "On this page" }, /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-over-card" }, /* @__PURE__ */ React$1.createElement("ul", { className: "hw-over-list" }, GS_HW_OVERVIEW.map(([id, sec, body]) => /* @__PURE__ */ React$1.createElement("li", { key: id }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-over-line" }, body), /* @__PURE__ */ React$1.createElement(DS.TextLink, { className: "hw-over-go", onClick: () => gsJump(id), "aria-label": "Go to " + sec }, sec))))))), /* @__PURE__ */ React$1.createElement("section", { id: "hw-setup", className: "hw-sec" }, /* @__PURE__ */ React$1.createElement(GsSetup, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-start", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsStart, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-playing", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", tabIndex: -1 }, "Playing"), /* @__PURE__ */ React$1.createElement(DS.StepCards, null, GS_HW_PLAY.map(([title, line], i) => /* @__PURE__ */ React$1.createElement(DS.StepCard, { key: title, art: /* @__PURE__ */ React$1.createElement("img", { src: "assets/how-it-works/step-" + (i + 1) + ".svg", alt: "" }), title, line }))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-more" }, "Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others let you try the start. The rest come with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".")), /* @__PURE__ */ React$1.createElement("section", { className: "hw-sec gs-stack-md", "aria-labelledby": "hw-who" }, /* @__PURE__ */ React$1.createElement("h2", { id: "hw-who", className: "mcp-t-sec" }, "Who does what"), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-who" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "Your AI"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Your AI does the talking, and a more capable model plays better. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "The game engine"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "It sets the rules, throws the dice and keeps your results."))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Your AI never asks you to pay.")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "To disconnect, remove After Pixels where you added it. Your results and history stay in your account.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "If something doesn’t work, write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and say which app you use.")))));
   };
   const GsPlayBox = ({ id }) => {
     const gs = useGs();

@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"TIME_CHIPS","sourcePath":"components/feedback/Tag.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"MoveList","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"MoveRow","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"NeedsPass","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"e9b7de29de70","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/chat-press.js":"90ce6ed8e95a","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"e7815cacb6fc","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"c1dac12da45d","components/chat/FactRows.jsx":"9407326d8b7e","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"efa644681b48","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"777e144e3413","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"01a9606f1140","components/media/Cover.jsx":"b407bbdd73fb","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"2b754c72f7ec","components/press.js":"894b196527ca","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"0c7a7f7490df","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/game-mark.jsx":"c8c47394b3b0","components/surfaces/GameCard.jsx":"e81a49b9177d","components/surfaces/GamePick.jsx":"cf90bfffa50e","components/surfaces/GameTile.jsx":"43daa3a9d3c2","components/surfaces/ListRow.jsx":"43f5ddb69d8e","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/MoveRow.jsx":"ff433b211bdb","components/surfaces/NeedsPass.jsx":"2f0af79b834e","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"f0715a8a576a","components/surfaces/SoonCard.jsx":"f4eebe3c025b"},"inlinedExternals":[],"unexposedExports":[{"name":"cbFold","sourcePath":"components/chat/chat-press.js"},{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"gameMark","sourcePath":"components/surfaces/game-mark.jsx"},{"name":"needsPassCopy","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"TIME_CHIPS","sourcePath":"components/feedback/Tag.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"SpeechBubble","sourcePath":"components/media/SpeechBubble.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"MoveList","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"MoveRow","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"NeedsPass","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"},{"name":"StepCard","sourcePath":"components/surfaces/StepCard.jsx"},{"name":"StepCards","sourcePath":"components/surfaces/StepCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"e9b7de29de70","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/chat-press.js":"90ce6ed8e95a","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"e7815cacb6fc","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"c1dac12da45d","components/chat/FactRows.jsx":"9407326d8b7e","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"efa644681b48","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"777e144e3413","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"8581c1afba49","components/media/Cover.jsx":"b407bbdd73fb","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"2b754c72f7ec","components/media/SpeechBubble.jsx":"7f314f2c88e4","components/press.js":"894b196527ca","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"0c7a7f7490df","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/game-mark.jsx":"c8c47394b3b0","components/surfaces/GameCard.jsx":"e81a49b9177d","components/surfaces/GamePick.jsx":"cf90bfffa50e","components/surfaces/GameTile.jsx":"43daa3a9d3c2","components/surfaces/ListRow.jsx":"43f5ddb69d8e","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/MoveRow.jsx":"ff433b211bdb","components/surfaces/NeedsPass.jsx":"2f0af79b834e","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"f0715a8a576a","components/surfaces/SoonCard.jsx":"f4eebe3c025b","components/surfaces/StepCard.jsx":"40287270aef7"},"inlinedExternals":[],"unexposedExports":[{"name":"cbFold","sourcePath":"components/chat/chat-press.js"},{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"gameMark","sourcePath":"components/surfaces/game-mark.jsx"},{"name":"needsPassCopy","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
 (function(React2) {
   "use strict";
   function usePress() {
@@ -275,19 +275,20 @@
     return null;
   }
   const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-  function useChatScroll(body, turns) {
+  function useChatScroll(body, turns, start) {
+    const top = start === "top";
     const [up, setUp] = React2.useState(false);
     React2.useEffect(() => {
       const b = body.current;
       if (!b) return void 0;
       let moved = false;
       const mark = () => {
-        const u = b.scrollTop > 4;
-        b.dataset.more = u ? "up" : "";
+        const u = top ? b.scrollTop + b.clientHeight < b.scrollHeight - 4 : b.scrollTop > 4;
+        b.dataset.more = u ? top ? "down" : "up" : "";
         setUp(u);
       };
       const end = () => {
-        if (!moved) b.scrollTop = b.scrollHeight;
+        if (!moved) b.scrollTop = top ? 0 : b.scrollHeight;
         mark();
       };
       const stop = () => {
@@ -311,7 +312,7 @@
     }, [turns]);
     const toStart = () => {
       const b = body.current;
-      if (b) b.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      if (b) b.scrollTo({ top: top ? b.scrollHeight : 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     };
     return [up, toStart];
   }
@@ -338,18 +339,19 @@
     ].filter(Boolean);
     return kids.length ? /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
   }
-  function chatShell({ body, bodyRef, up, toStart, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+  function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
     const name = label || "A game being played in a chat";
-    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up", hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon, { name: "down", size: 16, style: { transform: "rotate(180deg)" } })), control, comp);
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
   }
   const chatParas = paras;
-  function ChatPicture({ turns, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = "Back to the start", className = "" }) {
+  function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
     const body = React2.useRef(null);
-    const [up, toStart] = useChatScroll(body, turns);
+    const [up, toStart] = useChatScroll(body, turns, start);
     return chatShell({
       bodyRef: body,
       up,
       toStart,
+      start,
       title,
       height,
       width,
@@ -604,6 +606,24 @@
     });
   }
   ChatPlayback.duration = (turns, { pace, speed = 1, composer = true } = {}) => timeline(turns, { ...pace, speed }, composer).total;
+  function SpeechBubble({ children, wrap = false, copy = false, edge = false, onCopy, className = "" }) {
+    const [done, setDone] = React2.useState(false);
+    React2.useEffect(() => {
+      if (!done) return void 0;
+      const t = setTimeout(() => setDone(false), 2400);
+      return () => clearTimeout(t);
+    }, [done]);
+    const cls = ("mcp-say" + (wrap ? " is-wrap" : "") + (edge ? " is-edge" : "") + (copy ? " is-copy" : "") + (copy && done ? " is-done" : "") + " " + className).trim();
+    if (!copy) return /* @__PURE__ */ React2.createElement("span", { className: cls }, children);
+    const text = React2.Children.toArray(children).filter((c) => typeof c === "string" || typeof c === "number").join("");
+    const click = () => {
+      if (onCopy) onCopy(text);
+      else if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {
+      });
+      setDone(true);
+    };
+    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, "aria-label": "Copy: " + text, onClick: click }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-in" }, /* @__PURE__ */ React2.createElement("span", { className: "a" }, children), done && /* @__PURE__ */ React2.createElement("span", { className: "b", "aria-hidden": "true" }, "Copied"))), /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-live", role: "status" }, done ? "Copied" : ""));
+  }
   function Card({ title, action, children, className = "", style, href, onClick, label, chevron = true }) {
     const { pressed, handlers } = usePress();
     const live = !!(href || onClick);
@@ -930,6 +950,13 @@
     const P = playHref ? "a" : "button";
     return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-soon " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-art" }, art), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-body" }, label && /* @__PURE__ */ React2.createElement("span", { className: "mcp-soon-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-soon-line" }, line), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-tags" }, /* @__PURE__ */ React2.createElement(Tag, { kind: "daily" }, "Coming soon"), play && /* @__PURE__ */ React2.createElement(P, { className: "mcp-soon-play", href: playHref, type: playHref ? void 0 : "button", onClick: onPlay }, /* @__PURE__ */ React2.createElement(Tag, { kind: "open", icon: "play" }, play)))));
   }
+  const keepLastTwo = (t) => typeof t === "string" ? t.replace(/ (\S+)$/, " $1") : t;
+  function StepCard({ art, title, line, className = "", style }) {
+    return /* @__PURE__ */ React2.createElement("li", { className: ("mcp-card mcp-scard " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-scard-art" }, art), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card mcp-scard-name" }, keepLastTwo(title)), /* @__PURE__ */ React2.createElement("p", { className: "mcp-scard-line" }, line));
+  }
+  function StepCards({ label, children, className = "", style }) {
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-scards-wrap " + className).trim(), style }, /* @__PURE__ */ React2.createElement("ol", { className: "mcp-scards", "aria-label": label }, children));
+  }
   const ns = window.MCPGameStoreDesignSystem_ef1abd = window.MCPGameStoreDesignSystem_ef1abd || {};
   ns.__errors = ns.__errors || [];
   ns.Button = Button;
@@ -963,6 +990,7 @@
   ns.ICON_NAMES = ICON_NAMES;
   ns.Icon = Icon;
   ns.ChatPlayback = ChatPlayback;
+  ns.SpeechBubble = SpeechBubble;
   ns.Card = Card;
   ns.Heading = Heading;
   ns.CardRow = CardRow;
@@ -980,4 +1008,6 @@
   ns.PageGrid = PageGrid;
   ns.Popup = Popup;
   ns.SoonCard = SoonCard;
+  ns.StepCard = StepCard;
+  ns.StepCards = StepCards;
 })(React);

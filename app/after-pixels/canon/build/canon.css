@@ -170,6 +170,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 :is(button,a):active>:is(.mcp-tag-locked,.mcp-tag-open){background:color-mix(in srgb,var(--text) 16%,var(--page));transform:scale(.97)}
 @media (hover:hover){:is(button,a):hover>:is(.mcp-tag-locked,.mcp-tag-open){border-color:var(--off-white)}}
 @media (prefers-reduced-motion:reduce){.mcp-tag-locked,.mcp-tag-open{transition:none}:is(button,a):active>:is(.mcp-tag-locked,.mcp-tag-open){transform:none}}
+.mcp-cb .mcp-tag-locked,.mcp-cb .mcp-tag-open{color:var(--cb-ink);border-color:var(--cb-ink2)}
 .mcp-tag-success{background:var(--success);color:var(--success-on)}
 .mcp-tag-warning{background:var(--warning);color:var(--warning-on)}
 .mcp-tag-error{background:var(--error);color:var(--error-on)}
@@ -420,6 +421,10 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 /* KEEP: The pill: arrow only, 28px tall, 12px down, centred; ::before keeps the target 44px tall */
 .mcp-chat-up{position:absolute;z-index:2;top:12px;left:50%;display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border:0;border-radius:999px;background:var(--c-send);color:var(--c-send-fg);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18);transform:translateX(-50%);-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease),transform var(--time-press) var(--ease),background var(--time-press) var(--ease)}
 .mcp-chat-up::before{content:"";position:absolute;inset:-8px -2px}
+.mcp-chat-up.is-down{top:auto;bottom:68px}.mcp-chat-up.is-down.is-bare{bottom:12px}
+.mcp-chat-up.is-down[hidden]{transform:translate(-50%,6px)}
+.mcp-chat.is-top .mcp-chat-body>:first-child{margin-top:0}
+.mcp-chat-body[data-more="down"]{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 56px);mask-image:linear-gradient(to top,transparent 0,#000 56px)}
 .mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
 @media (hover:hover){.mcp-chat-up:not([hidden]):hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg));transform:translate(-50%,-1px)}}
 .mcp-chat-up:not([hidden]):active{transform:translateX(-50%) scale(.97)}
@@ -639,6 +644,17 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-gcard-name{display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;justify-content:space-between;gap:var(--space-2);min-width:0}
 .mcp-gcard-blurb{margin:0;font:400 16px/1.5 var(--font-text);color:var(--muted);text-wrap:wrap}
 .mcp-gcard-tags{display:flex;flex-wrap:wrap;align-items:center;align-content:center;gap:var(--space-2);align-self:stretch}
+/* StepCard: a step as a card, built from GameCard's parts. StepCards shares three lines (picture, name, line) across the cards. */
+.mcp-scards-wrap{container:mcp-scards/inline-size;min-width:0}
+.mcp-scards{--scard-text:calc((100cqi - 8px) / 2 - 26px);list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--space-2);row-gap:var(--space-2)}
+.mcp-scard{grid-row:span 3;display:grid;grid-template-rows:subgrid;row-gap:0;padding:var(--space-3);justify-items:stretch;align-content:start}
+.mcp-scard-art{min-width:0;margin-bottom:var(--space-3);aspect-ratio:2/1;overflow:hidden;background:var(--cover-bg-indigo)}
+.mcp-scard-art>img,.mcp-scard-art>svg{display:block;width:100%;height:100%;object-fit:cover}
+/* KEEP: the name shrinks from 20px towards 16px with a narrow card before it wraps, so a short name never leaves one word on a second line. */
+.mcp-scard-name{margin:0 0 var(--space-1);font-size:clamp(16px,calc(var(--scard-text) * .15),20px);text-wrap:balance}
+.mcp-scard-line{margin:0;font:400 14px/1.4 var(--font-text);color:var(--muted);text-wrap:pretty}
+@container mcp-scards (min-width:520px){.mcp-scards{--scard-text:calc((100cqi - 36px) / 4 - 26px);grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--space-3)}}
+@container mcp-scards (min-width:852px){.mcp-scards{column-gap:var(--space-4)}.mcp-scard{padding:var(--space-4)}}
 /* GamePick: one of a pair of games featured by hand. Bigger than a GameCard: a 3:1 picture, a label, the name and blurb as one block, tags. Two side by side share three lines (subgrid). */
 .mcp-gpicks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,348px),1fr));grid-auto-rows:auto;column-gap:var(--space-5);row-gap:0;margin-bottom:calc(-1*var(--space-4))}
 .mcp-gpick{grid-template-rows:auto auto auto;row-gap:var(--space-4);justify-items:stretch;align-content:start}
@@ -683,6 +699,26 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-card.is-link,.mcp-row.is-link,.mcp-btn,.mcp-lnk,.mcp-art-host,.mcp-disc-btn,.mcp-menu-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 /* KEEP: A tag keeps its box while its card or row is pressed: its 14% fill matches the 10% press fill exactly, so it lifts a step for the length of the press. */
 .mcp-card.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-row.is-link:is(:active,.is-pressed) .mcp-tag-daily,.mcp-art-host:is(:active,.is-on) .mcp-tag-daily{background:color-mix(in srgb,var(--text) 24%,var(--page))}
+/* SpeechBubble: the words a player types, inline, as a sent message. The one round shape on the shop's own surface. */
+.mcp-say{display:inline;margin-inline-start:var(--space-1);padding:.15em .6em;border-radius:1em 1em .2em 1em;background:var(--off-white);color:var(--page);font-family:var(--font-text);font-weight:500;white-space:nowrap;-webkit-box-decoration-break:clone;box-decoration-break:clone;cursor:inherit}
+/* KEEP: a long bubble that does not fit moves to the next line whole, and breaks inside itself only when one line is too narrow for it; its line height is trimmed by its padding so it adds no height to the line. */
+.mcp-say.is-edge{box-shadow:inset 0 0 0 1.5px var(--control-edge)}
+.mcp-say.is-wrap{display:inline-block;max-width:100%;white-space:normal;line-height:calc(1lh - .3em)}
+/* KEEP: a copying bubble is a button in the bubble's shape: an inline-block whose line height is trimmed by its padding so it adds no height to its line; the label and the "Copied" label share one grid cell so its width never changes; a 44px-tall ::after is its touch target. */
+.mcp-say.is-copy{position:relative;display:inline-block;max-width:100%;margin-block:0;border:0;font-size:inherit;line-height:calc(1lh - .3em);text-align:start;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;transition:background-color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}
+.mcp-say.is-copy:not(.is-wrap){white-space:nowrap}
+.mcp-say.is-copy.is-wrap{white-space:normal}
+.mcp-say.is-copy::after{content:"";position:absolute;left:0;right:0;top:calc(50% - 22px);height:44px}
+.mcp-say-in{display:inline-grid;max-width:100%}
+.mcp-say-in>span{grid-area:1/1;transition:opacity var(--time-swap) var(--ease),transform var(--time-swap) var(--ease)}
+.mcp-say-in .b{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;animation:mcp-say-rise var(--time-swap) var(--ease) both}
+@keyframes mcp-say-rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.mcp-say.is-copy.is-done .mcp-say-in .a{opacity:0;transform:translateY(-6px)}
+.mcp-say-live{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media (hover:hover){.mcp-say.is-copy:hover{background:color-mix(in srgb,var(--off-white) 87%,var(--page))}}
+.mcp-say.is-copy:active{background:color-mix(in srgb,var(--off-white) 74%,var(--page));transform:scale(.97)}
+.mcp-say.is-copy:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.mcp-say.is-copy,.mcp-say-in>span{transition:none}.mcp-say-in .b{animation:none}}
 
 /* The product's stylesheets, in the order index.html used to link them: a later file wins a tie, so this order is the cascade. */
 /* ============================================================================
@@ -2316,25 +2352,106 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* How it works and the play dialog (app/gs-connect.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
-/* How it works and the play dialog (app/gs-connect.jsx) */
-.hw-head .gs-lead { max-width: none; }
-@container gs (min-width: 720px) { .hw-head { max-width: 66.667%; } }
+/* The play dialog, and the prompt box the editions list shares */
 .hw-prompt { font: 400 15px/1.5 var(--font-text); color: var(--text); white-space: pre-wrap; }
 .hw-need { margin: 0; text-wrap: pretty; }
-.hw-seg { display: flex; flex-wrap: wrap; gap: 8px; }
-.hw-ai { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 16px; align-items: start; }
-.hw-ai-logo { display: grid; place-items: center; width: 48px; height: 48px; border: 1.5px solid var(--control-edge); color: var(--text); flex: none; }
-.hw-ai-tx { display: grid; gap: 4px; min-width: 0; }
-.hw-ai-act { grid-column: 2; }
-.hw-other { display: grid; gap: 20px; }
-.hw-band { display: grid; gap: 16px; padding: 20px; border: 1.5px solid var(--control-edge); }
-.hw-promptrow { display: grid; gap: 12px; justify-items: start; }
-.hw-promptrow > .hw-prompt { justify-self: stretch; }
-@container gs (min-width: 720px) {
-  .hw-other { grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr); gap: 32px; align-items: start; }
-  .hw-band { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; gap: 32px; padding: 24px; }
-  .hw-promptrow { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+
+/* How it works. One rhythm: each section is a 24px heading and one surface under it. Colour comes in only at the step
+   pictures, the speech bubbles and the app logos. */
+.hw-sec { scroll-margin-top: calc(80px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); }
+.hw-sec h2:focus { outline: none; }
+.hw-sec p, .hw-over-list { margin: 0; }
+
+/* Head and Overview: one column at every width, the head across the page and the Overview card under it. */
+.hw-top { display: grid; gap: 24px; }
+.hw-head .gs-lead { text-wrap: pretty; max-width: 70ch; }
+/* The Overview: one static card, three lines split by 1px lines, each ending in a text link that jumps to its section. */
+.hw-over-card { container: hw-over / inline-size; padding-block: 4px; justify-items: stretch; }
+.hw-over-list { list-style: none; padding: 0; display: grid; }
+.hw-over-list > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; padding-block: 8px; }
+.hw-over-list > li + li { border-top: 1px solid var(--line); }
+/* KEEP: under a 900px page each line is a card title that shrinks from 20px towards 16px with the card's width before it wraps,
+   so "Type" and its bubble always share one line (the system's order: size first). */
+.hw-over-line { flex: 1 1 9em; min-width: 0; font: 700 clamp(16px, 7.4cqi, 20px)/1.25 var(--font-heading); letter-spacing: -.01em; text-wrap: pretty; }
+.hw-over-go { flex: none; min-height: 44px; margin-left: auto; }
+/* KEEP: from a 900px page the Overview is one strip of three cells split by 1px lines, read left to right as the sequence it is:
+   the line at the top of its cell and its link at the bottom right corner, so the three links share one line; each line is 20px, shrinking to 16px
+   with its own cell's width. */
+@container gs (min-width: 900px) {
+  .hw-over-card { padding: 0; }
+  .hw-over-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .hw-over-list > li { display: grid; align-items: normal; align-content: space-between; justify-items: start; gap: 4px; padding: 16px 24px 8px; container-type: inline-size; }
+  .hw-over-go { justify-self: end; margin-left: 0; }
+  .hw-over-list > li + li { border-top: 0; border-left: 1px solid var(--line); }
+  .hw-over-line { font-size: clamp(16px, 6.4cqi, 20px); }
 }
+
+/* Setup: the app picker, a CardRow of logo tiles. The picked tile is filled, as a main Button is; the rest are outlined. */
+.hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
+.hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
+@container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
+.hw-apps .mcp-crow-sub { max-width: 70ch; }
+.hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
+.hw-app > svg, .hw-app > .hw-mask { flex: none; }
+.hw-app > span:not(.hw-mask) { max-width: 100%; overflow-wrap: normal; }
+.hw-app[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+.hw-app:active { transform: scale(.97); }
+.hw-app:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
+@media (hover: hover) { .hw-app:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+@container mcp-crow (max-width: 420px) { .hw-app { min-height: 56px; padding: 0; } .hw-app > span:not(.hw-mask) { display: none; } }
+.hw-img { display: block; flex: none; object-fit: contain; }
+/* Grok's mark comes as two files: the light mark on the page, the dark mark on the picked (off-white) tile. */
+.hw-img-grok.is-on { display: none; }
+.hw-app[aria-pressed="true"] .hw-img-grok.is-on { display: block; }
+.hw-app[aria-pressed="true"] .hw-img-grok.is-off { display: none; }
+/* A logo kept as its own file, painted in the tile's text colour through its shape. */
+.hw-mask { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
+
+/* The picked app's card, its notch on the top edge pointing at the picked tile. One anatomy for every route: title row,
+   the thing to copy, the steps, and the help line. */
+.hw-pick { position: relative; }
+.hw-notch { position: absolute; z-index: 1; top: -7px; width: 14px; height: 14px; background: var(--card); border-left: 1px solid var(--line); border-top: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); transition: left var(--time-swap) var(--ease); pointer-events: none; }
+.hw-pick-card.mcp-card { justify-items: stretch; gap: 16px; }
+.hw-help { margin: 0; }
+.hw-pick-head { display: grid; gap: 16px; }
+.hw-pick-head > .hw-seg { order: -1; }
+.hw-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+/* KEEP: from a 640px window (the button width rule) the Grok switch sits at the right of the title's row at its buttons' natural
+   width, so the row has no empty space; under it the switch is a full-width pair above the title. */
+@media (min-width: 640px) {
+  .hw-pick-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+  .hw-pick-head > .hw-seg { order: 0; display: flex; }
+}
+.hw-eyebrow { text-transform: uppercase; margin: 0; }
+.hw-pick-body { display: grid; gap: 16px; align-items: start; }
+/* KEEP: the card is one column at every width: the title, the switch, the thing to copy, the steps, then the help line. A copy box
+   stays one line with Copy beside it at every width; its text scrolls sideways, and a fade at the right edge shows while more is hidden. */
+.hw-pick-card { container: hw-card / inline-size; }
+.gs-copy-field { position: relative; min-width: 0; }
+.gs-copy-field.has-more::after { content: ""; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 40px; pointer-events: none; background: linear-gradient(to right, transparent, var(--card)); }
+@media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
+
+/* Start: two ChatPictures in the system's CardRow. The typed line is a SpeechBubble in place of ChatPicture's own user message,
+   so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
+@container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
+.hw-chatfig > h3 { margin: 0; }
+.hw-start .mcp-chat-me { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
+.hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
+.hw-chg-ic { flex: none; align-self: flex-start; }
+
+/* Playing: four StepCards, then the editions and Pass sentences in one paragraph. */
+.hw-more { max-width: 70ch; text-wrap: pretty; }
+
+/* Who does what: one card, two ruled rows.
+   KEEP: each row is as tall as its own text, so the card has no dead space at any width; from 640px the name sits beside its text (190px, then
+   the text at most 62 characters wide), under 640px it sits above it. */
+.hw-who.mcp-card { padding: 0; gap: 0; justify-items: stretch; }
+.hw-who-row { display: grid; gap: 4px; padding: 16px; }
+.hw-who-row > * { margin: 0; }
+.hw-who-row p { font: 400 14px/1.5 var(--font-text); text-wrap: pretty; }
+.hw-who-row + .hw-who-row { border-top: 1px solid var(--line); }
+@media (min-width: 640px) { .hw-who-row { grid-template-columns: 190px minmax(0, 62ch); align-items: center; gap: 28px; padding: 16px 24px; } }
 /* Product page: facts, finished play, gaps, the cover beside the play box, pitch (app/gs-game.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
@@ -2366,10 +2483,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .gs-hero-cover { min-height: 320px; }
   .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }
   .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; }
-}
-@container gs (min-width: 1000px) {
-  .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
-  .hw-ai-act { grid-column: auto; }
 }
 
 /* KEEP: Covers on a phone: the head of the product and session pages shows the cover small beside the title, as the library game page does, so the first action is in view; a More games card's art is 2:1 */

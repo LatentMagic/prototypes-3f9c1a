@@ -20,6 +20,7 @@ ChatPicture shows a game being played in a plain chat window; use it on a game's
 </CardRow>
 ```
 - It scrolls. It opens on the latest turn and the reader can scroll up to every earlier one; a longer conversation scrolls, it never makes the picture taller. Once scrolled up, the top edge fades and a small arrow-only pill appears at the top centre (28px tall, 12px down, tap target 44px); pressing it scrolls back to the first turn. Its spoken name is "Back to the start" (`more`). Don't build your own scroll or pill around it.
+- `start="top"` opens it on the first turn instead of the latest, for a picture whose point is its first turn (the line a player types). A short conversation sits at the top. The pill flips: a down arrow just above the reply box (its spoken name is "On to the latest"), which scrolls to the latest turn and hides once it is there; the fade moves to the bottom edge. Everything else is as above; leave it off on product pages.
 - `fill` stretches it to the box it sits in (e.g. a hero field) instead of the 290px height; give that box a height.
 - One colour only: the off-white ground, var(--off-white) (#EDE8DF), with the warm grey send button (var(--control-edge), white arrow). Never dark.
 - To show the chat being played rather than finished, use `ChatPlayback` with the same turns (see `playback/ChatPlayback.prompt.md`).
