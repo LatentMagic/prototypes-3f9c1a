@@ -984,7 +984,8 @@ button.mcp-cb-ent{cursor:pointer}
 .dl-fold:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
 @media (prefers-reduced-motion: reduce) { .dv8.is-3b.is-tap .dl-fold svg, .dv8.is-3b.is-tap .esx-fold, .dv8.is-3b.is-tap .dl-tabwrap > .esx-fold { transition: none; } }
 
-/* One row (a sheet 796px wide or more). KEEP: the tabs take the width the name and bars leave, each at most 140px wide, so the sheet has no empty side gaps; they shrink with the sheet (height 96px down to 64px, their word 10px down to 8px, its letter-spacing to 0) and the bars give way first, down to 128px. The tabs are always shown here, whatever the fold's state, so a resize never waits on a render. */
+/* One row (a sheet 796px wide or more). KEEP: the header's padding is 20px above and below its contents; the tallest part, the stacked meters, sets the header's height, and the hairlines and the five tabs stretch to fill it, each tab's icon and word centred in it, with no fixed height in the row; a part shorter than the meters stretches, and a taller one would leave the meters centred.
+   KEEP: the tabs take the width the name and bars leave, each at most 140px wide, so the sheet has no empty side gaps; they shrink with the sheet (their word 10px down to 8px, its letter-spacing to 0) and the bars give way first, down to 128px. The tabs are always shown here, whatever the fold's state, so a resize never waits on a render. */
 @container dv4 (min-width: calc(796px + 32px)) {
   .dv8-r1 { display: flex; flex-wrap: nowrap; align-items: stretch; padding: 20px 16px; }
   .dl-head { display: contents; }
@@ -992,9 +993,10 @@ button.mcp-cb-ent{cursor:pointer}
   .dv8.is-3b .dv7-grp.is-hero { flex: 0 0 auto; }
   .dv8.is-3b .dv8-meters { flex: 1 1 280px; min-width: 128px; width: auto; border-left: 1px solid var(--line); }
   .dl-tabwrap > .esx-fold { grid-template-rows: 1fr; opacity: 1; visibility: visible; flex: 100 1 0; min-width: 0; max-width: 756px; }
-  .dv8.is-3b .dl-tabgrp { padding: 0 0 0 14px; border-left: 1px solid var(--line); justify-items: stretch; align-content: center; }
-  .dv8.is-3b .esx-cards.dl-tabs { --f: clamp(8px, calc(8px + (var(--dlw) - 680px) / 60), 10px); grid-template-columns: repeat(var(--dl-tabs), minmax(calc(var(--f) * 6.27 + 8px), 140px)); gap: clamp(4px, calc((var(--dlw) - 560px) / 30), 10px); }
-  .dv8.is-3b .esx-card.dl-tab { height: clamp(64px, calc(var(--dlw) / 12), 96px); }
+  .dv8.is-3b .dl-tabgrp { padding: 0 0 0 14px; border-left: 1px solid var(--line); justify-items: stretch; align-content: stretch; flex: 1 1 auto; }
+  .dv8.is-3b .dl-tabwrap > .esx-fold > div { display: flex; flex-direction: column; }
+  .dv8.is-3b .esx-cards.dl-tabs { grid-template-rows: minmax(0, 1fr); flex: 1 1 auto; --f: clamp(8px, calc(8px + (var(--dlw) - 680px) / 60), 10px); grid-template-columns: repeat(var(--dl-tabs), minmax(calc(var(--f) * 6.27 + 8px), 140px)); gap: clamp(4px, calc((var(--dlw) - 560px) / 30), 10px); }
+  .dv8.is-3b .esx-card.dl-tab { height: auto; }
   .dv8.is-3b .dl-tab-w { font-size: var(--f); letter-spacing: 0; }
 }
 /* Two rows: the header over the tabs. The header is a full-width band, so its hover tint runs edge to edge of the card; the tabs share the sheet's width, their word and spacing stepping down with it. */
