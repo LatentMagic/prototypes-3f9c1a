@@ -234,7 +234,7 @@
     const HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
     const RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
     const SPARKLE = "M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z";
-    const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-7, -6.5] : adv ? [-7, -6] : [-3.5, -3];
+    const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-5, -4.5] : adv ? [-7, -6] : [-3.5, -3];
     function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
       const big = size >= 64;
       const adv = other != null && !big && !selected;
