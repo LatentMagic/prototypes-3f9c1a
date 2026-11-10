@@ -1555,7 +1555,7 @@
       threat: 3,
       light: 2,
       foeMax: { "snaggle's den": 2 },
-      sheet: { used: { "Sneak attack": 1 }, insp: true }
+      sheet: { used: {}, insp: true }
     }
   });
   const gsBegunId = (sid) => sid.replace(/-live$/, "-begun");
@@ -3521,7 +3521,9 @@
       shareLines: null,
       threat: 7,
       light: 4,
-      sheet: { used: { "Shield bash": 2 }, insp: false },
+      figures: ["Threat 7/12", "9 rolls", "HP 0/23"],
+      tracks: { progress: 3, rooms: 5, threat: 7, threatMax: 12 },
+      sheet: { used: {}, insp: false },
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12"],
         ["Room", "Entered the chime run"],
@@ -3550,7 +3552,9 @@
       threat: 12,
       foeMax: { "the shrine cavern": 5 },
       light: 0,
-      sheet: { used: { "Sneak attack": 1 }, insp: false },
+      figures: ["Threat 12/12", "24 rolls", "1 natural 20", "HP 14/21"],
+      tracks: { progress: 5, rooms: 5, threat: 12, threatMax: 12 },
+      sheet: { used: {}, insp: false },
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 20/21"],
         ["Room", "Entered the chime run"],
