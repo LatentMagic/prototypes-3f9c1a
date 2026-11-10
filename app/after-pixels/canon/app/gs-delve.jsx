@@ -259,18 +259,18 @@ const DlPanel = ({ groups, card }) => { const grp = groups.find((g) => g.key ===
 const DlHead = ({ c, one, folded, fold }) => (<div className={'dl-head' + (one ? '' : ' is-fold')}>
   <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
   <DlMeters c={c} />
-  {!one && <button type="button" className="dl-fold" aria-expanded={!folded} aria-label={folded ? 'Show the whole character sheet' : 'Fold the character sheet'} onClick={fold}><DS.Icon name="next" size={20} /></button>}
+  {!one && <button type="button" className="dl-fold" aria-expanded={!folded} aria-controls="dl-sheet-tabs" aria-label="Character sheet details" onClick={fold}><DS.Icon name="next" size={20} /></button>}
 </div>);
 const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const one = useDlOneRow(ref); const [card, setCard] = React.useState(null); const [folded, setFolded] = React.useState(true);
   const groups = dlTabGroups(c, dlSlots(c), streak);
   // KEEP: a new layout opens as a first one does: the tab shut and, in two rows, the sheet folded. Changing between one row and two is the new layout.
   React.useEffect(() => { setCard(null); setFolded(true); }, [one]);
   const fold = () => { setFolded(!folded); setCard(null); };
-  return (<section ref={ref} className={'dv4 dv5 is-tight dv7 is-band dv8 is-3b dl-sheet' + (one ? ' is-one' : '')} aria-label="Character sheet">
+  return (<section ref={ref} className="dv4 dv5 is-tight dv7 is-band dv8 is-3b" aria-label="Character sheet">
     <div className="dv8-rows"><div className="dv7-band">
       <div className="dv8-r1">
         <DlHead c={c} one={one} folded={folded} fold={fold} />
-        <EsxFold open={one || !folded}><div className="dv7-grp dl-tabgrp"><DlTabs groups={groups} card={card} setCard={setCard} /></div></EsxFold>
+        <div id="dl-sheet-tabs" className="dl-tabwrap"><EsxFold open={one || !folded}><div className="dv7-grp dl-tabgrp"><DlTabs groups={groups} card={card} setCard={setCard} /></div></EsxFold></div>
       </div>
       <DlPanel groups={groups} card={card} />
     </div></div></section>);

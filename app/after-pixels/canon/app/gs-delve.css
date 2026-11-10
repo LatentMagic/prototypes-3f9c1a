@@ -161,12 +161,8 @@
 .dv7-lb { max-width: 88px; align-self: start; text-align: center; text-wrap: balance; font: 600 12px/1.2 var(--font-text); color: var(--text); font-variant-numeric: tabular-nums; }
 .dv7-cell.is-used .dv7-lb { color: var(--muted); }
 .dv7 .dv7-cell .dv4-sx text { font-size: 20px; }
-.dv7-h { display: flex; align-items: baseline; gap: 8px; font: 600 13px/1.2 var(--font-text); color: var(--muted); }
-.dv7-h b { font: 600 13px/1.2 var(--font-text); color: var(--text); font-variant-numeric: tabular-nums; }
 .dv7 .mcp-prog-top { display: none; }
 /* 1H · Band: groups centred across the card, split by hairlines. */
-/* KEEP: every group grows by the same amount, so the card's slack is shared out between groups, never left beside the hero. */
-/* KEEP: the band never wraps on a desktop card; groups may shrink, never drop to a second row. */
 .dv7-band { display: flex; flex-wrap: nowrap; gap: 0; }
 .dv7-grp { flex: 1 1 auto; min-width: 0; display: grid; gap: 8px; justify-items: center; align-content: start; padding: 0 12px; }
 .dv7-grp:first-child { padding-left: 0; }
@@ -177,9 +173,7 @@
 .dv7-hero { margin: 0; display: grid; justify-items: center; gap: 4px; }
 .dv7-hero b { font: 700 22px/1.1 var(--font-heading); letter-spacing: -.01em; color: var(--text); white-space: nowrap; }
 .dv7-hero span { font: 600 14px/1.2 var(--font-text); color: var(--muted); }
-/* KEEP: ~ not +, because the phone's fold button sits between Threat and Stats in the markup. */
 .dv7-grp ~ .dv7-grp { border-left: 1px solid var(--line); }
-.dv7-grp .dv7-h { justify-content: center; }
 @container dv4 (max-width: 559.98px) {
   .dv7-hero b { font-size: 18px; }
 }
@@ -237,21 +231,21 @@
 .dv8.is-3b .esx-fold > div { display: block; }
 .dv8-r1 { min-width: 0; }
 .dl-head { position: relative; min-width: 0; }
+.dl-tabwrap { display: contents; }
 /* Folded, the tabs are hidden once their close has run, so a keyboard never lands on one that cannot be seen. */
-.dv8-r1 > .esx-fold { visibility: hidden; transition: grid-template-rows var(--time-dropdown) var(--ease), opacity var(--time-dropdown) var(--ease), visibility 0s linear var(--time-dropdown); }
-.dv8-r1 > .esx-fold.is-open { visibility: visible; transition-delay: 0s; }
+.dl-tabwrap > .esx-fold { visibility: hidden; transition: grid-template-rows var(--time-dropdown) var(--ease), opacity var(--time-dropdown) var(--ease), visibility 0s linear var(--time-dropdown); }
+.dl-tabwrap > .esx-fold.is-open { visibility: visible; transition-delay: 0s; }
 .dv8.is-3b .dv7-grp.is-hero { padding: 0 16px 0 0; justify-items: start; align-content: center; }
 .dv8.is-3b .dv7-hero { justify-items: start; text-align: left; }
 .dv8.is-3b .dv7-hero b { white-space: nowrap; text-align: left; }
 .dv8.is-3b .dv8-meters { padding: 0 16px; }
-/* The fold: a button with no box of its own, its ::before stretched over the whole header; only the chevron is drawn, centred on the header at its right end. */
-.dl-fold { position: static; display: block; width: 0; height: 0; padding: 0; margin: 0; background: none; border: 0; color: var(--text); cursor: pointer; }
-.dl-fold::before { content: ''; position: absolute; inset: 0; }
+/* The fold: a button over the whole header, so a tap anywhere on it folds; the name and bars stay beneath it, readable to a screen reader. Only the chevron is drawn, centred on the header at its right end. */
+.dl-fold { position: absolute; inset: 0; display: block; width: 100%; padding: 0; margin: 0; background: none; border: 0; color: var(--text); cursor: pointer; }
 .dl-fold svg { position: absolute; right: 12px; top: calc(50% - 10px); transform: rotate(-90deg); transition: transform var(--dur-fast, .15s); }
 .dl-fold[aria-expanded="false"] svg { transform: rotate(90deg); }
-.dl-fold:focus-visible::before { outline: 2px solid var(--off-white); outline-offset: -2px; }
+.dl-fold:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
 @media (hover: hover) { .dl-head.is-fold:hover { background: var(--popup); } }
-@media (prefers-reduced-motion: reduce) { .dl-fold svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .dl-fold svg, .dl-tabwrap > .esx-fold { transition: none; } }
 
 /* One row (a sheet 796px wide or more). KEEP: the tabs take the width the name and bars leave, each at most 140px wide, so the sheet has no empty side gaps; they shrink with the sheet (height 96px down to 64px, their word 10px down to 8px, its letter-spacing to 0) and the bars give way first, down to 128px. */
 @container dv4 (min-width: 796px) {
@@ -259,7 +253,7 @@
   .dl-head { display: contents; }
   .dv8.is-3b .dv7-grp.is-hero { flex: 0 0 auto; }
   .dv8.is-3b .dv8-meters { flex: 1 1 280px; min-width: 128px; width: auto; border-left: 1px solid var(--line); }
-  .dv8-r1 > .esx-fold { flex: 100 1 0; min-width: 0; max-width: 756px; }
+  .dl-tabwrap > .esx-fold { flex: 100 1 0; min-width: 0; max-width: 756px; }
   .dv8.is-3b .dl-tabgrp { padding: 0 0 0 14px; border-left: 1px solid var(--line); justify-items: stretch; align-content: center; }
   .dv8.is-3b .esx-cards.dl-tabs { --f: clamp(8px, calc(8px + (100cqw - 680px) / 60), 10px); grid-template-columns: repeat(var(--dl-tabs), minmax(calc(var(--f) * 6.27 + 8px), 140px)); gap: clamp(4px, calc((100cqw - 560px) / 30), 10px); }
   .dv8.is-3b .esx-card.dl-tab { height: clamp(64px, calc(100cqw / 12), 96px); }
