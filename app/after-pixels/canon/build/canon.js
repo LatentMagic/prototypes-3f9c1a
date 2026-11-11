@@ -6851,7 +6851,7 @@
     ["Pick a game", "Choose from your AI’s list, or ask by name."],
     ["Play in the chat", "Tell your AI your move. The game plays it out."],
     ["Stop any time", "Your game saves as you go. Come back later and carry on."],
-    ["Finish and share", "The game keeps your record. Share it, or pick another game."]
+    ["Finish & share", "The game keeps your record. Share it, or pick another game."]
   ];
   const GS_TOP_ART = ["word", "escape", "delve", "casebook", "where", "barrow", "derelict", "hunter", "murder"];
   const GsBandCovers = () => /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-covers", "aria-hidden": "true" }, [...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: "hw-band-cover", dangerouslySetInnerHTML: { __html: GS_ART[a].svg } }) : null));

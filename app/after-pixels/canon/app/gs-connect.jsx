@@ -335,7 +335,7 @@ const GS_HW_PLAY = [
   ['Pick a game', 'Choose from your AI’s list, or ask by name.'],
   ['Play in the chat', 'Tell your AI your move. The game plays it out.'],
   ['Stop any time', 'Your game saves as you go. Come back later and carry on.'],
-  ['Finish and share', 'The game keeps your record. Share it, or pick another game.'],
+  ['Finish & share', 'The game keeps your record. Share it, or pick another game.'],
 ];
 
 // ---- The page's top: the first thing a visitor lands on, so it shows the games rather than describing them. ----
