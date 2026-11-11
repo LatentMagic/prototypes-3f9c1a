@@ -44,17 +44,14 @@ const GS_AI_MARK = {
   openclaw: ['forest', 'orange', <path d="M9 31 L31 31 L31 9 Z" />],
   hermes: ['indigo', 'teal', <path d="M16 9 L28 9 L24 31 L12 31 Z" />],
 };
+// TRIAL (the user, 2026-11-11, not ratified): the marks in one colour, the tile's text colour, with no box: the shapes stay,
+// the colour goes, so the picker is calmer. Other is the only outline.
 const GsAiLogo = ({ ai, size = 20 }) => {
   const m = GS_AI_MARK[ai];
   return (
-    <svg className="hw-mark" viewBox="0 0 40 40" width={size} height={size} aria-hidden="true" focusable="false">
-      {m ? <>
-        <rect width="40" height="40" fill={'var(--cover-bg-' + m[0] + ')'} />
-        <g fill={'var(--cover-' + m[1] + ')'}>{m[2]}</g>
-      </> : <>
-        <rect width="40" height="40" fill="var(--line)" />
-        <circle cx="20" cy="20" r="9" fill="none" stroke="var(--muted)" strokeWidth="2" />
-      </>}
+    <svg className="hw-mark" viewBox="6 6 28 28" width={size} height={size} aria-hidden="true" focusable="false">
+      {m ? <g fill="currentColor">{m[2]}</g>
+        : <circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" strokeWidth="2.5" />}
     </svg>
   );
 };

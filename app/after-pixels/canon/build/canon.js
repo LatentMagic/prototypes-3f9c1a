@@ -6638,7 +6638,7 @@
   };
   const GsAiLogo = ({ ai, size = 20 }) => {
     const m = GS_AI_MARK[ai];
-    return /* @__PURE__ */ React$1.createElement("svg", { className: "hw-mark", viewBox: "0 0 40 40", width: size, height: size, "aria-hidden": "true", focusable: "false" }, m ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { width: "40", height: "40", fill: "var(--cover-bg-" + m[0] + ")" }), /* @__PURE__ */ React$1.createElement("g", { fill: "var(--cover-" + m[1] + ")" }, m[2])) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { width: "40", height: "40", fill: "var(--line)" }), /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "9", fill: "none", stroke: "var(--muted)", strokeWidth: "2" })));
+    return /* @__PURE__ */ React$1.createElement("svg", { className: "hw-mark", viewBox: "6 6 28 28", width: size, height: size, "aria-hidden": "true", focusable: "false" }, m ? /* @__PURE__ */ React$1.createElement("g", { fill: "currentColor" }, m[2]) : /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "10", fill: "none", stroke: "currentColor", strokeWidth: "2.5" }));
   };
   const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
   const gsPromptText = (r) => r.kind === "games" ? "Play After Pixels" : "Play " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + " on After Pixels";
