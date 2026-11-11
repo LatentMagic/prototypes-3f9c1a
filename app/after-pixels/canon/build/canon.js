@@ -2666,14 +2666,14 @@
     CB_BEGUN = { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, null, 4, []), cast: CB_CAST };
     CB_ALL = [CB_LIVE];
     CB_ACH = [
-      { k: "first", n: "First lie exposed", how: "Expose a suspect’s lie with proof.", first: true, by: (p) => p.src.lies >= 1 },
-      { k: "solved", n: "Case solved", how: "Name the killer.", first: true, by: cbRight },
-      { k: "eleven", n: "Solved in eleven turns", how: "Name the killer using eleven turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 11 },
-      { k: "every", n: "Every lie exposed", how: "Expose every lie in one case.", first: true, by: (p) => p.src.lies === p.src.total },
-      { k: "rooms", n: "Every room searched", how: "Search every place in one case.", first: true, by: (p) => p.src.searched >= p.src.places },
-      { k: "quick", n: "Solved in eight turns", how: "Name the killer using eight turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 8 },
-      { k: "five", n: "Five cases solved", how: "Solve five cases.", of: 5, count: (ps) => ps.filter(cbRight) },
-      { k: "ten", n: "Ten cases solved", how: "Solve ten cases.", of: 10, count: (ps) => ps.filter(cbRight) }
+      { k: "first", n: "First Lie Exposed", how: "Expose a suspect’s lie with proof.", first: true, by: (p) => p.src.lies >= 1 },
+      { k: "solved", n: "Case Solved", how: "Name the killer.", first: true, by: cbRight },
+      { k: "eleven", n: "Solved in Eleven Turns", how: "Name the killer using eleven turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 11 },
+      { k: "every", n: "Every Lie Exposed", how: "Expose every lie in one case.", first: true, by: (p) => p.src.lies === p.src.total },
+      { k: "rooms", n: "Every Room Searched", how: "Search every place in one case.", first: true, by: (p) => p.src.searched >= p.src.places },
+      { k: "quick", n: "Solved in Eight Turns", how: "Name the killer using eight turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 8 },
+      { k: "five", n: "Five Cases Solved", how: "Solve five cases.", of: 5, count: (ps) => ps.filter(cbRight) },
+      { k: "ten", n: "Ten Cases Solved", how: "Solve ten cases.", of: 10, count: (ps) => ps.filter(cbRight) }
     ];
     CB_BADGES = {
       first: ["#1D1B3A", [["path", 'd="M7 40L21 12L35 40Z"', "#F2EBE0"], ["rect", 'x="28" y="7" width="13" height="13"', "#D66847"]]],
@@ -3879,9 +3879,9 @@
       credit: true
     };
     BW_ACH = [
-      { k: "seal", n: "Into the barrow", how: "Open the barrow door.", first: true, by: (p) => p.src.earns.includes("seal") },
-      { k: "deep", n: "The wight’s crypt", how: "Reach the wight’s crypt.", first: true, by: (p) => p.src.earns.includes("deep") },
-      { k: "unhurt", n: "Out without a scratch", how: "Finish Chapter 1 with full HP.", first: true, by: (p) => p.src.earns.includes("unhurt") }
+      { k: "seal", n: "Into the Barrow", how: "Open the barrow door.", first: true, by: (p) => p.src.earns.includes("seal") },
+      { k: "deep", n: "The Wight’s Crypt", how: "Reach the wight’s crypt.", first: true, by: (p) => p.src.earns.includes("deep") },
+      { k: "unhurt", n: "Out Without a Scratch", how: "Finish Chapter 1 with full HP.", first: true, by: (p) => p.src.earns.includes("unhurt") }
     ];
     BW_BADGES = lbAutoBadges(BW_ACH);
   }
