@@ -270,10 +270,11 @@ const gsStartTag = (g) => {
 // The two overlays on it: the typed line is a copying SpeechBubble (edge, for the light ground) in place of ChatPicture's own
 // user message, and each game's art is canon's, cropped square by the menu row.
 const gsTyped = (say) => <GsCopyBubble wrap edge>{say}</GsCopyBubble>;
-const GsStartChat = ({ title, say, turns, caption }) => (
+// `plain`: the chat's first line is an ordinary player message, with no copying.
+const GsStartChat = ({ title, say, turns, caption, plain }) => (
   <figure className="mcp-chatfig hw-chatfig">
     <h3 className="mcp-t-card">{title}</h3>
-    <DS.ChatPicture start="top" turns={[{ from: 'user', text: gsTyped(say) }, ...turns]} label={title + ' ' + say} />
+    <DS.ChatPicture start="top" turns={[{ from: 'user', text: plain ? say : gsTyped(say) }, ...turns]} label={title + ' ' + say} />
     <figcaption>{caption}</figcaption>
   </figure>
 );
@@ -292,11 +293,11 @@ const GsStart = () => {
         <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
           caption={<>Name a game, or a past edition, and your AI starts it. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
           turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
-        <GsStartChat title="For a reminder or a hint, type" say="Remind me how accusing works in Accuse"
+        <GsStartChat plain title="For a reminder or a hint, type" say="Remind me how accusing works in Accuse"
           caption={<>Ask your AI how a game works, or for a hint when you’re stuck. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.mystery.route)}>Go to Accuse</button></>}
           turns={[
             { from: 'ai', text: 'Every clue is already given, so you work it out from those. You get one accusation: who, with what and where. I’ll ask you to confirm it before it counts.' },
-            { from: 'user', text: gsTyped('I’m stuck') },
+            { from: 'user', text: 'I’m stuck' },
             { from: 'ai', text: 'I can ask the game for a hint, which shows on your shared result. Or we can talk it through, and you do the working out. Which would you like?' },
             { from: 'user', text: 'A hint, please' },
             { from: 'ai', blocks: [{ type: 'clues', groups: [{ kind: 'Hint', facts: [{ text: 'Madame Zara was not in the costume tent.', new: true }] }] }], text: 'You have 1 hint left.' },

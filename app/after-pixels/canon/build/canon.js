@@ -7344,7 +7344,7 @@
     return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "open", go: false }, t === "FIRST" ? "First " + g.ed[0] + " free" : "Pass");
   };
   const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(GsCopyBubble, { wrap: true, edge: true }, say);
-  const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
+  const GsStartChat = ({ title, say, turns, caption, plain }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: plain ? say : gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
   const GsStart = () => {
     const gs = useGs();
     const d = GS_START_DELVE;
@@ -7370,12 +7370,13 @@
     ), /* @__PURE__ */ React$1.createElement(
       GsStartChat,
       {
+        plain: true,
         title: "For a reminder or a hint, type",
         say: "Remind me how accusing works in Accuse",
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Ask your AI how a game works, or for a hint when you’re stuck. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.mystery.route) }, "Go to Accuse")),
         turns: [
           { from: "ai", text: "Every clue is already given, so you work it out from those. You get one accusation: who, with what and where. I’ll ask you to confirm it before it counts." },
-          { from: "user", text: gsTyped("I’m stuck") },
+          { from: "user", text: "I’m stuck" },
           { from: "ai", text: "I can ask the game for a hint, which shows on your shared result. Or we can talk it through, and you do the working out. Which would you like?" },
           { from: "user", text: "A hint, please" },
           { from: "ai", blocks: [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }], text: "You have 1 hint left." }
