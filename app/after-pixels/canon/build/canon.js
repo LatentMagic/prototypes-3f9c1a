@@ -1126,16 +1126,16 @@
   };
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
-    word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
-    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
-    mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], daily: true, once: true, blurb: "Four suspects, four weapons, four places. Who do you accuse?", tags: ["Daily"], size: "tiny" },
-    escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
+    word: { real: true, access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
+    groups: { real: false, access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
+    mystery: { real: true, access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], daily: true, once: true, blurb: "Four suspects, four weapons, four places. Who do you accuse?", tags: ["Daily"], size: "tiny" },
+    escape: { real: true, access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
-    casebook: { access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
-    delve: { access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "A new world every week: fight room by room to the villain at its heart.", tags: ["Weekly"], size: "small" },
+    casebook: { real: false, access: "pass", name: GS_NAME.casebook, category: "MYSTERY", art: "casebook", route: "casebook", ed: ["case", "cases"], once: true, blurb: "Ask the question they haven’t prepared for.", tags: ["25–40 min"] },
+    delve: { real: true, access: "first", name: "Delve", category: "ADVENTURE", art: "delve", route: "delve", ed: ["run", "runs"], blurb: "A new world every week: fight room by room to the villain at its heart.", tags: ["Weekly"], size: "small" },
     // Chapters are its editions; a free player gets chapter 1. Sample content.
-    barrow: { access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
-    hunter: { access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
+    barrow: { real: false, access: "first", name: "The Barrow of Hollowmere", category: "ADVENTURE", art: "barrow", route: "barrow", ed: ["chapter", "chapters"], edLink: "All chapters", edAll: "All chapters", blurb: "Bring the lost bell home from the barrow. Your hero carries on.", tags: ["Several sessions"] },
+    hunter: { real: false, access: "pass", name: GS_NAME.hunter, category: "LEARNING", art: "hunter", route: "hunter", ed: ["summer", "summers"], blurb: "Grey dawn below Chauvet cave. Go where you like.", tags: ["2 hours"] }
   };
   const gsAccess = (g) => {
     g.free = g.access === "daily";
@@ -5701,6 +5701,7 @@
     Object.assign(GS_NAME, { where: "Where", chain: "Chain", salvage: "Salvage", common: "Common" });
     Object.assign(GS_GAMES, {
       where: gsAccess({
+        real: true,
         access: "pass",
         name: GS_NAME.where,
         category: "PUZZLE",
@@ -5714,6 +5715,7 @@
         size: "tiny"
       }),
       chain: gsAccess({
+        real: true,
         access: "pass",
         name: GS_NAME.chain,
         category: "PUZZLE",
@@ -5727,6 +5729,7 @@
         size: "tiny"
       }),
       salvage: gsAccess({
+        real: true,
         access: "pass",
         name: GS_NAME.salvage,
         category: "PUZZLE",
@@ -5740,6 +5743,7 @@
         size: "tiny"
       }),
       common: gsAccess({
+        real: true,
         access: "pass",
         name: GS_NAME.common,
         category: "PUZZLE",
@@ -11395,7 +11399,7 @@
     GS_MORE.forEach((d) => {
       const tags = [d.when, d.long].filter(Boolean);
       GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
-      GS_GAMES[d.k] = gsAccess({ access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
+      GS_GAMES[d.k] = gsAccess({ real: false, access: "pass", name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
       GS_PAGES[d.k] = {
         box: {
           label: "ONLY WITH THE PASS",

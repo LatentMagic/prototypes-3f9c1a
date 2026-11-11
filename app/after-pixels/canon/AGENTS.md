@@ -8,7 +8,7 @@ Paths below are relative to this folder (`app/after-pixels/canon/`); run command
 
 - `app/` — the source, ES modules. `main.jsx` imports every `.jsx` file, maps each route to a component (its `switch`), and calls each exported `init<File>()` in order. Edit here.
 - `app/registry.js` — the per-game registries: `GS_LIBRARY`, `GS_EDITIONS`, `GS_SESSION_BODY`.
-- `app/gs-data.jsx` — seed data (games in `GS_GAMES`, sessions in `GS_SESSIONS`, the player) and `DS`, the design system's components.
+- `app/gs-data.jsx` — seed data (games in `GS_GAMES`, sessions in `GS_SESSIONS`, the player) and `DS`, the design system's components. Each game's `real` says whether it is a real After Pixels game: only Guess, Accuse, Escape, Delve, Where, Chain, Salvage and Common are. Every game with `real: false` is fake, a proof of concept or canned sample content: build nothing for it, and take no product rule from its pages.
 - `app/states.jsx` — the state register (`KIT_STATE_REGISTER`).
 - `app/canon.css` — imports the design system's `styles.css`, then every `app/*.css`.
 - `build/` — `canon.js` and `canon.css`, which `index.html` loads. Generated; never edit.
