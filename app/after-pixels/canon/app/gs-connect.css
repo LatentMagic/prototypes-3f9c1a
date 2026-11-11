@@ -108,3 +108,13 @@
 .hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
 /* KEEP: Setup and Start are CardRows, whose title is padded to sit level with the row's 44px arrows; the row moves up by that padding so the space above these headings matches the page's other section headings. */
 .hw-apps > .mcp-crow-head, .hw-start > .mcp-crow-head { margin-top: calc((1.15 * 24px - 44px) / 2); }
+
+/* KEEP: the refused-copy line is a small muted line under the control; it takes no room until a copy is refused. A bubble's wrapper adds no box. */
+.gs-copy-bubble { display: contents; }
+.gs-copy-refused { display: block; margin: 0; }
+.gs-copy-refused:empty { display: none; }
+.gs-copy .gs-copy-refused { grid-column: 1 / -1; }
+/* KEEP: on the cover band the refused line sits at the band's foot on the page's dark ground, so it reads over the covers. */
+.hw-band-on .gs-copy-refused { position: absolute; left: 8px; right: 8px; bottom: 6px; text-align: center; padding: 2px 8px; background: var(--bg, #131110); border-radius: 4px; }
+/* Inside a chat picture the line is the sent message's own colour, so it keeps its contrast on the light bubble. */
+.mcp-chatfig .gs-copy-refused { color: inherit; text-align: left; font-size: 12px; }

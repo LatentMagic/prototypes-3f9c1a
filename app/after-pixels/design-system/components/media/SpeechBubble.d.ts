@@ -8,8 +8,8 @@ export interface SpeechBubbleProps{
   copy?:boolean;
   /** For a light ground (inside a ChatPicture): a 1.5px warm-grey edge drawn inside the bubble, so the off-white fill reads against the chat's off-white. Same size and shape. */
   edge?:boolean;
-  /** Called with the words when a copying bubble is pressed; without it the bubble writes to the clipboard itself. */
-  onCopy?:(text:string)=>void;
+  /** Called with the words when a copying bubble is pressed; without it the bubble writes to the clipboard itself. Return false (or a promise of false) when the copy was refused: the bubble then does not swap to "Copied". */
+  onCopy?:(text:string)=>void|boolean|Promise<boolean|void>;
   className?:string;
 }
 export declare function SpeechBubble(props:SpeechBubbleProps):JSX.Element;

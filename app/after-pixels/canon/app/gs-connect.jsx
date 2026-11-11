@@ -103,8 +103,12 @@ const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeCont
 // KEEP: a copy box is one line at every width, with Copy beside it at its normal size: a long command scrolls sideways inside the box
 // (no wrapping, no ellipsis), with a soft fade at the right edge while there is more to see. Copy copies the whole text.
 // KEEP: the address is short and must be read whole to be checked, so under 420px its box takes the full row with Copy under it.
-const GsCopyBox = ({ text, label, address }) => {
+// The refused-copy line, as deployed (connect-layout): the control never says "Copied", the text is selected so it can be copied by hand.
+const gsRefusedLine = (what) => 'Copy didn’t work. Select the ' + what + ' and copy it yourself.';
+const GsCopyBox = ({ text, label, address, what = 'command' }) => {
   const [done, setDone] = React.useState(false);
+  const [refused, setRefused] = React.useState(false);
+  React.useEffect(() => setRefused(false), [text]);
   const [more, setMore] = React.useState(false);
   const box = React.useRef(null);
   React.useLayoutEffect(() => {
@@ -119,7 +123,13 @@ const GsCopyBox = ({ text, label, address }) => {
       <div className={'gs-copy-field' + (more ? ' has-more' : '')}>
         <div ref={box} className="mcp-in gs-num-text gs-copy-addr" role="textbox" aria-readonly="true" tabIndex={0} aria-label={label} onFocus={(e) => gsSelectAll(e.currentTarget)} onClick={(e) => gsSelectAll(e.currentTarget)}>{text}</div>
       </div>
-      <DS.Button variant="secondary" done={done} doneLabel="Copied" onClick={() => { lbCopy([text]); setDone(true); setTimeout(() => setDone(false), 2400); }}>Copy</DS.Button>
+      <DS.Button variant="secondary" done={done} doneLabel="Copied" onClick={() => {
+        Promise.resolve(lbCopy([text])).then((ok) => {
+          setRefused(!ok); setDone(!!ok);
+          if (ok) setTimeout(() => setDone(false), 2400); else if (box.current) gsSelectAll(box.current);
+        });
+      }}>Copy</DS.Button>
+      <p className="gs-small gs-copy-refused" role="status">{refused ? gsRefusedLine(what) : ''}</p>
     </div>
   );
 };
@@ -155,7 +165,18 @@ export const GsPlayDialog = () => {
 // The words a player types, drawn as a sent message. A non-breaking space joins it to the word before, so "type" and the
 // bubble never split.
 // Every bubble on this page copies (`copy`).
-const GsSay = ({ text, wrap, copy }) => <>{' '}<DS.SpeechBubble wrap={wrap} copy={copy} onCopy={copy ? (t) => lbCopy([t]) : undefined}>{text}</DS.SpeechBubble></>;
+// A copying bubble that shows the refused line under itself and selects its words. The wrapper adds no box of its own.
+const GsCopyBubble = ({ children, wrap, edge }) => {
+  const root = React.useRef(null);
+  const [refused, setRefused] = React.useState(false);
+  const onCopy = (t) => Promise.resolve(lbCopy([t])).then((ok) => {
+    setRefused(!ok);
+    const words = root.current && root.current.querySelector('.mcp-say .a');
+    if (!ok && words) gsSelectAll(words);
+    return ok;
+  });
+  return <span className="gs-copy-bubble" ref={root}><DS.SpeechBubble wrap={wrap} copy edge={edge} onCopy={onCopy}>{children}</DS.SpeechBubble><span className="gs-small gs-copy-refused" role="status">{refused ? gsRefusedLine('text') : ''}</span></span>;
+};
 // Every route's last step: the app may ask before each move, and the player may be able to stop that.
 const gsPermStep = (a) => 'If ' + (a.id === 'other' ? 'your AI' : a.name) + ' asks you before each move, you may be able to change that in its permissions.';
 const GS_SIGN_IN = 'sign in with your After Pixels account.';
@@ -242,7 +263,7 @@ const GsSetup = () => {
             )}
           </div>
           <div className="hw-pick-body">
-            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} /></div>
+            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : a.route === 'chat' ? 'message' : 'command'} /></div>
             <GsSteps items={gsAppSteps(a)} />
             {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see this option? Not every plan or country offers it yet.</p>}
           </div>
@@ -283,7 +304,7 @@ const gsStartTag = (g) => {
 // Each chat is the design system's ChatPicture, light as everywhere else, in a CardRow kind="chat" with its caption under it.
 // The two overlays on it: the typed line is a copying SpeechBubble (edge, for the light ground) in place of ChatPicture's own
 // user message, and each game's art is canon's, cropped square by the menu row.
-const gsTyped = (say) => <DS.SpeechBubble wrap copy edge onCopy={(t) => lbCopy([t])}>{say}</DS.SpeechBubble>;
+const gsTyped = (say) => <GsCopyBubble wrap edge>{say}</GsCopyBubble>;
 const GsStartChat = ({ title, say, turns, caption }) => (
   <figure className="mcp-chatfig hw-chatfig">
     <h3 className="mcp-t-card">{title}</h3>
@@ -337,7 +358,7 @@ const GsTop = () => (
     <h1 className="gs-h1">How it works</h1>
     <p className="gs-lead">Add After Pixels to ChatGPT, Claude or another AI app once. Then, in any chat, type</p>
     <div className="hw-band">
-      <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><DS.SpeechBubble copy onCopy={(t) => lbCopy([t])}>{gsPromptText({ kind: 'games' })}</DS.SpeechBubble></span></span>
+      <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><GsCopyBubble>{gsPromptText({ kind: 'games' })}</GsCopyBubble></span></span>
     </div>
     <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
   </header>
