@@ -6852,7 +6852,7 @@
     const n = parseInt(new URLSearchParams(location.search).get("top") || "1", 10);
     return n >= 0 && n <= 4 ? n : 1;
   };
-  const GS_TOP_ART = ["word", "casebook", "delve", "where", "escape", "barrow", "derelict", "hunter", "murder"];
+  const GS_TOP_ART = ["word", "escape", "delve", "casebook", "where", "barrow", "derelict", "hunter", "murder"];
   const GsBandCovers = () => /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-covers", "aria-hidden": "true" }, [...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: "hw-band-cover", dangerouslySetInnerHTML: { __html: GS_ART[a].svg } }) : null));
   const GsTopSay = () => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { copy: true, onCopy: (t) => lbCopy([t]) }, gsPromptText({ kind: "games" }));
   const GS_TOP_LOGOS = ["chatgpt", "claude", "gemini", "grok", "muse", "openclaw", "hermes"];
