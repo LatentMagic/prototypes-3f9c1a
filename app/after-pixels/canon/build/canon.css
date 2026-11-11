@@ -2357,12 +2357,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-need { margin: 0; text-wrap: pretty; }
 
 /* How it works. One rhythm: each section is a 24px heading and one surface under it. Colour comes in only at the step
-   pictures, the speech bubbles and the app logos. */
+   pictures, the speech bubbles and the app marks. */
 .hw-sec { scroll-margin-top: calc(80px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); }
 .hw-sec h2:focus { outline: none; }
 .hw-sec p { margin: 0; }
 
-/* Setup: the app picker, a CardRow of logo tiles. The picked tile is filled, as a main Button is; the rest are outlined. */
+/* Setup: the app picker, a CardRow of tiles, each an app mark and its name. The picked tile is filled, as a main Button is; the rest are outlined. */
 .hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
 .hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
 @container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
