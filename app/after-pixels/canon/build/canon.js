@@ -3142,7 +3142,7 @@
   const dlSay = (r, foe = true) => r.story && r.over ? "The threat filled in " + r.room + ": " + r.name : r.story ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.story ? /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: "miss", value: "✕", selected: sel, surface, size, className: "is-story" }) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
+  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.plain ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.story ? /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: "miss", value: "✕", selected: sel, surface, size, className: "is-story" }) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
   const DlDieBtn = ({ r, size, act, on, foe, lit }) => r.inert ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-dbtn", role: "img", "aria-label": dlSay(r) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
@@ -3267,7 +3267,8 @@
   const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
     const isOpen = open === st.i;
     const sel = act ? m.turns[act - 1].stop : null;
-    const has = st.turns.length > 0;
+    const has = st.turns.some((r) => !r.inert);
+    const cross = st.turns.find((r) => r.inert);
     const keys = st.turns.filter((r) => m.mom[r.t]);
     const rest = st.turns.filter((r) => !m.mom[r.t]);
     const onRoom = React$1.useMemo(() => ({ ...on, sel: (t) => {
@@ -3281,7 +3282,7 @@
     React$1.useLayoutEffect(() => {
       if (isOpen) dlEvenOpen(openRef.current);
     }, [isOpen, act]);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvL-row" + (isOpen ? " is-open" : "") + (first ? " is-first" : "") + (last ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" + (has ? " is-tap" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, has ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dvL-head", "aria-expanded": isOpen, "aria-controls": fold, "aria-label": label, onClick: () => setOpen(isOpen ? null : st.i) }, /* @__PURE__ */ React$1.createElement("span", { className: "dvL-name", "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })) : /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name is-pass" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, label + ", no rolls")), has ? /* @__PURE__ */ React$1.createElement("div", { className: "dvL-tally", "aria-hidden": isOpen || void 0 }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on: onRoom, size: 24 })), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dvL-dots", role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.tier || "use") })))) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass dvL-pass", "aria-hidden": "true" }))), has && /* @__PURE__ */ React$1.createElement("div", { id: fold, className: "dvL-fold" }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: isOpen }, isOpen && /* @__PURE__ */ React$1.createElement("div", { ref: openRef, className: "dvL-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 }))), sel === st.i && /* @__PURE__ */ React$1.createElement("div", { className: "dvL-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act, live: false }))))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvL-row" + (isOpen ? " is-open" : "") + (first ? " is-first" : "") + (last ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" + (has ? " is-tap" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, has ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dvL-head", "aria-expanded": isOpen, "aria-controls": fold, "aria-label": label, onClick: () => setOpen(isOpen ? null : st.i) }, /* @__PURE__ */ React$1.createElement("span", { className: "dvL-name", "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })) : /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name is-pass" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, label + ", no rolls")), has ? /* @__PURE__ */ React$1.createElement("div", { className: "dvL-tally", "aria-hidden": isOpen || void 0 }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on: onRoom, size: 24 })), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dvL-dots", role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.tier || "use") })))) : cross ? /* @__PURE__ */ React$1.createElement("span", { className: "dvL-tally", role: "img", "aria-label": dlSay(cross) }, /* @__PURE__ */ React$1.createElement(DlDie, { r: cross, size: 24 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass dvL-pass", "aria-hidden": "true" }))), has && /* @__PURE__ */ React$1.createElement("div", { id: fold, className: "dvL-fold" }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: isOpen }, isOpen && /* @__PURE__ */ React$1.createElement("div", { ref: openRef, className: "dvL-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 }))), sel === st.i && /* @__PURE__ */ React$1.createElement("div", { className: "dvL-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act, live: false }))))));
   };
   const DlRoomList = ({ m, act, on }) => {
     const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : null);
@@ -3542,6 +3543,18 @@
     }, [s, sv, v]);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dfc" }, /* @__PURE__ */ React$1.createElement("div", { className: "dfc-tabs", role: "group", "aria-label": "Versions" }, DL_OPEN_VERSIONS.map((n, i) => /* @__PURE__ */ React$1.createElement("button", { key: n, type: "button", "aria-pressed": v === i, onClick: () => setV(i) }, n))), /* @__PURE__ */ React$1.createElement(DlCard, { key: v, s: sv, m: mv }));
   };
+  const DL_PLAIN_VERSIONS = ["1. Killed by a story turn: as built, ✕ in a die outline", "2. Killed by a story turn: a plain ✕", "3. Going back filled the threat: as built", "4. Going back filled the threat: a plain ✕"];
+  const dlPlain = (m) => ({ ...m, stops: m.stops.map((st) => ({ ...st, turns: st.turns.map((r) => r.inert ? { ...r, plain: true } : r) })) });
+  const DlPlainCanvas = ({ s }) => {
+    const [v, setV] = React$1.useState(0);
+    const fall = GS_SESSIONS["delve-story-fall"];
+    const sv = v < 2 ? fall : s;
+    const mv = React$1.useMemo(() => {
+      const m = v < 2 ? dlFallBuild(dlBuild(fall), 1) : dlCrossOn(dlBuild({ ...s, lines: [...s.lines, ["Room", "Doubled back to the warren", "The ritual +1"]] }), "Going back");
+      return v % 2 ? dlPlain(m) : m;
+    }, [s, fall, v]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dfc" }, /* @__PURE__ */ React$1.createElement("div", { className: "dfc-tabs", role: "group", "aria-label": "Versions" }, DL_PLAIN_VERSIONS.map((n, i) => /* @__PURE__ */ React$1.createElement("button", { key: n, type: "button", "aria-pressed": v === i, onClick: () => setV(i) }, n))), /* @__PURE__ */ React$1.createElement(DlCard, { key: v, s: sv, m: mv, noHold: true }));
+  };
   const DlBody = ({ s }) => {
     const gs = useGs();
     const m = React$1.useMemo(() => dlBuild(s), [s]);
@@ -3549,6 +3562,7 @@
     if (s.fallCanvas) return /* @__PURE__ */ React$1.createElement(DlFallCanvas, { s, m });
     if (s.overCanvas) return /* @__PURE__ */ React$1.createElement(DlOverCanvas, { s });
     if (s.openCanvas) return /* @__PURE__ */ React$1.createElement(DlOpenCanvas, { s });
+    if (s.plainCanvas) return /* @__PURE__ */ React$1.createElement(DlPlainCanvas, { s });
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const DL_NO_HOVER = () => {
@@ -3734,6 +3748,7 @@
     };
     GS_SESSIONS["delve-overrun-canvas"] = { ...GS_SESSIONS["delve-hard"], overCanvas: true };
     GS_SESSIONS["delve-loss-opens-canvas"] = { ...GS_SESSIONS["delve-hard"], openCanvas: true };
+    GS_SESSIONS["delve-plain-cross-canvas"] = { ...GS_SESSIONS["delve-hard"], plainCanvas: true };
     GS_SESSIONS["delve-hazard"] = {
       ...GS_SESSIONS.delve,
       noEd: true,
@@ -8845,6 +8860,11 @@
         c.setConnected(true);
         c.setReview({ ed: "won-by-use" });
         c.go("session", { id: "delve-won-by-use" });
+      } },
+      { group: "Screens", id: "delve-plain-cross-canvas", label: "7. Session page: Delve, the loss cross plain or in a die outline (canvas)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-plain-cross-canvas" });
       } },
       { group: "Screens", id: "delve-loss-opens-canvas", label: "7. Session page: Delve, the loss cross opens like a die (canvas)", stage: (c) => {
         c.setView("pass");

@@ -159,7 +159,9 @@ const dlSay = (r, foe = true) => r.story && r.over ? 'The threat filled in ' + r
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
 // still draw the sheet's hexes (stats, inspiration). ----
 const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
-const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.story
+const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.plain
+  ? <svg className="dl-cross" viewBox="0 0 12 12" width={Math.round(size * 0.45)} height={Math.round(size * 0.45)} aria-hidden="true" focusable="false"><path d="M2 2l8 8M10 2l-8 8" /></svg>
+  : r.story
   ? <DS.DelveDie kind="miss" value="✕" selected={sel} surface={surface} size={size} className="is-story" />
   : r.use
   ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} won={!!r.won} />
@@ -309,7 +311,7 @@ const dlEvenOpen = (el) => { const dice = el && el.querySelector('.dvL-dice'); i
   const bottom = box.bottom - parseFloat(getComputedStyle(dice).paddingBottom); // the row's own padding is what this sets, so it is left out of the reading
   el.style.setProperty('--dvL-down', Math.max(0, DL_OPEN_GAP - (bottom - Math.max(...drawn.map((r) => r.bottom)))) + 'px'); };
 const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
-  const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
+  const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.some((r) => !r.inert); const cross = st.turns.find((r) => r.inert);
   const keys = st.turns.filter((r) => m.mom[r.t]); const rest = st.turns.filter((r) => !m.mom[r.t]);
   const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { if (on.focus) on.focus(t); setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
   const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name; const fold = 'dvL-room-' + st.i;
@@ -329,7 +331,7 @@ const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
               {rest.length > 0 && <span className="dvL-dots" role="img" aria-label={dlNowMarksSay(rest)}>
                 {rest.map((r) => <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'use')} />)}</span>}
             </div>
-            : <i className="dv2-pass dvL-pass" aria-hidden="true" />}
+            : cross ? <span className="dvL-tally" role="img" aria-label={dlSay(cross)}><DlDie r={cross} size={24} /></span> : <i className="dv2-pass dvL-pass" aria-hidden="true" />}
         </div>
       </div>
       {has && <div id={fold} className="dvL-fold"><EsxFold open={isOpen}>{isOpen && <div ref={openRef} className="dvL-open">
@@ -543,12 +545,22 @@ const DlOpenCanvas = ({ s }) => { const [v, setV] = React.useState(0);
     return dlOpenCross(dlBuild({ ...s, lines: [...L, ['Room', 'Doubled back to the warren', 'The ritual +1']] }), { over: true, name: 'Went back to the warren', threat: 1, threatName: 'The ritual', threatAfter: '12/12' }, 'overrun'); }, [s, sv, v]);
   return (<div className="dfc"><div className="dfc-tabs" role="group" aria-label="Versions">{DL_OPEN_VERSIONS.map((n, i) => <button key={n} type="button" aria-pressed={v === i} onClick={() => setV(i)}>{n}</button>)}</div>
     <DlCard key={v} s={sv} m={mv} /></div>); };
+// ---- Canvas, round 3 of the loss mark: the cross drawn plain, with no die outline, so it reads as where the run ended rather than a die to open
+// (main thread's proposal, 2026-11-11). Versions 1 and 3 are as built on #1493: the cross in a die outline, not pressable. ----
+const DL_PLAIN_VERSIONS = ['1. Killed by a story turn: as built, ✕ in a die outline', '2. Killed by a story turn: a plain ✕', '3. Going back filled the threat: as built', '4. Going back filled the threat: a plain ✕'];
+const dlPlain = (m) => ({ ...m, stops: m.stops.map((st) => ({ ...st, turns: st.turns.map((r) => (r.inert ? { ...r, plain: true } : r)) })) });
+const DlPlainCanvas = ({ s }) => { const [v, setV] = React.useState(0); const fall = GS_SESSIONS['delve-story-fall']; const sv = v < 2 ? fall : s;
+  const mv = React.useMemo(() => { const m = v < 2 ? dlFallBuild(dlBuild(fall), 1) : dlCrossOn(dlBuild({ ...s, lines: [...s.lines, ['Room', 'Doubled back to the warren', 'The ritual +1']] }), 'Going back');
+    return v % 2 ? dlPlain(m) : m; }, [s, fall, v]);
+  return (<div className="dfc"><div className="dfc-tabs" role="group" aria-label="Versions">{DL_PLAIN_VERSIONS.map((n, i) => <button key={n} type="button" aria-pressed={v === i} onClick={() => setV(i)}>{n}</button>)}</div>
+    <DlCard key={v} s={sv} m={mv} noHold /></div>); };
 const DlBody = ({ s }) => {
   const gs = useGs();
   const m = React.useMemo(() => dlBuild(s), [s]); const c = React.useMemo(() => dlSheet(s, m), [s, m]);
   if (s.fallCanvas) return <DlFallCanvas s={s} m={m} />;
   if (s.overCanvas) return <DlOverCanvas s={s} />;
   if (s.openCanvas) return <DlOpenCanvas s={s} />;
+  if (s.plainCanvas) return <DlPlainCanvas s={s} />;
   return <>
     <div className="dv4-lay"><DlSheet c={c} streak={m.run} /><DlCard s={s} m={m} roll={gs.route && gs.route.roll} turn={gs.route && gs.route.turn} /></div>
     <GsMoves s={s} />
@@ -672,6 +684,7 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
 // The canvas of a run lost to the threat filling up: the hard play, drawn five ways by DlOverCanvas.
 GS_SESSIONS['delve-overrun-canvas'] = { ...GS_SESSIONS['delve-hard'], overCanvas: true };
 GS_SESSIONS['delve-loss-opens-canvas'] = { ...GS_SESSIONS['delve-hard'], openCanvas: true };
+GS_SESSIONS['delve-plain-cross-canvas'] = { ...GS_SESSIONS['delve-hard'], plainCanvas: true };
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's health are sample; the route follows the edition's order.
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.

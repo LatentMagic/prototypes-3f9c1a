@@ -451,3 +451,6 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 .dfc-tabs button[aria-pressed="true"] { border-color: currentColor; font-weight: 600; }
 .mcp-dl-die.is-story .hx { fill: none; stroke: var(--control-edge); }
 .mcp-dl-die.is-story .nm { fill: var(--control-edge); }
+
+/* Canvas round 3: the loss cross drawn plain, in the grey of the no-rolls square. */
+svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-width: 1.6; stroke-linecap: round; margin: 6px auto 0; }
