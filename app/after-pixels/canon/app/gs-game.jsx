@@ -175,8 +175,7 @@ GS_PAGES = {
     facts: { long: '2 hours', often: 'A different day every time you start' }, tags: [],
     pitch: { h: 'The day goes on whether you join it or not.', ps: [
       'It’s grey dawn, 36,000 years ago, and your band is already moving. Hunters head for the cliffs. Gatherers set out for the plateau.',
-      'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire.',
-      'Your AI tells the day and speaks for everyone in it. The game engine rolls the dice and keeps the record. Say what you do first.'] },
+      'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire. Say what you do first.'] },
     who: { ai: 'Tells the day, speaks for everyone in it and answers whatever you try.', server: 'Keeps the time, rolls the dice, tracks where everyone is and records what you do.' },
     week: { title: 'The day', line: 'One day, dawn to firelight. Start it over and it goes differently.', session: 'hunter', unmarked: true },
   },
