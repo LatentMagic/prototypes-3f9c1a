@@ -276,6 +276,13 @@ const GS_START_DELVE = {
   first: 'Ashford Mill stands silent at dusk, its great wheel locked and still.',
   rest: ' For three generations it has ground the valley’s grain, and the village has never known it to stop. Tonight the millpond lies black and flat, and the only sound is a thin chant rising through the stones.',
   heroes: [{ name: 'Bryn', line: 'Fighter' }, { name: 'Wren', line: 'Rogue' }, { name: 'Aldric', line: 'Wizard' }],
+  // The user, 2026-11-11: "i just want more delve content". The run goes on past the pick, as Wren's recorded play does (the chime run, a strong Dexterity hit).
+  more: [
+    { from: 'user', text: 'Wren' },
+    { from: 'ai', text: ['You are Wren, a rogue, quick-handed and hard to see in the dark.', 'Beneath the mill a low tunnel runs into the dark, strung with wires hung with tin chimes. One brush and the whole warren will hear you.'] },
+    { from: 'user', text: 'I slip between the wires without touching one' },
+    { from: 'ai', text: 'You turn sideways and thread through, and the chimes hang still. At the far end, firelight flickers on the walls of the warren.', after: [{ type: 'roll', label: 'Dexterity', roll: 16, mod: 3, target: 12, result: 'hit', outcome: 'Strong hit' }] },
+  ],
 };
 const gsStartTag = (g) => {
   const t = g.tags[0];
@@ -306,8 +313,8 @@ const GsStart = () => {
             return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
           }) }] }]} />
         <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
-          caption="Name a game, or a past edition, and your AI starts it straight away."
-          turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }]} />
+          caption={<>Name a game, or a past edition, and your AI starts it straight away. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
+          turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
       </DS.CardRow>
       <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</span></p>
     </>
