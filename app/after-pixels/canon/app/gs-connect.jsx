@@ -166,7 +166,8 @@ const gsAppSteps = (a) => [
   ...(a.route === 'settings' ? [
     a.id === 'other' ? 'In your app, find where you add a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}{a.via && <><b>{a.via}</b>, then </>}<b>{a.look}</b>.</>,
     a.noName ? 'Paste the address.' : <>Paste the address and name it <b>After Pixels</b>.</>,
-    'Connect, then sign in to your account.', // the step before names it After Pixels, so the name isn't repeated (the user, 2026-11-11)
+    // The step before names it After Pixels, so the name isn't repeated; Gemini's step before has no name, so its step says it (the user, 2026-11-11).
+    a.noName ? 'Connect, then sign in to your After Pixels account.' : 'Connect, then sign in to your account.',
   ] : a.route === 'chat' ? [
     'In a chat with ' + a.name + ', send the message.',
     'Open the link ' + a.name + ' sends, and ' + GS_SIGN_IN,
