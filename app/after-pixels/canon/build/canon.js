@@ -1913,11 +1913,6 @@
     gscU("Show Maeve the bar ledger"),
     gscAi("casebook", "“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”", [{ type: "clues", groups: [{ kind: "Evidence", facts: ["The bar ledger"] }, { kind: "Statements", facts: [{ text: "Maeve Doyle: lie exposed", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "5 of 16" }] }])
   ];
-  const GSC_DV_FIGHT_CAP = "Say how you want to fight the guards.";
-  const GSC_DV_FIGHT = [
-    gscU("I somersault over the first guard and kick him"),
-    gscAi("delve", "You vault over the first guard’s spear and kick him from behind. He goes down in a clatter of bronze.", null, [{ type: "roll", label: "Somersault", roll: 16, mod: 3, target: 13, result: "hit", outcome: "Hit · one guard falls" }])
-  ];
   let GS_CHATS;
   let GS_HERO_CHAT;
   const GsChatPic = ({ turns, height, width, label }) => /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { turns, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height, width, label });
@@ -2022,32 +2017,33 @@
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
       ],
-      // Delve: the product page's four chats, written for the page from a real playtest (2026-11-06) and the game spec: every turn shows something the game really does, and no edition secret appears.
+      // Delve: the product page's four chats, copied from the deployed Delve page (delve.page.ts on the monorepo's main), Delve #40, The Orc Caves under Raven Hill.
       // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
       delve: [
         { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
           gscU("Play Delve on After Pixels"),
           gscAi(
             "delve",
-            ["Delve #5: The Labyrinth of Crete", "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth. This year you are one of them.", "Choose your hero:"],
+            ["Delve #40: The Orc Caves under Raven Hill", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
             null,
-            [{ type: "entities", title: "Heroes", items: [{ name: "Leon, the Wrestler", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Ione, the Bull-leaper", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Mira, the Temple scholar", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
-          ),
-          gscU("Ione"),
-          gscAi("delve", "You are Ione, a bull-leaper, quick and light and very hard to hit.")
+            [{ type: "entities", title: "Heroes", items: [{ name: "Garrick, the Knight", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Tamsin, the Ranger", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Selwyn, the Wizard", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
+          )
         ] },
-        { cap: "A miss costs you health. Spend your inspiration on the retry.", turns: [
-          gscU("I wait for a gap in the moving walls, then dart through"),
-          gscAi("delve", "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", null, [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }] }]),
-          gscU("I try again and spend my inspiration"),
-          gscAi("delve", "The stone shudders and then stops, with a straight path laid down the hall.", null, [{ type: "roll", label: "Agility", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }])
+        { cap: "A slip costs you health. Then try it another way.", turns: [
+          gscU("I cross slowly and test every plank"),
+          gscAi("delve", "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", null, [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 19, max: 23, tone: "health" }] }]),
+          gscU("I haul myself along the ropes"),
+          gscAi("delve", "You grip the ropes and haul yourself across, hand over hand, to the far side.", null, [{ type: "roll", label: "Strength", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success" }])
         ] },
-        { cap: GSC_DV_FIGHT_CAP, turns: GSC_DV_FIGHT },
-        { cap: "Your result is ready to post, with one mark for every roll you made.", turns: [
-          gscU("Finish it with the somersault"),
-          gscAi("delve", ["The Minotaur goes down, and this time it does not get up. The den goes quiet at last.", "You won Delve #5. The next run opens next week."]),
-          gscU("Share my result"),
-          gscAi("delve", "Here’s your result, ready to copy:", null, [{ type: "mono", text: "The Labyrinth of Crete\nIone the Bull-leaper · ✅ the Minotaur beaten · 15 rolls · longest streak 2\n🟥🟥🟩🟩🟩✨🟥🟥🟥🟩🟩🟥🟥🟩🟩\nhttps://afterpixels.com/discover/delve" }])
+        { cap: "Every hero has a heavy swing of their own, and it hits harder.", turns: [
+          gscU("I use Sunder on the troll"),
+          gscAi("delve", "Your blade bites deep, and the troll roars loud enough to shake dust from the roof. Its club swings round in answer, and your shield takes the worst of it.", null, [{ type: "roll", label: "Sunder", roll: 13, mod: 3, target: 14, result: "hit", outcome: "Hit · 7 damage" }])
+        ] },
+        { cap: "Your result is ready to post, with the moments that made your run.", turns: [
+          gscU("Sunder, on the orc chief"),
+          gscAi("delve", ["The Orc Caves under Raven Hill: Won", "Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.", "You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe."], null, [{ type: "roll", label: "Sunder", roll: 20, mod: 3, target: 14, result: "hit", outcome: "Critical hit · 14 damage" }]),
+          gscU("Can I get the share card?"),
+          gscAi("delve", "Here’s your share card:", null, [{ type: "mono", text: "The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\nBest roll 🟩19 · Worst roll 🟥2 · Last roll ✨20\nhttps://afterpixels.com/discover/delve" }])
         ] }
       ],
       barrow: [
