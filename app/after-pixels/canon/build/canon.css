@@ -605,13 +605,14 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-cb-search input::placeholder{color:var(--cb-ink2)}
 @media (prefers-reduced-motion:reduce){.mcp-cb-choice,.mcp-cb-go,button.mcp-cb-chip{transition:none}:is(button,a):is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip):active{transform:none}}
 
-/* KEEP: CardRow. Previous and Next move the cards, so they sit just above them, on the right: on the heading line when the row has no sentence, and on a line of their own under the sentence when it has one, never beside the heading with the sentence between them and the cards (the user, 2026-11-11). The sentence takes the full width, so it never re-wraps as the arrows change ("banned - the text lolling around as I flick between"). Both arrows always show; one that cannot move is dimmed. */
+/* KEEP: CardRow. Previous and Next move the cards, so they sit on the line just above them, on the right. With a sentence under the heading, they sit beside it, centred on it; the 44px buttons overhang a one-line (24px) sentence by 10px each way, so the row is no taller than the sentence. Without one, they sit on the heading line, centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). */
 .mcp-crow{container:mcp-crow/inline-size;display:grid;gap:var(--space-4);min-width:0}
 .mcp-crow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);row-gap:var(--space-2);align-items:start}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
 .mcp-crow-nav{grid-column:2;grid-row:1;display:flex;gap:4px}
-.mcp-crow-sub{grid-column:1/-1;grid-row:2;margin:0;color:var(--muted);text-wrap:pretty}
-.mcp-crow-head:has(.mcp-crow-sub) .mcp-crow-nav{grid-row:3;grid-column:1/-1;justify-self:end;margin-bottom:calc(-1 * var(--space-2))}
+.mcp-crow-sub{grid-column:1/-1;margin:0;color:var(--muted);text-wrap:pretty}
+.mcp-crow-nav:has(+.mcp-crow-sub){grid-row:2;align-self:center;margin-block:-10px}
+.mcp-crow-nav+.mcp-crow-sub{grid-column:1;grid-row:2;align-self:center}
 .mcp-crow-btn{width:44px;height:44px;display:inline-grid;place-items:center;flex:none;background:none;border:0;padding:0;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease)}
 .mcp-crow-btn:active{opacity:.55}
 .mcp-crow-btn:focus-visible{outline:2px solid var(--off-white);outline-offset:2px}
@@ -2258,8 +2259,10 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
   .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
 }
-/* TRIAL: the free line under Available games sits close under the cards (the track already pads 12px below them). */
-.gs-home-free { margin: -12px 0 0; max-width: 70ch; }
+/* TRIAL: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
+   The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
+.gs-home-after { display: grid; gap: 12px; justify-items: start; margin-top: -20px; }
+.gs-home-after > p { margin: 0; }
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 

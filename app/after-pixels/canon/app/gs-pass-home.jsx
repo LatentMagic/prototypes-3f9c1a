@@ -116,9 +116,11 @@ export const GsHome = () => {
         <DS.CardRow title="Available games" className="gs-row4">
           {[<CprPassCard key="pass" />, ...GS_HOME_GAMES.map((k) => <GsFeature key={k} id={k} />)]}
         </DS.CardRow>
-        <p className="gs-muted gs-pu-wrap gs-home-free">{<CprHomeLine />}</p>
-        <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
-        <div className="gs-stack-sm">
+        {/* Maybe reintroduced within further design work around Coming soon (the user, 2026-11-11: "This is not in the platform,
+            and it's disrupting our design"). */}
+        {/* <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div> */}
+        <div className="gs-home-after">
+          <p className="gs-muted gs-pu-wrap">{<CprHomeLine />}</p>
           <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
           <p className="gs-small gs-pu-wrap">{GS.purchase}</p>
         </div>

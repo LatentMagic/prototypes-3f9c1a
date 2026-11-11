@@ -12,7 +12,7 @@ export function CardRow({title,sub,label,as='h2',kind='cards',children,className
     const ro=window.ResizeObserver?new ResizeObserver(read):null;if(ro)ro.observe(el);
     return ()=>{el.removeEventListener('scroll',read);if(ro)ro.disconnect();};
   },[]);
-  // KEEP: A button that reaches its end hides; focus moves to the other one.
+  // KEEP: both buttons always show while the row overflows; one that reaches its end is dimmed, so nothing beside them moves or re-wraps (the user, 2026-11-11).
   React.useEffect(()=>{
     if(pressed.current==='next'&&at.end&&prev.current){prev.current.focus({preventScroll:true});pressed.current='prev';}
     else if(pressed.current==='prev'&&at.start&&next.current){next.current.focus({preventScroll:true});pressed.current='next';}
