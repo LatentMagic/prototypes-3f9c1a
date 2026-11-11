@@ -7486,11 +7486,10 @@
           button: "Play the first room",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the first room."), " Every lock has three hints if you need them."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
-        facts: { often: "A new room every week" },
+        facts: { often: "New every week" },
         tags: [],
         pitch: { h: "The door’s locked and you’re on the wrong side of it.", ps: [
           "Examine what’s in the room and find its locks. Each one opens to an answer you work out from clues around you. Carry what you find, set what moves and choose your way on. The room changes as it opens, and a lock may open onto a second room.",
-          "Every lock has three hints, taken in order. The first two point the way and the third gives the answer. A hint costs no try, and it shows on your result.",
           "No clock runs while you play, and every room can be finished. Your time against par shows once you’re out. Say what you examine first."
         ] },
         who: { ai: "Describes the room and everything you find in it.", server: "Decides what each move does and keeps secret what the room hasn’t shown. It records wrong tries, hints and your time." },
