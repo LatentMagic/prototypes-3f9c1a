@@ -1136,8 +1136,8 @@ button.dvL-head:focus-visible::before { outline: 2px solid var(--off-white); out
 /* KEEP: hover (mouse only) lifts the whole line to the pop-up fill, the hero sheet header's hover, and turns the chevron to full text colour; a press lifts it a step further. An open room's dice and held roll take no band: the line alone is the control. */
 @media (hover: hover) { .dvL-top.is-tap:hover { background: var(--popup); } .dvL-top.is-tap:hover button.dvL-head svg { color: var(--text); } }
 .dvL-top.is-tap:has(button.dvL-head:active) { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
-/* KEEP: the chevron points down on a shut room and turns 180° to point up as it opens, on the dropdown's 220ms curve, and never moves: it is centred on the 48px line in every state. */
-button.dvL-head svg { position: absolute; right: 28px; top: 14px; color: var(--muted); transform: rotate(90deg); transition: transform var(--time-dropdown) var(--ease), color var(--time-press) var(--ease); }
+/* KEEP: the chevron points down on a shut room and turns 180° to point up as it opens, on the dropdown's 220ms curve, and never moves: it is centred on the 48px line in every state, and sits 22px from the right edge, in line with the sheet header's chevron. */
+button.dvL-head svg { position: absolute; right: 22px; top: 14px; color: var(--muted); transform: rotate(90deg); transition: transform var(--time-dropdown) var(--ease), color var(--time-press) var(--ease); }
 button.dvL-head[aria-expanded="true"] svg { transform: rotate(270deg); color: var(--text); }
 /* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. The tally fades out as its room opens, since the opened dice repeat it. */
 .dvL-tally { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-left: auto; min-width: 0; transition: opacity var(--time-swap) var(--ease), visibility 0s; }
