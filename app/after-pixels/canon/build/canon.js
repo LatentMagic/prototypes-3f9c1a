@@ -7508,8 +7508,7 @@
         tags: ["Mystery", "One case, sixteen turns, one accusation"],
         pitch: { h: "Ask the question they haven’t prepared for.", ps: [
           "The suspects have had time to get their stories straight. Your AI plays every one of them, and each has a secret to keep.",
-          "Sixteen turns to search, question and confront them. Then one accusation.",
-          "The game engine holds every statement word for word, so any story can be checked."
+          "Sixteen turns to search, question and confront them. Then one accusation."
         ] },
         who: { ai: "Voices every suspect and narrates what you find.", server: "Holds every statement and every piece of evidence, counts your turns and keeps the record." },
         week: { label: "A CASE", title: "Sixteen turns, then one accusation", line: "Ask the question they haven’t prepared for.", session: "casebook" }
