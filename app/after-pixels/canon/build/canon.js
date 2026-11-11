@@ -7515,7 +7515,7 @@
       delve: {
         box: {
           label: "FIRST RUN FREE",
-          heading: "One run every week",
+          heading: "A new run every week",
           session: "delve",
           button: "Play the first run",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play this week’s run"), ", from the first room to its ending."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
