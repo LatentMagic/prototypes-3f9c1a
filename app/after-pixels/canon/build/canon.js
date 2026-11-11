@@ -2965,7 +2965,7 @@
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Coil of rope", kind: "key", does: "" }]
     }
   };
-  const DL_GEAR_DOES = { "Iron key": "Opens the lock it fits" };
+  const DL_GEAR_DOES = { "Iron key": "Opens the lock it fits", "Pepper pouch": "Deals 4 damage", "Flask of lamp oil": "Restores 3 light" };
   const dlGrade = (r) => (r.fight ? { strong: "Hit", miss: "Miss" } : { strong: "Success", weak: "Partial success", miss: "Failure" })[r.tier];
   const DL_GRADE = /^(Hit|Miss)$/;
   const DL_GRADED = /^(Success|Partial success|Failure)$/;

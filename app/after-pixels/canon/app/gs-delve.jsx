@@ -46,7 +46,7 @@ const DL_HEROES = {
     fight: { defence: 14, armour: 1, armourName: 'leather jerkin', heavy: { name: 'Flurry', needs: 13, dmg: 6 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Coil of rope', kind: 'key', does: '' }] },
 };
-const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits' };
+const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits', 'Pepper pouch': 'Deals 4 damage', 'Flask of lamp oil': 'Restores 3 light' };
 
 // ---- The model: the record's lines read into the rooms stood in (going back included), the rolls and the gear. ----
 // A fight roll is a hit or a miss (delve.md: Check); an option or an obstacle is a success, a partial success or a failure. A fight die is never the middle tone.
