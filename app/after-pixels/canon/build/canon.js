@@ -6803,16 +6803,17 @@
   };
   const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
   const GS_START_DELVE = {
-    title: "The Goblin Warren beneath Ashford Mill",
-    first: "Ashford Mill stands silent at dusk, its great wheel locked and still.",
-    rest: " For three generations it has ground the valley’s grain, and the village has never known it to stop. Tonight the millpond lies black and flat, and the only sound is a thin chant rising through the stones.",
-    heroes: [{ name: "Bryn", line: "Fighter" }, { name: "Wren", line: "Rogue" }, { name: "Aldric", line: "Wizard" }],
-    // The user, 2026-11-11: "i just want more delve content". The run goes on past the pick, as Wren's recorded play does (the chime run, a Dexterity success).
+    title: "Delve #5: The Labyrinth of Crete",
+    first: "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth.",
+    rest: " This year you are one of them.",
+    heroes: [{ name: "Leon", line: "Wrestler" }, { name: "Ione", line: "Bull-leaper" }, { name: "Mira", line: "Temple scholar" }],
     more: [
-      { from: "user", text: "Wren" },
-      { from: "ai", text: ["You are Wren, a rogue, quick-handed and hard to see in the dark.", "Beneath the mill a low tunnel runs into the dark, strung with wires hung with tin chimes. One brush and the whole warren will hear you."] },
-      { from: "user", text: "I slip between the wires without touching one" },
-      { from: "ai", text: "You turn sideways and thread through, and the chimes hang still. At the far end, firelight flickers on the walls of the warren.", after: [{ type: "roll", label: "Dexterity", roll: 16, mod: 3, target: 12, result: "hit", outcome: "Success" }] }
+      { from: "user", text: "Ione" },
+      { from: "ai", text: "You are Ione, a bull-leaper, quick and light and very hard to hit." },
+      { from: "user", text: "I wait for a gap in the moving walls, then dart through" },
+      { from: "ai", text: "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", after: [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }] }] },
+      { from: "user", text: "I try again and spend my inspiration" },
+      { from: "ai", text: "The stone shudders and then stops, with a straight path laid down the hall.", after: [{ type: "roll", label: "Agility", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }] }
     ]
   };
   const gsStartTag = (g) => {
@@ -6841,7 +6842,7 @@
         title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it straight away. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
-        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest + " …"], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
+        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
       }
     )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.")));
   };
