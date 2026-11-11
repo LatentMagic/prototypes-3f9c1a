@@ -56,6 +56,7 @@
 .gs-h1.gs-h1-home > span { display: block; }
 .gs-hero3 .gs-hero-sub { max-width: 56ch; }
 .gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-works p { text-wrap: pretty; }
 .gs-br-wide { display: none; }
 .gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
 .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }

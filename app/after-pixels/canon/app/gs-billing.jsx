@@ -99,7 +99,7 @@ export const GsPassCard = () => {
       <h2 className="mcp-t-card">Pass</h2>
       {sub.hadPass
         ? <GsKeepLock lead={<>Your Pass ended on {gsLong(gsEndedOn(gs))}.</>} />
-        : <p>You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full.</p>}
+        : <p>You have a free account. Free play needs no card, and your results and history are kept. Everything else comes with the Pass.</p>}
       <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>{sub.hadPass ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
     </DS.Card>
   );

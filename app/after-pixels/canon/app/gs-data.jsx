@@ -13,7 +13,7 @@ export const GS = {
   link: 'https://play.afterpixels.com',
   email: 'you@example.com',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
-  works: 'ChatGPT · Claude · Gemini · Grok · Muse · OpenClaw · Hermes Agent, and more',
+  works: 'ChatGPT · Claude · Gemini · Grok · Muse · and more',
 };
 
 // Covers: a few flat basic shapes in the cover colours on a cover background. Each declares its ground and how it extends
@@ -51,7 +51,7 @@ export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // soon: the game is out for now and coming back. Every card, pick and tile shows it Coming soon, dimmed, with no way in.
 export const GS_GAMES = {
   word: { real: true, access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], daily: true, once: true, blurb: 'One hidden word a day: find it in six guesses.', tags: ['Daily'], size: 'tiny' },
-  groups: { real: false, access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
+  groups: { real: false, access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', daily: true, once: true, blurb: 'Sixteen words hide four groups of four.', tags: ['Daily', '10 min'] },
   mystery: { real: true, access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], daily: true, once: true, blurb: 'Four suspects, four weapons, four places. Who do you accuse?', tags: ['Daily'], size: 'tiny' },
   escape: { real: true, access: 'first', soon: true, name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly'], size: 'small' },
   // Casebook is episodic: cases are its editions, with no schedule.

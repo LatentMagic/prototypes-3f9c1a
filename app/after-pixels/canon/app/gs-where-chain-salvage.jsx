@@ -433,8 +433,8 @@ DP_PZ = {
     done: { st: { kind: 'ok', label: GS_SESSIONS['where-today'].result }, line: 'You found the country on your third guess, with the hint.', bar: ['Guess ' + dpWhT.guesses + ' of 6', dpWhT.guesses, 6] },
     recent: 'Your countries',
     ach: [{ k: 'wh1', n: 'Found', how: 'Find the country in a Where.', by: (p) => p.status.kind === 'ok' },
-      { k: 'wh0', n: 'Found without the hint', how: 'Find the country without taking the hint.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && !s.hints; } },
-      { k: 'wh7', n: 'Seven days in a row', how: 'Find the country seven days running.', of: 7 }],
+      { k: 'wh0', n: 'Found Without the Hint', how: 'Find the country without taking the hint.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && !s.hints; } },
+      { k: 'wh7', n: 'Seven Days in a Row', how: 'Find the country seven days running.', of: 7 }],
   },
   chain: {
     count: DP_NO, no: (i) => GS_NAME.chain + ' #' + (DP_NO - i), salt: 8, keep: {}, today: 'chain-today', get liveSid() { return gsLiveSid('chain-live'); },
@@ -444,8 +444,8 @@ DP_PZ = {
     done: { st: { kind: 'ok', label: GS_SESSIONS['chain-today'].result }, line: 'You found all ' + dpChT.hidden + ' words with two wrong guesses.', bar: [dpChT.hidden + ' of ' + dpChT.hidden + ' words', dpChT.hidden, dpChT.hidden] },
     recent: 'Your chains',
     ach: [{ k: 'ch1', n: 'Solved', how: 'Find every word in a Chain.', by: (p) => p.status.kind === 'ok' },
-      { k: 'ch0', n: 'Solved with no wrong guesses', how: 'Find every word in a Chain without a wrong guess.', by: (p) => p.status.label === GS_RESULT.chain({ wrong: 0 }) },
-      { k: 'ch7', n: 'Seven days in a row', how: 'Solve Chain seven days running.', of: 7 }],
+      { k: 'ch0', n: 'Solved With No Wrong Guesses', how: 'Find every word without a wrong guess.', by: (p) => p.status.label === GS_RESULT.chain({ wrong: 0 }) },
+      { k: 'ch7', n: 'Seven Days in a Row', how: 'Solve Chain seven days running.', of: 7 }],
   },
   salvage: {
     count: DP_NO, no: (i) => GS_NAME.salvage + ' #' + (DP_NO - i), salt: 12, keep: {}, today: 'salvage-today', get liveSid() { return gsLiveSid('salvage-live'); },
@@ -455,10 +455,10 @@ DP_PZ = {
     live: { line: 'You’ve found ' + SLV_PLAYS.live.raised.size + ' of the 5 wrecks in ' + SLV_PLAYS.live.dives + ' dives.', bar: [SLV_PLAYS.live.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.live.dives, SLV_DIVES] },
     done: { st: { kind: 'ok', label: GS_SESSIONS['salvage-today'].result }, line: 'You found all five wrecks with ' + (SLV_DIVES - SLV_PLAYS.won.dives) + ' dives to spare.', bar: [SLV_PLAYS.won.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.won.dives, SLV_DIVES] },
     recent: 'Your seas',
-    ach: [{ k: 'sv1', n: 'Every wreck found', how: 'Find all five wrecks in a Salvage.', by: (p) => p.status.kind === 'ok' },
+    ach: [{ k: 'sv1', n: 'Every Wreck Found', how: 'Find all five wrecks in a Salvage.', by: (p) => p.status.kind === 'ok' },
       // KEEP: a deployed achievement (monorepo play-records.ts, "Last Dive"); the platform has nine, the library shows three.
-      { k: 'sv5', n: 'Last dive', how: 'Find all five wrecks with your twentieth and final dive.', by: (p) => { const m = new RegExp('^All 5 wrecks in (\\d+) of ' + SLV_DIVES).exec(p.status.label); return !!m && +m[1] === SLV_DIVES; } },
-      { k: 'sv7', n: 'Seven days in a row', how: 'Find every wreck seven days running.', of: 7 }],
+      { k: 'sv5', n: 'Last Dive', how: 'Find the last wreck with your twentieth and final dive.', by: (p) => { const m = new RegExp('^All 5 wrecks in (\\d+) of ' + SLV_DIVES).exec(p.status.label); return !!m && +m[1] === SLV_DIVES; } },
+      { k: 'sv7', n: 'Seven Days in a Row', how: 'Find every wreck seven days running.', of: 7 }],
   },
   common: {
     count: CM_NO, no: (i) => GS_NAME.common + ' #' + (CM_NO - i), salt: 11, keep: {}, alwaysCompletes: true, today: 'common-today', get liveSid() { return gsLiveSid('common-live'); },
@@ -486,7 +486,7 @@ Object.assign(GS_PAGES, {
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Which country is hidden? Each guess shows how far off you are.', ps: [
       'A different country is hidden every day, and you have six guesses to find it. Name any country in the world, and you’re told how far it lies from the hidden one.',
-      'A guess on the far side of the world still helps, because it tells you where the country isn’t. Each distance rules out more of the world, so every guess closes in on where it’s hiding. When you’re torn between places, your one hint gives the compass direction from your latest guess.'] },
+      'A guess on the far side of the world still helps, because it tells you where the country isn’t. Each distance rules out more of the world, so every guess closes in on where it’s hiding.'] },
     who: { ai: 'Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.', server: 'Keeps the country secret, measures every distance and works out which way the hint points.' },
     week: { title: 'Today’s country', line: 'You get six guesses and one hint.', session: 'where-today' },
   },
@@ -496,7 +496,7 @@ Object.assign(GS_PAGES, {
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Work out the missing words in a chain where each joins the next.', ps: [
       'A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.',
-      'Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word.'] },
+      'Start with a word next to either end and work inward. Each word you find lets you guess the word beside it.'] },
     who: { ai: 'Draws the whole line after every guess, with the words you can try next marked, and goes through every link once the chain is solved.', server: 'Keeps the chain secret, shows only the letters you’ve earned, and gives a word away once its letters run out.' },
     week: { title: 'Today’s chain', line: 'You get both ends and every first letter.', session: 'chain-today' },
   },
@@ -506,7 +506,7 @@ Object.assign(GS_PAGES, {
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Five wrecks lie somewhere on the sea bed. Find them in twenty dives.', ps: [
       'Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.',
-      'You also get three tools: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools.'] },
+      'You also get three tools: a sonar sweep, a metal detector and a dragnet. Every sea can be solved by reasoning from its counts and these tools.'] },
     who: { ai: 'Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.', server: 'Keeps the wrecks secret, answers every dive and tool, and counts what you have left.' },
     week: { title: 'Today’s sea', line: 'You get twenty dives to find five wrecks.', session: 'salvage-today' },
   },

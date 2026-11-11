@@ -114,7 +114,7 @@ GS_PAGES = {
       steps: [GS_STEP_CONNECT, <><b>Work it out from the clues</b>, then make one accusation.</>, <><b>See your result</b> on your session page.</>] },
     facts: { often: 'New every day' }, tags: [],
     pitch: { h: 'Four suspects, four weapons, four places. Who do you accuse?', ps: [
-      'A body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.',
+      'A body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start.',
       'At first the clues are loose facts, and none of them settles the case on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold.'] },
     who: { ai: 'Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.', server: 'Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong.' },
     week: { title: 'Today’s case', line: 'Four suspects, four weapons, four places. One accusation.', session: 'mystery-today' },
@@ -122,10 +122,9 @@ GS_PAGES = {
   escape: {
     box: { label: 'FIRST ROOM FREE', small: 'The first room is free with an account. Every room after it needs the Pass.', heading: 'A new room every week', button: 'Play the first room',
       steps: [GS_STEP_CONNECT, <><b>Play the first room.</b> Every lock has three hints if you need them.</>, <><b>See your result</b> on your session page.</>] },
-    facts: { often: 'A new room every week' }, tags: [],
+    facts: { often: 'New every week' }, tags: [],
     pitch: { h: 'The door’s locked and you’re on the wrong side of it.', ps: [
       'Examine what’s in the room and find its locks. Each one opens to an answer you work out from clues around you. Carry what you find, set what moves and choose your way on. The room changes as it opens, and a lock may open onto a second room.',
-      'Every lock has three hints, taken in order. The first two point the way and the third gives the answer. A hint costs no try, and it shows on your result.',
       'No clock runs while you play, and every room can be finished. Your time against par shows once you’re out. Say what you examine first.'] },
     who: { ai: 'Describes the room and everything you find in it.', server: 'Decides what each move does and keeps secret what the room hasn’t shown. It records wrong tries, hints and your time.' },
     week: { title: 'This week’s room', line: 'Find the way out.', session: 'escape-week' },
@@ -138,13 +137,12 @@ GS_PAGES = {
     tags: ['Mystery', 'One case, sixteen turns, one accusation'],
     pitch: { h: 'Ask the question they haven’t prepared for.', ps: [
       'The suspects have had time to get their stories straight. Your AI plays every one of them, and each has a secret to keep.',
-      'Sixteen turns to search, question and confront them. Then one accusation.',
-      'The game engine holds every statement word for word, so any story can be checked.'] },
+      'Sixteen turns to search, question and confront them. Then one accusation.'] },
     who: { ai: 'Voices every suspect and narrates what you find.', server: 'Holds every statement and every piece of evidence, counts your turns and keeps the record.' },
     week: { label: 'A CASE', title: 'Sixteen turns, then one accusation', line: 'Ask the question they haven’t prepared for.', session: 'casebook' },
   },
   delve: {
-    box: { label: 'FIRST RUN FREE', heading: 'One run every week', session: 'delve', button: 'Play the first run',
+    box: { label: 'FIRST RUN FREE', heading: 'A new run every week', session: 'delve', button: 'Play the first run',
       steps: [GS_STEP_CONNECT, <><b>Play this week’s run</b>, from the first room to its ending.</>, <><b>Keep your result.</b> It stays in your history.</>],
       firstStep: <><b>Play the first run</b>, from the first room to its ending.</>,
       small: 'The first run is free with an account. Every run after it needs the Pass.' },
@@ -164,8 +162,7 @@ GS_PAGES = {
     tags: ['Adventure', 'Mist, old stone and honest dice'],
     pitch: { h: 'Bring the bell home. Keep the hero.', ps: [
       'Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Go as a fighter, a rogue or a wizard, through the churchyard and Whisperwood to the old stone and the older things beneath it.',
-      'Explore a world that stays put, fight with dice nobody can fudge, and stop whenever you like. Finish the quest and your hero carries on, levelled up, into the second chapter, out across the mere to the drowned abbey.',
-      'Your AI is the Game Master and gives the world its voice. The game engine holds the map, rolls every die and keeps the journal. Choose your hero.'] },
+      'Explore a world that stays put, fight with dice nobody can fudge, and stop whenever you like. Finish the quest and your hero carries on, levelled up, into the second chapter, out across the mere to the drowned abbey. Choose your hero.'] },
     who: { ai: 'Plays the Game Master: narrates the world and turns what you say into moves.', server: 'Holds the map, the hero’s sheet and every enemy, rolls every die and keeps the journal.' },
     week: { label: 'A QUEST', title: 'The bell is in the barrow', line: 'Bring the Bell of Hollowmere home from the barrow, and stop whenever you like.' },
     // Chapter 2's card, for a player past Chapter 1 (label as deployed).
@@ -178,8 +175,7 @@ GS_PAGES = {
     facts: { long: '2 hours', often: 'A different day every time you start' }, tags: [],
     pitch: { h: 'The day goes on whether you join it or not.', ps: [
       'It’s grey dawn, 36,000 years ago, and your band is already moving. Hunters head for the cliffs. Gatherers set out for the plateau.',
-      'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire.',
-      'Your AI tells the day and speaks for everyone in it. The game engine rolls the dice and keeps the record. Say what you do first.'] },
+      'Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire. Say what you do first.'] },
     who: { ai: 'Tells the day, speaks for everyone in it and answers whatever you try.', server: 'Keeps the time, rolls the dice, tracks where everyone is and records what you do.' },
     week: { title: 'The day', line: 'One day, dawn to firelight. Start it over and it goes differently.', session: 'hunter', unmarked: true },
   },
