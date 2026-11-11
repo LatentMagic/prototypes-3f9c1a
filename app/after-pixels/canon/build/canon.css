@@ -2372,7 +2372,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-hero-name-t { display: inline-flex; align-items: center; gap: 8px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
 .gs-hero-field { container-type: inline-size; }
 .gs-hero-field > .mcp-chat { --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
-/* KEEP: stacked (below 900px) the chat keeps its 5:4 shape until it is 400px tall (before the 0.82 zoom, about 328px on screen), then stops growing: phones keep 5:4, and from about 500px wide the chat is the short strip tablets get (home-hero-tablet concept 4), with no tall empty box above the turns */
+/* KEEP: stacked (below 900px) the chat keeps its 5:4 shape until it is 400px tall (before the 0.82 zoom, about 328px on screen), then stops growing: phones keep 5:4, and from about 470px wide the chat is the short strip tablets get (home-hero-tablet concept 4), with no tall empty box above the turns */
 .gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; max-height: 400px; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
 @container gs (min-width: 900px) {
