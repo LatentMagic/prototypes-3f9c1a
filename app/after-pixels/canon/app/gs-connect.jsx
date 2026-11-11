@@ -254,10 +254,10 @@ const GsSetup = () => {
   );
 };
 
-// Start: two chat windows in one CardRow. The first types "Play After Pixels" and the AI lists the games; the second types
-// "Play Delve on After Pixels" and Delve opens. The replies are examples of what the AI sends: the game rows and their tags
+// Start: three chat windows in one CardRow. The first types "Play After Pixels" and the AI lists the games; the second types
+// "Play Delve on After Pixels" and Delve opens; the third types "I’m stuck" and the AI offers a hint or a talk-through. The replies are examples of what the AI sends: the game rows and their tags
 // are the deployed catalogue's; Delve's run is the product page's made-up edition.
-// KEEP: at 1280 the chats sit side by side in one row, three to a row; where they do not fit (tablet and phone) the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
+// KEEP: at 1280 the three pictures sit side by side in one row; where three do not fit (tablet and phone) the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
 // KEEP: each picture opens on its first turn, the typed line (ChatPicture start="top"), at the system's height, and scrolls to the reply.
 // KEEP: each chat's typed line is a copying SpeechBubble; the chat itself is inert, a picture.
 // KEEP: these four are a picture of the games list, not the live one: the real reply lists every game with the player's progress (games_library), so the build takes the list from there.
@@ -308,6 +308,15 @@ const GsStart = () => {
         <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
           caption={<>Name a game, or a past edition, and your AI starts it. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
           turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
+        <GsStartChat title="When you’re stuck, type" say="I’m stuck"
+          caption={<>Your AI talks it through with you, or gets you the game’s hint. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.mystery.route)}>Go to Accuse</button></>}
+          turns={[
+            { from: 'ai', text: 'I can ask the game for a hint, which shows on your shared result. Or we can talk it through, and you do the working out. Which would you like?' },
+            { from: 'user', text: 'Talk me through where everyone was' },
+            { from: 'ai', text: 'Four of the clues name a place. What do you make of them?', after: [{ type: 'clues', groups: [{ kind: 'Clues', facts: ['2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.'] }] }] },
+            { from: 'user', text: 'So it’s not Coco or Ivan. A hint, please' },
+            { from: 'ai', blocks: [{ type: 'clues', groups: [{ kind: 'Hint', facts: [{ text: 'Madame Zara was not in the costume tent.', new: true }] }] }], text: 'You have 1 hint left.' },
+          ]} />
       </DS.CardRow>
       <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type <b>Play After Pixels</b> again to pick up an unfinished game where you left off.</span></p>
     </>
