@@ -143,3 +143,5 @@
 @media (min-width: 720px) { .hw-band.is-thin { height: 72px; } }
 /* Trial (the user, 2026-11-11, "built quick and we can revert"): Start's chats drop the scroll fade; the list is cut clean and the chevron stays. */
 .hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
+/* KEEP: Setup and Start are CardRows, whose title is padded to sit level with the row's 44px arrows; the row moves up by that padding so the space above these headings matches the page's other section headings. */
+.hw-apps > .mcp-crow-head, .hw-start > .mcp-crow-head { margin-top: calc((1.15 * 24px - 44px) / 2); }
