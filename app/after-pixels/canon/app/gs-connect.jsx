@@ -12,10 +12,11 @@ import { PZ } from './gs-puzzles-library.jsx';
 import { bwEds } from './gs-barrow-library.jsx';
 import { edList } from './gs-history.jsx';
 
-// The app picker on How it works, in the owner's order: ChatGPT first, Other last. Each app sets up one of three ways
-// (route): in its settings, by asking in a chat, or by a command. `noun` is the app's own word for where a custom server goes;
-// `look` is the button to look for; `first` is a command run before the one that adds After Pixels. Grok is one tile whose card switches between the Grok app and Grok Bot (an AI's agent
-// version sits under its AI this way). The Grok app's steps are untried; the commands are from each app's docs.
+// The app picker on How it works, in the owner's order: ChatGPT first, Other last. Each app sets up one of two ways
+// (route): in its settings, or by asking in a chat. `noun` is the app's own word for where a custom server goes;
+// `look` is the button to look for. Command-line apps (OpenClaw, Hermes Agent) have no tile of their own: Other covers them
+// (the user, 2026-11-11, from Jonny's feedback: "yes drop them, they can be added via other?"). Grok is one tile whose card switches between the Grok app and Grok Bot (an AI's agent
+// version sits under its AI this way). The Grok app's steps are untried.
 const GS_APPS = [
   { id: 'chatgpt', name: 'ChatGPT', route: 'settings', noun: 'plugin', look: 'Add custom MCP server' },
   { id: 'claude', name: 'Claude', route: 'settings', noun: 'custom connector', look: 'Add custom connector' },
@@ -24,9 +25,6 @@ const GS_APPS = [
   { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'Custom', via: 'New Connector', subs: ['grok', 'grokbot'] },
   { id: 'grokbot', name: 'Grok Bot', route: 'chat', sub: true },
   { id: 'muse', name: 'Muse', route: 'chat' },
-  // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command and starting it again the last.
-  { id: 'openclaw', name: 'OpenClaw', route: 'command', first: 'openclaw gateway stop', last: 'openclaw gateway start', cmd: (url) => 'openclaw mcp add after-pixels --url ' + url + ' --transport streamable-http --auth oauth', login: 'openclaw mcp login after-pixels' },
-  { id: 'hermes', name: 'Hermes Agent', tile: 'Hermes', route: 'command', remote: true, cmd: (url) => 'hermes mcp add after-pixels --url ' + url + ' --auth oauth', retry: 'hermes mcp login after-pixels' },
   { id: 'other', name: 'Other', route: 'settings' },
 ];
 const gsApp = (id) => GS_APPS.find((a) => a.id === id);
@@ -34,16 +32,13 @@ const GS_SUB_LABEL = { grok: 'Grok app', grokbot: 'Grok Bot' };
 // KEEP: each app shows a mark of our own, never its real logo: the owners' terms need permission we are not asking for
 // (the user, 2026-11-11). A mark is one cover shape, every app's different and none copying its logo, drawn in the tile's
 // text colour with no box, so the picker carries no colour of its own (the user, 2026-11-11: "one colour is aboslute bloody
-// perfection"). Other is the only outline. A tile shows `tile` in place of `name` where the full name would wrap (the user:
-// "make hermes agent say hermes").
+// perfection"). Other is the only outline.
 const GS_AI_MARK = {
   chatgpt: <circle cx="20" cy="20" r="10" />,
   claude: <path d="M20 8 L32 20 L20 32 L8 20 Z" />,
   gemini: <path d="M8 28 A12 12 0 0 1 32 28 Z" />,
   grok: <rect x="11" y="11" width="18" height="18" />,
   muse: <path d="M10 10 L30 10 A20 20 0 0 1 10 30 Z" />,
-  openclaw: <path d="M9 31 L31 31 L31 9 Z" />,
-  hermes: <path d="M16 9 L28 9 L24 31 L12 31 Z" />,
 };
 const GsAiLogo = ({ ai, size = 20 }) => (
   <svg className="hw-mark" viewBox="6 6 28 28" width={size} height={size} aria-hidden="true" focusable="false">
@@ -157,29 +152,19 @@ const GsCopyBubble = ({ children, wrap, edge }) => <DS.SpeechBubble wrap={wrap} 
 // Every route's last step: the app may ask before each move, and the player may be able to stop that.
 const gsPermStep = (a) => 'If ' + (a.id === 'other' ? 'your AI' : a.name) + ' asks before each move, you may be able to change that in its permissions.';
 const GS_SIGN_IN = 'sign in with your After Pixels account.';
-// The thing to copy before leaving for the other app: the address, the message or the first command. It sits beside the steps,
+// The thing to copy before leaving for the other app: the address or the message. It sits beside the steps,
 // so a step that uses it names it by its label's noun.
 const gsAppCopy = (a) => a.route === 'settings' ? ['The address to paste', GS.link]
-  : a.route === 'chat' ? ['The message to send', 'Add this MCP server: ' + GS.link]
-  : ['The command to run', a.first || a.cmd(GS.link)];
+  : ['The message to send', 'Add this MCP server: ' + GS.link];
 const gsAppSteps = (a) => [
   ...(a.route === 'settings' ? [
     a.id === 'other' ? 'In your app, find where you add a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}{a.via && <><b>{a.via}</b>, then </>}<b>{a.look}</b>.</>,
     a.noName ? 'Paste the address.' : <>Paste the address and name it <b>After Pixels</b>.</>,
     // The step before names it After Pixels, so the name isn't repeated; Gemini's step before has no name, so its step says it (the user, 2026-11-11).
     a.noName ? 'Connect, then sign in to your After Pixels account.' : 'Connect, then sign in to your account.',
-  ] : a.route === 'chat' ? [
+  ] : [
     'In a chat with ' + a.name + ', send the message.',
     'Open the link ' + a.name + ' sends, and ' + GS_SIGN_IN,
-  ] : [
-    a.first ? <div className="gs-stack-sm"><span>Stop {a.name}’s Gateway.</span><GsCopyBox text={a.first} label="The command to stop the Gateway" /></div> : 'Run the command.',
-    ...(a.first ? [<div className="gs-stack-sm"><span>Run this command.</span><GsCopyBox text={a.cmd(GS.link)} label="The command to run" /></div>] : []),
-    a.login ? <div className="gs-stack-sm"><span>Run this to sign in, then open the link it prints.</span><GsCopyBox text={a.login} label="The sign-in command" /></div>
-      : 'Open the link it prints, and ' + GS_SIGN_IN,
-    ...(a.remote ? ['On a remote machine, copy the address the browser ends on back into the terminal.'] : []),
-    // Hermes's docs: its wait for sign-in can run out before the player finishes; its login command waits longer.
-    ...(a.retry ? [<div className="gs-stack-sm"><span>If the sign-in times out, run this, then open the link it prints.</span><GsCopyBox text={a.retry} label="The sign-in command" /></div>] : []),
-    ...(a.last ? [<div className="gs-stack-sm"><span>Start {a.name}’s Gateway again.</span><GsCopyBox text={a.last} label="The command to start the Gateway" /></div>] : []),
   ]),
   gsPermStep(a),
 ];
@@ -227,7 +212,7 @@ const GsSetup = () => {
       <DS.CardRow title="Setup" sub={ask} label="Which app do you use?" className="hw-apps">
         {GS_APPS.filter((x) => !x.sub).map((x) => (
           <button key={x.id} type="button" className="hw-app" aria-pressed={tile === x.id} aria-expanded={tile === x.id} aria-controls="hw-pick" aria-label={x.name} onClick={(e) => { setTile(tile === x.id ? null : x.id); if (tile !== x.id) gsRevealTile(e.currentTarget); }}>
-            <GsAiLogo ai={x.id} size={32} /><span>{x.tile || x.name}</span>
+            <GsAiLogo ai={x.id} size={32} /><span>{x.name}</span>
           </button>
         ))}
       </DS.CardRow>
@@ -243,8 +228,7 @@ const GsSetup = () => {
             )}
           </div>
           <div className="hw-pick-body">
-            {/* An app with a first command (OpenClaw) has every command under the step that runs it, so it has no box up top. */}
-            {!a.first && <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : a.route === 'chat' ? 'message' : 'command'} /></div>}
+            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : 'message'} /></div>
             <GsSteps items={gsAppSteps(a)} />
             {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see {a.look ? <b>{a.look}</b> : 'this option'}? Not every plan or country offers it yet.</p>}
           </div>

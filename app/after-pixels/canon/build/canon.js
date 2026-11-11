@@ -7152,9 +7152,6 @@
     { id: "grok", name: "Grok", route: "settings", noun: "custom connector", look: "Custom", via: "New Connector", subs: ["grok", "grokbot"] },
     { id: "grokbot", name: "Grok Bot", route: "chat", sub: true },
     { id: "muse", name: "Muse", route: "chat" },
-    // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command and starting it again the last.
-    { id: "openclaw", name: "OpenClaw", route: "command", first: "openclaw gateway stop", last: "openclaw gateway start", cmd: (url) => "openclaw mcp add after-pixels --url " + url + " --transport streamable-http --auth oauth", login: "openclaw mcp login after-pixels" },
-    { id: "hermes", name: "Hermes Agent", tile: "Hermes", route: "command", remote: true, cmd: (url) => "hermes mcp add after-pixels --url " + url + " --auth oauth", retry: "hermes mcp login after-pixels" },
     { id: "other", name: "Other", route: "settings" }
   ];
   const gsApp = (id) => GS_APPS.find((a) => a.id === id);
@@ -7164,9 +7161,7 @@
     claude: /* @__PURE__ */ React$1.createElement("path", { d: "M20 8 L32 20 L20 32 L8 20 Z" }),
     gemini: /* @__PURE__ */ React$1.createElement("path", { d: "M8 28 A12 12 0 0 1 32 28 Z" }),
     grok: /* @__PURE__ */ React$1.createElement("rect", { x: "11", y: "11", width: "18", height: "18" }),
-    muse: /* @__PURE__ */ React$1.createElement("path", { d: "M10 10 L30 10 A20 20 0 0 1 10 30 Z" }),
-    openclaw: /* @__PURE__ */ React$1.createElement("path", { d: "M9 31 L31 31 L31 9 Z" }),
-    hermes: /* @__PURE__ */ React$1.createElement("path", { d: "M16 9 L28 9 L24 31 L12 31 Z" })
+    muse: /* @__PURE__ */ React$1.createElement("path", { d: "M10 10 L30 10 A20 20 0 0 1 10 30 Z" })
   };
   const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React$1.createElement("svg", { className: "hw-mark", viewBox: "6 6 28 28", width: size, height: size, "aria-hidden": "true", focusable: "false" }, GS_AI_MARK[ai] ? /* @__PURE__ */ React$1.createElement("g", { fill: "currentColor" }, GS_AI_MARK[ai]) : /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "10", fill: "none", stroke: "currentColor", strokeWidth: "2.5" }));
   const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
@@ -7273,24 +7268,16 @@
   const GsCopyBubble = ({ children, wrap, edge }) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy: true, edge, onCopy: (t) => lbCopy([t]) }, children);
   const gsPermStep = (a) => "If " + (a.id === "other" ? "your AI" : a.name) + " asks before each move, you may be able to change that in its permissions.";
   const GS_SIGN_IN = "sign in with your After Pixels account.";
-  const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : a.route === "chat" ? ["The message to send", "Add this MCP server: " + GS.link] : ["The command to run", a.first || a.cmd(GS.link)];
+  const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : ["The message to send", "Add this MCP server: " + GS.link];
   const gsAppSteps = (a) => [
     ...a.route === "settings" ? [
       a.id === "other" ? "In your app, find where you add a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", a.via && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, a.via), ", then "), /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
       a.noName ? "Paste the address." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Paste the address and name it ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), "."),
       // The step before names it After Pixels, so the name isn't repeated; Gemini's step before has no name, so its step says it (the user, 2026-11-11).
       a.noName ? "Connect, then sign in to your After Pixels account." : "Connect, then sign in to your account."
-    ] : a.route === "chat" ? [
+    ] : [
       "In a chat with " + a.name + ", send the message.",
       "Open the link " + a.name + " sends, and " + GS_SIGN_IN
-    ] : [
-      a.first ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Stop ", a.name, "’s Gateway."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.first, label: "The command to stop the Gateway" })) : "Run the command.",
-      ...a.first ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this command."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.cmd(GS.link), label: "The command to run" }))] : [],
-      a.login ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this to sign in, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.login, label: "The sign-in command" })) : "Open the link it prints, and " + GS_SIGN_IN,
-      ...a.remote ? ["On a remote machine, copy the address the browser ends on back into the terminal."] : [],
-      // Hermes's docs: its wait for sign-in can run out before the player finishes; its login command waits longer.
-      ...a.retry ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "If the sign-in times out, run this, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.retry, label: "The sign-in command" }))] : [],
-      ...a.last ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Start ", a.name, "’s Gateway again."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.last, label: "The command to start the Gateway" }))] : []
     ],
     gsPermStep(a)
   ];
@@ -7335,7 +7322,7 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", ref: wrap }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Setup", sub: ask, label: "Which app do you use?", className: "hw-apps" }, GS_APPS.filter((x) => !x.sub).map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "hw-app", "aria-pressed": tile === x.id, "aria-expanded": tile === x.id, "aria-controls": "hw-pick", "aria-label": x.name, onClick: (e) => {
       setTile(tile === x.id ? null : x.id);
       if (tile !== x.id) gsRevealTile(e.currentTarget);
-    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.tile || x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, !a.first && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : a.route === "chat" ? "message" : "command" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet.")))));
+    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : "message" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet.")))));
   };
   const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
   const GS_START_DELVE = {
