@@ -244,6 +244,7 @@ const GsSetup = () => {
           <div className="hw-pick-body">
             <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} /></div>
             <GsSteps items={gsAppSteps(a)} />
+            {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see this option? Not every plan or country offers it yet.</p>}
           </div>
           <p className="gs-small hw-help">Stuck? <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>Get in touch</button> and tell us which app you use.</p>
         </DS.Card>
