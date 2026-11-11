@@ -210,3 +210,5 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
   .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
 }
+/* TRIAL: the free line under Available games sits close under the cards (the track already pads 12px below them). */
+.gs-home-free { margin: -12px 0 0; max-width: 70ch; }
