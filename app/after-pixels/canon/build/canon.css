@@ -2407,6 +2407,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-pick-card { container: hw-card / inline-size; }
 .gs-copy-field { position: relative; min-width: 0; }
 .gs-copy-field.has-more::after { content: ""; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 40px; pointer-events: none; background: linear-gradient(to right, transparent, var(--card)); }
+@container hw-card (max-width: 420px) { .gs-copy.is-address { grid-template-columns: minmax(0, 1fr); } .gs-copy.is-address .mcp-btn { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
 /* Start: two ChatPictures in the system's CardRow. The typed line is a SpeechBubble in place of ChatPicture's own user message,

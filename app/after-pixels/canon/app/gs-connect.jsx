@@ -102,7 +102,8 @@ export const GsHowLink = ({ label }) => { const gs = useGs(); return <button typ
 const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
 // KEEP: a copy box is one line at every width, with Copy beside it at its normal size: a long command scrolls sideways inside the box
 // (no wrapping, no ellipsis), with a soft fade at the right edge while there is more to see. Copy copies the whole text.
-const GsCopyBox = ({ text, label }) => {
+// KEEP: the address is short and must be read whole to be checked, so under 420px its box takes the full row with Copy under it.
+const GsCopyBox = ({ text, label, address }) => {
   const [done, setDone] = React.useState(false);
   const [more, setMore] = React.useState(false);
   const box = React.useRef(null);
@@ -114,7 +115,7 @@ const GsCopyBox = ({ text, label }) => {
     return () => { el.removeEventListener('scroll', read); if (ro) ro.disconnect(); };
   }, [text]);
   return (
-    <div className="gs-copy">
+    <div className={'gs-copy' + (address ? ' is-address' : '')}>
       <div className={'gs-copy-field' + (more ? ' has-more' : '')}>
         <div ref={box} className="mcp-in gs-num-text gs-copy-addr" role="textbox" aria-readonly="true" tabIndex={0} aria-label={label} onFocus={(e) => gsSelectAll(e.currentTarget)} onClick={(e) => gsSelectAll(e.currentTarget)}>{text}</div>
       </div>
@@ -241,7 +242,7 @@ const GsSetup = () => {
             )}
           </div>
           <div className="hw-pick-body">
-            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} /></div>
+            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} /></div>
             <GsSteps items={gsAppSteps(a)} />
           </div>
           <p className="gs-small hw-help">Stuck? <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>Get in touch</button> and tell us which app you use.</p>
