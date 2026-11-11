@@ -6530,7 +6530,7 @@
   const CprHomeLine = () => {
     const gs = useGs();
     const c = cprPassLine();
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, c.p1.replace(/ with your account\. $/, " free. ").replace(/(he) start of select games/i, "$1 first edition of select games"), c.p1 ? "Everything else" : "Everything", " with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, c.p1.replace(/ with your account\. $/, " free. ").replace(/(he) start of select games/i, "$1 first edition of select games"), c.p1 ? "Everything else" : "Everything", " comes with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
   };
   const cprMix = (ids) => {
     const ground = (k) => (GS_ART[GS_GAMES[k].art] || {}).ground;
