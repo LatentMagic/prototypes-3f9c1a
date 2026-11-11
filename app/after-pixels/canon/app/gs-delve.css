@@ -446,4 +446,6 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 .dvS-line.is-foe .dvS-meter.is-band { max-width: none; }
 
 /* The loss mark: a plain cross in the grey of the no-rolls square, on the room where the run ended. */
-svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-width: 1.6; stroke-linecap: round; margin: 6px auto 0; }
+svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-width: 1.6; stroke-linecap: round; }
+/* The loss cross's box: no hit area and no pointer, as high as a die so the cross centres on the dice in its row. */
+.dv2-lost { display: grid; place-items: center; }

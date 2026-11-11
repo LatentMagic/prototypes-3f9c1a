@@ -150,26 +150,26 @@ const dlBuild = (s) => {
   // KEEP: a run lost with no roll or use in its last room (a story turn killed the hero, or the threat filled on a story turn or on going back) ends on a plain grey cross
   // on that room: no die outline, not pressable, nothing held open, and no "Last blow" or "Last roll" on an earlier roll. A roll that filled the threat keeps "Last roll". The record
   // keeps no turn for this, so the cross is no turn: it sits on the room and ends the key moments, and the roll before it competes for best, closest or worst like any other.
-  const lost = cur && !s.live && s.lostOff ? { story: true, plain: true, inert: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
-  if (lost) cur.turns.push(lost);
+  const lost = cur && !s.live && s.lostOff ? { lost: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
+  if (lost) { cur.turns.push(lost); hp = Math.max(0, hp - lost.harm); }
   const moments = dlMoments(lost ? [...turns, lost] : turns, end);
   // KEEP: a closing use on a won run is drawn green (the one use that is not grey); on any other end it keeps the use's grey sparkle.
   const closer = turns[turns.length - 1]; if (closer && closer.use && end === 'won') closer.won = true;
   return { stops, rolls, turns, hp, run, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
 const dlKindSay = (k) => (k === 'Weakness' ? 'Weak spot' : k);
-const dlSay = (r, foe = true) => r.story && r.over ? 'The threat filled in ' + r.room + ': ' + r.name : r.story ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
+const dlSay = (r, foe = true) => r.lost && r.over ? 'The threat filled in ' + r.room + ': ' + r.name : r.lost ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
 // still draw the sheet's hexes (stats, inspiration). ----
 const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
-const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.plain
+const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.lost
   ? <svg className="dl-cross" viewBox="0 0 12 12" width={Math.round(size * 0.45)} height={Math.round(size * 0.45)} aria-hidden="true" focusable="false"><path d="M2 2l8 8M10 2l-8 8" /></svg>
   : r.use
   ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} won={!!r.won} />
   : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} crit={r.crit} fumble={r.fumble} foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />);
-const DlDieBtn = ({ r, size, act, on, foe, lit }) => (r.inert ? <span className="dv2-dbtn" role="img" aria-label={dlSay(r)}><DlDie r={r} size={size} /></span> :
+const DlDieBtn = ({ r, size, act, on, foe, lit }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
   <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r, foe !== false)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
     <DlDie r={r} size={size} sel={act === r.t || lit === r.t} foe={foe} />
   </button>);
@@ -305,7 +305,7 @@ const dlEvenOpen = (el) => { const dice = el && el.querySelector('.dvL-dice'); i
   const bottom = box.bottom - parseFloat(getComputedStyle(dice).paddingBottom); // the row's own padding is what this sets, so it is left out of the reading
   el.style.setProperty('--dvL-down', Math.max(0, DL_OPEN_GAP - (bottom - Math.max(...drawn.map((r) => r.bottom)))) + 'px'); };
 const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
-  const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.some((r) => !r.inert); const cross = st.turns.find((r) => r.inert);
+  const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.some((r) => !r.lost); const cross = st.turns.find((r) => r.lost);
   const keys = st.turns.filter((r) => m.mom[r.t]); const rest = st.turns.filter((r) => !m.mom[r.t]);
   const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { if (on.focus) on.focus(t); setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
   const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name; const fold = 'dvL-room-' + st.i;
@@ -368,7 +368,7 @@ const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The wa
         : <div className="dvL-head" role="img" aria-label={'Room ' + st.num + ', not reached'}><DlEmptyHex /></div>}</div>
     </div>
   </div>))}</div>);
-// KEEP: a press holds a roll and fills the held roll; it opens on the roll the route names (a die pressed on the now card), else the
+// KEEP: a run that ends on the loss cross opens nothing: the cross is not pressable and no roll is held until one is pressed. A press holds a roll and fills the held roll; it opens on the roll the route names (a die pressed on the now card), else the
 // last roll. Beside the route a hover also fills the held roll. Above the route and in the list a hover only rings the die: a held roll
 // that follows the pointer changes the box's height, moves the route and the die from under the pointer, and the route flickers.
 const DlCard = ({ s, m, roll, turn }) => {
@@ -619,7 +619,9 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
   ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
 // The hard play with a last going-back to the warren (The ritual +1) that filled the threat: no roll or use in that room, so the run ends on the loss cross. SAMPLE: the going-back is added to the hard play.
-GS_SESSIONS['delve-overrun-back'] = { ...GS_SESSIONS['delve-hard'], lostOff: { over: true, name: 'Going back' }, lines: [...GS_SESSIONS['delve-hard'].lines, ['Room', 'Doubled back to the warren', 'The ritual +1']] };
+// Its last roll leaves the threat at 11/12 (the hard play without the going-back to the warren before the shrine cavern), so the going-back (+1) is what fills it to 12/12.
+GS_SESSIONS['delve-overrun-back'] = (() => { const L = GS_SESSIONS['delve-hard'].lines; const at = L.findIndex((l) => l[1] === 'Entered the shrine cavern');
+  return { ...GS_SESSIONS['delve-hard'], lostOff: { over: true, name: 'Going back' }, lines: [...L.slice(0, at - 1), ...L.slice(at), ['Room', 'Doubled back to the warren', 'The ritual +1']] }; })();
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's health are sample; the route follows the edition's order.
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.

@@ -3133,19 +3133,22 @@
       cur.turns.push(r);
     });
     const end = s.live ? "live" : s.end;
-    const lost = cur && !s.live && s.lostOff ? { story: true, plain: true, inert: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
-    if (lost) cur.turns.push(lost);
+    const lost = cur && !s.live && s.lostOff ? { lost: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
+    if (lost) {
+      cur.turns.push(lost);
+      hp = Math.max(0, hp - lost.harm);
+    }
     const moments = dlMoments(lost ? [...turns, lost] : turns, end);
     const closer = turns[turns.length - 1];
     if (closer && closer.use && end === "won") closer.won = true;
     return { stops, rolls, turns, hp, run, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
   };
   const dlKindSay = (k) => k === "Weakness" ? "Weak spot" : k;
-  const dlSay = (r, foe = true) => r.story && r.over ? "The threat filled in " + r.room + ": " + r.name : r.story ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
+  const dlSay = (r, foe = true) => r.lost && r.over ? "The threat filled in " + r.room + ": " + r.name : r.lost ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.plain ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
-  const DlDieBtn = ({ r, size, act, on, foe, lit }) => r.inert ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-dbtn", role: "img", "aria-label": dlSay(r) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
+  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.lost ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
+  const DlDieBtn = ({ r, size, act, on, foe, lit }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
@@ -3268,8 +3271,8 @@
   const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
     const isOpen = open === st.i;
     const sel = act ? m.turns[act - 1].stop : null;
-    const has = st.turns.some((r) => !r.inert);
-    const cross = st.turns.find((r) => r.inert);
+    const has = st.turns.some((r) => !r.lost);
+    const cross = st.turns.find((r) => r.lost);
     const keys = st.turns.filter((r) => m.mom[r.t]);
     const rest = st.turns.filter((r) => !m.mom[r.t]);
     const onRoom = React$1.useMemo(() => ({ ...on, sel: (t) => {
@@ -3673,7 +3676,11 @@
         ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
       ]
     };
-    GS_SESSIONS["delve-overrun-back"] = { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...GS_SESSIONS["delve-hard"].lines, ["Room", "Doubled back to the warren", "The ritual +1"]] };
+    GS_SESSIONS["delve-overrun-back"] = (() => {
+      const L = GS_SESSIONS["delve-hard"].lines;
+      const at = L.findIndex((l) => l[1] === "Entered the shrine cavern");
+      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...L.slice(0, at - 1), ...L.slice(at), ["Room", "Doubled back to the warren", "The ritual +1"]] };
+    })();
     GS_SESSIONS["delve-hazard"] = {
       ...GS_SESSIONS.delve,
       noEd: true,
