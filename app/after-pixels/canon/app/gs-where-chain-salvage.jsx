@@ -433,8 +433,8 @@ DP_PZ = {
     done: { st: { kind: 'ok', label: GS_SESSIONS['where-today'].result }, line: 'You found the country on your third guess, with the hint.', bar: ['Guess ' + dpWhT.guesses + ' of 6', dpWhT.guesses, 6] },
     recent: 'Your countries',
     ach: [{ k: 'wh1', n: 'Found', how: 'Find the country in a Where.', by: (p) => p.status.kind === 'ok' },
-      { k: 'wh0', n: 'Found without the hint', how: 'Find the country without taking the hint.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && !s.hints; } },
-      { k: 'wh7', n: 'Seven days in a row', how: 'Find the country seven days running.', of: 7 }],
+      { k: 'wh0', n: 'Found Without the Hint', how: 'Find the country without taking the hint.', by: (p) => { const s = GS_SESSIONS[p.sid]; return p.status.kind === 'ok' && !!s && !s.hints; } },
+      { k: 'wh7', n: 'Seven Days in a Row', how: 'Find the country seven days running.', of: 7 }],
   },
   chain: {
     count: DP_NO, no: (i) => GS_NAME.chain + ' #' + (DP_NO - i), salt: 8, keep: {}, today: 'chain-today', get liveSid() { return gsLiveSid('chain-live'); },
@@ -444,8 +444,8 @@ DP_PZ = {
     done: { st: { kind: 'ok', label: GS_SESSIONS['chain-today'].result }, line: 'You found all ' + dpChT.hidden + ' words with two wrong guesses.', bar: [dpChT.hidden + ' of ' + dpChT.hidden + ' words', dpChT.hidden, dpChT.hidden] },
     recent: 'Your chains',
     ach: [{ k: 'ch1', n: 'Solved', how: 'Find every word in a Chain.', by: (p) => p.status.kind === 'ok' },
-      { k: 'ch0', n: 'Solved with no wrong guesses', how: 'Find every word in a Chain without a wrong guess.', by: (p) => p.status.label === GS_RESULT.chain({ wrong: 0 }) },
-      { k: 'ch7', n: 'Seven days in a row', how: 'Solve Chain seven days running.', of: 7 }],
+      { k: 'ch0', n: 'Solved With No Wrong Guesses', how: 'Find every word without a wrong guess.', by: (p) => p.status.label === GS_RESULT.chain({ wrong: 0 }) },
+      { k: 'ch7', n: 'Seven Days in a Row', how: 'Solve Chain seven days running.', of: 7 }],
   },
   salvage: {
     count: DP_NO, no: (i) => GS_NAME.salvage + ' #' + (DP_NO - i), salt: 12, keep: {}, today: 'salvage-today', get liveSid() { return gsLiveSid('salvage-live'); },
@@ -455,10 +455,10 @@ DP_PZ = {
     live: { line: 'You’ve found ' + SLV_PLAYS.live.raised.size + ' of the 5 wrecks in ' + SLV_PLAYS.live.dives + ' dives.', bar: [SLV_PLAYS.live.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.live.dives, SLV_DIVES] },
     done: { st: { kind: 'ok', label: GS_SESSIONS['salvage-today'].result }, line: 'You found all five wrecks with ' + (SLV_DIVES - SLV_PLAYS.won.dives) + ' dives to spare.', bar: [SLV_PLAYS.won.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.won.dives, SLV_DIVES] },
     recent: 'Your seas',
-    ach: [{ k: 'sv1', n: 'Every wreck found', how: 'Find all five wrecks in a Salvage.', by: (p) => p.status.kind === 'ok' },
+    ach: [{ k: 'sv1', n: 'Every Wreck Found', how: 'Find all five wrecks in a Salvage.', by: (p) => p.status.kind === 'ok' },
       // KEEP: a deployed achievement (monorepo play-records.ts, "Last Dive"); the platform has nine, the library shows three.
-      { k: 'sv5', n: 'Last dive', how: 'Find all five wrecks with your twentieth and final dive.', by: (p) => { const m = new RegExp('^All 5 wrecks in (\\d+) of ' + SLV_DIVES).exec(p.status.label); return !!m && +m[1] === SLV_DIVES; } },
-      { k: 'sv7', n: 'Seven days in a row', how: 'Find every wreck seven days running.', of: 7 }],
+      { k: 'sv5', n: 'Last Dive', how: 'Find the last wreck with your twentieth and final dive.', by: (p) => { const m = new RegExp('^All 5 wrecks in (\\d+) of ' + SLV_DIVES).exec(p.status.label); return !!m && +m[1] === SLV_DIVES; } },
+      { k: 'sv7', n: 'Seven Days in a Row', how: 'Find every wreck seven days running.', of: 7 }],
   },
   common: {
     count: CM_NO, no: (i) => GS_NAME.common + ' #' + (CM_NO - i), salt: 11, keep: {}, alwaysCompletes: true, today: 'common-today', get liveSid() { return gsLiveSid('common-live'); },
