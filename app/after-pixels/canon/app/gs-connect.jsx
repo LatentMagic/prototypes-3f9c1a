@@ -332,7 +332,8 @@ const GS_HW_PLAY = [
 // Four versions of one idea, a band of game covers with the phrase to copy on it, picked by ?top=1..4 (default 1);
 // ?top=0 is the Overview card it would replace. None has links: Setup follows straight after.
 const gsTopV = () => { const n = parseInt(new URLSearchParams(location.search).get('top') || '1', 10); return n >= 0 && n <= 4 ? n : 1; };
-const GS_TOP_ART = ['word', 'murder', 'delve', 'groups', 'escape', 'casebook', 'barrow', 'hunter', 'derelict'];
+// KEEP: no two neighbouring covers share a ground (forest, indigo, wine), across the repeat too; the first three are what a phone shows, so they lead with the strongest (Guess, Delve either side of the bubble).
+const GS_TOP_ART = ['word', 'casebook', 'delve', 'where', 'escape', 'barrow', 'derelict', 'hunter', 'murder'];
 // KEEP: the band is one row of square covers, as many as fit; the row is cut at its edge, never squeezed or wrapped.
 const GsBandCovers = () => <span className="hw-band-covers" aria-hidden="true">{[...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? <span key={i} className="hw-band-cover" dangerouslySetInnerHTML={{ __html: GS_ART[a].svg }} /> : null)}</span>;
 const GsTopSay = () => <DS.SpeechBubble copy onCopy={(t) => lbCopy([t])}>{gsPromptText({ kind: 'games' })}</DS.SpeechBubble>;
