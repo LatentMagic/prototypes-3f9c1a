@@ -151,7 +151,8 @@
 .gs-hero-name-t { display: inline-flex; align-items: center; gap: 8px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
 .gs-hero-field { container-type: inline-size; }
 .gs-hero-field > .mcp-chat { --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
-.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
+/* KEEP: stacked (below 900px) the chat keeps its 5:4 shape until it is 400px tall (before the 0.82 zoom, about 328px on screen), then stops growing: phones keep 5:4, and from about 500px wide the chat is the short strip tablets get (home-hero-tablet concept 4), with no tall empty box above the turns */
+.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; max-height: 400px; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
 @container gs (min-width: 900px) {
   .gs-hero-field { padding: 28px 16px 16px; gap: 36px; }
@@ -161,7 +162,7 @@
 /* KEEP: the field takes the copy's height and never sets the hero's, so nothing overhangs; the chat gives up its top turns to fit (home-product-hero option 4) */
 @container gs (min-width: 900px) {
   .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); gap: 20px; padding: 20px 16px 16px; }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
+  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; max-height: none; }
 }
 
 /* what's new: release feed on Home */
@@ -202,14 +203,13 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @supports (animation-timeline: scroll()) { .wn-nest:has(> .wn-e:nth-child(5))::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
 
-/* KEEP: tablet (720–899): the hero stays stacked, but the headline and line run full width, Works with sits beside the buttons, and the chat is a short strip that gives up its top turns, as on desktop (home-hero-tablet concept 4) */
+/* KEEP: tablet (720–899): the hero stays stacked, but the headline and line run full width, Works with sits beside the buttons, and the chat is the capped strip set above, giving up its top turns as on desktop (home-hero-tablet concept 4) */
 @container gs (720px <= width < 900px) {
   .gs-hero3 > .gs-hero-copy { grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; justify-items: stretch; }
   .gs-hero3 > .gs-hero-copy > .gs-h1, .gs-hero3 > .gs-hero-copy > .gs-hero-sub { grid-column: 1 / -1; }
   .gs-hero3 .gs-hero-sub { max-width: none; }
   .gs-hero3 .gs-hero-act { align-self: center; }
   .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
 }
 /* KEEP: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
    The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
