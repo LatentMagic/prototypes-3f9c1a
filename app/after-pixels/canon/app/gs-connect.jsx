@@ -25,14 +25,16 @@ const GS_APPS = [
   { id: 'muse', name: 'Muse', route: 'chat' },
   // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command and starting it again the last.
   { id: 'openclaw', name: 'OpenClaw', route: 'command', first: 'openclaw gateway stop', last: 'openclaw gateway start', cmd: (url) => 'openclaw mcp add after-pixels --url ' + url + ' --transport streamable-http --auth oauth', login: 'openclaw mcp login after-pixels' },
-  { id: 'hermes', name: 'Hermes Agent', route: 'command', remote: true, cmd: (url) => 'hermes mcp add after-pixels --url ' + url + ' --auth oauth' },
+  { id: 'hermes', name: 'Hermes Agent', tile: 'Hermes', route: 'command', remote: true, cmd: (url) => 'hermes mcp add after-pixels --url ' + url + ' --auth oauth' },
   { id: 'other', name: 'Other', route: 'settings' },
 ];
 const gsApp = (id) => GS_APPS.find((a) => a.id === id);
 const GS_SUB_LABEL = { grok: 'Grok app', grokbot: 'Grok Bot' };
 // KEEP: each app shows a mark of our own, never its real logo: the owners' terms need permission we are not asking for
 // (the user, 2026-11-11). A mark is one cover shape on a cover-colour box; every box-and-shape pair is different, and none
-// copies an app's logo. Other is a ring in a box outline, both in the tile's text colour, so it shows on a picked tile too.
+// copies an app's logo. Other is a quiet ring on a plain box, so it does not outshout the apps (the user, 2026-11-11: "other is
+// maybe a bit too aggressive"). A tile shows `tile` in place of `name` where the full name would wrap (the user: "make hermes
+// agent say hermes").
 const GS_AI_MARK = {
   chatgpt: ['forest', 'green', <circle cx="20" cy="20" r="10" />],
   claude: ['wine', 'orange', <path d="M20 8 L32 20 L20 32 L8 20 Z" />],
@@ -50,8 +52,8 @@ const GsAiLogo = ({ ai, size = 20 }) => {
         <rect width="40" height="40" fill={'var(--cover-bg-' + m[0] + ')'} />
         <g fill={'var(--cover-' + m[1] + ')'}>{m[2]}</g>
       </> : <>
-        <rect x=".75" y=".75" width="38.5" height="38.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <circle cx="20" cy="20" r="9" fill="none" stroke="currentColor" strokeWidth="3" />
+        <rect width="40" height="40" fill="var(--line)" />
+        <circle cx="20" cy="20" r="9" fill="none" stroke="var(--muted)" strokeWidth="2" />
       </>}
     </svg>
   );
@@ -229,7 +231,7 @@ const GsSetup = () => {
       <DS.CardRow title="Setup" sub={ask} label="Which app do you use?" className="hw-apps">
         {GS_APPS.filter((x) => !x.sub).map((x) => (
           <button key={x.id} type="button" className="hw-app" aria-pressed={tile === x.id} aria-expanded={tile === x.id} aria-controls="hw-pick" aria-label={x.name} onClick={(e) => { setTile(tile === x.id ? null : x.id); if (tile !== x.id) gsRevealTile(e.currentTarget); }}>
-            <GsAiLogo ai={x.id} size={32} /><span>{x.name}</span>
+            <GsAiLogo ai={x.id} size={32} /><span>{x.tile || x.name}</span>
           </button>
         ))}
       </DS.CardRow>
