@@ -2263,6 +2263,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
 .gs-home-after { display: grid; gap: 12px; justify-items: start; margin-top: -20px; }
 .gs-home-after > p { margin: 0; }
+/* All games keeps its 48px tap height; pulling it in 8px each way leaves about 18px of visible space above and below its text,
+   without its tap area reaching the Pass link above. */
+.gs-home-after > div { margin-block: -8px; }
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
