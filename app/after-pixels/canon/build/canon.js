@@ -24,7 +24,12 @@
       settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
       mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
       logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
-      card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>'
+      card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+      stats: "<g " + A + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
+      advantage: "<g " + A + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
+      pack: "<g " + A + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
+      ability: "<g " + A + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
+      fight: "<g " + A + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
     };
     const UI = {
       check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
@@ -225,6 +230,24 @@
         const p = on.has(w.toUpperCase());
         return cbPress(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
       })));
+    }
+    const HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
+    const RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
+    const SPARKLE = "M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z";
+    const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-5, -4.5] : adv ? [-7, -6] : [-3.5, -3];
+    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+      const big = size >= 64;
+      const adv = other != null && !big && !selected;
+      const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
+      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
+    }
+    function DelveUseDie({ won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+      return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", won, foe, selected, surface, size, className });
+    }
+    function DelveFoeDie({ value, other, hit = false, surface = "card", size = 34, className = "" }) {
+      const cls = ["mcp-dl-foe", other != null && "has-other", hit && "is-hit", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-2 -2 40 44", width: size, height: Math.round(size * 44 / 40), "aria-hidden": "true" }, other != null && /* @__PURE__ */ React2.createElement("polygon", { className: "gf", points: "18,0 36,20 18,40 0,20", transform: "translate(-3.5 -4.5)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "fx", points: "18,0 36,20 18,40 0,20" }), /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value));
     }
     function Loader({ size = 64, label = "Loading" }) {
       return /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader", role: "status", "aria-label": label, style: { width: size, height: size } }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader-m", style: { zoom: size / 120 } }, /* @__PURE__ */ React2.createElement("i", { className: "tl" }), /* @__PURE__ */ React2.createElement("i", { className: "tr" }), /* @__PURE__ */ React2.createElement("i", { className: "br" }), /* @__PURE__ */ React2.createElement("i", { className: "bl" })));
@@ -981,6 +1004,9 @@
     ns.TileGrid = TileGrid;
     ns.Track = Track;
     ns.WordBoard = WordBoard;
+    ns.DelveDie = DelveDie;
+    ns.DelveUseDie = DelveUseDie;
+    ns.DelveFoeDie = DelveFoeDie;
     ns.Loader = Loader;
     ns.ProgressBar = ProgressBar;
     ns.StatusMessage = StatusMessage;
@@ -1191,41 +1217,44 @@
   const GS_ES_DIG3 = ["123", "482", "907", "256"];
   const GS_DV_TURNCOAT = "As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.";
   const GS_DV_WON = [
-    ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "Rolled 1 + 0 = 1 against DC 12", "HP 12/13"],
+    ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 17 + 0 = 17 vs 12"],
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Miss", "Rolled 9 + 1 = 10 against DC 12", "HP 11/13"],
-    ["Dexterity", "Weak hit", "Rolled 11 + 1 = 12 against DC 12"],
-    ["Dexterity", "Strong hit", "Rolled 18 + 1 = 19 against DC 12"],
+    ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 12", "HP 21/23"],
+    ["Strength", "Success", "d20 16 + 3 = 19 vs 12"],
+    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 11 + 1 = 12 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12"],
-    ["Strength", "Weak hit", "Rolled 13 + 3 = 16 against DC 12", "HP 9/13"],
-    ["Strength", "Strong hit", "Rolled 17 + 3 = 20 against DC 12"],
-    ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "Rolled 20 + 1 = 21 against DC 12"],
+    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
+    ["Strength", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 8 vs 10, missed"],
+    ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"],
+    ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Gear", "Used a pepper pouch", "Snaggle: track 3 → 1"],
-    ["Strength", "Strong hit", "Rolled 18, the higher of 15 and 18, + 3 = 21 against DC 12"],
+    ["Gear", "Used a healing draught", "Healed 4, HP 22/23", "Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23"],
+    ["Strength", "Hit", "d20s 15 and 18, kept 18 + 3 = 21 vs 12"],
     ["Gear", "Took the iron key"],
     ["Room", "Doubled back to the warren", "The ritual +1"],
     ["Lock", "Opened the bone gate with the iron key"],
     ["Room", "Entered the shrine cavern"],
-    ["Strength", "Strong hit", "Rolled 19, the higher of 11 and 19, + 3 = 22 against DC 12"],
-    ["Strength", "Strong hit", "Rolled 17, the higher of 17 and 9, + 3 = 20 against DC 12"]
+    ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
+    ["Ability", "Used shield bash", "Grizzletooth: health 4 → 3", "Struck back: d20 7 vs 10, missed"],
+    ["Weakness", "A flask of lamp oil", "Grizzletooth: health 3 → 1"],
+    ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"]
   ];
   const GS_DV_LIVE = [
-    ["Oracle", "Is anyone awake down here?", "Yes", "Rolled d100 23 against 25"],
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Weak hit", "Rolled 13 + 3 = 16 against DC 12"],
-    ["Dexterity", "Strong hit", "Rolled 16 + 3 = 19 against DC 12"],
+    ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
+    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 3 = 16 vs 12"],
     ["Room", "Entered the warren"],
+    ["Gear", "Took a pepper pouch"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Dexterity", "Strong hit", "Rolled 14 + 3 = 17 against DC 12"],
-    ["Dexterity", "Strong hit", "Rolled 14, the higher of 8 and 14, + 3 = 17 against DC 12"],
-    ["Intelligence", "Study the wall scratchings", "Success", "Rolled 19, the higher of 19 and 15, + 1 = 20 against DC 12"],
+    ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
+    ["Dexterity", "Hit", "d20 12 + 3 = 15 vs 12"],
+    ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Dexterity", "Strong hit", "Rolled 14, the higher of 14 and 5, + 3 = 17 against DC 12"],
-    ["Dexterity", "Strong hit", "Rolled 18, the higher of 18 and 7, + 3 = 21 against DC 12"],
-    ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "Rolled 20, the higher of 20 and 6, + 3 = 23 against DC 12"],
+    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12"],
+    ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 12"],
     ["Room", "Doubled back to the warren", "The ritual +1"]
   ];
   const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the ritual was completed", "Fell in the warren"];
@@ -1293,7 +1322,7 @@
       art: "delve",
       result: "Elsie rescued",
       date: "Monday 5 October",
-      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 9/13"],
+      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 22/23"],
       tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
       lines: GS_DV_WON,
       endings: GS_DV_ENDINGS,
@@ -1302,12 +1331,16 @@
       setting: "The Goblin Warren beneath Ashford Mill",
       end: "won",
       hero: "Bryn the Fighter",
-      hpMax: 13,
+      hpMax: 23,
       threat: 5,
       threatMax: 12,
+      lightName: "the torch",
+      light: 1,
+      lightMax: 6,
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
-      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5", "💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩"]
+      foeMax: { "snaggle's den": 1, "the shrine cavern": 5 },
+      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
@@ -1497,7 +1530,7 @@
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
-    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live" },
+    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
   const gsSessStatus = (s) => ({ kind: s.loss ? "bad" : "ok", label: s.result });
@@ -1548,16 +1581,18 @@
       ...GS_SESSIONS.delve,
       live: true,
       result: "In progress",
-      figures: ["Threat 3/12", "8 rolls", "1 natural 20", "HP 11/11"],
+      figures: ["Threat 3/12", "9 rolls", "1 natural 20", "HP 21/21"],
       tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 },
       lines: GS_DV_LIVE,
       reached: null,
       share: null,
       shareLines: null,
       hero: "Wren the Rogue",
-      hpMax: 11,
+      hpMax: 21,
       threat: 3,
-      sheet: { used: { Backstab: 1 }, insp: true }
+      light: 2,
+      foeMax: { "snaggle's den": 2 },
+      sheet: { used: {}, insp: true }
     }
   });
   const gsBegunId = (sid) => sid.replace(/-live$/, "-begun");
@@ -1570,7 +1605,7 @@
     "word-begun": { ...GS_SESSIONS["word-live"], lines: [] },
     "groups-begun": { ...GS_SESSIONS["groups-live"], figures: ["0 of 4 groups", "No mistakes"], lines: [] },
     "escape-begun": { ...GS_SESSIONS["escape-live"], lines: [] },
-    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 11/11"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, sheet: { used: {}, insp: true } }
+    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 21/21"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } }
   });
   GS_SESSIONS["escape-0928"] = GS_SESSIONS["escape-week"];
   const gsLapsed = (gs) => gs.view !== "pass" && !!gs.sub.hadPass;
@@ -2702,445 +2737,6 @@
     CB_FIRST = CB_DONE;
     CB_KINDS = [["Show evidence", "Evidence shown"], ["Search", "Searches"], ["Question", "Questions"]];
   }
-  const DL_CARRY = 3;
-  const DL_HEROES = {
-    "Bryn the Fighter": {
-      name: "Bryn",
-      cls: "Fighter",
-      stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 },
-      abilities: [{ name: "Shield bash", of: 2, does: "Strikes at once, no roll" }],
-      gear: [{ name: "Chain shirt", kind: "armour", does: "Every hit on you costs one less" }, { name: "Pepper pouch", kind: "once", does: "Flung in a face, it blinds for a blow" }]
-    },
-    "Wren the Rogue": {
-      name: "Wren",
-      cls: "Rogue",
-      stats: { Strength: 0, Dexterity: 3, Constitution: 0, Intelligence: 1, Wisdom: 1, Charisma: 2 },
-      abilities: [{ name: "Backstab", of: 2, does: "Strikes from behind at once, no roll" }],
-      gear: [{ name: "Leather coat", kind: "armour", does: "Every hit on you costs one less" }, { name: "Smoke pellet", kind: "once", does: "Burst underfoot, it hides you for a breath" }]
-    }
-  };
-  const DL_GEAR_DOES = { "Iron key": "Opens the lock it fits" };
-  const DL_TIER = { strong: "Strong hit", weak: "Weak hit", miss: "Miss" };
-  const DL_GRADE = /^(Strong hit|Weak hit|Miss|Success|Partial success|Failure)$/;
-  const dlRoll = (l) => {
-    const parts = l.slice(1).map(String);
-    const t = parts.join(" · ");
-    const m = /Rolled (?:(\d+), the higher of (\d+) and (\d+), |(\d+) )\+ (-?\d+) = (-?\d+) against DC (\d+)/.exec(t);
-    if (!m) return null;
-    const kept = +(m[1] || m[4]);
-    const two = m[1] != null;
-    const other = two ? +m[2] === kept ? +m[3] : +m[2] : null;
-    const crit = /Natural 20/.test(t);
-    const fumble = /Natural 1\b/.test(t);
-    const tier = fumble ? "miss" : /Weak hit|Partial success/.test(t) ? "weak" : /\bMiss\b|Failure/.test(t) ? "miss" : /Strong hit|\bSuccess\b/.test(t) || crit ? "strong" : "miss";
-    const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
-    return { stat: l[0], kept, other, mod: +m[5], total: +m[6], dc: +m[7], gap: +m[6] - +m[7], tier, crit, fumble, two, hp: hp ? +hp[1] : null, action: DL_GRADE.test(parts[0]) ? "" : parts[0] };
-  };
-  const DL_END = { won: "The winning blow", fallen: "The last blow", overrun: "The last roll", live: "Latest roll" };
-  const dlMoments = (R, end) => {
-    if (!R.length) return [];
-    const last = R[R.length - 1];
-    const pool = R.slice(0, -1);
-    const used = /* @__PURE__ */ new Set([last.n]);
-    const out = [];
-    const take = (r, kicker) => {
-      if (r && !used.has(r.n)) {
-        used.add(r.n);
-        out.push({ r, kicker });
-      }
-    };
-    const crit = pool.find((r) => r.crit);
-    take(crit || pool.filter((r) => r.tier === "strong").sort((a, b) => b.gap - a.gap)[0], "Best roll");
-    take(pool.find((r) => r.gap === 0 && !used.has(r.n)), "Closest call");
-    const fum = pool.find((r) => r.fumble && !used.has(r.n));
-    take(fum || pool.filter((r) => r.tier === "miss" && !used.has(r.n)).sort((a, b) => a.gap - b.gap)[0], "Worst roll");
-    out.push({ r: last, kicker: DL_END[end] });
-    return out.sort((a, b) => a.r.n - b.r.n);
-  };
-  const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
-  const dlBuild = (s) => {
-    const stops = [];
-    const rolls = [];
-    const order = [];
-    let cur = null;
-    let hp = s.hpMax;
-    const open = (name, back) => {
-      name = name && dlCap(name);
-      const key = name || "_first";
-      if (!order.includes(key)) order.push(key);
-      cur = { i: stops.length, key, name: name || "First room", back, num: order.indexOf(key) + 1, rolls: [] };
-      stops.push(cur);
-    };
-    (s.lines || []).forEach((l) => {
-      if (l[0] === "Room") {
-        const p = String(l[1]);
-        open(p.replace(/^(Entered|Doubled back to) /, ""), /^Doubled back to /.test(p));
-        return;
-      }
-      if (!cur) open(null, false);
-      const r = dlRoll(l);
-      if (!r) return;
-      r.n = rolls.length + 1;
-      r.stop = cur.i;
-      r.room = cur.name;
-      r.back = cur.back;
-      r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0;
-      if (r.hp != null) hp = r.hp;
-      rolls.push(r);
-      cur.rolls.push(r);
-    });
-    let run = 0;
-    rolls.forEach((r) => {
-      run = r.tier === "strong" ? run + 1 : 0;
-    });
-    const end = s.live ? "live" : s.end;
-    const moments = dlMoments(rolls, end);
-    return { stops, rolls, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
-  };
-  const dlSay = (r) => "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + DL_TIER[r.tier].toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "");
-  const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
-  const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-die is-" + r.tier + (r.crit ? " is-crit" : "") + (r.fumble ? " is-fumble" : "") + (sel ? " is-sel" : ""), viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, r.two && size < 64 && !sel && /* @__PURE__ */ React$1.createElement("polygon", { className: "gh", points: DL_HEX, transform: r.crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), r.crit && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM }), /* @__PURE__ */ React$1.createElement("text", { className: "nm", x: "18", y: "20.5" }, r.kept), r.two && size >= 64 && /* @__PURE__ */ React$1.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "21" }, r.other)), /* @__PURE__ */ React$1.createElement("polygon", { className: "sl", points: DL_RIM }));
-  const DlDieBtn = ({ r, size, act, on }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.n, "aria-label": dlSay(r), onClick: () => on.sel(r.n), onMouseEnter: () => on.hov(r.n), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.n }));
-  const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
-  const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
-  const DlResult = ({ s, m }) => {
-    const line = m.end === "live" ? null : s.result;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
-  };
-  const DlHeld = ({ m, act }) => {
-    const r = act ? m.rolls[act - 1] : null;
-    if (!r) return null;
-    const x = m.mom[r.n];
-    const tcls = r.fumble ? "fumble" : r.tier;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72 }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, "Roll ", r.n)))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, (r.back ? "Back in " : "") + r.room)), r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, DL_TIER[r.tier])), r.harm > 0 && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, "Lost ", r.harm, " HP")))));
-  };
-  const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
-  const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
-  const DlRoute = ({ m, act, on }) => {
-    const sel = act ? m.rolls[act - 1].stop : null;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvE-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named: true }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.rolls.length ? st.rolls.map((r) => m.mom[r.n] ? /* @__PURE__ */ React$1.createElement("span", { key: r.n, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
-  };
-  const DlCard = ({ s, m, roll }) => {
-    const [sel, setSel] = React$1.useState(() => roll && m.rolls[roll - 1] ? roll : m.rolls.length ? m.rolls.length : null);
-    const [hov, setHov] = React$1.useState(null);
-    const act = hov || sel;
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlRoute, { m, act, on: { sel: setSel, hov: setHov } }));
-  };
-  const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
-  const dlSheet = (s, m) => {
-    const h = DL_HEROES[s.hero] || DL_HEROES["Wren the Rogue"];
-    const sh = s.sheet || {};
-    const used = sh.used || {};
-    const gear = h.gear.map((g) => ({ ...g, state: g.kind === "armour" ? "worn" : "held" }));
-    const find = (name) => {
-      const n = dlCap(name.replace(/^(a|an|the)\s+/i, ""));
-      let g = gear.find((x) => x.name === n);
-      if (!g) {
-        g = { name: n, kind: /key/i.test(n) ? "key" : "once", does: DL_GEAR_DOES[n] || "", state: "held" };
-        gear.push(g);
-      }
-      return g;
-    };
-    (s.lines || []).forEach((l) => {
-      if (l[0] === "Gear") {
-        const t = String(l[1]);
-        if (/^Took /.test(t)) find(t.replace(/^Took /, ""));
-        else if (/^Used /.test(t)) find(t.replace(/^Used /, "")).state = "used";
-      }
-      if (l[0] === "Lock") {
-        const w = /^Opened (.+) with (.+)$/.exec(String(l[1]));
-        if (w) find(w[2]).note = "Opened " + w[1];
-      }
-    });
-    gear.forEach((g) => {
-      g.label = g.note || DL_STATE[g.state];
-    });
-    return {
-      name: h.name,
-      cls: h.cls,
-      hp: m.hp,
-      hpMax: s.hpMax,
-      threat: s.threat,
-      threatMax: s.threatMax,
-      carry: DL_CARRY,
-      gear,
-      abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })),
-      insp: !!sh.insp,
-      stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? "−" : "+") + Math.abs(n) }))
-    };
-  };
-  const DL_G = { armour: "M5 4h14v8l-7 8-7-8z", once: "M9 3h6M10 3v6l-5 11h14l-5-11V3", key: "M3 9h7v6H3zM10 12h11M17 12v4M20 12v3" };
-  const DlBox = ({ k, state }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv4-g" + (state === "used" ? " is-used" : "") + (!k ? " is-empty" : "") }, k && /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "20", height: "20", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_G[k] })));
-  const DlUses = ({ left, of }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv4-uses", role: "img", "aria-label": left + " of " + of + " left" }, Array.from({ length: of }, (_, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < left ? "is-on" : "" })));
-  const DlInsp = ({ on }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv5-insw", role: "img", "aria-label": "Inspiration, " + (on ? "ready" : "spent") }, /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-insp" + (on ? " is-on" : ""), viewBox: "-5 -5 46 50", width: "28", height: "30", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), on && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM })));
-  const DlHex = ({ x }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-sx", viewBox: "-5 -5 46 50", width: "32", height: "35", role: "img", "aria-label": x.say }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "20.5" }, x.say));
-  const DlCell = ({ label, used, title, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cell" + (used ? " is-used" : ""), title }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-fig" }, children), /* @__PURE__ */ React$1.createElement("span", { className: "dv7-lb" }, label));
-  const DlGrp = ({ k, head, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp" + (k ? " " + k : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-h" }, /* @__PURE__ */ React$1.createElement("span", null, head)), /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, children));
-  const DlMeter = ({ label, n, of }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv6-bar" }, /* @__PURE__ */ React$1.createElement("span", null, label), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label, value: n, max: of, showValue: false }), /* @__PURE__ */ React$1.createElement("small", null, n + "/" + of));
-  const DlSheet = ({ c, streak }) => {
-    const [open, setOpen] = React$1.useState(false);
-    const slots = Array.from({ length: Math.max(c.carry, c.gear.length) }, (_, i) => c.gear[i] || null);
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 dv5 is-tight dv7 is-band fold-none dv8 is-3b" + (open ? "" : " is-shut"), "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv8-tog", "aria-expanded": open, "aria-label": open ? "Fold the character sheet" : "Show the whole character sheet", onClick: () => setOpen((o) => !o) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })), /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax })), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-stats", head: "Stats" }, c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-pack", head: "Pack" }, slots.map((g, i) => g ? /* @__PURE__ */ React$1.createElement(DlCell, { key: g.name, label: g.name, used: g.state === "used", title: g.name + " · " + g.label }, /* @__PURE__ */ React$1.createElement(DlBox, { k: g.kind, state: g.state }), g.kind === "armour" && /* @__PURE__ */ React$1.createElement("i", { className: "dv7-arm", "aria-label": "Armour plus 1" }, "+1")) : /* @__PURE__ */ React$1.createElement(DlCell, { key: "free" + i, label: "Free", used: true, title: "Room for one more" }, /* @__PURE__ */ React$1.createElement(DlBox, { k: null })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "is-r", head: c.abilities.length > 1 ? "Abilities" : "Ability" }, c.abilities.map((a) => /* @__PURE__ */ React$1.createElement(DlCell, { key: a.name, label: a.name, used: !a.left, title: a.left + " of " + a.of + " left. " + a.does }, /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of })))), /* @__PURE__ */ React$1.createElement(DlGrp, { k: "dv8-adv", head: "Advantage" }, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Strong hits in a row" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak))))));
-  };
-  const DlBody = ({ s }) => {
-    const gs = useGs();
-    const m = React$1.useMemo(() => dlBuild(s), [s]);
-    const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
-  };
-  const DL_NO_HOVER = () => {
-  };
-  const DL_NOW_COL = 44;
-  const useDlNowCols = (n) => {
-    const ref = React$1.useRef(null);
-    const [cols, setCols] = React$1.useState(n);
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return;
-      const read = () => {
-        const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
-        setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
-      };
-      read();
-      const ro = new ResizeObserver(read);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, [n]);
-    return [ref, cols];
-  };
-  const dlMarkCols = (n) => n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3));
-  const DlNowRoute = ({ m, open }) => {
-    const on = { sel: open, hov: DL_NO_HOVER };
-    const [ref, cols] = useDlNowCols(m.stops.length);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, "aria-label": "The way you went" }, m.stops.map((st, i) => {
-      const keys = st.rolls.filter((r) => m.mom[r.n]);
-      const rest = st.rolls.filter((r) => !m.mom[r.n]);
-      const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === m.stops.length - 1 ? " is-row-end" : "");
-      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.rolls.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34 }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": rest.length + (rest.length === 1 ? " other roll: " : " other rolls: ") + rest.map((r) => DL_TIER[r.tier].toLowerCase()).join(", ") }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.n, className: "dl-now-mark is-" + r.tier }))));
-    }));
-  };
-  const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
-    const gs = useGs();
-    const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
-    const s = GS_SESSIONS[sid];
-    const m = React$1.useMemo(() => dlBuild(s), [s]);
-    const open = (roll) => gs.go("session", roll ? { id: sid, roll } : { id: sid });
-    const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open })));
-  };
-  const registerDelve = () => {
-    GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
-  };
-  function initGsDelve() {
-    GS_SESSIONS["delve-fallen"] = {
-      ...GS_SESSIONS.delve,
-      loss: true,
-      end: "fallen",
-      result: "Fell in the warren",
-      reached: "Fell in the warren",
-      share: "Fell in the warren",
-      shareLines: null,
-      threat: 7,
-      sheet: { used: { "Shield bash": 2 }, insp: false },
-      lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Success", "Rolled 14 + 0 = 14 against DC 12"],
-        ["Room", "Entered the chime run"],
-        ["Dexterity", "Miss", "Rolled 5 + 1 = 6 against DC 12", "HP 11/13"],
-        ["Dexterity", "Weak hit", "Rolled 12 + 1 = 13 against DC 12", "HP 10/13"],
-        ["Dexterity", "Strong hit", "Rolled 19 + 1 = 20 against DC 12"],
-        ["Room", "Entered the warren"],
-        ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Strength", "Miss", "Rolled 3 + 3 = 6 against DC 12", "HP 7/13"],
-        ["Strength", "Weak hit", "Rolled 9 + 3 = 12 against DC 12", "HP 5/13"],
-        ["Strength", "Miss", "Natural 1", "Rolled 1 + 3 = 4 against DC 12", "HP 2/13"],
-        ["Strength", "Strong hit", "Rolled 15 + 3 = 18 against DC 12"],
-        ["Strength", "Miss", "Rolled 7 + 3 = 10 against DC 12", "HP 0/13"]
-      ]
-    };
-    GS_SESSIONS["delve-hard"] = {
-      ...GS_SESSIONS.delve,
-      loss: true,
-      end: "overrun",
-      result: "Too late: the ritual was completed",
-      reached: "Too late: the ritual was completed",
-      share: "Too late: the ritual was completed",
-      shareLines: null,
-      hero: "Wren the Rogue",
-      hpMax: 11,
-      threat: 12,
-      sheet: { used: { Backstab: 2 }, insp: false },
-      lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "Rolled 1 + 1 = 2 against DC 12", "HP 10/11"],
-        ["Room", "Entered the chime run"],
-        ["Dexterity", "Miss", "Rolled 8 + 3 = 11 against DC 12", "HP 9/11"],
-        ["Dexterity", "Weak hit", "Rolled 9 + 3 = 12 against DC 12"],
-        ["Dexterity", "Strong hit", "Rolled 16 + 3 = 19 against DC 12"],
-        ["Room", "Entered the warren"],
-        ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Dexterity", "Strong hit", "Rolled 14 + 3 = 17 against DC 12"],
-        ["Dexterity", "Strong hit", "Rolled 15, the higher of 6 and 15, + 3 = 18 against DC 12"],
-        ["Dexterity", "Miss", "Rolled 4, the higher of 4 and 2, + 3 = 7 against DC 12", "HP 7/11"],
-        ["Strength", "Weak hit", "Rolled 12 + 0 = 12 against DC 12", "HP 6/11"],
-        ["Dexterity", "Strong hit", "Rolled 15 + 3 = 18 against DC 12"],
-        ["Room", "Doubled back to the chime run", "The ritual +1"],
-        ["Intelligence", "Read the chime wires", "Partial success", "Rolled 13 + 1 = 14 against DC 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
-        ["Room", "Entered Snaggle's den"],
-        ["Dexterity", "Miss", "Rolled 7 + 3 = 10 against DC 12", "HP 5/11"],
-        ["Dexterity", "Strong hit", "Natural 20", "Rolled 20 + 3 = 23 against DC 12"],
-        ["Dexterity", "Strong hit", "Rolled 12, the higher of 12 and 3, + 3 = 15 against DC 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
-        ["Strength", "Force the bone gate", "Failure", "Rolled 6 + 0 = 6 against DC 12"],
-        ["Strength", "Force the bone gate", "Failure", "Rolled 11 + 0 = 11 against DC 12"],
-        ["Strength", "Force the bone gate", "Success", "Rolled 14 + 0 = 14 against DC 12"],
-        ["Lock", "Forced the bone gate"],
-        ["Room", "Entered the shrine cavern"],
-        ["Dexterity", "Weak hit", "Rolled 10 + 3 = 13 against DC 12", "HP 3/11"],
-        ["Dexterity", "Strong hit", "Rolled 17 + 3 = 20 against DC 12"],
-        ["Dexterity", "Strong hit", "Rolled 18 + 3 = 21 against DC 12"],
-        ["Dexterity", "Miss", "Rolled 7, the higher of 5 and 7, + 3 = 10 against DC 12", "HP 2/11"],
-        ["Dexterity", "Weak hit", "Rolled 11 + 3 = 14 against DC 12"],
-        ["Dexterity", "Miss", "Rolled 8 + 3 = 11 against DC 12", "HP 1/11"]
-      ]
-    };
-  }
-  let DV_END;
-  let DV_RUN1;
-  let DV_ALL;
-  let DV_LIVE;
-  let DV_DONE;
-  let DV_NEXT;
-  const dvEnded = (ps) => ps.filter((p) => p.status.kind === "ok");
-  let DV_ACH;
-  let DV_BADGES;
-  const dvStatus = (s) => !s.played ? { kind: "none", label: "Not played" } : !s.end ? { kind: "live", label: "In progress" } : DV_END[s.end];
-  let DV_FIRST;
-  const dvSid = (s) => s === DV_FIRST || s && s.id === DV_FIRST.id ? "delve-first" : "delve-" + s.id;
-  const dvRun = (gs) => {
-    const by = {};
-    phVisible(gs).forEach((p) => {
-      if (p.gid === "delve" && p.status.kind !== "live") by[p.ed] = p.status.kind;
-    });
-    return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: by[s.id] === "ok", failed: by[s.id] === "bad" }));
-  };
-  const DvLibrary = () => {
-    const gs = useGs();
-    const access = lbAccess(gs, "delve");
-    const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "");
-    const fresh = !lbNow(gs, "delve");
-    const ach = phAch(gs, "delve", DV_ACH);
-    const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: "delve", title: DV_RUN1.title, line: "You haven’t started this week’s run yet. Get her out before the ritual is complete.", next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
-  };
-  const registerDelveLibrary = () => {
-    GS_LIBRARY.delve = DvLibrary;
-    GS_EDITIONS.delve = (gs) => edRuns(gs, "delve", { all: DV_ALL, done: DV_DONE, doneStatus: (g) => gsSessStatus(GS_SESSIONS[gsEdPick("delve", g) || "delve"]), status: dvStatus, openCur: (g) => g.go("session", { id: "delve" }), open: (g, x) => g.go("session", { id: dvSid(x) }) });
-  };
-  function initGsDelveLibrary() {
-    DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, ritual: { kind: "bad", label: GS_RESULT.delve({ end: "ritual" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
-    DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren beneath Ashford Mill", played: true, end: null };
-    DV_ALL = [DV_RUN1];
-    DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 8, rooms: 4, ritual: 3 };
-    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 5 };
-    DV_NEXT = "Monday 12 October";
-    DV_ACH = [
-      { k: "untouched", n: "Untouched", how: "Win a run without losing a hit point.", first: true, by: (p) => p.src.end === "won" && !!p.src.unhurt },
-      { k: "streak", n: "Hot Streak", how: "Land three strong hits in a row.", first: true, by: (p) => (p.src.streak || 0) >= 3 },
-      { k: "enemy", n: "Know Thy Enemy", how: "Bring down a foe by what it fears.", first: true },
-      { k: "regular", n: "Regular", how: "Complete four weeks in a row.", of: 4, count: dvEnded },
-      { k: "ten", n: "Ten Runs", how: "Complete ten runs.", of: 10, count: dvEnded }
-    ];
-    DV_BADGES = lbAutoBadges(DV_ACH);
-    DV_FIRST = DV_RUN1;
-    GS_SESSIONS["delve-first"] = GS_SESSIONS.delve;
-  }
-  let BW_CH1;
-  let BW_CH2;
-  let BW_T1;
-  let BW_T2;
-  let BW_REC1;
-  const bwEds = (gs) => {
-    const out = gs.view === "out";
-    const plays = out || !phVisible ? [] : phVisible(gs).filter((p) => p.gid === "barrow");
-    const st = (key) => {
-      const p = plays.find((x) => x.ed === key);
-      return out ? null : p ? p.status : { kind: "none", label: "Not played" };
-    };
-    const open = (key) => {
-      const p = plays.find((x) => x.ed === key);
-      return p ? () => p.open(gs) : null;
-    };
-    return [
-      { key: "bw2", gid: "barrow", n: 2, title: BW_T2, date: "", nodate: true, month: "October", free: false, now: true, status: st("bw2"), open: open("bw2") },
-      { key: "bw1", gid: "barrow", n: 1, title: BW_T1, date: "", nodate: true, month: "October", free: true, now: false, status: st("bw1"), open: open("bw1") }
-    ];
-  };
-  const registerBarrowLibrary = () => {
-    GS_EDITIONS.barrow = bwEds;
-  };
-  let CPR_BW_JOURNAL;
-  let BW_ACH;
-  let BW_BADGES;
-  function initGsBarrowLibrary() {
-    BW_CH1 = { title: GS_PAGES.barrow.week.title, line: GS_PAGES.barrow.week.line };
-    BW_CH2 = { title: GS_PAGES.barrow.week2.title, line: GS_PAGES.barrow.week2.line };
-    BW_T1 = "The Barrow of Hollowmere";
-    BW_T2 = "The Barrow of Hollowmere — Chapter 2: The Abbey on the Mere";
-    BW_REC1 = { earns: ["seal", "deep"] };
-    CPR_BW_JOURNAL = [
-      [1, "Wren the Rogue took up Elder Maud’s quest: Recover the Bell of Hollowmere from the barrow and bring it home to the village."],
-      [1, "Reached St. Ebba’s churchyard."],
-      [1, "Took the Storm lantern."],
-      [1, "Forced a way through the lodge door."],
-      [1, "Reached The sexton’s lodge."],
-      [1, "Took the Iron key."],
-      [1, "Rested and recovered. Session 1 ended."],
-      [2, "Reached Whisperwood."],
-      [2, "Defeated Grey wolf in Whisperwood."],
-      [2, "Defeated Grey wolf in Whisperwood."],
-      [2, "Reached The barrow mound."],
-      [2, "Opened the barrow door with the Iron key."],
-      [2, "Rested and recovered. Session 2 ended."],
-      [3, "Reached The barrow hall."],
-      [3, "Defeated Barrow skeleton in The barrow hall."],
-      [3, "Defeated Barrow skeleton in The barrow hall."],
-      [3, "Reached The wight’s crypt."],
-      [3, "Defeated The barrow wight in The wight’s crypt."],
-      [3, "Wren reached level 2."],
-      [3, "Took the Bell of Hollowmere."],
-      [3, "Rang the Bell of Hollowmere in the chapel tower again. The mist drew back from the marsh. Quest complete."]
-    ];
-    GS_SESSIONS["gs-pu-barrow-ch1"] = {
-      kind: "chapter",
-      gid: "barrow",
-      edKey: "bw1",
-      game: GS_GAMES.barrow.name,
-      art: "barrow",
-      result: "Quest complete",
-      figures: ["3 sessions", "Level 2"],
-      lines: CPR_BW_JOURNAL.map(([n, t]) => ["Session " + n, t]),
-      share: "Quest complete",
-      shareLines: ["Adventure: The Barrow of Hollowmere", "Wren the Rogue, level 2 · ✅ Bell returned · 3 sessions"],
-      credit: true
-    };
-    BW_ACH = [
-      { k: "seal", n: "Into the barrow", how: "Open the barrow door.", first: true, by: (p) => p.src.earns.includes("seal") },
-      { k: "deep", n: "The wight’s crypt", how: "Reach the wight’s crypt.", first: true, by: (p) => p.src.earns.includes("deep") },
-      { k: "unhurt", n: "Out without a scratch", how: "Finish Chapter 1 with full HP.", first: true, by: (p) => p.src.earns.includes("unhurt") }
-    ];
-    BW_BADGES = lbAutoBadges(BW_ACH);
-  }
-  const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
-  const gsKinds = () => GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
-  const gsFind = (q, k) => {
-    const s = gsNorm(q);
-    return !s || gsNorm(GS_GAMES[k].name).includes(s);
-  };
-  let GS_LIB_READY;
-  function initGsDiscover() {
-    GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", common: "Today’s threads are ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
-  }
   const ESX_ROOM = {
     text: "A dim study at the top of a narrow house: a workbench under a cold lamp, a glass cabinet of pocket watches, a tall case clock, a portrait of a girl, and a fireplace with carved panelling. Grey light seeps through a small round window. The door behind you is shut fast.",
     lit: "Late-afternoon sun pours through the round window, and a single beam crosses the study: first over the workbench, then the portrait, then the glass cabinet, and last the fireplace, where a panel has swung back on a narrow oak door."
@@ -3369,6 +2965,936 @@
       );
     })), /* @__PURE__ */ React$1.createElement(EsxLatest, { lt })), /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && /* @__PURE__ */ React$1.createElement(EsxChips, { grp, sel, pick: (id) => setSel(sel === id ? null : id) })), /* @__PURE__ */ React$1.createElement(EsxReader, { it }));
   };
+  const DL_OBSTACLES = { "the chime run": "The bone chimes" };
+  const DL_HAZARDS = /* @__PURE__ */ new Set(["the thorn stair"]);
+  const DL_FOES = { "the thorn stair": ["The thorn stair", 4], "the great hall": ["The briar knight", 3], "the warren": ["The goblin sentries", 12, 3], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 5] };
+  const DL_HIT = { "Bryn the Fighter": 5, "Wren the Rogue": 4 };
+  const dlStanding = (members, health, max) => health <= 0 ? 0 : Math.ceil(health * members / max);
+  const DL_CARRY = 3;
+  const DL_HEROES = {
+    // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
+    // the starting gear a healing draught and a crowbar (a key), 23 health, stats as the archetype sets them.
+    "Bryn the Fighter": {
+      name: "Bryn",
+      cls: "Fighter",
+      stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
+      abilities: [{ name: "Shield bash", of: 1, ult: true, does: "Strikes at once, no roll" }],
+      fight: { defence: 10, armour: 2, armourName: "ox shield", heavy: { name: "Cleave", needs: 14, dmg: 7 } },
+      gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
+    },
+    // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak (armour value as Bryn's, sample), a honey cake (heals 6) and an axe (a key).
+    "Hal the Woodcutter": {
+      name: "Hal",
+      cls: "Woodcutter",
+      stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
+      abilities: [{ name: "Tree-felling", of: 1, ult: true, does: "Strikes at once, no roll" }],
+      fight: { defence: 10, armour: 2, armourName: "elder-bark cloak", heavy: { name: "Timberfall", needs: 14, dmg: 7 } },
+      gear: [{ name: "Honey cake", kind: "once", does: "Heals 6" }, { name: "Axe", kind: "key", does: "" }]
+    },
+    // Wren, from the same source (rogue): defence 14, protection 1 (a leather jerkin), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
+    "Wren the Rogue": {
+      name: "Wren",
+      cls: "Rogue",
+      stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
+      abilities: [{ name: "Sneak attack", of: 1, ult: true, does: "Strikes at once, no roll" }],
+      fight: { defence: 14, armour: 1, armourName: "leather jerkin", heavy: { name: "Flurry", needs: 13, dmg: 6 } },
+      gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Coil of rope", kind: "key", does: "" }]
+    }
+  };
+  const DL_GEAR_DOES = { "Iron key": "Opens the lock it fits", "Pepper pouch": "Deals 4 damage", "Flask of lamp oil": "Restores 3 light" };
+  const dlGrade = (r) => (r.fight ? { strong: "Hit", miss: "Miss" } : { strong: "Success", weak: "Partial success", miss: "Failure" })[r.tier];
+  const DL_GRADE = /^(Hit|Miss)$/;
+  const DL_GRADED = /^(Success|Partial success|Failure)$/;
+  const dlStruck = (parts) => {
+    const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+)) vs (\d+), (hit|missed)(?:, (\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
+    if (!sb) return null;
+    const two = sb[1] != null;
+    const roll = +(sb[3] || sb[4]);
+    return { roll, other: two ? +sb[1] === roll ? +sb[2] : +sb[1] : null, dc: +sb[5], hit: sb[6] === "hit", dmg: sb[7] ? +sb[7] : 0 };
+  };
+  const dlRoll = (l) => {
+    const parts = l.slice(1).map(String);
+    const t = parts.join(" · ");
+    const m = /(?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+)) ([+-]) (\d+) = (-?\d+) vs (\d+)/.exec(t);
+    if (!m) return null;
+    const kept = +(m[3] || m[4]);
+    const two = m[1] != null;
+    const other = two ? +m[1] === kept ? +m[2] : +m[1] : null;
+    const mod = (m[5] === "-" ? -1 : 1) * +m[6];
+    const crit = /Natural 20/.test(t);
+    const fumble = /Natural 1\b/.test(t);
+    const fight = DL_GRADE.test(parts[0]) || /^Heavy attack/.test(parts[0]);
+    const tier = fumble ? "miss" : /Partial success/.test(t) ? "weak" : /\bMiss\b|Failure/.test(t) ? "miss" : /\bHit\b|\bSuccess\b/.test(t) || crit ? "strong" : "miss";
+    const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
+    return { stat: l[0], fight, kept, other, mod, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
+  };
+  const dlUseDoes = (d) => {
+    const s = d.replace(/,? *no roll$/i, "");
+    return s.charAt(0).toLowerCase() + s.slice(1);
+  };
+  const DL_USE_KINDS = /^(Ability|Ultimate|Gear|Weakness)$/;
+  const DL_WEAK_DOES = "no blow back";
+  const dlUse = (l, hero) => {
+    if (l[0] === "Weakness") {
+      const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1]));
+      return w ? { use: true, what: "Weakness", name: dlCap(w[1]), does: DL_WEAK_DOES, tier: "use", foe: null, hp: null } : null;
+    }
+    const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1]));
+    if (!m) return null;
+    const parts = l.slice(1).map(String);
+    const sheet = DL_HEROES[hero] || DL_HEROES["Wren the Rogue"];
+    const name = dlCap(m[1]);
+    const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name);
+    const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(" · "));
+    return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : "", tier: "use", foe: dlStruck(parts), hp: hp ? +hp[1] : null };
+  };
+  const DL_END = { won: "Winning blow", fallen: "Last blow", overrun: "Last roll", live: "Latest roll" };
+  const dlMoments = (T, end) => {
+    if (!T.length) return [];
+    const last = T[T.length - 1];
+    const pool = T.slice(0, -1).filter((r) => !r.use);
+    const used = /* @__PURE__ */ new Set([last.t]);
+    const out = [];
+    const take = (r, kicker) => {
+      if (r && !used.has(r.t)) {
+        used.add(r.t);
+        out.push({ r, kicker });
+      }
+    };
+    const crit = pool.find((r) => r.crit);
+    take(crit || pool.filter((r) => r.tier === "strong").sort((a, b) => b.gap - a.gap)[0], "Best roll");
+    take(pool.find((r) => r.gap === 0 && !used.has(r.t)), "Closest call");
+    const fum = pool.find((r) => r.fumble && !used.has(r.t));
+    take(fum || pool.filter((r) => r.tier === "miss" && !used.has(r.t)).sort((a, b) => a.gap - b.gap)[0], "Worst roll");
+    out.push({ r: last, kicker: DL_END[end] });
+    return out.sort((a, b) => a.r.t - b.r.t);
+  };
+  const dlBand = (f, health, max) => f[2] ? { members: f[2], standing: dlStanding(f[2], health, max) } : {};
+  const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const dlBuild = (s) => {
+    const stops = [];
+    const rolls = [];
+    const turns = [];
+    const order = [];
+    let cur = null;
+    let hp = s.hpMax;
+    const foeHp = {};
+    let run = 0;
+    const passedRooms = /* @__PURE__ */ new Set();
+    const foeOf = () => {
+      const f = cur && DL_FOES[cur.name.toLowerCase()];
+      const nm = f && (s.foeName || {})[cur.key.toLowerCase()];
+      return f ? { f: nm ? [nm, ...f.slice(1)] : f, k: cur.key } : null;
+    };
+    const open = (name, back) => {
+      name = name && dlCap(name);
+      const key = name || "_first";
+      if (!order.includes(key)) order.push(key);
+      cur = { i: stops.length, key, name: name || "First room", back, num: order.indexOf(key) + 1, rolls: [], turns: [] };
+      stops.push(cur);
+      if (DL_FOES[(name || "").toLowerCase()] && !DL_HAZARDS.has((name || "").toLowerCase())) run = 0;
+    };
+    (s.lines || []).forEach((l) => {
+      if (l[0] === "Room") {
+        const p = String(l[1]);
+        open(p.replace(/^(Entered|Doubled back to) /, ""), /^Doubled back to /.test(p));
+        return;
+      }
+      if (!cur) open(null, false);
+      const wear = DL_USE_KINDS.test(l[0]) && (/→ (\d+)$/.exec(String(l[2] || "")) || l[0] === "Weakness" && /: defeated$/.test(String(l[2] || "")) && [null, 0]);
+      const fo = foeOf();
+      const foeMx = fo ? (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1] : 0;
+      const was = fo ? foeHp[fo.k] != null ? foeHp[fo.k] : foeMx : 0;
+      if (wear && fo) foeHp[fo.k] = +wear[1];
+      const downed = fo && was > 0 && foeHp[fo.k] === 0 ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
+      const u = dlUse(l, s.hero);
+      if (u) {
+        u.t = turns.length + 1;
+        u.stop = cur.i;
+        u.room = cur.name;
+        u.back = cur.back;
+        u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0;
+        if (u.hp != null) hp = u.hp;
+        if (fo && u.foe) {
+          const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
+          u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) };
+        }
+        if (fo && l[0] === "Weakness") u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
+        if (downed) u.downed = downed;
+        turns.push(u);
+        cur.turns.push(u);
+        return;
+      }
+      const r = dlRoll(l);
+      if (!r) return;
+      r.n = rolls.length + 1;
+      r.t = turns.length + 1;
+      r.stop = cur.i;
+      r.room = cur.name;
+      r.back = cur.back;
+      r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0;
+      if (r.hp != null) hp = r.hp;
+      const hazard = !!fo && DL_HAZARDS.has(cur.name.toLowerCase());
+      const graded = !r.action && !r.fight;
+      const obstacle = DL_OBSTACLES[cur.name.toLowerCase()];
+      if (obstacle && graded && !passedRooms.has(cur.key) && r.tier !== "miss") {
+        passedRooms.add(cur.key);
+        r.passed = obstacle;
+      }
+      if (hazard && graded) {
+        const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
+        const left = foeHp[fo.k] != null ? foeHp[fo.k] : max;
+        foeHp[fo.k] = Math.max(0, left - (r.tier === "strong" ? r.crit ? 4 : 2 : r.tier === "weak" ? 1 : 0));
+        r.meter = { name: fo.f[0], health: foeHp[fo.k], max };
+        if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
+      }
+      if ((hazard || obstacle) && graded && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
+      if (fo && !hazard && r.fight && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
+      if (fo && !hazard && (!r.action || r.action === "Heavy attack")) {
+        const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
+        const dmg = (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1);
+        foeHp[fo.k] = r.tier === "miss" ? left : Math.max(0, left - dmg);
+        if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
+        if (r.foe) {
+          const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
+          r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) };
+        }
+      }
+      run = r.tier === "strong" ? run + 1 : 0;
+      if (fo && !hazard && foeHp[fo.k] === 0) run = 0;
+      rolls.push(r);
+      turns.push(r);
+      cur.rolls.push(r);
+      cur.turns.push(r);
+    });
+    const end = s.live ? "live" : s.end;
+    const lost = cur && !s.live && s.lostOff ? { lost: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
+    if (lost) {
+      cur.turns.push(lost);
+      hp = Math.max(0, hp - lost.harm);
+    }
+    const moments = dlMoments(lost ? [...turns, lost] : turns, end);
+    const closer = turns[turns.length - 1];
+    if (closer && closer.use && end === "won") closer.won = true;
+    return { stops, rolls, turns, hp, run, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
+  };
+  const dlKindSay = (k) => k === "Weakness" ? "Weak spot" : k;
+  const dlSay = (r, foe = true) => r.lost && r.over ? "The threat filled in " + r.room + ": " + r.name : r.lost ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
+  const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
+  const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
+  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.lost ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
+  const DlDieBtn = ({ r, size, act, on, foe, lit }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
+  const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
+  const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
+  const DlResult = ({ s, m }) => {
+    const line = m.end === "live" ? null : s.result;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
+  };
+  const DlFoeDie = ({ f }) => /* @__PURE__ */ React$1.createElement(DS.DelveFoeDie, { value: f.roll, other: f.other != null ? f.other : void 0, hit: f.hit, surface: "popup" });
+  const dlRoomSaid = (r) => r.back ? "Back in " + r.room.replace(/^The /, "the ") : r.room;
+  const dlMeterOf = (r) => {
+    const x = r.foe ? r.foe : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
+    return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing };
+  };
+  const DlFoeMeter = ({ mt }) => mt.members ? /* @__PURE__ */ React$1.createElement("div", { className: "dv6-band" }, /* @__PURE__ */ React$1.createElement("b", null, mt.name), " ", /* @__PURE__ */ React$1.createElement("span", null, mt.standing, " of ", mt.members, " standing")) : /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of });
+  const dlBeat = (r) => r.downed ? r.downed.name + " beaten" : r.passed ? r.passed + " passed" : "";
+  const dlCost = (r) => [r.harm > 0 && !r.foe && "Lost " + r.harm + " HP", r.threat > 0 && "Threat +" + r.threat].filter(Boolean).join(" · ");
+  const DlFact = ({ label, children, tone }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvS-fact" }, /* @__PURE__ */ React$1.createElement("dt", null, label), /* @__PURE__ */ React$1.createElement("dd", { className: tone ? "is-" + tone : void 0 }, children));
+  const dlTurnName = (r) => r.use ? dlKindSay(r.what) + " · " + r.name : "Roll " + r.n;
+  const DlHeldStacked = ({ r, x, live }) => {
+    const tcls = r.fumble ? "fumble" : r.tier;
+    const grp = (...c) => {
+      const k = c.filter(Boolean);
+      return k.length ? /* @__PURE__ */ React$1.createElement("div", { className: "dvS-grp" }, k.map((n, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, n))) : null;
+    };
+    const mt = dlMeterOf(r);
+    const foe = mt && /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line is-foe" }, r.foe && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvS-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))), r.foe && dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r)), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-meter" + (mt.members ? " is-band" : "") }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-stacked" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvS-head" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 52, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : r.use ? dlKindSay(r.what) : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, dlTurnName(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r)))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line" }, grp(
+      /* @__PURE__ */ React$1.createElement(DlFact, { label: "Room" }, dlRoomSaid(r)),
+      r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Used" }, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does))),
+      !r.use && r.action && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Action" }, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))
+    ), grp(
+      !r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Roll" }, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc)),
+      !r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Outcome", tone: tcls }, dlGrade(r)),
+      !r.foe && dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r))
+    )), foe))));
+  };
+  const DlHeld = ({ m, act, live = true, beside }) => {
+    const r = act ? m.turns[act - 1] : null;
+    if (!r) return null;
+    const x = m.mom[r.t];
+    const tcls = r.fumble ? "fumble" : r.tier;
+    const mt = dlMeterOf(r);
+    const foeRow = r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc)));
+    const ledger = /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : r.use ? dlKindSay(r.what) : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, dlTurnName(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r))))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, dlRoomSaid(r))), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, dlCost(r) && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, dlCost(r))), mt && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })))));
+    return beside === false ? /* @__PURE__ */ React$1.createElement(DlHeldStacked, { r, x, live }) : ledger;
+  };
+  const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
+  const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
+  const DL_NAME_MIN = 64;
+  const useDlNamed = (n) => {
+    const ref = React$1.useRef(null);
+    const [named, setNamed] = React$1.useState(true);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => setNamed(el.clientWidth / n >= DL_NAME_MIN);
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [n]);
+    return [ref, named];
+  };
+  const DL_BESIDE_MIN = 800;
+  const DL_HELD_W = 272;
+  const DL_HELD_GAP = 16;
+  const dlBesideMin = (rooms) => Math.max(DL_BESIDE_MIN, DL_HELD_W + DL_HELD_GAP + DL_NAME_MIN * rooms);
+  const useDlBeside = (ref, rooms) => {
+    const [beside, setBeside] = React$1.useState(false);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => {
+        const cs = getComputedStyle(el);
+        const pad = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
+        setBeside(el.getBoundingClientRect().width - pad >= dlBesideMin(rooms));
+      };
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [ref, rooms]);
+    return beside;
+  };
+  const dlMainClass = (beside) => "dvE-main" + (beside ? " is-beside" : "");
+  const DlRoute = ({ m, act, on, beside, lit }) => {
+    const sel = act ? m.turns[act - 1].stop : null;
+    const [ref, named] = useDlNamed(m.stops.length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(beside) }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": m.stops.length }, "aria-label": "The way you went" }, m.stops.map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => m.mom[r.t] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, lit, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act, beside })));
+  };
+  const DL_LIST_BELOW = 610;
+  const useDlList = (ref) => {
+    const [list, setList] = React$1.useState(false);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => {
+        const cs = getComputedStyle(el);
+        const sides = el.classList.contains("is-list") ? ["borderLeftWidth", "borderRightWidth"] : ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"];
+        const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains("is-list") ? 2 * DL_GUTTER : 0);
+        setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW);
+      };
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [ref]);
+    return list;
+  };
+  const DL_OPEN_GAP = 12;
+  const dlEvenOpen = (el) => {
+    const dice = el && el.querySelector(".dvL-dice");
+    if (!dice) return;
+    const box = dice.getBoundingClientRect();
+    const drawn = [...dice.querySelectorAll("svg *")].filter((e) => /^(polygon|path|circle|rect)$/.test(e.tagName) && (!e.classList.contains("sl") || e.closest('[aria-pressed="true"]')) && getComputedStyle(e).display !== "none").map((e) => e.getBoundingClientRect()).filter((r) => r.height > 0);
+    if (!drawn.length) return;
+    el.style.setProperty("--dvL-up", Math.max(0, DL_OPEN_GAP - (Math.min(...drawn.map((r) => r.top)) - box.top)) + "px");
+    const bottom = box.bottom - parseFloat(getComputedStyle(dice).paddingBottom);
+    el.style.setProperty("--dvL-down", Math.max(0, DL_OPEN_GAP - (bottom - Math.max(...drawn.map((r) => r.bottom)))) + "px");
+  };
+  const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
+    const isOpen = open === st.i;
+    const sel = act ? m.turns[act - 1].stop : null;
+    const has = st.turns.some((r) => !r.lost);
+    const cross = st.turns.find((r) => r.lost);
+    const keys = st.turns.filter((r) => m.mom[r.t]);
+    const rest = st.turns.filter((r) => !m.mom[r.t]);
+    const onRoom = React$1.useMemo(() => ({ ...on, sel: (t) => {
+      if (on.focus) on.focus(t);
+      setOpen(st.i);
+      on.sel(t);
+    } }), [on, st.i, setOpen]);
+    const label = (st.back ? "Back to " : "Room " + st.num + ", ") + st.name;
+    const fold = "dvL-room-" + st.i;
+    const openRef = React$1.useRef(null);
+    React$1.useLayoutEffect(() => {
+      if (isOpen) dlEvenOpen(openRef.current);
+    }, [isOpen, act]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvL-row" + (isOpen ? " is-open" : "") + (first ? " is-first" : "") + (last ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" + (has ? " is-tap" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, has ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dvL-head", "aria-expanded": isOpen, "aria-controls": fold, "aria-label": label, onClick: () => setOpen(isOpen ? null : st.i) }, /* @__PURE__ */ React$1.createElement("span", { className: "dvL-name", "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })) : /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name is-pass" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, cross ? label : label + ", no rolls")), has ? /* @__PURE__ */ React$1.createElement("div", { className: "dvL-tally", "aria-hidden": isOpen || void 0 }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on: onRoom, size: 24 })), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dvL-dots", role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.tier || "use") })))) : cross ? /* @__PURE__ */ React$1.createElement("span", { className: "dvL-tally", role: "img", "aria-label": dlSay(cross) }, /* @__PURE__ */ React$1.createElement(DlDie, { r: cross, size: 24 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass dvL-pass", "aria-hidden": "true" }))), has && /* @__PURE__ */ React$1.createElement("div", { id: fold, className: "dvL-fold" }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: isOpen }, isOpen && /* @__PURE__ */ React$1.createElement("div", { ref: openRef, className: "dvL-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 }))), sel === st.i && /* @__PURE__ */ React$1.createElement("div", { className: "dvL-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act, live: false }))))));
+  };
+  const DlRoomList = ({ m, act, on }) => {
+    const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : null);
+    const ref = React$1.useRef(null);
+    const pending = React$1.useRef(null);
+    const [lit, setLit] = React$1.useState(null);
+    const onList = React$1.useMemo(() => ({ ...on, hov: (t) => {
+      if (t == null || window.matchMedia("(hover: hover)").matches) setLit(t);
+    }, focus: (t) => {
+      pending.current = t;
+    } }), [on]);
+    React$1.useLayoutEffect(() => {
+      const t = pending.current;
+      if (t == null) return;
+      pending.current = null;
+      const b = ref.current && ref.current.querySelector('.dvL-dice [data-t="' + t + '"]');
+      if (b) b.focus();
+    });
+    const r = act ? m.turns[act - 1] : null;
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvL-list", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvL-vh", "aria-live": "polite" }, r ? dlSay(r) : ""), m.stops.map((st, i) => /* @__PURE__ */ React$1.createElement(DlRoomRow, { key: st.i, m, st, act, on: onList, lit, open, setOpen, first: i === 0, last: i === m.stops.length - 1 })));
+  };
+  const DlEmptyHex = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dl-empty-hex", viewBox: "-5 -5 46 50", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }));
+  const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: "Room " + (i + 1) }));
+  const DlEmptyRoute = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(false) }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": rooms }, "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (st.i === 0 ? " is-on" : " is-far") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": "Room " + st.num + (st.i === 0 ? ", First room" : ", not reached") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.i === 0 ? "First room" : " ")), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))))));
+  const DlEmptyList = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvL-list", "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvL-row" + (st.i === 0 ? " is-open is-first" : " is-far") + (st.i === rooms - 1 ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num", "aria-hidden": "true" }, st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "First room"), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, "Room 1, First room, no rolls")) : /* @__PURE__ */ React$1.createElement("div", { className: "dvL-head", role: "img", "aria-label": "Room " + st.num + ", not reached" }, /* @__PURE__ */ React$1.createElement(DlEmptyHex, null)))))));
+  const DlCard = ({ s, m, roll, turn }) => {
+    const ref = React$1.useRef(null);
+    const list = useDlList(ref);
+    const rooms = m.turns.length ? m.stops.length : s.tracks && s.tracks.rooms || 5;
+    const beside = useDlBeside(ref, rooms);
+    const [sel, setSel] = React$1.useState(() => turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null);
+    const [hov, setHov] = React$1.useState(null);
+    const on = React$1.useMemo(() => ({ sel: setSel, hov: setHov }), []);
+    const stacked = list || !beside;
+    const act = stacked ? sel : hov || sel;
+    if (!m.turns.length) {
+      return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlEmptyList, { rooms }) : /* @__PURE__ */ React$1.createElement(DlEmptyRoute, { rooms }));
+    }
+    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlRoomList, { m, act, on: { sel: setSel, hov: DL_NO_HOVER } }) : /* @__PURE__ */ React$1.createElement(DlRoute, { m, act, on, beside, lit: stacked ? hov : null }));
+  };
+  const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
+  const dlSheet = (s, m) => {
+    const h = DL_HEROES[s.hero] || DL_HEROES["Wren the Rogue"];
+    const sh = s.sheet || {};
+    const used = sh.used || {};
+    const gear = h.gear.map((g) => ({ ...g, state: g.kind === "armour" ? "worn" : "held" }));
+    const find = (name) => {
+      const n = dlCap(name.replace(/^(a|an|the)\s+/i, ""));
+      let g = gear.find((x) => x.name === n);
+      if (!g) {
+        g = { name: n, kind: /key/i.test(n) ? "key" : "once", does: DL_GEAR_DOES[n] || "", state: "held" };
+        gear.push(g);
+      }
+      return g;
+    };
+    (s.lines || []).forEach((l) => {
+      if (l[0] === "Gear") {
+        const t = String(l[1]);
+        if (/^Took /.test(t)) find(t.replace(/^Took /, ""));
+        else if (/^Used /.test(t)) find(t.replace(/^Used /, "")).state = "used";
+      }
+      if (l[0] === "Weakness") {
+        const g = find(String(l[1]));
+        if (g.kind !== "key") g.state = "used";
+      }
+      if (l[0] === "Lock") {
+        const w = /^Opened (.+) with (.+)$/.exec(String(l[1]));
+        if (w) find(w[2]).note = "Opened " + w[1];
+      }
+    });
+    gear.forEach((g) => {
+      g.label = g.note || DL_STATE[g.state];
+    });
+    return {
+      name: h.name,
+      cls: h.cls,
+      hp: m.hp,
+      hpMax: s.hpMax,
+      threat: s.threat,
+      threatMax: s.threatMax,
+      lightName: s.lightName,
+      light: s.light,
+      lightMax: s.lightMax,
+      carry: DL_CARRY,
+      gear,
+      abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })),
+      insp: !!sh.insp,
+      fight: h.fight || null,
+      stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? "−" : "+") + Math.abs(n) }))
+    };
+  };
+  const DL_G = { armour: "M5 4h14v8l-7 8-7-8z", once: "M9 3h6M10 3v6l-5 11h14l-5-11V3", key: "M3 9h7v6H3zM10 12h11M17 12v4M20 12v3" };
+  const DlBox = ({ k, state }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv4-g" + (state === "used" ? " is-used" : "") + (!k ? " is-empty" : "") }, k && /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "20", height: "20", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_G[k] })));
+  const DlUses = ({ left, of }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv4-uses", role: "img", "aria-label": left + " of " + of + " left" }, Array.from({ length: of }, (_, i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < left ? "is-on" : "" })));
+  const DlInsp = ({ on }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv5-insw", role: "img", "aria-label": "Inspiration, " + (on ? "ready" : "spent") }, /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-insp" + (on ? " is-on" : ""), viewBox: "-5 -5 46 50", width: "28", height: "30", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), on && /* @__PURE__ */ React$1.createElement("polygon", { className: "rim", points: DL_RIM })));
+  const DlHex = ({ x }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dv4-sx", viewBox: "-5 -5 46 50", width: "32", height: "35", role: "img", "aria-label": x.say }, /* @__PURE__ */ React$1.createElement("polygon", { className: "hx", points: DL_HEX }), /* @__PURE__ */ React$1.createElement("text", { x: "18", y: "20.5" }, x.say));
+  const DlCell = ({ label, used, title, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cell" + (used ? " is-used" : ""), title }, /* @__PURE__ */ React$1.createElement("span", { className: "dv7-fig" }, children), /* @__PURE__ */ React$1.createElement("span", { className: "dv7-lb" }, label));
+  const DlMeter = ({ label, n, of }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv6-bar" }, /* @__PURE__ */ React$1.createElement("span", null, label), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label, value: n, max: of, showValue: false }), /* @__PURE__ */ React$1.createElement("small", null, n + "/" + of));
+  const DL_GUTTER = 16;
+  const DL_ONE_ROW = 796;
+  const useDlOneRow = (ref) => {
+    const [one, setOne] = React$1.useState(false);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => {
+        const cs = getComputedStyle(el);
+        const edge = ["borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
+        setOne(el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW);
+      };
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [ref]);
+    return one;
+  };
+  const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
+  const DlAdvCells = ({ c, streak }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Hits or successes in a row. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak)));
+  const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+  const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-mgrid" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }), c.lightName && /* @__PURE__ */ React$1.createElement(DlMeter, { label: dlLightLabel(c.lightName), n: c.light, of: c.lightMax })));
+  const dlFight = (c) => {
+    const f = c.fight;
+    if (!f) return [];
+    return [
+      { key: "def", label: "Defence", num: f.defence, text: "A foe’s d20 must reach " + f.defence + " to hit you." },
+      { key: "arm", label: "Armour", num: f.armour, tip: f.armourName, text: "The " + f.armourName + ": takes " + f.armour + " damage off blows each fight, full again at the next." },
+      { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.needs, text: "Needs " + f.heavy.needs + " to hit, " + f.heavy.dmg + " damage." }
+    ];
+  };
+  const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== "used").length) }, (_, i) => c.gear[i] || null);
+  const dlTabGroups = (c, slots, streak) => {
+    const carried = c.gear.filter((g) => g.state !== "used").length;
+    const free = slots.length - carried;
+    const left = c.abilities.reduce((n, a) => n + a.left, 0);
+    const of = c.abilities.reduce((n, a) => n + a.of, 0);
+    return [
+      { key: "stats", head: "Stats", icon: "stats", cells: /* @__PURE__ */ React$1.createElement(DlStatCells, { c }), cls: "dv8-stats" },
+      { key: "advantage", head: "Advantage", icon: "advantage", cells: /* @__PURE__ */ React$1.createElement(DlAdvCells, { c, streak }), cls: "dv8-adv" },
+      {
+        key: "pack",
+        head: "Pack",
+        icon: "pack",
+        say: carried + " of " + slots.length + " carried",
+        rows: [
+          ...c.gear.map((g) => ({ key: g.name, fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: g.kind, state: g.state }), name: g.name, tag: g.label, text: g.does })),
+          ...free > 0 ? [{ key: "free", fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: null }), name: "Free", text: "Room for " + (free === 1 ? "one more" : free + " more") + "." }] : []
+        ]
+      },
+      {
+        key: "abilities",
+        head: "Ability",
+        icon: "ability",
+        say: left + " of " + of + " uses left",
+        rows: c.abilities.map((a) => ({ key: a.name, fig: /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of }), name: a.name, tag: (a.ult ? "Ultimate · " : "") + a.left + " of " + a.of + " left", text: a.does }))
+      },
+      ...c.fight ? [{
+        key: "fight",
+        head: "Fight",
+        icon: "fight",
+        say: "defence " + c.fight.defence,
+        rows: dlFight(c).map((f) => ({ key: f.key, fig: /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, f.num), name: f.label, tag: f.kind || f.tip, text: f.text }))
+      }] : []
+    ];
+  };
+  const DlTapRow = ({ fig, name, tag, text }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvp-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvp-fig" }, fig), /* @__PURE__ */ React$1.createElement("div", { className: "dvp-tx" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvp-nm" }, /* @__PURE__ */ React$1.createElement("b", null, name), tag && /* @__PURE__ */ React$1.createElement("span", null, tag)), text && /* @__PURE__ */ React$1.createElement("p", { className: "dvp-does" }, text)));
+  const DlTabs = ({ groups, card, setCard }) => /* @__PURE__ */ React$1.createElement("div", { className: "esx-cards dl-tabs", style: { "--dl-tabs": groups.length } }, groups.map((g) => /* @__PURE__ */ React$1.createElement("button", { key: g.key, type: "button", className: "esx-card dl-tab" + (card === g.key ? " is-open" : ""), "aria-expanded": card === g.key, "aria-label": g.say ? g.head + ", " + g.say : g.head, onClick: () => setCard(card === g.key ? null : g.key) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: g.icon, size: 24 }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-tab-w" }, g.head))));
+  const DlPanel = ({ groups, card }) => {
+    const grp = groups.find((g) => g.key === card);
+    return /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && (grp.rows ? /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dvp-rows dl-panel esx-in", role: "group", "aria-label": grp.head }, grp.rows.map((r) => /* @__PURE__ */ React$1.createElement(DlTapRow, { key: r.key, ...r }))) : /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dl-panel dl-cellpanel esx-in " + grp.cls, role: "group", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, grp.cells))));
+  };
+  const DlHead = ({ c, folded, fold }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-head is-fold" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dl-fold", "aria-expanded": !folded, "aria-controls": "dl-sheet-tabs", "aria-label": "Character sheet details", onClick: fold }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })));
+  const DlSheet = ({ c, streak }) => {
+    const ref = React$1.useRef(null);
+    const one = useDlOneRow(ref);
+    const [card, setCard] = React$1.useState(null);
+    const [folded, setFolded] = React$1.useState(true);
+    const [seen, setSeen] = React$1.useState(one);
+    const [tap, setTap] = React$1.useState(null);
+    const groups = dlTabGroups(c, dlSlots(c), streak);
+    if (seen !== one) {
+      setSeen(one);
+      setCard(null);
+      setFolded(true);
+      setTap(null);
+    }
+    React$1.useEffect(() => {
+      if (!tap) return void 0;
+      const t = setTimeout(() => setTap(null), 600);
+      return () => clearTimeout(t);
+    }, [tap]);
+    const fold = () => {
+      setTap({});
+      setFolded(!folded);
+      setCard(null);
+    };
+    const pick = (k) => {
+      setTap({});
+      setCard(k);
+    };
+    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv4 dv5 is-tight dv7 is-band dv8 is-3b" + (tap ? " is-tap" : "") + (folded ? "" : " is-unfolded"), "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-r1" }, /* @__PURE__ */ React$1.createElement(DlHead, { c, folded, fold }), /* @__PURE__ */ React$1.createElement("div", { id: "dl-sheet-tabs", className: "dl-tabwrap" }, /* @__PURE__ */ React$1.createElement("div", { className: "esx-fold" + (folded ? "" : " is-open") }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dl-tabgrp" }, /* @__PURE__ */ React$1.createElement(DlTabs, { groups, card, setCard: pick })))))), /* @__PURE__ */ React$1.createElement(DlPanel, { groups, card }))));
+  };
+  const DlBody = ({ s }) => {
+    const gs = useGs();
+    const m = React$1.useMemo(() => dlBuild(s), [s]);
+    const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const DL_NO_HOVER = () => {
+  };
+  const DL_NOW_COL = 44;
+  const useDlNowCols = (n) => {
+    const ref = React$1.useRef(null);
+    const [cols, setCols] = React$1.useState(n);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return;
+      const read = () => {
+        const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
+        setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
+      };
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [n]);
+    return [ref, cols];
+  };
+  const dlMarkCols = (n) => n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3));
+  const DlNowUseMark = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dl-now-mark is-use", viewBox: "0 0 10 10", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z" }));
+  const dlNowMarksSay = (rest) => {
+    const rolls = rest.filter((r) => !r.use);
+    const uses = rest.length - rolls.length;
+    const said = rolls.length ? rolls.length + (rolls.length === 1 ? " other roll: " : " other rolls: ") + rolls.map((r) => dlGrade(r).toLowerCase()).join(", ") : "";
+    return [said, uses ? uses === 1 ? "a use" : uses + " uses" : ""].filter(Boolean).join(", and ");
+  };
+  const DlNowRoute = ({ m, open }) => {
+    const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
+    const [ref, cols] = useDlNowCols(m.stops.length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, "aria-label": "The way you went" }, m.stops.map((st, i) => {
+      const keys = st.turns.filter((r) => m.mom[r.t]);
+      const rest = st.turns.filter((r) => !m.mom[r.t]);
+      const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === m.stops.length - 1 ? " is-row-end" : "");
+      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.turns.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act: null, on, size: 34, foe: true }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => r.use ? /* @__PURE__ */ React$1.createElement(DlNowUseMark, { key: r.t }) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + r.tier }))));
+    }));
+  };
+  const DlNowEmptyRoute = ({ rooms, reached }) => {
+    const [ref, cols] = useDlNowCols(rooms);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, role: "img", "aria-label": "The run has " + rooms + " rooms, " + (reached ? "the first reached, no rolls yet" : "none entered yet") }, dlEmptyStops(rooms).map((st, i) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + (reached ? i === 0 ? " is-on" : " is-far" : "") + (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === rooms - 1 ? " is-row-end" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num)), reached && i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-hidden": "true" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))));
+  };
+  const DlNowEmpty = ({ title, rooms, next, onPlay }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", title, play: onPlay, next }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms })));
+  const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
+    const gs = useGs();
+    const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
+    const s = GS_SESSIONS[sid];
+    const m = React$1.useMemo(() => dlBuild(s), [s]);
+    const open = (turn) => gs.go("session", turn ? { id: sid, turn } : { id: sid });
+    const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, m.turns.length ? /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open }) : /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms: s.tracks && s.tracks.rooms || 5, reached: true })));
+  };
+  const registerDelve = () => {
+    GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
+  };
+  function initGsDelve() {
+    GS_SESSIONS["delve-replay"] = { ...GS_SESSIONS.delve, replay: true };
+    GS_SESSIONS["delve-fallen"] = {
+      ...GS_SESSIONS.delve,
+      loss: true,
+      end: "fallen",
+      result: "Fell in the warren",
+      reached: "Fell in the warren",
+      share: "Fell in the warren",
+      shareLines: null,
+      threat: 6,
+      light: 4,
+      figures: ["Threat 6/12", "8 rolls", "HP 0/23"],
+      tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 },
+      sheet: { used: {}, insp: false },
+      lines: [
+        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12", "HP 21/23"],
+        ["Room", "Entered the chime run"],
+        ["Strength", "Failure", "d20 3 + 3 = 6 vs 12", "HP 19/23"],
+        ["Strength", "Success", "d20 17 + 3 = 20 vs 12"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 12", "HP 17/23"],
+        ["Room", "Entered the warren"],
+        ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
+        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23"],
+        ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
+        ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
+      ]
+    };
+    GS_SESSIONS["delve-story-fall"] = {
+      ...GS_SESSIONS.delve,
+      loss: true,
+      end: "fallen",
+      lostOff: { name: "Crank panel", harm: 4 },
+      setting: "Cold Sleep",
+      hero: "Wren the Rogue",
+      hpMax: 21,
+      threat: 2,
+      threatMax: 12,
+      lightName: null,
+      light: 0,
+      lightMax: 0,
+      foeMax: {},
+      result: "Fell in the medbay",
+      reached: "Fell in the medbay",
+      share: "Fell in the medbay",
+      shareLines: null,
+      figures: ["Threat 2/12", "5 rolls", "HP 0/21"],
+      tracks: { progress: 3, rooms: 6, threat: 2, threatMax: 12 },
+      sheet: { used: {}, insp: false },
+      lines: [
+        ["Room", "Entered the cryo deck"],
+        ["Intelligence", "Read the wake log", "Success", "d20 15 + 0 = 15 vs 12"],
+        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 12", "HP 17/21"],
+        ["Room", "Entered the armoury"],
+        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 12", "HP 11/21"],
+        ["Wisdom", "Listen for the hunt", "Partial success", "d20 11 + 1 = 12 vs 12"],
+        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 12", "HP 4/21"],
+        ["Room", "Entered the medbay"]
+      ]
+    };
+    GS_SESSIONS["delve-won-by-use"] = (() => {
+      const base = GS_SESSIONS.delve.lines;
+      const cut = base.findIndex((l) => l[0] === "Ability");
+      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12", "Struck back: d20 8 vs 10, missed"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
+    })();
+    GS_SESSIONS["delve-hard"] = {
+      ...GS_SESSIONS.delve,
+      loss: true,
+      end: "overrun",
+      result: "Too late: the ritual was completed",
+      reached: "Too late: the ritual was completed",
+      share: "Too late: the ritual was completed",
+      shareLines: null,
+      hero: "Wren the Rogue",
+      hpMax: 21,
+      threat: 12,
+      foeMax: { "the shrine cavern": 5 },
+      // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
+      foeName: { "the shrine cavern": "Mortlake, the drowned captain" },
+      // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
+      lightName: "the watchman's round",
+      light: 0,
+      lightMax: 9,
+      figures: ["Threat 12/12", "24 rolls", "1 natural 20", "HP 12/21"],
+      tracks: { progress: 5, rooms: 5, threat: 12, threatMax: 12 },
+      sheet: { used: {}, insp: false },
+      lines: [
+        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 19/21"],
+        ["Room", "Entered the chime run"],
+        ["Dexterity", "Failure", "d20 8 + 3 = 11 vs 12", "HP 17/21"],
+        ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 12"],
+        ["Room", "Entered the warren"],
+        ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
+        ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
+        ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 3 = 18 vs 12", "Struck back: d20 11 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21"],
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 15 + 3 = 18 vs 12"],
+        ["Room", "Doubled back to the chime run", "The ritual +1"],
+        ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
+        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Entered Snaggle's den"],
+        ["Dexterity", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 13 vs 14, missed"],
+        ["Dexterity", "Hit", "Natural 20", "d20 20 + 3 = 23 vs 12", "Struck back: d20 8 vs 14, missed"],
+        ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
+        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to Snaggle's den", "The ritual +1"],
+        ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 12"],
+        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Strength", "Force the bone gate", "Failure", "d20 6 + 0 = 6 vs 12"],
+        ["Strength", "Force the bone gate", "Failure", "d20 11 + 0 = 11 vs 12"],
+        ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 12"],
+        ["Room", "Doubled back to the chime run", "The ritual +1"],
+        ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
+        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Entered the shrine cavern"],
+        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
+        ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 9 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 5 and 7, kept 7 + 3 = 10 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
+        ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 12 vs 14, missed"],
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
+      ]
+    };
+    GS_SESSIONS["delve-overrun-back"] = (() => {
+      const L = GS_SESSIONS["delve-hard"].lines;
+      const at = L.findIndex((l) => l[1] === "Entered the shrine cavern");
+      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...L.slice(0, at - 1), ...L.slice(at), ["Room", "Doubled back to the warren", "The ritual +1"]] };
+    })();
+    GS_SESSIONS["delve-hazard"] = {
+      ...GS_SESSIONS.delve,
+      noEd: true,
+      date: "Monday 12 October",
+      live: true,
+      loss: false,
+      end: "won",
+      result: "In progress",
+      reached: null,
+      share: null,
+      shareLines: null,
+      setting: "The Briar Keep",
+      hero: "Hal the Woodcutter",
+      hpMax: 23,
+      threat: 2,
+      threatMax: 14,
+      lightName: null,
+      light: 0,
+      lightMax: 0,
+      foeMax: {},
+      figures: ["Threat 2/14", "10 rolls", "HP 20/23"],
+      tracks: { progress: 4, rooms: 6, threat: 2, threatMax: 14 },
+      sheet: { used: {}, insp: true },
+      lines: [
+        ["Intelligence", "Read the rhyme on the gatepost", "Success", "d20 17 + 0 = 17 vs 12"],
+        ["Room", "Entered the rose walk"],
+        ["Dexterity", "Climb the garden wall to the sundial", "Success", "d20 16 + 1 = 17 vs 12"],
+        ["Room", "Entered the well court"],
+        ["Charisma", "Flatter the witch", "Partial success", "d20 13 + 0 = 13 vs 12"],
+        ["Room", "Entered the great hall"],
+        ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 vs 10, missed"],
+        ["Strength", "Hit", "d20 12 + 3 = 15 vs 12", "Struck back: d20 12 vs 10, hit, 1 damage, HP 22/23"],
+        ["Strength", "Hit", "d20 14 + 3 = 17 vs 12"],
+        ["Room", "Entered the thorn stair"],
+        ["Strength", "Partial success", "d20 11 + 3 = 14 vs 12"],
+        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 20/23"],
+        ["Strength", "Success", "d20 15 + 3 = 18 vs 12"],
+        ["Strength", "Success", "d20 16 + 3 = 19 vs 12"]
+      ]
+    };
+  }
+  let DV_END;
+  let DV_RUN1;
+  let DV_ALL;
+  let DV_LIVE;
+  let DV_DONE;
+  let DV_ROOMS;
+  let DV_NEXT;
+  const dvEnded = (ps) => ps.filter((p) => p.status.kind !== "live");
+  let DV_ACH;
+  let DV_BADGES;
+  const dvStatus = (s) => !s.played ? { kind: "none", label: "Not played" } : !s.end ? { kind: "live", label: "In progress" } : DV_END[s.end];
+  let DV_FIRST;
+  const dvSid = (s) => s === DV_FIRST || s && s.id === DV_FIRST.id ? "delve-first" : "delve-" + s.id;
+  const dvRun = (gs) => {
+    const by = {};
+    phVisible(gs).forEach((p) => {
+      if (p.gid === "delve" && p.status.kind !== "live") by[p.ed] = p.status.kind;
+    });
+    return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: by[s.id] === "ok", failed: by[s.id] === "bad" }));
+  };
+  const DvLibrary = () => {
+    const gs = useGs();
+    const access = lbAccess(gs, "delve");
+    const k = gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "");
+    const fresh = !lbNow(gs, "delve");
+    const ach = phAch(gs, "delve", DV_ACH);
+    const list = dvRun(gs);
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: DV_RUN1.title, rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
+  };
+  const registerDelveLibrary = () => {
+    GS_LIBRARY.delve = DvLibrary;
+    GS_EDITIONS.delve = (gs) => edRuns(gs, "delve", { all: DV_ALL, done: DV_DONE, doneStatus: (g) => gsSessStatus(GS_SESSIONS[gsEdPick("delve", g) || "delve"]), status: dvStatus, openCur: (g) => g.go("session", { id: "delve" }), open: (g, x) => g.go("session", { id: dvSid(x) }) });
+  };
+  function initGsDelveLibrary() {
+    DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, ritual: { kind: "bad", label: GS_RESULT.delve({ end: "ritual" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
+    DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren beneath Ashford Mill", played: true, end: null };
+    DV_ALL = [DV_RUN1];
+    DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 9, rooms: 4, ritual: 3 };
+    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
+    DV_ROOMS = 5;
+    DV_NEXT = "Monday 12 October";
+    DV_ACH = [
+      { k: "untouched", n: "Untouched", how: "Win a run without losing a hit point.", first: true, by: (p) => p.src.end === "won" && !!p.src.unhurt },
+      { k: "streak", n: "Hot Streak", how: "Land three hits or successes in a row.", first: true, by: (p) => (p.src.streak || 0) >= 3 },
+      { k: "enemy", n: "Know Thy Enemy", how: "Bring down a foe by what it fears.", first: true, by: (p) => p.src.end === "won" && (p.src.lines || []).some((l) => l[0] === "Weakness") },
+      { k: "regular", n: "Regular", how: "Complete four weeks in a row.", of: 4, count: dvEnded },
+      { k: "ten", n: "Ten Runs", how: "Complete ten runs.", of: 10, count: dvEnded }
+    ];
+    DV_BADGES = lbAutoBadges(DV_ACH);
+    DV_FIRST = DV_RUN1;
+    GS_SESSIONS["delve-first"] = GS_SESSIONS.delve;
+  }
+  let BW_CH1;
+  let BW_CH2;
+  let BW_T1;
+  let BW_T2;
+  let BW_REC1;
+  const bwEds = (gs) => {
+    const out = gs.view === "out";
+    const plays = out || !phVisible ? [] : phVisible(gs).filter((p) => p.gid === "barrow");
+    const st = (key) => {
+      const p = plays.find((x) => x.ed === key);
+      return out ? null : p ? p.status : { kind: "none", label: "Not played" };
+    };
+    const open = (key) => {
+      const p = plays.find((x) => x.ed === key);
+      return p ? () => p.open(gs) : null;
+    };
+    return [
+      { key: "bw2", gid: "barrow", n: 2, title: BW_T2, date: "", nodate: true, month: "October", free: false, now: true, status: st("bw2"), open: open("bw2") },
+      { key: "bw1", gid: "barrow", n: 1, title: BW_T1, date: "", nodate: true, month: "October", free: true, now: false, status: st("bw1"), open: open("bw1") }
+    ];
+  };
+  const registerBarrowLibrary = () => {
+    GS_EDITIONS.barrow = bwEds;
+  };
+  let CPR_BW_JOURNAL;
+  let BW_ACH;
+  let BW_BADGES;
+  function initGsBarrowLibrary() {
+    BW_CH1 = { title: GS_PAGES.barrow.week.title, line: GS_PAGES.barrow.week.line };
+    BW_CH2 = { title: GS_PAGES.barrow.week2.title, line: GS_PAGES.barrow.week2.line };
+    BW_T1 = "The Barrow of Hollowmere";
+    BW_T2 = "The Barrow of Hollowmere — Chapter 2: The Abbey on the Mere";
+    BW_REC1 = { earns: ["seal", "deep"] };
+    CPR_BW_JOURNAL = [
+      [1, "Wren the Rogue took up Elder Maud’s quest: Recover the Bell of Hollowmere from the barrow and bring it home to the village."],
+      [1, "Reached St. Ebba’s churchyard."],
+      [1, "Took the Storm lantern."],
+      [1, "Forced a way through the lodge door."],
+      [1, "Reached The sexton’s lodge."],
+      [1, "Took the Iron key."],
+      [1, "Rested and recovered. Session 1 ended."],
+      [2, "Reached Whisperwood."],
+      [2, "Defeated Grey wolf in Whisperwood."],
+      [2, "Defeated Grey wolf in Whisperwood."],
+      [2, "Reached The barrow mound."],
+      [2, "Opened the barrow door with the Iron key."],
+      [2, "Rested and recovered. Session 2 ended."],
+      [3, "Reached The barrow hall."],
+      [3, "Defeated Barrow skeleton in The barrow hall."],
+      [3, "Defeated Barrow skeleton in The barrow hall."],
+      [3, "Reached The wight’s crypt."],
+      [3, "Defeated The barrow wight in The wight’s crypt."],
+      [3, "Wren reached level 2."],
+      [3, "Took the Bell of Hollowmere."],
+      [3, "Rang the Bell of Hollowmere in the chapel tower again. The mist drew back from the marsh. Quest complete."]
+    ];
+    GS_SESSIONS["gs-pu-barrow-ch1"] = {
+      kind: "chapter",
+      gid: "barrow",
+      edKey: "bw1",
+      game: GS_GAMES.barrow.name,
+      art: "barrow",
+      result: "Quest complete",
+      figures: ["3 sessions", "Level 2"],
+      lines: CPR_BW_JOURNAL.map(([n, t]) => ["Session " + n, t]),
+      share: "Quest complete",
+      shareLines: ["Adventure: The Barrow of Hollowmere", "Wren the Rogue, level 2 · ✅ Bell returned · 3 sessions"],
+      credit: true
+    };
+    BW_ACH = [
+      { k: "seal", n: "Into the barrow", how: "Open the barrow door.", first: true, by: (p) => p.src.earns.includes("seal") },
+      { k: "deep", n: "The wight’s crypt", how: "Reach the wight’s crypt.", first: true, by: (p) => p.src.earns.includes("deep") },
+      { k: "unhurt", n: "Out without a scratch", how: "Finish Chapter 1 with full HP.", first: true, by: (p) => p.src.earns.includes("unhurt") }
+    ];
+    BW_BADGES = lbAutoBadges(BW_ACH);
+  }
+  const gsKind = (c) => c.charAt(0) + c.slice(1).toLowerCase();
+  const gsKinds = () => GS_GAME_ORDER.map((k) => GS_GAMES[k].category).filter((c, i, a) => a.indexOf(c) === i);
+  const gsFind = (q, k) => {
+    const s = gsNorm(q);
+    return !s || gsNorm(GS_GAMES[k].name).includes(s);
+  };
+  let GS_LIB_READY;
+  function initGsDiscover() {
+    GS_LIB_READY = { barrow: "Chapter 1 is ready", word: "Today’s word is ready", groups: "Today’s groups are ready", mystery: "Today’s case is ready", where: "Today’s country is ready", chain: "Today’s chain is ready", salvage: "Today’s sea is ready", common: "Today’s threads are ready", escape: "This week’s room is ready", hunter: "Today’s hunt is ready" };
+  }
   const ES_SIDS = { under: "escape-week", par: "escape-par", over: "escape-over", hard: "escape-hard" };
   const esFinished = (gs) => gsEdPick("escape", gs) || ES_SIDS[gs.review.escape] || "escape-week";
   const esSid = (gs) => gs.review.week === "live" ? gsLiveSid("escape-live", gs) : esFinished(gs);
@@ -6321,14 +6847,19 @@
       edKey: "dv-r0",
       __dated: true,
       date: pzLong(PH_MORE.delve.at) + ", " + phTime(PH_MORE.delve.at),
-      figures: ["Threat 2/12", "4 rolls", "HP 10/11"],
-      threat: 2,
+      figures: ["Threat 0/12", "1 roll", "HP 21/21"],
+      threat: 0,
+      foeMax: {},
+      lightName: void 0,
+      light: void 0,
+      lightMax: void 0,
+      sheet: { used: {}, insp: true },
       setting: "The Drowned Chapel under Fenwick Marsh",
-      tracks: { progress: 2, rooms: 5, threat: 2, threatMax: 12 },
+      tracks: { progress: 2, rooms: 5, threat: 0, threatMax: 12 },
       endings: null,
       reached: null,
       shareLines: null,
-      lines: [["Room", "Entered the flooded nave"], ["Dexterity", "Cross the sunken pews", "Success", "Rolled 14 + 2 = 16 against DC 12"], ["Room", "Entered the bell loft"]]
+      lines: [["Room", "Entered the flooded nave"], ["Dexterity", "Cross the sunken pews", "Success", "d20 14 + 3 = 17 vs 12"], ["Room", "Entered the bell loft"]]
     };
     PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + "-0", at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
     Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
@@ -7116,7 +7647,7 @@
   const gsHeadGame = (s) => s.gid && GS_GAMES[s.gid] ? GS_GAMES[s.gid].name : s.game;
   const gsHeadDay = (d) => typeof d === "string" ? gsShortDay(d.split(",")[0]).replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*/, "$1") : d;
   const gsHeadTitle = (s, ed) => ed ? ed.title || "No. " + ed.n : s.title || (s.number != null ? "No. " + s.number : null);
-  const GsSessHead = ({ art, label, title, actions }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React$1.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-text" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-acts" }, actions)));
+  const GsSessHead = ({ art, label, title, actions, replay }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-sess-head" }, /* @__PURE__ */ React$1.createElement(GsCover, { art, fill: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-text" }, replay ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-labelrow" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "daily" }, "Replay")) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-sess-label" }, label), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-sess-title" }, title), actions && /* @__PURE__ */ React$1.createElement("div", { className: "gs-sess-acts" }, actions)));
   const GsSessResult = ({ s, title }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md", style: { justifyItems: "start" } }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, gsOr(s.result)), (s.figures || []).filter((f) => f !== title).length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "gs-figs" }, s.figures.filter((f) => f !== title).map((f, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "gs-fig" }, gsOr(f)))));
   const gsEdMine = (gid) => {
     const c = PZ[gid];
@@ -7175,7 +7706,7 @@
     const title = gsHeadTitle(s, ed);
     const label = gsHeadGame(s) + " · " + gsHeadDay(gsSessDate(s));
     const art = s.art;
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, back, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsSessHead, { art, label, title, replay: !!s.replay, actions: kept ? /* @__PURE__ */ React$1.createElement(GsNeedsPass, { gid: s.gid, text: "This session is kept. Carrying it on comes with the Pass." }) : s.live ? /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.play(s.game, sid) }, "Play") : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, again, text && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => setShare(true) }, "Share")) }), !Body && /* @__PURE__ */ React$1.createElement(GsSessResult, { s, title }), body, s.credit && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open: share, onClose: closeShare, lines: text, linkOnly })));
   };
   const GsSessionGone = ({ gid }) => {
     const gs = useGs();
@@ -8421,17 +8952,43 @@
         c.setReview({ week: "live" });
         c.go("session", { id: "escape-live" });
       } },
+      { group: "Screens", id: "session-delve-replay", label: "7. Session page: Delve, a replay of the won run (Replay tag)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-replay" });
+      } },
       { group: "Screens", id: "session-delve-fallen", label: "7. Session page: Delve, a run that fell", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ ed: "failed" });
         c.go("session", { id: "delve-fallen" });
       } },
-      { group: "Screens", id: "session-delve-hard", label: "7. Session page: Delve, the hard play (overrun, going back three times)", stage: (c) => {
+      { group: "Screens", id: "session-delve-hard", label: "7. Session page: Delve, the hard play (overrun, going back seven times, 12 stops)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ ed: "hard" });
         c.go("session", { id: "delve-hard" });
+      } },
+      { group: "Screens", id: "session-delve-won-by-use", label: "7. Session page: Delve, won by an ability (the last turn is a use)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "won-by-use" });
+        c.go("session", { id: "delve-won-by-use" });
+      } },
+      { group: "Screens", id: "session-delve-story-fall", label: "7. Session page: Delve, a run lost to a story turn (ends on the loss cross)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-story-fall" });
+      } },
+      { group: "Screens", id: "session-delve-overrun-back", label: "7. Session page: Delve, a run lost to the threat filling on going back (ends on the loss cross)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-overrun-back" });
+      } },
+      { group: "Screens", id: "session-delve-hazard", label: "7. Session page: Delve, the Briar Keep (a hazard room, the thorn stair)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-hazard" });
       } },
       { group: "Screens", id: "session-delve-in-progress", label: "7. Session page: Delve in progress (Wren)", stage: (c) => {
         c.setView("pass");
@@ -8549,10 +9106,22 @@
         c.setReview({ week: "live" });
         c.go("delve", { page: "record" });
       } },
-      { group: "Library", id: "library-delve-hard", label: "Delve in your library, the hard play (overrun, going back three times)", stage: (c) => {
+      { group: "Library", id: "library-delve-hard", label: "Delve in your library, the hard play (overrun, going back seven times, 12 stops)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ ed: "hard" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-won-by-use", label: "Delve in your library, won by an ability (the last turn is a use)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "won-by-use" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-failed", label: "Delve in your library, this week’s run fell", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "failed" });
         c.go("delve", { page: "record" });
       } },
       { group: "Library", id: "library-word", label: "Guess in your library, with the Pass", stage: (c) => {

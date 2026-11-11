@@ -1,8 +1,8 @@
 import React from 'react';
 import { GS_RESULT, GS_SESSIONS, useGs, GS_GAMES, gsEdPick, gsSessStatus } from './gs-data.jsx';
-import { lbAutoBadges, lbAccess, lbWeekDone, lbNow, LbHead, LbFreshNow, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
+import { lbAutoBadges, lbAccess, lbWeekDone, lbNow, LbHead, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
-import { DlNow } from './gs-delve.jsx';
+import { DlNow, DlNowEmpty } from './gs-delve.jsx';
 import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
 export let DV_END;
@@ -14,9 +14,9 @@ let DV_ROOMS;
 let DV_RITUAL;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play
-// (Bryn: a streak of five strong hits, HP 9 of 13) meets Hot Streak only. A run counts as completed when its status is a win: Config → This edition: Failed
-// or Hard makes this week's a loss (gsSessStatus), so it is not completed.
-const dvEnded = (ps) => ps.filter((p) => p.status.kind === 'ok');
+// (Bryn: a longest streak of three, HP 22 of 23) meets Hot Streak, and Know Thy Enemy by the weakness strike on its climax foe. Regular and Ten Runs count finished runs, won or not: a play whose status is not live
+// (Config → This edition: Failed or Hard still counts).
+const dvEnded = (ps) => ps.filter((p) => p.status.kind !== 'live');
 export let DV_ACH;
 export let DV_BADGES;
 export const dvStatus = (s) => (!s.played ? { kind: 'none', label: 'Not played' } : !s.end ? { kind: 'live', label: 'In progress' } : DV_END[s.end]);
@@ -42,7 +42,7 @@ const DvLibrary = () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
       <div className="lb-lay">
-        {fresh ? <LbFreshNow gid="delve" title={DV_RUN1.title} line="You haven’t started this week’s run yet. Get her out before the ritual is complete." next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DlNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
+        {fresh ? <DlNowEmpty title={DV_RUN1.title} rooms={DV_ROOMS} next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DlNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
         <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list)} />
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
@@ -68,16 +68,17 @@ DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, ritual: 
 DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'October', title: 'The Goblin Warren beneath Ashford Mill', played: true, end: null };
 // Every run, newest first.
 DV_ALL = [DV_RUN1];
-DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 8, rooms: 4, ritual: 3 };
-// streak: the run's longest run of strong hits (its share card: longest streak 5).
-DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 5 };
+DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 9, rooms: 4, ritual: 3 };
+// streak: the run's longest run of hits or successes (its share card: longest streak 3).
+DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
+// KEEP: the room count, the threat's name and maximum, and the carry limit come from the run's edition (5 or 6 rooms, threat 12 to 24 deployed), never fixed at 5 and 12.
 DV_ROOMS = 5;
 DV_RITUAL = 12;
 DV_NEXT = 'Monday 12 October';
 DV_ACH = [
   { k: 'untouched', n: 'Untouched', how: 'Win a run without losing a hit point.', first: true, by: (p) => p.src.end === 'won' && !!p.src.unhurt },
-  { k: 'streak', n: 'Hot Streak', how: 'Land three strong hits in a row.', first: true, by: (p) => (p.src.streak || 0) >= 3 },
-  { k: 'enemy', n: 'Know Thy Enemy', how: 'Bring down a foe by what it fears.', first: true },
+  { k: 'streak', n: 'Hot Streak', how: 'Land three hits or successes in a row.', first: true, by: (p) => (p.src.streak || 0) >= 3 },
+  { k: 'enemy', n: 'Know Thy Enemy', how: 'Bring down a foe by what it fears.', first: true, by: (p) => p.src.end === 'won' && (p.src.lines || []).some((l) => l[0] === 'Weakness') },
   { k: 'regular', n: 'Regular', how: 'Complete four weeks in a row.', of: 4, count: dvEnded },
   { k: 'ten', n: 'Ten Runs', how: 'Complete ten runs.', of: 10, count: dvEnded },
 ];
