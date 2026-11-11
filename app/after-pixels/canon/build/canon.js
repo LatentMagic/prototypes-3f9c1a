@@ -6844,7 +6844,7 @@
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
         turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
       }
-    )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type Play After Pixels again to pick up an unfinished game where you left off.")));
+    )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type ", /* @__PURE__ */ React$1.createElement("b", null, "Play After Pixels"), " again to pick up an unfinished game where you left off.")));
   };
   const GsAgainGlyph = () => /* @__PURE__ */ React$1.createElement("svg", { className: "mcp-ico hw-chg-ic", viewBox: "0 0 24 24", width: "20", height: "20", "aria-hidden": "true", focusable: "false", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: "M19 12a7 7 0 1 1-2.1-5" }), /* @__PURE__ */ React$1.createElement("path", { d: "M17.5 3v4.2h-4.2" }));
   const GS_HW_PLAY = [

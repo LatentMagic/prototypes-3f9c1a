@@ -320,7 +320,7 @@ const GsStart = () => {
           caption={<>Name a game, or a past edition, and your AI starts it. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
           turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
       </DS.CardRow>
-      <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type Play After Pixels again to pick up an unfinished game where you left off.</span></p>
+      <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type <b>Play After Pixels</b> again to pick up an unfinished game where you left off.</span></p>
     </>
   );
 };
