@@ -1576,7 +1576,7 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .gs-sess-text { display: grid; align-content: center; justify-items: start; gap: var(--space-2); min-width: 0; }
 .gs-sess-label { font: 600 13px/1.3 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .gs-sess-labelrow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-.gs-sess-mark { text-transform: uppercase; letter-spacing: .06em; }
+.gs-sess-labelrow .mcp-tag { text-transform: uppercase; }
 .gs-sess-title { overflow-wrap: normal; word-break: normal; hyphens: none; text-wrap: balance; }
 .gs-sess-acts { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
 /* KEEP: the system's phone rule (full-width buttons under 640px) gives way here: the head's buttons keep their natural width so two sit side by side. */
