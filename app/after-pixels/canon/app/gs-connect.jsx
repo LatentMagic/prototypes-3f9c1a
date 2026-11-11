@@ -366,7 +366,7 @@ export const GsConnect = () => {
           <div className="hw-who-row"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.</p></div>
           <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">The game sets the rules, throws the dice and keeps your record. If your AI ever says otherwise, the game’s record is the one that counts.</p></div>
         </DS.Card>
-        <p className="gs-small">Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.</p>
+        <p className="gs-small">Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. We never charge for that usage.</p>
       </section>
       <div className="gs-band">
         <div className="gs-grid2">
