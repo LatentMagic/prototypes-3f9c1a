@@ -306,7 +306,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 @media (prefers-reduced-motion:reduce){.mcp-art i,.mcp-art b{transition-duration:0ms!important;transition-delay:0ms!important}.mcp-art{--on:0!important; /* @kind other */}}
 
 /* ChatPicture */
-.mcp-chat{--c-bg:var(--off-white);--c-fg:oklch(23% .01 95);--c-fg2:oklch(50% .01 95);--c-me:color-mix(in oklab,var(--c-bg),#000 6%);--c-edge:color-mix(in oklab,var(--c-bg),#000 8%);--c-tile:oklch(62% .01 95);--c-tile-fg:#fff;--c-g:var(--cover-green);--c-y:var(--cover-amber);--c-send:var(--control-edge);--c-send-fg:#fff;display:flex;flex-direction:column;background:var(--c-bg);color:var(--c-fg);border-radius:16px;overflow:hidden;position:relative;font:400 15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;border:1px solid var(--c-edge)}
+.mcp-chat{--c-bg:var(--off-white);--c-fg:oklch(23% .01 95);--c-fg2:oklch(50% .01 95);--c-me:color-mix(in oklab,var(--c-bg),#000 6%);--c-edge:color-mix(in oklab,var(--c-bg),#000 8%);--c-call:color-mix(in oklab,var(--c-fg2),var(--c-fg) 15%);--c-tile:oklch(62% .01 95);--c-tile-fg:#fff;--c-g:var(--cover-green);--c-y:var(--cover-amber);--c-send:var(--control-edge);--c-send-fg:#fff;display:flex;flex-direction:column;background:var(--c-bg);color:var(--c-fg);border-radius:16px;overflow:hidden;position:relative;font:400 15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;border:1px solid var(--c-edge)}
 .mcp-chat p,.mcp-chat ul,.mcp-chat pre{margin:0}
 .mcp-chat-head{padding:9px 16px;border-bottom:1px solid var(--c-edge);font:600 15px/1.2 var(--font-heading);text-align:center;flex:none}
 .mcp-chat-body{overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;justify-content:flex-start;gap:14px;padding:12px 16px 14px}
@@ -333,7 +333,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-me{align-self:flex-end;max-width:80%;background:var(--c-me);border-radius:18px;padding:7px 14px;flex:none}
 .mcp-chat-ai{display:grid;gap:8px;justify-items:start;max-width:94%;flex:none}
 .mcp-chat-call{display:inline-flex;align-items:center;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px}
-.mcp-chat-call img{border-radius:4px}.mcp-chat-call em{font-style:normal;color:var(--c-fg2)}
+.mcp-chat-call img{border-radius:4px}.mcp-chat-call em{font-style:normal;color:var(--c-call)}
 .mcp-chat-board{display:grid;gap:4px}.mcp-chat-row{display:flex;gap:4px}
 .mcp-chat-row>span{width:28px;height:28px;display:grid;place-items:center;border-radius:5px;font-weight:700;font-size:14px;background:var(--c-tile);color:var(--c-tile-fg)}
 .mcp-chat-row>.is-g{background:var(--c-g);color:var(--success-on)}.mcp-chat-row>.is-y{background:var(--c-y);color:var(--warning-on)}
