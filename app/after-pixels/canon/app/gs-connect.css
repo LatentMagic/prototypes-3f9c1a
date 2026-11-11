@@ -40,6 +40,8 @@
 .hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
 @container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
 .hw-apps .mcp-crow-sub { max-width: 70ch; }
+/* KEEP: the intro sentence runs up to the one visible arrow with the row's ordinary gap, at every width. The design system's CardRow hides the arrow that cannot move with visibility, which still holds its 44px, so it is taken out of the layout here; the sentence then re-wraps when the other arrow appears. */
+.hw-apps .mcp-crow-btn[style*="hidden"] { display: none; }
 .hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
 .hw-app > svg, .hw-app > .hw-mask { flex: none; }
 .hw-app > span:not(.hw-mask) { max-width: 100%; overflow-wrap: normal; }
@@ -67,7 +69,7 @@
 .hw-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 /* KEEP: from a 640px window (the button width rule) the Grok switch sits at the right of the title's row at its buttons' natural
    width, so the row has no empty space; under it the switch is a full-width pair above the title. */
-@media (min-width: 640px) {
+@container gs (min-width: 640px) {
   .hw-pick-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
   .hw-pick-head > .hw-seg { order: 0; display: flex; }
 }
@@ -84,14 +86,17 @@
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
 @container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
 .hw-chatfig > h3 { margin: 0; }
-.hw-start .mcp-chat-me { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
-/* KEEP: inside the chat pictures the play prompts are white, so they read on the chat's off-white ground. */
-.hw-start .mcp-chat-me .mcp-say { background: #fff; }
-.hw-start .mcp-chat-me .mcp-say.is-copy:hover { background: color-mix(in srgb, #fff 90%, var(--page)); }
-.hw-start .mcp-chat-me .mcp-say.is-copy:active { background: color-mix(in srgb, #fff 80%, var(--page)); }
+.hw-start .mcp-chat-me:has(> .mcp-say) { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
+/* KEEP: inside the chat pictures the play prompts take the same light panel as the games list (the chat part's --cb-panel), not pure white, so they match it on the chat's off-white ground. */
+.hw-start .mcp-chat-me .mcp-say { --hw-say: color-mix(in oklab, var(--c-bg), #fff 43%); background: var(--hw-say); }
+.hw-start .mcp-chat-me .mcp-say.is-copy:hover { background: color-mix(in srgb, var(--hw-say) 90%, var(--page)); }
+.hw-start .mcp-chat-me .mcp-say.is-copy:active { background: color-mix(in srgb, var(--hw-say) 80%, var(--page)); }
+/* KEEP: in Start's chats the Pass and first-run chips are filled with the chat's ink and the Free chip is outlined (the user, 2026-11-11). */
+.hw-start .mcp-cb .mcp-tag-open { background: var(--cb-ink); color: var(--cb-ground); border-color: var(--cb-ink); }
+.hw-start .mcp-cb .mcp-tag-free { background: transparent; color: var(--cb-ink); border-color: var(--cb-ink2); }
 .hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
-.hw-chg-ic { flex: none; align-self: flex-start; }
+.hw-chg-ic { flex: none; }
 
 /* Playing: four StepCards, then the editions and Pass sentences in one paragraph. */
 .hw-more { max-width: 70ch; text-wrap: pretty; }
@@ -104,4 +109,39 @@
 .hw-who-row > * { margin: 0; }
 .hw-who-row p { font: 400 14px/1.5 var(--font-text); text-wrap: pretty; }
 .hw-who-row + .hw-who-row { border-top: 1px solid var(--line); }
-@media (min-width: 640px) { .hw-who-row { grid-template-columns: 190px minmax(0, 62ch); align-items: center; gap: 28px; padding: 16px 24px; } }
+@container gs (min-width: 640px) { .hw-who-row { grid-template-columns: 190px minmax(0, 62ch); align-items: center; gap: 28px; padding: 16px 24px; } }
+
+/* ---- The page's top, under trial (?top=1..4). ---- */
+.hw-top2 { display: grid; gap: 12px; }
+.hw-top2 .gs-lead { text-wrap: pretty; max-width: 75ch; }
+.hw-t-after { margin: 0; color: var(--muted); font: 400 var(--size-small, 14px)/1.4 var(--font-text); }
+/* KEEP: the band is 104px tall on a phone and 108px from 720px (version 4's strip 56px, then 72px), so the whole top stays no taller than the Overview card it replaces. */
+.hw-band { position: relative; height: 104px; overflow: hidden; display: flex; }
+@container gs (min-width: 720px) { .hw-band { height: 108px; } }
+.hw-band-games { position: relative; flex: 1 1 auto; min-width: 0; display: flex; }
+.hw-band-covers { display: flex; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.hw-band-cover { flex: none; height: 100%; aspect-ratio: 1; display: block; }
+.hw-band-cover > svg { width: 100%; height: 100%; display: block; }
+.hw-band-on { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 16px; }
+/* KEEP: the phrase is drawn larger than a bubble in text, 22px rising to 30px with the width, with a shadow so it lifts off the covers. */
+.hw-band-on .mcp-say, .hw-t4-say .mcp-say { font-size: clamp(22px, 6.4cqi, 30px); line-height: 1.2; padding: .3em .8em; margin: 0; box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
+/* KEEP: with the apps shown, they sit on a light panel at the band's left (a 32px row above the covers on a phone, the two together 104px) and the phrase centres on the covers alone. */
+.hw-band-apps { flex: none; display: grid; grid-template-columns: repeat(4, 26px); grid-auto-rows: 26px; place-content: center; gap: 6px; padding: 0 14px; background: var(--off-white); color: var(--page); }
+@container gs (min-width: 720px) { .hw-band-apps { grid-template-columns: repeat(7, 30px); grid-auto-rows: 30px; gap: 10px; padding: 0 24px; } }
+.hw-band-app { display: grid; place-items: center; }
+/* KEEP: on the apps panel Grok shows its dark mark, as on a picked tile. */
+.hw-band-apps .hw-img-grok.is-off { display: none; }
+.hw-band-apps .hw-img-grok.is-on { display: block; }
+@container gs (max-width: 719px) { .hw-band.has-apps { flex-direction: column; height: auto; } .hw-band.has-apps .hw-band-apps { height: 32px; grid-template-columns: repeat(7, 18px); grid-auto-rows: 18px; justify-content: start; } .hw-band.has-apps .hw-band-games { height: 72px; } }
+/* KEEP: the quiet band shows its covers at 40% so the phrase, not the art, is what the eye lands on. */
+.hw-band.is-quiet .hw-band-covers { opacity: .4; }
+/* KEEP: the phrase standing alone sits beside a thin strip of covers from 900px, and above it below that, so the strip never shrinks to a stub beside the bubble. */
+.hw-t4 { display: grid; gap: 12px; }
+.hw-t4-say { margin: 0; }
+.hw-band.is-thin { height: 56px; }
+@container gs (min-width: 900px) { .hw-t4 { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 24px; } .hw-t4 .gs-lead, .hw-t4 .hw-t-after { grid-column: 1 / -1; } }
+@container gs (min-width: 720px) { .hw-band.is-thin { height: 72px; } }
+/* Trial (the user, 2026-11-11, "built quick and we can revert"): Start's chats drop the scroll fade; the list is cut clean and the chevron stays. */
+.hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
+/* KEEP: Setup and Start are CardRows, whose title is padded to sit level with the row's 44px arrows; the row moves up by that padding so the space above these headings matches the page's other section headings. */
+.hw-apps > .mcp-crow-head, .hw-start > .mcp-crow-head { margin-top: calc((1.15 * 24px - 44px) / 2); }

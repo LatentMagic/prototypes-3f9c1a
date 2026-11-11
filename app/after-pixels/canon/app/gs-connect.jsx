@@ -256,7 +256,7 @@ const GsSetup = () => {
             <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} /></div>
             <GsSteps items={gsAppSteps(a)} />
           </div>
-          <p className="gs-small hw-help">If you can’t find it, <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>get in touch</button> and say which app you use.</p>
+          <p className="gs-small hw-help">Stuck? <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>Get in touch</button> and tell us which app you use.</p>
         </DS.Card>
       </div>
     </div>
@@ -276,10 +276,18 @@ const GS_START_DELVE = {
   first: 'Ashford Mill stands silent at dusk, its great wheel locked and still.',
   rest: ' For three generations it has ground the valley’s grain, and the village has never known it to stop. Tonight the millpond lies black and flat, and the only sound is a thin chant rising through the stones.',
   heroes: [{ name: 'Bryn', line: 'Fighter' }, { name: 'Wren', line: 'Rogue' }, { name: 'Aldric', line: 'Wizard' }],
+  // The user, 2026-11-11: "i just want more delve content". The run goes on past the pick, as Wren's recorded play does (the chime run, a strong Dexterity hit).
+  more: [
+    { from: 'user', text: 'Wren' },
+    { from: 'ai', text: ['You are Wren, a rogue, quick-handed and hard to see in the dark.', 'Beneath the mill a low tunnel runs into the dark, strung with wires hung with tin chimes. One brush and the whole warren will hear you.'] },
+    { from: 'user', text: 'I slip between the wires without touching one' },
+    { from: 'ai', text: 'You turn sideways and thread through, and the chimes hang still. At the far end, firelight flickers on the walls of the warren.', after: [{ type: 'roll', label: 'Dexterity', roll: 16, mod: 3, target: 12, result: 'hit', outcome: 'Strong hit' }] },
+  ],
 };
 const gsStartTag = (g) => {
   const t = g.tags[0];
-  return t === 'FREE' ? <DS.Tag kind="free">Free</DS.Tag> : t === 'FIRST' ? <DS.Tag kind="free">{'First ' + g.ed[0] + ' free'}</DS.Tag> : <DS.Tag kind="locked">Pass</DS.Tag>;
+  // The user, 2026-11-10/11: Pass and the first-run chip alike, filled, no lock and no arrow; Free outlined.
+  return t === 'FREE' ? <DS.Tag kind="free">Free</DS.Tag> : <DS.Tag kind="open" go={false}>{t === 'FIRST' ? 'First ' + g.ed[0] + ' free' : 'Pass'}</DS.Tag>;
 };
 // Each chat is the design system's ChatPicture, light as everywhere else, in a CardRow kind="chat" with its caption under it.
 // The two overlays on it: the typed line is a copying SpeechBubble (edge, for the light ground) in place of ChatPicture's own
@@ -305,8 +313,8 @@ const GsStart = () => {
             return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
           }) }] }]} />
         <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
-          caption="Name a game, or a past edition, and your AI starts it straight away."
-          turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }]} />
+          caption={<>Name a game, or a past edition, and your AI starts it straight away. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
+          turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
       </DS.CardRow>
       <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</span></p>
     </>
@@ -327,25 +335,59 @@ const GS_HW_PLAY = [
   ['When it ends', 'Your result is saved. Share it or pick another.'],
 ];
 
+// ---- The page's top, under trial: the first thing a visitor lands on, so it shows the games rather than describing them. ----
+// Four versions of one idea, a band of game covers with the phrase to copy on it, picked by ?top=1..4 (default 1);
+// ?top=0 is the Overview card it would replace. None has links: Setup follows straight after.
+const gsTopV = () => { const n = parseInt(new URLSearchParams(location.search).get('top') || '1', 10); return n >= 0 && n <= 4 ? n : 1; };
+// KEEP: no two neighbouring covers share a ground (forest, indigo, wine), across the repeat too; the first three are what a phone shows, so they lead with the strongest (Guess, Delve either side of the bubble).
+const GS_TOP_ART = ['word', 'escape', 'delve', 'casebook', 'where', 'barrow', 'derelict', 'hunter', 'murder'];
+// KEEP: the band is one row of square covers, as many as fit; the row is cut at its edge, never squeezed or wrapped.
+const GsBandCovers = () => <span className="hw-band-covers" aria-hidden="true">{[...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? <span key={i} className="hw-band-cover" dangerouslySetInnerHTML={{ __html: GS_ART[a].svg }} /> : null)}</span>;
+const GsTopSay = () => <DS.SpeechBubble copy onCopy={(t) => lbCopy([t])}>{gsPromptText({ kind: 'games' })}</DS.SpeechBubble>;
+const GS_TOP_LOGOS = ['chatgpt', 'claude', 'gemini', 'grok', 'muse', 'openclaw', 'hermes'];
+const GsTop = ({ v }) => (
+  <header className={'hw-top2 is-v' + v}>
+    <h1 className="gs-h1">How it works</h1>
+    {v === 4 ? (
+      <div className="hw-t4">
+        <p className="gs-lead">Add After Pixels to ChatGPT, Claude or another AI app once. Then, in any chat, type</p>
+        <p className="hw-t4-say"><GsTopSay /></p>
+        <div className="hw-band is-thin"><GsBandCovers /></div>
+        <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
+      </div>
+    ) : <>
+      <p className="gs-lead">Add After Pixels to {v === 2 ? 'your AI app' : 'ChatGPT, Claude or another AI app'} once. Then, in any chat, type</p>
+      <div className={'hw-band' + (v === 3 ? ' is-quiet' : '') + (v === 2 ? ' has-apps' : '')}>
+        {v === 2 ? <span className="hw-band-apps" aria-hidden="true">{GS_TOP_LOGOS.map((a) => <span key={a} className="hw-band-app"><GsAiLogo ai={a} size={22} /></span>)}</span> : null}
+        <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><GsTopSay /></span></span>
+      </div>
+      <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
+    </>}
+  </header>
+);
 export const GsConnect = () => {
   const gs = useGs();
+  const top = gsTopV();
   return (
     <main className="gs-wrap gs-main">
+      {top === 0 ? (
       <div className="hw-top">
-        <header className="gs-stack-md hw-head">
-          <h1 className="gs-h1">How it works</h1>
-          <p className="gs-lead">You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.</p>
-        </header>
-        <nav className="hw-over" aria-label="On this page">
-          <DS.Card className="hw-over-card">
-            <ul className="hw-over-list">
-              {GS_HW_OVERVIEW.map(([id, sec, body]) => (
-                <li key={id}><span className="hw-over-line">{body}</span><DS.TextLink className="hw-over-go" onClick={() => gsJump(id)} aria-label={'Go to ' + sec}>{sec}</DS.TextLink></li>
-              ))}
-            </ul>
-          </DS.Card>
-        </nav>
-      </div>
+          <header className="gs-stack-md hw-head">
+            <h1 className="gs-h1">How it works</h1>
+            <p className="gs-lead">You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.</p>
+          </header>
+          <nav className="hw-over" aria-label="On this page">
+            <DS.Card className="hw-over-card">
+              <ul className="hw-over-list">
+                {GS_HW_OVERVIEW.map(([id, sec, body]) => (
+                  <li key={id}><span className="hw-over-line">{body}</span><DS.TextLink className="hw-over-go" onClick={() => gsJump(id)} aria-label={'Go to ' + sec}>{sec}</DS.TextLink></li>
+                ))}
+              </ul>
+            </DS.Card>
+          </nav>
+        </div>
+      ) : <GsTop v={top} />}
+
       <section id="hw-setup" className="hw-sec">
         <GsSetup />
       </section>
@@ -363,10 +405,10 @@ export const GsConnect = () => {
       <section className="hw-sec gs-stack-md" aria-labelledby="hw-who">
         <h2 id="hw-who" className="mcp-t-sec">Who does what</h2>
         <DS.Card className="hw-who">
-          <div className="hw-who-row"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">Your AI does the talking, and a more capable model plays better. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.</p></div>
-          <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">It sets the rules, throws the dice and keeps your results.</p></div>
+          <div className="hw-who-row"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.</p></div>
+          <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">It sets the rules, throws the dice and keeps your results. If your AI tells it differently, the game’s record is the one that counts.</p></div>
         </DS.Card>
-        <p className="gs-small">Your AI never asks you to pay.</p>
+        <p className="gs-small">Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.</p>
       </section>
       <div className="gs-band">
         <div className="gs-grid2">
