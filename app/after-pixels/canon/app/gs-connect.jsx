@@ -14,8 +14,8 @@ import { edList } from './gs-history.jsx';
 
 // The app picker on How it works, in the owner's order: ChatGPT first, Other last. Each app sets up one of two ways
 // (route): in its settings, or by asking in a chat. `noun` is the app's own word for where a custom server goes;
-// `look` is the button to look for. Command-line apps (OpenClaw, Hermes Agent) have no tile of their own: Other covers them
-// (the user, 2026-11-11, from Jonny's feedback: "yes drop them, they can be added via other?"). Grok is one tile whose card switches between the Grok app and Grok Bot (an AI's agent
+// `look` is the button to look for. Command-line apps (OpenClaw, Hermes Agent) have no tile of their own: Other covers them.
+// Grok is one tile whose card switches between the Grok app and Grok Bot (an AI's agent
 // version sits under its AI this way). The Grok app's steps are untried.
 const GS_APPS = [
   { id: 'chatgpt', name: 'ChatGPT', route: 'settings', noun: 'plugin', look: 'Add custom MCP server' },
@@ -79,15 +79,15 @@ export const GsCopyPrompt = ({ text, label, block }) => {
   return <DS.Button block={block} done={done} doneLabel="Copied" onClick={() => { Promise.resolve(lbCopy([text])).then((ok) => ok && setDone(true)); }}>{label || 'Copy prompt'}</DS.Button>;
 };
 export const GsHowLink = ({ label }) => { const gs = useGs(); return <button type="button" className="gs-inlink" onClick={() => (gs.playing ? gs.howFromPlay() : gs.go('connect'))}>{label || 'How it works'}</button>; };
-// KEEP: the text (the address, a message to send, a command) scrolls sideways under a finger so the whole of it can be read;
+// KEEP: the text (the address, or a message to send) scrolls sideways under a finger so the whole of it can be read;
 // focus or a tap selects it for copying by hand. A box, not an input: an input's select-on-focus stops the swipe.
 const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
-// KEEP: a copy box is one line at every width, with Copy beside it at its normal size: a long command scrolls sideways inside the box
+// KEEP: a copy box is one line at every width, with Copy beside it at its normal size: long text scrolls sideways inside the box
 // (no wrapping, no ellipsis), with a soft fade at the right edge while there is more to see. Copy copies the whole text.
 // KEEP: the address is short and must be read whole to be checked, so under 420px its box takes the full row with Copy under it.
 // The refused-copy line, as deployed (connect-layout): the control never says "Copied", the text is selected so it can be copied by hand.
 const gsRefusedLine = (what) => 'Copy didn’t work. Select the ' + what + ' and copy it yourself.';
-const GsCopyBox = ({ text, label, address, what = 'command' }) => {
+const GsCopyBox = ({ text, label, address, what }) => {
   const [done, setDone] = React.useState(false);
   const [refused, setRefused] = React.useState(false);
   React.useEffect(() => setRefused(false), [text]);

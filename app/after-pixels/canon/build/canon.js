@@ -7220,7 +7220,7 @@
     s.addRange(r);
   };
   const gsRefusedLine = (what) => "Copy didn’t work. Select the " + what + " and copy it yourself.";
-  const GsCopyBox = ({ text, label, address, what = "command" }) => {
+  const GsCopyBox = ({ text, label, address, what }) => {
     const [done, setDone] = React$1.useState(false);
     const [refused, setRefused] = React$1.useState(false);
     React$1.useEffect(() => setRefused(false), [text]);

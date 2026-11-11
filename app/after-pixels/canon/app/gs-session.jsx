@@ -75,7 +75,7 @@ export const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   const [copied, setCopied] = React.useState(false);
   React.useEffect(() => { if (!open) setCopied(false); }, [open]);
   const copy = () => {
-    // Copied shows only once the copy worked (a refused copy, or ?copy=fail, leaves the button as it was).
+    // Copied shows only once the copy worked (a refused copy, or ?copy=fail, leaves the button as it was). The deployed panel also shows its refused line; the prototype leaves it out.
     Promise.resolve(lbCopy(lines)).then((ok) => ok && setCopied(true));
   };
   return (
