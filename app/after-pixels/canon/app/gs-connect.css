@@ -97,8 +97,6 @@
 .hw-band-on .mcp-say { font-size: clamp(22px, 6.4cqi, 30px); line-height: 1.2; padding: .3em .8em; margin: 0; box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
 /* Trial (the user, 2026-11-11, "built quick and we can revert"): Start's chats drop the scroll fade; the list is cut clean and the chevron stays. */
 .hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
-/* KEEP: Setup and Start are CardRows, whose title is padded to sit level with the row's 44px arrows; the row moves up by that padding so the space above these headings matches the page's other section headings. */
-.hw-apps > .mcp-crow-head, .hw-start > .mcp-crow-head { margin-top: calc((1.15 * 24px - 44px) / 2); }
 
 /* KEEP: the refused-copy line is a small muted line under the control; it takes no room until a copy is refused. */
 .gs-copy-refused { display: block; margin: 0; }

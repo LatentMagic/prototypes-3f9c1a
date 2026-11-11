@@ -508,6 +508,8 @@ button.mcp-cb-ent{cursor:pointer}
 /* KEEP: CardRow. Previous and Next move the cards, so they sit on the line just above them, on the right. With a sentence under the heading, they sit beside it, centred on it; the 44px buttons overhang a one-line (24px) sentence by 10px each way, so the row is no taller than the sentence. Without one, they sit on the heading line, centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre). */
 .mcp-crow{container:mcp-crow/inline-size;display:grid;gap:var(--space-4);min-width:0}
 .mcp-crow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);row-gap:var(--space-2);align-items:start}
+/* KEEP: the title is padded to the 44px arrows' height, so the head is pulled up by the difference: the heading text sits where a plain section heading's would. */
+.mcp-crow-head{margin-top:calc((1.15 * 24px - 44px) / 2)}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
 .mcp-crow-nav{grid-column:2;grid-row:1;display:flex;gap:4px}
 .mcp-crow-sub{grid-column:1/-1;margin:0;color:var(--muted);text-wrap:pretty}
