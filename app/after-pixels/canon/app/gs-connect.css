@@ -40,6 +40,8 @@
 .hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
 @container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
 .hw-apps .mcp-crow-sub { max-width: 70ch; }
+/* KEEP: the intro sentence runs up to the one visible arrow with the row's ordinary gap, at every width. The design system's CardRow hides the arrow that cannot move with visibility, which still holds its 44px, so it is taken out of the layout here; the sentence then re-wraps when the other arrow appears. */
+.hw-apps .mcp-crow-btn[style*="hidden"] { display: none; }
 .hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
 .hw-app > svg, .hw-app > .hw-mask { flex: none; }
 .hw-app > span:not(.hw-mask) { max-width: 100%; overflow-wrap: normal; }
