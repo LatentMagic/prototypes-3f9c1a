@@ -148,27 +148,13 @@ export const GsPlayDialog = () => {
 };
 
 // ---- How it works ----
-// The head with the Overview beside it, then Setup, Start and Playing, then who does what, with Disconnecting and Help at the
-// foot. No numbers on the Overview lines or the section headings. Each section is a 24px heading and one surface under it.
-// KEEP: each Overview line ends in a text link that jumps to its section, landing the section's heading just under the sticky
-// top bar (scroll-margin-top 80px, plus the app posture's top inset) and moving focus to it, so a keyboard or screen-reader
-// user carries on from there; with reduced motion it jumps instead of gliding. The section ids stay, so other pages can link to one.
-const gsJump = (id) => {
-  const el = document.getElementById(id); if (!el) return;
-  const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  el.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
-  const h = el.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
-};
+// The cover band, then Setup, Start and Playing, then who does what, with Disconnecting and Help at the foot. No numbers on the
+// section headings, and no jumps at the top: Setup follows straight after. Each section is a 24px heading and one surface under it.
+// The section ids stay, so other pages can link to one (scroll-margin-top 80px, plus the app posture's top inset).
 // The words a player types, drawn as a sent message. A non-breaking space joins it to the word before, so "type" and the
 // bubble never split.
-// Every bubble on this page copies (`copy`), the Overview's included.
+// Every bubble on this page copies (`copy`).
 const GsSay = ({ text, wrap, copy }) => <>{' '}<DS.SpeechBubble wrap={wrap} copy={copy} onCopy={copy ? (t) => lbCopy([t]) : undefined}>{text}</DS.SpeechBubble></>;
-const GS_HW_OVERVIEW = [
-  ['hw-setup', 'Setup', <>Add After Pixels to your app once</>],
-  ['hw-start', 'Start', <>Type<GsSay copy text={gsPromptText({ kind: 'games' })} /></>],
-  ['hw-playing', 'Playing', <>Pick a game and play it in the chat</>],
-];
-
 // Every route's last step: the app may ask before each move, and the player may be able to stop that.
 const gsPermStep = (a) => 'If ' + (a.id === 'other' ? 'your AI' : a.name) + ' asks you before each move, you may be able to change that in its permissions.';
 const GS_SIGN_IN = 'sign in with your After Pixels account.';
@@ -335,58 +321,27 @@ const GS_HW_PLAY = [
   ['When it ends', 'Your result is saved. Share it or pick another.'],
 ];
 
-// ---- The page's top, under trial: the first thing a visitor lands on, so it shows the games rather than describing them. ----
-// Four versions of one idea, a band of game covers with the phrase to copy on it, picked by ?top=1..4 (default 1);
-// ?top=0 is the Overview card it would replace. None has links: Setup follows straight after.
-const gsTopV = () => { const n = parseInt(new URLSearchParams(location.search).get('top') || '1', 10); return n >= 0 && n <= 4 ? n : 1; };
+// ---- The page's top: the first thing a visitor lands on, so it shows the games rather than describing them. ----
+// A band of game covers with the phrase to copy on it. No links: Setup follows straight after.
 // KEEP: no two neighbouring covers share a ground (forest, indigo, wine), across the repeat too; the first three are what a phone shows, so they lead with the strongest (Guess, Delve either side of the bubble).
 const GS_TOP_ART = ['word', 'escape', 'delve', 'casebook', 'where', 'barrow', 'derelict', 'hunter', 'murder'];
 // KEEP: the band is one row of square covers, as many as fit; the row is cut at its edge, never squeezed or wrapped.
 const GsBandCovers = () => <span className="hw-band-covers" aria-hidden="true">{[...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? <span key={i} className="hw-band-cover" dangerouslySetInnerHTML={{ __html: GS_ART[a].svg }} /> : null)}</span>;
-const GsTopSay = () => <DS.SpeechBubble copy onCopy={(t) => lbCopy([t])}>{gsPromptText({ kind: 'games' })}</DS.SpeechBubble>;
-const GS_TOP_LOGOS = ['chatgpt', 'claude', 'gemini', 'grok', 'muse', 'openclaw', 'hermes'];
-const GsTop = ({ v }) => (
-  <header className={'hw-top2 is-v' + v}>
+const GsTop = () => (
+  <header className="hw-top2">
     <h1 className="gs-h1">How it works</h1>
-    {v === 4 ? (
-      <div className="hw-t4">
-        <p className="gs-lead">Add After Pixels to ChatGPT, Claude or another AI app once. Then, in any chat, type</p>
-        <p className="hw-t4-say"><GsTopSay /></p>
-        <div className="hw-band is-thin"><GsBandCovers /></div>
-        <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
-      </div>
-    ) : <>
-      <p className="gs-lead">Add After Pixels to {v === 2 ? 'your AI app' : 'ChatGPT, Claude or another AI app'} once. Then, in any chat, type</p>
-      <div className={'hw-band' + (v === 3 ? ' is-quiet' : '') + (v === 2 ? ' has-apps' : '')}>
-        {v === 2 ? <span className="hw-band-apps" aria-hidden="true">{GS_TOP_LOGOS.map((a) => <span key={a} className="hw-band-app"><GsAiLogo ai={a} size={22} /></span>)}</span> : null}
-        <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><GsTopSay /></span></span>
-      </div>
-      <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
-    </>}
+    <p className="gs-lead">Add After Pixels to ChatGPT, Claude or another AI app once. Then, in any chat, type</p>
+    <div className="hw-band">
+      <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><DS.SpeechBubble copy onCopy={(t) => lbCopy([t])}>{gsPromptText({ kind: 'games' })}</DS.SpeechBubble></span></span>
+    </div>
+    <p className="hw-t-after">Pick a game, and your AI plays it with you.</p>
   </header>
 );
 export const GsConnect = () => {
   const gs = useGs();
-  const top = gsTopV();
   return (
     <main className="gs-wrap gs-main">
-      {top === 0 ? (
-      <div className="hw-top">
-          <header className="gs-stack-md hw-head">
-            <h1 className="gs-h1">How it works</h1>
-            <p className="gs-lead">You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.</p>
-          </header>
-          <nav className="hw-over" aria-label="On this page">
-            <DS.Card className="hw-over-card">
-              <ul className="hw-over-list">
-                {GS_HW_OVERVIEW.map(([id, sec, body]) => (
-                  <li key={id}><span className="hw-over-line">{body}</span><DS.TextLink className="hw-over-go" onClick={() => gsJump(id)} aria-label={'Go to ' + sec}>{sec}</DS.TextLink></li>
-                ))}
-              </ul>
-            </DS.Card>
-          </nav>
-        </div>
-      ) : <GsTop v={top} />}
+      <GsTop />
 
       <section id="hw-setup" className="hw-sec">
         <GsSetup />

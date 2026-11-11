@@ -2360,31 +2360,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    pictures, the speech bubbles and the app logos. */
 .hw-sec { scroll-margin-top: calc(80px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); }
 .hw-sec h2:focus { outline: none; }
-.hw-sec p, .hw-over-list { margin: 0; }
-
-/* Head and Overview: one column at every width, the head across the page and the Overview card under it. */
-.hw-top { display: grid; gap: 24px; }
-.hw-head .gs-lead { text-wrap: pretty; max-width: 70ch; }
-/* The Overview: one static card, three lines split by 1px lines, each ending in a text link that jumps to its section. */
-.hw-over-card { container: hw-over / inline-size; padding-block: 4px; justify-items: stretch; }
-.hw-over-list { list-style: none; padding: 0; display: grid; }
-.hw-over-list > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; padding-block: 8px; }
-.hw-over-list > li + li { border-top: 1px solid var(--line); }
-/* KEEP: under a 900px page each line is a card title that shrinks from 20px towards 16px with the card's width before it wraps,
-   so "Type" and its bubble always share one line (the system's order: size first). */
-.hw-over-line { flex: 1 1 9em; min-width: 0; font: 700 clamp(16px, 7.4cqi, 20px)/1.25 var(--font-heading); letter-spacing: -.01em; text-wrap: pretty; }
-.hw-over-go { flex: none; min-height: 44px; margin-left: auto; }
-/* KEEP: from a 900px page the Overview is one strip of three cells split by 1px lines, read left to right as the sequence it is:
-   the line at the top of its cell and its link at the bottom right corner, so the three links share one line; each line is 20px, shrinking to 16px
-   with its own cell's width. */
-@container gs (min-width: 900px) {
-  .hw-over-card { padding: 0; }
-  .hw-over-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .hw-over-list > li { display: grid; grid-template-columns: minmax(0, 1fr); align-items: normal; align-content: space-between; justify-items: start; gap: 4px; padding: 16px 24px 8px; container-type: inline-size; }
-  .hw-over-go { justify-self: end; margin-left: 0; }
-  .hw-over-list > li + li { border-top: 0; border-left: 1px solid var(--line); }
-  .hw-over-line { font-size: clamp(16px, 6.4cqi, 20px); }
-}
+.hw-sec p { margin: 0; }
 
 /* Setup: the app picker, a CardRow of logo tiles. The picked tile is filled, as a main Button is; the rest are outlined. */
 .hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
@@ -2462,11 +2438,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-who-row + .hw-who-row { border-top: 1px solid var(--line); }
 @container gs (min-width: 640px) { .hw-who-row { grid-template-columns: 190px minmax(0, 62ch); align-items: center; gap: 28px; padding: 16px 24px; } }
 
-/* ---- The page's top, under trial (?top=1..4). ---- */
+/* ---- The page's top: a band of game covers with the phrase on it. ---- */
 .hw-top2 { display: grid; gap: 12px; }
 .hw-top2 .gs-lead { text-wrap: pretty; max-width: 75ch; }
 .hw-t-after { margin: 0; color: var(--muted); font: 400 var(--size-small, 14px)/1.4 var(--font-text); }
-/* KEEP: the band is 104px tall on a phone and 108px from 720px (version 4's strip 56px, then 72px), so the whole top stays no taller than the Overview card it replaces. */
+/* KEEP: the band is 104px tall on a phone and 108px from 720px. */
 .hw-band { position: relative; height: 104px; overflow: hidden; display: flex; }
 @container gs (min-width: 720px) { .hw-band { height: 108px; } }
 .hw-band-games { position: relative; flex: 1 1 auto; min-width: 0; display: flex; }
@@ -2475,23 +2451,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-band-cover > svg { width: 100%; height: 100%; display: block; }
 .hw-band-on { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 16px; }
 /* KEEP: the phrase is drawn larger than a bubble in text, 22px rising to 30px with the width, with a shadow so it lifts off the covers. */
-.hw-band-on .mcp-say, .hw-t4-say .mcp-say { font-size: clamp(22px, 6.4cqi, 30px); line-height: 1.2; padding: .3em .8em; margin: 0; box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
-/* KEEP: with the apps shown, they sit on a light panel at the band's left (a 32px row above the covers on a phone, the two together 104px) and the phrase centres on the covers alone. */
-.hw-band-apps { flex: none; display: grid; grid-template-columns: repeat(4, 26px); grid-auto-rows: 26px; place-content: center; gap: 6px; padding: 0 14px; background: var(--off-white); color: var(--page); }
-@container gs (min-width: 720px) { .hw-band-apps { grid-template-columns: repeat(7, 30px); grid-auto-rows: 30px; gap: 10px; padding: 0 24px; } }
-.hw-band-app { display: grid; place-items: center; }
-/* KEEP: on the apps panel Grok shows its dark mark, as on a picked tile. */
-.hw-band-apps .hw-img-grok.is-off { display: none; }
-.hw-band-apps .hw-img-grok.is-on { display: block; }
-@container gs (max-width: 719px) { .hw-band.has-apps { flex-direction: column; height: auto; } .hw-band.has-apps .hw-band-apps { height: 32px; grid-template-columns: repeat(7, 18px); grid-auto-rows: 18px; justify-content: start; } .hw-band.has-apps .hw-band-games { height: 72px; } }
-/* KEEP: the quiet band shows its covers at 40% so the phrase, not the art, is what the eye lands on. */
-.hw-band.is-quiet .hw-band-covers { opacity: .4; }
-/* KEEP: the phrase standing alone sits beside a thin strip of covers from 900px, and above it below that, so the strip never shrinks to a stub beside the bubble. */
-.hw-t4 { display: grid; gap: 12px; }
-.hw-t4-say { margin: 0; }
-.hw-band.is-thin { height: 56px; }
-@container gs (min-width: 900px) { .hw-t4 { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 24px; } .hw-t4 .gs-lead, .hw-t4 .hw-t-after { grid-column: 1 / -1; } }
-@container gs (min-width: 720px) { .hw-band.is-thin { height: 72px; } }
+.hw-band-on .mcp-say { font-size: clamp(22px, 6.4cqi, 30px); line-height: 1.2; padding: .3em .8em; margin: 0; box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
 /* Trial (the user, 2026-11-11, "built quick and we can revert"): Start's chats drop the scroll fade; the list is cut clean and the chevron stays. */
 .hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
 /* KEEP: Setup and Start are CardRows, whose title is padded to sit level with the row's 44px arrows; the row moves up by that padding so the space above these headings matches the page's other section headings. */
