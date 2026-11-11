@@ -7330,17 +7330,17 @@
   };
   const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
   const GS_START_DELVE = {
-    title: "Delve #5: The Labyrinth of Crete",
-    first: "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth.",
-    rest: " This year you are one of them.",
-    heroes: [{ name: "Leon", line: "Wrestler" }, { name: "Ione", line: "Bull-leaper" }, { name: "Mira", line: "Temple scholar" }],
+    title: "Delve #40: The Orc Caves under Raven Hill",
+    first: "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.",
+    rest: "",
+    heroes: [{ name: "Garrick", line: "Knight" }, { name: "Tamsin", line: "Ranger" }, { name: "Selwyn", line: "Wizard" }],
     more: [
-      { from: "user", text: "Ione" },
-      { from: "ai", text: "You are Ione, a bull-leaper, quick and light and very hard to hit." },
-      { from: "user", text: "I wait for a gap in the moving walls, then dart through" },
-      { from: "ai", text: "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", after: [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }] }] },
-      { from: "user", text: "I try again and spend my inspiration" },
-      { from: "ai", text: "The stone shudders and then stops, with a straight path laid down the hall.", after: [{ type: "roll", label: "Agility", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }] }
+      { from: "user", text: "Garrick" },
+      { from: "ai", text: "You are Garrick, a knight, strong and tough and slow to fall." },
+      { from: "user", text: "I cross slowly and test every plank" },
+      { from: "ai", text: "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", after: [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 19, max: 23, tone: "health" }] }] },
+      { from: "user", text: "I haul myself along the ropes" },
+      { from: "ai", text: "You grip the ropes and haul yourself across, hand over hand, to the far side.", after: [{ type: "roll", label: "Strength", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success" }] }
     ]
   };
   const gsStartTag = (g) => {
