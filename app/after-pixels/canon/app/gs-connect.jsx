@@ -20,7 +20,7 @@ const GS_APPS = [
   { id: 'chatgpt', name: 'ChatGPT', route: 'settings', noun: 'plugin', look: 'Add custom MCP server' },
   { id: 'claude', name: 'Claude', route: 'settings', noun: 'custom connector', look: 'Add custom connector' },
   // Gemini's form has no name field, so it skips "name it After Pixels" (checked by the user, 2026-11-11).
-  { id: 'gemini', name: 'Gemini', route: 'settings', noun: 'connected app', look: 'Custom', noName: true },
+  { id: 'gemini', name: 'Gemini', route: 'settings', noun: 'connected app', look: 'Custom', via: 'Connected apps', noName: true },
   { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'New Connector', subs: ['grok', 'grokbot'] },
   { id: 'grokbot', name: 'Grok Bot', route: 'chat', sub: true },
   { id: 'muse', name: 'Muse', route: 'chat' },
@@ -164,7 +164,7 @@ const gsAppCopy = (a) => a.route === 'settings' ? ['The address to paste', GS.li
   : ['The command to run', a.first || a.cmd(GS.link)];
 const gsAppSteps = (a) => [
   ...(a.route === 'settings' ? [
-    a.id === 'other' ? 'In your app, find where you add a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}<b>{a.look}</b>.</>,
+    a.id === 'other' ? 'In your app, find where you add a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}{a.via && <><b>{a.via}</b>, then </>}<b>{a.look}</b>.</>,
     a.noName ? 'Paste the address.' : <>Paste the address and name it <b>After Pixels</b>.</>,
     'Connect, then sign in to your account.', // the step before names it After Pixels, so the name isn't repeated (the user, 2026-11-11)
   ] : a.route === 'chat' ? [
