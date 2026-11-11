@@ -3047,7 +3047,8 @@
     const passedRooms = /* @__PURE__ */ new Set();
     const foeOf = () => {
       const f = cur && DL_FOES[cur.name.toLowerCase()];
-      return f ? { f, k: cur.key } : null;
+      const nm = f && (s.foeName || {})[cur.key.toLowerCase()];
+      return f ? { f: nm ? [nm, ...f.slice(1)] : f, k: cur.key } : null;
     };
     const open = (name, back) => {
       name = name && dlCap(name);
@@ -3588,6 +3589,8 @@
       hpMax: 21,
       threat: 12,
       foeMax: { "the shrine cavern": 5 },
+      // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
+      foeName: { "the shrine cavern": "Mortlake, the drowned captain" },
       // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
       lightName: "the watchman's round",
       light: 0,
