@@ -256,7 +256,7 @@ const GsSetup = () => {
             <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} /></div>
             <GsSteps items={gsAppSteps(a)} />
           </div>
-          <p className="gs-small hw-help">If you can’t find it, <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>get in touch</button> and say which app you use.</p>
+          <p className="gs-small hw-help">Stuck? <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>Get in touch</button> and tell us which app you use.</p>
         </DS.Card>
       </div>
     </div>

@@ -2492,6 +2492,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-band.is-thin { height: 56px; }
 @media (min-width: 900px) { .hw-t4 { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 24px; } .hw-t4 .gs-lead, .hw-t4 .hw-t-after { grid-column: 1 / -1; } }
 @media (min-width: 720px) { .hw-band.is-thin { height: 72px; } }
+/* Trial (the user, 2026-11-11, "built quick and we can revert"): Start's chats drop the scroll fade; the list is cut clean and the chevron stays. */
+.hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
 /* Product page: facts, finished play, gaps, the cover beside the play box, pitch (app/gs-game.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
