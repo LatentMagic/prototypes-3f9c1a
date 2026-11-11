@@ -163,6 +163,7 @@ const GS_DV_LIVE = [
   ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'],
   ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 13 + 3 = 16 vs 12'],
   ['Room', 'Entered the warren'],
+  ['Gear', 'Took a pepper pouch'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 3 vs 14, missed'],
   ['Dexterity', 'Hit', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
