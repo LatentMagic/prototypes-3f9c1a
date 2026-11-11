@@ -26,11 +26,9 @@ export function CardRow({title,sub,label,as='h2',kind='cards',children,className
   return <div className={('mcp-crow'+(kind==='chat'?' is-chat':kind==='tiles'?' is-tiles':'')+' '+className).trim()}>
     <div className="mcp-crow-head">
       <T className="mcp-t-sec mcp-crow-title">{title}</T>
-      {/* KEEP: an arrow that cannot move is taken out of the layout, not just hidden, so the line under the title runs up to the one
-          visible arrow at every width and re-wraps when the other appears (the user, 2026-11-11). */}
       {at.over&&<div className="mcp-crow-nav">
-        <button ref={prev} type="button" className="mcp-crow-btn" aria-label={'Previous, '+name} style={at.start?{display:'none'}:null} onClick={()=>move(-1)}><Icon name="next" style={{transform:'rotate(180deg)'}}/></button>
-        <button ref={next} type="button" className="mcp-crow-btn" aria-label={'Next, '+name} style={at.end?{display:'none'}:null} onClick={()=>move(1)}><Icon name="next"/></button>
+        <button ref={prev} type="button" className="mcp-crow-btn" aria-label={'Previous, '+name} style={at.start?{visibility:'hidden'}:null} onClick={()=>move(-1)}><Icon name="next" style={{transform:'rotate(180deg)'}}/></button>
+        <button ref={next} type="button" className="mcp-crow-btn" aria-label={'Next, '+name} style={at.end?{visibility:'hidden'}:null} onClick={()=>move(1)}><Icon name="next"/></button>
       </div>}
       {sub&&<p className="mcp-crow-sub">{sub}</p>}
     </div>
