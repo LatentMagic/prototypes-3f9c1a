@@ -2440,8 +2440,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-start .mcp-chat-me .mcp-say { --hw-say: color-mix(in oklab, var(--c-bg), #fff 43%); background: var(--hw-say); }
 .hw-start .mcp-chat-me .mcp-say.is-copy:hover { background: color-mix(in srgb, var(--hw-say) 90%, var(--page)); }
 .hw-start .mcp-chat-me .mcp-say.is-copy:active { background: color-mix(in srgb, var(--hw-say) 80%, var(--page)); }
-/* KEEP: in Start's chats the Free chip is filled with the chat's ink, the site's light-on-dark Free chip turned round for the light chat. */
-.hw-start .mcp-cb .mcp-tag-free { background: var(--cb-ink); color: var(--cb-ground); }
+/* KEEP: in Start's chats the Pass and first-run chips are filled with the chat's ink and the Free chip is outlined (the user, 2026-11-11). */
+.hw-start .mcp-cb .mcp-tag-open { background: var(--cb-ink); color: var(--cb-ground); border-color: var(--cb-ink); }
+.hw-start .mcp-cb .mcp-tag-free { background: transparent; color: var(--cb-ink); border-color: var(--cb-ink2); }
 .hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
 .hw-chg-ic { flex: none; align-self: flex-start; }

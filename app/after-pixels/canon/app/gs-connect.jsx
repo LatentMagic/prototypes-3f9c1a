@@ -279,8 +279,8 @@ const GS_START_DELVE = {
 };
 const gsStartTag = (g) => {
   const t = g.tags[0];
-  // The user, 2026-11-10: Free filled dark; Pass without the lock; the first-run chip styled as Pass (outlined, no arrow: it opens nothing).
-  return t === 'FREE' ? <DS.Tag kind="free">Free</DS.Tag> : t === 'FIRST' ? <DS.Tag kind="open" go={false}>{'First ' + g.ed[0] + ' free'}</DS.Tag> : <DS.Tag kind="open">Pass</DS.Tag>;
+  // The user, 2026-11-10/11: Pass and the first-run chip alike, filled, no lock and no arrow; Free outlined.
+  return t === 'FREE' ? <DS.Tag kind="free">Free</DS.Tag> : <DS.Tag kind="open" go={false}>{t === 'FIRST' ? 'First ' + g.ed[0] + ' free' : 'Pass'}</DS.Tag>;
 };
 // Each chat is the design system's ChatPicture, light as everywhere else, in a CardRow kind="chat" with its caption under it.
 // The two overlays on it: the typed line is a copying SpeechBubble (edge, for the light ground) in place of ChatPicture's own
