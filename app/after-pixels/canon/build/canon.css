@@ -2447,7 +2447,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-start .mcp-cb .mcp-tag-free { background: transparent; color: var(--cb-ink); border-color: var(--cb-ink2); }
 .hw-heroes .mcp-cb-ents-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hw-chg { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/20px var(--font-text); color: var(--muted); text-wrap: pretty; }
-.hw-chg-ic { flex: none; align-self: flex-start; }
+.hw-chg-ic { flex: none; }
 
 /* Playing: four StepCards, then the editions and Pass sentences in one paragraph. */
 .hw-more { max-width: 70ch; text-wrap: pretty; }
