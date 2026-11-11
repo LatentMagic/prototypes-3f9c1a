@@ -1078,7 +1078,7 @@
     today: "Tuesday 6 October",
     link: "https://play.afterpixels.com",
     purchase: "Purchases only ever happen on this site; your AI will never ask you to pay.",
-    works: "ChatGPT · Claude · Gemini · OpenClaw · any assistant that supports MCP connectors"
+    works: "ChatGPT · Claude · Gemini · Grok · Muse · OpenClaw · Hermes Agent, and more"
   };
   const GS_SVG = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + "</svg>";
   const GS_ART = {
