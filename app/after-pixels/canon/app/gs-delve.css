@@ -122,8 +122,9 @@
 .dvS-foe b.is-err { color: var(--error); }
 .dvS-line.is-foe .dvS-meter { display: grid; flex: 1 1 96px; min-width: 96px; max-width: 240px; }
 .dvS-meter .dv6-bar, .dv3-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
-/* KEEP: in a held roll the foe's name is on its own line and wraps in full, never cut with an ellipsis; the bar and count sit on the line under it. */
+/* KEEP: in a held roll the foe's name is on its own line and wraps in full, never cut with an ellipsis; the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
 .dvS-meter .dv6-bar > span, .dv3-fm .dv6-bar > span { grid-column: 1 / -1; align-self: start; font: 600 13px/1.4 var(--font-text); color: var(--muted); white-space: normal; overflow-wrap: break-word; }
+.dv3-fm .dv6-bar > span { color: var(--text); }
 .dvS-meter .dv6-bar small, .dv3-fm .dv6-bar small { font: 600 14px/1.4 var(--font-text); color: var(--text); }
 /* ---- from delve-v4.html ---- */
 /* ---- The sheet card: the session card's surface. ---- */
