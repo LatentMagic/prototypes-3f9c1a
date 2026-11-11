@@ -2259,6 +2259,13 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
   .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
 }
+/* KEEP: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
+   The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
+.gs-home-after { display: grid; gap: 16px; justify-items: start; margin-top: -16px; }
+.gs-home-after > p { margin: 0; }
+/* All games keeps its 48px tap height, which centres its text in empty space; pulling the box in (more above, where the
+   sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
+.gs-home-after > div { margin: -12px 0 -4px; }
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 

@@ -111,11 +111,16 @@ export const GsHome = () => {
       </section>
 
       <section className="gs-band">
-        <DS.CardRow title="Available games" sub={<CprHomeLine />} className="gs-row4">
+        {/* KEEP: the free line sits under the cards (the user, 2026-11-11: "yes it will be part of our home work"), so the row's arrows
+            share the title line right above the cards and the line never shares a line with them. */}
+        <DS.CardRow title="Available games" className="gs-row4">
           {[<CprPassCard key="pass" />, ...GS_HOME_GAMES.map((k) => <GsFeature key={k} id={k} />)]}
         </DS.CardRow>
-        <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
-        <div className="gs-stack-sm">
+        {/* Maybe reintroduced within further design work around Coming soon (the user, 2026-11-11: "This is not in the platform,
+            and it's disrupting our design"). */}
+        {/* <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div> */}
+        <div className="gs-home-after">
+          <p className="gs-muted gs-pu-wrap">{<CprHomeLine />}</p>
           <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
           <p className="gs-small gs-pu-wrap">{GS.purchase}</p>
         </div>
