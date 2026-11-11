@@ -212,8 +212,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 /* TRIAL: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
    The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
-.gs-home-after { display: grid; gap: 12px; justify-items: start; margin-top: -20px; }
+.gs-home-after { display: grid; gap: 16px; justify-items: start; margin-top: -16px; }
 .gs-home-after > p { margin: 0; }
-/* All games keeps its 48px tap height; pulling it in 8px each way leaves about 18px of visible space above and below its text,
-   without its tap area reaching the Pass link above. */
-.gs-home-after > div { margin-block: -8px; }
+/* All games keeps its 48px tap height, which centres its text in empty space; pulling the box in (more above, where the
+   sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
+.gs-home-after > div { margin: -12px 0 -4px; }
