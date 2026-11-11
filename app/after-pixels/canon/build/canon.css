@@ -2176,10 +2176,10 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
 }
 
-/* home hero: one Casebook cover field with the screenshot set inside it (home-hero option 9) */
+/* home hero: one cover field (bars and sun) with the screenshot set inside it (home-hero option 9) */
 .gs-hero-field { position: relative; display: grid; gap: 24px; padding: 20px 12px 12px; background: #1D1B3A; overflow: hidden; min-width: 0; align-self: center; }
 .gs-hero-shapes4 { position: absolute; top: 0; right: 20px; width: 46%; height: 132px; display: flex; align-items: flex-end; gap: 12%; padding-left: 4%; }
-/* Casebook motion on the hero art: the game-art-motion rules (400ms --ease-art, bars round and rise by different amounts, sun squares and sinks 50ms behind). Hovering or focusing the name, or hovering the art, plays it. */
+/* Motion on the hero art: the game-art-motion rules (400ms --ease-art, bars round and rise by different amounts, sun squares and sinks 50ms behind). Hovering or focusing the name, or hovering the art, plays it. */
 .gs-hero-field { --on: 0; }
 .gs-hero-shapes4 { cursor: pointer; }
 .gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: transform var(--time-art) var(--ease-art) 0ms, border-radius var(--time-art) var(--ease-art) 0ms; }
