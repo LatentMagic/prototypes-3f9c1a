@@ -255,7 +255,7 @@ const GsSetup = () => {
           <div className="hw-pick-body">
             <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : a.route === 'chat' ? 'message' : 'command'} /></div>
             <GsSteps items={gsAppSteps(a)} />
-            {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see <b>{a.look}</b>? Not every plan or country offers it yet.</p>}
+            {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see {a.look ? <b>{a.look}</b> : 'this option'}? Not every plan or country offers it yet.</p>}
           </div>
         </DS.Card>
       </div>
