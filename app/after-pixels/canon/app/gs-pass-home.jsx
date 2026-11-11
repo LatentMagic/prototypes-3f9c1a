@@ -46,7 +46,7 @@ export const GsPick = ({ id, label }) => {
 // The line under Available games: what's free, from the staging (a third free daily reads "Three" with no copy edit), then "the Pass" as its only link.
 const CprHomeLine = () => {
   const gs = useGs(); const c = cprPassLine();
-  return <>{c.p1.replace(/ with your account\. $/, ' free. ')}{c.p1 ? 'Everything else' : 'Everything'} with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</>;
+  return <>{c.p1.replace(/ with your account\. $/, ' free. ').replace(/(he) start of select games/i, '$1 first edition of select games')}{c.p1 ? 'Everything else' : 'Everything'} with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</>;
 };
 // KEEP: the Pass card is first in the row, so a phone shows it without scrolling. The whole card opens Pricing; the price is plain text in the chip line.
 // Salvage's board is too fine to read at mosaic size, so Guess takes its place (owner, 2026-10-21).
