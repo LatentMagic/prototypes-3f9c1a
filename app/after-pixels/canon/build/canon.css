@@ -2437,7 +2437,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
 @container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
 .hw-chatfig > h3 { margin: 0; }
-.hw-start .mcp-chat-me { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
+.hw-start .mcp-chat-me:has(> .mcp-say) { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
 /* KEEP: inside the chat pictures the play prompts take the same light panel as the games list (the chat part's --cb-panel), not pure white, so they match it on the chat's off-white ground. */
 .hw-start .mcp-chat-me .mcp-say { --hw-say: color-mix(in oklab, var(--c-bg), #fff 43%); background: var(--hw-say); }
 .hw-start .mcp-chat-me .mcp-say.is-copy:hover { background: color-mix(in srgb, var(--hw-say) 90%, var(--page)); }
