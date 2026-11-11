@@ -317,8 +317,6 @@ const GsStart = () => {
           turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
       </DS.CardRow>
       <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</span></p>
-      {/* The user, 2026-11-11 (Jonny's ask): which model, named by tier only so it never goes stale. */}
-      <p className="hw-chg hw-model"><span>If your app lets you choose a model, skip its smallest one. You don’t need its most powerful either.</span></p>
     </>
   );
 };
