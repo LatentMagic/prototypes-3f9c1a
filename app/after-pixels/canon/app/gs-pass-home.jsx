@@ -77,7 +77,7 @@ export const GsHome = () => {
   const gs = useGs(); const field = React.useRef(null);
   React.useEffect(() => {
     const f = field.current; if (!f) return undefined;
-    const on = (e) => { if (e.pointerType !== 'mouse' && e.target.closest('.gs-hero-name, .gs-hero-shapes4')) f.classList.add('is-on'); };
+    const on = (e) => { if (e.pointerType !== 'mouse' && e.target.closest('.gs-hero-name, .gs-hero-art')) f.classList.add('is-on'); };
     const off = () => f.classList.remove('is-on'); const ends = ['pointerup', 'pointercancel', 'pointerleave'];
     f.addEventListener('pointerdown', on); ends.forEach((t) => f.addEventListener(t, off));
     return () => { f.removeEventListener('pointerdown', on); ends.forEach((t) => f.removeEventListener(t, off)); };
@@ -95,13 +95,8 @@ export const GsHome = () => {
           <div className="gs-works"><span className="gs-label">WORKS WITH</span><p className="gs-muted">{GS.works}</p></div>
         </div>
         {/* The pattern stands whichever game it shows: one game's art, its schedule caption, a sample chat. */}
-        <div className="gs-hero-field" ref={field}>
-          <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.delve.route)}>
-            <i style={{ background: '#D66847', '--h': '62%', '--rise': '12px' }}></i>
-            <i style={{ background: '#A390B2', '--h': '86%', '--rise': '6px' }}></i>
-            <i style={{ background: '#F2EBE0', '--h': '66%', '--rise': '18px' }}></i>
-            <b></b>
-          </div>
+        <div className="gs-hero-field mcp-art-host" ref={field}>
+          <div className="gs-hero-art" aria-hidden="true" onClick={() => gs.go(GS_GAMES.delve.route)}><GsArt art="delve" shape="banner" /></div>
           <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.delve.route)}>
             <span className="gs-label">A NEW RUN EVERY WEEK</span>
             <span className="gs-hero-name-t">{GS_GAMES.delve.name} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
