@@ -1098,7 +1098,8 @@ button.dvL-head svg { position: absolute; right: 28px; top: 14px; color: var(--m
 button.dvL-head[aria-expanded="true"] svg { transform: rotate(270deg); color: var(--text); }
 /* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. The tally fades out as its room opens, since the opened dice repeat it. */
 .dvL-tally { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-left: auto; min-width: 0; transition: opacity var(--time-swap) var(--ease), visibility 0s; }
-.dvL-row.is-open .dvL-tally { opacity: 0; visibility: hidden; transition: opacity var(--time-swap) var(--ease), visibility 0s linear var(--time-swap); }
+/* KEEP: an open room's hidden tally takes no room in the line, or one that wrapped under the name (a narrow phone, or many dots) leaves a blank band between the header and the dice. */
+.dvL-row.is-open .dvL-tally { position: absolute; opacity: 0; visibility: hidden; transition: opacity var(--time-swap) var(--ease), visibility 0s linear var(--time-swap); }
 .dvL-tally .dv2-dbtn { --hit-w: 28px; z-index: 2; }
 .dvL-dots { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .dvL-dots .dl-now-mark.is-use { background: var(--control-edge); }
