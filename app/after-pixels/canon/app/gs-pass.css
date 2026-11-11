@@ -67,8 +67,8 @@
 /* KEEP: Pricing: right-aligned beside Choose a plan, left-aligned once the button is full width (the 640px switch of .gs-pass-foot). */
 @container gs (min-width: 640px) { .gs-pu-payline { text-align: right; } }
 .gs-pu-libbody { display: grid; gap: 24px; min-width: 0; }
-/* Your games: heading to list 24px, the same space New for you leaves between its heading and tiles (CardRow's 44px title box plus 16px). */
-.gs-pu-libgrp { display: grid; gap: var(--space-6); min-width: 0; }
+/* Your games: heading to list 24px, the same space New for you leaves between its heading and tiles (measured 24.6 against 24.8px, heading text to list or tiles, at 390 and 1280). --space-5 is 24px; --space-6 is 36px. */
+.gs-pu-libgrp { display: grid; gap: var(--space-5); min-width: 0; }
 /* KEEP: At phone width no Library heading or line ends on one or two words alone. */
 @container gs (max-width: 559px) {
   .lb-lay .lb-card :is(h2, .lb-big) { text-wrap: balance; }
