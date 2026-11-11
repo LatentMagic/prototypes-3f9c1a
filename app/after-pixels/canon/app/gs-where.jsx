@@ -60,7 +60,8 @@ const WhGlobe = ({ p }) => {
 
 // The chart: a ruled box with a faint grid, N at the top, the bearing dashed out from the guessed country to an open ring. The box
 // is unfilled, so it takes the card's colour.
-const WhChart = ({ p }) => {
+// KEEP: on the Now card (count) the caption only counts the hint, "1 hint" or "No hint" ("Not used yet" while live), as the share text does: the card's last guess is rarely the guess the hint pointed from, so a direction beside it would mislead. The session page keeps the full "North of …" caption.
+const WhChart = ({ p, count }) => {
   // KEEP: the same 120 box and 104 span as the globe (WhGlobe), so the square is exactly as wide as the globe (Joe, 2026-10-31).
   const h = p.hint; const a = h ? (WH_POINTS.indexOf(h.dir) * 45 - 90) * Math.PI / 180 : 0; const c = 60; const L = 44;
   return (
@@ -73,7 +74,7 @@ const WhChart = ({ p }) => {
         {h && <circle cx={c + Math.cos(a) * L} cy={c + Math.sin(a) * L} r="4" className="wh-ch-end" />}
         <circle cx={c} cy={c} r="5" className="wh-ch-from" />
       </svg>
-      <span className="wh-say">{whSay(p)}</span>
+      <span className="wh-say">{count && p.hint ? '1 hint' : whSay(p)}</span>
     </div>);
 };
 
@@ -95,7 +96,7 @@ const WhNow = ({ c, done, none, children }) => {
     <LbNowCard gid="where" title={'#' + GS_SESSIONS[c.today].number} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'where')[0] })} next={c.next} className="wh-now">
       <div className="wh-row">
         <div className="wh-last is-none"><span className="wh-cap">Last guess</span><b>None yet</b></div>
-        <div className="wh-figs"><WhGlobe p={WH_FRESH} /><WhChart p={WH_FRESH} /></div>
+        <div className="wh-figs"><WhGlobe p={WH_FRESH} /><WhChart p={WH_FRESH} count /></div>
       </div>
     </LbNowCard>);
   const sid = done ? c.today : c.liveSid; const s = GS_SESSIONS[sid]; if (!s) return children;
@@ -108,7 +109,7 @@ const WhNow = ({ c, done, none, children }) => {
           <b>{p.lost ? p.answer : g.c}</b>
           <span className="wh-km">{p.lost ? 'Not found' : whDist(g.km)}</span>
         </div>
-        <div className="wh-figs"><WhGlobe p={p} /><WhChart p={p} /></div>
+        <div className="wh-figs"><WhGlobe p={p} /><WhChart p={p} count /></div>
       </div>
     </LbNowCard>);
 };

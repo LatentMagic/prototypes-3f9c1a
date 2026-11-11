@@ -250,7 +250,7 @@ export const dpSession = (id, c, x, base) => {
   const n = (id === 'common' ? CM_NO : DP_NO) - x.i; const i = x.i;
   if (id === 'where') {
     const r = dpWhere(x.ok ? WH_OK[i % WH_OK.length] : WH_FAIL, x.ok);
-    return { ...base, number: n, hints: r.hints, figures: [r.guesses + ' of 6 guesses', r.hints ? '1 hint' : 'No hints'], share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
+    return { ...base, number: n, hints: r.hints, figures: [r.guesses + ' of 6 guesses', r.hints ? '1 hint' : 'No hint'], share: x.line, shareLines: [dpWhHead(n, r, x.ok), r.marks], lines: r.lines };
   }
   if (id === 'chain') {
     const play = x.ok ? CH_OK[i % CH_OK.length] : CH_FAIL; const r = dpChain(play);
@@ -379,7 +379,7 @@ Object.assign(GS_SESSIONS, {
   'where-today': { kind: 'puzzle', gid: 'where', game: GS_NAME.where, art: 'where', number: DP_NO, hints: 1, result: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), date: GS.today,
     figures: [dpWhT.guesses + ' of 6 guesses', '1 hint'], share: GS_RESULT.where({ ok: true, guesses: dpWhT.guesses }), shareLines: [dpWhHead(DP_NO, dpWhT, true), dpWhT.marks], lines: dpWhT.lines },
   'where-live': { kind: 'puzzle', gid: 'where', game: GS_NAME.where, art: 'where', number: DP_NO, hints: 0, live: true, result: 'In progress', date: GS.today,
-    figures: ['2 of 6 guesses', 'No hints'], share: null, lines: dpWhT.lines.slice(0, 2) },
+    figures: ['2 of 6 guesses', 'No hint'], share: null, lines: dpWhT.lines.slice(0, 2) },
   'chain-today': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: CH_TODAY, result: dpChResult(dpChT), date: GS.today,
     figures: [dpChT.words + ' words', dpWrong(dpChT.wrong).replace(/^./, (c) => c.toUpperCase())], share: dpChResult(dpChT), shareLines: [dpChHead(DP_NO, dpChT), dpChT.marks], lines: dpChT.lines },
   'chain-live': { kind: 'puzzle', gid: 'chain', game: GS_NAME.chain, art: 'chain', number: DP_NO, play: { ...CH_TODAY, p: CH_TODAY.p.slice(0, 3) }, live: true, result: 'In progress', date: GS.today,
@@ -392,7 +392,7 @@ Object.assign(GS_SESSIONS, {
 // In progress, nothing played yet (Config → This edition): today's in-progress play with no move made.
 const dpChB = dpChain({ ...CH_TODAY, p: [] });
 Object.assign(GS_SESSIONS, {
-  'where-begun': { ...GS_SESSIONS['where-live'], figures: ['0 of 6 guesses', 'No hints'], lines: [] },
+  'where-begun': { ...GS_SESSIONS['where-live'], figures: ['0 of 6 guesses', 'No hint'], lines: [] },
   'chain-begun': { ...GS_SESSIONS['chain-live'], play: { ...CH_TODAY, p: [] }, figures: [dpChB.found + ' of ' + dpChB.hidden + ' words', dpWrong(dpChB.wrong).replace(/^./, (c) => c.toUpperCase())], lines: [] },
   'common-begun': { ...GS_SESSIONS['common-live'], play: { c: CM_C7, m: [] }, figures: ['Thread 1 of 3', '0 points so far'], lines: [] },
 });
