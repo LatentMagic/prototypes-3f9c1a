@@ -85,16 +85,17 @@ const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? 
   const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(' · '));
   return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : '', tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
 const DL_END = { won: 'The winning blow', fallen: 'The last blow', overrun: 'The last roll', live: 'Latest roll' };
-// The key moments: the best roll, the closest call, the worst roll, and the roll the run ended on.
-const dlMoments = (R, end) => {
-  if (!R.length) return [];
-  const last = R[R.length - 1]; const pool = R.slice(0, -1); const used = new Set([last.n]); const out = [];
-  const take = (r, kicker) => { if (r && !used.has(r.n)) { used.add(r.n); out.push({ r, kicker }); } };
+// The key moments: the best roll, the closest call, the worst roll, and the turn the run ended on (a roll or a use), keyed by turn.
+// KEEP: the run's last turn is its closing key moment even when it is a use; the rolls are then all in the pool, so the roll that used to close the run competes for best, closest or worst like any other.
+const dlMoments = (T, end) => {
+  if (!T.length) return [];
+  const last = T[T.length - 1]; const pool = T.slice(0, -1).filter((r) => !r.use); const used = new Set([last.t]); const out = [];
+  const take = (r, kicker) => { if (r && !used.has(r.t)) { used.add(r.t); out.push({ r, kicker }); } };
   const crit = pool.find((r) => r.crit); take(crit || pool.filter((r) => r.tier === 'strong').sort((a, b) => b.gap - a.gap)[0], 'Best roll');
-  take(pool.find((r) => r.gap === 0 && !used.has(r.n)), 'Closest call');
-  const fum = pool.find((r) => r.fumble && !used.has(r.n)); take(fum || pool.filter((r) => r.tier === 'miss' && !used.has(r.n)).sort((a, b) => a.gap - b.gap)[0], 'Worst roll');
+  take(pool.find((r) => r.gap === 0 && !used.has(r.t)), 'Closest call');
+  const fum = pool.find((r) => r.fumble && !used.has(r.t)); take(fum || pool.filter((r) => r.tier === 'miss' && !used.has(r.t)).sort((a, b) => a.gap - b.gap)[0], 'Worst roll');
   out.push({ r: last, kicker: DL_END[end] });
-  return out.sort((a, b) => a.r.n - b.r.n);
+  return out.sort((a, b) => a.r.t - b.r.t);
 };
 // A band's members and how many stand, carried beside its health, which is never drawn for a band.
 const dlBand = (f, health, max) => (f[2] ? { members: f[2], standing: dlStanding(f[2], health, max) } : {});
@@ -115,7 +116,7 @@ const dlBuild = (s) => {
     // The turn that takes a foe's health to 0 beats it: its held roll says so and keeps the foe's bar, at 0.
     const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
     const u = dlUse(l, s.hero);
-    // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number, is no key moment, and breaks no streak.
+    // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number and breaks no streak. It is a key moment only as the run's last turn.
     if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
       if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) }; }
@@ -144,8 +145,10 @@ const dlBuild = (s) => {
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
   const end = s.live ? 'live' : s.end;
-  const moments = dlMoments(rolls, end);
-  return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.n, x])) };
+  const moments = dlMoments(turns, end);
+  // KEEP: a closing use on a won run is drawn green (the one use that is not grey); on any other end it keeps the use's grey sparkle.
+  const closer = turns[turns.length - 1]; if (closer && closer.use && end === 'won') closer.won = true;
+  return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
 const dlKindSay = (k) => (k === 'Weakness' ? 'Weak spot' : k);
 const dlSay = (r, foe = true) => r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
@@ -155,7 +158,7 @@ const dlSay = (r, foe = true) => r.use ? dlKindSay(r.what) + ' used, ' + r.room 
 // still draw the sheet's hexes (stats, inspiration). ----
 const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
 const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.use
-  ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />
+  ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} className={r.won ? 'is-won' : ''} />
   : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} crit={r.crit} fumble={r.fumble} foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />);
 const DlDieBtn = ({ r, size, act, on, foe, lit }) => (
   <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r, foe !== false)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
@@ -190,6 +193,8 @@ const dlBeat = (r) => (r.downed ? r.downed.name + ' beaten' : r.passed ? r.passe
 // The Cost fact lists each part in one form (gate 19): the hero's lost health, and the threat a failed hazard turn added. A foe's turn shows its harm in the foe roll row instead.
 const dlCost = (r) => [r.harm > 0 && !r.foe && 'Lost ' + r.harm + ' HP', r.threat > 0 && 'Threat +' + r.threat].filter(Boolean).join(' · ');
 const DlFact = ({ label, children, tone }) => (<div className="dvS-fact"><dt>{label}</dt><dd className={tone ? 'is-' + tone : undefined}>{children}</dd></div>);
+// Under a key moment's heading: a roll's number, or a use's kind and name ("Ability · Dynamite").
+const dlTurnName = (r) => (r.use ? dlKindSay(r.what) + ' · ' + r.name : 'Roll ' + r.n);
 const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r.tier;
   const grp = (...c) => { const k = c.filter(Boolean); return k.length ? <div className="dvS-grp">{k.map((n, i) => <React.Fragment key={i}>{n}</React.Fragment>)}</div> : null; };
   const mt = dlMeterOf(r);
@@ -202,7 +207,7 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-stacked' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
     <div className="dvS-body">
       <div className="dvS-head"><DlDie r={r} size={52} surface="popup" />
-        <div className="dv3-hk"><p className="dv3-k">{r.use ? dlKindSay(r.what) : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{dlBeat(r) && <p className="dv3-beat">{dlBeat(r)}</p>}</div></div>
+        <div className="dv3-hk"><p className="dv3-k">{x ? x.kicker : r.use ? dlKindSay(r.what) : 'Roll ' + r.n}</p>{x && <p className="dv3-n">{dlTurnName(r)}</p>}{dlBeat(r) && <p className="dv3-beat">{dlBeat(r)}</p>}</div></div>
       <div className="dvS-lines">
         <dl className="dvS-line">
           {grp(<DlFact label="Room">{dlRoomSaid(r)}</DlFact>,
@@ -215,10 +220,10 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
         {foe}
       </div></div></div></div>); };
 const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
-  const x = r.use ? null : m.mom[r.n]; const tcls = r.fumble ? 'fumble' : r.tier; const mt = dlMeterOf(r);
+  const x = m.mom[r.t]; const tcls = r.fumble ? 'fumble' : r.tier; const mt = dlMeterOf(r);
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
   const ledger = (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
-    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.use ? dlKindSay(r.what) : x ? x.kicker : 'Roll ' + r.n}</p>{x && <p className="dv3-n">Roll {r.n}</p>}{dlBeat(r) && <p className="dv3-beat">{dlBeat(r)}</p>}</div></div></div>
+    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{x ? x.kicker : r.use ? dlKindSay(r.what) : 'Roll ' + r.n}</p>{x && <p className="dv3-n">{dlTurnName(r)}</p>}{dlBeat(r) && <p className="dv3-beat">{dlBeat(r)}</p>}</div></div></div>
     <dl className="dv3-dl">
       <div><dt>Room</dt><dd>{dlRoomSaid(r)}</dd></div>
       {r.use && <div><dt>Used</dt><dd>{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</dd></div>}
@@ -260,7 +265,7 @@ const DlRoute = ({ m, act, on, beside, lit }) => { const sel = act ? m.turns[act
     <div ref={ref} className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': m.stops.length }} aria-label="The way you went">{m.stops.map((st) => (
       <div key={st.i} className={'dvA2-stop' + (sel === st.i ? ' is-on' : '')}>
         <DlStopHead st={st} named={named} />
-        <div className="dvA2-dice">{st.turns.length ? st.turns.map((r) => (!r.use && m.mom[r.n]
+        <div className="dvA2-dice">{st.turns.length ? st.turns.map((r) => (m.mom[r.t]
           ? <span key={r.t} className="dvE-mom"><DlDieBtn r={r} act={act} lit={lit} on={on} size={52} /></span>
           : <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={30} />)) : <i className="dv2-pass" aria-label="No rolls" />}</div>
       </div>))}</div>
@@ -292,7 +297,7 @@ const dlEvenOpen = (el) => { const dice = el && el.querySelector('.dvL-dice'); i
   el.style.setProperty('--dvL-down', Math.max(0, DL_OPEN_GAP - (bottom - Math.max(...drawn.map((r) => r.bottom)))) + 'px'); };
 const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
   const isOpen = open === st.i; const sel = act ? m.turns[act - 1].stop : null; const has = st.turns.length > 0;
-  const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
+  const keys = st.turns.filter((r) => m.mom[r.t]); const rest = st.turns.filter((r) => !m.mom[r.t]);
   const onRoom = React.useMemo(() => ({ ...on, sel: (t) => { if (on.focus) on.focus(t); setOpen(st.i); on.sel(t); } }), [on, st.i, setOpen]);
   const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name; const fold = 'dvL-room-' + st.i;
   const openRef = React.useRef(null); React.useLayoutEffect(() => { if (isOpen) dlEvenOpen(openRef.current); }, [isOpen, act]);
@@ -315,7 +320,7 @@ const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
         </div>
       </div>
       {has && <div id={fold} className="dvL-fold"><EsxFold open={isOpen}>{isOpen && <div ref={openRef} className="dvL-open">
-        <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={!r.use && m.mom[r.n] ? 44 : 30} />)}</div>
+        <div className="dvL-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
         {sel === st.i && <div className="dvL-held"><DlHeld m={m} act={act} live={false} /></div>}
       </div>}</EsxFold></div>}
     </div>);
@@ -517,7 +522,7 @@ const dlNowMarksSay = (rest) => { const rolls = rest.filter((r) => !r.use); cons
   return [said, uses ? (uses === 1 ? 'a use' : uses + ' uses') : ''].filter(Boolean).join(', and '); };
 const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(m.turns[t - 1].n), hov: DL_NO_HOVER }; const [ref, cols] = useDlNowCols(m.stops.length);
   return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} aria-label="The way you went">{m.stops.map((st, i) => {
-    const keys = st.turns.filter((r) => !r.use && m.mom[r.n]); const rest = st.turns.filter((r) => r.use || !m.mom[r.n]);
+    const keys = st.turns.filter((r) => m.mom[r.t]); const rest = st.turns.filter((r) => !m.mom[r.t]);
     const edge = (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === m.stops.length - 1 ? ' is-row-end' : '');
     return (<div key={st.i} className={'dl-now-stop' + edge}>
       <DlStopHead st={st} />
@@ -590,7 +595,8 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
-  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
+  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21'],
+  ['Ability', 'Used sneak attack', 'Grizzletooth: health 1 → 0']] };
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's health are sample; the route follows the edition's order.
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.
