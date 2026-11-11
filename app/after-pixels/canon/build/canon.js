@@ -7147,7 +7147,8 @@
   const GS_APPS = [
     { id: "chatgpt", name: "ChatGPT", route: "settings", noun: "plugin", look: "Add custom MCP server" },
     { id: "claude", name: "Claude", route: "settings", noun: "custom connector", look: "Add custom connector" },
-    { id: "gemini", name: "Gemini", route: "settings", noun: "custom app", look: "Connected Apps" },
+    // Gemini's form has no name field, so it skips "name it After Pixels" (checked by the user, 2026-11-11).
+    { id: "gemini", name: "Gemini", route: "settings", noun: "custom app", look: "Custom", via: "Connected apps", noName: true },
     { id: "grok", name: "Grok", route: "settings", noun: "custom connector", look: "New Connector", subs: ["grok", "grokbot"] },
     { id: "grokbot", name: "Grok Bot", route: "chat", sub: true },
     { id: "muse", name: "Muse", route: "chat" },
@@ -7276,10 +7277,10 @@
   const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : a.route === "chat" ? ["The message to send", "Add this MCP server: " + GS.link] : ["The command to run", a.first || a.cmd(GS.link)];
   const gsAppSteps = (a) => [
     ...a.route === "settings" ? [
-      a.id === "other" ? "In your app, find where you add a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
-      /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Paste the address and name it ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), "."),
-      "Connect, then sign in to your account."
-      // the step before names it After Pixels, so the name isn't repeated (the user, 2026-11-11)
+      a.id === "other" ? "In your app, find where you add a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", a.via && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, a.via), ", then "), /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
+      a.noName ? "Paste the address." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Paste the address and name it ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), "."),
+      // The step before names it After Pixels, so the name isn't repeated; Gemini's step before has no name, so its step says it (the user, 2026-11-11).
+      a.noName ? "Connect, then sign in to your After Pixels account." : "Connect, then sign in to your account."
     ] : a.route === "chat" ? [
       "In a chat with " + a.name + ", send the message.",
       "Open the link " + a.name + " sends, and " + GS_SIGN_IN
