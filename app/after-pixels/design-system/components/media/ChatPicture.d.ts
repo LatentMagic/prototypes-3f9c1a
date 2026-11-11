@@ -33,6 +33,8 @@ export interface ChatTurn{
  */
 export interface ChatPictureProps{
   turns:ChatTurn[];
+  /** Where the conversation opens. Default: on the latest turn, with a pill at the top that scrolls back to the first. 'top': on the first turn (a short conversation sits at the top, not the bottom), with a down-arrow pill above the reply box that scrolls to the latest turn and hides once it is there. Use it where the first turn is the point, such as the line a player types. */
+  start?:'latest'|'top';
   /** Header label. Omit for no header; the page around it already says whose it is. */
   title?:string;
   /** Shown after the tool name in the tool-call card, e.g. the store name. */
@@ -45,7 +47,7 @@ export interface ChatPictureProps{
   width?:number;
   /** Stretch to the box it sits in (width and height) instead of using `height` and `width`. The box must have a height. Default false. */
   fill?:boolean;
-  /** Spoken name of the arrow pill that scrolls back to the first turn. Default "Back to the start". */
+  /** Spoken name of the arrow pill that scrolls back to the first turn. Default "Back to the start", or "On to the latest" with start='top'. */
   more?:string;
   /** Show the reply box. Default true. */
   composer?:boolean;
