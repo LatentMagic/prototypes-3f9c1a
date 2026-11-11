@@ -1018,7 +1018,7 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8.is-3b .dv8-meters { padding: 0 16px; }
 /* The fold: a button over the whole header, so a tap anywhere on it folds; the name and bars stay beneath it, readable to a screen reader. Only the chevron is drawn, centred on the header at its right end, inside the 64px the header keeps clear for it. */
 .dl-fold { position: absolute; inset: 0; display: block; width: 100%; padding: 0; margin: 0; background: none; border: 0; color: var(--text); cursor: pointer; }
-.dl-fold svg { position: absolute; right: 28px; top: calc(50% - 10px); transform: rotate(-90deg); }
+.dl-fold svg { position: absolute; right: 22px; top: calc(50% - 10px); transform: rotate(-90deg); }
 .dv8.is-3b.is-tap .dl-fold svg { transition: transform var(--dur-fast, .15s); }
 .dl-fold[aria-expanded="false"] svg { transform: rotate(90deg); }
 .dl-fold:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
@@ -1072,10 +1072,14 @@ button.mcp-cb-ent{cursor:pointer}
   .dv8.is-3b .esx-card.dl-tab { flex-direction: row; justify-content: flex-start; gap: 12px; height: 40px; padding: 0 12px; }
   .dv8.is-3b .dl-tab-w { font-size: var(--size-2xs); letter-spacing: .07em; }
 }
+/* KEEP: as a list (a sheet 340px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 341px the tabs are squares across and the column is 56px. */
+@container dv4 (max-width: calc(340px + 32px)) {
+  .dvp-rows { --dvp-fig: 50px; }
+}
 /* A card's rows: the figure on the left, the name and its line on the right. */
 .dvp-rows { display: grid; margin-top: 8px; }
 /* KEEP: the icon box sits vertically centred on the whole text block (name plus grey line), not on the name alone. */
-.dvp-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 0; }
+.dvp-row { display: grid; grid-template-columns: var(--dvp-fig, 56px) minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 0; }
 .dvp-row + .dvp-row { border-top: 1px solid var(--line); }
 .dvp-fig .dv4-uses { gap: 4px; }
 .dvp-fig .dv4-uses i { width: 14px; height: 14px; }
@@ -1093,18 +1097,19 @@ button.mcp-cb-ent{cursor:pointer}
   .dvp-fig .dv8-num { font-size: 18px; }
 }
 @container dv4 (max-width: calc(240px + 32px)) {
-  .dvp-row { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
+  .dvp-row { gap: 8px; }
 }
 /* ---- the tabs: Escape's tap cards (esx-card), each with its icon centred above its word and no figure ---- */
 .esx-card.dl-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px 2px; text-align: center; }
 .dl-tab-w { font: 600 var(--size-2xs)/1 var(--font-text); text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .dl-tab.is-open .dl-tab-w { color: var(--text); }
 /* The open tab's panel, under the row. */
-/* KEEP: in a Pack, Ability or Fight panel the last row ends 24px above the card's edge (its own 12px and the panel's 12px), the same 24px that separates its rows, so no extra space sits under it. Stats and Advantage show their cells instead, which end 12px above the edge. */
+/* KEEP: in a Pack, Ability or Fight panel every row's content is centred between its hairlines, the first and last rows included: the rows' own 12px is all the space above the first row and below the last, and the panel adds none. Stats and Advantage show their cells instead, which sit 12px in from the panel's hairline and the card's edge. */
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+.dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
 /* ---- The route as a list of closed rooms (a run card under 610px: gs-delve.jsx, DL_LIST_BELOW). ---- */
-/* KEEP: as a list the run card has no side padding of its own: the result and each room carry the 16px gutter, as the hero sheet's parts do, so a room's hover band runs edge to edge of the card like the sheet header's, and the rooms' chevrons sit 28px from the edge, in line with the sheet's chevron above. */
+/* KEEP: as a list the run card has no side padding of its own: the result and each room carry the 16px gutter, as the hero sheet's parts do, so a room's hover band runs edge to edge of the card like the sheet header's, and the rooms' chevrons sit 28px from the edge. */
 .dv2.is-list { padding: 16px 0; }
 .dv2.is-list > .dv7r-band { padding: 0 16px; }
 .dvL-list { position: relative; isolation: isolate; display: grid; min-width: 0; }
