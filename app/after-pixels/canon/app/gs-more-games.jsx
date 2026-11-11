@@ -120,7 +120,7 @@ export function initGsMoreGames() {
 GS_MORE.forEach((d) => {
   const tags = [d.when, d.long].filter(Boolean);
   GS_ART[d.k] = { ground: d.art[0], extend: d.art[1], svg: GS_SVG(d.art[2]) };
-  GS_GAMES[d.k] = gsAccess({ access: 'pass', name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
+  GS_GAMES[d.k] = gsAccess({ real: false, access: 'pass', name: d.name, category: d.category, art: d.k, route: d.k, ed: d.ed, once: d.once, added: true, blurb: d.blurb, tags });
   GS_PAGES[d.k] = {
     box: { label: 'ONLY WITH THE PASS', heading: d.page.heading, session: null,
       steps: [GS_STEP_CONNECT, d.page.step, <><b>Keep your result.</b> It stays in your history.</>],

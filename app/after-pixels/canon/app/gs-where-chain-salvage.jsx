@@ -297,13 +297,13 @@ export let DP_STATES;
 export function initGsWhereChainSalvage() {
 Object.assign(GS_NAME, { where: 'Where', chain: 'Chain', salvage: 'Salvage', common: 'Common' });
 Object.assign(GS_GAMES, {
-  where: gsAccess({ access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], daily: true, once: true,
+  where: gsAccess({ real: true, access: 'pass', name: GS_NAME.where, category: 'PUZZLE', art: 'where', route: 'where', ed: ['country', 'countries'], daily: true, once: true,
     blurb: 'Which country is hidden? Each guess shows how far off you are.', tags: ['Daily'], size: 'tiny' }),
-  chain: gsAccess({ access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], daily: true, once: true,
+  chain: gsAccess({ real: true, access: 'pass', name: GS_NAME.chain, category: 'PUZZLE', art: 'chain', route: 'chain', ed: ['chain', 'chains'], daily: true, once: true,
     blurb: 'Work out the missing words in a chain where each joins the next.', tags: ['Daily'], size: 'tiny' }),
-  salvage: gsAccess({ access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], daily: true, once: true,
+  salvage: gsAccess({ real: true, access: 'pass', name: GS_NAME.salvage, category: 'PUZZLE', art: 'salvage', route: 'salvage', ed: ['sea', 'seas'], daily: true, once: true,
     blurb: 'Five wrecks lie somewhere on the sea bed. Find them in twenty dives.', tags: ['Daily'], size: 'tiny' }),
-  common: gsAccess({ access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], daily: true, once: true,
+  common: gsAccess({ real: true, access: 'pass', name: GS_NAME.common, category: 'PUZZLE', art: 'common', route: 'common', ed: ['day', 'days'], daily: true, once: true,
     blurb: 'An egg, a tortoise and a peanut share something. Guess it early for more points.', tags: ['Daily'], size: 'tiny' }),
 });
 GS_GAME_ORDER.splice(GS_GAME_ORDER.indexOf('mystery') + 1, 0, ...DP_IDS);
