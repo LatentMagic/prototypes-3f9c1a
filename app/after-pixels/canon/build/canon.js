@@ -1127,7 +1127,7 @@
   const GS_NAME = { casebook: "Casebook", hunter: "36,000 Summers Ago" };
   const GS_GAMES = {
     word: { access: "daily", name: "Guess", category: "PUZZLE", art: "word", route: "word", ed: ["word", "words"], daily: true, once: true, blurb: "One hidden word a day: find it in six guesses.", tags: ["Daily"], size: "tiny" },
-    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups. Find all four.", tags: ["Daily", "10 min"] },
+    groups: { access: "pass", name: "Daily Groups", category: "PUZZLE", art: "groups", route: "groups", ed: ["puzzle", "puzzles"], edLink: "See all groups", edAll: "All groups", daily: true, once: true, blurb: "Sixteen words hide four groups of four.", tags: ["Daily", "10 min"] },
     mystery: { access: "daily", name: "Accuse", category: "PUZZLE", art: "murder", route: "mystery", ed: ["case", "cases"], daily: true, once: true, blurb: "Four suspects, four weapons, four places. Who do you accuse?", tags: ["Daily"], size: "tiny" },
     escape: { access: "first", soon: true, name: "Escape", category: "PUZZLE", art: "escape", route: "escape", ed: ["room", "rooms"], blurb: "The door’s locked and you’re on the wrong side of it.", tags: ["Weekly"], size: "small" },
     // Casebook is episodic: cases are its editions, with no schedule.
@@ -1947,11 +1947,11 @@
         ] }
       ],
       groups: [
-        { cap: "Sixteen words hide four groups of four.", turns: [
+        { cap: "Ask for today’s groups and the board opens with all sixteen words.", turns: [
           gscU("Play Daily Groups on After Pixels"),
           gscAi("daily-groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
-        { cap: "Each set of four goes to the engine, which checks it and counts your mistakes.", turns: [
+        { cap: "One word out still costs a mistake. Get all four and the group is solved.", turns: [
           gscU("Bass, pike, carp, sole"),
           gscAi("daily-groups", "One away. 3 mistakes left."),
           gscU("Pike, carp, sole, perch"),
@@ -2081,7 +2081,7 @@
     };
     GS_HERO_CHAT = GS_CHATS.delve.flatMap((c) => c.turns);
   }
-  const GS_TAKEN = "That username is taken";
+  const GS_TAKEN = "That username is taken.";
   const gsUsernameRules = (current) => {
     const t = (v) => v.trim();
     return [
@@ -2485,7 +2485,7 @@
     const other = gsOther(sub.plan);
     const card = { gap: 16, justifyItems: "stretch", alignContent: "start" };
     const update = /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => gs.go("update-card") }, /* @__PURE__ */ React$1.createElement(GsGlyph, { name: "card" }), "Update payment card");
-    if (!GS_SUB_HOLDS.includes(sub.status)) return /* @__PURE__ */ React$1.createElement(DS.Card, { style: card }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Pass"), sub.hadPass ? /* @__PURE__ */ React$1.createElement(GsKeepLock, { lead: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your Pass ended on ", gsLong(gsEndedOn(gs)), ".") }) : /* @__PURE__ */ React$1.createElement("p", null, "You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "getpass", variant: "secondary", onClick: () => gs.go("pass") }, sub.hadPass ? "Get the Pass again" : "Get the Pass")));
+    if (!GS_SUB_HOLDS.includes(sub.status)) return /* @__PURE__ */ React$1.createElement(DS.Card, { style: card }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Pass"), sub.hadPass ? /* @__PURE__ */ React$1.createElement(GsKeepLock, { lead: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your Pass ended on ", gsLong(gsEndedOn(gs)), ".") }) : /* @__PURE__ */ React$1.createElement("p", null, "You have a free account. Free play needs no card, and your results and history are kept. Everything else comes with the Pass."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { "data-gs-focus": "getpass", variant: "secondary", onClick: () => gs.go("pass") }, sub.hadPass ? "Get the Pass again" : "Get the Pass")));
     const marker = sub.status === "failed" ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker is-bad" }, "Payment failed") : sub.status === "ending" ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, "Ending") : /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "Active");
     let rows = [["Plan", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, plan.name, " · ", plan.price)]];
     let body = null;
@@ -2666,14 +2666,14 @@
     CB_BEGUN = { ...cbMake(CB_ID, "5 October", "October", CB_TITLE, true, null, 4, []), cast: CB_CAST };
     CB_ALL = [CB_LIVE];
     CB_ACH = [
-      { k: "first", n: "First lie exposed", how: "Expose a suspect’s lie with proof.", first: true, by: (p) => p.src.lies >= 1 },
-      { k: "solved", n: "Case solved", how: "Name the killer.", first: true, by: cbRight },
-      { k: "eleven", n: "Solved in eleven turns", how: "Name the killer using eleven turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 11 },
-      { k: "every", n: "Every lie exposed", how: "Expose every lie in one case.", first: true, by: (p) => p.src.lies === p.src.total },
-      { k: "rooms", n: "Every room searched", how: "Search every place in one case.", first: true, by: (p) => p.src.searched >= p.src.places },
-      { k: "quick", n: "Solved in eight turns", how: "Name the killer using eight turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 8 },
-      { k: "five", n: "Five cases solved", how: "Solve five cases.", of: 5, count: (ps) => ps.filter(cbRight) },
-      { k: "ten", n: "Ten cases solved", how: "Solve ten cases.", of: 10, count: (ps) => ps.filter(cbRight) }
+      { k: "first", n: "First Lie Exposed", how: "Expose a suspect’s lie with proof.", first: true, by: (p) => p.src.lies >= 1 },
+      { k: "solved", n: "Case Solved", how: "Name the killer.", first: true, by: cbRight },
+      { k: "eleven", n: "Solved in Eleven Turns", how: "Name the killer using eleven turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 11 },
+      { k: "every", n: "Every Lie Exposed", how: "Expose every lie in one case.", first: true, by: (p) => p.src.lies === p.src.total },
+      { k: "rooms", n: "Every Room Searched", how: "Search every place in one case.", first: true, by: (p) => p.src.searched >= p.src.places },
+      { k: "quick", n: "Solved in Eight Turns", how: "Name the killer using eight turns or fewer.", first: true, by: (p) => cbRight(p) && p.src.turns <= 8 },
+      { k: "five", n: "Five Cases Solved", how: "Solve five cases.", of: 5, count: (ps) => ps.filter(cbRight) },
+      { k: "ten", n: "Ten Cases Solved", how: "Solve ten cases.", of: 10, count: (ps) => ps.filter(cbRight) }
     ];
     CB_BADGES = {
       first: ["#1D1B3A", [["path", 'd="M7 40L21 12L35 40Z"', "#F2EBE0"], ["rect", 'x="28" y="7" width="13" height="13"', "#D66847"]]],
@@ -3879,9 +3879,9 @@
       credit: true
     };
     BW_ACH = [
-      { k: "seal", n: "Into the barrow", how: "Open the barrow door.", first: true, by: (p) => p.src.earns.includes("seal") },
-      { k: "deep", n: "The wight’s crypt", how: "Reach the wight’s crypt.", first: true, by: (p) => p.src.earns.includes("deep") },
-      { k: "unhurt", n: "Out without a scratch", how: "Finish Chapter 1 with full HP.", first: true, by: (p) => p.src.earns.includes("unhurt") }
+      { k: "seal", n: "Into the Barrow", how: "Open the barrow door.", first: true, by: (p) => p.src.earns.includes("seal") },
+      { k: "deep", n: "The Wight’s Crypt", how: "Reach the wight’s crypt.", first: true, by: (p) => p.src.earns.includes("deep") },
+      { k: "unhurt", n: "Out Without a Scratch", how: "Finish Chapter 1 with full HP.", first: true, by: (p) => p.src.earns.includes("unhurt") }
     ];
     BW_BADGES = lbAutoBadges(BW_ACH);
   }
@@ -5995,11 +5995,11 @@
         recent: "Your countries",
         ach: [
           { k: "wh1", n: "Found", how: "Find the country in a Where.", by: (p) => p.status.kind === "ok" },
-          { k: "wh0", n: "Found without the hint", how: "Find the country without taking the hint.", by: (p) => {
+          { k: "wh0", n: "Found Without the Hint", how: "Find the country without taking the hint.", by: (p) => {
             const s = GS_SESSIONS[p.sid];
             return p.status.kind === "ok" && !!s && !s.hints;
           } },
-          { k: "wh7", n: "Seven days in a row", how: "Find the country seven days running.", of: 7 }
+          { k: "wh7", n: "Seven Days in a Row", how: "Find the country seven days running.", of: 7 }
         ]
       },
       chain: {
@@ -6020,8 +6020,8 @@
         recent: "Your chains",
         ach: [
           { k: "ch1", n: "Solved", how: "Find every word in a Chain.", by: (p) => p.status.kind === "ok" },
-          { k: "ch0", n: "Solved with no wrong guesses", how: "Find every word in a Chain without a wrong guess.", by: (p) => p.status.label === GS_RESULT.chain({ wrong: 0 }) },
-          { k: "ch7", n: "Seven days in a row", how: "Solve Chain seven days running.", of: 7 }
+          { k: "ch0", n: "Solved With No Wrong Guesses", how: "Find every word without a wrong guess.", by: (p) => p.status.label === GS_RESULT.chain({ wrong: 0 }) },
+          { k: "ch7", n: "Seven Days in a Row", how: "Solve Chain seven days running.", of: 7 }
         ]
       },
       salvage: {
@@ -6043,13 +6043,13 @@
         done: { st: { kind: "ok", label: GS_SESSIONS["salvage-today"].result }, line: "You found all five wrecks with " + (SLV_DIVES - SLV_PLAYS.won.dives) + " dives to spare.", bar: [SLV_PLAYS.won.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.won.dives, SLV_DIVES] },
         recent: "Your seas",
         ach: [
-          { k: "sv1", n: "Every wreck found", how: "Find all five wrecks in a Salvage.", by: (p) => p.status.kind === "ok" },
+          { k: "sv1", n: "Every Wreck Found", how: "Find all five wrecks in a Salvage.", by: (p) => p.status.kind === "ok" },
           // KEEP: a deployed achievement (monorepo play-records.ts, "Last Dive"); the platform has nine, the library shows three.
-          { k: "sv5", n: "Last dive", how: "Find all five wrecks with your twentieth and final dive.", by: (p) => {
+          { k: "sv5", n: "Last Dive", how: "Find the last wreck with your twentieth and final dive.", by: (p) => {
             const m = new RegExp("^All 5 wrecks in (\\d+) of " + SLV_DIVES).exec(p.status.label);
             return !!m && +m[1] === SLV_DIVES;
           } },
-          { k: "sv7", n: "Seven days in a row", how: "Find every wreck seven days running.", of: 7 }
+          { k: "sv7", n: "Seven Days in a Row", how: "Find every wreck seven days running.", of: 7 }
         ]
       },
       common: {
@@ -6096,7 +6096,7 @@
         tags: [],
         pitch: { h: "Which country is hidden? Each guess shows how far off you are.", ps: [
           "A different country is hidden every day, and you have six guesses to find it. Name any country in the world, and you’re told how far it lies from the hidden one.",
-          "A guess on the far side of the world still helps, because it tells you where the country isn’t. Each distance rules out more of the world, so every guess closes in on where it’s hiding. When you’re torn between places, your one hint gives the compass direction from your latest guess."
+          "A guess on the far side of the world still helps, because it tells you where the country isn’t. Each distance rules out more of the world, so every guess closes in on where it’s hiding."
         ] },
         who: { ai: "Lists every guess with its distance after each turn, and tells you a little about the country once you’ve found it.", server: "Keeps the country secret, measures every distance and works out which way the hint points." },
         week: { title: "Today’s country", line: "You get six guesses and one hint.", session: "where-today" }
@@ -6113,7 +6113,7 @@
         tags: [],
         pitch: { h: "Work out the missing words in a chain where each joins the next.", ps: [
           "A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.",
-          "Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word."
+          "Start with a word next to either end and work inward. Each word you find lets you guess the word beside it."
         ] },
         who: { ai: "Draws the whole line after every guess, with the words you can try next marked, and goes through every link once the chain is solved.", server: "Keeps the chain secret, shows only the letters you’ve earned, and gives a word away once its letters run out." },
         week: { title: "Today’s chain", line: "You get both ends and every first letter.", session: "chain-today" }
@@ -6130,7 +6130,7 @@
         tags: [],
         pitch: { h: "Five wrecks lie somewhere on the sea bed. Find them in twenty dives.", ps: [
           "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.",
-          "You also get three tools: a sonar sweep that counts a row or column, a metal detector that counts the wreck squares around a square, and a dragnet that snags the first wreck square on a line. Every sea can be solved by reasoning from its counts and these tools."
+          "You also get three tools: a sonar sweep, a metal detector and a dragnet. Every sea can be solved by reasoning from its counts and these tools."
         ] },
         who: { ai: "Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.", server: "Keeps the wrecks secret, answers every dive and tool, and counts what you have left." },
         week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
@@ -7475,7 +7475,7 @@
         facts: { often: "New every day" },
         tags: [],
         pitch: { h: "Four suspects, four weapons, four places. Who do you accuse?", ps: [
-          "A body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start. Two hints are there if you need them.",
+          "A body turns up somewhere different from one day to the next: a country house cut off by a storm, an ocean liner on its last night out, a night train stopped in a dark forest. Four suspects, four weapons and four places are in play, and every clue you need is in front of you from the start.",
           "At first the clues are loose facts, and none of them settles the case on its own. Then two fit together, and a suspect who looked guilty turns out to have been somewhere else. Each name you clear leaves the rest less room, until only one person, one weapon and one place still fit. You name them once, and the right killer with the wrong weapon still leaves the case cold."
         ] },
         who: { ai: "Sets the scene and introduces the suspects, then tells you how it really happened once your accusation is in.", server: "Keeps the answer secret, works out each hint from the clues alone and marks the suspect, weapon and place you accuse each right or wrong." },
@@ -7489,11 +7489,10 @@
           button: "Play the first room",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play the first room."), " Every lock has three hints if you need them."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "See your result"), " on your session page.")]
         },
-        facts: { often: "A new room every week" },
+        facts: { often: "New every week" },
         tags: [],
         pitch: { h: "The door’s locked and you’re on the wrong side of it.", ps: [
           "Examine what’s in the room and find its locks. Each one opens to an answer you work out from clues around you. Carry what you find, set what moves and choose your way on. The room changes as it opens, and a lock may open onto a second room.",
-          "Every lock has three hints, taken in order. The first two point the way and the third gives the answer. A hint costs no try, and it shows on your result.",
           "No clock runs while you play, and every room can be finished. Your time against par shows once you’re out. Say what you examine first."
         ] },
         who: { ai: "Describes the room and everything you find in it.", server: "Decides what each move does and keeps secret what the room hasn’t shown. It records wrong tries, hints and your time." },
@@ -7511,8 +7510,7 @@
         tags: ["Mystery", "One case, sixteen turns, one accusation"],
         pitch: { h: "Ask the question they haven’t prepared for.", ps: [
           "The suspects have had time to get their stories straight. Your AI plays every one of them, and each has a secret to keep.",
-          "Sixteen turns to search, question and confront them. Then one accusation.",
-          "The game engine holds every statement word for word, so any story can be checked."
+          "Sixteen turns to search, question and confront them. Then one accusation."
         ] },
         who: { ai: "Voices every suspect and narrates what you find.", server: "Holds every statement and every piece of evidence, counts your turns and keeps the record." },
         week: { label: "A CASE", title: "Sixteen turns, then one accusation", line: "Ask the question they haven’t prepared for.", session: "casebook" }
@@ -7520,7 +7518,7 @@
       delve: {
         box: {
           label: "FIRST RUN FREE",
-          heading: "One run every week",
+          heading: "A new run every week",
           session: "delve",
           button: "Play the first run",
           steps: [GS_STEP_CONNECT, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Play this week’s run"), ", from the first room to its ending."), /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, "Keep your result."), " It stays in your history.")],
@@ -7548,8 +7546,7 @@
         tags: ["Adventure", "Mist, old stone and honest dice"],
         pitch: { h: "Bring the bell home. Keep the hero.", ps: [
           "Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Go as a fighter, a rogue or a wizard, through the churchyard and Whisperwood to the old stone and the older things beneath it.",
-          "Explore a world that stays put, fight with dice nobody can fudge, and stop whenever you like. Finish the quest and your hero carries on, levelled up, into the second chapter, out across the mere to the drowned abbey.",
-          "Your AI is the Game Master and gives the world its voice. The game engine holds the map, rolls every die and keeps the journal. Choose your hero."
+          "Explore a world that stays put, fight with dice nobody can fudge, and stop whenever you like. Finish the quest and your hero carries on, levelled up, into the second chapter, out across the mere to the drowned abbey. Choose your hero."
         ] },
         who: { ai: "Plays the Game Master: narrates the world and turns what you say into moves.", server: "Holds the map, the hero’s sheet and every enemy, rolls every die and keeps the journal." },
         week: { label: "A QUEST", title: "The bell is in the barrow", line: "Bring the Bell of Hollowmere home from the barrow, and stop whenever you like." },
@@ -7568,8 +7565,7 @@
         tags: [],
         pitch: { h: "The day goes on whether you join it or not.", ps: [
           "It’s grey dawn, 36,000 years ago, and your band is already moving. Hunters head for the cliffs. Gatherers set out for the plateau.",
-          "Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire.",
-          "Your AI tells the day and speaks for everyone in it. The game engine rolls the dice and keeps the record. Say what you do first."
+          "Join them, or go your own way. Whatever you skip, the day carries on without you. You’ll hear what you missed at the fire. Say what you do first."
         ] },
         who: { ai: "Tells the day, speaks for everyone in it and answers whatever you try.", server: "Keeps the time, rolls the dice, tracks where everyone is and records what you do." },
         week: { title: "The day", line: "One day, dawn to firelight. Start it over and it goes differently.", session: "hunter", unmarked: true }
@@ -8070,7 +8066,7 @@
     { name: "Your results and history", free: true },
     { name: "Sharing a result", free: true },
     { name: "Play earlier editions", free: false },
-    { name: "The full game catalog", free: false },
+    { name: "The full game catalogue", free: false },
     { name: "New releases", free: false }
   ];
   const GsCmpMark = ({ on }) => on ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Included")) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell gs-muted" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "–"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Not included"));
@@ -8689,7 +8685,7 @@
     const provider = gs.provider === "email" ? null : gs.provider;
     const holds = GS_SUB_HOLDS.includes(gs.sub.status);
     const st = gs.sub.status;
-    const passLine = !holds ? null : st === "failed" ? "Your Pass ends straight away." : "Your Pass is cancelled. No more payments are taken, and nothing is refunded.";
+    const passLine = !holds ? null : st === "failed" ? "Your Pass ends straight away." : "Your Pass is cancelled and no more payments are taken. You lose any time left on it. Deleting doesn't refund anything by itself. You can still ask for a refund within 30 days of a payment.";
     return /* @__PURE__ */ React$1.createElement(DS.Card, { style: GS_ACCT_CARD }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Delete account"), /* @__PURE__ */ React$1.createElement("p", null, "Your account goes, and so does your play history."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-card-acts" }, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", className: "gs-btn-danger-outline", onClick: () => setStep("alert") }, "Delete your account")), /* @__PURE__ */ React$1.createElement(DS.Popup, { open: step === "alert", onClose: () => setStep(null), posture: "window", label: "Delete your account?" }, /* @__PURE__ */ React$1.createElement(GsPopTitle, null, "Delete your account?"), /* @__PURE__ */ React$1.createElement("p", null, "This deletes your name, username, email, results, history, streaks and achievements. It can’t be undone."), passLine && /* @__PURE__ */ React$1.createElement("p", null, passLine), /* @__PURE__ */ React$1.createElement(GsActs, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: () => setStep(null) }, "Cancel"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "danger", onClick: () => setStep("identity") }, "Delete account"))), /* @__PURE__ */ React$1.createElement(GsIdentity, { open: step === "identity", provider, onCancel: () => setStep(null), onOk: () => {
       setStep(null);
       gs.deleteAccount();
@@ -11214,7 +11210,7 @@
       page: {
         heading: "A new case every week",
         step: cprStep("Work one full case", ", from the first stop to the last."),
-        often: "A new case every week",
+        often: "New every week",
         h: "Someone left the sleeper car and never reached the next one.",
         ps: ["Eight passengers, one corridor and a train that doesn’t stop until dawn. Everyone saw something. Nobody saw all of it.", "Your AI plays every passenger. The game engine keeps what each one said and where they were. Knock on the first door."],
         ai: "Plays every passenger and the guard, and narrates the train.",
@@ -11237,7 +11233,7 @@
       page: {
         heading: "A new voyage every week",
         step: cprStep("Sail one voyage", ", from the quay to the drop."),
-        often: "A new voyage every week",
+        often: "New every week",
         h: "Run the cargo through the marsh before the tide turns.",
         ps: ["The channels shift every week, the excise cutter knows half of them, and the tide waits for nobody. Pick your route, read the water, and keep the hold dry.", "Your AI tells the crossing and voices the crew. The game engine rolls every die and keeps the tide clock. Cast off."],
         ai: "Tells the crossing, voices your crew and the excise men.",
@@ -11260,7 +11256,7 @@
       page: {
         heading: "A new job every week",
         step: cprStep("Plan this week’s job", ", then pull it off."),
-        often: "A new job every week",
+        often: "New every week",
         h: "Plan the job. Then make it work when it goes wrong.",
         ps: ["You get the floor plan, the guard rota and a crew of three. Decide who goes where and when. Something will slip, and you’ll have one move to fix it.", "Your AI briefs you and plays the crew. The game engine runs the guards to the second. Pick your way in."],
         ai: "Briefs you on the job and plays your crew.",
@@ -11423,7 +11419,7 @@
     const holds = gs.view === "pass";
     return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React$1.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-pass-price gs-num-text" }, plans.yearly.price, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, " or ", plans.monthly.price)), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.purchase)) })));
   };
-  const CPR_PICKS = [["delve", "ONE RUN A WEEK"], ["word", "A NEW WORD EVERY DAY"]];
+  const CPR_PICKS = [["delve", "A NEW RUN EVERY WEEK"], ["word", "A NEW WORD EVERY DAY"]];
   const cprSelection = (gs) => {
     const free = gs.view === "pass" ? [] : CPR_SHOWN.filter((k) => CPR_STAGE[k] !== "pass");
     return { free };

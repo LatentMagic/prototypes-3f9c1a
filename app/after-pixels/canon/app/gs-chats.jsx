@@ -62,9 +62,9 @@ GS_CHATS = {
       gscAi('guess', 'You found it in 3 of 6 guesses, and you didn’t use your hint.', null, [{ type: 'mono', text: 'Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess' }])] },
   ],
   groups: [
-    { cap: 'Sixteen words hide four groups of four.', turns: [gscU('Play Daily Groups on After Pixels'),
+    { cap: 'Ask for today’s groups and the board opens with all sixteen words.', turns: [gscU('Play Daily Groups on After Pixels'),
       gscAi('daily-groups', 'Find four groups of four. You can make four mistakes.', [{ type: 'wordboard', words: ['BASS', 'PIKE', 'FROST', 'RAIL', 'CARP', 'CHORD', 'MIST', 'GATE', 'SOLE', 'SCALE', 'HAIL', 'POST', 'PERCH', 'NOTE', 'SLEET', 'PANEL'] }])] },
-    { cap: 'Each set of four goes to the engine, which checks it and counts your mistakes.', turns: [gscU('Bass, pike, carp, sole'), gscAi('daily-groups', 'One away. 3 mistakes left.'),
+    { cap: 'One word out still costs a mistake. Get all four and the group is solved.', turns: [gscU('Bass, pike, carp, sole'), gscAi('daily-groups', 'One away. 3 mistakes left.'),
       gscU('Pike, carp, sole, perch'), gscAi('daily-groups', 'Three groups to go.', [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }], words: ['BASS', 'FROST', 'RAIL', 'CHORD', 'MIST', 'GATE', 'SCALE', 'HAIL', 'POST', 'NOTE', 'SLEET', 'PANEL'] }])] },
     { cap: 'Afterwards, your AI explains the groups.', turns: [gscU('Rail, gate, post, panel'),
       gscAi('daily-groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }, { label: 'Weather', words: ['FROST', 'MIST', 'HAIL', 'SLEET'] }, { label: 'Music', words: ['BASS', 'CHORD', 'SCALE', 'NOTE'] }, { label: 'Parts of a fence', words: ['RAIL', 'GATE', 'POST', 'PANEL'] }], words: [] }])] },

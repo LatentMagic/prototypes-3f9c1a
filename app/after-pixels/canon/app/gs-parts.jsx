@@ -94,7 +94,7 @@ const GS_COMPARE = [
   { name: 'Your results and history', free: true },
   { name: 'Sharing a result', free: true },
   { name: 'Play earlier editions', free: false },
-  { name: 'The full game catalog', free: false },
+  { name: 'The full game catalogue', free: false },
   { name: 'New releases', free: false },
 ];
 const GsCmpMark = ({ on }) => on
