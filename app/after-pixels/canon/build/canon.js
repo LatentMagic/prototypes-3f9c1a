@@ -2081,7 +2081,7 @@
     };
     GS_HERO_CHAT = GS_CHATS.delve.flatMap((c) => c.turns);
   }
-  const GS_TAKEN = "That username is taken";
+  const GS_TAKEN = "That username is taken.";
   const gsUsernameRules = (current) => {
     const t = (v) => v.trim();
     return [
