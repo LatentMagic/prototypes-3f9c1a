@@ -3012,7 +3012,7 @@
     const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(" · "));
     return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : "", tier: "use", foe: dlStruck(parts), hp: hp ? +hp[1] : null };
   };
-  const DL_END = { won: "The winning blow", fallen: "The last blow", overrun: "The last roll", live: "Latest roll" };
+  const DL_END = { won: "Winning blow", fallen: "Last blow", overrun: "Last roll", live: "Latest roll" };
   const dlMoments = (T, end) => {
     if (!T.length) return [];
     const last = T[T.length - 1];
