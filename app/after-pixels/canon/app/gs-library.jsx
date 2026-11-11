@@ -257,7 +257,7 @@ export const lbCopy = (lines) => {
 const LbCopyBtn = ({ lines }) => {
   const [done, setDone] = React.useState(false);
   React.useEffect(() => { if (!done) return undefined; const t = setTimeout(() => setDone(false), 2400); return () => clearTimeout(t); }, [done]);
-  return <DS.Button variant="main" done={done} doneLabel="Copied" onClick={() => { lbCopy(lines); setDone(true); }}>Copy</DS.Button>;
+  return <DS.Button variant="main" done={done} doneLabel="Copied" onClick={() => { Promise.resolve(lbCopy(lines)).then((ok) => ok && setDone(true)); }}>Copy</DS.Button>;
 };
 // Share on a library game page: the page's own button, the session page's pop-up (GsSharePopup).
 export const LbShare = ({ lines }) => {

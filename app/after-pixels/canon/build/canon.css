@@ -611,6 +611,8 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
 .mcp-crow-nav{grid-column:2;grid-row:1;display:flex;gap:4px}
 .mcp-crow-sub{grid-column:1/-1;margin:0;color:var(--muted);text-wrap:pretty}
+/* KEEP: a row's sentence belongs to its cards, so it sits closer to them than a heading alone does. */
+.mcp-crow:has(>.mcp-crow-head>.mcp-crow-sub){gap:var(--space-2)}
 .mcp-crow-nav:has(+.mcp-crow-sub){grid-row:2;align-self:center;margin-block:-10px}
 .mcp-crow-nav+.mcp-crow-sub{grid-column:1;grid-row:2;align-self:center}
 .mcp-crow-btn{width:44px;height:44px;display:inline-grid;place-items:center;flex:none;background:none;border:0;padding:0;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease)}
@@ -1018,7 +1020,7 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8.is-3b .dv8-meters { padding: 0 16px; }
 /* The fold: a button over the whole header, so a tap anywhere on it folds; the name and bars stay beneath it, readable to a screen reader. Only the chevron is drawn, centred on the header at its right end, inside the 64px the header keeps clear for it. */
 .dl-fold { position: absolute; inset: 0; display: block; width: 100%; padding: 0; margin: 0; background: none; border: 0; color: var(--text); cursor: pointer; }
-.dl-fold svg { position: absolute; right: 28px; top: calc(50% - 10px); transform: rotate(-90deg); }
+.dl-fold svg { position: absolute; right: 22px; top: calc(50% - 10px); transform: rotate(-90deg); }
 .dv8.is-3b.is-tap .dl-fold svg { transition: transform var(--dur-fast, .15s); }
 .dl-fold[aria-expanded="false"] svg { transform: rotate(90deg); }
 .dl-fold:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
@@ -1072,10 +1074,14 @@ button.mcp-cb-ent{cursor:pointer}
   .dv8.is-3b .esx-card.dl-tab { flex-direction: row; justify-content: flex-start; gap: 12px; height: 40px; padding: 0 12px; }
   .dv8.is-3b .dl-tab-w { font-size: var(--size-2xs); letter-spacing: .07em; }
 }
+/* KEEP: as a list (a sheet 340px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 341px the tabs are squares across and the column is 56px. */
+@container dv4 (max-width: calc(340px + 32px)) {
+  .dvp-rows { --dvp-fig: 50px; }
+}
 /* A card's rows: the figure on the left, the name and its line on the right. */
 .dvp-rows { display: grid; margin-top: 8px; }
 /* KEEP: the icon box sits vertically centred on the whole text block (name plus grey line), not on the name alone. */
-.dvp-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 0; }
+.dvp-row { display: grid; grid-template-columns: var(--dvp-fig, 56px) minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 0; }
 .dvp-row + .dvp-row { border-top: 1px solid var(--line); }
 .dvp-fig .dv4-uses { gap: 4px; }
 .dvp-fig .dv4-uses i { width: 14px; height: 14px; }
@@ -1093,18 +1099,19 @@ button.mcp-cb-ent{cursor:pointer}
   .dvp-fig .dv8-num { font-size: 18px; }
 }
 @container dv4 (max-width: calc(240px + 32px)) {
-  .dvp-row { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
+  .dvp-row { gap: 8px; }
 }
 /* ---- the tabs: Escape's tap cards (esx-card), each with its icon centred above its word and no figure ---- */
 .esx-card.dl-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px 2px; text-align: center; }
 .dl-tab-w { font: 600 var(--size-2xs)/1 var(--font-text); text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .dl-tab.is-open .dl-tab-w { color: var(--text); }
 /* The open tab's panel, under the row. */
-/* KEEP: in a Pack, Ability or Fight panel the last row ends 24px above the card's edge (its own 12px and the panel's 12px), the same 24px that separates its rows, so no extra space sits under it. Stats and Advantage show their cells instead, which end 12px above the edge. */
+/* KEEP: in a Pack, Ability or Fight panel every row's content is centred between its hairlines, the first and last rows included: the rows' own 12px is all the space above the first row and below the last, and the panel adds none. Stats and Advantage show their cells instead, which sit 12px in from the panel's hairline and the card's edge. */
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+.dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
 /* ---- The route as a list of closed rooms (a run card under 610px: gs-delve.jsx, DL_LIST_BELOW). ---- */
-/* KEEP: as a list the run card has no side padding of its own: the result and each room carry the 16px gutter, as the hero sheet's parts do, so a room's hover band runs edge to edge of the card like the sheet header's, and the rooms' chevrons sit 28px from the edge, in line with the sheet's chevron above. */
+/* KEEP: as a list the run card has no side padding of its own: the result and each room carry the 16px gutter, as the hero sheet's parts do, so a room's hover band runs edge to edge of the card like the sheet header's, and the rooms' chevrons sit 28px from the edge. */
 .dv2.is-list { padding: 16px 0; }
 .dv2.is-list > .dv7r-band { padding: 0 16px; }
 .dvL-list { position: relative; isolation: isolate; display: grid; min-width: 0; }
@@ -1131,8 +1138,8 @@ button.dvL-head:focus-visible::before { outline: 2px solid var(--off-white); out
 /* KEEP: hover (mouse only) lifts the whole line to the pop-up fill, the hero sheet header's hover, and turns the chevron to full text colour; a press lifts it a step further. An open room's dice and held roll take no band: the line alone is the control. */
 @media (hover: hover) { .dvL-top.is-tap:hover { background: var(--popup); } .dvL-top.is-tap:hover button.dvL-head svg { color: var(--text); } }
 .dvL-top.is-tap:has(button.dvL-head:active) { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
-/* KEEP: the chevron points down on a shut room and turns 180° to point up as it opens, on the dropdown's 220ms curve, and never moves: it is centred on the 48px line in every state. */
-button.dvL-head svg { position: absolute; right: 28px; top: 14px; color: var(--muted); transform: rotate(90deg); transition: transform var(--time-dropdown) var(--ease), color var(--time-press) var(--ease); }
+/* KEEP: the chevron points down on a shut room and turns 180° to point up as it opens, on the dropdown's 220ms curve, and never moves: it is centred on the 48px line in every state, and sits 22px from the right edge, in line with the sheet header's chevron. */
+button.dvL-head svg { position: absolute; right: 22px; top: 14px; color: var(--muted); transform: rotate(90deg); transition: transform var(--time-dropdown) var(--ease), color var(--time-press) var(--ease); }
 button.dvL-head[aria-expanded="true"] svg { transform: rotate(270deg); color: var(--text); }
 /* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. The tally fades out as its room opens, since the opened dice repeat it. */
 .dvL-tally { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-left: auto; min-width: 0; transition: opacity var(--time-swap) var(--ease), visibility 0s; }
@@ -2270,6 +2277,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-h1.gs-h1-home > span { display: block; }
 .gs-hero3 .gs-hero-sub { max-width: 56ch; }
 .gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-works p { text-wrap: pretty; }
 .gs-br-wide { display: none; }
 .gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
 .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
@@ -2548,7 +2556,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
 .hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
 @container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
-.hw-apps .mcp-crow-sub { max-width: 70ch; }
 .hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
 .hw-app > svg { flex: none; }
 .hw-app > span { max-width: 100%; overflow-wrap: normal; }
@@ -2583,9 +2590,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @container hw-card (max-width: 420px) { .gs-copy.is-address { grid-template-columns: minmax(0, 1fr); } .gs-copy.is-address .mcp-btn { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
-/* Start: two ChatPictures in the system's CardRow. The typed line is a SpeechBubble in place of ChatPicture's own user message,
+/* Start: three ChatPictures in the system's CardRow, at the system's own widths (three side by side from about 1000px, else scrolling). The typed line is a SpeechBubble in place of ChatPicture's own user message,
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
-@container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
 .hw-chatfig > h3 { margin: 0; }
 .hw-start .mcp-chat-me:has(> .mcp-say) { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
 /* KEEP: inside the chat pictures the play prompts take the same light panel as the games list (the chat part's --cb-panel), not pure white, so they match it on the chat's off-white ground. */
@@ -2632,8 +2638,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-band-on .mcp-say { font-size: clamp(22px, 6.4cqi, 30px); line-height: 1.2; padding: .3em .8em; margin: 0; box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
 /* Trial (the user, 2026-11-11, "built quick and we can revert"): Start's chats drop the scroll fade; the list is cut clean and the chevron stays. */
 .hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
-/* KEEP: Setup and Start are CardRows, whose title is padded to sit level with the row's 44px arrows; the row moves up by that padding so the space above these headings matches the page's other section headings. */
-.hw-apps > .mcp-crow-head, .hw-start > .mcp-crow-head { margin-top: calc((1.15 * 24px - 44px) / 2); }
 
 /* KEEP: the refused-copy line is a small muted line under the control; it takes no room until a copy is refused. */
 .gs-copy-refused { display: block; margin: 0; }
