@@ -1109,7 +1109,7 @@
     today: "Tuesday 6 October",
     link: "https://play.afterpixels.com",
     purchase: "Purchases only ever happen on this site; your AI will never ask you to pay.",
-    works: "ChatGPT · Claude · Gemini · Grok · Muse · OpenClaw · Hermes Agent, and more"
+    works: "ChatGPT · Claude · Gemini · Grok · Muse · and more"
   };
   const GS_SVG = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + "</svg>";
   const GS_ART = {
@@ -7149,12 +7149,9 @@
     { id: "claude", name: "Claude", route: "settings", noun: "custom connector", look: "Add custom connector" },
     // Gemini's form has no name field, so it skips "name it After Pixels" (checked by the user, 2026-11-11).
     { id: "gemini", name: "Gemini", route: "settings", noun: "custom app", look: "Custom", via: "Connected apps", noName: true },
-    { id: "grok", name: "Grok", route: "settings", noun: "custom connector", look: "New Connector", subs: ["grok", "grokbot"] },
+    { id: "grok", name: "Grok", route: "settings", noun: "custom connector", look: "Custom", via: "New Connector", subs: ["grok", "grokbot"] },
     { id: "grokbot", name: "Grok Bot", route: "chat", sub: true },
     { id: "muse", name: "Muse", route: "chat" },
-    // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command and starting it again the last.
-    { id: "openclaw", name: "OpenClaw", route: "command", first: "openclaw gateway stop", last: "openclaw gateway start", cmd: (url) => "openclaw mcp add after-pixels --url " + url + " --transport streamable-http --auth oauth", login: "openclaw mcp login after-pixels" },
-    { id: "hermes", name: "Hermes Agent", tile: "Hermes", route: "command", remote: true, cmd: (url) => "hermes mcp add after-pixels --url " + url + " --auth oauth" },
     { id: "other", name: "Other", route: "settings" }
   ];
   const gsApp = (id) => GS_APPS.find((a) => a.id === id);
@@ -7164,9 +7161,7 @@
     claude: /* @__PURE__ */ React$1.createElement("path", { d: "M20 8 L32 20 L20 32 L8 20 Z" }),
     gemini: /* @__PURE__ */ React$1.createElement("path", { d: "M8 28 A12 12 0 0 1 32 28 Z" }),
     grok: /* @__PURE__ */ React$1.createElement("rect", { x: "11", y: "11", width: "18", height: "18" }),
-    muse: /* @__PURE__ */ React$1.createElement("path", { d: "M10 10 L30 10 A20 20 0 0 1 10 30 Z" }),
-    openclaw: /* @__PURE__ */ React$1.createElement("path", { d: "M9 31 L31 31 L31 9 Z" }),
-    hermes: /* @__PURE__ */ React$1.createElement("path", { d: "M16 9 L28 9 L24 31 L12 31 Z" })
+    muse: /* @__PURE__ */ React$1.createElement("path", { d: "M10 10 L30 10 A20 20 0 0 1 10 30 Z" })
   };
   const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React$1.createElement("svg", { className: "hw-mark", viewBox: "6 6 28 28", width: size, height: size, "aria-hidden": "true", focusable: "false" }, GS_AI_MARK[ai] ? /* @__PURE__ */ React$1.createElement("g", { fill: "currentColor" }, GS_AI_MARK[ai]) : /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "10", fill: "none", stroke: "currentColor", strokeWidth: "2.5" }));
   const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
@@ -7210,8 +7205,7 @@
       return () => clearTimeout(t);
     }, [done]);
     return /* @__PURE__ */ React$1.createElement(DS.Button, { block, done, doneLabel: "Copied", onClick: () => {
-      lbCopy([text]);
-      setDone(true);
+      Promise.resolve(lbCopy([text])).then((ok) => ok && setDone(true));
     } }, label || "Copy prompt");
   };
   const GsHowLink = ({ label }) => {
@@ -7226,7 +7220,7 @@
     s.addRange(r);
   };
   const gsRefusedLine = (what) => "Copy didn’t work. Select the " + what + " and copy it yourself.";
-  const GsCopyBox = ({ text, label, address, what = "command" }) => {
+  const GsCopyBox = ({ text, label, address, what }) => {
     const [done, setDone] = React$1.useState(false);
     const [refused, setRefused] = React$1.useState(false);
     React$1.useEffect(() => setRefused(false), [text]);
@@ -7274,22 +7268,16 @@
   const GsCopyBubble = ({ children, wrap, edge }) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy: true, edge, onCopy: (t) => lbCopy([t]) }, children);
   const gsPermStep = (a) => "If " + (a.id === "other" ? "your AI" : a.name) + " asks before each move, you may be able to change that in its permissions.";
   const GS_SIGN_IN = "sign in with your After Pixels account.";
-  const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : a.route === "chat" ? ["The message to send", "Add this MCP server: " + GS.link] : ["The command to run", a.first || a.cmd(GS.link)];
+  const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : ["The message to send", "Add this MCP server: " + GS.link];
   const gsAppSteps = (a) => [
     ...a.route === "settings" ? [
       a.id === "other" ? "In your app, find where you add a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", a.via && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("b", null, a.via), ", then "), /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
       a.noName ? "Paste the address." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Paste the address and name it ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), "."),
       // The step before names it After Pixels, so the name isn't repeated; Gemini's step before has no name, so its step says it (the user, 2026-11-11).
       a.noName ? "Connect, then sign in to your After Pixels account." : "Connect, then sign in to your account."
-    ] : a.route === "chat" ? [
+    ] : [
       "In a chat with " + a.name + ", send the message.",
       "Open the link " + a.name + " sends, and " + GS_SIGN_IN
-    ] : [
-      a.first ? "Stop " + a.name + "’s Gateway." : "Run the command.",
-      ...a.first ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this command."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.cmd(GS.link), label: "The command to run" }))] : [],
-      a.login ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this to sign in, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.login, label: "The sign-in command" })) : "Open the link it prints, and " + GS_SIGN_IN,
-      ...a.remote ? ["On a remote machine, copy the address the browser ends on back into the terminal."] : [],
-      ...a.last ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Start ", a.name, "’s Gateway again."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.last, label: "The command to start the Gateway" }))] : []
     ],
     gsPermStep(a)
   ];
@@ -7334,7 +7322,7 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", ref: wrap }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Setup", sub: ask, label: "Which app do you use?", className: "hw-apps" }, GS_APPS.filter((x) => !x.sub).map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "hw-app", "aria-pressed": tile === x.id, "aria-expanded": tile === x.id, "aria-controls": "hw-pick", "aria-label": x.name, onClick: (e) => {
       setTile(tile === x.id ? null : x.id);
       if (tile !== x.id) gsRevealTile(e.currentTarget);
-    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.tile || x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : a.route === "chat" ? "message" : "command" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet.")))));
+    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : "message" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet.")))));
   };
   const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
   const GS_START_DELVE = {
@@ -7356,7 +7344,7 @@
     return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "open", go: false }, t === "FIRST" ? "First " + g.ed[0] + " free" : "Pass");
   };
   const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(GsCopyBubble, { wrap: true, edge: true }, say);
-  const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
+  const GsStartChat = ({ title, say, turns, caption, plain }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: plain ? say : gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
   const GsStart = () => {
     const gs = useGs();
     const d = GS_START_DELVE;
@@ -7365,7 +7353,7 @@
       {
         title: "In any chat, type",
         say: gsPromptText({ kind: "games" }),
-        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI shows you the games to pick from. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("games") }, "See the games")),
+        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI shows you the games, and you pick one to play. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("games") }, "See the games")),
         turns: [{ from: "ai", text: "Here are today’s games. Pick one, or type a game’s name.", after: [{ type: "menu", label: "Today’s games", items: GS_START_GAMES.map((gid) => {
           const g = GS_GAMES[gid];
           return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
@@ -7379,6 +7367,21 @@
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
         turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
       }
+    ), /* @__PURE__ */ React$1.createElement(
+      GsStartChat,
+      {
+        plain: true,
+        title: "For a reminder or a hint, type",
+        say: "Remind me how accusing works in Accuse",
+        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Ask your AI how a game works, or for a hint when you’re stuck. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.mystery.route) }, "Go to Accuse")),
+        turns: [
+          { from: "ai", text: "Every clue is already given, so you work it out from those. You get one accusation: who, with what and where. I’ll ask you to confirm it before it counts." },
+          { from: "user", text: "I’m stuck" },
+          { from: "ai", text: "I can ask the game for a hint, which shows on your shared result. Or we can talk it through, and you do the working out. Which would you like?" },
+          { from: "user", text: "A hint, please" },
+          { from: "ai", blocks: [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }], text: "You have 1 hint left." }
+        ]
+      }
     )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type ", /* @__PURE__ */ React$1.createElement("b", null, "Play After Pixels"), " again to pick up an unfinished game where you left off.")));
   };
   const GsAgainGlyph = () => /* @__PURE__ */ React$1.createElement("svg", { className: "mcp-ico hw-chg-ic", viewBox: "0 0 24 24", width: "20", height: "20", "aria-hidden": "true", focusable: "false", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: "M19 12a7 7 0 1 1-2.1-5" }), /* @__PURE__ */ React$1.createElement("path", { d: "M17.5 3v4.2h-4.2" }));
@@ -7390,10 +7393,10 @@
   ];
   const GS_TOP_ART = ["word", "escape", "delve", "casebook", "where", "barrow", "derelict", "hunter", "murder"];
   const GsBandCovers = () => /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-covers", "aria-hidden": "true" }, [...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: "hw-band-cover", dangerouslySetInnerHTML: { __html: GS_ART[a].svg } }) : null));
-  const GsTop = () => /* @__PURE__ */ React$1.createElement("header", { className: "hw-top2" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "Add After Pixels once to ChatGPT, Claude or another AI app. Then, in any chat, type"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-band" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-games" }, /* @__PURE__ */ React$1.createElement(GsBandCovers, null), /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-on" }, /* @__PURE__ */ React$1.createElement(GsCopyBubble, null, gsPromptText({ kind: "games" }))))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-t-after" }, "Pick a game, and your AI plays it with you."));
+  const GsTop = () => /* @__PURE__ */ React$1.createElement("header", { className: "hw-top2" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "Add ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), " once to ChatGPT, Claude or another AI app. Then, in any chat, type"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-band" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-games" }, /* @__PURE__ */ React$1.createElement(GsBandCovers, null), /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-on" }, /* @__PURE__ */ React$1.createElement(GsCopyBubble, null, gsPromptText({ kind: "games" }))))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-t-after" }, "Pick a game, and your AI plays it with you."));
   const GsConnect = () => {
     const gs = useGs();
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsTop, null), /* @__PURE__ */ React$1.createElement("section", { id: "hw-setup", className: "hw-sec" }, /* @__PURE__ */ React$1.createElement(GsSetup, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-start", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsStart, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-playing", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", tabIndex: -1 }, "Playing"), /* @__PURE__ */ React$1.createElement(DS.StepCards, null, GS_HW_PLAY.map(([title, line], i) => /* @__PURE__ */ React$1.createElement(DS.StepCard, { key: title, art: /* @__PURE__ */ React$1.createElement("img", { src: "assets/how-it-works/step-" + (i + 1) + ".svg", alt: "" }), title, line }))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-more" }, "Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others give you their first edition free. Everything else comes with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".")), /* @__PURE__ */ React$1.createElement("section", { className: "hw-sec gs-stack-md", "aria-labelledby": "hw-who" }, /* @__PURE__ */ React$1.createElement("h2", { id: "hw-who", className: "mcp-t-sec" }, "Who does what"), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-who" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "Your AI"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "The game engine"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "The game sets the rules, throws the dice and keeps your record. If your AI ever says otherwise, the game’s record is the one that counts."))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. We never charge for that usage.")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "To disconnect, remove After Pixels where you added it. Your results and history stay in your account.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Stuck? Write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and tell us which app you use.")))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsTop, null), /* @__PURE__ */ React$1.createElement("section", { id: "hw-setup", className: "hw-sec" }, /* @__PURE__ */ React$1.createElement(GsSetup, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-start", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsStart, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-playing", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", tabIndex: -1 }, "Playing"), /* @__PURE__ */ React$1.createElement(DS.StepCards, null, GS_HW_PLAY.map(([title, line], i) => /* @__PURE__ */ React$1.createElement(DS.StepCard, { key: title, art: /* @__PURE__ */ React$1.createElement("img", { src: "assets/how-it-works/step-" + (i + 1) + ".svg", alt: "" }), title, line }))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-more" }, "Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others give you their first edition free. Everything else comes with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".")), /* @__PURE__ */ React$1.createElement("section", { className: "hw-sec gs-stack-md", "aria-labelledby": "hw-who" }, /* @__PURE__ */ React$1.createElement("h2", { id: "hw-who", className: "mcp-t-sec" }, "Who does what"), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-who" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "Your AI"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "The game engine"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "The game sets the rules, throws the dice and keeps your record. If your AI ever says otherwise, the game’s record is the one that counts."))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. We never charge for that usage.")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "To disconnect, remove ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), " where you added it. Your results and history stay in your account.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Stuck? Write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and tell us which app you use.")))));
   };
   const GsPlayBox = ({ id }) => {
     const gs = useGs();
@@ -7625,14 +7628,7 @@
       if (!open) setCopied(false);
     }, [open]);
     const copy = () => {
-      if (lbCopy) lbCopy(lines);
-      else {
-        try {
-          navigator.clipboard && navigator.clipboard.writeText(lines.join("\n"));
-        } catch (e) {
-        }
-      }
-      setCopied(true);
+      Promise.resolve(lbCopy(lines)).then((ok) => ok && setCopied(true));
     };
     return /* @__PURE__ */ React$1.createElement(
       DS.Popup,

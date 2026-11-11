@@ -611,6 +611,8 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}
 .mcp-crow-nav{grid-column:2;grid-row:1;display:flex;gap:4px}
 .mcp-crow-sub{grid-column:1/-1;margin:0;color:var(--muted);text-wrap:pretty}
+/* KEEP: a row's sentence belongs to its cards, so it sits closer to them than a heading alone does. */
+.mcp-crow:has(>.mcp-crow-head>.mcp-crow-sub){gap:var(--space-2)}
 .mcp-crow-nav:has(+.mcp-crow-sub){grid-row:2;align-self:center;margin-block:-10px}
 .mcp-crow-nav+.mcp-crow-sub{grid-column:1;grid-row:2;align-self:center}
 .mcp-crow-btn{width:44px;height:44px;display:inline-grid;place-items:center;flex:none;background:none;border:0;padding:0;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity var(--time-press) var(--ease)}
@@ -2275,6 +2277,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-h1.gs-h1-home > span { display: block; }
 .gs-hero3 .gs-hero-sub { max-width: 56ch; }
 .gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-works p { text-wrap: pretty; }
 .gs-br-wide { display: none; }
 .gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
 .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
@@ -2553,7 +2556,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
 .hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
 @container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
-.hw-apps .mcp-crow-sub { max-width: 70ch; }
 .hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
 .hw-app > svg { flex: none; }
 .hw-app > span { max-width: 100%; overflow-wrap: normal; }
@@ -2588,9 +2590,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @container hw-card (max-width: 420px) { .gs-copy.is-address { grid-template-columns: minmax(0, 1fr); } .gs-copy.is-address .mcp-btn { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
-/* Start: two ChatPictures in the system's CardRow. The typed line is a SpeechBubble in place of ChatPicture's own user message,
+/* Start: three ChatPictures in the system's CardRow, at the system's own widths (three side by side from about 1000px, else scrolling). The typed line is a SpeechBubble in place of ChatPicture's own user message,
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
-@container mcp-crow (min-width: 640px) { .mcp-crow.is-chat.hw-start .mcp-crow-track { grid-auto-columns: calc((100% - var(--space-5)) / 2); } }
 .hw-chatfig > h3 { margin: 0; }
 .hw-start .mcp-chat-me:has(> .mcp-say) { background: none; padding: 0; max-width: 100%; font-size: 20px; line-height: 1.4; }
 /* KEEP: inside the chat pictures the play prompts take the same light panel as the games list (the chat part's --cb-panel), not pure white, so they match it on the chat's off-white ground. */
@@ -2637,8 +2638,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-band-on .mcp-say { font-size: clamp(22px, 6.4cqi, 30px); line-height: 1.2; padding: .3em .8em; margin: 0; box-shadow: 0 6px 20px rgba(0, 0, 0, .35); }
 /* Trial (the user, 2026-11-11, "built quick and we can revert"): Start's chats drop the scroll fade; the list is cut clean and the chevron stays. */
 .hw-start .mcp-chat-body[data-more] { -webkit-mask-image: none; mask-image: none; }
-/* KEEP: Setup and Start are CardRows, whose title is padded to sit level with the row's 44px arrows; the row moves up by that padding so the space above these headings matches the page's other section headings. */
-.hw-apps > .mcp-crow-head, .hw-start > .mcp-crow-head { margin-top: calc((1.15 * 24px - 44px) / 2); }
 
 /* KEEP: the refused-copy line is a small muted line under the control; it takes no room until a copy is refused. */
 .gs-copy-refused { display: block; margin: 0; }
