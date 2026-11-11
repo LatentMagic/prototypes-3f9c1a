@@ -8070,7 +8070,7 @@
     { name: "Your results and history", free: true },
     { name: "Sharing a result", free: true },
     { name: "Play earlier editions", free: false },
-    { name: "The full game catalog", free: false },
+    { name: "The full game catalogue", free: false },
     { name: "New releases", free: false }
   ];
   const GsCmpMark = ({ on }) => on ? /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Included")) : /* @__PURE__ */ React$1.createElement("span", { className: "gs-cmp-cell gs-muted" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "–"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-vh" }, "Not included"));
