@@ -31,33 +31,25 @@ const GS_APPS = [
 const gsApp = (id) => GS_APPS.find((a) => a.id === id);
 const GS_SUB_LABEL = { grok: 'Grok app', grokbot: 'Grok Bot' };
 // KEEP: each app shows a mark of our own, never its real logo: the owners' terms need permission we are not asking for
-// (the user, 2026-11-11). A mark is one cover shape on a cover-colour box; every box-and-shape pair is different, and none
-// copies an app's logo. Other is a quiet ring on a plain box, so it does not outshout the apps (the user, 2026-11-11: "other is
-// maybe a bit too aggressive"). A tile shows `tile` in place of `name` where the full name would wrap (the user: "make hermes
-// agent say hermes").
+// (the user, 2026-11-11). A mark is one cover shape, every app's different and none copying its logo, drawn in the tile's
+// text colour with no box, so the picker carries no colour of its own (the user, 2026-11-11: "one colour is aboslute bloody
+// perfection"). Other is the only outline. A tile shows `tile` in place of `name` where the full name would wrap (the user:
+// "make hermes agent say hermes").
 const GS_AI_MARK = {
-  chatgpt: ['forest', 'green', <circle cx="20" cy="20" r="10" />],
-  claude: ['wine', 'orange', <path d="M20 8 L32 20 L20 32 L8 20 Z" />],
-  gemini: ['indigo', 'lilac', <path d="M8 28 A12 12 0 0 1 32 28 Z" />],
-  grok: ['indigo', 'cream', <rect x="11" y="11" width="18" height="18" />],
-  muse: ['wine', 'amber', <path d="M10 10 L30 10 A20 20 0 0 1 10 30 Z" />],
-  openclaw: ['forest', 'orange', <path d="M9 31 L31 31 L31 9 Z" />],
-  hermes: ['indigo', 'teal', <path d="M16 9 L28 9 L24 31 L12 31 Z" />],
+  chatgpt: <circle cx="20" cy="20" r="10" />,
+  claude: <path d="M20 8 L32 20 L20 32 L8 20 Z" />,
+  gemini: <path d="M8 28 A12 12 0 0 1 32 28 Z" />,
+  grok: <rect x="11" y="11" width="18" height="18" />,
+  muse: <path d="M10 10 L30 10 A20 20 0 0 1 10 30 Z" />,
+  openclaw: <path d="M9 31 L31 31 L31 9 Z" />,
+  hermes: <path d="M16 9 L28 9 L24 31 L12 31 Z" />,
 };
-const GsAiLogo = ({ ai, size = 20 }) => {
-  const m = GS_AI_MARK[ai];
-  return (
-    <svg className="hw-mark" viewBox="0 0 40 40" width={size} height={size} aria-hidden="true" focusable="false">
-      {m ? <>
-        <rect width="40" height="40" fill={'var(--cover-bg-' + m[0] + ')'} />
-        <g fill={'var(--cover-' + m[1] + ')'}>{m[2]}</g>
-      </> : <>
-        <rect width="40" height="40" fill="var(--line)" />
-        <circle cx="20" cy="20" r="9" fill="none" stroke="var(--muted)" strokeWidth="2" />
-      </>}
-    </svg>
-  );
-};
+const GsAiLogo = ({ ai, size = 20 }) => (
+  <svg className="hw-mark" viewBox="6 6 28 28" width={size} height={size} aria-hidden="true" focusable="false">
+    {GS_AI_MARK[ai] ? <g fill="currentColor">{GS_AI_MARK[ai]}</g>
+      : <circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" strokeWidth="2.5" />}
+  </svg>
+);
 
 // ---- Prompts (drafts, not ratified). A request is { kind: 'games' } | { kind: 'game', gid } | { kind: 'edition', e }. ----
 const gsEdPromptName = (e) => (e.title ? GS_GAMES[e.gid].name + ', “' + e.title + '”' : GS_GAMES[e.gid].name + ' #' + e.n + (e.title ? ', “' + e.title + '”' : ''));

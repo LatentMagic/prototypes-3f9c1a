@@ -6628,18 +6628,15 @@
   const gsApp = (id) => GS_APPS.find((a) => a.id === id);
   const GS_SUB_LABEL = { grok: "Grok app", grokbot: "Grok Bot" };
   const GS_AI_MARK = {
-    chatgpt: ["forest", "green", /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "10" })],
-    claude: ["wine", "orange", /* @__PURE__ */ React$1.createElement("path", { d: "M20 8 L32 20 L20 32 L8 20 Z" })],
-    gemini: ["indigo", "lilac", /* @__PURE__ */ React$1.createElement("path", { d: "M8 28 A12 12 0 0 1 32 28 Z" })],
-    grok: ["indigo", "cream", /* @__PURE__ */ React$1.createElement("rect", { x: "11", y: "11", width: "18", height: "18" })],
-    muse: ["wine", "amber", /* @__PURE__ */ React$1.createElement("path", { d: "M10 10 L30 10 A20 20 0 0 1 10 30 Z" })],
-    openclaw: ["forest", "orange", /* @__PURE__ */ React$1.createElement("path", { d: "M9 31 L31 31 L31 9 Z" })],
-    hermes: ["indigo", "teal", /* @__PURE__ */ React$1.createElement("path", { d: "M16 9 L28 9 L24 31 L12 31 Z" })]
+    chatgpt: /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "10" }),
+    claude: /* @__PURE__ */ React$1.createElement("path", { d: "M20 8 L32 20 L20 32 L8 20 Z" }),
+    gemini: /* @__PURE__ */ React$1.createElement("path", { d: "M8 28 A12 12 0 0 1 32 28 Z" }),
+    grok: /* @__PURE__ */ React$1.createElement("rect", { x: "11", y: "11", width: "18", height: "18" }),
+    muse: /* @__PURE__ */ React$1.createElement("path", { d: "M10 10 L30 10 A20 20 0 0 1 10 30 Z" }),
+    openclaw: /* @__PURE__ */ React$1.createElement("path", { d: "M9 31 L31 31 L31 9 Z" }),
+    hermes: /* @__PURE__ */ React$1.createElement("path", { d: "M16 9 L28 9 L24 31 L12 31 Z" })
   };
-  const GsAiLogo = ({ ai, size = 20 }) => {
-    const m = GS_AI_MARK[ai];
-    return /* @__PURE__ */ React$1.createElement("svg", { className: "hw-mark", viewBox: "0 0 40 40", width: size, height: size, "aria-hidden": "true", focusable: "false" }, m ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { width: "40", height: "40", fill: "var(--cover-bg-" + m[0] + ")" }), /* @__PURE__ */ React$1.createElement("g", { fill: "var(--cover-" + m[1] + ")" }, m[2])) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("rect", { width: "40", height: "40", fill: "var(--line)" }), /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "9", fill: "none", stroke: "var(--muted)", strokeWidth: "2" })));
-  };
+  const GsAiLogo = ({ ai, size = 20 }) => /* @__PURE__ */ React$1.createElement("svg", { className: "hw-mark", viewBox: "6 6 28 28", width: size, height: size, "aria-hidden": "true", focusable: "false" }, GS_AI_MARK[ai] ? /* @__PURE__ */ React$1.createElement("g", { fill: "currentColor" }, GS_AI_MARK[ai]) : /* @__PURE__ */ React$1.createElement("circle", { cx: "20", cy: "20", r: "10", fill: "none", stroke: "currentColor", strokeWidth: "2.5" }));
   const gsEdPromptName = (e) => e.title ? GS_GAMES[e.gid].name + ", “" + e.title + "”" : GS_GAMES[e.gid].name + " #" + e.n + (e.title ? ", “" + e.title + "”" : "");
   const gsPromptText = (r) => r.kind === "games" ? "Play After Pixels" : "Play " + (r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name) + " on After Pixels";
   const gsPromptTitle = (r) => r.kind === "edition" ? gsEdPromptName(r.e) : GS_GAMES[r.gid].name;
