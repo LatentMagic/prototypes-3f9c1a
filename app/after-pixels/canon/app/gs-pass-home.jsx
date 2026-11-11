@@ -46,7 +46,7 @@ export const GsPick = ({ id, label }) => {
 // The line under Available games: what's free, from the staging (a third free daily reads "Three" with no copy edit), then "the Pass" as its only link.
 const CprHomeLine = () => {
   const gs = useGs(); const c = cprPassLine();
-  return <>{c.p1.replace(/ with your account\. $/, ' free. ')}{c.p1 ? 'Everything else' : 'Everything'} with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</>;
+  return <>{c.p1.replace(/ with your account\. $/, ' free. ').replace(/(he) start of select games/i, '$1 first edition of select games')}{c.p1 ? 'Everything else' : 'Everything'} comes with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</>;
 };
 // KEEP: the Pass card is first in the row, so a phone shows it without scrolling. The whole card opens Pricing; the price is plain text in the chip line.
 // Salvage's board is too fine to read at mosaic size, so Guess takes its place (owner, 2026-10-21).
@@ -87,36 +87,40 @@ export const GsHome = () => {
       <section className="gs-hero3">
         <div className="gs-hero-copy">
           <h1 className="gs-h1 gs-h1-home"><span>Your AI does the talking.</span> <span>The game keeps the score.</span></h1>
-          <p className="gs-hero-sub">Play small games by talking to Claude or ChatGPT. The game holds the rules, the dice and your record.</p>
+          <p className="gs-hero-sub">Daily puzzles and immersive adventures, played in your own AI chat. The game holds the rules, the dice and your record.</p>
           <div className="gs-hero-act">
             <DS.Button onClick={gs.startFree}>Start free</DS.Button>
             <DS.Button variant="secondary" onClick={gs.goHow}>See how it works</DS.Button>
           </div>
           <div className="gs-works"><span className="gs-label">WORKS WITH</span><p className="gs-muted">{GS.works}</p></div>
         </div>
-        {/* Casebook here isn't a decided game. The pattern stands whichever game it shows:
-            one game's art, its schedule caption, a sample chat. */}
+        {/* The pattern stands whichever game it shows: one game's art, its schedule caption, a sample chat. */}
         <div className="gs-hero-field" ref={field}>
-          <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.casebook.route)}>
+          <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.delve.route)}>
             <i style={{ background: '#D66847', '--h': '62%', '--rise': '12px' }}></i>
             <i style={{ background: '#A390B2', '--h': '86%', '--rise': '6px' }}></i>
             <i style={{ background: '#F2EBE0', '--h': '66%', '--rise': '18px' }}></i>
             <b></b>
           </div>
-          <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.casebook.route)}>
-            <span className="gs-label">A NEW CASE EVERY WEEK</span>
-            <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
+          <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.delve.route)}>
+            <span className="gs-label">A NEW RUN EVERY WEEK</span>
+            <span className="gs-hero-name-t">{GS_GAMES.delve.name} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
-          <DS.ChatPlayback turns={GS_HERO_CHAT} loop mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={340} width={480} label="A Casebook case being played in a chat" />
+          <DS.ChatPlayback turns={GS_HERO_CHAT} loop mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={340} width={480} label="A Delve run being played in a chat" />
         </div>
       </section>
 
       <section className="gs-band">
-        <DS.CardRow title="Available games" sub={<CprHomeLine />} className="gs-row4">
+        {/* KEEP: the free line sits under the cards (the user, 2026-11-11: "yes it will be part of our home work"), so the row's arrows
+            share the title line right above the cards and the line never shares a line with them. */}
+        <DS.CardRow title="Available games" className="gs-row4">
           {[<CprPassCard key="pass" />, ...GS_HOME_GAMES.map((k) => <GsFeature key={k} id={k} />)]}
         </DS.CardRow>
-        <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div>
-        <div className="gs-stack-sm">
+        {/* Maybe reintroduced within further design work around Coming soon (the user, 2026-11-11: "This is not in the platform,
+            and it's disrupting our design"). */}
+        {/* <div className="gs-grid2">{GS_SOON.map((g) => <GsSoonCard key={g.name} g={g} />)}</div> */}
+        <div className="gs-home-after">
+          <p className="gs-muted gs-pu-wrap">{<CprHomeLine />}</p>
           <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
           <p className="gs-small gs-pu-wrap">{GS.purchase}</p>
         </div>

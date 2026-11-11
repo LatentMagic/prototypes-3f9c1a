@@ -127,10 +127,10 @@
   .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
 }
 
-/* home hero: one Casebook cover field with the screenshot set inside it (home-hero option 9) */
+/* home hero: one cover field (bars and sun) with the screenshot set inside it (home-hero option 9) */
 .gs-hero-field { position: relative; display: grid; gap: 24px; padding: 20px 12px 12px; background: #1D1B3A; overflow: hidden; min-width: 0; align-self: center; }
 .gs-hero-shapes4 { position: absolute; top: 0; right: 20px; width: 46%; height: 132px; display: flex; align-items: flex-end; gap: 12%; padding-left: 4%; }
-/* Casebook motion on the hero art: the game-art-motion rules (400ms --ease-art, bars round and rise by different amounts, sun squares and sinks 50ms behind). Hovering or focusing the name, or hovering the art, plays it. */
+/* Motion on the hero art: the game-art-motion rules (400ms --ease-art, bars round and rise by different amounts, sun squares and sinks 50ms behind). Hovering or focusing the name, or hovering the art, plays it. */
 .gs-hero-field { --on: 0; }
 .gs-hero-shapes4 { cursor: pointer; }
 .gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: transform var(--time-art) var(--ease-art) 0ms, border-radius var(--time-art) var(--ease-art) 0ms; }
@@ -200,3 +200,20 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wn-nest:has(> .wn-e:nth-child(5))::after { content: ""; display: block; position: sticky; bottom: -8px; height: 56px; margin-top: -56px; pointer-events: none; background: linear-gradient(to top, var(--card), rgb(0 0 0 / 0)); }
 @supports (animation-timeline: scroll()) { .wn-nest:has(> .wn-e:nth-child(5))::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
+
+/* KEEP: tablet (720–899): the hero stays stacked, but the headline and line run full width, Works with sits beside the buttons, and the chat is a short strip that gives up its top turns, as on desktop (home-hero-tablet concept 4) */
+@container gs (720px <= width < 900px) {
+  .gs-hero3 > .gs-hero-copy { grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; justify-items: stretch; }
+  .gs-hero3 > .gs-hero-copy > .gs-h1, .gs-hero3 > .gs-hero-copy > .gs-hero-sub { grid-column: 1 / -1; }
+  .gs-hero3 .gs-hero-sub { max-width: none; }
+  .gs-hero3 .gs-hero-act { align-self: center; }
+  .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
+  .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
+}
+/* KEEP: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
+   The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
+.gs-home-after { display: grid; gap: 16px; justify-items: start; margin-top: -16px; }
+.gs-home-after > p { margin: 0; }
+/* All games keeps its 48px tap height, which centres its text in empty space; pulling the box in (more above, where the
+   sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
+.gs-home-after > div { margin: -12px 0 -4px; }

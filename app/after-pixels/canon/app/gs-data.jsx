@@ -13,7 +13,7 @@ export const GS = {
   link: 'https://play.afterpixels.com',
   email: 'you@example.com',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
-  works: 'ChatGPT · Claude · Gemini · OpenClaw · any assistant that supports MCP connectors',
+  works: 'ChatGPT · Claude · Gemini · Grok · Muse · OpenClaw · Hermes Agent, and more',
 };
 
 // Covers: a few flat basic shapes in the cover colours on a cover background. Each declares its ground and how it extends
