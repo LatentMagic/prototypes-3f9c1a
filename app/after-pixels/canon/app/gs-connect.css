@@ -15,7 +15,6 @@
 .hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
 .hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
 @container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
-.hw-apps .mcp-crow-sub { max-width: 70ch; }
 .hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
 .hw-app > svg { flex: none; }
 .hw-app > span { max-width: 100%; overflow-wrap: normal; }
