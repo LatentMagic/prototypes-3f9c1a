@@ -257,8 +257,7 @@ const GsSetup = () => {
 // Start: two chat windows in one CardRow. The first types "Play After Pixels" and the AI lists the games; the second types
 // "Play Delve on After Pixels" and Delve opens. The replies are examples of what the AI sends: the game rows and their tags
 // are the deployed catalogue's; Delve's run is the product page's made-up edition.
-// KEEP: from 640px the two pictures share the row equally, side by side;
-// narrower, the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
+// KEEP: at 1280 the chats sit side by side in one row, three to a row; where they do not fit (tablet and phone) the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
 // KEEP: each picture opens on its first turn, the typed line (ChatPicture start="top"), at the system's height, and scrolls to the reply.
 // KEEP: each chat's typed line is a copying SpeechBubble; the chat itself is inert, a picture.
 // KEEP: these four are a picture of the games list, not the live one: the real reply lists every game with the player's progress (games_library), so the build takes the list from there.
