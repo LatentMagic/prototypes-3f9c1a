@@ -7370,14 +7370,14 @@
     ), /* @__PURE__ */ React$1.createElement(
       GsStartChat,
       {
-        title: "When you’re stuck, type",
-        say: "I’m stuck",
-        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Your AI talks it through with you, or gets you the game’s hint. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.mystery.route) }, "Go to Accuse")),
+        title: "For a reminder or a hint, type",
+        say: "Remind me how accusing works in Accuse",
+        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Ask your AI how a game works, or for a hint when you’re stuck. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.mystery.route) }, "Go to Accuse")),
         turns: [
+          { from: "ai", text: "Every clue is already given, so you work it out from those. You get one accusation: who, with what and where. I’ll ask you to confirm it before it counts." },
+          { from: "user", text: gsTyped("I’m stuck") },
           { from: "ai", text: "I can ask the game for a hint, which shows on your shared result. Or we can talk it through, and you do the working out. Which would you like?" },
-          { from: "user", text: "Talk me through where everyone was" },
-          { from: "ai", text: "Here’s every clue. Which suspect do you want to start with?", after: [{ type: "clues", groups: [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }] }] },
-          { from: "user", text: "So it’s not Coco or Ivan. A hint, please." },
+          { from: "user", text: "A hint, please" },
           { from: "ai", blocks: [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }], text: "You have 1 hint left." }
         ]
       }
