@@ -75,9 +75,8 @@ export const GsSharePopup = ({ open, onClose, lines, linkOnly }) => {
   const [copied, setCopied] = React.useState(false);
   React.useEffect(() => { if (!open) setCopied(false); }, [open]);
   const copy = () => {
-    if (lbCopy) lbCopy(lines);
-    else { try { navigator.clipboard && navigator.clipboard.writeText(lines.join('\n')); } catch (e) {} }
-    setCopied(true);
+    // Copied shows only once the copy worked (a refused copy, or ?copy=fail, leaves the button as it was).
+    Promise.resolve(lbCopy(lines)).then((ok) => ok && setCopied(true));
   };
   return (
     <DS.Popup open={open} onClose={onClose} kind="panel" title={linkOnly ? 'Share this game' : 'Share this result'}

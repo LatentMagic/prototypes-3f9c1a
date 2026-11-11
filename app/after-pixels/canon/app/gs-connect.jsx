@@ -21,12 +21,12 @@ const GS_APPS = [
   { id: 'claude', name: 'Claude', route: 'settings', noun: 'custom connector', look: 'Add custom connector' },
   // Gemini's form has no name field, so it skips "name it After Pixels" (checked by the user, 2026-11-11).
   { id: 'gemini', name: 'Gemini', route: 'settings', noun: 'custom app', look: 'Custom', via: 'Connected apps', noName: true },
-  { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'New Connector', subs: ['grok', 'grokbot'] },
+  { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'Custom', via: 'New Connector', subs: ['grok', 'grokbot'] },
   { id: 'grokbot', name: 'Grok Bot', route: 'chat', sub: true },
   { id: 'muse', name: 'Muse', route: 'chat' },
   // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command and starting it again the last.
   { id: 'openclaw', name: 'OpenClaw', route: 'command', first: 'openclaw gateway stop', last: 'openclaw gateway start', cmd: (url) => 'openclaw mcp add after-pixels --url ' + url + ' --transport streamable-http --auth oauth', login: 'openclaw mcp login after-pixels' },
-  { id: 'hermes', name: 'Hermes Agent', tile: 'Hermes', route: 'command', remote: true, cmd: (url) => 'hermes mcp add after-pixels --url ' + url + ' --auth oauth' },
+  { id: 'hermes', name: 'Hermes Agent', tile: 'Hermes', route: 'command', remote: true, cmd: (url) => 'hermes mcp add after-pixels --url ' + url + ' --auth oauth', retry: 'hermes mcp login after-pixels' },
   { id: 'other', name: 'Other', route: 'settings' },
 ];
 const gsApp = (id) => GS_APPS.find((a) => a.id === id);
@@ -81,7 +81,7 @@ export const GsPrompt = ({ text }) => <div className="lb-share-text hw-prompt">{
 export const GsCopyPrompt = ({ text, label, block }) => {
   const [done, setDone] = React.useState(false);
   React.useEffect(() => { if (!done) return undefined; const t = setTimeout(() => setDone(false), 2400); return () => clearTimeout(t); }, [done]);
-  return <DS.Button block={block} done={done} doneLabel="Copied" onClick={() => { lbCopy([text]); setDone(true); }}>{label || 'Copy prompt'}</DS.Button>;
+  return <DS.Button block={block} done={done} doneLabel="Copied" onClick={() => { Promise.resolve(lbCopy([text])).then((ok) => ok && setDone(true)); }}>{label || 'Copy prompt'}</DS.Button>;
 };
 export const GsHowLink = ({ label }) => { const gs = useGs(); return <button type="button" className="gs-inlink" onClick={() => (gs.playing ? gs.howFromPlay() : gs.go('connect'))}>{label || 'How it works'}</button>; };
 // KEEP: the text (the address, a message to send, a command) scrolls sideways under a finger so the whole of it can be read;
@@ -176,6 +176,8 @@ const gsAppSteps = (a) => [
     ...(a.first ? [<div className="gs-stack-sm"><span>Run this command.</span><GsCopyBox text={a.cmd(GS.link)} label="The command to run" /></div>] : []),
     a.login ? <div className="gs-stack-sm"><span>Run this to sign in, then open the link it prints.</span><GsCopyBox text={a.login} label="The sign-in command" /></div>
       : 'Open the link it prints, and ' + GS_SIGN_IN,
+    // Hermes's docs: its wait for sign-in can run out before the player finishes; its login command waits longer.
+    ...(a.retry ? [<>If it times out, run <b>{a.retry}</b>.</>] : []),
     ...(a.remote ? ['On a remote machine, copy the address the browser ends on back into the terminal.'] : []),
     ...(a.last ? [<div className="gs-stack-sm"><span>Start {a.name}’s Gateway again.</span><GsCopyBox text={a.last} label="The command to start the Gateway" /></div>] : []),
   ]),
