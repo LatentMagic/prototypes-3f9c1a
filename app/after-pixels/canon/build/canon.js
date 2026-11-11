@@ -7390,7 +7390,7 @@
           { from: "ai", text: "I can ask the game for a hint, which shows on your shared result. Or we can talk it through, and you do the working out. Which would you like?" },
           { from: "user", text: "Talk me through where everyone was" },
           { from: "ai", text: "Four of the clues name a place. What do you make of them?", after: [{ type: "clues", groups: [{ kind: "Clues", facts: ["2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }] }] },
-          { from: "user", text: "So it’s not Coco or Ivan. A hint, please" },
+          { from: "user", text: "So it’s not Coco or Ivan. A hint, please." },
           { from: "ai", blocks: [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }], text: "You have 1 hint left." }
         ]
       }

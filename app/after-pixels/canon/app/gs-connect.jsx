@@ -257,7 +257,7 @@ const GsSetup = () => {
 // Start: three chat windows in one CardRow. The first types "Play After Pixels" and the AI lists the games; the second types
 // "Play Delve on After Pixels" and Delve opens; the third types "I’m stuck" and the AI offers a hint or a talk-through. The replies are examples of what the AI sends: the game rows and their tags
 // are the deployed catalogue's; Delve's run is the product page's made-up edition.
-// KEEP: at 1280 the three pictures sit side by side in one row; where three do not fit (tablet and phone) the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
+// KEEP: from about 1000px wide the three pictures sit side by side in one row (three of the system's 300px chats fit), so Start reads as one set on desktop; where three do not fit (tablet and phone) the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
 // KEEP: each picture opens on its first turn, the typed line (ChatPicture start="top"), at the system's height, and scrolls to the reply.
 // KEEP: each chat's typed line is a copying SpeechBubble; the chat itself is inert, a picture.
 // KEEP: these four are a picture of the games list, not the live one: the real reply lists every game with the player's progress (games_library), so the build takes the list from there.
@@ -314,7 +314,7 @@ const GsStart = () => {
             { from: 'ai', text: 'I can ask the game for a hint, which shows on your shared result. Or we can talk it through, and you do the working out. Which would you like?' },
             { from: 'user', text: 'Talk me through where everyone was' },
             { from: 'ai', text: 'Four of the clues name a place. What do you make of them?', after: [{ type: 'clues', groups: [{ kind: 'Clues', facts: ['2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.'] }] }] },
-            { from: 'user', text: 'So it’s not Coco or Ivan. A hint, please' },
+            { from: 'user', text: 'So it’s not Coco or Ivan. A hint, please.' },
             { from: 'ai', blocks: [{ type: 'clues', groups: [{ kind: 'Hint', facts: [{ text: 'Madame Zara was not in the costume tent.', new: true }] }] }], text: 'You have 1 hint left.' },
           ]} />
       </DS.CardRow>
