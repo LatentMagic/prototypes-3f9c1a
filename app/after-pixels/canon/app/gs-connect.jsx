@@ -317,6 +317,8 @@ const GsStart = () => {
           turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest + ' …'], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
       </DS.CardRow>
       <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</span></p>
+      {/* The user, 2026-11-11 (Jonny's ask): which model, named by tier only so it never goes stale. */}
+      <p className="hw-chg hw-model"><span>If your app lets you choose a model, skip its smallest one. You don’t need its most powerful either.</span></p>
     </>
   );
 };
@@ -405,10 +407,10 @@ export const GsConnect = () => {
       <section className="hw-sec gs-stack-md" aria-labelledby="hw-who">
         <h2 id="hw-who" className="mcp-t-sec">Who does what</h2>
         <DS.Card className="hw-who">
-          <div className="hw-who-row"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">Your AI does the talking, and a more capable model plays better. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.</p></div>
-          <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">It sets the rules, throws the dice and keeps your results.</p></div>
+          <div className="hw-who-row"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.</p></div>
+          <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">It sets the rules, throws the dice and keeps your results. If your AI tells it differently, the game’s record is the one that counts.</p></div>
         </DS.Card>
-        <p className="gs-small">Your AI never asks you to pay.</p>
+        <p className="gs-small">Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.</p>
       </section>
       <div className="gs-band">
         <div className="gs-grid2">
