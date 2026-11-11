@@ -1162,6 +1162,13 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 .dv6-band { font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dv6-band span { font-weight: 400; color: var(--muted); white-space: nowrap; }
 .dvS-line.is-foe .dvS-meter.is-band { max-width: none; }
+
+/* Canvas of a run lost to a story turn: the version tabs, and the medbay's cross, drawn in the grey of the pass square. */
+.dfc-tabs { display: flex; flex-direction: column; gap: 8px; margin: 0 0 16px; }
+.dfc-tabs button { font: inherit; text-align: left; padding: 12px 16px; min-height: 48px; border: 1px solid var(--control-edge); border-radius: 8px; background: transparent; color: inherit; cursor: pointer; }
+.dfc-tabs button[aria-pressed="true"] { border-color: currentColor; font-weight: 600; }
+.mcp-dl-die.is-story .hx { fill: none; stroke: var(--control-edge); }
+.mcp-dl-die.is-story .nm { fill: var(--control-edge); }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
 /* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).

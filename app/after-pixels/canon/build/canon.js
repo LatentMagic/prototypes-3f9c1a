@@ -3139,11 +3139,11 @@
     return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
   };
   const dlKindSay = (k) => k === "Weakness" ? "Weak spot" : k;
-  const dlSay = (r, foe = true) => r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
+  const dlSay = (r, foe = true) => r.story ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
-  const DlDieBtn = ({ r, size, act, on, foe, lit }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
+  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.story ? /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: "miss", value: "✕", selected: sel, surface, size, className: "is-story" }) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
+  const DlDieBtn = ({ r, size, act, on, foe, lit }) => r.inert ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-dbtn", role: "img", "aria-label": dlSay(r) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
@@ -3182,6 +3182,7 @@
   const DlHeld = ({ m, act, live = true, beside }) => {
     const r = act ? m.turns[act - 1] : null;
     if (!r) return null;
+    if (r.story) return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger is-mo" }, /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, "Last blow"), /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, r.name + " · " + r.harm + " damage · 0 hit points left"))))));
     const x = m.mom[r.t];
     const tcls = r.fumble ? "fumble" : r.tier;
     const mt = dlMeterOf(r);
@@ -3306,12 +3307,12 @@
   const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: "Room " + (i + 1) }));
   const DlEmptyRoute = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(false) }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": rooms }, "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (st.i === 0 ? " is-on" : " is-far") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": "Room " + st.num + (st.i === 0 ? ", First room" : ", not reached") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.i === 0 ? "First room" : " ")), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))))));
   const DlEmptyList = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvL-list", "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvL-row" + (st.i === 0 ? " is-open is-first" : " is-far") + (st.i === rooms - 1 ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num", "aria-hidden": "true" }, st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "First room"), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, "Room 1, First room, no rolls")) : /* @__PURE__ */ React$1.createElement("div", { className: "dvL-head", role: "img", "aria-label": "Room " + st.num + ", not reached" }, /* @__PURE__ */ React$1.createElement(DlEmptyHex, null)))))));
-  const DlCard = ({ s, m, roll, turn }) => {
+  const DlCard = ({ s, m, roll, turn, noHold }) => {
     const ref = React$1.useRef(null);
     const list = useDlList(ref);
     const rooms = m.turns.length ? m.stops.length : s.tracks && s.tracks.rooms || 5;
     const beside = useDlBeside(ref, rooms);
-    const [sel, setSel] = React$1.useState(() => turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null);
+    const [sel, setSel] = React$1.useState(() => noHold ? null : turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null);
     const [hov, setHov] = React$1.useState(null);
     const on = React$1.useMemo(() => ({ sel: setSel, hov: setHov }), []);
     const stacked = list || !beside;
@@ -3483,10 +3484,27 @@
     };
     return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv4 dv5 is-tight dv7 is-band dv8 is-3b" + (tap ? " is-tap" : "") + (folded ? "" : " is-unfolded"), "aria-label": "Character sheet" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-rows" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-r1" }, /* @__PURE__ */ React$1.createElement(DlHead, { c, folded, fold }), /* @__PURE__ */ React$1.createElement("div", { id: "dl-sheet-tabs", className: "dl-tabwrap" }, /* @__PURE__ */ React$1.createElement("div", { className: "esx-fold" + (folded ? "" : " is-open") }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dl-tabgrp" }, /* @__PURE__ */ React$1.createElement(DlTabs, { groups, card, setCard: pick })))))), /* @__PURE__ */ React$1.createElement(DlPanel, { groups, card }))));
   };
+  const DL_FALL_VERSIONS = ["1. As now", "2. A cross, no Last blow", "3. The cross is the Last blow"];
+  const dlFallBuild = (m, v) => {
+    if (v === 0) return m;
+    const at = m.stops.length - 1;
+    const last = m.stops[at];
+    const story = { story: true, t: m.turns.length + 1, stop: at, room: last.name, name: "Crank panel", harm: 4, inert: v === 1 };
+    const turns = v === 2 ? [...m.turns, story] : m.turns;
+    const stops = m.stops.map((st, i) => i === at ? { ...st, turns: [...st.turns, story] } : st);
+    const mom = Object.fromEntries(dlMoments([...m.turns, story], "fallen").map((x) => [x.r.t, x]));
+    return { ...m, stops, turns, mom };
+  };
+  const DlFallCanvas = ({ s, m }) => {
+    const [v, setV] = React$1.useState(0);
+    const mv = React$1.useMemo(() => dlFallBuild(m, v), [m, v]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dfc" }, /* @__PURE__ */ React$1.createElement("div", { className: "dfc-tabs", role: "group", "aria-label": "Versions" }, DL_FALL_VERSIONS.map((n, i) => /* @__PURE__ */ React$1.createElement("button", { key: n, type: "button", "aria-pressed": v === i, onClick: () => setV(i) }, n))), /* @__PURE__ */ React$1.createElement(DlCard, { key: v, s, m: mv, noHold: v === 1 }));
+  };
   const DlBody = ({ s }) => {
     const gs = useGs();
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
+    if (s.fallCanvas) return /* @__PURE__ */ React$1.createElement(DlFallCanvas, { s, m });
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const DL_NO_HOVER = () => {
@@ -3571,6 +3589,38 @@
         ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23"],
         ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
         ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
+      ]
+    };
+    GS_SESSIONS["delve-story-fall"] = {
+      ...GS_SESSIONS.delve,
+      fallCanvas: true,
+      loss: true,
+      end: "fallen",
+      setting: "Cold Sleep",
+      hero: "Wren the Rogue",
+      hpMax: 21,
+      threat: 2,
+      threatMax: 12,
+      lightName: null,
+      light: 0,
+      lightMax: 0,
+      foeMax: {},
+      result: "Fell in the medbay",
+      reached: "Fell in the medbay",
+      share: "Fell in the medbay",
+      shareLines: null,
+      figures: ["Threat 2/12", "5 rolls", "HP 0/21"],
+      tracks: { progress: 3, rooms: 6, threat: 2, threatMax: 12 },
+      sheet: { used: {}, insp: false },
+      lines: [
+        ["Room", "Entered the cryo deck"],
+        ["Intelligence", "Read the wake log", "Success", "d20 15 + 0 = 15 vs 12"],
+        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 12", "HP 17/21"],
+        ["Room", "Entered the armoury"],
+        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 12", "HP 11/21"],
+        ["Wisdom", "Listen for the hunt", "Partial success", "d20 11 + 1 = 12 vs 12"],
+        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 12", "HP 4/21"],
+        ["Room", "Entered the medbay"]
       ]
     };
     GS_SESSIONS["delve-won-by-use"] = (() => {
@@ -8749,6 +8799,11 @@
         c.setConnected(true);
         c.setReview({ ed: "won-by-use" });
         c.go("session", { id: "delve-won-by-use" });
+      } },
+      { group: "Screens", id: "delve-story-fall-canvas", label: "7. Session page: Delve, a run lost to a story turn, drawn three ways (canvas)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-story-fall" });
       } },
       { group: "Screens", id: "session-delve-hazard", label: "7. Session page: Delve, the Briar Keep (a hazard room, the thorn stair)", stage: (c) => {
         c.setView("pass");

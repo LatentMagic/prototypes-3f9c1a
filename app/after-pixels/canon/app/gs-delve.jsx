@@ -153,16 +153,18 @@ const dlBuild = (s) => {
   return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
 const dlKindSay = (k) => (k === 'Weakness' ? 'Weak spot' : k);
-const dlSay = (r, foe = true) => r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
+const dlSay = (r, foe = true) => r.story ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
 // still draw the sheet's hexes (stats, inspiration). ----
 const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
-const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.use
+const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.story
+  ? <DS.DelveDie kind="miss" value="✕" selected={sel} surface={surface} size={size} className="is-story" />
+  : r.use
   ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} won={!!r.won} />
   : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} crit={r.crit} fumble={r.fumble} foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />);
-const DlDieBtn = ({ r, size, act, on, foe, lit }) => (
+const DlDieBtn = ({ r, size, act, on, foe, lit }) => (r.inert ? <span className="dv2-dbtn" role="img" aria-label={dlSay(r)}><DlDie r={r} size={size} /></span> :
   <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r, foe !== false)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
     <DlDie r={r} size={size} sel={act === r.t || lit === r.t} foe={foe} />
   </button>);
@@ -222,6 +224,8 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
         {foe}
       </div></div></div></div>); };
 const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
+  if (r.story) return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className="dv3-held is-ledger is-mo"><i className="dv3-mk" role="img" aria-label="Key moment" />
+    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">Last blow</p><p className="dv3-n">{r.name + ' · ' + r.harm + ' damage · 0 hit points left'}</p></div></div></div></div></div>);
   const x = m.mom[r.t]; const tcls = r.fumble ? 'fumble' : r.tier; const mt = dlMeterOf(r);
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
   const ledger = (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
@@ -364,9 +368,9 @@ const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The wa
 // KEEP: a press holds a roll and fills the held roll; it opens on the roll the route names (a die pressed on the now card), else the
 // last roll. Beside the route a hover also fills the held roll. Above the route and in the list a hover only rings the die: a held roll
 // that follows the pointer changes the box's height, moves the route and the die from under the pointer, and the route flickers.
-const DlCard = ({ s, m, roll, turn }) => {
+const DlCard = ({ s, m, roll, turn, noHold }) => {
   const ref = React.useRef(null); const list = useDlList(ref); const rooms = m.turns.length ? m.stops.length : (s.tracks && s.tracks.rooms) || 5; const beside = useDlBeside(ref, rooms);
-  const [sel, setSel] = React.useState(() => (turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
+  const [sel, setSel] = React.useState(() => (noHold ? null : turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
   const on = React.useMemo(() => ({ sel: setSel, hov: setHov }), []);
   const stacked = list || !beside; const act = stacked ? sel : hov || sel;
   if (!m.turns.length) {
@@ -488,9 +492,23 @@ const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const one =
 };
 
 // ---- The session page's own part, under the shared head. Every move is the store's plain list, collapsed. ----
+// ---- Canvas: a run lost to a story turn, drawn three ways (the owner picks). The seed is GS_SESSIONS['delve-story-fall'];
+// the record keeps no turn for the story harm, so versions 2 and 3 add the medbay's mark as a turn of its own on that room. ----
+const DL_FALL_VERSIONS = ['1. As now', '2. A cross, no Last blow', '3. The cross is the Last blow'];
+const dlFallBuild = (m, v) => { if (v === 0) return m;
+  const at = m.stops.length - 1; const last = m.stops[at];
+  const story = { story: true, t: m.turns.length + 1, stop: at, room: last.name, name: 'Crank panel', harm: 4, inert: v === 1 };
+  const turns = v === 2 ? [...m.turns, story] : m.turns;
+  const stops = m.stops.map((st, i) => (i === at ? { ...st, turns: [...st.turns, story] } : st));
+  const mom = Object.fromEntries(dlMoments([...m.turns, story], 'fallen').map((x) => [x.r.t, x]));
+  return { ...m, stops, turns, mom }; };
+const DlFallCanvas = ({ s, m }) => { const [v, setV] = React.useState(0); const mv = React.useMemo(() => dlFallBuild(m, v), [m, v]);
+  return (<div className="dfc"><div className="dfc-tabs" role="group" aria-label="Versions">{DL_FALL_VERSIONS.map((n, i) => <button key={n} type="button" aria-pressed={v === i} onClick={() => setV(i)}>{n}</button>)}</div>
+    <DlCard key={v} s={s} m={mv} noHold={v === 1} /></div>); };
 const DlBody = ({ s }) => {
   const gs = useGs();
   const m = React.useMemo(() => dlBuild(s), [s]); const c = React.useMemo(() => dlSheet(s, m), [s, m]);
+  if (s.fallCanvas) return <DlFallCanvas s={s} m={m} />;
   return <>
     <div className="dv4-lay"><DlSheet c={c} streak={m.run} /><DlCard s={s} m={m} roll={gs.route && gs.route.roll} turn={gs.route && gs.route.turn} /></div>
     <GsMoves s={s} />
@@ -579,6 +597,13 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
   ['Strength', 'Miss', 'd20 6 + 3 = 9 vs 12', 'Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23']] };
 // The won play whose last turn is a use: the average run's play to the shrine cavern, then the lamp oil, a hit, and Bryn's ultimate (one use a run, kept for last) taking Grizzletooth's last health.
 // Its sheet marks the ultimate used. Picked by its states only: it is no Config → This edition option.
+// A run of Cold Sleep (edition 2) lost to the medbay's story turn: the crank panel deals 4 damage and the hero has 4 hit points. Shown by the canvas (`fallCanvas`).
+// SAMPLE: the room order (cryo deck, armoury, medbay) and every roll; the record keeps no turn for the story harm. HP 21 -> 17 -> 11 -> 4, then 4 damage -> 0.
+GS_SESSIONS['delve-story-fall'] = { ...GS_SESSIONS.delve, fallCanvas: true, loss: true, end: 'fallen', setting: 'Cold Sleep', hero: 'Wren the Rogue', hpMax: 21, threat: 2, threatMax: 12, lightName: null, light: 0, lightMax: 0, foeMax: {},
+  result: 'Fell in the medbay', reached: 'Fell in the medbay', share: 'Fell in the medbay', shareLines: null, figures: ['Threat 2/12', '5 rolls', 'HP 0/21'], tracks: { progress: 3, rooms: 6, threat: 2, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
+  ['Room', 'Entered the cryo deck'], ['Intelligence', 'Read the wake log', 'Success', 'd20 15 + 0 = 15 vs 12'], ['Dexterity', 'Slip the frozen vent', 'Failure', 'd20 5 + 3 = 8 vs 12', 'HP 17/21'],
+  ['Room', 'Entered the armoury'], ['Strength', 'Pry the locker', 'Failure', 'd20 7 + 0 = 7 vs 12', 'HP 11/21'], ['Wisdom', 'Listen for the hunt', 'Partial success', 'd20 11 + 1 = 12 vs 12'], ['Dexterity', 'Force the cage', 'Failure', 'd20 4 + 3 = 7 vs 12', 'HP 4/21'],
+  ['Room', 'Entered the medbay']] };
 GS_SESSIONS['delve-won-by-use'] = (() => { const base = GS_SESSIONS.delve.lines; const cut = base.findIndex((l) => l[0] === 'Ability');
   return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 4 → 2'], ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12', 'Struck back: d20 8 vs 10, missed'], ['Ability', 'Used shield bash', 'Grizzletooth: health 1 → 0']] }; })();
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
