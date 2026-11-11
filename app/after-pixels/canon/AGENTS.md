@@ -44,6 +44,7 @@ A design or copy decision is the owner's. Build what the brief says; name anythi
 - A state is a URL: `?state=<id>`. `?state=index` lists every id; many come from lists the game files export (such as `DP_STATES`), so a grep of `app/states.jsx` misses them. `&fast` skips the 1.2 s page-arrival wait. Content still arriving carries `aria-busy="true"`.
 - Screenshot with the check, not by hand, and name only the states your change touches: that takes seconds. It builds first (`--no-build` skips that), starts the server if none answers and stops it afterwards (run `npm start` yourself to click through), waits until the page is ready, writes `<dir>/<id>-<width>.png` (full page) and prints console errors per shot. An unknown id prints FAIL. Rerun a crashing state with `--react-dev` for React's warnings and full error messages.
 - To prove a refactor changed nothing, run `--states all` (about 90 s) before and after, then `npm run diff` (diff images in `<dirB>/_diff/`; exit 1 on any difference). The `loading-*` states and `home` differ run to run on their own.
+- Every screenshot carries `&nodemo` (the root `AGENTS.md`, *Screenshots carry `nodemo`*); `npm run check` adds it itself.
 - Use `playwright-cli` only to click or type through a flow. Pass the session first: `playwright-cli -s=<name> open "<url>"`, then `-s=<name> click <ref>` with a ref from `-s=<name> snapshot`, and `-s=<name> screenshot --filename=<absolute path>`.
 - A reload restarts the prototype on its seed data; that is not a finding.
 </important>
