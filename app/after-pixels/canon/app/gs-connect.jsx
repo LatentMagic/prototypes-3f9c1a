@@ -165,7 +165,7 @@ const gsAppSteps = (a) => [
   ...(a.route === 'settings' ? [
     a.id === 'other' ? 'In your app, find where you add a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}<b>{a.look}</b>.</>,
     <>Paste the address and name it <b>After Pixels</b>.</>,
-    'Connect, then ' + GS_SIGN_IN,
+    'Connect, then sign in to your account.', // the step before names it After Pixels, so the name isn't repeated (the user, 2026-11-11)
   ] : a.route === 'chat' ? [
     'In a chat with ' + a.name + ', send the message.',
     'Open the link ' + a.name + ' sends, and ' + GS_SIGN_IN,

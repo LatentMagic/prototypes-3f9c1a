@@ -6747,7 +6747,8 @@
     ...a.route === "settings" ? [
       a.id === "other" ? "In your app, find where you add a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
       /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Paste the address and name it ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), "."),
-      "Connect, then " + GS_SIGN_IN
+      "Connect, then sign in to your account."
+      // the step before names it After Pixels, so the name isn't repeated (the user, 2026-11-11)
     ] : a.route === "chat" ? [
       "In a chat with " + a.name + ", send the message.",
       "Open the link " + a.name + " sends, and " + GS_SIGN_IN
