@@ -172,13 +172,13 @@ const gsAppSteps = (a) => [
     'In a chat with ' + a.name + ', send the message.',
     'Open the link ' + a.name + ' sends, and ' + GS_SIGN_IN,
   ] : [
-    a.first ? 'Stop ' + a.name + '’s Gateway.' : 'Run the command.',
+    a.first ? <div className="gs-stack-sm"><span>Stop {a.name}’s Gateway.</span><GsCopyBox text={a.first} label="The command to stop the Gateway" /></div> : 'Run the command.',
     ...(a.first ? [<div className="gs-stack-sm"><span>Run this command.</span><GsCopyBox text={a.cmd(GS.link)} label="The command to run" /></div>] : []),
     a.login ? <div className="gs-stack-sm"><span>Run this to sign in, then open the link it prints.</span><GsCopyBox text={a.login} label="The sign-in command" /></div>
       : 'Open the link it prints, and ' + GS_SIGN_IN,
-    // Hermes's docs: its wait for sign-in can run out before the player finishes; its login command waits longer.
-    ...(a.retry ? [<>If it times out, run <b>{a.retry}</b>.</>] : []),
     ...(a.remote ? ['On a remote machine, copy the address the browser ends on back into the terminal.'] : []),
+    // Hermes's docs: its wait for sign-in can run out before the player finishes; its login command waits longer.
+    ...(a.retry ? [<div className="gs-stack-sm"><span>If the sign-in times out, run this, then open the link it prints.</span><GsCopyBox text={a.retry} label="The sign-in command" /></div>] : []),
     ...(a.last ? [<div className="gs-stack-sm"><span>Start {a.name}’s Gateway again.</span><GsCopyBox text={a.last} label="The command to start the Gateway" /></div>] : []),
   ]),
   gsPermStep(a),
@@ -243,7 +243,8 @@ const GsSetup = () => {
             )}
           </div>
           <div className="hw-pick-body">
-            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : a.route === 'chat' ? 'message' : 'command'} /></div>
+            {/* An app with a first command (OpenClaw) has every command under the step that runs it, so it has no box up top. */}
+            {!a.first && <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : a.route === 'chat' ? 'message' : 'command'} /></div>}
             <GsSteps items={gsAppSteps(a)} />
             {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see {a.look ? <b>{a.look}</b> : 'this option'}? Not every plan or country offers it yet.</p>}
           </div>
