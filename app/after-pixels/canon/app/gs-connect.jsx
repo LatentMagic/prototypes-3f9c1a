@@ -298,7 +298,7 @@ const GsStart = () => {
     <>
       <DS.CardRow kind="chat" title="Start" className="hw-start">
         <GsStartChat title="In any chat, type" say={gsPromptText({ kind: 'games' })}
-          caption={<>Your AI shows you the games to pick from. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></>}
+          caption={<>Your AI shows you the games, and you pick one to play. <button type="button" className="gs-inlink" onClick={() => gs.go('games')}>See the games</button></>}
           turns={[{ from: 'ai', text: 'Here are today’s games. Pick one, or type a game’s name.', after: [{ type: 'menu', label: 'Today’s games', items: GS_START_GAMES.map((gid) => {
             const g = GS_GAMES[gid];
             return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
@@ -335,7 +335,7 @@ const GsBandCovers = () => <span className="hw-band-covers" aria-hidden="true">{
 const GsTop = () => (
   <header className="hw-top2">
     <h1 className="gs-h1">How it works</h1>
-    <p className="gs-lead">Add After Pixels once to ChatGPT, Claude or another AI app. Then, in any chat, type</p>
+    <p className="gs-lead">Add <b>After Pixels</b> once to ChatGPT, Claude or another AI app. Then, in any chat, type</p>
     <div className="hw-band">
       <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><GsCopyBubble>{gsPromptText({ kind: 'games' })}</GsCopyBubble></span></span>
     </div>
@@ -372,7 +372,7 @@ export const GsConnect = () => {
       </section>
       <div className="gs-band">
         <div className="gs-grid2">
-          <section className="gs-stack-sm"><h2 className="mcp-t-card">Disconnecting</h2><p className="gs-muted">To disconnect, remove After Pixels where you added it. Your results and history stay in your account.</p></section>
+          <section className="gs-stack-sm"><h2 className="mcp-t-card">Disconnecting</h2><p className="gs-muted">To disconnect, remove <b>After Pixels</b> where you added it. Your results and history stay in your account.</p></section>
           <section className="gs-stack-sm"><h2 className="mcp-t-card">Help</h2><p className="gs-muted">Stuck? Write to <a href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a> and tell us which app you use.</p></section>
         </div>
       </div>
