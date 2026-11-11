@@ -6783,7 +6783,7 @@
         if (ro) ro.disconnect();
       };
     }, [tile]);
-    const ask = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Do this once, and the games are there in any chat. ", gs.view === "out" && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "You need a free After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signup") }, "Start free"), " "), "Which app do you use?");
+    const ask = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Do this once, and the games are there in any chat. You need a free After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signup") }, "Start free"), " Which app do you use?");
     return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", ref: wrap }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Setup", sub: ask, label: "Which app do you use?", className: "hw-apps" }, GS_APPS.filter((x) => !x.sub).map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "hw-app", "aria-pressed": tile === x.id, "aria-expanded": tile === x.id, "aria-controls": "hw-pick", "aria-label": x.name, onClick: (e) => {
       setTile(tile === x.id ? null : x.id);
       if (tile !== x.id) gsRevealTile(e.currentTarget);

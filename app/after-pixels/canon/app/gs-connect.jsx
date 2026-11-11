@@ -219,8 +219,8 @@ const GsSetup = () => {
     const ro = window.ResizeObserver ? new ResizeObserver(refit) : null; if (ro) ro.observe(w);
     return () => { if (track) track.removeEventListener('scroll', follow); if (ro) ro.disconnect(); };
   }, [tile]);
-  // The account sentence shows only to a signed-out visitor: with no account, the games list but every move is refused.
-  const ask = <>Do this once, and the games are there in any chat. {gs.view === 'out' && <>You need a free After Pixels account. <button type="button" className="gs-inlink" onClick={() => gs.go('signup')}>Start free</button> </>}Which app do you use?</>;
+  // KEEP: the account sentence shows to everyone (MCPG-021: How it works is the same page for everyone). With no account the games list but every move is refused.
+  const ask = <>Do this once, and the games are there in any chat. You need a free After Pixels account. <button type="button" className="gs-inlink" onClick={() => gs.go('signup')}>Start free</button> Which app do you use?</>;
   return (
     <div className="gs-stack-md" ref={wrap}>
       <DS.CardRow title="Setup" sub={ask} label="Which app do you use?" className="hw-apps">
