@@ -416,4 +416,6 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
   );
 };
 
-Object.assign(window, { ConfigLauncher, ConfigGroup, ConfigRow, ConfigAction, ConfigNote });
+// ?nodemo hides the Config pill, so a screenshot shows the page alone: main.jsx renders nothing when window.ConfigLauncher is absent.
+const CONFIG_NODEMO = new URLSearchParams(window.location.search).has('nodemo');
+Object.assign(window, { ConfigLauncher: CONFIG_NODEMO ? undefined : ConfigLauncher, ConfigGroup, ConfigRow, ConfigAction, ConfigNote });
