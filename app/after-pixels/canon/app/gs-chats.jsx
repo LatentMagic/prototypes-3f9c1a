@@ -142,6 +142,6 @@ GS_CHATS = {
       gscAi('summers', ['The hunters are back with one ibex and a story: the young ones lost the herd at the river.', 'You weren’t at the river. Next time, you might be.'])] },
   ],
 };
-// The home hero's chat is the whole Casebook conversation from its product page; the hero scrolls it (gs-home.jsx).
-GS_HERO_CHAT = GS_CHATS.casebook.flatMap((c) => c.turns);
+// The home hero's chat is the whole Delve conversation from its product page; the hero scrolls it (gs-home.jsx).
+GS_HERO_CHAT = GS_CHATS.delve.flatMap((c) => c.turns);
 }

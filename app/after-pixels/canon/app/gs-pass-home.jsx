@@ -94,20 +94,19 @@ export const GsHome = () => {
           </div>
           <div className="gs-works"><span className="gs-label">WORKS WITH</span><p className="gs-muted">{GS.works}</p></div>
         </div>
-        {/* Casebook here isn't a decided game. The pattern stands whichever game it shows:
-            one game's art, its schedule caption, a sample chat. */}
+        {/* The pattern stands whichever game it shows: one game's art, its schedule caption, a sample chat. */}
         <div className="gs-hero-field" ref={field}>
-          <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.casebook.route)}>
+          <div className="gs-hero-shapes4" aria-hidden="true" onClick={() => gs.go(GS_GAMES.delve.route)}>
             <i style={{ background: '#D66847', '--h': '62%', '--rise': '12px' }}></i>
             <i style={{ background: '#A390B2', '--h': '86%', '--rise': '6px' }}></i>
             <i style={{ background: '#F2EBE0', '--h': '66%', '--rise': '18px' }}></i>
             <b></b>
           </div>
-          <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.casebook.route)}>
-            <span className="gs-label">A NEW CASE EVERY WEEK</span>
-            <span className="gs-hero-name-t">{GS_NAME.casebook} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
+          <button type="button" className="gs-hero-name" onClick={() => gs.go(GS_GAMES.delve.route)}>
+            <span className="gs-label">A NEW RUN EVERY WEEK</span>
+            <span className="gs-hero-name-t">{GS_GAMES.delve.name} <DS.Icon name="down" size={20} style={{ transform: 'rotate(-90deg)' }} /></span>
           </button>
-          <DS.ChatPlayback turns={GS_HERO_CHAT} loop mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={340} width={480} label="A Casebook case being played in a chat" />
+          <DS.ChatPlayback turns={GS_HERO_CHAT} loop mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} height={340} width={480} label="A Delve run being played in a chat" />
         </div>
       </section>
 
