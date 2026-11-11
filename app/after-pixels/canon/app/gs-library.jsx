@@ -238,16 +238,21 @@ export const LbTools = LbFilters;
 const LbToolsColumn = ({ children }) => <aside className="lb-tools">{children}</aside>;
 // ---- Share: a panel with the text and Copy ------------------------------------------
 // KEEP: Copy works inside the preview iframe, which can refuse the Clipboard API silently: the textarea copy runs first, inside the click.
+// Returns true when copied, false when refused, or a promise of that when only the Clipboard API is left to try.
+// KEEP: ?copy=fail on the page's address forces every copy to be refused, so the refused state can be seen. A demo switch only: the platform reacts to the real clipboard refusal, never to a switch.
 export const lbCopy = (lines) => {
   // KEEP: after Copy, focus is back on the control pressed, never the page root.
   const was = document.activeElement;
   const t = lines.join('\n'); const ta = document.createElement('textarea');
   ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
   document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
-  let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+  const forced = /[?&]copy=fail(&|$)/.test(window.location.search);
+  let ok = false; try { ok = !forced && document.execCommand('copy'); } catch (e) {}
   document.body.removeChild(ta);
   if (was && was !== document.body && was.focus) was.focus({ preventScroll: true });
-  if (!ok && navigator.clipboard) navigator.clipboard.writeText(t).catch(() => {});
+  if (ok) return true;
+  if (forced || !navigator.clipboard) return false;
+  return navigator.clipboard.writeText(t).then(() => true, () => false);
 };
 const LbCopyBtn = ({ lines }) => {
   const [done, setDone] = React.useState(false);

@@ -12,8 +12,9 @@ export function SpeechBubble({children,wrap=false,copy=false,edge=false,onCopy,c
   if(!copy) return <span className={cls}>{children}</span>;
   const text=React.Children.toArray(children).filter(c=>typeof c==='string'||typeof c==='number').join('');
   const click=()=>{
-    if(onCopy) onCopy(text); else if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{});
-    setDone(true);
+    if(!onCopy){ if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{}); setDone(true); return; }
+    // onCopy may answer false, or a promise of false, when the copy was refused: the bubble then never says "Copied".
+    Promise.resolve(onCopy(text)).then(ok=>{ if(ok!==false) setDone(true); });
   };
   return <>
     <button type="button" className={cls} aria-label={'Copy: '+text} onClick={click}>

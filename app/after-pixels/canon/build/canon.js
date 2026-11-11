@@ -617,10 +617,15 @@
       if (!copy) return /* @__PURE__ */ React2.createElement("span", { className: cls }, children);
       const text = React2.Children.toArray(children).filter((c) => typeof c === "string" || typeof c === "number").join("");
       const click = () => {
-        if (onCopy) onCopy(text);
-        else if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {
+        if (!onCopy) {
+          if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {
+          });
+          setDone(true);
+          return;
+        }
+        Promise.resolve(onCopy(text)).then((ok) => {
+          if (ok !== false) setDone(true);
         });
-        setDone(true);
       };
       return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, "aria-label": "Copy: " + text, onClick: click }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-in" }, /* @__PURE__ */ React2.createElement("span", { className: "a" }, children), done && /* @__PURE__ */ React2.createElement("span", { className: "b", "aria-hidden": "true" }, "Copied"))), /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-live", role: "status" }, done ? "Copied" : ""));
     }
@@ -6620,9 +6625,9 @@
     { id: "grok", name: "Grok", route: "settings", noun: "custom connector", look: "New Connector", subs: ["grok", "grokbot"] },
     { id: "grokbot", name: "Grok Bot", route: "chat", sub: true },
     { id: "muse", name: "Muse", route: "chat" },
-    // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command.
-    { id: "openclaw", name: "OpenClaw", route: "command", first: "openclaw gateway stop", cmd: (url) => "openclaw mcp add after-pixels --url " + url + " --transport streamable-http --auth oauth", login: "openclaw mcp login after-pixels" },
-    { id: "hermes", name: "Hermes Agent", route: "command", cmd: (url) => "hermes mcp add after-pixels --url " + url + " --auth oauth" },
+    // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command and starting it again the last.
+    { id: "openclaw", name: "OpenClaw", route: "command", first: "openclaw gateway stop", last: "openclaw gateway start", cmd: (url) => "openclaw mcp add after-pixels --url " + url + " --transport streamable-http --auth oauth", login: "openclaw mcp login after-pixels" },
+    { id: "hermes", name: "Hermes Agent", route: "command", remote: true, cmd: (url) => "hermes mcp add after-pixels --url " + url + " --auth oauth" },
     { id: "other", name: "Other", route: "settings" }
   ];
   const gsApp = (id) => GS_APPS.find((a) => a.id === id);
@@ -6686,8 +6691,11 @@
     s.removeAllRanges();
     s.addRange(r);
   };
-  const GsCopyBox = ({ text, label }) => {
+  const gsRefusedLine = (what) => "Copy didn’t work. Select the " + what + " and copy it yourself.";
+  const GsCopyBox = ({ text, label, address, what = "command" }) => {
     const [done, setDone] = React$1.useState(false);
+    const [refused, setRefused] = React$1.useState(false);
+    React$1.useEffect(() => setRefused(false), [text]);
     const [more, setMore] = React$1.useState(false);
     const box = React$1.useRef(null);
     React$1.useLayoutEffect(() => {
@@ -6703,11 +6711,14 @@
         if (ro) ro.disconnect();
       };
     }, [text]);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy-field" + (more ? " has-more" : "") }, /* @__PURE__ */ React$1.createElement("div", { ref: box, className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": label, onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, text)), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
-      lbCopy([text]);
-      setDone(true);
-      setTimeout(() => setDone(false), 2400);
-    } }, "Copy"));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy" + (address ? " is-address" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-copy-field" + (more ? " has-more" : "") }, /* @__PURE__ */ React$1.createElement("div", { ref: box, className: "mcp-in gs-num-text gs-copy-addr", role: "textbox", "aria-readonly": "true", tabIndex: 0, "aria-label": label, onFocus: (e) => gsSelectAll(e.currentTarget), onClick: (e) => gsSelectAll(e.currentTarget) }, text)), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", done, doneLabel: "Copied", onClick: () => {
+      Promise.resolve(lbCopy([text])).then((ok) => {
+        setRefused(!ok);
+        setDone(!!ok);
+        if (ok) setTimeout(() => setDone(false), 2400);
+        else if (box.current) gsSelectAll(box.current);
+      });
+    } }, "Copy"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-copy-refused", role: "status" }, refused ? gsRefusedLine(what) : ""));
   };
   const gsReqEd = (gs, r) => r.page ? null : r.e || (r.kind === "game" && gs.view !== "out" ? edList(gs, r.gid)[0] : null);
   const gsReqDone = (gs, r) => {
@@ -6726,38 +6737,24 @@
       gs.go("signup");
     } }, "Start free"))));
   };
-  const gsJump = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
-    const h = el.querySelector("h2");
-    if (h) {
-      if (!h.hasAttribute("tabindex")) h.setAttribute("tabindex", "-1");
-      h.focus({ preventScroll: true });
-    }
-  };
-  const GsSay = ({ text, wrap, copy }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy, onCopy: copy ? (t) => lbCopy([t]) : void 0 }, text));
-  const GS_HW_OVERVIEW = [
-    ["hw-setup", "Setup", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add After Pixels to your app once")],
-    ["hw-start", "Start", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Type", /* @__PURE__ */ React$1.createElement(GsSay, { copy: true, text: gsPromptText({ kind: "games" }) }))],
-    ["hw-playing", "Playing", /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Pick a game and play it in the chat")]
-  ];
-  const gsPermStep = (a) => "If " + (a.id === "other" ? "your AI" : a.name) + " asks you before each move, you may be able to change that in its permissions.";
+  const GsCopyBubble = ({ children, wrap, edge }) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy: true, edge, onCopy: (t) => lbCopy([t]) }, children);
+  const gsPermStep = (a) => "If " + (a.id === "other" ? "your AI" : a.name) + " asks before each move, you may be able to change that in its permissions.";
   const GS_SIGN_IN = "sign in with your After Pixels account.";
   const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : a.route === "chat" ? ["The message to send", "Add this MCP server: " + GS.link] : ["The command to run", a.first || a.cmd(GS.link)];
   const gsAppSteps = (a) => [
     ...a.route === "settings" ? [
-      a.id === "other" ? "In your app, find where it adds a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
+      a.id === "other" ? "In your app, find where you add a connector, plugin or MCP server." : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Add a " + a.noun + " in " + a.name + ". Look for ", /* @__PURE__ */ React$1.createElement("b", null, a.look), "."),
       /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Paste the address and name it ", /* @__PURE__ */ React$1.createElement("b", null, "After Pixels"), "."),
       "Connect, then " + GS_SIGN_IN
     ] : a.route === "chat" ? [
       "In a chat with " + a.name + ", send the message.",
       "Open the link " + a.name + " sends, and " + GS_SIGN_IN
     ] : [
-      "Run the command.",
+      a.first ? "Stop " + a.name + "’s Gateway." : "Run the command.",
       ...a.first ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this command."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.cmd(GS.link), label: "The command to run" }))] : [],
-      a.login ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this to sign in, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.login, label: "The sign-in command" })) : "Open the link it prints, and " + GS_SIGN_IN
+      a.login ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this to sign in, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.login, label: "The sign-in command" })) : "Open the link it prints, and " + GS_SIGN_IN,
+      ...a.remote ? ["On a remote machine, copy the address the browser ends on back into the terminal."] : [],
+      ...a.last ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Start ", a.name, "’s Gateway again."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.last, label: "The command to start the Gateway" }))] : []
     ],
     gsPermStep(a)
   ];
@@ -6798,31 +6795,32 @@
         if (ro) ro.disconnect();
       };
     }, [tile]);
-    const ask = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Do this once, and the games are there in any chat. ", gs.view === "out" && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "You need a free After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signup") }, "Start free"), " "), "Which app do you use?");
+    const ask = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "You need a free After Pixels account. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("signup") }, "Start free"), ". Which app do you use?");
     return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", ref: wrap }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Setup", sub: ask, label: "Which app do you use?", className: "hw-apps" }, GS_APPS.filter((x) => !x.sub).map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "hw-app", "aria-pressed": tile === x.id, "aria-expanded": tile === x.id, "aria-controls": "hw-pick", "aria-label": x.name, onClick: (e) => {
       setTile(tile === x.id ? null : x.id);
       if (tile !== x.id) gsRevealTile(e.currentTarget);
-    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, a.id === "other" ? "Add After Pixels to your app" : "Add After Pixels to " + a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) })), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small hw-help" }, "Stuck? ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("legal", { doc: "contact" }) }, "Get in touch"), " and tell us which app you use."))));
+    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : a.route === "chat" ? "message" : "command" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet.")))));
   };
   const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
   const GS_START_DELVE = {
-    title: "The Goblin Warren beneath Ashford Mill",
-    first: "Ashford Mill stands silent at dusk, its great wheel locked and still.",
-    rest: " For three generations it has ground the valley’s grain, and the village has never known it to stop. Tonight the millpond lies black and flat, and the only sound is a thin chant rising through the stones.",
-    heroes: [{ name: "Bryn", line: "Fighter" }, { name: "Wren", line: "Rogue" }, { name: "Aldric", line: "Wizard" }],
-    // The user, 2026-11-11: "i just want more delve content". The run goes on past the pick, as Wren's recorded play does (the chime run, a strong Dexterity hit).
+    title: "Delve #5: The Labyrinth of Crete",
+    first: "Every year King Minos of Crete makes Athens send young people to feed the Minotaur, a monster half man and half bull, kept in a maze called the Labyrinth.",
+    rest: " This year you are one of them.",
+    heroes: [{ name: "Leon", line: "Wrestler" }, { name: "Ione", line: "Bull-leaper" }, { name: "Mira", line: "Temple scholar" }],
     more: [
-      { from: "user", text: "Wren" },
-      { from: "ai", text: ["You are Wren, a rogue, quick-handed and hard to see in the dark.", "Beneath the mill a low tunnel runs into the dark, strung with wires hung with tin chimes. One brush and the whole warren will hear you."] },
-      { from: "user", text: "I slip between the wires without touching one" },
-      { from: "ai", text: "You turn sideways and thread through, and the chimes hang still. At the far end, firelight flickers on the walls of the warren.", after: [{ type: "roll", label: "Dexterity", roll: 16, mod: 3, target: 12, result: "hit", outcome: "Strong hit" }] }
+      { from: "user", text: "Ione" },
+      { from: "ai", text: "You are Ione, a bull-leaper, quick and light and very hard to hit." },
+      { from: "user", text: "I wait for a gap in the moving walls, then dart through" },
+      { from: "ai", text: "You watch the stone slide and pick your gap. You dart for it, but it’s the wrong one. A wall swings shut and catches you across the ribs.", after: [{ type: "roll", label: "Agility", roll: 7, mod: 3, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Ione’s health", value: 17, max: 21, tone: "health" }] }] },
+      { from: "user", text: "I try again and spend my inspiration" },
+      { from: "ai", text: "The stone shudders and then stops, with a straight path laid down the hall.", after: [{ type: "roll", label: "Agility", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success · inspiration spent" }] }
     ]
   };
   const gsStartTag = (g) => {
     const t = g.tags[0];
     return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "open", go: false }, t === "FIRST" ? "First " + g.ed[0] + " free" : "Pass");
   };
-  const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap: true, copy: true, edge: true, onCopy: (t) => lbCopy([t]) }, say);
+  const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(GsCopyBubble, { wrap: true, edge: true }, say);
   const GsStartChat = ({ title, say, turns, caption }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
   const GsStart = () => {
     const gs = useGs();
@@ -6843,31 +6841,24 @@
       {
         title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
-        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it straight away. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
-        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest + " …"], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
+        caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
+        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
       }
-    )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.")));
+    )), /* @__PURE__ */ React$1.createElement("p", { className: "hw-chg" }, /* @__PURE__ */ React$1.createElement(GsAgainGlyph, null), /* @__PURE__ */ React$1.createElement("span", null, "Change games whenever you like. In a new chat, type ", /* @__PURE__ */ React$1.createElement("b", null, "Play After Pixels"), " again to pick up an unfinished game where you left off.")));
   };
   const GsAgainGlyph = () => /* @__PURE__ */ React$1.createElement("svg", { className: "mcp-ico hw-chg-ic", viewBox: "0 0 24 24", width: "20", height: "20", "aria-hidden": "true", focusable: "false", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: "M19 12a7 7 0 1 1-2.1-5" }), /* @__PURE__ */ React$1.createElement("path", { d: "M17.5 3v4.2h-4.2" }));
   const GS_HW_PLAY = [
     ["Pick a game", "Choose from your AI’s list, or ask by name."],
-    ["Play it in the chat", "Tell your AI your move. The game plays it out."],
-    ["It saves as you go", "Stop any time. Come back later and carry on."],
-    ["When it ends", "Your result is saved. Share it or pick another."]
+    ["Play in the chat", "Tell your AI your move. The game plays it out."],
+    ["Stop any time", "Your game saves as you go. Come back later and carry on."],
+    ["Finish and share", "The game keeps your record. Share it, or pick another game."]
   ];
-  const gsTopV = () => {
-    const n = parseInt(new URLSearchParams(location.search).get("top") || "1", 10);
-    return n >= 0 && n <= 4 ? n : 1;
-  };
   const GS_TOP_ART = ["word", "escape", "delve", "casebook", "where", "barrow", "derelict", "hunter", "murder"];
   const GsBandCovers = () => /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-covers", "aria-hidden": "true" }, [...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: "hw-band-cover", dangerouslySetInnerHTML: { __html: GS_ART[a].svg } }) : null));
-  const GsTopSay = () => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { copy: true, onCopy: (t) => lbCopy([t]) }, gsPromptText({ kind: "games" }));
-  const GS_TOP_LOGOS = ["chatgpt", "claude", "gemini", "grok", "muse", "openclaw", "hermes"];
-  const GsTop = ({ v }) => /* @__PURE__ */ React$1.createElement("header", { className: "hw-top2 is-v" + v }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), v === 4 ? /* @__PURE__ */ React$1.createElement("div", { className: "hw-t4" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "Add After Pixels to ChatGPT, Claude or another AI app once. Then, in any chat, type"), /* @__PURE__ */ React$1.createElement("p", { className: "hw-t4-say" }, /* @__PURE__ */ React$1.createElement(GsTopSay, null)), /* @__PURE__ */ React$1.createElement("div", { className: "hw-band is-thin" }, /* @__PURE__ */ React$1.createElement(GsBandCovers, null)), /* @__PURE__ */ React$1.createElement("p", { className: "hw-t-after" }, "Pick a game, and your AI plays it with you.")) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "Add After Pixels to ", v === 2 ? "your AI app" : "ChatGPT, Claude or another AI app", " once. Then, in any chat, type"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-band" + (v === 3 ? " is-quiet" : "") + (v === 2 ? " has-apps" : "") }, v === 2 ? /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-apps", "aria-hidden": "true" }, GS_TOP_LOGOS.map((a) => /* @__PURE__ */ React$1.createElement("span", { key: a, className: "hw-band-app" }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: a, size: 22 })))) : null, /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-games" }, /* @__PURE__ */ React$1.createElement(GsBandCovers, null), /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-on" }, /* @__PURE__ */ React$1.createElement(GsTopSay, null)))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-t-after" }, "Pick a game, and your AI plays it with you.")));
+  const GsTop = () => /* @__PURE__ */ React$1.createElement("header", { className: "hw-top2" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "Add After Pixels once to ChatGPT, Claude or another AI app. Then, in any chat, type"), /* @__PURE__ */ React$1.createElement("div", { className: "hw-band" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-games" }, /* @__PURE__ */ React$1.createElement(GsBandCovers, null), /* @__PURE__ */ React$1.createElement("span", { className: "hw-band-on" }, /* @__PURE__ */ React$1.createElement(GsCopyBubble, null, gsPromptText({ kind: "games" }))))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-t-after" }, "Pick a game, and your AI plays it with you."));
   const GsConnect = () => {
     const gs = useGs();
-    const top = gsTopV();
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, top === 0 ? /* @__PURE__ */ React$1.createElement("div", { className: "hw-top" }, /* @__PURE__ */ React$1.createElement("header", { className: "gs-stack-md hw-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "How it works"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-lead" }, "You play every game here by chatting with your own AI, in ChatGPT, Claude or another app. Add After Pixels there once, then ask to play.")), /* @__PURE__ */ React$1.createElement("nav", { className: "hw-over", "aria-label": "On this page" }, /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-over-card" }, /* @__PURE__ */ React$1.createElement("ul", { className: "hw-over-list" }, GS_HW_OVERVIEW.map(([id, sec, body]) => /* @__PURE__ */ React$1.createElement("li", { key: id }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-over-line" }, body), /* @__PURE__ */ React$1.createElement(DS.TextLink, { className: "hw-over-go", onClick: () => gsJump(id), "aria-label": "Go to " + sec }, sec))))))) : /* @__PURE__ */ React$1.createElement(GsTop, { v: top }), /* @__PURE__ */ React$1.createElement("section", { id: "hw-setup", className: "hw-sec" }, /* @__PURE__ */ React$1.createElement(GsSetup, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-start", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsStart, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-playing", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", tabIndex: -1 }, "Playing"), /* @__PURE__ */ React$1.createElement(DS.StepCards, null, GS_HW_PLAY.map(([title, line], i) => /* @__PURE__ */ React$1.createElement(DS.StepCard, { key: title, art: /* @__PURE__ */ React$1.createElement("img", { src: "assets/how-it-works/step-" + (i + 1) + ".svg", alt: "" }), title, line }))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-more" }, "Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others let you try the start. The rest come with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".")), /* @__PURE__ */ React$1.createElement("section", { className: "hw-sec gs-stack-md", "aria-labelledby": "hw-who" }, /* @__PURE__ */ React$1.createElement("h2", { id: "hw-who", className: "mcp-t-sec" }, "Who does what"), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-who" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "Your AI"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "The game engine"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "It sets the rules, throws the dice and keeps your results. If your AI tells it differently, the game’s record is the one that counts."))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "To disconnect, remove After Pixels where you added it. Your results and history stay in your account.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "If something doesn’t work, write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and say which app you use.")))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(GsTop, null), /* @__PURE__ */ React$1.createElement("section", { id: "hw-setup", className: "hw-sec" }, /* @__PURE__ */ React$1.createElement(GsSetup, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-start", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsStart, null)), /* @__PURE__ */ React$1.createElement("section", { id: "hw-playing", className: "hw-sec gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", tabIndex: -1 }, "Playing"), /* @__PURE__ */ React$1.createElement(DS.StepCards, null, GS_HW_PLAY.map(([title, line], i) => /* @__PURE__ */ React$1.createElement(DS.StepCard, { key: title, art: /* @__PURE__ */ React$1.createElement("img", { src: "assets/how-it-works/step-" + (i + 1) + ".svg", alt: "" }), title, line }))), /* @__PURE__ */ React$1.createElement("p", { className: "hw-more" }, "Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others give you their first edition free. Everything else comes with ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".")), /* @__PURE__ */ React$1.createElement("section", { className: "hw-sec gs-stack-md", "aria-labelledby": "hw-who" }, /* @__PURE__ */ React$1.createElement("h2", { id: "hw-who", className: "mcp-t-sec" }, "Who does what"), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-who" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "Your AI"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.")), /* @__PURE__ */ React$1.createElement("div", { className: "hw-who-row" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, "The game engine"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "The game sets the rules, throws the dice and keeps your record. If your AI ever says otherwise, the game’s record is the one that counts."))), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small" }, "Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Disconnecting"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "To disconnect, remove After Pixels where you added it. Your results and history stay in your account.")), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, "Help"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, "Stuck? Write to ", /* @__PURE__ */ React$1.createElement("a", { href: "mailto:" + GS_SUPPORT }, GS_SUPPORT), " and tell us which app you use.")))));
   };
   const GsPlayBox = ({ id }) => {
     const gs = useGs();
@@ -7456,15 +7447,17 @@
     document.body.appendChild(ta);
     ta.select();
     ta.setSelectionRange(0, t.length);
+    const forced = /[?&]copy=fail(&|$)/.test(window.location.search);
     let ok = false;
     try {
-      ok = document.execCommand("copy");
+      ok = !forced && document.execCommand("copy");
     } catch (e) {
     }
     document.body.removeChild(ta);
     if (was && was !== document.body && was.focus) was.focus({ preventScroll: true });
-    if (!ok && navigator.clipboard) navigator.clipboard.writeText(t).catch(() => {
-    });
+    if (ok) return true;
+    if (forced || !navigator.clipboard) return false;
+    return navigator.clipboard.writeText(t).then(() => true, () => false);
   };
   const LbShare = ({ lines }) => {
     const [open, setOpen] = React$1.useState(false);
