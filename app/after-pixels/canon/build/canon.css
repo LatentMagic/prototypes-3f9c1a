@@ -3173,7 +3173,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wh-now { container: whnow / inline-size; position: relative; }
 .wh-now > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
 .wh-now .wh-globe svg, .wh-now .wh-chart svg { width: var(--fig); height: var(--fig); }
-/* KEEP: the last guess lines up with the tops of the globe and chart, never with their captions, so a long hint (four lines at 320–390) never pulls it down: the block sits where it does with a one-line hint, whatever the hint's length. */
+/* KEEP: the last guess lines up with the tops of the globe and chart, never with their captions, so a caption that wraps ("Not used yet" at 280px, or a long caption anywhere) never pulls it down. */
 .wh-row { --fig: 64px; display: flex; flex-wrap: nowrap; justify-content: center; align-items: flex-start; gap: 12px; min-width: 0; align-self: center; }
 .wh-figs { display: flex; align-items: flex-start; justify-content: center; gap: 8px; }
 .wh-last { display: grid; justify-items: center; gap: 4px; text-align: center; }
@@ -3188,7 +3188,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .wh-now .wh-say { font-size: 12px; }
   .wh-row { column-gap: clamp(12px, 8cqi, 40px); }
   .wh-figs { --fig: 48px; column-gap: clamp(8px, 5cqi, 24px); }
-  .wh-figs .wh-say { max-width: 76px; }
+  .wh-figs .wh-say { max-width: 76px; text-wrap: balance; }
   .wh-last b { font-size: 22px; }
   .wh-last .wh-km { font-size: 13px; }
 }
