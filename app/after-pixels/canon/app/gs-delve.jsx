@@ -153,7 +153,7 @@ const dlBuild = (s) => {
   return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
 const dlKindSay = (k) => (k === 'Weakness' ? 'Weak spot' : k);
-const dlSay = (r, foe = true) => r.story ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
+const dlSay = (r, foe = true) => r.story && r.over ? 'The threat filled in ' + r.room + ': ' + r.name : r.story ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
 // natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
@@ -505,10 +505,27 @@ const dlFallBuild = (m, v) => { if (v === 0) return m;
 const DlFallCanvas = ({ s, m }) => { const [v, setV] = React.useState(0); const mv = React.useMemo(() => dlFallBuild(m, v), [m, v]);
   return (<div className="dfc"><div className="dfc-tabs" role="group" aria-label="Versions">{DL_FALL_VERSIONS.map((n, i) => <button key={n} type="button" aria-pressed={v === i} onClick={() => setV(i)}>{n}</button>)}</div>
     <DlCard key={v} s={s} m={mv} noHold={v === 1} /></div>); };
+// ---- Canvas: a run lost to the threat filling up, by what filled it (the owner picks). The seed is GS_SESSIONS['delve-overrun-canvas'], the hard play.
+// SAMPLE: versions 2 and 3 add a last going-back to the warren (The ritual +1) after the shrine cavern; versions 4 and 5 end the run at the warren's story turn.
+// The record keeps no turn for a move or a story turn, so the cross versions add the mark as a turn of its own on that room, not pressable, nothing held open. ----
+const dlCrossOn = (m, name) => { const at = m.stops.length - 1;
+  const x = { story: true, over: true, inert: true, t: m.turns.length + 1, stop: at, room: m.stops[at].name, name };
+  const stops = m.stops.map((st, i) => (i === at ? { ...st, turns: [...st.turns, x] } : st));
+  const mom = Object.fromEntries(dlMoments([...m.turns, x], 'overrun').map((y) => [y.r.t, y]));
+  return { ...m, stops, mom }; };
+const DL_OVER_VERSIONS = ['1. A roll filled it (as now, kept)', '2. Going back filled it, as now', '3. Going back filled it, a cross', '4. A story turn filled it, as now', '5. A story turn filled it, a cross'];
+const DlOverCanvas = ({ s }) => { const [v, setV] = React.useState(0);
+  const mv = React.useMemo(() => { const L = s.lines; const turn = L.findIndex((l) => l[0] === 'Turn');
+    const back = [...L, ['Room', 'Doubled back to the warren', 'The ritual +1']]; const story = L.slice(0, turn + 1);
+    const lines = v === 0 ? L : v <= 2 ? back : story; const m = dlBuild({ ...s, lines });
+    return v === 2 ? dlCrossOn(m, 'Going back') : v === 4 ? dlCrossOn(m, 'The turncoat joins') : m; }, [s, v]);
+  return (<div className="dfc"><div className="dfc-tabs" role="group" aria-label="Versions">{DL_OVER_VERSIONS.map((n, i) => <button key={n} type="button" aria-pressed={v === i} onClick={() => setV(i)}>{n}</button>)}</div>
+    <DlCard key={v} s={s} m={mv} noHold={v === 2 || v === 4} /></div>); };
 const DlBody = ({ s }) => {
   const gs = useGs();
   const m = React.useMemo(() => dlBuild(s), [s]); const c = React.useMemo(() => dlSheet(s, m), [s, m]);
   if (s.fallCanvas) return <DlFallCanvas s={s} m={m} />;
+  if (s.overCanvas) return <DlOverCanvas s={s} />;
   return <>
     <div className="dv4-lay"><DlSheet c={c} streak={m.run} /><DlCard s={s} m={m} roll={gs.route && gs.route.roll} turn={gs.route && gs.route.turn} /></div>
     <GsMoves s={s} />
@@ -629,6 +646,8 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
   ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
+// The canvas of a run lost to the threat filling up: the hard play, drawn five ways by DlOverCanvas.
+GS_SESSIONS['delve-overrun-canvas'] = { ...GS_SESSIONS['delve-hard'], overCanvas: true };
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's health are sample; the route follows the edition's order.
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.

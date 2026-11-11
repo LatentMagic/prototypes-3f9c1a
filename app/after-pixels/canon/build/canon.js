@@ -3139,7 +3139,7 @@
     return { stops, rolls, turns, hp, run, end, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
   };
   const dlKindSay = (k) => k === "Weakness" ? "Weak spot" : k;
-  const dlSay = (r, foe = true) => r.story ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
+  const dlSay = (r, foe = true) => r.story && r.over ? "The threat filled in " + r.room + ": " + r.name : r.story ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
   const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.story ? /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: "miss", value: "✕", selected: sel, surface, size, className: "is-story" }) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
@@ -3500,11 +3500,33 @@
     const mv = React$1.useMemo(() => dlFallBuild(m, v), [m, v]);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dfc" }, /* @__PURE__ */ React$1.createElement("div", { className: "dfc-tabs", role: "group", "aria-label": "Versions" }, DL_FALL_VERSIONS.map((n, i) => /* @__PURE__ */ React$1.createElement("button", { key: n, type: "button", "aria-pressed": v === i, onClick: () => setV(i) }, n))), /* @__PURE__ */ React$1.createElement(DlCard, { key: v, s, m: mv, noHold: v === 1 }));
   };
+  const dlCrossOn = (m, name) => {
+    const at = m.stops.length - 1;
+    const x = { story: true, over: true, inert: true, t: m.turns.length + 1, stop: at, room: m.stops[at].name, name };
+    const stops = m.stops.map((st, i) => i === at ? { ...st, turns: [...st.turns, x] } : st);
+    const mom = Object.fromEntries(dlMoments([...m.turns, x], "overrun").map((y) => [y.r.t, y]));
+    return { ...m, stops, mom };
+  };
+  const DL_OVER_VERSIONS = ["1. A roll filled it (as now, kept)", "2. Going back filled it, as now", "3. Going back filled it, a cross", "4. A story turn filled it, as now", "5. A story turn filled it, a cross"];
+  const DlOverCanvas = ({ s }) => {
+    const [v, setV] = React$1.useState(0);
+    const mv = React$1.useMemo(() => {
+      const L = s.lines;
+      const turn = L.findIndex((l) => l[0] === "Turn");
+      const back = [...L, ["Room", "Doubled back to the warren", "The ritual +1"]];
+      const story = L.slice(0, turn + 1);
+      const lines = v === 0 ? L : v <= 2 ? back : story;
+      const m = dlBuild({ ...s, lines });
+      return v === 2 ? dlCrossOn(m, "Going back") : v === 4 ? dlCrossOn(m, "The turncoat joins") : m;
+    }, [s, v]);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dfc" }, /* @__PURE__ */ React$1.createElement("div", { className: "dfc-tabs", role: "group", "aria-label": "Versions" }, DL_OVER_VERSIONS.map((n, i) => /* @__PURE__ */ React$1.createElement("button", { key: n, type: "button", "aria-pressed": v === i, onClick: () => setV(i) }, n))), /* @__PURE__ */ React$1.createElement(DlCard, { key: v, s, m: mv, noHold: v === 2 || v === 4 }));
+  };
   const DlBody = ({ s }) => {
     const gs = useGs();
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
     if (s.fallCanvas) return /* @__PURE__ */ React$1.createElement(DlFallCanvas, { s, m });
+    if (s.overCanvas) return /* @__PURE__ */ React$1.createElement(DlOverCanvas, { s });
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const DL_NO_HOVER = () => {
@@ -3688,6 +3710,7 @@
         ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
       ]
     };
+    GS_SESSIONS["delve-overrun-canvas"] = { ...GS_SESSIONS["delve-hard"], overCanvas: true };
     GS_SESSIONS["delve-hazard"] = {
       ...GS_SESSIONS.delve,
       noEd: true,
@@ -8799,6 +8822,11 @@
         c.setConnected(true);
         c.setReview({ ed: "won-by-use" });
         c.go("session", { id: "delve-won-by-use" });
+      } },
+      { group: "Screens", id: "delve-overrun-canvas", label: "7. Session page: Delve, a run lost to the threat filling up, by what filled it (canvas)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-overrun-canvas" });
       } },
       { group: "Screens", id: "delve-story-fall-canvas", label: "7. Session page: Delve, a run lost to a story turn, drawn three ways (canvas)", stage: (c) => {
         c.setView("pass");
