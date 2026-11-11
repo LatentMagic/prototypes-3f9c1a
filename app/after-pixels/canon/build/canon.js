@@ -6113,7 +6113,7 @@
         tags: [],
         pitch: { h: "Work out the missing words in a chain where each joins the next.", ps: [
           "A line of words has its two ends showing, and the words between are yours to find. Each one joins the next, either fused into a single word, like rainbow, or as a pair that belong together, like bow tie.",
-          "Start with a word next to either end and work inward. Each word you find lets you guess the word beside it, and a wrong guess shows you the next letter of that word."
+          "Start with a word next to either end and work inward. Each word you find lets you guess the word beside it."
         ] },
         who: { ai: "Draws the whole line after every guess, with the words you can try next marked, and goes through every link once the chain is solved.", server: "Keeps the chain secret, shows only the letters you’ve earned, and gives a word away once its letters run out." },
         week: { title: "Today’s chain", line: "You get both ends and every first letter.", session: "chain-today" }
