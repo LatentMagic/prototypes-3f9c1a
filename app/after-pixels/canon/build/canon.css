@@ -2522,33 +2522,23 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-need { margin: 0; text-wrap: pretty; }
 
 /* How it works. One rhythm: each section is a 24px heading and one surface under it. Colour comes in only at the step
-   pictures, the speech bubbles and the app logos. */
+   pictures, the speech bubbles and the app marks. */
 .hw-sec { scroll-margin-top: calc(80px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); }
 .hw-sec h2:focus { outline: none; }
 .hw-sec p { margin: 0; }
 
-/* Setup: the app picker, a CardRow of logo tiles. The picked tile is filled, as a main Button is; the rest are outlined. */
+/* Setup: the app picker, a CardRow of tiles, each an app mark and its name. The picked tile is filled, as a main Button is; the rest are outlined. */
 .hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
 .hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
 @container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
 .hw-apps .mcp-crow-sub { max-width: 70ch; }
-/* KEEP: the intro sentence runs up to the one visible arrow with the row's ordinary gap, at every width. The design system's CardRow hides the arrow that cannot move with visibility, which still holds its 44px, so it is taken out of the layout here; the sentence then re-wraps when the other arrow appears. */
-.hw-apps .mcp-crow-btn[style*="hidden"] { display: none; }
 .hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
-.hw-app > svg, .hw-app > .hw-mask { flex: none; }
-.hw-app > span:not(.hw-mask) { max-width: 100%; overflow-wrap: normal; }
+.hw-app > svg { flex: none; }
+.hw-app > span { max-width: 100%; overflow-wrap: normal; }
 .hw-app[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
 .hw-app:active { transform: scale(.97); }
 .hw-app:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
 @media (hover: hover) { .hw-app:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
-@container mcp-crow (max-width: 420px) { .hw-app { min-height: 56px; padding: 0; } .hw-app > span:not(.hw-mask) { display: none; } }
-.hw-img { display: block; flex: none; object-fit: contain; }
-/* Grok's mark comes as two files: the light mark on the page, the dark mark on the picked (off-white) tile. */
-.hw-img-grok.is-on { display: none; }
-.hw-app[aria-pressed="true"] .hw-img-grok.is-on { display: block; }
-.hw-app[aria-pressed="true"] .hw-img-grok.is-off { display: none; }
-/* A logo kept as its own file, painted in the tile's text colour through its shape. */
-.hw-mask { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
 
 /* The picked app's card, its notch on the top edge pointing at the picked tile. One anatomy for every route: title row,
    the thing to copy, then the steps. */
