@@ -1494,7 +1494,7 @@
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
-    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live" },
+    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
   const gsSessStatus = (s) => ({ kind: s.loss ? "bad" : "ok", label: s.result });
@@ -3571,6 +3571,11 @@
         ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
       ]
     };
+    GS_SESSIONS["delve-won-by-use"] = (() => {
+      const base = GS_SESSIONS.delve.lines;
+      const cut = base.findIndex((l) => l[0] === "Ability");
+      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
+    })();
     GS_SESSIONS["delve-hard"] = {
       ...GS_SESSIONS.delve,
       loss: true,
@@ -3626,8 +3631,7 @@
         ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 9 vs 14, missed"],
         ["Dexterity", "Miss", "d20s 5 and 7, kept 7 + 3 = 10 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
         ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 12 vs 14, missed"],
-        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"],
-        ["Ability", "Used sneak attack", "Grizzletooth: health 1 → 0"]
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
       ]
     };
     GS_SESSIONS["delve-hazard"] = {
@@ -8736,6 +8740,12 @@
         c.setReview({ ed: "hard" });
         c.go("session", { id: "delve-hard" });
       } },
+      { group: "Screens", id: "session-delve-won-by-use", label: "7. Session page: Delve, won by an ability (the last turn is a use)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "won-by-use" });
+        c.go("session", { id: "delve-won-by-use" });
+      } },
       { group: "Screens", id: "session-delve-hazard", label: "7. Session page: Delve, the Briar Keep (a hazard room, the thorn stair)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -8861,6 +8871,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ ed: "hard" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-won-by-use", label: "Delve in your library, won by an ability (the last turn is a use)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "won-by-use" });
         c.go("delve", { page: "record" });
       } },
       { group: "Library", id: "library-delve-failed", label: "Delve in your library, this week’s run fell", stage: (c) => {

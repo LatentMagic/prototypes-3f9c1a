@@ -575,6 +575,10 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Strength', 'Miss', 'd20 3 + 3 = 6 vs 12', 'Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23'], ['Strength', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23'], ['Strength', 'Miss', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23'],
   ['Strength', 'Miss', 'd20 6 + 3 = 9 vs 12', 'Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23']] };
+// The won play whose last turn is a use: the average run's play to the shrine cavern, then the lamp oil, a hit, and Bryn's ultimate (one use a run, kept for last) taking Grizzletooth's last health.
+// Its sheet marks the ultimate used. Picked by its states only: it is no Config → This edition option.
+GS_SESSIONS['delve-won-by-use'] = (() => { const base = GS_SESSIONS.delve.lines; const cut = base.findIndex((l) => l[0] === 'Ability');
+  return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 4 → 2'], ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12'], ['Ability', 'Used shield bash', 'Grizzletooth: health 1 → 0']] }; })();
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 5 },
   // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
@@ -595,8 +599,7 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
-  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21'],
-  ['Ability', 'Used sneak attack', 'Grizzletooth: health 1 → 0']] };
+  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's health are sample; the route follows the edition's order.
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.
