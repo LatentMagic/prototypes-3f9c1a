@@ -165,18 +165,8 @@ export const GsPlayDialog = () => {
 // The words a player types, drawn as a sent message. A non-breaking space joins it to the word before, so "type" and the
 // bubble never split.
 // Every bubble on this page copies (`copy`).
-// A copying bubble that shows the refused line under itself and selects its words. The wrapper adds no box of its own.
-const GsCopyBubble = ({ children, wrap, edge }) => {
-  const root = React.useRef(null);
-  const [refused, setRefused] = React.useState(false);
-  const onCopy = (t) => Promise.resolve(lbCopy([t])).then((ok) => {
-    setRefused(!ok);
-    const words = root.current && root.current.querySelector('.mcp-say .a');
-    if (!ok && words) gsSelectAll(words);
-    return ok;
-  });
-  return <span className="gs-copy-bubble" ref={root}><DS.SpeechBubble wrap={wrap} copy edge={edge} onCopy={onCopy}>{children}</DS.SpeechBubble><span className="gs-small gs-copy-refused" role="status">{refused ? gsRefusedLine('text') : ''}</span></span>;
-};
+// KEEP: a copying bubble shows no refused line: on a refused copy it simply doesn't say "Copied" (the user, 2026-11-11). Its words stay unselectable, since a tap copies.
+const GsCopyBubble = ({ children, wrap, edge }) => <DS.SpeechBubble wrap={wrap} copy edge={edge} onCopy={(t) => lbCopy([t])}>{children}</DS.SpeechBubble>;
 // Every route's last step: the app may ask before each move, and the player may be able to stop that.
 const gsPermStep = (a) => 'If ' + (a.id === 'other' ? 'your AI' : a.name) + ' asks you before each move, you may be able to change that in its permissions.';
 const GS_SIGN_IN = 'sign in with your After Pixels account.';

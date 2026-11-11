@@ -6737,17 +6737,7 @@
       gs.go("signup");
     } }, "Start free"))));
   };
-  const GsCopyBubble = ({ children, wrap, edge }) => {
-    const root = React$1.useRef(null);
-    const [refused, setRefused] = React$1.useState(false);
-    const onCopy = (t) => Promise.resolve(lbCopy([t])).then((ok) => {
-      setRefused(!ok);
-      const words = root.current && root.current.querySelector(".mcp-say .a");
-      if (!ok && words) gsSelectAll(words);
-      return ok;
-    });
-    return /* @__PURE__ */ React$1.createElement("span", { className: "gs-copy-bubble", ref: root }, /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy: true, edge, onCopy }, children), /* @__PURE__ */ React$1.createElement("span", { className: "gs-small gs-copy-refused", role: "status" }, refused ? gsRefusedLine("text") : ""));
-  };
+  const GsCopyBubble = ({ children, wrap, edge }) => /* @__PURE__ */ React$1.createElement(DS.SpeechBubble, { wrap, copy: true, edge, onCopy: (t) => lbCopy([t]) }, children);
   const gsPermStep = (a) => "If " + (a.id === "other" ? "your AI" : a.name) + " asks you before each move, you may be able to change that in its permissions.";
   const GS_SIGN_IN = "sign in with your After Pixels account.";
   const gsAppCopy = (a) => a.route === "settings" ? ["The address to paste", GS.link] : a.route === "chat" ? ["The message to send", "Add this MCP server: " + GS.link] : ["The command to run", a.first || a.cmd(GS.link)];
