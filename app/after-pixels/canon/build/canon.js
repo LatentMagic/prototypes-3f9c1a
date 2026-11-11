@@ -6620,9 +6620,9 @@
     { id: "grok", name: "Grok", route: "settings", noun: "custom connector", look: "New Connector", subs: ["grok", "grokbot"] },
     { id: "grokbot", name: "Grok Bot", route: "chat", sub: true },
     { id: "muse", name: "Muse", route: "chat" },
-    // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command.
-    { id: "openclaw", name: "OpenClaw", route: "command", first: "openclaw gateway stop", cmd: (url) => "openclaw mcp add after-pixels --url " + url + " --transport streamable-http --auth oauth", login: "openclaw mcp login after-pixels" },
-    { id: "hermes", name: "Hermes Agent", route: "command", cmd: (url) => "hermes mcp add after-pixels --url " + url + " --auth oauth" },
+    // OpenClaw signs in only with its Gateway stopped, so stopping it is the first command and starting it again the last.
+    { id: "openclaw", name: "OpenClaw", route: "command", first: "openclaw gateway stop", last: "openclaw gateway start", cmd: (url) => "openclaw mcp add after-pixels --url " + url + " --transport streamable-http --auth oauth", login: "openclaw mcp login after-pixels" },
+    { id: "hermes", name: "Hermes Agent", route: "command", remote: true, cmd: (url) => "hermes mcp add after-pixels --url " + url + " --auth oauth" },
     { id: "other", name: "Other", route: "settings" }
   ];
   const gsApp = (id) => GS_APPS.find((a) => a.id === id);
@@ -6738,9 +6738,11 @@
       "In a chat with " + a.name + ", send the message.",
       "Open the link " + a.name + " sends, and " + GS_SIGN_IN
     ] : [
-      "Run the command.",
+      a.first ? "Stop " + a.name + "’s Gateway." : "Run the command.",
       ...a.first ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this command."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.cmd(GS.link), label: "The command to run" }))] : [],
-      a.login ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this to sign in, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.login, label: "The sign-in command" })) : "Open the link it prints, and " + GS_SIGN_IN
+      a.login ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Run this to sign in, then open the link it prints."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.login, label: "The sign-in command" })) : "Open the link it prints, and " + GS_SIGN_IN,
+      ...a.remote ? ["On a remote machine, copy the address the browser ends on back into the terminal."] : [],
+      ...a.last ? [/* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("span", null, "Start ", a.name, "’s Gateway again."), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: a.last, label: "The command to start the Gateway" }))] : []
     ],
     gsPermStep(a)
   ];
