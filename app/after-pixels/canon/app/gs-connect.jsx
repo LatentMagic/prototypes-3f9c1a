@@ -260,6 +260,7 @@ const GsSetup = () => {
 // narrower, the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
 // KEEP: each picture opens on its first turn, the typed line (ChatPicture start="top"), at the system's height, and scrolls to the reply.
 // KEEP: each chat's typed line is a copying SpeechBubble; the chat itself is inert, a picture.
+// KEEP: these four are a picture of the games list, not the live one: the real reply lists every game with the player's progress (games_library), so the build takes the list from there.
 const GS_START_GAMES = ['word', 'mystery', 'delve', 'salvage'];
 const GS_START_DELVE = {
   title: 'The Goblin Warren beneath Ashford Mill',
