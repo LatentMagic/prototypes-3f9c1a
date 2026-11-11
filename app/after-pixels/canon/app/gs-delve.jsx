@@ -225,7 +225,14 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
       </div></div></div></div>); };
 const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
   if (r.story) return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className="dv3-held is-ledger is-mo"><i className="dv3-mk" role="img" aria-label="Key moment" />
-    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">Last blow</p><p className="dv3-n">{r.name + ' · ' + r.harm + ' damage · 0 hit points left'}</p></div></div></div></div></div>);
+    <div className="dv3-lh"><DlDie r={r} size={72} surface="popup" /><div className="dv3-lht"><div className="dv3-hk"><p className="dv3-k">{r.over ? 'Last turn' : 'Last blow'}</p>{r.full ? <p className="dv3-n">{r.name}</p> : <p className="dv3-n">{r.name + ' · ' + r.harm + ' damage · 0 hit points left'}</p>}</div></div></div>
+    {r.full && <dl className="dv3-dl">
+      <div><dt>Room</dt><dd>{dlRoomSaid(r)}</dd></div>
+      {r.text && <div><dt>What happened</dt><dd>{r.text}</dd></div>}
+      {r.choice && <div><dt>Chose</dt><dd>{r.choice}</dd></div>}
+      {r.harm > 0 && <div><dt>Damage</dt><dd>{r.harm} <span>{'HP ' + r.hpAfter}</span></dd></div>}
+      {r.threat && <div><dt>{r.threatName}</dt><dd>{'+' + r.threat} <span>{r.threatAfter}</span></dd></div>}
+    </dl>}</div></div>);
   const x = m.mom[r.t]; const tcls = r.fumble ? 'fumble' : r.tier; const mt = dlMeterOf(r);
   const foeRow = r.foe && <div className="dv3-foe"><dt>Foe roll</dt><dd><DlFoeDie f={r.foe} /><b className={r.foe.hit ? 'is-err' : ''}>{r.foe.hit ? 'Hit you for ' + r.foe.dmg : 'Missed you'}</b> <span>vs defence {r.foe.dc}</span></dd></div>;
   const ledger = (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className={'dv3-held is-ledger' + (x ? ' is-mo' : '')}>{x && <i className="dv3-mk" role="img" aria-label="Key moment" />}
@@ -521,11 +528,27 @@ const DlOverCanvas = ({ s }) => { const [v, setV] = React.useState(0);
     return v === 2 ? dlCrossOn(m, 'Going back') : v === 4 ? dlCrossOn(m, 'The turncoat joins') : m; }, [s, v]);
   return (<div className="dfc"><div className="dfc-tabs" role="group" aria-label="Versions">{DL_OVER_VERSIONS.map((n, i) => <button key={n} type="button" aria-pressed={v === i} onClick={() => setV(i)}>{n}</button>)}</div>
     <DlCard key={v} s={s} m={mv} noHold={v === 2 || v === 4} /></div>); };
+// ---- Canvas, round 2 of the loss mark: the cross opens like a die, showing what the game knows of the turn that ended the run (the owner, 2026-11-11:
+// "it doesn't make any sense to me to have a die that's not clickable"). SAMPLE: the turn texts, choices and numbers are made up for the canvas. ----
+const dlOpenCross = (m, x, end) => { const at = m.stops.length - 1; const t = { story: true, full: true, t: m.turns.length + 1, stop: at, room: m.stops[at].name, back: m.stops[at].back, ...x };
+  const turns = [...m.turns, t]; const stops = m.stops.map((st, i) => (i === at ? { ...st, turns: [...st.turns, t] } : st));
+  const mom = Object.fromEntries(dlMoments(turns, end).map((y) => [y.r.t, y.r === t ? { ...y, kicker: t.over ? 'Last turn' : 'Last blow' } : y]));
+  return { ...m, stops, turns, mom }; };
+const DL_OPEN_VERSIONS = ['1. Killed by a story turn', '2. A story turn filled the threat', '3. Going back filled the threat'];
+const DlOpenCanvas = ({ s }) => { const [v, setV] = React.useState(0);
+  const sv = v === 0 ? GS_SESSIONS['delve-story-fall'] : s;
+  const mv = React.useMemo(() => { const L = s.lines; const turn = L.findIndex((l) => l[0] === 'Turn');
+    if (v === 0) return dlOpenCross(dlBuild(sv), { name: 'The dead panel', text: 'The medbay door is sealed. A crank panel hangs off the wall, sparking.', choice: 'Crank the panel by hand', harm: 4, hpAfter: '0/21' }, 'fallen');
+    if (v === 1) return dlOpenCross(dlBuild({ ...s, lines: L.slice(0, turn) }), { over: true, name: 'The turncoat joins', text: 'A scrawny goblin chained to the wall wrenches free and turns on his masters.', choice: 'Let him run ahead', threat: 2, threatName: 'The ritual', threatAfter: '12/12' }, 'overrun');
+    return dlOpenCross(dlBuild({ ...s, lines: [...L, ['Room', 'Doubled back to the warren', 'The ritual +1']] }), { over: true, name: 'Went back to the warren', threat: 1, threatName: 'The ritual', threatAfter: '12/12' }, 'overrun'); }, [s, sv, v]);
+  return (<div className="dfc"><div className="dfc-tabs" role="group" aria-label="Versions">{DL_OPEN_VERSIONS.map((n, i) => <button key={n} type="button" aria-pressed={v === i} onClick={() => setV(i)}>{n}</button>)}</div>
+    <DlCard key={v} s={sv} m={mv} /></div>); };
 const DlBody = ({ s }) => {
   const gs = useGs();
   const m = React.useMemo(() => dlBuild(s), [s]); const c = React.useMemo(() => dlSheet(s, m), [s, m]);
   if (s.fallCanvas) return <DlFallCanvas s={s} m={m} />;
   if (s.overCanvas) return <DlOverCanvas s={s} />;
+  if (s.openCanvas) return <DlOpenCanvas s={s} />;
   return <>
     <div className="dv4-lay"><DlSheet c={c} streak={m.run} /><DlCard s={s} m={m} roll={gs.route && gs.route.roll} turn={gs.route && gs.route.turn} /></div>
     <GsMoves s={s} />
@@ -648,6 +671,7 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
 // The canvas of a run lost to the threat filling up: the hard play, drawn five ways by DlOverCanvas.
 GS_SESSIONS['delve-overrun-canvas'] = { ...GS_SESSIONS['delve-hard'], overCanvas: true };
+GS_SESSIONS['delve-loss-opens-canvas'] = { ...GS_SESSIONS['delve-hard'], openCanvas: true };
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's health are sample; the route follows the edition's order.
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.
