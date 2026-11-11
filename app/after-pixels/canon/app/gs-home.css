@@ -135,6 +135,7 @@
 .gs-hero-field { --on: 0; }
 .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-art:active)) { --on: 1; }
 .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
+.gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-art:active)) .gs-hero-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); }
 @media (hover: hover) { .gs-hero-field:hover { --on: 1; } .gs-hero-field:hover .gs-hero-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); } }
 .gs-hero-name { position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0; color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
 .gs-hero-name:active { opacity: .55; }
