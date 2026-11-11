@@ -20,7 +20,7 @@ const GS_APPS = [
   { id: 'chatgpt', name: 'ChatGPT', route: 'settings', noun: 'plugin', look: 'Add custom MCP server' },
   { id: 'claude', name: 'Claude', route: 'settings', noun: 'custom connector', look: 'Add custom connector' },
   // Gemini's form has no name field, so it skips "name it After Pixels" (checked by the user, 2026-11-11).
-  { id: 'gemini', name: 'Gemini', route: 'settings', noun: 'connected app', look: 'Custom', via: 'Connected apps', noName: true },
+  { id: 'gemini', name: 'Gemini', route: 'settings', noun: 'custom app', look: 'Custom', via: 'Connected apps', noName: true },
   { id: 'grok', name: 'Grok', route: 'settings', noun: 'custom connector', look: 'New Connector', subs: ['grok', 'grokbot'] },
   { id: 'grokbot', name: 'Grok Bot', route: 'chat', sub: true },
   { id: 'muse', name: 'Muse', route: 'chat' },
