@@ -392,7 +392,7 @@ const KitApp = () => {
   const appTree = (
     <GsCtx.Provider value={gs}>
       <div className={'gs-root' + (fitted ? ' fitted' : '')} ref={rootRef}>
-        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? <PgBar /> : !fitted && <GsTopBar />)}
+        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? (!isDemoHidden() && <PgBar />) : !fitted && <GsTopBar />)}
         {fitted ? <FitView /> : <>
         {Cand && Cand.Screen
           ? <Cand.Screen api={gs} />
