@@ -605,7 +605,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-cb-search input::placeholder{color:var(--cb-ink2)}
 @media (prefers-reduced-motion:reduce){.mcp-cb-choice,.mcp-cb-go,button.mcp-cb-chip{transition:none}:is(button,a):is(.mcp-cb-choice,.mcp-cb-go,.mcp-cb-chip):active{transform:none}}
 
-/* KEEP: CardRow. Previous and Next sit on the heading line, on the right, centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre), in every row, with or without a sentence under the heading. The sentence takes the full width below, so it never shares a line with the arrows and never re-wraps as they change (the user, 2026-11-11: "banned - the text lolling around as I flick between"). An arrow that cannot move keeps its space. */
+/* KEEP: CardRow. Previous and Next sit on the heading line, on the right, centred on the title's first line (padding puts that line's centre 22px down, the arrows' centre), in every row, with or without a sentence under the heading. The sentence takes the full width below, so it never shares a line with the arrows and never re-wraps as they change (the user, 2026-11-11: "banned - the text lolling around as I flick between"). Both arrows always show; one that cannot move is dimmed. */
 .mcp-crow{container:mcp-crow/inline-size;display:grid;gap:var(--space-4);min-width:0}
 .mcp-crow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);row-gap:var(--space-2);align-items:start}
 .mcp-crow-title{grid-column:1;grid-row:1;min-height:44px;padding-block:calc((44px - 1.15em) / 2)}

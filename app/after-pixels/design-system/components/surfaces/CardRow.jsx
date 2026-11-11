@@ -27,8 +27,8 @@ export function CardRow({title,sub,label,as='h2',kind='cards',children,className
     <div className="mcp-crow-head">
       <T className="mcp-t-sec mcp-crow-title">{title}</T>
       {at.over&&<div className="mcp-crow-nav">
-        <button ref={prev} type="button" className="mcp-crow-btn" aria-label={'Previous, '+name} style={at.start?{visibility:'hidden'}:null} onClick={()=>move(-1)}><Icon name="next" style={{transform:'rotate(180deg)'}}/></button>
-        <button ref={next} type="button" className="mcp-crow-btn" aria-label={'Next, '+name} style={at.end?{visibility:'hidden'}:null} onClick={()=>move(1)}><Icon name="next"/></button>
+        <button ref={prev} type="button" className="mcp-crow-btn" aria-label={'Previous, '+name} aria-disabled={at.start||undefined} style={at.start?{opacity:.3,cursor:'default'}:null} onClick={()=>move(-1)}><Icon name="next" style={{transform:'rotate(180deg)'}}/></button>
+        <button ref={next} type="button" className="mcp-crow-btn" aria-label={'Next, '+name} aria-disabled={at.end||undefined} style={at.end?{opacity:.3,cursor:'default'}:null} onClick={()=>move(1)}><Icon name="next"/></button>
       </div>}
       {sub&&<p className="mcp-crow-sub">{sub}</p>}
     </div>
