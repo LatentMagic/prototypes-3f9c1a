@@ -10697,6 +10697,7 @@
   const fitQuery = () => new URLSearchParams(window.location.search);
   const isFitted = () => fitQuery().get("fit") === "1";
   const isFramed = () => fitQuery().get("pgframe") === "1";
+  const isDemoHidden = () => fitQuery().has("nodemo");
   const fitSubs = /* @__PURE__ */ new Set();
   const useFit = () => {
     const [, bump] = React$1.useState(0);
@@ -12127,11 +12128,11 @@
     }, [forcedMobile, showIndex]);
     const Cand = window.KitCandidate || null;
     if (Cand && Cand.bind) Cand.bind(gs);
-    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root" + (fitted ? " fitted" : ""), ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? /* @__PURE__ */ React$1.createElement(PgBar, null) : !fitted && /* @__PURE__ */ React$1.createElement(GsTopBar, null)), fitted ? /* @__PURE__ */ React$1.createElement(FitView, null) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), /* @__PURE__ */ React$1.createElement(GsDemoBar, null)))));
+    const appTree = /* @__PURE__ */ React$1.createElement(GsCtx.Provider, { value: gs }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-root" + (fitted ? " fitted" : ""), ref: rootRef }, GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? /* @__PURE__ */ React$1.createElement(PgBar, null) : !fitted && /* @__PURE__ */ React$1.createElement(GsTopBar, null)), fitted ? /* @__PURE__ */ React$1.createElement(FitView, null) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, Cand && Cand.Screen ? /* @__PURE__ */ React$1.createElement(Cand.Screen, { api: gs }) : /* @__PURE__ */ React$1.createElement(GsArrival, { key: idx.current, name: route.name, quick: backNav.current }), (GS_FOOTER.includes(route.name) || !GS_ROUTES.includes(route.name)) && /* @__PURE__ */ React$1.createElement(GsFooter, null), /* @__PURE__ */ React$1.createElement("div", { id: "gs-announce", className: "gs-vh", role: "status", "aria-live": "polite" }), !gsWithout(GS_LISTING, route) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(GsPlayPopup, null), !isDemoHidden() && /* @__PURE__ */ React$1.createElement(GsDemoBar, null)))));
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, showIndex ? /* @__PURE__ */ React$1.createElement(StatesIndexView, { reason: landing, groups: STATE_GROUPS, onGo: goState, onDismiss: () => {
       setLanding(null);
       setShown(null);
-    } }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && !isFramed() && /* @__PURE__ */ React$1.createElement(
+    } }) : forcedMobile ? /* @__PURE__ */ React$1.createElement("div", { className: "kit-stage" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-clip", "data-app": isApp ? "1" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-phone-screen" }, appTree), isApp && /* @__PURE__ */ React$1.createElement(KitPhoneBars, null)))) : appTree, ConfigLauncher && !isFramed() && !isDemoHidden() && /* @__PURE__ */ React$1.createElement(
       ConfigLauncher,
       {
         statesGroups: STATE_GROUPS,

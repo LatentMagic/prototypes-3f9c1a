@@ -91,7 +91,7 @@ import { registerDelve } from './gs-delve.jsx';
 import { PgBar, pgActive, pgTabName, pgSubscribe } from './playground.jsx';
 import { initGsSalvage } from './gs-salvage.jsx';
 import { initGsAccuse } from './gs-accuse.jsx';
-import { FitView, isFramed, useFit } from './fit.jsx';
+import { FitView, isFramed, isDemoHidden, useFit } from './fit.jsx';
 import { initGsWhere } from './gs-where.jsx';
 import { initGsChain } from './gs-chain.jsx';
 import { initGsCommon } from './gs-common.jsx';
@@ -401,7 +401,7 @@ const KitApp = () => {
         <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
         {!gsWithout(GS_LISTING, route) && <>
           <GsPlayPopup />
-          <GsDemoBar />
+          {!isDemoHidden() && <GsDemoBar />}
         </>}
         </>}
       </div>
@@ -424,7 +424,7 @@ const KitApp = () => {
       ) : appTree}
 
       {/* KEEP: the Config pill stays fixed to the window in the phone frame too (mounted outside it: the frame's transform would capture position: fixed). */}
-      {ConfigLauncher && !isFramed() && <ConfigLauncher
+      {ConfigLauncher && !isFramed() && !isDemoHidden() && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => { setLanding({ kind: 'index', name: 'index' }); setShown({ kind: 'index' }); }}
         onReset={resetAndShow}
