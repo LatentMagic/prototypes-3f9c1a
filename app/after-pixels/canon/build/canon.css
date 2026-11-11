@@ -2386,12 +2386,13 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-mask { display: block; background: currentColor; -webkit-mask: center / contain no-repeat; mask: center / contain no-repeat; }
 
 /* The picked app's card, its notch on the top edge pointing at the picked tile. One anatomy for every route: title row,
-   the thing to copy, the steps, and the help line. */
+   the thing to copy, then the steps. */
 .hw-pick { position: relative; }
 .hw-notch { position: absolute; z-index: 1; top: -7px; width: 14px; height: 14px; background: var(--card); border-left: 1px solid var(--line); border-top: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); transition: left var(--time-swap) var(--ease); pointer-events: none; }
 .hw-pick-card.mcp-card { justify-items: stretch; gap: 16px; }
-.hw-help { margin: 0; }
 .hw-pick-head { display: grid; gap: 16px; }
+/* The card title's linking words, Add and to, are set in the body font and weight, so the names stand out (the user, 2026-11-11). */
+.hw-soft { font-family: var(--font-text); font-weight: 400; }
 .hw-pick-head > .hw-seg { order: -1; }
 .hw-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 /* KEEP: from a 640px window (the button width rule) the Grok switch sits at the right of the title's row at its buttons' natural
@@ -2402,7 +2403,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 .hw-eyebrow { text-transform: uppercase; margin: 0; }
 .hw-pick-body { display: grid; gap: 16px; align-items: start; }
-/* KEEP: the card is one column at every width: the title, the switch, the thing to copy, the steps, then the help line. A copy box
+/* KEEP: the card is one column at every width: the title, the switch, the thing to copy, then the steps. A copy box
    stays one line with Copy beside it at every width; its text scrolls sideways, and a fade at the right edge shows while more is hidden. */
 .hw-pick-card { container: hw-card / inline-size; }
 .gs-copy-field { position: relative; min-width: 0; }

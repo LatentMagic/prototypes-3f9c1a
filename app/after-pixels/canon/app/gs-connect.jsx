@@ -245,7 +245,7 @@ const GsSetup = () => {
         <i className="hw-notch" ref={notch} aria-hidden="true" />
         <DS.Card className="hw-pick-card">
           <div className="hw-pick-head">
-            <h3 className="mcp-t-card">{a.id === 'other' ? 'Add After Pixels to your app' : 'Add After Pixels to ' + a.name}</h3>
+            <h3 className="mcp-t-card"><span className="hw-soft">Add</span> After Pixels <span className="hw-soft">to</span> {a.id === 'other' ? 'your app' : a.name}</h3>
             {t.subs && (
               <div className="hw-seg" role="group" aria-label="Which Grok">
                 {t.subs.map((id) => <DS.Button key={id} aria-pressed={sub === id} variant={sub === id ? 'main' : 'secondary'} onClick={() => setSub(id)}>{GS_SUB_LABEL[id]}</DS.Button>)}
@@ -257,7 +257,6 @@ const GsSetup = () => {
             <GsSteps items={gsAppSteps(a)} />
             {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see <b>{a.look}</b>? Not every plan or country offers it yet.</p>}
           </div>
-          <p className="gs-small hw-help">Stuck? <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>Get in touch</button> and tell us which app you use.</p>
         </DS.Card>
       </div>
     </div>
