@@ -177,7 +177,7 @@ const gsAppCopy = (a) => a.route === 'settings' ? ['The address to paste', GS.li
   : ['The command to run', a.first || a.cmd(GS.link)];
 const gsAppSteps = (a) => [
   ...(a.route === 'settings' ? [
-    a.id === 'other' ? 'In your app, find where it adds a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}<b>{a.look}</b>.</>,
+    a.id === 'other' ? 'In your app, find where you add a connector, plugin or MCP server.' : <>{'Add a ' + a.noun + ' in ' + a.name + '. Look for '}<b>{a.look}</b>.</>,
     <>Paste the address and name it <b>After Pixels</b>.</>,
     'Connect, then ' + GS_SIGN_IN,
   ] : a.route === 'chat' ? [
@@ -231,7 +231,7 @@ const GsSetup = () => {
     return () => { if (track) track.removeEventListener('scroll', follow); if (ro) ro.disconnect(); };
   }, [tile]);
   // KEEP: the account sentence shows to everyone (MCPG-021: How it works is the same page for everyone). With no account the games list but every move is refused.
-  const ask = <>Do this once, and the games are there in any chat. You need a free After Pixels account. <button type="button" className="gs-inlink" onClick={() => gs.go('signup')}>Start free</button>. Which app do you use?</>;
+  const ask = <>You need a free After Pixels account. <button type="button" className="gs-inlink" onClick={() => gs.go('signup')}>Start free</button>. Which app do you use?</>;
   return (
     <div className="gs-stack-md" ref={wrap}>
       <DS.CardRow title="Setup" sub={ask} label="Which app do you use?" className="hw-apps">
@@ -255,7 +255,7 @@ const GsSetup = () => {
           <div className="hw-pick-body">
             <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : a.route === 'chat' ? 'message' : 'command'} /></div>
             <GsSteps items={gsAppSteps(a)} />
-            {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see this option? Not every plan or country offers it yet.</p>}
+            {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see <b>{a.look}</b>? Not every plan or country offers it yet.</p>}
           </div>
           <p className="gs-small hw-help">Stuck? <button type="button" className="gs-inlink" onClick={() => gs.go('legal', { doc: 'contact' })}>Get in touch</button> and tell us which app you use.</p>
         </DS.Card>
@@ -317,10 +317,10 @@ const GsStart = () => {
             return { name: g.name, line: g.blurb, art: GS_ART[g.art].svg, meta: gsStartTag(g) };
           }) }] }]} />
         <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
-          caption={<>Name a game, or a past edition, and your AI starts it straight away. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
+          caption={<>Name a game, or a past edition, and your AI starts it. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
           turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
       </DS.CardRow>
-      <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type it again to pick up an unfinished game where you left off.</span></p>
+      <p className="hw-chg"><GsAgainGlyph /><span>Change games whenever you like. In a new chat, type Play After Pixels again to pick up an unfinished game where you left off.</span></p>
     </>
   );
 };
@@ -334,9 +334,9 @@ const GsAgainGlyph = () => (
 // Playing: a game from start to end, one StepCard a step, each with its still picture.
 const GS_HW_PLAY = [
   ['Pick a game', 'Choose from your AI’s list, or ask by name.'],
-  ['Play it in the chat', 'Tell your AI your move. The game plays it out.'],
-  ['It saves as you go', 'Stop any time. Come back later and carry on.'],
-  ['When it ends', 'Your result is saved. Share it or pick another.'],
+  ['Play in the chat', 'Tell your AI your move. The game plays it out.'],
+  ['Stop any time', 'Your game saves as you go. Come back later and carry on.'],
+  ['Finish and share', 'The game keeps your record. Share it, or pick another game.'],
 ];
 
 // ---- The page's top: the first thing a visitor lands on, so it shows the games rather than describing them. ----
@@ -348,7 +348,7 @@ const GsBandCovers = () => <span className="hw-band-covers" aria-hidden="true">{
 const GsTop = () => (
   <header className="hw-top2">
     <h1 className="gs-h1">How it works</h1>
-    <p className="gs-lead">Add After Pixels to ChatGPT, Claude or another AI app once. Then, in any chat, type</p>
+    <p className="gs-lead">Add After Pixels once to ChatGPT, Claude or another AI app. Then, in any chat, type</p>
     <div className="hw-band">
       <span className="hw-band-games"><GsBandCovers /><span className="hw-band-on"><GsCopyBubble>{gsPromptText({ kind: 'games' })}</GsCopyBubble></span></span>
     </div>
@@ -373,20 +373,20 @@ export const GsConnect = () => {
           {GS_HW_PLAY.map(([title, line], i) => <DS.StepCard key={title} art={<img src={'assets/how-it-works/step-' + (i + 1) + '.svg'} alt="" />} title={title} line={line} />)}
         </DS.StepCards>
         {/* The editions sentence and the Pass sentence stay in one paragraph: the first alone reads as all free. */}
-        <p className="hw-more">Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others let you try the start. The rest come with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>
+        <p className="hw-more">Fresh games daily and weekly, and every past edition is there to play. Some games are free, and others give you their first edition free. Everything else comes with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>
       </section>
       <section className="hw-sec gs-stack-md" aria-labelledby="hw-who">
         <h2 id="hw-who" className="mcp-t-sec">Who does what</h2>
         <DS.Card className="hw-who">
           <div className="hw-who-row"><h3 className="mcp-t-card">Your AI</h3><p className="gs-muted">Your AI does the talking, and the game relies on it to pass each move on accurately. If your app lets you choose a model, a mid-range one does that reliably. The lightest may lose track of the game, and the top ones aren’t needed.</p></div>
-          <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">It sets the rules, throws the dice and keeps your results. If your AI tells it differently, the game’s record is the one that counts.</p></div>
+          <div className="hw-who-row"><h3 className="mcp-t-card">The game engine</h3><p className="gs-muted">The game sets the rules, throws the dice and keeps your record. If your AI ever says otherwise, the game’s record is the one that counts.</p></div>
         </DS.Card>
         <p className="gs-small">Your AI never asks you to pay. Playing uses your own AI plan and counts towards its usage limits. After Pixels never charges for that usage.</p>
       </section>
       <div className="gs-band">
         <div className="gs-grid2">
           <section className="gs-stack-sm"><h2 className="mcp-t-card">Disconnecting</h2><p className="gs-muted">To disconnect, remove After Pixels where you added it. Your results and history stay in your account.</p></section>
-          <section className="gs-stack-sm"><h2 className="mcp-t-card">Help</h2><p className="gs-muted">If something doesn’t work, write to <a href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a> and say which app you use.</p></section>
+          <section className="gs-stack-sm"><h2 className="mcp-t-card">Help</h2><p className="gs-muted">Stuck? Write to <a href={'mailto:' + GS_SUPPORT}>{GS_SUPPORT}</a> and tell us which app you use.</p></section>
         </div>
       </div>
     </main>
