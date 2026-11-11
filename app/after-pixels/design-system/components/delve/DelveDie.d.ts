@@ -20,6 +20,6 @@ export interface DelveDieProps{
   className?:string;
 }
 export declare function DelveDie(props:DelveDieProps):JSX.Element;
-export interface DelveUseDieProps{foe?:boolean;selected?:boolean;surface?:'card'|'popup';size?:number;className?:string}
+export interface DelveUseDieProps{/** Filled green: the use that ends a won run. */won?:boolean;foe?:boolean;selected?:boolean;surface?:'card'|'popup';size?:number;className?:string}
 /** A turn that used an ability, the ultimate or gear, with no roll. */
 export declare function DelveUseDie(props:DelveUseDieProps):JSX.Element;

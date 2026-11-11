@@ -235,15 +235,15 @@
     const RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
     const SPARKLE = "M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z";
     const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-5, -4.5] : adv ? [-7, -6] : [-3.5, -3];
-    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
       const big = size >= 64;
       const adv = other != null && !big && !selected;
       const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
-      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", fumble && "is-fumble", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
       return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
     }
-    function DelveUseDie({ foe = false, selected = false, surface = "card", size = 36, className = "" }) {
-      return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", foe, selected, surface, size, className });
+    function DelveUseDie({ won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+      return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", won, foe, selected, surface, size, className });
     }
     function DelveFoeDie({ value, other, hit = false, surface = "card", size = 34, className = "" }) {
       const cls = ["mcp-dl-foe", other != null && "has-other", hit && "is-hit", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
@@ -3140,7 +3140,7 @@
   const dlSay = (r, foe = true) => r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, className: r.won ? "is-won" : "" }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
+  const DlDie = ({ r, size = 36, sel, foe = true, surface }) => r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { foe: foe && !!r.foe, selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, crit: r.crit, fumble: r.fumble, foe: foe && !!r.foe, selected: sel, surface, size });
   const DlDieBtn = ({ r, size, act, on, foe, lit }) => /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
@@ -3304,12 +3304,12 @@
   const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: "Room " + (i + 1) }));
   const DlEmptyRoute = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(false) }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": rooms }, "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (st.i === 0 ? " is-on" : " is-far") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": "Room " + st.num + (st.i === 0 ? ", First room" : ", not reached") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.i === 0 ? "First room" : " ")), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))))));
   const DlEmptyList = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvL-list", "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvL-row" + (st.i === 0 ? " is-open is-first" : " is-far") + (st.i === rooms - 1 ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num", "aria-hidden": "true" }, st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "First room"), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, "Room 1, First room, no rolls")) : /* @__PURE__ */ React$1.createElement("div", { className: "dvL-head", role: "img", "aria-label": "Room " + st.num + ", not reached" }, /* @__PURE__ */ React$1.createElement(DlEmptyHex, null)))))));
-  const DlCard = ({ s, m, roll }) => {
+  const DlCard = ({ s, m, roll, turn }) => {
     const ref = React$1.useRef(null);
     const list = useDlList(ref);
     const rooms = m.turns.length ? m.stops.length : s.tracks && s.tracks.rooms || 5;
     const beside = useDlBeside(ref, rooms);
-    const [sel, setSel] = React$1.useState(() => roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null);
+    const [sel, setSel] = React$1.useState(() => turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length ? m.turns.length : null);
     const [hov, setHov] = React$1.useState(null);
     const on = React$1.useMemo(() => ({ sel: setSel, hov: setHov }), []);
     const stacked = list || !beside;
@@ -3485,7 +3485,7 @@
     const gs = useGs();
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const DL_NO_HOVER = () => {
   };
@@ -3516,13 +3516,13 @@
     return [said, uses ? uses === 1 ? "a use" : uses + " uses" : ""].filter(Boolean).join(", and ");
   };
   const DlNowRoute = ({ m, open }) => {
-    const on = { sel: (t) => open(m.turns[t - 1].n), hov: DL_NO_HOVER };
+    const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
     const [ref, cols] = useDlNowCols(m.stops.length);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, "aria-label": "The way you went" }, m.stops.map((st, i) => {
       const keys = st.turns.filter((r) => m.mom[r.t]);
       const rest = st.turns.filter((r) => !m.mom[r.t]);
       const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === m.stops.length - 1 ? " is-row-end" : "");
-      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.turns.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.n, r, act: null, on, size: 34, foe: true }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => r.use ? /* @__PURE__ */ React$1.createElement(DlNowUseMark, { key: r.t }) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + r.tier }))));
+      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.turns.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act: null, on, size: 34, foe: true }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => r.use ? /* @__PURE__ */ React$1.createElement(DlNowUseMark, { key: r.t }) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + r.tier }))));
     }));
   };
   const DlNowEmptyRoute = ({ rooms, reached }) => {
@@ -3535,7 +3535,7 @@
     const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => dlBuild(s), [s]);
-    const open = (roll) => gs.go("session", roll ? { id: sid, roll } : { id: sid });
+    const open = (turn) => gs.go("session", turn ? { id: sid, turn } : { id: sid });
     const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, m.turns.length ? /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open }) : /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms: s.tracks && s.tracks.rooms || 5, reached: true })));
   };
@@ -3574,7 +3574,7 @@
     GS_SESSIONS["delve-won-by-use"] = (() => {
       const base = GS_SESSIONS.delve.lines;
       const cut = base.findIndex((l) => l[0] === "Ability");
-      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
+      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12", "Struck back: d20 8 vs 10, missed"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
     })();
     GS_SESSIONS["delve-hard"] = {
       ...GS_SESSIONS.delve,

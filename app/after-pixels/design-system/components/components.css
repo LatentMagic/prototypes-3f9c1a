@@ -597,6 +597,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-dl-die.is-fumble .hx{stroke:var(--error);stroke-width:2.25}.mcp-dl-die.is-fumble .nm{fill:var(--error)}
 /* KEEP: a use has no hero roll, so no grade colour: the empty hex with a muted sparkle where the numbers are. */
 .mcp-dl-die .gl{fill:var(--muted);stroke:none}
+.mcp-dl-die.is-won .hx{fill:var(--success);stroke:none}.mcp-dl-die.is-won .gl{fill:var(--success-on)}
 .mcp-dl-die .gh{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke}
 /* The foe's roll: a red hex behind the die, outside the advantage hex. */
 .mcp-dl-die .fo{fill:color-mix(in srgb,var(--error) 50%,var(--card));stroke:var(--error);stroke-opacity:.9;stroke-width:1;vector-effect:non-scaling-stroke}

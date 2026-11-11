@@ -440,7 +440,3 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 .dv6-band { font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dv6-band span { font-weight: 400; color: var(--muted); white-space: nowrap; }
 .dvS-line.is-foe .dvS-meter.is-band { max-width: none; }
-
-/* A closing use on a won run: the sparkle die drawn green as a strong roll is, its sparkle dark on the fill. */
-.mcp-dl-die.is-use.is-won .hx { fill: var(--success); stroke: none; }
-.mcp-dl-die.is-use.is-won .gl { fill: var(--success-on); }

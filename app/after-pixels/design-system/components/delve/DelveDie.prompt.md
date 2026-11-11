@@ -10,6 +10,7 @@ DelveDie is one turn of a Delve run, drawn as a hexagon on the route. DelveUseDi
 ```
 
 - Grade is the fill: green strong, yellow weak, empty miss. The number is always drawn, so colour is never the only signal. A use has no grade, so no fill and no number.
+- `won` fills a use's sparkle green: only the use that ends a won run, as its closing key moment. Every other use stays grey.
 - One sparkle stands for every use: an ability, the ultimate, gear of any kind. Never give a kind its own icon.
 - The foe's red hex shows that the foe struck back, hit or missed; the held roll says which. It never appears on the held roll's large die.
 - Draw it 24-52px on a route, 72px in the held roll with `surface="popup"`. The die is a picture: wrap it in a button for a tap target, and label that button.

@@ -697,6 +697,7 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-dl-die.is-fumble .hx{stroke:var(--error);stroke-width:2.25}.mcp-dl-die.is-fumble .nm{fill:var(--error)}
 /* KEEP: a use has no hero roll, so no grade colour: the empty hex with a muted sparkle where the numbers are. */
 .mcp-dl-die .gl{fill:var(--muted);stroke:none}
+.mcp-dl-die.is-won .hx{fill:var(--success);stroke:none}.mcp-dl-die.is-won .gl{fill:var(--success-on)}
 .mcp-dl-die .gh{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke}
 /* The foe's roll: a red hex behind the die, outside the advantage hex. */
 .mcp-dl-die .fo{fill:color-mix(in srgb,var(--error) 50%,var(--card));stroke:var(--error);stroke-opacity:.9;stroke-width:1;vector-effect:non-scaling-stroke}
@@ -1157,10 +1158,6 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 .dv6-band { font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dv6-band span { font-weight: 400; color: var(--muted); white-space: nowrap; }
 .dvS-line.is-foe .dvS-meter.is-band { max-width: none; }
-
-/* A closing use on a won run: the sparkle die drawn green as a strong roll is, its sparkle dark on the fill. */
-.mcp-dl-die.is-use.is-won .hx { fill: var(--success); stroke: none; }
-.mcp-dl-die.is-use.is-won .gl { fill: var(--success-on); }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
 /* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).

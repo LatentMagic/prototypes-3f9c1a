@@ -6,12 +6,12 @@ const RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
 const SPARKLE = 'M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z';
 // KEEP: the foe's red hex sits one step out from whatever is behind the die (nothing, the advantage hex, or a natural 20's rim), so no two lines run together.
 const foeAt = (crit, adv) => (crit ? (adv ? [-10, -9.5] : [-5, -4.5]) : adv ? [-7, -6] : [-3.5, -3]);
-export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, foe = false, selected = false, surface = 'card', size = 36, className = '' }) {
+export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, won = false, foe = false, selected = false, surface = 'card', size = 36, className = '' }) {
   const big = size >= 64;
   // KEEP: selected, a two-dice die stands alone and the foe's hex is cleared, so nothing crosses the selection ring; from 64px the foe's hex is cleared too and the second die sits at the die's corner.
   const adv = other != null && !big && !selected;
   const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
-  const cls = ['mcp-dl-die', 'is-' + kind, crit && 'is-crit', fumble && 'is-fumble', selected && 'is-sel', surface === 'popup' && 'is-popup', className].filter(Boolean).join(' ');
+  const cls = ['mcp-dl-die', 'is-' + kind, crit && 'is-crit', fumble && 'is-fumble', won && kind === 'use' && 'is-won', selected && 'is-sel', surface === 'popup' && 'is-popup', className].filter(Boolean).join(' ');
   return (
     <svg className={cls} viewBox="-5 -5 46 50" width={size} height={Math.round(size * 50 / 46)} aria-hidden="true">
       {layer && <polygon className="fo" points={HEX} transform={'translate(' + layer[0] + ' ' + layer[1] + ')'} />}
@@ -24,7 +24,7 @@ export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = f
     </svg>
   );
 }
-// A turn where the hero used an ability, the ultimate or gear and made no roll: one sparkle for every kind of use.
-export function DelveUseDie({ foe = false, selected = false, surface = 'card', size = 36, className = '' }) {
-  return <DelveDie kind="use" foe={foe} selected={selected} surface={surface} size={size} className={className} />;
+// A turn where the hero used an ability, the ultimate or gear and made no roll: one sparkle for every kind of use. `won` fills it green, for the use that ends a won run.
+export function DelveUseDie({ won = false, foe = false, selected = false, surface = 'card', size = 36, className = '' }) {
+  return <DelveDie kind="use" won={won} foe={foe} selected={selected} surface={surface} size={size} className={className} />;
 }
