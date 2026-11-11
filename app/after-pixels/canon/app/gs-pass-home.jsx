@@ -87,7 +87,7 @@ export const GsHome = () => {
       <section className="gs-hero3">
         <div className="gs-hero-copy">
           <h1 className="gs-h1 gs-h1-home"><span>Your AI does the talking.</span> <span>The game keeps the score.</span></h1>
-          <p className="gs-hero-sub">Play small games by talking to Claude or ChatGPT. The game holds the rules, the dice and your record.</p>
+          <p className="gs-hero-sub">Daily puzzles and immersive adventures, played in your own AI chat. The game holds the rules, the dice and your record.</p>
           <div className="gs-hero-act">
             <DS.Button onClick={gs.startFree}>Start free</DS.Button>
             <DS.Button variant="secondary" onClick={gs.goHow}>See how it works</DS.Button>
