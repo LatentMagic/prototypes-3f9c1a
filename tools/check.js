@@ -4,7 +4,7 @@
 // Headless sanity check for a prototype's addressable states.
 //
 //   npm run check -- [--slug canon] [--widths 1280,390] [--states a,b,c] [--port 4321]
-//   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast] [--no-build] [--react-dev] [--concurrency 6] [--no-freeze]
+//   npm run check -- --app after-pixels [--states a,b|all] [--widths 1440,390] [--out <dir>] [--no-fast] [--no-nodemo] [--no-build] [--react-dev] [--concurrency 6] [--no-freeze]
 //
 // After Pixels canon is ES modules under app/after-pixels/canon/app/, built by `npm run build` into build/ (the page loads
 // the build). The check runs the build first (--no-build skips it, to shoot what is already built) and --react-dev
@@ -17,6 +17,8 @@
 // and per-shot timing plus every console error and warning is printed.
 // Shots run --concurrency at a time (default 6 here, 1 for Circlists); the log
 // prints in the same order at any concurrency, but per-shot ms grows with it.
+// Every shot of every app opens with &nodemo, which hides the prototype's demo controls (the Config pill, and
+// After Pixels' demo bar); --no-nodemo keeps them, for a shot where they are what is under test.
 // After Pixels shots freeze CSS animations and transitions first (--no-freeze
 // to shoot the page as it moves). Circlists output is unchanged.
 //
@@ -66,7 +68,7 @@ const APPS = {
 function parseArgs(argv) {
   const opts = {
     app: 'circlists', slug: 'canon', widths: null, states: null, port: Number(process.env.PORT) || 4321,
-    out: null, fast: true, freeze: true, concurrency: null, build: true, reactDev: false,
+    out: null, fast: true, nodemo: true, freeze: true, concurrency: null, build: true, reactDev: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -74,6 +76,7 @@ function parseArgs(argv) {
     else if (a === '--app') opts.app = argv[++i];
     else if (a === '--out') opts.out = path.resolve(argv[++i]);
     else if (a === '--no-fast') opts.fast = false;
+    else if (a === '--no-nodemo') opts.nodemo = false;
     else if (a === '--no-freeze') opts.freeze = false;
     else if (a === '--no-build') opts.build = false;
     else if (a === '--react-dev') opts.reactDev = true;
@@ -332,7 +335,8 @@ async function testState(browser, opts, cdnMap, id, width) {
 
   const afterPixels = opts.app === 'after-pixels';
   const fastQuery = afterPixels && opts.fast ? '&fast' : '';
-  const targetUrl = `http://127.0.0.1:${opts.port}/${APPS[opts.app].entry(opts.slug)}?state=${encodeURIComponent(id)}${fastQuery}`;
+  const nodemoQuery = opts.nodemo ? '&nodemo' : '';
+  const targetUrl = `http://127.0.0.1:${opts.port}/${APPS[opts.app].entry(opts.slug)}?state=${encodeURIComponent(id)}${fastQuery}${nodemoQuery}`;
   let navErr = null;
   let blank = true;
   let busy = false;
