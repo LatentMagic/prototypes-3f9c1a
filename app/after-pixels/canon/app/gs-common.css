@@ -97,7 +97,7 @@
   .cmn-t { --s: 30px; }
   .cmn-sum { grid-auto-flow: column; align-items: center; gap: 28px; --q: 22px; }
   .cmn-score b { font-size: 40px; }
-  /* KEEP: on the phone the four tiles sit on the card's centre line in every state. The points column is mirrored by an empty one of the same width on the left, so the board neither leans left before a thread closes nor shifts when its points appear. */
+  /* KEEP: on the phone the four tiles sit on the card's centre line in every state. The points column is mirrored by an empty one of the same width on the left, so the board neither leans left before a thread closes nor shifts when its points appear. Once points show they hang to the right of the centred tiles, so tiles plus points sit right of centre on purpose. */
   .cmn-row { grid-template-columns: var(--pts-w) auto var(--pts-w); }
   .cmn-tiles { grid-column: 2; }
   .cmn-pts { grid-column: 3; }
