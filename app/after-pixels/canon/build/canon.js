@@ -1729,6 +1729,7 @@
     if (m = /^All 4 groups, (.+)$/.exec(s)) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
     if ((m = /^Found in (.+)$/.exec(s)) || (m = /^All 5 wrecks, (.+)$/.exec(s))) return [s, m[1]];
     if (m = /^Solved, (.+)$/.exec(s)) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
+    if (s === "Fell in the warren") return [s, "Fallen"];
     if (/ (is|are) ready$/.test(s)) return [s, "Ready"];
     if (/^Done (today|this week)$/.test(s) || /^(Every|Free) \w+ done$/.test(s)) return [s, "Done"];
     return s;
@@ -9373,6 +9374,12 @@
         c.setConnected(true);
         c.setSub({ hadPass: true });
         c.go("hunter", { page: "record" });
+      } },
+      { group: "Library", id: "history-delve-fallen", label: "History, with a Delve run that fell", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "failed" });
+        c.go("history");
       } },
       { group: "Library", id: "history-in-progress", label: "History, today and this week in progress", stage: (c) => {
         c.setView("pass");

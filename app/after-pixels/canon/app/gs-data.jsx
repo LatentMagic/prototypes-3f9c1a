@@ -474,6 +474,8 @@ export const gsForms = (s) => {
   if ((m = /^All 4 groups, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
   if ((m = /^Found in (.+)$/.exec(s)) || (m = /^All 5 wrecks, (.+)$/.exec(s))) return [s, m[1]];
   if ((m = /^Solved, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
+  // KEEP: a fallen Delve run's row reads "Fallen" in place of "Fell in the warren" when the row itself is under 440px wide (not the screen), so the library's plays column shows "Fallen" at every screen width and History only on narrow phones; ListRow picks the form from the row's width.
+  if (s === 'Fell in the warren') return [s, 'Fallen'];
   if (/ (is|are) ready$/.test(s)) return [s, 'Ready'];
   if (/^Done (today|this week)$/.test(s) || /^(Every|Free) \w+ done$/.test(s)) return [s, 'Done'];
   return s;
