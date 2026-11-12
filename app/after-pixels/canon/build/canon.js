@@ -6131,7 +6131,7 @@
         tags: [],
         pitch: { h: "Five wrecks lie somewhere on the sea bed. Find them in twenty dives.", ps: [
           "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.",
-          "Three tools cost no dive at all: a sonar sweep counts the wreck squares along a row or column whose margin is blank, a metal detector counts them in the squares around one square, and a dragnet hauls along a line until it catches on a wreck. Every sea can be solved by reasoning from its counts and these tools."
+          "You also get three tools: a sonar sweep counts the wreck squares along a row or column whose margin is blank, a metal detector counts them in and around one square, and a dragnet hauls along a line until it catches on a wreck. Every sea can be solved by reasoning from its counts and these tools."
         ] },
         who: { ai: "Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.", server: "Keeps the wrecks secret, answers every dive and tool, and counts what you have left." },
         week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
