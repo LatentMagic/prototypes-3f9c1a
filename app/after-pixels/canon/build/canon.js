@@ -2050,15 +2050,16 @@
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
           gscU("Play The Barrow of Hollowmere on After Pixels"),
-          gscAi("The Barrow of Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
+          // The tool line is limited in length, so the long title is shortened to Hollowmere here until a decision is made.
+          gscAi("Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
           gscU("I attack the skeleton with my longsword"),
-          gscAi("The Barrow of Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
+          gscAi("Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
         ] },
         { cap: "Stop when you like. Your hero carries on to the next chapter.", turns: [
           gscU("I ring the bell in the chapel tower"),
-          gscAi("The Barrow of Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
+          gscAi("Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
         ] }
       ],
       hunter: [

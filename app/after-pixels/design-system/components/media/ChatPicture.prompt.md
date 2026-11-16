@@ -9,7 +9,7 @@ ChatPicture shows a game being played in a plain chat window; use it on a game's
 ]}/>
 ```
 
-- `tool` is the game's display name (for example `Delve`), shown as "Called Delve".
+- `tool` is the game's display name (for example `Delve`), shown as "Called Delve". The tool line is limited in length, so a long game title is shortened here (for example `Hollowmere` for The Barrow of Hollowmere) until a decision is made.
 - The chat has no logo or store name in its header. The branding is the tool-call card (`mark`, `toolBy`). Leave `title` off on product pages.
 - `blocks` is what a game returns, shown above the turn's text; `after` holds blocks shown under it (the moves and buttons at the foot of a turn). `tiles`, `list` and `mono` are the original three. Every other block is a chat part (below). Reach for a part before a `list` or `mono`, and add a part to `components/chat/` before drawing a one-off.
 - Keep it short: the default 290px body, about 360px wide. Pass the whole conversation, latest turn last.
