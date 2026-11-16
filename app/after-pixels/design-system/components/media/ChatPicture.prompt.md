@@ -3,12 +3,13 @@ ChatPicture shows a game being played in a plain chat window; use it on a game's
 ```jsx
 <ChatPicture mark="assets/logo.svg" toolBy="After Pixels" turns={[
   {from:'user',text:'I want to play Daily Word.'},
-  {from:'ai',tool:'daily-word',text:'Six tries to find the hidden five-letter word. What’s your first guess?'},
+  {from:'ai',tool:'Guess',text:'Six tries to find the hidden five-letter word. What’s your first guess?'},
   {from:'user',text:'amaze'},
-  {from:'ai',tool:'daily-word',blocks:[{type:'tiles',rows:[{word:'AMAZE',marks:'xxxxx'}]}],text:'No hits. 5 guesses left.'},
+  {from:'ai',tool:'Guess',blocks:[{type:'tiles',rows:[{word:'AMAZE',marks:'xxxxx'}]}],text:'No hits. 5 guesses left.'},
 ]}/>
 ```
 
+- `tool` is the game's display name (for example `Delve`), shown as "Called Delve".
 - The chat has no logo or store name in its header. The branding is the tool-call card (`mark`, `toolBy`). Leave `title` off on product pages.
 - `blocks` is what a game returns, shown above the turn's text; `after` holds blocks shown under it (the moves and buttons at the foot of a turn). `tiles`, `list` and `mono` are the original three. Every other block is a chat part (below). Reach for a part before a `list` or `mono`, and add a part to `components/chat/` before drawing a one-off.
 - Keep it short: the default 290px body, about 360px wide. Pass the whole conversation, latest turn last.

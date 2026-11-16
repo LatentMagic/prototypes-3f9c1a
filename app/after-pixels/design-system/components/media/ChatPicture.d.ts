@@ -21,7 +21,7 @@ export interface ChatTurn{
   from:'user'|'ai';
   /** One paragraph, or several. */
   text?:string|string[];
-  /** AI turns only. Shows a "Called <tool>" line before the blocks. */
+  /** AI turns only. Shows a "Called <tool>" line before the blocks. Pass the game's display name (for example `Delve`), shown as "Called Delve". */
   tool?:string;
   /** AI turns only. What the tool returned, shown above the text. */
   blocks?:ChatBlock[];
