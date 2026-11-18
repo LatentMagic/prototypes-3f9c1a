@@ -146,11 +146,11 @@
       }))));
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold2({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
     }
-    function FactRows2({ items = [], plain = false, label, title, fold, className = "" }) {
+    function FactRows2({ items = [], plain: plain2 = false, label, title, fold, className = "" }) {
       const folded = !!fold;
-      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich2(f.value)))));
+      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain2 || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich2(f.value)))));
       if (!folded) return rows;
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold2({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain2 ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold2({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
     }
     function ConfirmCard2({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
       const done = answer === "confirm" || answer === "cancel";
@@ -7377,7 +7377,7 @@
     return t === "FREE" ? /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "free" }, "Free") : /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "open", go: false }, t === "FIRST" ? "First " + g.ed[0] + " free" : "Pass");
   };
   const gsTyped = (say) => /* @__PURE__ */ React$1.createElement(GsCopyBubble, { wrap: true, edge: true }, say);
-  const GsStartChat = ({ title, say, turns, caption, plain }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: plain ? say : gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
+  const GsStartChat = ({ title, say, turns, caption, plain: plain2 }) => /* @__PURE__ */ React$1.createElement("figure", { className: "mcp-chatfig hw-chatfig" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, title), /* @__PURE__ */ React$1.createElement(DS.ChatPicture, { start: "top", turns: [{ from: "user", text: plain2 ? say : gsTyped(say) }, ...turns], label: title + " " + say }), /* @__PURE__ */ React$1.createElement("figcaption", null, caption));
   const GsStart = () => {
     const gs = useGs();
     const d = GS_START_DELVE;
@@ -12355,11 +12355,11 @@
       return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, p && /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 14 }), t));
     }));
   }
-  function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+  function FactRows({ items = [], plain: plain2 = false, label, title, fold, className = "" }) {
     const folded = !!fold;
-    const rows = /* @__PURE__ */ React$1.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React$1.createElement("div", { key: i }, /* @__PURE__ */ React$1.createElement("dt", null, f.label), /* @__PURE__ */ React$1.createElement("dd", null, cbRich(f.value)))));
+    const rows = /* @__PURE__ */ React$1.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain2 || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React$1.createElement("div", { key: i }, /* @__PURE__ */ React$1.createElement("dt", null, f.label), /* @__PURE__ */ React$1.createElement("dd", null, cbRich(f.value)))));
     if (!folded) return rows;
-    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React$1.cloneElement(rows, { className: "mcp-cb-facts" })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb" + (plain2 ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React$1.cloneElement(rows, { className: "mcp-cb-facts" })));
   }
   function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
     const done = answer === "confirm" || answer === "cancel";
@@ -12412,10 +12412,10 @@
     }));
   }
   const TONE = { hit: "won", weak: "warn", miss: "lost" };
-  const WORD$1 = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
+  const WORD = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
   function RollLine({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
     const sum = total ?? roll + mod;
-    const text = outcome || WORD$1[result] || "";
+    const text = outcome || WORD[result] || "";
     const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
     return /* @__PURE__ */ React$1.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React$1.createElement("b", null, label), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React$1.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React$1.createElement("span", null, "= ", /* @__PURE__ */ React$1.createElement("b", null, sum)), target != null && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React$1.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
   }
@@ -12498,10 +12498,11 @@
   }
   function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
     const name = label || "A game being played in a chat";
-    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React$1.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React$1.createElement(Icon, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + " is-top" + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React$1.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-chat-up" + (comp ? " is-down" : " is-down is-bare"), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React$1.createElement(Icon, { name: "down", size: 16, style: void 0 })), control, comp);
   }
   const MARK = "logo.svg";
   const BY = "After Pixels";
+  const WARREN = "delve-warren.svg";
   const HEADING = "Your AI, cast for each game.";
   const SENTENCE = "Step into a story, crack a puzzle or talk through a mystery.";
   const GAMES = [
@@ -12511,6 +12512,8 @@
   ];
   const U = (text) => ({ from: "user", text });
   const A = (tool, text, blocks) => ({ from: "ai", tool, text, blocks });
+  const BOARD = { type: "tilegrid", length: 5, count: 6, rows: [{ letters: "CRANE", marks: "xxxxx" }, { letters: "SLATE", marks: "hnxnx" }, { letters: "STAIN", marks: "hhxnx" }] };
+  const CLUE_GROUPS = [{ kind: "Statements", facts: ["Whoever carried the snow shovel was not in the games room.", "The killer was in the cable car hut.", "Rick Dawson was in the cellar bar."] }];
   const CHAT = {
     delve: [
       A("Delve", "Cold air breathes from the warren’s mouth. Two sentries bicker over dice. “Who goes there?” one growls, not looking up."),
@@ -12519,57 +12522,30 @@
       A("Delve", "The dice clatter and neither looks up. You are through. The tunnel forks, and a voice in the dark mutters, “Left smells of smoke.” What do you do, Garrick?")
     ],
     guess: [
-      { ...A("Guess", "Two down, four to go. What’s your next word?"), wide: true },
+      A("Guess", "Two down, four to go. What’s your next word?"),
       U("STAIN"),
-      A("Guess", "So close. S is home, and T, A, I and N are all in the word, just not there. Three guesses left.")
+      A("Guess", "So close. S and T are home, and I is in the word, just not there. Three guesses left.", [BOARD])
     ],
     accuse: [
       U("I’m stuck on all of it. Help me think?"),
-      { ...A("Accuse", "The whole case is three smaller questions: where, with what, and who. Which one first?"), wide: true },
-      { ...U("where"), wide: true },
-      A("Accuse", "Which of the clues mention a place? Tell me what each one rules out, and I’ll read any of them back.")
+      A("Accuse", "The whole case is three smaller questions: where, with what, and who. Which one first?"),
+      U("where"),
+      { ...A("Accuse", "These three clues name a place. What does each one rule out?"), after: [{ type: "clues", groups: CLUE_GROUPS }] }
     ]
   };
-  const cardAt = (id, n) => id === "delve" ? 0 : n - 1;
-  const WORD = { answer: "STILL", lines: gsWordLines("STILL", ["CRANE", "SLATE", "STAIN"]) };
-  const NB_ICONS = {
-    scene: "M3 21h18M5 21V10l7-6 7 6v11M10 21v-5h4v5",
-    suspects: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 21c0-4 3.4-6 7.5-6s7.5 2 7.5 6",
-    weapons: "M5 19L17 7M14 4l6 6M4 20l2-2",
-    places: "M6 21V3.5h12V21M3.5 21h17M14.5 12.5h.01",
-    hints: "M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3zM9.5 19h5M10.5 21.5h3"
-  };
-  const CLUES = [
-    "Whoever carried the snow shovel was not in the games room.",
-    "The killer was in the cable car hut.",
-    "Anneliese Berger was not in the great hall.",
-    "Anneliese Berger carried the snow shovel.",
-    "Rick Dawson was in the cellar bar."
-  ];
-  const NotebookStill = ({ chips, reader }) => {
-    const tabs = [["scene", "Setting", " "], ["suspects", "Suspects", " "], ["weapons", "Weapons", " "], ["places", "Places", " "], ["clues", "Clues", 5], ["hints", "Hints", 0]];
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv4 esx-sheet acc-nb", "aria-label": "Notebook" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-sc-cap" }, "Notebook"), /* @__PURE__ */ React$1.createElement("div", { className: "acc-tabs", role: "tablist", "data-open": "y" }, tabs.map(([k, head, n]) => /* @__PURE__ */ React$1.createElement("button", { key: k, type: "button", role: "tab", "aria-selected": k === "clues", disabled: n === 0, className: "acc-tab" + (k === "clues" ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-tl" }, k === "clues" ? /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-slip" })) : /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk acc-ic", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "square", strokeLinejoin: "miter" }, /* @__PURE__ */ React$1.createElement("path", { d: NB_ICONS[k] }))), /* @__PURE__ */ React$1.createElement("span", { className: "acc-tn" }, head)), /* @__PURE__ */ React$1.createElement("b", { className: "esx-num" }, n)))), /* @__PURE__ */ React$1.createElement("div", { className: "acc-folder", role: "tabpanel", "aria-label": "Clues" }, /* @__PURE__ */ React$1.createElement("span", { className: "acc-fh" }, "Clues"), /* @__PURE__ */ React$1.createElement("div", { className: "esx-chips" }, CLUES.slice(0, chips).map((c, i) => /* @__PURE__ */ React$1.createElement("button", { key: i, type: "button", className: "esx-chip", "aria-expanded": i === 1 }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-mk", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { className: "esx-slip" })), /* @__PURE__ */ React$1.createElement("b", null, "Clue ", i + 1)))), reader && /* @__PURE__ */ React$1.createElement("div", { className: "esx-read" }, /* @__PURE__ */ React$1.createElement("span", { className: "esx-nm" }, /* @__PURE__ */ React$1.createElement("b", null, "Clue 2")), /* @__PURE__ */ React$1.createElement("p", { className: "esx-tx" }, CLUES[1]))));
-  };
-  const GameView = ({ game, where }) => {
-    if (game === "delve") {
-      return /* @__PURE__ */ React$1.createElement("div", { className: "dv4 hb-gv hb-gv-delve is-" + where }, /* @__PURE__ */ React$1.createElement(GsArt, { art: "delve", shape: where === "chat" ? "wide" : "banner" }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-cap" }, /* @__PURE__ */ React$1.createElement("span", null, "Delve · The Warren"), /* @__PURE__ */ React$1.createElement("span", null, "Garrick · 14 HP")));
-    }
-    if (game === "guess") {
-      return /* @__PURE__ */ React$1.createElement("div", { className: "dv4 hb-gv hb-gv-guess is-" + where, style: { "--t": where === "chat" ? "40px" : "46px", "--g": "5px" } }, /* @__PURE__ */ React$1.createElement(WdBoard, { s: WORD }));
-    }
-    return /* @__PURE__ */ React$1.createElement("div", { className: "hb-gv hb-gv-accuse is-" + where }, /* @__PURE__ */ React$1.createElement(NotebookStill, { chips: where === "chat" ? 4 : 5, reader: where !== "chat" }));
-  };
+  const plain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== "tilegrid"), after: t.after && t.after.filter((b) => b.type !== "clues") });
+  const Pic = () => /* @__PURE__ */ React$1.createElement("figure", { className: "hb-pic" }, /* @__PURE__ */ React$1.createElement("img", { src: WARREN, alt: "A tunnel in the warren that forks" }), /* @__PURE__ */ React$1.createElement("figcaption", null, /* @__PURE__ */ React$1.createElement("span", null, "The Warren"), /* @__PURE__ */ React$1.createElement("span", null, "Garrick · 14 HP")));
+  const PicTurn = () => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: MARK, alt: "", width: "16", height: "16" }), "Called Delve", /* @__PURE__ */ React$1.createElement("em", null, BY)), /* @__PURE__ */ React$1.createElement(Pic, null));
+  const Side = ({ game }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-sidebox" }, game === "delve" && /* @__PURE__ */ React$1.createElement(Pic, null), game === "guess" && /* @__PURE__ */ React$1.createElement(TileGrid, { ...BOARD }), game === "accuse" && /* @__PURE__ */ React$1.createElement(ClueCards, { groups: CLUE_GROUPS }));
   const ReplyBar = () => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, null, "Start free"));
   const Chat = ({ game, size }) => {
     const body = React$1.useRef(null);
     const phone = size === "phone";
-    const turns = CHAT[game].filter((t) => phone ? !t.wide : true);
-    const at = cardAt(game, turns.length);
-    const items = turns.map((t, i) => chatTurn(t, i, { mark: MARK, toolBy: BY }));
-    if (phone) items.splice(at, 0, /* @__PURE__ */ React$1.createElement("div", { key: "card", className: "hb-cin" }, /* @__PURE__ */ React$1.createElement(GameView, { game, where: "chat" })));
+    const pic = phone && game === "delve";
+    const items = CHAT[game].map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: void 0 } : phone ? t : plain(t), i, { mark: MARK, toolBy: BY }));
+    if (pic) items.unshift(/* @__PURE__ */ React$1.createElement(PicTurn, { key: "pic" }));
     React$1.useEffect(() => {
-      const b = body.current;
-      if (b) b.scrollTop = phone && game === "delve" ? 0 : b.scrollHeight;
+      if (body.current) body.current.scrollTop = 0;
     }, [game, size]);
     return chatShell({
       bodyRef: body,
@@ -12577,6 +12553,7 @@
       up: false,
       toStart: () => {
       },
+      start: "top",
       height: phone ? 440 : void 0,
       width: 2e3,
       fill: !phone,
@@ -12591,7 +12568,7 @@
     const on = g.id === open;
     return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "hb-tab-b" }, /* @__PURE__ */ React$1.createElement("small", null, g.name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && size !== "phone" && /* @__PURE__ */ React$1.createElement(Intro, { open }));
   }), size === "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-strip" }, /* @__PURE__ */ React$1.createElement(Intro, { open })));
-  const Block = ({ open, size }) => /* @__PURE__ */ React$1.createElement("section", { className: "hb is-" + size, "aria-label": "Your AI, cast for each game" }, /* @__PURE__ */ React$1.createElement(DS.Heading, { level: "section" }, HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "hb-lead" }, SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(Tabs, { open, size }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(GameView, { game: open, where: "side" })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(Chat, { game: open, size })))));
+  const Block = ({ open, size }) => /* @__PURE__ */ React$1.createElement("section", { className: "hb is-" + size, "aria-label": "Your AI, cast for each game" }, /* @__PURE__ */ React$1.createElement(DS.Heading, { level: "section" }, HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "hb-lead" }, SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(Tabs, { open, size }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(Side, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(Chat, { game: open, size })))));
   const Scaled = ({ w, children, className = "" }) => {
     const outer = React$1.useRef(null);
     const inner = React$1.useRef(null);
@@ -12615,8 +12592,8 @@
   const Section = ({ n, title, note, isNew, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "cv-sec", "aria-labelledby": "cv-" + n }, /* @__PURE__ */ React$1.createElement("h2", { id: "cv-" + n, className: "cv-h" }, /* @__PURE__ */ React$1.createElement("span", { className: "cv-n" }, n), title, isNew && /* @__PURE__ */ React$1.createElement(NewTag, null)), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note" }, note), children);
   const BarInChat = ({ width }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-solo", style: { width } }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-chat", role: "group", "aria-label": "A chat with the reply bar" }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-body", style: { height: 210 } }, [
     chatTurn(CHAT.guess[1], 0, { mark: MARK, toolBy: BY }),
-    chatTurn(CHAT.guess[2], 1, { mark: MARK, toolBy: BY })
+    chatTurn(plain(CHAT.guess[2]), 1, { mark: MARK, toolBy: BY })
   ]), /* @__PURE__ */ React$1.createElement(ReplyBar, null)));
-  const Canvas = () => /* @__PURE__ */ React$1.createElement("main", { className: "cv" }, /* @__PURE__ */ React$1.createElement("h1", { className: "cv-title" }, "Homepage block: new chat parts"), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note cv-intro" }, "Hi-fi shapes of the parts the new block brings, drawn with the design system and canon’s session-page themes. Game data is rough. Wide parts are drawn at their real width and scaled down to fit a small screen."), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note cv-intro" }, /* @__PURE__ */ React$1.createElement(NewTag, null), " marks a part the design system does not have yet."), /* @__PURE__ */ React$1.createElement(Section, { n: "1", title: "The reply bar", isNew: true, note: "A reply field under the conversation, in the chat. Its send button reads “Start free”." }, /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, /* @__PURE__ */ React$1.createElement(Fig, { cap: "In a chat at phone width, 390px", w: 390 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(BarInChat, { width: "100%" }))), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Beside a game view, 440px", w: 440 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(BarInChat, { width: "100%" }))), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Narrowest phone, 320px", w: 320 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(BarInChat, { width: "100%" }))))), /* @__PURE__ */ React$1.createElement(Section, { n: "2", title: "The game card inside the chat, phone", isNew: true, note: "On a phone the game’s own view is a card in the conversation. Delve’s scene opens the chat; Guess’s board and Accuse’s notebook sit just above the AI’s newest message." }, /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " · " + (g.id === "delve" ? "scene art opens the chat" : g.id === "guess" ? "board above the newest message" : "notebook above the newest message"), w: 390 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(Chat, { game: g.id, size: "phone" })))))), /* @__PURE__ */ React$1.createElement(Section, { n: "3", title: "The tabs", isNew: true, note: "The three games in a fixed order. The open one is the dark one: it holds the part’s name, the intro and “See <game> ›”. The others are closed. Each game open, at each width." }, /* @__PURE__ */ React$1.createElement("h3", { className: "cv-sub" }, "Desktop · a column on the left, the open one wrapping the others"), /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " open", w: 300 }, /* @__PURE__ */ React$1.createElement(Tabs, { open: g.id, size: "desktop" })))), /* @__PURE__ */ React$1.createElement("h3", { className: "cv-sub" }, "Tablet · a row, the open one wide, the others square at a fixed width"), /* @__PURE__ */ React$1.createElement("div", { className: "cv-col" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " open", w: 768 }, /* @__PURE__ */ React$1.createElement(Tabs, { open: g.id, size: "tablet" })))), /* @__PURE__ */ React$1.createElement("h3", { className: "cv-sub" }, "Phone · three equal tabs, the open one dark, its intro in a dark strip under the row"), /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " open", w: 390 }, /* @__PURE__ */ React$1.createElement(Tabs, { open: g.id, size: "phone" }))))), /* @__PURE__ */ React$1.createElement(Section, { n: "4", title: "The block assembled", note: "One game open at each width: Delve at desktop, Guess at tablet, Accuse at phone. At tablet and desktop the game view sits beside the chat; on a phone it is inside the chat." }, /* @__PURE__ */ React$1.createElement("div", { className: "cv-col" }, /* @__PURE__ */ React$1.createElement(Fig, { cap: "Desktop · 1200px · Delve open", w: 1200 }, /* @__PURE__ */ React$1.createElement(Block, { open: "delve", size: "desktop" })), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Tablet · 768px · Guess open", w: 768 }, /* @__PURE__ */ React$1.createElement(Block, { open: "guess", size: "tablet" })), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Phone · 390px · Accuse open", w: 390 }, /* @__PURE__ */ React$1.createElement(Block, { open: "accuse", size: "phone" })))));
+  const Canvas = () => /* @__PURE__ */ React$1.createElement("main", { className: "cv" }, /* @__PURE__ */ React$1.createElement("h1", { className: "cv-title" }, "Homepage block: new chat parts"), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note cv-intro" }, "Hi-fi shapes of the parts the new block brings, drawn with the design system and canon’s session-page themes. Game data is rough. Wide parts are drawn at their real width and scaled down to fit a small screen."), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note cv-intro" }, /* @__PURE__ */ React$1.createElement(NewTag, null), " marks a part the design system does not have yet."), /* @__PURE__ */ React$1.createElement(Section, { n: "1", title: "The reply bar", isNew: true, note: "A reply field under the conversation, in the chat. Its send button reads “Start free”." }, /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, /* @__PURE__ */ React$1.createElement(Fig, { cap: "In a chat at phone width, 390px", w: 390 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(BarInChat, { width: "100%" }))), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Beside a game view, 440px", w: 440 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(BarInChat, { width: "100%" }))), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Narrowest phone, 320px", w: 320 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(BarInChat, { width: "100%" }))))), /* @__PURE__ */ React$1.createElement(Section, { n: "2", title: "The game inside the chat, phone", isNew: true, note: "On a phone the game shows up as the AI would draw it in its reply, on the chat’s own surface. Delve’s scene opens the chat. Guess’s board and Accuse’s clues come with the AI’s newest reply. Every chat opens at its top." }, /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " · " + (g.id === "delve" ? "a picture of the scene opens the chat" : g.id === "guess" ? "the board in the AI’s reply" : "the clues in the AI’s reply"), w: 390 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-pad" }, /* @__PURE__ */ React$1.createElement(Chat, { game: g.id, size: "phone" })))))), /* @__PURE__ */ React$1.createElement(Section, { n: "3", title: "The tabs", isNew: true, note: "The three games in a fixed order, as plain cells divided by hairlines. The open one has a bright edge and holds the part’s name, the intro and “See <game> ›”. The others are closed. Each game open, at each width." }, /* @__PURE__ */ React$1.createElement("h3", { className: "cv-sub" }, "Desktop · a column on the left, the open one between the others"), /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " open", w: 300 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-set is-solo" }, /* @__PURE__ */ React$1.createElement(Tabs, { open: g.id, size: "desktop" }))))), /* @__PURE__ */ React$1.createElement("h3", { className: "cv-sub" }, "Tablet · a row, the open one wide, the others at a fixed width"), /* @__PURE__ */ React$1.createElement("div", { className: "cv-col" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " open", w: 768 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-set is-solo" }, /* @__PURE__ */ React$1.createElement(Tabs, { open: g.id, size: "tablet" }))))), /* @__PURE__ */ React$1.createElement("h3", { className: "cv-sub" }, "Phone · three equal tabs, the open one marked, its intro in a strip under the row"), /* @__PURE__ */ React$1.createElement("div", { className: "cv-row" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement(Fig, { key: g.id, cap: g.name + " open", w: 390 }, /* @__PURE__ */ React$1.createElement("div", { className: "hb-set is-solo" }, /* @__PURE__ */ React$1.createElement(Tabs, { open: g.id, size: "phone" })))))), /* @__PURE__ */ React$1.createElement(Section, { n: "4", title: "The block assembled", note: "One game open at each width: Delve at desktop, Guess at tablet, Accuse at phone. One surface: the tabs sit on the page’s dark ground, and the game and the chat share the chat’s light surface. At tablet and desktop the same picture the AI draws sits beside the chat; on a phone it is in the chat." }, /* @__PURE__ */ React$1.createElement("div", { className: "cv-col" }, /* @__PURE__ */ React$1.createElement(Fig, { cap: "Desktop · 1200px · Delve open", w: 1200 }, /* @__PURE__ */ React$1.createElement(Block, { open: "delve", size: "desktop" })), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Tablet · 768px · Guess open", w: 768 }, /* @__PURE__ */ React$1.createElement(Block, { open: "guess", size: "tablet" })), /* @__PURE__ */ React$1.createElement(Fig, { cap: "Phone · 390px · Accuse open", w: 390 }, /* @__PURE__ */ React$1.createElement(Block, { open: "accuse", size: "phone" })))));
   window.KitCandidate.Screen = Canvas;
 })(React, ReactDOM);
