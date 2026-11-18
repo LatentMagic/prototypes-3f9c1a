@@ -110,17 +110,18 @@ const HbIntro = ({ open, go, role }) => (
       <p>{g.intro}</p>
       <DS.TextLink onClick={() => go(GS_GAMES[g.gid].route)} tabIndex={g.id === open ? 0 : -1}>See {GS_GAMES[g.gid].name} <span aria-hidden="true">›</span></DS.TextLink>
     </div>))}</div>);
+// The games are a group of toggle buttons, not ARIA tabs: a tablist may own only tabs, and the chosen game's description (with its link) sits inside its box.
 // The tabs take Connect's app picker: outlined on the page colour, the chosen one inverted. From 400px the chosen tab holds the description, so the tab is a button plus the description beside it, never a link inside a button.
 const HbTabs = ({ open, size, pick, go }) => {
   const inTab = size !== 'list'; const at = HB_GAMES.findIndex((g) => g.id === open);
   const cols = size === 'phone' || size === 'tablet' ? { gridTemplateColumns: HB_GAMES.map((_, i) => (i === at ? 'minmax(0, 2fr)' : 'minmax(0, 1fr)')).join(' ') } : undefined;
   return (
-    <div className="hb-tabs" role="tablist" aria-label="Games" aria-orientation={size === 'desktop' ? 'vertical' : undefined} style={cols}>
+    <div className="hb-tabs" role="group" aria-label="Games" style={cols}>
       {HB_GAMES.map((g) => {
         const on = g.id === open;
         return (
           <div key={g.id} className={'hb-tab' + (on ? ' is-open' : '')}>
-            <button type="button" role="tab" id={'hb-t-' + g.id} aria-selected={on} aria-controls="hb-panel" className="hb-tab-b" onClick={() => pick(g.id)}><small>{GS_GAMES[g.gid].name}</small><b>{g.part}</b></button>
+            <button type="button" id={'hb-t-' + g.id} aria-pressed={on} aria-controls="hb-panel" className="hb-tab-b" onClick={() => pick(g.id)}><small>{GS_GAMES[g.gid].name}</small><b>{g.part}</b></button>
             {on && inTab && <HbIntro open={open} go={go} />}
           </div>);
       })}
@@ -151,7 +152,7 @@ export const GsHomeBlock = () => {
       <div className="hb-set" ref={set}>
         <HbTabs open={open} size={size} pick={setOpen} go={gs.go} />
         {size === 'list' && <div className="hb-desc"><HbIntro open={open} go={gs.go} role /></div>}
-        <div className="hb-panel" id="hb-panel" role="tabpanel" aria-labelledby={'hb-t-' + open}>
+        <div className="hb-panel" id="hb-panel" role="region" aria-labelledby={'hb-t-' + open}>
           <i className="hw-notch hb-notch" ref={notch} aria-hidden="true" />
           <div className="hb-stage">
             {size !== 'list' && size !== 'phone' && <div className="hb-side"><HbSide game={open} /></div>}
