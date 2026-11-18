@@ -2287,8 +2287,6 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-h1.gs-h1-home { font-size: clamp(25px, calc(7.6cqi - 3px), 34px); }
 .gs-h1.gs-h1-home > span { display: block; }
 .gs-hero3 .gs-hero-sub { max-width: 56ch; text-wrap: pretty; }
-/* KEEP: the hero's first sentence never leaves one word alone on its last row ("chat." at 300 to 339px): its rows are balanced. */
-.gs-hero3 .gs-hero-sub:first-of-type { text-wrap: balance; }
 /* The hairline runs the copy column's full width at every size; only the text keeps its measure. */
 .gs-works { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
 .gs-works p { max-width: 44ch; text-wrap: pretty; }
@@ -2340,8 +2338,8 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 @media (prefers-reduced-motion: reduce) { .gs-today-item { transition: none; } }
 
-/* The hero's two buttons: stacked full width on a phone; from the block's phone line (a 400px container, a 432px screen) one row, still full width, two equal halves; from 720px, beside the chat, their own width. */
-@container gs (min-width: 400px) { .gs-hero-act { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* The hero's two buttons: stacked full width on a phone; from a 432px screen, the line where the games block stops being a list (its own 400px, inside the page's 16px gutters), one row, still full width, two equal halves; from 720px, beside the chat, their own width. The gs container is the full page width. */
+@container gs (min-width: 432px) { .gs-hero-act { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 @container gs (min-width: 720px) {
   .gs-sess-head { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-6); }
