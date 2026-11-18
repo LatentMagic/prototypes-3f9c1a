@@ -12273,35 +12273,36 @@
     { id: "delve", gid: "delve", part: "Game Master", intro: "It sets each scene, plays everyone you meet and asks what you do next." },
     { id: "guess", gid: "word", part: "Host", intro: "It shows how each guess scored and keeps a hint back until you want it." },
     { id: "accuse", gid: "mystery", part: "Thinking partner", intro: "Stuck? Ask, and it turns the case into smaller questions. The deduction stays yours." }
-  ].map((g) => ({ ...g, name: GS_GAMES[g.gid].name, art: GS_GAMES[g.gid].art }));
-  const TREATMENTS = [
+  ].map((g) => ({ ...g, name: GS_GAMES[g.gid].name }));
+  const PALETTES = [
     {
       n: 1,
-      name: "Literal carry-over",
-      why: "The low-fi tabs in the two colours the block has: a dark frame, the closed games as buttons in the light panel’s colour, the open game dark and merged into the frame."
+      name: "Off-white buttons",
+      tokens: "Frame --page with a 1px --line edge; closed games --off-white with --page text; the open game --page with --text, merged into the frame; panel --off-white."
     },
     {
       n: 2,
-      name: "Picked in light",
-      why: "From How it works’ “Which app do you use?” picker: unpicked choices are outlined on the page ground and the picked one fills with the light, here running straight into the light panel. Light means picked, as everywhere on the platform, and there is no black frame."
+      name: "White buttons",
+      tokens: "Frame --page with a 1px --line edge; closed games --white with --page text, beside the --off-white panel and Start free; the open game --page, merged into the frame."
     },
     {
       n: 3,
-      name: "Game colour frame",
-      why: "From the homepage hero one block up, which frames its light chat in Delve’s colour: the frame takes the open game’s cover colour, and the closed games are the platform’s cards with their cover, as in Available games."
+      name: "Card buttons",
+      tokens: "Frame --page with a 1px --line edge; closed games --card with a 1px --line edge and --text; the open game --page, merged into the frame; the only light is the --off-white panel."
+    },
+    {
+      n: 4,
+      name: "Inverted",
+      tokens: "Frame and panel one --off-white surface; closed games --card with --text; the open game --off-white with --page text, part of that surface; a --c-edge hairline (the chat’s own edge) between the tabs and the panel."
     }
   ];
   const Intro = ({ open }) => /* @__PURE__ */ React$1.createElement("div", { className: "tb-ins" }, GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "tb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { href: "#", tabIndex: g.id === open ? 0 : -1 }, "See ", g.name, " ›"))));
   const Tabs = ({ open, size }) => /* @__PURE__ */ React$1.createElement("div", { className: "tb-tabs is-" + size, role: "tablist", "aria-label": "Games" }, GAMES.map((g) => {
     const on = g.id === open;
-    return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "tb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "tb-tab-b" }, /* @__PURE__ */ React$1.createElement("span", { className: "tb-thumb", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(GsArt, { art: g.art, shape: "square" })), /* @__PURE__ */ React$1.createElement("span", { className: "tb-label" }, /* @__PURE__ */ React$1.createElement("small", null, g.name), /* @__PURE__ */ React$1.createElement("b", null, g.part))), on && size !== "phone" && /* @__PURE__ */ React$1.createElement(Intro, { open }));
+    return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "tb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "tb-tab-b" }, /* @__PURE__ */ React$1.createElement("span", { className: "tb-label" }, /* @__PURE__ */ React$1.createElement("small", null, g.name), /* @__PURE__ */ React$1.createElement("b", null, g.part))), on && size !== "phone" && /* @__PURE__ */ React$1.createElement(Intro, { open }));
   }), size === "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "tb-strip" }, /* @__PURE__ */ React$1.createElement(Intro, { open })));
   const Panel = ({ size }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat tb-panel" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "tb-ph tb-ph-game" }, "The game"), /* @__PURE__ */ React$1.createElement("div", { className: "tb-ph tb-ph-chat" }, /* @__PURE__ */ React$1.createElement("span", null, "The chat"), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp tb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, null, "Start free"))));
-  const GROUND = { delve: "wine", word: "forest", murder: "wine" };
-  const Block = ({ t, open, size }) => {
-    const ground = GROUND[GAMES.find((g) => g.id === open).art];
-    return /* @__PURE__ */ React$1.createElement("section", { className: "gs-band tb-block is-t" + t + " is-" + size, "aria-label": HEADING }, /* @__PURE__ */ React$1.createElement("div", { className: "tb-head" }, /* @__PURE__ */ React$1.createElement(DS.Heading, { level: "section" }, HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, SENTENCE)), /* @__PURE__ */ React$1.createElement("div", { className: "tb-set", style: { "--tb-ground": "var(--cover-bg-" + ground + ")" } }, /* @__PURE__ */ React$1.createElement(Tabs, { open, size }), /* @__PURE__ */ React$1.createElement(Panel, { size })));
-  };
+  const Block = ({ p, open, size }) => /* @__PURE__ */ React$1.createElement("section", { className: "gs-band tb-block is-p" + p + " is-" + size, "aria-label": HEADING }, /* @__PURE__ */ React$1.createElement("div", { className: "tb-head" }, /* @__PURE__ */ React$1.createElement(DS.Heading, { level: "section" }, HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, SENTENCE)), /* @__PURE__ */ React$1.createElement("div", { className: "tb-set" + (p === 4 ? " mcp-chat" : "") }, /* @__PURE__ */ React$1.createElement(Tabs, { open, size }), /* @__PURE__ */ React$1.createElement(Panel, { size })));
   const Slice = ({ children }) => /* @__PURE__ */ React$1.createElement("div", { className: "tb-slice" }, /* @__PURE__ */ React$1.createElement("div", { className: "tb-crop", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(GsHome, null)), /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap tb-after" }, children));
   const Scaled = ({ w, children }) => {
     const outer = React$1.useRef(null);
@@ -12323,9 +12324,8 @@
   };
   const WIDTHS = [
     { size: "desktop", w: 1280, open: "delve", cap: "Desktop · 1280px · Delve open" },
-    { size: "tablet", w: 768, open: "guess", cap: "Tablet · 768px · Guess open" },
     { size: "phone", w: 390, open: "accuse", cap: "Phone · 390px · Accuse open" }
   ];
-  const Canvas = () => /* @__PURE__ */ React$1.createElement("main", { className: "cv" }, /* @__PURE__ */ React$1.createElement("h1", { className: "cv-title" }, "Homepage block: three treatments for the tabs"), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note cv-intro" }, "Each treatment sits in a slice of the real homepage: the foot of Available games, then the block. The game and chat side is drawn as an edge only. Wide frames are drawn at their real width and scaled down to fit a small screen."), TREATMENTS.map((tr) => /* @__PURE__ */ React$1.createElement("section", { key: tr.n, className: "cv-sec", "aria-labelledby": "cv-" + tr.n }, /* @__PURE__ */ React$1.createElement("h2", { id: "cv-" + tr.n, className: "cv-h" }, tr.n, ". ", tr.name), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note" }, tr.why), /* @__PURE__ */ React$1.createElement("div", { className: "cv-col" }, WIDTHS.map((x) => /* @__PURE__ */ React$1.createElement("figure", { key: x.size, className: "cv-fig", style: { maxWidth: x.w } }, /* @__PURE__ */ React$1.createElement("figcaption", { className: "cv-cap" }, tr.n, ". ", tr.name, " · ", x.cap), /* @__PURE__ */ React$1.createElement(Scaled, { w: x.w }, /* @__PURE__ */ React$1.createElement(Slice, null, /* @__PURE__ */ React$1.createElement(Block, { t: tr.n, open: x.open, size: x.size })))))))));
+  const Canvas = () => /* @__PURE__ */ React$1.createElement("main", { className: "cv" }, /* @__PURE__ */ React$1.createElement("h1", { className: "cv-title" }, "Homepage block: the tabs in four palettes"), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note cv-intro" }, "One shape, the low-fi tabs, in four palettes from the design system’s colour tokens. Each sits in a slice of the real homepage: the foot of Available games, then the block. The game and chat side is drawn as an edge only. Wide frames are drawn at their real width and scaled down to fit a small screen."), PALETTES.map((pl) => /* @__PURE__ */ React$1.createElement("section", { key: pl.n, className: "cv-sec", "aria-labelledby": "cv-" + pl.n }, /* @__PURE__ */ React$1.createElement("h2", { id: "cv-" + pl.n, className: "cv-h" }, pl.n, ". ", pl.name), /* @__PURE__ */ React$1.createElement("p", { className: "cv-note" }, pl.tokens), /* @__PURE__ */ React$1.createElement("div", { className: "cv-col" }, WIDTHS.map((x) => /* @__PURE__ */ React$1.createElement("figure", { key: x.size, className: "cv-fig", style: { maxWidth: x.w } }, /* @__PURE__ */ React$1.createElement("figcaption", { className: "cv-cap" }, pl.n, ". ", pl.name, " · ", x.cap), /* @__PURE__ */ React$1.createElement(Scaled, { w: x.w }, /* @__PURE__ */ React$1.createElement(Slice, null, /* @__PURE__ */ React$1.createElement(Block, { p: pl.n, open: x.open, size: x.size })))))))));
   window.KitCandidate.Screen = Canvas;
 })(React, ReactDOM);
