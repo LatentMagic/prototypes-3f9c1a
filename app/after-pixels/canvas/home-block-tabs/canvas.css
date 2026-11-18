@@ -1,0 +1,108 @@
+/* The canvas page: canon's app is hidden except the canvas. Each frame is drawn at its real width ("gs" container, so canon's
+   container rules apply whatever the browser's width) and scaled down by script where the page is narrower. */
+.gs-root > :not(.cv), .kit-config-wrap { display: none !important; }
+.cv { display: grid; gap: 48px; width: 100%; max-width: 1312px; margin: 0 auto; padding: 24px 16px 72px; box-sizing: border-box; background: var(--page); color: var(--text); }
+.cv-title { margin: 0; font: var(--type-page-title); }
+.cv-intro { margin: -32px 0 0; }
+.cv-note { margin: 0; color: var(--muted); font: var(--type-body); max-width: 72ch; }
+.cv-sec { display: grid; gap: 16px; min-width: 0; padding-top: 24px; border-top: 1px solid var(--line); }
+.cv-h { margin: 0; font: var(--type-section-title); }
+.cv-col { display: grid; gap: 32px; justify-items: start; }
+.cv-fig { margin: 0; display: grid; gap: 8px; width: 100%; min-width: 0; }
+.cv-cap { font: var(--type-small); color: var(--muted); }
+.cv-scaled { position: relative; width: 100%; overflow: hidden; }
+.cv-frame { container: gs / inline-size; transform-origin: 0 0; box-sizing: border-box; background: var(--page); outline: 1px solid var(--line); }
+
+/* ---- the homepage slice: the foot of canon's Available games (hero and What's new hidden), faded at the crop, then the block ---- */
+.tb-crop { position: relative; height: 320px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 72px); mask-image: linear-gradient(to bottom, transparent, #000 72px); }
+.tb-crop .gs-hero3, .tb-crop .gs-main > :last-child { display: none; }
+.tb-crop .gs-main { padding-bottom: 0; }
+.tb-after { padding-top: 36px; padding-bottom: 48px; }
+.tb-block { display: grid; gap: 20px; }
+.tb-head { display: grid; gap: 8px; }
+.tb-head .mcp-t-sec, .tb-head p { margin: 0; }
+
+/* ---- the set: tabs and panel. Desktop a column beside the panel; tablet and phone a row above it. ---- */
+.tb-set { box-sizing: border-box; display: grid; min-width: 0; }
+.tb-block.is-desktop .tb-set { grid-template-columns: 290px minmax(0, 1fr); }
+
+/* ---- the panel: the game and chat side as an edge only (accepted, not in question) ---- */
+.tb-panel.mcp-chat { display: grid; min-width: 0; border-radius: 12px; border: 0; }
+.is-desktop .tb-panel { grid-template-columns: 1fr 1fr; height: 380px; }
+.is-tablet .tb-panel { grid-template-columns: 1fr 1fr; height: 300px; }
+.is-phone .tb-panel { height: 260px; }
+.tb-ph { display: grid; place-items: center; min-width: 0; color: var(--c-fg2); font: 600 12px/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
+.tb-ph-game { border-right: 1px solid var(--c-edge); }
+.tb-ph-chat { grid-template-rows: 1fr auto; place-items: stretch; }
+.tb-ph-chat > span { display: grid; place-items: center; }
+.tb-reply { padding-right: 4px; font: 400 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: 0; text-transform: none; }
+.tb-panel .tb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
+
+/* ---- the tabs, shared shape ---- */
+.tb-tabs { box-sizing: border-box; display: flex; min-width: 0; }
+.tb-tab { box-sizing: border-box; position: relative; min-width: 0; display: grid; align-content: start; color: var(--text); }
+.tb-tab-b { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; padding: 12px 14px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
+.tb-tab.is-open .tb-tab-b { cursor: default; }
+.tb-label { display: grid; gap: 2px; min-width: 0; }
+.tb-label small { font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+.tb-label b { font: 700 16px/1.2 var(--font-heading); letter-spacing: -.01em; }
+.tb-tab.is-open .tb-label b { font-size: 22px; }
+.tb-thumb { display: none; flex: none; width: 40px; }
+.tb-thumb .mcp-art { width: 100%; }
+.tb-ins { display: grid; padding: 0 14px 12px; }
+.tb-intro { grid-area: 1 / 1; display: grid; gap: 4px; align-content: start; justify-items: start; }
+.tb-intro.is-ghost { visibility: hidden; }
+.tb-intro p { margin: 0; font: var(--type-body); color: inherit; text-wrap: pretty; }
+.tb-intro .mcp-lnk { min-height: 44px; color: inherit; }
+.tb-tab:not(.is-open):active { opacity: .8; }
+
+/* desktop: a column; the open one takes the room left */
+.tb-tabs.is-desktop { flex-direction: column; }
+.tb-tabs.is-desktop .tb-tab:not(.is-open) .tb-tab-b { min-height: 64px; }
+.tb-tabs.is-desktop .tb-tab.is-open { flex: 1; }
+/* tablet: a row; the open one wide, the others square at 104px */
+.tb-tabs.is-tablet .tb-tab.is-open { flex: 1; }
+.tb-tabs.is-tablet .tb-tab:not(.is-open) { flex: none; width: 104px; }
+.tb-tabs.is-tablet .tb-tab:not(.is-open) .tb-tab-b { height: 100%; min-height: 104px; box-sizing: border-box; flex-direction: column; align-items: flex-start; justify-content: flex-end; padding: 10px; }
+.tb-tabs.is-tablet .tb-tab.is-open .tb-label b { font-size: 20px; }
+/* phone: three equal tabs; the open one's intro in a strip under the row */
+.tb-tabs.is-phone { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tb-tabs.is-phone .tb-tab-b { min-height: 56px; padding: 10px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; }
+.tb-tabs.is-phone .tb-label b, .tb-tabs.is-phone .tb-tab.is-open .tb-label b { font-size: 14px; }
+.tb-strip { grid-column: 1 / -1; box-sizing: border-box; padding: 10px 14px 0; }
+.tb-strip .tb-ins { padding: 0; }
+.tb-strip .tb-intro p { font-size: 14px; line-height: 1.4; }
+
+/* ============ 1. Literal carry-over: a dark frame; closed games are buttons in the panel's light; the open game is the frame's dark ============ */
+.is-t1 .tb-set { gap: 8px; padding: 8px; background: var(--page); border: 1px solid var(--line); border-radius: 20px; }
+.is-t1 .tb-tabs { gap: 8px; }
+.is-t1 .tb-tab:not(.is-open) { background: var(--off-white); color: var(--page); border-radius: 8px; }
+.is-t1 .tb-tab.is-open { background: transparent; color: var(--text); }
+.is-t1 .tb-strip { padding-bottom: 4px; }
+
+/* ============ 2. Picked in light: How it works' app picker. Outlined on the page ground; the picked one fills with the light and runs into the panel ============ */
+.is-t2 .tb-set { gap: 0; }
+.is-t2 .tb-tabs { gap: 8px; }
+.is-t2 .tb-tab:not(.is-open) { border: 1.5px solid var(--control-edge); }
+@media (hover: hover) { .is-t2 .tb-tab:not(.is-open):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+.is-t2 .tb-tab.is-open, .is-t2 .tb-strip { background: var(--off-white); color: var(--page); }
+.is-t2 .tb-panel.mcp-chat { border-radius: 0; }
+/* the open tile touches the panel; the others keep the 8px gap */
+.is-t2 .tb-tabs.is-desktop .tb-tab:not(.is-open) { margin-right: 8px; }
+.is-t2 .tb-tabs.is-tablet .tb-tab:not(.is-open) { margin-bottom: 8px; }
+.is-t2 .tb-tabs.is-phone { row-gap: 0; }
+.is-t2 .tb-tabs.is-phone .tb-tab:not(.is-open) { margin-bottom: 8px; }
+.is-t2 .tb-strip { padding-bottom: 6px; }
+
+/* ============ 3. Game colour frame: the hero's own treatment. The frame takes the open game's cover colour; closed games are cards with their cover ============ */
+.is-t3 .tb-set { gap: 12px; padding: 12px; background: var(--tb-ground); }
+.is-t3 .tb-tabs { gap: 8px; }
+.is-t3 .tb-tab:not(.is-open) { background: var(--card); border: 1px solid var(--line); }
+@media (hover: hover) { .is-t3 .tb-tab:not(.is-open):hover { background: var(--popup); } }
+.is-t3 .tb-tab:not(.is-open) .tb-thumb { display: block; }
+.is-t3 .tb-tab.is-open { background: transparent; }
+.is-t3 .tb-tab.is-open .tb-tab-b, .is-t3 .tb-tab.is-open .tb-ins { padding-inline: 4px; }
+.is-t3 .tb-tabs.is-tablet .tb-tab:not(.is-open) .tb-thumb, .is-t3 .tb-tabs.is-phone .tb-tab:not(.is-open) .tb-thumb { width: 32px; }
+.is-t3 .tb-tabs.is-tablet .tb-tab:not(.is-open) .tb-tab-b { justify-content: space-between; }
+.is-t3 .tb-strip { padding-inline: 4px; }
+.is-t3 .tb-panel.mcp-chat { border: 1px solid var(--c-edge); }
