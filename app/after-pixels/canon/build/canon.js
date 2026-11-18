@@ -372,20 +372,23 @@
       };
       return [up, toStart];
     }
+    function ToolCall({ tool, mark, toolBy, style }) {
+      return /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call", style }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-calltxt" }, toolBy && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("em", null, toolBy, " ·"), " "), "Called ", tool));
+    }
     function chatTurn(t, i, { mark, toolBy, fx }) {
       if (t.from === "user") {
         if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
         const st = fx.piece(i, "u");
         return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
         return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block, { b }));
       });
       const call = t.tool && fx.piece(i, "c");
       const kids = [
-        call && /* @__PURE__ */ React2.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)),
+        call && /* @__PURE__ */ React2.createElement(ToolCall, { key: "c", tool: t.tool, mark, toolBy, style: call }),
         ...blk(t.blocks, "b"),
         ...paras(t.text).map((p, k) => {
           const st = fx.piece(i, "p" + k);
@@ -2081,15 +2084,15 @@
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
           gscU("Play The Barrow of Hollowmere on After Pixels"),
-          gscAi("Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
+          gscAi("The Barrow of Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
           gscU("I attack the skeleton with my longsword"),
-          gscAi("Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
+          gscAi("The Barrow of Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
         ] },
         { cap: "Stop when you like. Your hero carries on to the next chapter.", turns: [
           gscU("I ring the bell in the chapel tower"),
-          gscAi("Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
+          gscAi("The Barrow of Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
         ] }
       ],
       hunter: [
