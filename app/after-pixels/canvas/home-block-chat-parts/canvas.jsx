@@ -29,8 +29,8 @@ const GAMES = [
 const U = (text) => ({ from: 'user', text });
 const A = (tool, text, blocks) => ({ from: 'ai', tool, text, blocks });
 // What the AI itself draws in each game's turn: Delve a picture of the scene, Guess the board, Accuse the clues it is talking about.
-const BOARD = { type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'CRANE', marks: 'xxxxx' }, { letters: 'SLATE', marks: 'hnxnx' }, { letters: 'STAIN', marks: 'hhxnx' }] };
-const CLUE_GROUPS = [{ kind: 'Statements', facts: ['Whoever carried the snow shovel was not in the games room.', 'The killer was in the cable car hut.', 'Rick Dawson was in the cellar bar.'] }];
+const BOARD = { type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'POINT', marks: 'xhxxx' }, { letters: 'COILS', marks: 'hhxhx' }] };
+const CLUE_GROUPS = [{ kind: 'Statements', facts: ['The killer was not in the conservatory.', 'Owen was in the conservatory.'] }];
 const CHAT = {
   delve: [
     A('Delve', 'Cold air breathes from the warren’s mouth. Two sentries bicker over dice. “Who goes there?” one growls, not looking up.'),
@@ -39,15 +39,16 @@ const CHAT = {
     A('Delve', 'The dice clatter and neither looks up. You are through. The tunnel forks, and a voice in the dark mutters, “Left smells of smoke.” What do you do, Garrick?'),
   ],
   guess: [
-    A('Guess', 'Two down, four to go. What’s your next word?'),
-    U('STAIN'),
-    A('Guess', 'So close. S and T are home, and I is in the word, just not there. Three guesses left.', [BOARD]),
+    U('COILS'),
+    A('Guess', 'Three in place now. Four left.', [BOARD]),
+    U('Still got my hint?'),
+    A('Guess', 'Still yours. Say when you want it. Next word?'),
   ],
   accuse: [
-    U('I’m stuck on all of it. Help me think?'),
-    A('Accuse', 'The whole case is three smaller questions: where, with what, and who. Which one first?'),
-    U('where'),
-    { ...A('Accuse', 'These three clues name a place. What does each one rule out?'), after: [{ type: 'clues', groups: CLUE_GROUPS }] },
+    U('Help me think. What do I do with “The killer was not in the conservatory”?'),
+    { ...A('Accuse', 'Smaller question, then: who was in the conservatory?'), after: [{ type: 'clues', groups: CLUE_GROUPS }] },
+    U('Owen. So it can’t be Owen.'),
+    A('Accuse', 'Owen’s off your list. Three suspects left. Which clue next?'),
   ],
 };
 
@@ -182,7 +183,7 @@ const Canvas = () => (
       </div>
     </Section>
 
-    <Section n="2" title="The game inside the chat, phone" isNew note="On a phone the game shows up as the AI would draw it in its reply, on the chat’s own surface. Delve’s scene opens the chat. Guess’s board and Accuse’s clues come with the AI’s newest reply. Every chat opens at its top.">
+    <Section n="2" title="The game inside the chat, phone" isNew note="On a phone the game shows up as the AI would draw it in its reply, on the chat’s own surface. Delve’s scene opens the chat. Guess’s board and Accuse’s clues come with the AI’s reply. Every chat opens at its top.">
       <div className="cv-row">
         {GAMES.map((g) => (
           <Fig key={g.id} cap={g.name + ' · ' + (g.id === 'delve' ? 'a picture of the scene opens the chat' : g.id === 'guess' ? 'the board in the AI’s reply' : 'the clues in the AI’s reply')} w={390}>
