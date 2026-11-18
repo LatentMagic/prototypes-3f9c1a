@@ -201,7 +201,7 @@
       const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
       return /* @__PURE__ */ React2.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React2.createElement("b", null, label), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React2.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React2.createElement("span", null, "= ", /* @__PURE__ */ React2.createElement("b", null, sum)), target != null && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React2.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
     }
-    const MARK = { h: "hit", n: "near", x: "miss" };
+    const MARK$1 = { h: "hit", n: "near", x: "miss" };
     const SAY = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
     function TileGrid({ rows = [], length, count: count2, label, className = "" }) {
       const n = Math.max(1, length || Math.max(0, ...rows.map((r) => (r.letters || "").length)));
@@ -209,7 +209,7 @@
       while (count2 && all.length < count2) all.push({ letters: "" });
       const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
         const c = ((r.letters || "")[i] || " ").trim();
-        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
+        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK$1[(r.marks || "")[i]] || "filled" : "empty";
         return { c, s };
       }));
       const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
@@ -288,7 +288,7 @@
     }
     function Block({ b }) {
       if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles, { rows: b.rows });
-      if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, t)));
+      if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, chatRich(t))));
       if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
       const P = PARTS[b.type];
       if (P) {
@@ -298,6 +298,39 @@
       return null;
     }
     const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
+    const MARK = /\*\*(\S(?:.*?\S)?)\*\*|__(\S(?:.*?\S)?)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+    function chatRuns(text, f = {}) {
+      const s = String(text), out = [];
+      let rest = s;
+      for (; ; ) {
+        const m = MARK.exec(rest);
+        if (!m) {
+          if (rest) out.push({ s: rest, ...f });
+          return out;
+        }
+        if (m.index) out.push({ s: rest.slice(0, m.index), ...f });
+        const g = m[1] != null ? { b: 1 } : m[2] != null ? { u: 1 } : { i: 1 };
+        out.push(...chatRuns(m[1] ?? m[2] ?? m[3], { ...f, ...g }));
+        rest = rest.slice(m.index + m[0].length);
+      }
+    }
+    const chatPlain = (t) => chatRuns(t).map((r) => r.s).join("");
+    const styled = (r, node, key) => {
+      let n = node;
+      if (r.u) n = /* @__PURE__ */ React2.createElement("u", null, n);
+      if (r.i) n = /* @__PURE__ */ React2.createElement("em", null, n);
+      if (r.b) n = /* @__PURE__ */ React2.createElement("strong", null, n);
+      return React2.isValidElement(n) && n !== node ? React2.cloneElement(n, { key }) : /* @__PURE__ */ React2.createElement(React2.Fragment, { key }, n);
+    };
+    function chatRich(text) {
+      const runs = chatRuns(text);
+      if (runs.every((r) => !r.b && !r.i && !r.u)) return String(text);
+      return runs.map((r, k) => styled(r, r.s, k));
+    }
+    function chatRichWords(text, wordFn) {
+      let j = 0;
+      return chatRuns(text).map((r, k) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: k }, styled(r, r.s.split(/(\s+)/).map((w, x) => !w || /^\s+$/.test(w) ? w : /* @__PURE__ */ React2.createElement(React2.Fragment, { key: x }, wordFn(w, j++))), "r")));
+    }
     function useChatScroll(body, turns, start) {
       const top = start === "top";
       const [up, setUp] = React2.useState(false);
@@ -341,11 +374,11 @@
     }
     function chatTurn(t, i, { mark, toolBy, fx }) {
       if (t.from === "user") {
-        if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text));
+        if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
         const st = fx.piece(i, "u");
-        return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text));
+        return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, p)), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
         return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block, { b }));
@@ -428,7 +461,7 @@
       return ((ay * t + by) * t + cy) * t;
     }
     const c01 = (v) => v < 0 ? 0 : v > 1 ? 1 : v;
-    const nWords = (s) => String(s).split(/\s+/).filter(Boolean).length;
+    const nWords = (s) => chatPlain(s).split(/\s+/).filter(Boolean).length;
     function timeline(turns, pace, composer) {
       const p = { ...PACE, ...pace };
       const sp = p.speed > 0 ? p.speed : 1;
@@ -445,7 +478,7 @@
         let type = null;
         if (tu.from === "user") {
           if (composer) {
-            const text = chatParas(tu.text).join(" ");
+            const text = chatParas(tu.text).map(chatPlain).join(" ");
             const dur = d(Math.min(p.typeMax, Math.max(p.typeMin, text.length / p.type * 1e3)));
             type = { start: t, end: t + dur, text };
             t += dur + d(p.send);
@@ -483,12 +516,10 @@
         },
         words: (i, k, text) => {
           const p = tl.turns[i] && tl.turns[i].pieces[k];
-          if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return text;
-          let j = 0;
-          return String(text).split(/(\s+)/).map((w, x) => {
-            if (!w || /^\s+$/.test(w)) return w;
-            const o = c01((T - (p.at + j++ * p.word)) / tl.wordIn);
-            return /* @__PURE__ */ React2.createElement("span", { key: x, style: { opacity: +o.toFixed(4) } }, w);
+          if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return chatRich(text);
+          return chatRichWords(text, (w, j) => {
+            const o = c01((T - (p.at + j * p.word)) / tl.wordIn);
+            return /* @__PURE__ */ React2.createElement("span", { style: { opacity: +o.toFixed(4) } }, w);
           });
         }
       };

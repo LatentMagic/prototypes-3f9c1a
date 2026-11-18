@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from '../Icon.jsx';
-import { ChatPicture, chatTurn, chatShell, chatParas } from '../ChatPicture.jsx';
+import { ChatPicture, chatTurn, chatShell, chatParas, chatPlain, chatRich, chatRichWords } from '../ChatPicture.jsx';
 // Default pacing, in ms at speed 1 (type is characters per second). Entering pieces use --time-popup (260ms) on --ease.
 const PACE={lead:500,type:32,typeMin:450,typeMax:1600,send:300,enter:260,think:700,call:450,word:55,wordIn:140,gap:300,user:450,read:1400,end:4000};
 // cubic-bezier(.16,1,.3,1): the system's --ease, solved here so a time gives the same value everywhere.
@@ -10,7 +10,7 @@ function ease(x){
   return ((ay*t+by)*t+cy)*t;
 }
 const c01=v=>v<0?0:v>1?1:v;
-const nWords=s=>String(s).split(/\s+/).filter(Boolean).length;
+const nWords=s=>chatPlain(s).split(/\s+/).filter(Boolean).length;
 // Turns -> when every piece starts. Pure: the same turns and pace always give the same times.
 function timeline(turns,pace,composer){
   const p={...PACE,...pace}; const sp=p.speed>0?p.speed:1; const d=x=>x/sp;
@@ -19,7 +19,7 @@ function timeline(turns,pace,composer){
   turns.forEach(tu=>{
     const pieces={}; let type=null;
     if(tu.from==='user'){
-      if(composer){const text=chatParas(tu.text).join(' '); const dur=d(Math.min(p.typeMax,Math.max(p.typeMin,text.length/p.type*1000))); type={start:t,end:t+dur,text}; t+=dur+d(p.send);}
+      if(composer){const text=chatParas(tu.text).map(chatPlain).join(' '); const dur=d(Math.min(p.typeMax,Math.max(p.typeMin,text.length/p.type*1000))); type={start:t,end:t+dur,text}; t+=dur+d(p.send);}
       put(pieces,'u',d(tu.hold??p.user));
     } else {
       t+=d(p.think);
@@ -44,8 +44,8 @@ function frame(tl,T){
   const fx={
     piece:(i,k)=>{const p=tl.turns[i]&&tl.turns[i].pieces[k]; return p?enter(T,p.at,tl.enter):{};},
     words:(i,k,text)=>{
-      const p=tl.turns[i]&&tl.turns[i].pieces[k]; if(!p||T>=p.at+Math.max(0,p.n-1)*p.word+tl.wordIn) return text;
-      let j=0; return String(text).split(/(\s+)/).map((w,x)=>{if(!w||/^\s+$/.test(w)) return w; const o=c01((T-(p.at+(j++)*p.word))/tl.wordIn); return <span key={x} style={{opacity:+o.toFixed(4)}}>{w}</span>;});
+      const p=tl.turns[i]&&tl.turns[i].pieces[k]; if(!p||T>=p.at+Math.max(0,p.n-1)*p.word+tl.wordIn) return chatRich(text);
+      return chatRichWords(text,(w,j)=>{const o=c01((T-(p.at+j*p.word))/tl.wordIn); return <span style={{opacity:+o.toFixed(4)}}>{w}</span>;});
     }};
   let typed=null, sent=false;
   tl.turns.forEach(({type,pieces})=>{
