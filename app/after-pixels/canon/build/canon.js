@@ -298,7 +298,7 @@
       return null;
     }
     const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-    const MARK = /\*\*(\S(?:.*?\S)?)\*\*|__(\S(?:.*?\S)?)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+    const MARK = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
     function chatRuns(text, f = {}) {
       const s = String(text), out = [];
       let rest = s;
