@@ -7493,20 +7493,12 @@
     const on = g.id === open;
     return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && size !== "phone" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
   }), size === "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-strip" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go })));
-  const HB_GREYS = { 1: "var(--card)", 2: "var(--popup)", 3: "color-mix(in oklab, var(--popup), var(--control-edge) 30%)" };
-  const HB_TAB_TRIAL = { 1: "1. Off-white", 2: "2. Card grey, outlined", 3: "3. Card grey, others plain text", 4: "4. Folder tab, joined to the chat" };
   const GsHomeBlock = () => {
-    const q = new URLSearchParams(location.search).get("hbtab");
-    if (q === "all") return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, Object.keys(HB_TAB_TRIAL).map((k) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "hb-trial hb-t" + k }, /* @__PURE__ */ React$1.createElement("p", { className: "hb-trial-n" }, HB_TAB_TRIAL[k]), /* @__PURE__ */ React$1.createElement(GsHomeBlockOne, null))));
-    return /* @__PURE__ */ React$1.createElement("div", { className: "hb-t" + (HB_TAB_TRIAL[q] ? q : 1) }, /* @__PURE__ */ React$1.createElement(GsHomeBlockOne, null));
-  };
-  const GsHomeBlockOne = () => {
     const gs = useGs();
     const root = React$1.useRef(null);
     const size = useHbSize(root);
     const [open, setOpen] = React$1.useState("delve");
-    const grey = HB_GREYS[new URLSearchParams(location.search).get("hbgrey")] || HB_GREYS[1];
-    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, style: { "--hb-grey": grey }, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage", role: "tabpanel" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))));
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage", role: "tabpanel" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))));
   };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },

@@ -239,11 +239,13 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
 .hb-chat .hb-reply .mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
 
-/* tabs: closed games are grey buttons; the open game is off-white, with the part, the intro and the link */
+/* tabs: closed games are outlined in the hairline colour; the open game's button is card grey with an off-white outline, and its intro and link sit below it on the page colour */
 .hb-tabs { box-sizing: border-box; display: flex; gap: 8px; min-width: 0; }
 .hb-tab { position: relative; min-width: 0; display: grid; align-content: start; border-radius: 8px; }
-.hb-tab:not(.is-open) { background: var(--hb-grey); color: var(--text); }
-.hb-tab.is-open { background: var(--off-white); color: var(--page); }
+.hb-tab { color: var(--text); }
+.hb-tab:not(.is-open) { box-shadow: inset 0 0 0 1px var(--line); }
+.hb-tab.is-open .hb-tab-b { background: var(--card); border-radius: 8px; box-shadow: inset 0 0 0 1px var(--off-white); padding-bottom: 12px; }
+.hb-tab.is-open .hb-ins { padding-top: 12px; }
 .hb-tab-b { display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 12px 14px 8px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
 .hb-tab.is-open .hb-tab-b { cursor: default; }
 .hb-tab-b small { font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
@@ -280,20 +282,3 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .hb-chat .mcp-cb-steps > i { min-width: 3px; }
 }
 
-/* Trial of the chosen tab (?hbtab=all). 1 is the rules above. */
-.hb-trial { margin-bottom: 48px; }
-.hb-trial-n { margin: 0 0 8px; font: 700 18px/1.3 var(--font-heading); color: var(--warning); }
-.hb-t2 .hb-tab.is-open { background: var(--card); color: var(--text); box-shadow: inset 0 0 0 1px var(--off-white); }
-.hb-t2 .hb-tab:not(.is-open) { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
-.hb-t3 .hb-tab.is-open { background: var(--card); color: var(--text); }
-.hb-t3 .hb-tab:not(.is-open) { background: transparent; color: var(--text); opacity: .7; }
-.hb-t4 .hb-tab:not(.is-open) { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
-.hb-t4 .hb-set { gap: 0; }
-.hb-t4 .hb.is-desktop .hb-set { column-gap: 0; }
-.hb-t4 .hb-tabs.is-desktop .hb-tab.is-open { border-radius: 8px 0 0 8px; margin-right: -1px; }
-.hb-t4 .hb.is-desktop .hb-stage { border-top-left-radius: 0; }
-.hb-t4 .hb-tabs:not(.is-desktop) .hb-tab.is-open { border-radius: 8px 8px 0 0; }
-.hb-t4 .hb-tabs.is-tablet, .hb-t4 .hb-tabs.is-phone { row-gap: 0; }
-.hb-t4 .hb-strip { background: var(--off-white); color: var(--page); padding: 6px 12px 0; }
-.hb-t4 .hb:not(.is-desktop) .hb-stage { border-top-left-radius: 0; border-top-right-radius: 0; }
-.hb-t4 .hb.is-phone .hb-stage { border-top: 1px solid var(--c-edge); }

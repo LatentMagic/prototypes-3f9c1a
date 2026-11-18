@@ -119,20 +119,10 @@ const HbTabs = ({ open, size, pick, go }) => (
     {size === 'phone' && <div className="hb-strip"><HbIntro open={open} go={go} /></div>}
   </div>);
 
-// Shades on trial for the closed tabs (?hbgrey=1, 2 or 3).
-const HB_GREYS = { 1: 'var(--card)', 2: 'var(--popup)', 3: 'color-mix(in oklab, var(--popup), var(--control-edge) 30%)' };
-// Trial (?hbtab=all): the four ways of showing the chosen tab, one block each, stacked.
-const HB_TAB_TRIAL = { 1: '1. Off-white', 2: '2. Card grey, outlined', 3: '3. Card grey, others plain text', 4: '4. Folder tab, joined to the chat' };
 export const GsHomeBlock = () => {
-  const q = new URLSearchParams(location.search).get('hbtab');
-  if (q === 'all') return <>{Object.keys(HB_TAB_TRIAL).map((k) => <div key={k} className={'hb-trial hb-t' + k}><p className="hb-trial-n">{HB_TAB_TRIAL[k]}</p><GsHomeBlockOne /></div>)}</>;
-  return <div className={'hb-t' + (HB_TAB_TRIAL[q] ? q : 1)}><GsHomeBlockOne /></div>;
-};
-const GsHomeBlockOne = () => {
   const gs = useGs(); const root = React.useRef(null); const size = useHbSize(root); const [open, setOpen] = React.useState('delve');
-  const grey = HB_GREYS[new URLSearchParams(location.search).get('hbgrey')] || HB_GREYS[1];
   return (
-    <section ref={root} className={'gs-band hb is-' + size} style={{ '--hb-grey': grey }} aria-labelledby="gs-hb-h">
+    <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h">
       <h2 className="mcp-t-sec" id="gs-hb-h">{HB_HEADING}</h2>
       <p className="gs-muted hb-lead">{HB_SENTENCE}</p>
       <div className="hb-set">
