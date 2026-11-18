@@ -53,7 +53,7 @@ export const GS_SUB_HOLDS = ['active', 'failed', 'ending'];
 // ---- Shared bits ------------------------------------------------------------------
 const GsRows = ({ rows }) => (
   <dl className="gs-rows-dl">
-    {rows.map(([k, v]) => <div key={k} className="gs-row-kv"><dt className="gs-muted">{k}</dt><dd className="gs-num-text">{v}</dd></div>)}
+    {rows.map(([k, v], i) => <div key={i} className="gs-row-kv"><dt className="gs-muted">{k}</dt><dd className="gs-num-text">{v}</dd></div>)}
   </dl>
 );
 // KEEP: two actions stack with the primary first on a phone, and sit in one row (secondary left) when wider.
@@ -248,8 +248,8 @@ export const GsSubscribe = () => {
             </label>
           ))}
         </fieldset>
-        <GsRows rows={[['Due today', plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
-        <p className="gs-small">{GS.tax}.</p>
+        {/* KEEP: the tax note shares the Due today row so the summary keeps its rhythm, and fits on one line down to 280 (the user, 2026-11-18). */}
+        <GsRows rows={[[<>Due today <span className="gs-row-note">· {GS.taxShort}</span></>, plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
         <DS.Button block onClick={gs.getPass}>Get the Pass</DS.Button>
       </section>
     </main>

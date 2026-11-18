@@ -59,6 +59,7 @@
 @media (prefers-reduced-motion: reduce) { .cpr-pcard .cpr-chev { transition: none; } }
 .cpr-price { font: 400 16px/1.5 var(--font-text); color: var(--muted); }
 .cpr-price > span { white-space: nowrap; }
+.gs-row-note { font-size: 13px; white-space: nowrap; }
 .cpr-price > .cpr-tax { display: block; font-size: 13px; line-height: 1.4; }
 
 /* ---- The Pass upsell (1153): app/gs-pass-*.jsx ---- */
