@@ -3739,6 +3739,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 
 /* ---- what the AI draws, beside the chat ---- */
 .hb-sidebox { align-items: center; justify-content: center; padding: 16px; overflow: visible; min-width: 0; }
+.hb-sidebox .mcp-cb-tiles { text-align: center; }
 .hb-sidebox .mcp-cb-tiles-in { --t: min(40px, calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n))); }
 .hb-sidebox .mcp-cb-clues { max-width: 360px; }
 
