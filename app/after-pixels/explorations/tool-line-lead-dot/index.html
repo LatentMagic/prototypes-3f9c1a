@@ -1,0 +1,37 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tool line, lead with a dot</title>
+<link rel="stylesheet" href="../../design-system/styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../design-system/_ds_bundle.js"></script>
+<style>
+body{margin:0;padding:16px 16px 48px;background:var(--page)}
+.canvas{max-width:430px;margin:0 auto;display:grid;gap:32px}
+.canvas h1{font:700 20px/26px var(--font-text);margin:0}
+.canvas header p{font:400 14px/20px var(--font-text);color:var(--muted);margin:6px 0 0}
+.canvas h2{font:700 16px/22px var(--font-text);margin:0 0 4px}
+.canvas h2+p{font:400 13px/18px var(--font-text);color:var(--muted);margin:0 0 12px}
+.set{display:grid;gap:16px;justify-items:start}
+.set figure{margin:0;display:grid;gap:6px}
+.set figcaption{font:400 13px/18px var(--font-text);color:var(--muted)}
+</style></head><body><main class="canvas" id="root"></main>
+<script type="text/babel">
+const {ChatPicture}=window.MCPGameStoreDesignSystem_ef1abd;
+const mark='../../design-system/assets/logo.svg';
+const GAMES=[
+  {name:'Delve',say:'You step into the torchlight. Which way do you go?'},
+  {name:'36,000 Summers Ago',say:'Grey dawn. The fire is ash and the band is already moving.'},
+  {name:'The Barrow of Hollowmere',say:'Mist lies on the marsh. Will you go as a fighter, a rogue or a wizard?'},
+];
+// Widths a phone gives the chat on a game's product page in canon (measured at 390, 320 and 280).
+const PHONES=[{w:390,chat:308},{w:320,chat:248},{w:280,chat:213}];
+const turns=g=>[{from:'user',text:'Play '+g.name+' on After Pixels'},{from:'ai',tool:g.name,text:g.say}];
+const Canvas=()=><>
+  <header><h1>Tool line: After Pixels, a dot, then the name</h1>
+  <p>The by-line leads and never breaks. The name follows and wraps in full. The mark sits on the first row. Drawn with the design system's ChatPicture, at the width the chat gets on each phone.</p></header>
+  {PHONES.map(p=><section key={p.w}><h2>{p.w}px phone</h2><p>The chat is {p.chat}px wide.</p>
+    <div className="set">{GAMES.map(g=><figure key={g.name}><ChatPicture turns={turns(g)} mark={mark} toolBy="After Pixels" width={p.chat} height="auto" composer={false} label={g.name+' tool line at '+p.w+'px'}/><figcaption>{g.name}</figcaption></figure>)}</div></section>)}
+</>;
+ReactDOM.createRoot(document.getElementById('root')).render(<Canvas/>);
+</script></body></html>
