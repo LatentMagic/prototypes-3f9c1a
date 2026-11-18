@@ -57,12 +57,13 @@ const HB_GAMES = [
 // Where the game sits beside the chat (tablet and desktop), the chat does not repeat it: the board and the clues come out of its turns.
 const hbPlain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== 'tilegrid'), after: t.after && t.after.filter((b) => b.type !== 'clues' && b.type !== 'tilegrid') });
 
-// The block's layout class follows its own width, so it holds wherever the page sits: phone below 640, tablet to 959, desktop from 960; the chat column never drops under 280px, where the Track's count would overlap its steps.
+// The block's layout follows its own width, so it holds wherever the page sits.
+// KEEP: four bands of the block's width. Under 400px (a 432px screen) the games are a list beside one description box; from 400px the three tabs sit in a row with the chosen one widened to half the row and holding its description; from 640px the game sits beside the chat; from 960px the tabs are a vertical column. The chat column never drops under 300px, where the Track's count would overlap its steps.
 const useHbSize = (ref) => {
   const [size, setSize] = React.useState('desktop');
   React.useLayoutEffect(() => {
     const el = ref.current; if (!el) return undefined;
-    const read = () => { const w = el.getBoundingClientRect().width; setSize(w < 640 ? 'phone' : w < 960 ? 'tablet' : 'desktop'); };
+    const read = () => { const w = el.getBoundingClientRect().width; setSize(w < 400 ? 'list' : w < 640 ? 'phone' : w < 960 ? 'tablet' : 'desktop'); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect();
   }, []);
   return size;
@@ -86,7 +87,7 @@ const HbReply = ({ onSend }) => (
   </div>);
 
 const HbChat = ({ game, size, onSend }) => {
-  const body = React.useRef(null); const phone = size === 'phone'; const g = HB_GAMES.find((x) => x.id === game);
+  const body = React.useRef(null); const phone = size === 'list' || size === 'phone'; const g = HB_GAMES.find((x) => x.id === game);
   const turns = phone ? g.turns : g.turns.map(hbPlain);
   const pic = phone && game === 'delve';
   const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: undefined } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
@@ -99,37 +100,59 @@ const HbChat = ({ game, size, onSend }) => {
     label: g.id + ' being played in a chat', more: 'Back to the start', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
 };
 
-// KEEP: all three intros share one grid cell and only the open one shows, so the open tab is as tall as the longest and nothing below it moves when a tab is tapped.
-const HbIntro = ({ open, go }) => (
+// KEEP: all three descriptions share one grid cell and only the chosen one shows (the others are visibility:hidden), so the block is as tall as the longest and nothing below it moves when a tab is tapped.
+const HbIntro = ({ open, go, role }) => (
   <div className="hb-ins">{HB_GAMES.map((g) => (
     <div key={g.id} className={'hb-intro' + (g.id === open ? '' : ' is-ghost')} aria-hidden={g.id === open ? undefined : true}>
+      {role && <b className="hb-role">{g.part}</b>}
       <p>{g.intro}</p>
       <DS.TextLink onClick={() => go(GS_GAMES[g.gid].route)} tabIndex={g.id === open ? 0 : -1}>See {GS_GAMES[g.gid].name} ›</DS.TextLink>
     </div>))}</div>);
-const HbTabs = ({ open, size, pick, go }) => (
-  <div className={'hb-tabs is-' + size} role="tablist" aria-label="Games">
-    {HB_GAMES.map((g) => {
-      const on = g.id === open;
-      return (
-        <div key={g.id} className={'hb-tab' + (on ? ' is-open' : '')}>
-          <button type="button" role="tab" aria-selected={on} className="hb-tab-b" onClick={() => pick(g.id)}><small>{GS_GAMES[g.gid].name}</small><b>{g.part}</b></button>
-          {on && size === 'desktop' && <HbIntro open={open} go={go} />}
-        </div>);
-    })}
-  </div>);
+// The tabs take Connect's app picker: outlined on the page colour, the chosen one inverted. From 400px the chosen tab holds the description, so the tab is a button plus the description beside it, never a link inside a button.
+const HbTabs = ({ open, size, pick, go }) => {
+  const inTab = size !== 'list'; const at = HB_GAMES.findIndex((g) => g.id === open);
+  const cols = size === 'phone' || size === 'tablet' ? { gridTemplateColumns: HB_GAMES.map((_, i) => (i === at ? 'minmax(0, 2fr)' : 'minmax(0, 1fr)')).join(' ') } : undefined;
+  return (
+    <div className="hb-tabs" role="tablist" aria-label="Games" aria-orientation={size === 'desktop' ? 'vertical' : undefined} style={cols}>
+      {HB_GAMES.map((g) => {
+        const on = g.id === open;
+        return (
+          <div key={g.id} className={'hb-tab' + (on ? ' is-open' : '')}>
+            <button type="button" role="tab" id={'hb-t-' + g.id} aria-selected={on} aria-controls="hb-panel" className="hb-tab-b" onClick={() => pick(g.id)}><small>{GS_GAMES[g.gid].name}</small><b>{g.part}</b></button>
+            {on && inTab && <HbIntro open={open} go={go} />}
+          </div>);
+      })}
+    </div>);
+};
 
 export const GsHomeBlock = () => {
   const gs = useGs(); const root = React.useRef(null); const size = useHbSize(root); const [open, setOpen] = React.useState('delve');
+  const set = React.useRef(null); const notch = React.useRef(null); const placed = React.useRef(null);
+  // KEEP: the notch sits on the grey panel's edge and points at the chosen game, as Connect's does at its picked app: at the box's centre under it (list), the tab's centre (row), or level with the tab on the panel's left edge (column). It glides to a newly chosen tab and follows a resize at once.
+  React.useLayoutEffect(() => {
+    const s = set.current, n = notch.current; if (!s || !n) return undefined;
+    const place = (glide) => {
+      const pr = n.parentElement.getBoundingClientRect(); const col = size === 'desktop';
+      const t = (size === 'list' ? s.querySelector('.hb-desc') : s.querySelector('.hb-tab.is-open')); if (!t) return;
+      const r = t.getBoundingClientRect();
+      n.style.transition = glide && placed.current === size ? '' : 'none';
+      if (col) { n.style.left = ''; n.style.top = (r.top + Math.min(r.height / 2, 40) - pr.top) + 'px'; }
+      else { n.style.top = ''; n.style.left = (r.left + r.width / 2 - pr.left) + 'px'; }
+    };
+    place(true); placed.current = size;
+    const ro = new ResizeObserver(() => place(false)); ro.observe(s); return () => ro.disconnect();
+  }, [open, size]);
   return (
     <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h">
       <h2 className="mcp-t-sec" id="gs-hb-h">{HB_HEADING}</h2>
       <p className="gs-muted hb-lead">{HB_SENTENCE}</p>
-      <div className="hb-set">
+      <div className="hb-set" ref={set}>
         <HbTabs open={open} size={size} pick={setOpen} go={gs.go} />
-        <div className="hb-panel" role="tabpanel">
-          {size !== 'desktop' && <HbIntro open={open} go={gs.go} />}
+        {size === 'list' && <div className="hb-desc"><HbIntro open={open} go={gs.go} role /></div>}
+        <div className="hb-panel" id="hb-panel" role="tabpanel" aria-labelledby={'hb-t-' + open}>
+          <i className="hw-notch hb-notch" ref={notch} aria-hidden="true" />
           <div className="hb-stage">
-            {size !== 'phone' && <div className="hb-side"><HbSide game={open} /></div>}
+            {size !== 'list' && size !== 'phone' && <div className="hb-side"><HbSide game={open} /></div>}
             <div className="hb-talk"><HbChat game={open} size={size} onSend={gs.startFree} /></div>
           </div>
         </div>

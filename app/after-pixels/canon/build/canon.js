@@ -7446,7 +7446,7 @@
       if (!el) return void 0;
       const read = () => {
         const w = el.getBoundingClientRect().width;
-        setSize(w < 640 ? "phone" : w < 960 ? "tablet" : "desktop");
+        setSize(w < 400 ? "list" : w < 640 ? "phone" : w < 960 ? "tablet" : "desktop");
       };
       read();
       const ro = new ResizeObserver(read);
@@ -7461,7 +7461,7 @@
   const HbReply = ({ onSend }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free"));
   const HbChat = ({ game, size, onSend }) => {
     const body = React$1.useRef(null);
-    const phone = size === "phone";
+    const phone = size === "list" || size === "phone";
     const g = HB_GAMES.find((x) => x.id === game);
     const turns = phone ? g.turns : g.turns.map(hbPlain);
     const pic = phone && game === "delve";
@@ -7488,17 +7488,49 @@
       comp: /* @__PURE__ */ React$1.createElement(HbReply, { onSend })
     });
   };
-  const HbIntro = ({ open, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ›"))));
-  const HbTabs = ({ open, size, pick, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-tabs is-" + size, role: "tablist", "aria-label": "Games" }, HB_GAMES.map((g) => {
-    const on = g.id === open;
-    return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && size === "desktop" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
-  }));
+  const HbIntro = ({ open, go, role }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, role && /* @__PURE__ */ React$1.createElement("b", { className: "hb-role" }, g.part), /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ›"))));
+  const HbTabs = ({ open, size, pick, go }) => {
+    const inTab = size !== "list";
+    const at = HB_GAMES.findIndex((g) => g.id === open);
+    const cols = size === "phone" || size === "tablet" ? { gridTemplateColumns: HB_GAMES.map((_, i) => i === at ? "minmax(0, 2fr)" : "minmax(0, 1fr)").join(" ") } : void 0;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "hb-tabs", role: "tablist", "aria-label": "Games", "aria-orientation": size === "desktop" ? "vertical" : void 0, style: cols }, HB_GAMES.map((g) => {
+      const on = g.id === open;
+      return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", id: "hb-t-" + g.id, "aria-selected": on, "aria-controls": "hb-panel", className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && inTab && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
+    }));
+  };
   const GsHomeBlock = () => {
     const gs = useGs();
     const root = React$1.useRef(null);
     const size = useHbSize(root);
     const [open, setOpen] = React$1.useState("delve");
-    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", role: "tabpanel" }, size !== "desktop" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
+    const set = React$1.useRef(null);
+    const notch = React$1.useRef(null);
+    const placed = React$1.useRef(null);
+    React$1.useLayoutEffect(() => {
+      const s = set.current, n = notch.current;
+      if (!s || !n) return void 0;
+      const place = (glide) => {
+        const pr = n.parentElement.getBoundingClientRect();
+        const col = size === "desktop";
+        const t = size === "list" ? s.querySelector(".hb-desc") : s.querySelector(".hb-tab.is-open");
+        if (!t) return;
+        const r = t.getBoundingClientRect();
+        n.style.transition = glide && placed.current === size ? "" : "none";
+        if (col) {
+          n.style.left = "";
+          n.style.top = r.top + Math.min(r.height / 2, 40) - pr.top + "px";
+        } else {
+          n.style.top = "";
+          n.style.left = r.left + r.width / 2 - pr.left + "px";
+        }
+      };
+      place(true);
+      placed.current = size;
+      const ro = new ResizeObserver(() => place(false));
+      ro.observe(s);
+      return () => ro.disconnect();
+    }, [open, size]);
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set", ref: set }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), size === "list" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", id: "hb-panel", role: "tabpanel", "aria-labelledby": "hb-t-" + open }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch hb-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
   };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },

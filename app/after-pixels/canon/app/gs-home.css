@@ -210,13 +210,16 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
 .gs-home-after > div { margin: -12px 0 -4px; }
 
-/* The homepage block under Available games: a square frame holding a row or column of game tabs. The chosen tab and its panel are one surface, in the game card's hover fill with an off-white outline; the other tabs are game cards at rest. The chat stage inside the panel stays rounded, as the host chat. */
-.hb { gap: 12px; --hb-sel: color-mix(in srgb, var(--text) 6%, var(--card)); }
+/* The homepage block under Available games: game tabs in Connect's app-picker theme, a card-grey panel with a notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
+.hb { gap: 12px; }
 .hb .mcp-t-sec, .hb-lead { margin: 0; }
 .hb-lead { max-width: 60ch; }
-.hb-set { box-sizing: border-box; display: grid; min-width: 0; padding: 8px; margin-top: 4px; background: var(--page); border: 1px solid var(--line); border-radius: 0; }
+.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; margin-top: 4px; }
+/* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
+.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 16px 12px; }
+.hb.is-list .hb-panel { grid-column: 1 / -1; }
 .hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
-.hb-panel { box-sizing: border-box; display: grid; gap: 12px; align-content: start; min-width: 0; padding: 12px; background: var(--hb-sel); border: 1px solid var(--off-white); border-radius: 0; }
+.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 0; }
 .hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
 /* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
 .hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
@@ -243,40 +246,65 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
 .hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
 
-/* tabs: all one height in a row (phone, tablet) or a column of 290px (desktop). Closed tabs are game cards at rest; the open tab drops the edge that meets its panel and overlaps it by 1px, so the two read as one surface. */
-.hb-tabs { box-sizing: border-box; position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: stretch; min-width: 0; }
-.hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; color: var(--text); background: var(--card); box-shadow: inset 0 0 0 1px var(--control-edge); border-radius: 0; }
-@media (hover: hover) { .hb-tab:not(.is-open):hover { background: var(--hb-sel); } }
-.hb-tab:not(.is-open):active { opacity: .8; }
+/* The tabs take Connect's app picker (.hw-app in gs-connect.css) exactly: outlined on the page colour, a faint hover, the chosen one inverted to off-white; the notch is Connect's own (.hw-notch). */
+.hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }
+.hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
+.hb-tab.is-open { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+.hb-tab:not(.is-open):active { transform: scale(.97); }
+@media (hover: hover) { .hb-tab:not(.is-open):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
 /* KEEP: the ring shows for keyboard focus only (:focus-visible); on a tap or click the tab just opens, with no white flash. */
-.hb-tab:not(.is-open):has(.hb-tab-b:focus-visible) { outline: 2px solid var(--off-white); outline-offset: 2px; }
-.hb-tab-b { -webkit-tap-highlight-color: transparent; }
+.hb-tab:has(.hb-tab-b:focus-visible) { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.hb-tab-b { -webkit-tap-highlight-color: transparent; display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 8px 10px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
 .hb-tab-b:focus { outline: none; }
-.hb-tab.is-open { background: var(--hb-sel); box-shadow: none; border: 1px solid var(--off-white); border-bottom: 0; margin-bottom: -1px; padding: 9px 11px 15px; align-content: start; }
-.hb-tab-b { display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 10px 12px 15px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
-.hb-tab.is-open .hb-tab-b { padding: 0; cursor: default; }
-.hb-tab-b small { font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
-.hb-tab-b b { font: 700 14px/1.2 var(--font-heading); letter-spacing: -.01em; overflow-wrap: anywhere; }
-.hb-tabs.is-tablet .hb-tab-b b { font-size: 16px; }
-.hb-tabs.is-desktop { display: flex; flex-direction: column; padding-right: 8px; }
-.hb-tabs.is-desktop .hb-tab:not(.is-open) { min-height: 72px; }
-.hb-tabs.is-desktop .hb-tab:not(.is-open) .hb-tab-b { align-content: center; padding: 10px 16px; }
-.hb-tabs.is-desktop .hb-tab-b b { font-size: 16px; }
-/* the open tab fills the rest of the column and runs 9px (the column's 8px right padding and the panel's 1px edge) into the panel */
-.hb-tabs.is-desktop .hb-tab.is-open { flex: 1; border-right: 0; border-bottom: 1px solid var(--off-white); margin: 0 -9px 0 0; padding: 13px 24px 15px 15px; }
-.hb-tabs.is-desktop .hb-tab.is-open .hb-tab-b b { font-size: 24px; }
-.hb-tabs.is-desktop .hb-tab.is-open .hb-ins { padding-top: 12px; }
+.hb-tab.is-open .hb-tab-b { cursor: default; }
+.hb-tab-b small { font: 600 12px/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+.hb-tab-b b { font: 700 18px/1.2 var(--font-heading); letter-spacing: -.01em; overflow-wrap: normal; }
+.hb-tab.is-open .hb-tab-b b { font-size: 16px; }
+.hb-tab.is-open .hb-tab-b small { opacity: .75; }
 
-/* the intro and its link: in the open tab on desktop, at the top of the panel on phone and tablet; the three intros share one cell so the open game's height never changes */
+/* list (under 400px): the game's name only, so the list is no taller than the box beside it; the role heads the description */
+.hb.is-list .hb-tabs { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; }
+.hb.is-list .hb-tab { min-height: 40px; align-content: center; }
+.hb.is-list .hb-tab-b { align-content: center; padding: 8px 12px; }
+.hb.is-list .hb-tab-b b { display: none; }
+.hb.is-list .hb-tab-b small { font-size: 13px; letter-spacing: .02em; text-transform: none; font-weight: 700; opacity: 1; }
+.hb-desc { box-sizing: border-box; min-width: 0; padding: 16px; background: var(--off-white); color: var(--page); border-radius: 0; }
+.hb-role { display: block; margin-bottom: 4px; font: 700 16px/1.2 var(--font-heading); letter-spacing: -.01em; }
+@container gs (max-width: 359px) {
+  .hb.is-list .hb-set { grid-template-columns: 84px minmax(0, 1fr); gap: 16px 8px; }
+  .hb.is-list .hb-tab-b { padding: 8px; }
+  .hb.is-list .hb-tab-b small { font-size: 12px; letter-spacing: 0; }
+  .hb-desc { padding: 12px; }
+}
+
+/* row (400 to 959px): the chosen tab is half the row (2fr of 4fr, set inline) and holds its description */
+.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 10px 16px 0; }
+.hb-tab.is-open .hb-ins { padding: 8px 16px 14px; }
+
+/* column (960px up): the chosen tab fills the column and holds its description; the others are 72px */
+.hb.is-desktop .hb-tabs { display: flex; flex-direction: column; }
+.hb.is-desktop .hb-tab { min-height: 72px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b { align-content: center; padding: 10px 16px; height: 100%; }
+.hb.is-desktop .hb-tab.is-open { flex: 1; align-content: start; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b { padding: 16px 16px 0; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b b { font-size: 24px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b b { font-size: 16px; }
+.hb.is-desktop .hb-tab.is-open .hb-ins { padding: 12px 16px 16px; }
+
+/* the notch is Connect's (.hw-notch: top edge, gliding left); in the column it sits on the panel's left edge and glides in top */
+.hb.is-desktop .hb-notch { top: auto; left: -7px; transform: translateY(-50%) rotate(-45deg); transition-property: top; }
+
+/* the description: in the chosen tab (row, column) or the box beside the list; the three share one cell so the open game's height never changes */
 /* KEEP: the link's tap area is its 17px padding, pulled back by negative margins, as the design system does for a link in a cover head (`.mcp-cover-head-links`); the link's own 48px min-height would leave about 14px of dead space above and below it. */
 .hb-ins { display: grid; }
 .hb-intro { grid-area: 1 / 1; display: grid; gap: 12px; align-content: start; justify-items: start; }
 .hb-intro.is-ghost { visibility: hidden; }
-.hb-intro p { margin: 0; font: var(--type-body); color: inherit; text-wrap: balance; }
-.hb-tabs.is-phone ~ .hb-panel .hb-intro p { font-size: 14px; line-height: 1.4; }
+.hb-intro p { margin: 0; font: var(--type-body); font-size: 14px; line-height: 1.4; color: inherit; text-wrap: balance; }
+.hb:is(.is-tablet, .is-desktop) .hb-intro p { font-size: 16px; line-height: 1.5; }
+.hb-intro .hb-role { margin-bottom: -8px; }
 .hb-intro .mcp-lnk { display: inline-block; min-height: 0; padding: 17px 0; margin: -17px 0 calc(-17px + 5.5px); text-box: trim-both cap alphabetic; color: inherit; }
 /* Under 320px the three tab names still fit their cells whole, with a smaller name and less padding. */
-@container gs (max-width: 319px) { .hb-tabs.is-phone .hb-tab-b { padding: 10px 6px; } .hb-tabs.is-phone .hb-tab-b b { font-size: 12px; } .hb-tabs.is-phone .hb-tab-b small { font-size: 10px; letter-spacing: .04em; } }
+@container gs (max-width: 319px) { .hb-tab-b b { font-size: 14px; } .hb-tab-b small { font-size: 10px; letter-spacing: .04em; } .hb-tab:not(.is-open) .hb-tab-b { padding: 8px 6px; } }
 /* KEEP: below 360px the chat's Track keeps its steps and its count apart: a 12-step row at the design system's own minimum widths runs into the count at 280px, so the steps shrink to 3px with a 1px gap. */
 @container gs (max-width: 359px) {
   .hb-chat .mcp-cb-track { grid-template-columns: fit-content(5.5em) minmax(4em, 1fr) auto; column-gap: 8px; }
