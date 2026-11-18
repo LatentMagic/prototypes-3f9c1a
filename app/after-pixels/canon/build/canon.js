@@ -7399,7 +7399,7 @@
   const HB_A = (tool, text, blocks, after) => ({ from: "ai", tool, text, blocks, after });
   const HB_PICTURE = "assets/home-block-delve.svg";
   const HB_TRACK = (advance) => ({ type: "track", items: [{ label: "Health", value: 23, max: 23, tone: "health" }, { label: "Orcs’ advance", value: advance, max: 12, tone: "threat" }] });
-  const HB_BOARD = { type: "tilegrid", length: 5, count: 6, rows: [{ letters: "POINT", marks: "xhxxx" }, { letters: "COILS", marks: "hhxhx" }] };
+  const HB_BOARD = { type: "tilegrid", length: 5, count: 6, rows: [{ letters: "COILS", marks: "hhxhx" }] };
   const HB_CLUES = [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }];
   const HB_GAMES = [
     {
@@ -7422,7 +7422,7 @@
       intro: "It shows how each guess scored and keeps a hint back until you want it.",
       turns: [
         HB_U("COILS"),
-        HB_A("Guess", "Three in place now. Four left.", [HB_BOARD]),
+        HB_A("Guess", "Three in place on your first go. Five left.", [HB_BOARD]),
         HB_U("Still got my hint?"),
         HB_A("Guess", "Still yours. Say when you want it. Next word?")
       ]
