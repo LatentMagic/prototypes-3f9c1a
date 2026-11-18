@@ -27,6 +27,7 @@ const HB_SENTENCE = 'Step into a story, crack a puzzle or talk through a mystery
 const HB_U = (text) => ({ from: 'user', text });
 const HB_A = (tool, text, blocks, after) => ({ from: 'ai', tool, text, blocks, after });
 const HB_PICTURE = 'assets/home-block-delve.svg';
+// KEEP: the threat track's tone is the design system's `threat`; the platform's ChatBlock names that tone `danger`, so the platform record uses `danger`.
 const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Garrick’s health', value: 23, max: 23, tone: 'health' }, { label: 'The drums', value: advance, max: 12, tone: 'threat' }] });
 const HB_BOARD = { type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'COILS', marks: 'hhxhx' }] };
 // OPEN: what Accuse shows beside the chat is not designed. For now it shows the clues the chat talks about, as the chat-parts canvas did.
