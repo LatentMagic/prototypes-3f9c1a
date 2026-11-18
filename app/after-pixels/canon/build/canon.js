@@ -7530,7 +7530,7 @@
       comp: /* @__PURE__ */ React$1.createElement(HbReply, { onSend })
     });
   };
-  const HbIntro = ({ open, go, role }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, role && /* @__PURE__ */ React$1.createElement("b", { className: "hb-role" }, g.part), /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ›"))));
+  const HbIntro = ({ open, go, role }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, role && /* @__PURE__ */ React$1.createElement("b", { className: "hb-role" }, g.part), /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ", /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "›")))));
   const HbTabs = ({ open, size, pick, go }) => {
     const inTab = size !== "list";
     const at = HB_GAMES.findIndex((g) => g.id === open);

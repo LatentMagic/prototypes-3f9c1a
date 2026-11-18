@@ -108,7 +108,7 @@ const HbIntro = ({ open, go, role }) => (
     <div key={g.id} className={'hb-intro' + (g.id === open ? '' : ' is-ghost')} aria-hidden={g.id === open ? undefined : true}>
       {role && <b className="hb-role">{g.part}</b>}
       <p>{g.intro}</p>
-      <DS.TextLink onClick={() => go(GS_GAMES[g.gid].route)} tabIndex={g.id === open ? 0 : -1}>See {GS_GAMES[g.gid].name} ›</DS.TextLink>
+      <DS.TextLink onClick={() => go(GS_GAMES[g.gid].route)} tabIndex={g.id === open ? 0 : -1}>See {GS_GAMES[g.gid].name} <span aria-hidden="true">›</span></DS.TextLink>
     </div>))}</div>);
 // The tabs take Connect's app picker: outlined on the page colour, the chosen one inverted. From 400px the chosen tab holds the description, so the tab is a button plus the description beside it, never a link inside a button.
 const HbTabs = ({ open, size, pick, go }) => {
