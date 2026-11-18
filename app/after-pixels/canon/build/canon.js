@@ -331,7 +331,7 @@
       let j = 0;
       return chatRuns2(text).map((r, k) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: k }, styled2(r, r.s.split(/(\s+)/).map((w, x) => !w || /^\s+$/.test(w) ? w : /* @__PURE__ */ React2.createElement(React2.Fragment, { key: x }, wordFn(w, j++))), "r")));
     }
-    function useChatScroll(body, turns, start) {
+    function useChatScroll2(body, turns, start) {
       const top = start === "top";
       const [up, setUp] = React2.useState(false);
       React2.useEffect(() => {
@@ -402,7 +402,7 @@
     const chatParas = paras2;
     function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
       const body = React2.useRef(null);
-      const [up, toStart] = useChatScroll(body, turns, start);
+      const [up, toStart] = useChatScroll2(body, turns, start);
       return chatShell2({
         bodyRef: body,
         up,
@@ -7363,6 +7363,46 @@
     if (runs.every((r) => !r.b && !r.i && !r.u)) return String(text);
     return runs.map((r, k) => styled(r, r.s, k));
   }
+  function useChatScroll(body, turns, start) {
+    const [up, setUp] = React$1.useState(false);
+    React$1.useEffect(() => {
+      const b = body.current;
+      if (!b) return void 0;
+      let moved = false;
+      const mark = () => {
+        const u = b.scrollTop + b.clientHeight < b.scrollHeight - 4;
+        b.dataset.more = u ? "down" : "";
+        setUp(u);
+      };
+      const end = () => {
+        if (!moved) b.scrollTop = 0;
+        mark();
+      };
+      const stop = () => {
+        moved = true;
+      };
+      b.addEventListener("scroll", mark, { passive: true });
+      ["wheel", "touchstart", "keydown"].forEach((t2) => b.addEventListener(t2, stop, { passive: true }));
+      const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(end) : null;
+      if (ro) {
+        ro.observe(b);
+        [...b.children].forEach((c) => ro.observe(c));
+      }
+      end();
+      const t = setTimeout(end, 600);
+      return () => {
+        clearTimeout(t);
+        if (ro) ro.disconnect();
+        b.removeEventListener("scroll", mark);
+        ["wheel", "touchstart", "keydown"].forEach((t2) => b.removeEventListener(t2, stop));
+      };
+    }, [turns]);
+    const toStart = () => {
+      const b = body.current;
+      if (b) b.scrollTo({ top: b.scrollHeight, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    };
+    return [up, toStart];
+  }
   function chatTurn(t, i, { mark, toolBy, fx }) {
     if (t.from === "user") {
       if (!fx) return /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
@@ -7458,7 +7498,7 @@
   const HbPic = () => /* @__PURE__ */ React$1.createElement("img", { className: "hb-pic", src: HB_PICTURE, alt: "A hero in armour on a ridge at dawn, a burning tower behind" });
   const HB_EDITION = { delve: "Delve #40", guess: "Guess #33", accuse: "Accuse #112" };
   const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-sidebox" }, /* @__PURE__ */ React$1.createElement("p", { className: "hb-ed" }, HB_EDITION[game]), game === "delve" && /* @__PURE__ */ React$1.createElement(HbPic, null), game === "guess" && /* @__PURE__ */ React$1.createElement(TileGrid, { ...HB_BOARD }), game === "accuse" && /* @__PURE__ */ React$1.createElement(ClueCards, { groups: HB_CLUES }));
-  const HbReply = ({ onSend }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free", /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "send", size: 16 })));
+  const HbReply = ({ onSend }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free"));
   const HbChat = ({ game, size, onSend }) => {
     const body = React$1.useRef(null);
     const phone = size === "list" || size === "phone";
@@ -7469,21 +7509,18 @@
     if (pic) items.unshift(
       /* @__PURE__ */ React$1.createElement("div", { key: "pic", className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: GS_CHAT_MARK, alt: "", width: "16", height: "16" }), "Called Delve", /* @__PURE__ */ React$1.createElement("em", null, GS_CHAT_BY)), /* @__PURE__ */ React$1.createElement(HbPic, null))
     );
-    React$1.useEffect(() => {
-      if (body.current) body.current.scrollTop = 0;
-    }, [game, size]);
+    const [more, toEnd] = useChatScroll(body, game + size);
     return chatShell({
       bodyRef: body,
       body: items,
-      up: false,
-      toStart: () => {
-      },
+      up: more,
+      toStart: toEnd,
       start: "top",
       height: phone ? 300 : void 0,
       width: 2e3,
       fill: !phone,
       label: g.id + " being played in a chat",
-      more: "Back to the start",
+      more: "On to the latest",
       className: "hb-chat",
       comp: /* @__PURE__ */ React$1.createElement(HbReply, { onSend })
     });

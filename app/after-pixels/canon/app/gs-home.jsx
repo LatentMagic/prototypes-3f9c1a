@@ -5,7 +5,7 @@
 import React from 'react';
 import { DS, GS_GAMES, useGs } from './gs-data.jsx';
 import { GsCard } from './gs-pass-home.jsx';
-import { chatTurn, chatShell } from '../../design-system/components/media/ChatPicture.jsx';
+import { chatTurn, chatShell, useChatScroll } from '../../design-system/components/media/ChatPicture.jsx';
 import { TileGrid } from '../../design-system/components/chat/TileGrid.jsx';
 import { ClueCards } from '../../design-system/components/chat/ClueCards.jsx';
 import { GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
@@ -83,8 +83,8 @@ const HbSide = ({ game }) => (
 const HbReply = ({ onSend }) => (
   <div className="mcp-chat-comp hb-reply" role="group" aria-label="Reply">
     <span>Reply</span>
-    {/* KEEP: Start free is the chat's send button, so it carries the send arrow; black, so it reads as the thing to press (the user, 2026-11-18). */}
-    <DS.Button onClick={onSend}>Start free<DS.Icon name="send" size={16} /></DS.Button>
+    {/* KEEP: Start free is black so it reads as the thing to press, never the chat's grey send button (the user, 2026-11-18). */}
+    <DS.Button onClick={onSend}>Start free</DS.Button>
   </div>);
 
 const HbChat = ({ game, size, onSend }) => {
@@ -96,9 +96,10 @@ const HbChat = ({ game, size, onSend }) => {
   if (pic) items.unshift(
     <div key="pic" className="mcp-chat-ai hb-pic-turn"><span className="mcp-chat-call"><img src={GS_CHAT_MARK} alt="" width="16" height="16" />Called Delve<em>{GS_CHAT_BY}</em></span><HbPic /></div>);
   // KEEP: the chat is all there when shown (nothing types in) and opens at its top, whichever tab or width. The chat scrolls; the block never changes height.
-  React.useEffect(() => { if (body.current) body.current.scrollTop = 0; }, [game, size]);
-  return chatShell({ bodyRef: body, body: items, up: false, toStart: () => {}, start: 'top', height: phone ? 300 : undefined, width: 2000, fill: !phone,
-    label: g.id + ' being played in a chat', more: 'Back to the start', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
+  // While more of the chat sits below, the design system's down pill shows above the reply bar, as on the hero chat (the user, 2026-11-18).
+  const [more, toEnd] = useChatScroll(body, game + size, 'top');
+  return chatShell({ bodyRef: body, body: items, up: more, toStart: toEnd, start: 'top', height: phone ? 300 : undefined, width: 2000, fill: !phone,
+    label: g.id + ' being played in a chat', more: 'On to the latest', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
 };
 
 // KEEP: all three descriptions share one grid cell and only the chosen one shows (the others are visibility:hidden), so the block is as tall as the longest and nothing below it moves when a tab is tapped.

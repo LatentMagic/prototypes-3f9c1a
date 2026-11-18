@@ -59,7 +59,7 @@ export function chatRichWords(text,wordFn){
 // Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
 // KEEP: Stays at the latest turn while it lays out, until the reader scrolls it themselves.
 // start="top": opens on the first turn instead; the pill then points down and scrolls to the latest turn, and hides once the body is at the bottom.
-function useChatScroll(body,turns,start){
+export function useChatScroll(body,turns,start){
   const top=start==='top';
   const [up,setUp]=React.useState(false);
   React.useEffect(()=>{
