@@ -129,31 +129,33 @@
 }
 
 /* home hero: one cover field (Delve's wine ground and banner art, as on the platform) with the screenshot set inside it (home-hero option 9) */
-.gs-hero-field { position: relative; display: grid; gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
-.gs-hero-art { position: absolute; top: 0; right: 20px; width: 46%; cursor: pointer; }
+/* KEEP: Delve's art sits in the hero grid on the row that ends at the chat card's top (art bottom-aligned, no row gap), so the foot of the arch touches the card's top edge by layout at every width, never by a measured offset; the name block keeps its 24px (20px from 900px) above the card as its own padding. At the narrowest widths the art stays 46% wide and the eyebrow wraps beside it, so the two never overlap. */
+.gs-hero-field { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; row-gap: 0; --name-gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
+.gs-hero-delve-art { grid-column: 2; grid-row: 1; align-self: end; width: 46cqw; margin-right: 8px; cursor: pointer; }
 /* Motion on the hero art: Delve's own art-motion pieces. Hovering or focusing the name, or hovering the art, plays it. */
 .gs-hero-field { --on: 0; }
-.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-art:active)) { --on: 1; }
+.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) { --on: 1; }
 .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
-.gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-art:active)) .gs-hero-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); }
-@media (hover: hover) { .gs-hero-field:hover { --on: 1; } .gs-hero-field:hover .gs-hero-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); } }
-.gs-hero-name { position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0; color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
+.gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); }
+@media (hover: hover) { .gs-hero-field:hover { --on: 1; } .gs-hero-field:hover .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); } }
+.gs-hero-name { grid-column: 1; grid-row: 1; align-self: start; position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0 0 var(--name-gap); color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
 .gs-hero-name:active { opacity: .55; }
 .gs-hero-name-t .mcp-ico { transition: transform var(--time-press) var(--ease); }
 @media (hover: hover) { .gs-hero-field:hover .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; } }
 @media (prefers-reduced-motion: reduce) { .gs-hero-name-t .mcp-ico, .gs-inlink, .gs-ft-link, .gs-ft-mail, .gs-support, .gs-legal-col a { transition: none; } }
 .gs-hero-name-t { display: inline-flex; align-items: center; gap: 8px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
 .gs-hero-field { container-type: inline-size; }
-.gs-hero-field > .mcp-chat { --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
+.gs-hero-field > .gs-hero-name .gs-label { text-wrap: balance; }
+.gs-hero-field > .mcp-chat { grid-column: 1 / -1; grid-row: 2; --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
 .gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
 @container gs (min-width: 900px) {
-  .gs-hero-field { padding: 28px 16px 16px; gap: 36px; }
-  .gs-hero-art { right: 28px; }
+  .gs-hero-field { padding: 28px 16px 16px; --name-gap: 36px; }
+  .gs-hero-delve-art { margin-right: 12px; }
 }
 /* KEEP: the field takes the copy's height and never sets the hero's, so nothing overhangs; the chat gives up its top turns to fit (home-product-hero option 4) */
 @container gs (min-width: 900px) {
-  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); gap: 20px; padding: 20px 16px 16px; }
+  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); --name-gap: 20px; padding: 20px 16px 16px; }
   .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
 }
 
