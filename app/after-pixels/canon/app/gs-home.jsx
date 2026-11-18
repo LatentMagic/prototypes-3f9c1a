@@ -38,8 +38,6 @@ const HB_GAMES = [
       HB_A('Delve', ['Dawn on the ridge above Brackenford. The watchtower burns, and orc tracks run up towards the caves under Raven Hill. A watchman lies pinned beneath an overturned cart.', '“Get this off me. Please.”', 'You can lift the cart with Strength, or follow the tracks to the caves. What do you do?'], [HB_TRACK(0)]),
       HB_U('I lift the cart.'),
       HB_A('Delve', ['You heave the cart up, and he drags his leg free.', '“They went up to the caves. Dozens of them.”', 'The tracks climb towards Raven Hill. What do you do?'], [{ type: 'roll', label: 'Strength', roll: 14, mod: 3, target: 12, result: 'hit', outcome: 'Success' }, HB_TRACK(0)]),
-      HB_U('I follow the tracks.'),
-      HB_A('Delve', ['The path climbs through the heather to a cave mouth. Two orcs sit by a fire at the entrance, arguing over a sack of grain.', 'You can creep past with Agility, or charge them with Strength. What do you do?'], [HB_TRACK(0)]),
     ] },
   { id: 'guess', gid: 'word', part: 'Host', intro: 'It shows how each guess scored and keeps a hint back until you want it.',
     turns: [
