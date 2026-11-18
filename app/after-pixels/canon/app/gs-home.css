@@ -153,13 +153,14 @@
 .gs-hero-field { container-type: inline-size; }
 .gs-hero-field > .gs-hero-name .gs-label { text-wrap: balance; }
 .gs-hero-field > .mcp-chat { grid-column: 1 / -1; grid-row: 2; --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
-.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
+/* KEEP: below 720 the chat is 5:4 but at most 400px tall (328px on screen after the .82 scale, as at 500px wide), so from 500 to 719 the hero ends within one 1024px screen instead of growing with the width */
+.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; max-height: 400px; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
 /* KEEP: below 720 the art is at most 150px wide (75px tall, as on a 390 phone) so it never outgrows the title row; from 720 it is 46% of the field, small enough that the eyebrow stays on one line beside it (about 106px at 720, 87px tall at 899).
    KEEP: from 720px the field takes the copy's height and never sets the hero's, so nothing overhangs and the hero fits one screen; the chat gives up its top turns to fit (home-product-hero option 4). The art's foot still touches the chat card's top edge: it stays in the grid row above the card. */
 @container gs (min-width: 720px) {
   .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); --name-gap: 20px; padding: 20px 16px 16px; }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
+  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; max-height: none; }
   .gs-hero-delve-art { margin-right: 12px; width: min(46cqw, calc(100% - 8px)); }
 }
 
