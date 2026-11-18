@@ -7,7 +7,7 @@
 /* KEEP: on a phone the band drops its cover; the page's own cover sits right below it, and two stacked covers read as noise */
 .pg-band { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); }
 .pg-band > :first-child { display: none; }
-/* KEEP: stacked (under 640px), the band's own rows set every visible space and nothing is cancelled with a negative margin. The description ends at its descenders and the link is drawn from its cap top to its underline's bottom (text-box trim), so the row gap above the link and the band's padding below it are the same 12px whatever the font's metrics. The link's 48px hit area comes from a pseudo-element centred on that box, so it adds no visible space. */
+/* KEEP: stacked (under 640px), the space above the link equals the space below it, 12px each whatever the font, and the link keeps a 48px tap area that adds no visible space. */
 @container gs (width < 640px) {
   .pg-band-link { display: grid; justify-items: start; grid-column: 1 / -1; }
   .pg-band-link > .mcp-lnk { display: inline-block; position: relative; min-height: 0; padding-block: 0 calc(4px + 1.5px); text-box: trim-both cap alphabetic; }
