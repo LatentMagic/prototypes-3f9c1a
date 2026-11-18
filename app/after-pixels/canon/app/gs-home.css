@@ -89,11 +89,17 @@
   .gs-who2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
   .gs-who2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
 }
-@container gs (min-width: 900px) {
-  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; align-items: stretch; }
+/* KEEP: home hero is two columns from 720px (copy left, the Delve block right), as on desktop, so a tablet's hero fits one screen; below 720 it is the phone's single column. From 720 to 899 the columns are equal and the headline is smaller so each sentence still holds one line; from 900 the copy column is wider. */
+@container gs (min-width: 720px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding-top: 28px; align-items: stretch; }
   .gs-hero3 > .gs-hero-copy { gap: 24px; }
-  /* KEEP: the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
   .gs-hero3 + .gs-band { margin-top: -12px; }
+  .gs-h1.gs-h1-home { font-size: clamp(22px, calc(3.6cqi - 1px), 32px); }
+  .gs-hero-art3 { padding: 36px 16px; align-content: center; }
+}
+@container gs (min-width: 900px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; }
+  /* KEEP: the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
   .gs-h1.gs-h1-home { font-size: clamp(32px, calc(3.9cqi - 4px), 46px); text-wrap: initial; }
   .gs-h1.gs-h1-home > span { display: block; white-space: nowrap; }
   .gs-hero-art3 { padding: 36px 16px; align-content: center; }
@@ -149,14 +155,16 @@
 .gs-hero-field > .mcp-chat { grid-column: 1 / -1; grid-row: 2; --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
 .gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
-@container gs (min-width: 900px) {
-  .gs-hero-field { padding: 28px 16px 16px; --name-gap: 36px; }
-  .gs-hero-delve-art { margin-right: 12px; }
-}
-/* KEEP: the field takes the copy's height and never sets the hero's, so nothing overhangs; the chat gives up its top turns to fit (home-product-hero option 4) */
-@container gs (min-width: 900px) {
+/* KEEP: from 720px the field takes the copy's height and never sets the hero's, so nothing overhangs and the hero fits one screen; the chat gives up its top turns to fit (home-product-hero option 4). The art's foot still touches the chat card's top edge: it stays in the grid row above the card. */
+@container gs (min-width: 720px) {
   .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); --name-gap: 20px; padding: 20px 16px 16px; }
   .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
+  .gs-hero-delve-art { margin-right: 12px; }
+}
+/* KEEP: in the narrow right column (720–899) the art is never smaller than 150px wide (75px tall), so the tunnel stays legible; wider, it is 46% of the field as on desktop */
+@container gs (720px <= width < 900px) {
+  .gs-hero-field { grid-template-columns: fit-content(calc(100% - 158px)) minmax(0, 1fr); }
+  .gs-hero-delve-art { width: min(max(46cqw, 150px), calc(100% - 8px)); }
 }
 
 /* what's new: release feed on Home */
@@ -197,15 +205,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @supports (animation-timeline: scroll()) { .wn-nest:has(> .wn-e:nth-child(5))::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
 
-/* KEEP: tablet (720–899): the hero stays stacked, but the headline and line run full width, Works with sits beside the buttons, and the chat is a short strip that gives up its top turns, as on desktop (home-hero-tablet concept 4) */
-@container gs (720px <= width < 900px) {
-  .gs-hero3 > .gs-hero-copy { grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; justify-items: stretch; }
-  .gs-hero3 > .gs-hero-copy > .gs-h1, .gs-hero3 > .gs-hero-copy > .gs-hero-sub { grid-column: 1 / -1; }
-  .gs-hero3 .gs-hero-sub { max-width: none; }
-  .gs-hero3 .gs-hero-act { align-self: center; }
-  .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
-}
 /* KEEP: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
    The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
 .gs-home-after { display: grid; gap: 16px; justify-items: start; margin-top: -16px; }
