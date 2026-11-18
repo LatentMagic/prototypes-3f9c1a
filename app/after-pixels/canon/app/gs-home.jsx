@@ -70,6 +70,7 @@ const useHbSize = (ref) => {
 
 const HbPic = () => <img className="hb-pic" src={HB_PICTURE} alt="A hero in armour on a ridge at dawn, a burning tower behind" />;
 // Beside the chat (tablet and desktop) each game's side opens with its edition, in the same place for all three; a phone shows none.
+// KEEP: the edition numbers are invented, so no real edition is shown: #40 is Delve's product page sample, #112 is Accuse's, and Guess's #33 is one before that page's No. 34, so the two never contradict.
 const HB_EDITION = { delve: 'Delve #40', guess: 'Guess #33', accuse: 'Accuse #112' };
 // What the AI draws for the game: beside the chat on tablet and desktop, inside it on a phone.
 const HbSide = ({ game }) => (
