@@ -2312,11 +2312,17 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .gs-who2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
   .gs-who2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
 }
-@container gs (min-width: 900px) {
-  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; align-items: stretch; }
+/* KEEP: home hero is two columns from 720px (copy left, the Delve block right), as on desktop, so a tablet's hero fits one screen; below 720 it is the phone's single column. From 720 to 899 the columns are equal and the headline is smaller so each sentence still holds one line; from 900 the copy column is wider. */
+@container gs (min-width: 720px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding-top: 28px; align-items: stretch; }
   .gs-hero3 > .gs-hero-copy { gap: 24px; }
-  /* KEEP: the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
   .gs-hero3 + .gs-band { margin-top: -12px; }
+  .gs-h1.gs-h1-home { font-size: clamp(22px, calc(3.6cqi - 1px), 32px); }
+  .gs-hero-art3 { padding: 36px 16px; align-content: center; }
+}
+@container gs (min-width: 900px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; }
+  /* KEEP: the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
   .gs-h1.gs-h1-home { font-size: clamp(32px, calc(3.9cqi - 4px), 46px); text-wrap: initial; }
   .gs-h1.gs-h1-home > span { display: block; white-space: nowrap; }
   .gs-hero-art3 { padding: 36px 16px; align-content: center; }
@@ -2352,32 +2358,33 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 
 /* home hero: one cover field (Delve's wine ground and banner art, as on the platform) with the screenshot set inside it (home-hero option 9) */
-.gs-hero-field { position: relative; display: grid; gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
-.gs-hero-art { position: absolute; top: 0; right: 20px; width: 46%; cursor: pointer; }
+/* KEEP: Delve's art sits on the name row, bottom-aligned, so the arch's foot touches the chat card's top edge at every width. The eyebrow stays on one line while the art has at least 92px beside it, then wraps; the art is at most 46% of the field wide, so the two never overlap. */
+.gs-hero-field { position: relative; display: grid; grid-template-columns: fit-content(calc(100% - 108px)) minmax(0, 1fr); column-gap: 8px; row-gap: 0; --name-gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
+.gs-hero-delve-art { grid-column: 2; grid-row: 1; align-self: end; justify-self: end; width: min(46cqw, 150px, calc(100% - 8px)); margin-right: 8px; cursor: pointer; }
 /* Motion on the hero art: Delve's own art-motion pieces. Hovering or focusing the name, or hovering the art, plays it. */
 .gs-hero-field { --on: 0; }
-.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-art:active)) { --on: 1; }
+.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) { --on: 1; }
 .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
-.gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-art:active)) .gs-hero-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); }
-@media (hover: hover) { .gs-hero-field:hover { --on: 1; } .gs-hero-field:hover .gs-hero-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); } }
-.gs-hero-name { position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0; color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
+.gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); }
+@media (hover: hover) { .gs-hero-field:hover { --on: 1; } .gs-hero-field:hover .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); } }
+.gs-hero-name { grid-column: 1; grid-row: 1; align-self: start; position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0 0 var(--name-gap); color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
 .gs-hero-name:active { opacity: .55; }
 .gs-hero-name-t .mcp-ico { transition: transform var(--time-press) var(--ease); }
 @media (hover: hover) { .gs-hero-field:hover .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; } }
 @media (prefers-reduced-motion: reduce) { .gs-hero-name-t .mcp-ico, .gs-inlink, .gs-ft-link, .gs-ft-mail, .gs-support, .gs-legal-col a { transition: none; } }
 .gs-hero-name-t { display: inline-flex; align-items: center; gap: 8px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
 .gs-hero-field { container-type: inline-size; }
-.gs-hero-field > .mcp-chat { --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
-.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
+.gs-hero-field > .gs-hero-name .gs-label { text-wrap: balance; }
+.gs-hero-field > .mcp-chat { grid-column: 1 / -1; grid-row: 2; --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
+/* KEEP: below 720 the chat is 5:4 but at most 400px tall (328px on screen after the .82 scale, as at 500px wide), so from 500 to 719 the hero ends within one 1024px screen instead of growing with the width */
+.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; max-height: 400px; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
-@container gs (min-width: 900px) {
-  .gs-hero-field { padding: 28px 16px 16px; gap: 36px; }
-  .gs-hero-art { right: 28px; }
-}
-/* KEEP: the field takes the copy's height and never sets the hero's, so nothing overhangs; the chat gives up its top turns to fit (home-product-hero option 4) */
-@container gs (min-width: 900px) {
-  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); gap: 20px; padding: 20px 16px 16px; }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
+/* KEEP: below 720 the art is at most 150px wide (75px tall, as on a 390 phone) so it never outgrows the title row; from 720 it is 46% of the field, small enough that the eyebrow stays on one line beside it (about 106px at 720, 87px tall at 899).
+   KEEP: from 720px the field takes the copy's height and never sets the hero's, so nothing overhangs and the hero fits one screen; the chat gives up its top turns to fit (home-product-hero option 4). The art's foot still touches the chat card's top edge: it stays in the grid row above the card. */
+@container gs (min-width: 720px) {
+  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); --name-gap: 20px; padding: 20px 16px 16px; }
+  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; max-height: none; }
+  .gs-hero-delve-art { margin-right: 12px; width: min(46cqw, calc(100% - 8px)); }
 }
 
 /* what's new: release feed on Home */
@@ -2418,15 +2425,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @supports (animation-timeline: scroll()) { .wn-nest:has(> .wn-e:nth-child(5))::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
 
-/* KEEP: tablet (720–899): the hero stays stacked, but the headline and line run full width, Works with sits beside the buttons, and the chat is a short strip that gives up its top turns, as on desktop (home-hero-tablet concept 4) */
-@container gs (720px <= width < 900px) {
-  .gs-hero3 > .gs-hero-copy { grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; justify-items: stretch; }
-  .gs-hero3 > .gs-hero-copy > .gs-h1, .gs-hero3 > .gs-hero-copy > .gs-hero-sub { grid-column: 1 / -1; }
-  .gs-hero3 .gs-hero-sub { max-width: none; }
-  .gs-hero3 .gs-hero-act { align-self: center; }
-  .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
-}
 /* KEEP: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
    The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
 .gs-home-after { display: grid; gap: 16px; justify-items: start; margin-top: -16px; }
