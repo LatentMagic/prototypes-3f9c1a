@@ -115,13 +115,6 @@ const MgLibrary = ({ id }) => {
 };
 export const GS_MORE_SCREENS = {};
 
-// The chat's tool line: the game's name in sentence case, two words at most; a longer name falls back to its key.
-const gsToolName = (d) => {
-  const words = d.name.replace(/^The /, '').split(' ');
-  const name = words.length <= 2 ? words.join(' ') : d.k;
-  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-};
-
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsMoreGames() {
 GS_MORE.forEach((d) => {
@@ -137,7 +130,7 @@ GS_MORE.forEach((d) => {
     who: { ai: d.page.ai, server: d.page.server },
     week: { title: d.page.heading, line: d.blurb },
   };
-  GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(gsToolName(d), d.chat[2])] }];
+  GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.name, d.chat[2])] }];
   GS_LIB_READY[d.k] = d.ready;
   GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
   GS_LIBRARY[d.k] = () => <MgLibrary id={d.k} />;
