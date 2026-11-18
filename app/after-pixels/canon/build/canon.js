@@ -7456,7 +7456,7 @@
     return size;
   };
   const HbPic = () => /* @__PURE__ */ React$1.createElement("img", { className: "hb-pic", src: HB_PICTURE, alt: "A hero in armour on a ridge at dawn, a burning tower behind" });
-  const HB_EDITION = { delve: "Delve #40", guess: "Guess #34", accuse: "Accuse #112" };
+  const HB_EDITION = { delve: "Delve #40", guess: "Guess #33", accuse: "Accuse #112" };
   const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-sidebox" }, /* @__PURE__ */ React$1.createElement("p", { className: "hb-ed" }, HB_EDITION[game]), game === "delve" && /* @__PURE__ */ React$1.createElement(HbPic, null), game === "guess" && /* @__PURE__ */ React$1.createElement(TileGrid, { ...HB_BOARD }), game === "accuse" && /* @__PURE__ */ React$1.createElement(ClueCards, { groups: HB_CLUES }));
   const HbReply = ({ onSend }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free"));
   const HbChat = ({ game, size, onSend }) => {
