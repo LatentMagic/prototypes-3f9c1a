@@ -60,7 +60,7 @@ export function chatRichWords(text,wordFn){
 // Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
 // KEEP: Stays at the latest turn while it lays out, until the reader scrolls it themselves.
 // start="top": opens on the first turn instead; the pill then points down and scrolls to the latest turn, and hides once the body is at the bottom.
-function useChatScroll(body,turns,start){
+export function useChatScroll(body,turns,start){
   const top=start==='top';
   const [up,setUp]=React.useState(false);
   React.useEffect(()=>{
@@ -81,7 +81,7 @@ function useChatScroll(body,turns,start){
 }
 // The tool line: "<toolBy> · Called <tool>". The by-line leads and never breaks inside itself; the name follows and wraps in full, uncut. The mark sits on the first row.
 // With no toolBy there is no dot.
-function ToolCall({tool,mark,toolBy,style}){
+export function ToolCall({tool,mark,toolBy,style}){
   return <span className="mcp-chat-call" style={style}>{mark&&<img src={mark} alt="" width="16" height="16"/>}<span className="mcp-chat-calltxt">{toolBy&&<><em>{toolBy} ·</em>{' '}</>}Called {tool}</span></span>;
 }
 // Shared drawing for ChatPicture and ChatPlayback. Without fx a turn draws whole, exactly as ChatPicture always has.

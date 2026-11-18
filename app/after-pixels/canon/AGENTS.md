@@ -100,6 +100,9 @@ Read the copy rules in the monorepo (`LatentMagic/monorepo`) first: the shop-wid
 - Before adding a class, grep `app/` for it: a name already used elsewhere restyles that too. After a change to shared styles, check the home page and one page you did not touch.
 - `!important` is kept where it beats an inline `style={{}}` or a design-system rule it cannot out-rank; test any removal with the check.
 - If spacing needs a negative margin or a nudge value to look right, fix the structure instead.
+- **A hairline between two blocks sits midway: the gap above it equals the gap below it.**
+- **A heading's gap above it is larger than its gap below it.**
+- Measure both on the rendered page at each width you check, before anyone sees it: a gap runs between the visible edges of what is drawn (the hairline, the last text or box above it, the top of the heading's capital letters), not between element boxes, whose line-height and tap padding the eye does not see.
 - Centre by default: a short or lone row (dice, marks, tiles, a last row that does not fill) is centred on its row, and content is centred on the cross axis, unless the design says otherwise. Grid and flex start at the left and top; set the centring.
 - Never draw a dashed edge with `border` or `outline` `dashed` on a small box: iPhone Safari drops its side dashes, leaving only the top and bottom. Draw the dashes with four `linear-gradient` backgrounds, as `.wd-t.is-hint` (`gs-word.css`) and Delve's free pack slot (`gs-delve.css`) do.
 - Content in the app posture reads its insets as `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))`; only the app posture (Config → Platform, `isApp`) sets them.

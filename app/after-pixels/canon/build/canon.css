@@ -425,11 +425,11 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-up.is-down[hidden]{transform:translate(-50%,6px)}
 .mcp-chat.is-top .mcp-chat-body>:first-child{margin-top:0}
 .mcp-chat-body[data-more="down"]{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 56px);mask-image:linear-gradient(to top,transparent 0,#000 56px)}
-.mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
+.mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;visibility:hidden;transform:translate(-50%,-6px);transition:opacity var(--time-press) var(--ease),transform var(--time-press) var(--ease),background var(--time-press) var(--ease),visibility 0s linear var(--time-press)}
 @media (hover:hover){.mcp-chat-up:not([hidden]):hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg));transform:translate(-50%,-1px)}}
 .mcp-chat-up:not([hidden]):active{transform:translateX(-50%) scale(.97)}
 .mcp-chat-up:focus-visible{outline:2px solid var(--c-send);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.mcp-chat-up{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.mcp-chat-up,.mcp-chat-up[hidden]{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
 .mcp-chat-me{align-self:flex-end;max-width:80%;background:var(--c-me);border-radius:18px;padding:7px 14px;flex:none}
 .mcp-chat-ai{display:grid;gap:8px;justify-items:start;max-width:94%;flex:none}
 .mcp-chat-call{display:inline-flex;align-items:flex-start;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px;line-height:18px;max-width:100%}
@@ -2286,9 +2286,10 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 /* KEEP: home H1 below 900: sized so each sentence holds one line from ~350px; narrower, a sentence may wrap, and the H1 never drops below 25px */
 .gs-h1.gs-h1-home { font-size: clamp(25px, calc(7.6cqi - 3px), 34px); }
 .gs-h1.gs-h1-home > span { display: block; }
-.gs-hero3 .gs-hero-sub { max-width: 56ch; }
-.gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
-.gs-works p { text-wrap: pretty; }
+.gs-hero3 .gs-hero-sub { max-width: 56ch; text-wrap: pretty; }
+/* The hairline runs the copy column's full width at every size; only the text keeps its measure. */
+.gs-works { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-works p { max-width: 44ch; text-wrap: pretty; }
 .gs-br-wide { display: none; }
 .gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
 .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
@@ -2325,7 +2326,6 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 @container gs (min-width: 720px) {
   .gs-hero3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding-top: 28px; align-items: stretch; }
   .gs-hero3 > .gs-hero-copy { gap: 24px; }
-  .gs-hero3 + .gs-band { margin-top: -12px; }
   .gs-h1.gs-h1-home { font-size: clamp(22px, calc(3.6cqi - 1px), 32px); }
   .gs-hero-art3 { padding: 36px 16px; align-content: center; }
 }
@@ -2338,13 +2338,16 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 @media (prefers-reduced-motion: reduce) { .gs-today-item { transition: none; } }
 
+/* The hero's two buttons: stacked full width on a phone; from a 432px screen, the line where the games block stops being a list (its own 400px, inside the page's 16px gutters), one row, still full width, two equal halves; from 720px, beside the chat, their own width. The gs container is the full page width. */
+@container gs (min-width: 432px) { .gs-hero-act { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 @container gs (min-width: 720px) {
   .gs-sess-head { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-6); }
+  .gs-hero-act { display: flex; width: auto; }
   .gs-wrap { padding-inline: 24px; }
   .gs-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .gs-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
   .gs-steps.is-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-  .gs-hero-act { display: flex; width: auto; gap: 12px; }
   .gs-how { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
   .gs-hero-art { padding: 36px; }
   .gs-pz-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: end; }
@@ -2441,6 +2444,117 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* All games keeps its 48px tap height, which centres its text in empty space; pulling the box in (more above, where the
    sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
 .gs-home-after > div { margin: -12px 0 -4px; }
+
+/* The homepage block under Available games: game tabs in Connect's app-picker theme, a card-grey panel with a notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
+.hb { gap: 12px; }
+.hb .mcp-t-sec, .hb-lead { margin: 0; }
+.hb-lead { max-width: 60ch; text-wrap: balance; }
+.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; margin-top: 4px; gap: 28px; }
+/* KEEP: 28px between the chosen game and the panel, as Connect's app picker leaves between its tiles and its card; the panel pads 16px, as Connect's card does. */
+/* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
+.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 28px 12px; }
+.hb.is-list .hb-panel { grid-column: 1 / -1; }
+.hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
+.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 0; }
+.hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
+/* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
+.hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
+.hb-side, .hb-talk { min-width: 0; min-height: 0; display: grid; }
+.hb-side { border-right: 1px solid var(--c-edge); }
+.hb-talk > .mcp-chat { height: 100%; }
+.hb-stage .mcp-chat { background: transparent; border: 0; border-radius: 0; }
+
+/* what the AI draws, beside the chat: the edition label in flow at the top, the drawing centred in the space left */
+.hb-sidebox { display: grid; grid-template-rows: auto minmax(0, 1fr); align-items: center; justify-items: center; padding: 16px; overflow: visible; min-width: 0; }
+.hb.is-desktop .hb-sidebox { padding: 24px; }
+.hb-sidebox .mcp-cb-tiles { text-align: center; }
+.hb-sidebox .mcp-cb-tiles-in { --t: min(40px, calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n))); }
+.hb-sidebox .mcp-cb-clues { max-width: 360px; }
+.hb-pic { display: block; min-width: 0; border-radius: 8px; }
+.hb-sidebox .hb-pic { width: 100%; max-width: 400px; aspect-ratio: 2 / 1; object-fit: cover; }
+.hb-ed { justify-self: start; align-self: start; margin: 0; font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--c-fg2); }
+/* On a phone the picture is a full-width banner across the chat, 96px tall and cropped to fit. */
+.hb-pic-turn .hb-pic { width: 100%; max-width: none; height: 96px; aspect-ratio: auto; object-fit: cover; }
+.hb-pic-turn + .mcp-chat-ai { margin-top: -6px; }
+
+/* the reply bar: the chat's reply box with the design system's Button as its send button */
+.hb-reply { padding-right: 4px; }
+.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
+/* KEEP: Start free is drawn 36px tall and its hit area is 44px: the ::before extends 4px beyond the 1.5px border above and below. */
+.hb-reply .mcp-btn::before { content: ""; position: absolute; inset: calc(-4px - 1.5px) 0; }
+.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
+
+/* The tabs take Connect's app picker (.hw-app in gs-connect.css) exactly: outlined on the page colour, a faint hover, the chosen one inverted to off-white; the notch is Connect's own (.hw-notch). */
+.hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }
+.hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
+.hb-tab.is-open { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+.hb-tab:not(.is-open):active { transform: scale(.97); }
+@media (hover: hover) { .hb-tab:not(.is-open):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .hb-tab { transition: none; } .hb-tab:not(.is-open):active { transform: none; } }
+/* KEEP: the ring shows for keyboard focus only (:focus-visible); on a tap or click the tab just opens, with no white flash. */
+.hb-tab:has(.hb-tab-b:focus-visible) { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.hb-tab-b { -webkit-tap-highlight-color: transparent; display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 8px 10px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
+.hb-tab-b:focus { outline: none; }
+.hb-tab.is-open .hb-tab-b { cursor: default; }
+.hb-tab-b small { font: 600 12px/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+.hb-tab-b b { font: 700 18px/1.2 var(--font-heading); letter-spacing: -.01em; overflow-wrap: normal; }
+.hb-tab.is-open .hb-tab-b small { opacity: .75; }
+
+/* list (under 400px): the game's name only, so the list is no taller than the box beside it; the role heads the description */
+.hb.is-list .hb-tabs { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; }
+/* KEEP: a list tab's whole box is its button, and its hit area reaches at least 44px tall (the box is 42px at 390) without growing the drawn box: the ::before extends 3px above and below, into the 8px between tabs. */
+.hb.is-list .hb-tab { min-height: 40px; align-content: stretch; }
+.hb.is-list .hb-tab-b { position: relative; align-content: center; padding: 8px 12px; }
+.hb.is-list .hb-tab-b::before { content: ""; position: absolute; inset: -3px 0; }
+.hb.is-list .hb-tab-b b { display: none; }
+.hb.is-list .hb-tab-b small { font-size: 13px; letter-spacing: .02em; text-transform: none; font-weight: 700; opacity: 1; }
+.hb-desc { box-sizing: border-box; min-width: 0; padding: 16px; background: var(--off-white); color: var(--page); border-radius: 0; }
+.hb-role { display: block; margin-bottom: 4px; font: 700 16px/1.2 var(--font-heading); letter-spacing: -.01em; }
+@container gs (max-width: 359px) {
+  .hb.is-list .hb-set { grid-template-columns: 84px minmax(0, 1fr); gap: 16px 8px; }
+  .hb.is-list .hb-tab-b { padding: 8px; }
+  .hb.is-list .hb-tab-b small { font-size: 12px; letter-spacing: 0; }
+  .hb-desc { padding: 12px; }
+}
+
+/* row (400 to 959px): the chosen tab is half the row (2fr of 4fr, set inline) and holds its description */
+/* the chosen tab's name and role sit at the same height and size as the others' */
+.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 8px 16px 0; }
+.hb-tab.is-open .hb-ins { padding: 8px 16px 14px; }
+
+/* column (960px up): the chosen tab fills the column and holds its description; the others are 72px */
+.hb.is-desktop .hb-tabs { display: flex; flex-direction: column; }
+.hb.is-desktop .hb-tab { min-height: 72px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b { align-content: center; padding: 10px 16px; height: 100%; }
+.hb.is-desktop .hb-tab.is-open { flex: 1; align-content: start; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b { padding: 16px 16px 0; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b b { font-size: 24px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b b { font-size: 16px; }
+.hb.is-desktop .hb-tab.is-open .hb-ins { padding: 12px 16px 16px; }
+
+/* the notch is Connect's (.hw-notch: top edge, gliding left); in the column it sits on the panel's left edge and glides in top */
+.hb.is-desktop .hb-notch { top: auto; left: -7px; transform: translateY(-50%) rotate(-45deg); transition-property: top; }
+
+/* the description: in the chosen tab (row, column) or the box beside the list; the three share one cell so the open game's height never changes */
+/* KEEP: the link's tap area is its 17px padding, pulled back by negative margins, as the design system does for a link in a cover head (`.mcp-cover-head-links`); the link's own 48px min-height would leave about 14px of dead space above and below it. */
+.hb-ins { display: grid; }
+.hb-intro { grid-area: 1 / 1; display: grid; gap: 12px; align-content: start; justify-items: start; }
+.hb-intro.is-ghost { visibility: hidden; }
+.hb-intro p { margin: 0; font: var(--type-body); font-size: 14px; line-height: 1.4; color: inherit; text-wrap: balance; }
+.hb:is(.is-tablet, .is-desktop) .hb-intro p { font-size: 16px; line-height: 1.5; }
+.hb-intro .hb-role { margin-bottom: -8px; }
+.hb-intro .mcp-lnk { display: inline-block; min-height: 0; padding: 17px 0; margin: -17px 0 calc(-17px + 5.5px); text-box: trim-both cap alphabetic; color: inherit; }
+/* KEEP: the link sits on the off-white chosen tab, so hover, press and focus keep its ink colour; the design system's link turns white for dark ground. */
+.hb-intro .mcp-lnk.mcp-lnk.mcp-lnk:is(:hover, :active, .is-pressed, :focus-visible) { color: inherit; }
+.hb-intro .mcp-lnk:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+/* Under 320px the three tab names still fit their cells whole, with a smaller name and less padding. */
+@container gs (max-width: 319px) { .hb-tab-b b { font-size: 14px; } .hb-tab-b small { font-size: 10px; letter-spacing: .04em; } .hb-tab:not(.is-open) .hb-tab-b { padding: 8px 6px; } }
+/* KEEP: below 360px the chat's Track keeps its steps and its count apart: a 12-step row at the design system's own minimum widths runs into the count at 280px, so the steps shrink to 3px with a 1px gap. */
+@container gs (max-width: 359px) {
+  .hb-chat .mcp-cb-track { grid-template-columns: fit-content(5.5em) minmax(4em, 1fr) auto; column-gap: 8px; }
+  .hb-chat .mcp-cb-steps { gap: 1px; }
+  .hb-chat .mcp-cb-steps > i { min-width: 3px; }
+}
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
@@ -2772,9 +2886,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 /* KEEP: One button width (design system Layout), keyed to the width the page is handed so the phone frame gets it too: the system's own rule
    reads the window. Under 640px every button is full width and a pair stacks; from 640px natural width. Popup actions and menu triggers keep their own rule,
-   and so does a button attached to a field (the Connect page's Copy), which keeps its own width. */
+   and so does a button attached to a field (the Connect page's Copy) or to the home block's reply bar, which keep their own width. */
 @container gs (max-width: 639.98px) {
-  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn) { display: flex; width: 100%; }
+  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn):not(.hb-reply .mcp-btn) { display: flex; width: 100%; }
   .mcp-btn-pair:not(.mcp-pop .mcp-btn-pair) { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .mcp-npass { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .mcp-npass-half { padding: var(--space-4); }

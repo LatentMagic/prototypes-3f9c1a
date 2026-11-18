@@ -11,7 +11,7 @@ import React from 'react';
 import { GS_GAMES, useGs, DS, GS_ART, GS, GS_NAME, GS_SOON } from './gs-data.jsx';
 import { GsArt, useGsArtHost, gsKeepLast, GsTagList, GsSoonCard } from './gs-parts.jsx';
 import { GS_HERO_CHAT, GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
-import { GS_HOME_GAMES, GsFeature, GsWhatsNew } from './gs-home.jsx';
+import { GS_HOME_GAMES, GsFeature, GsHomeBlock, GsWhatsNew } from './gs-home.jsx';
 import { gsPlans } from './gs-billing.jsx';
 import { cprLocked, cprFirstFree, cprPassLine, CPR_SHOWN, CPR_STAGE } from './gs-pass-store.jsx';
 
@@ -86,8 +86,9 @@ export const GsHome = () => {
     <main className="gs-wrap gs-main gs-home">
       <section className="gs-hero3">
         <div className="gs-hero-copy">
+          <p className="gs-label">THE AI GAMING PLATFORM</p>
           <h1 className="gs-h1 gs-h1-home"><span>Your AI does the talking.</span> <span>The game keeps the score.</span></h1>
-          <p className="gs-hero-sub">Daily puzzles and immersive adventures, played in your own AI chat. The game holds the rules, the dice and your record.</p>
+          <p className="gs-hero-sub">Play daily puzzles and adventures. The game holds the rules, the dice and your record.</p>
           <div className="gs-hero-act">
             <DS.Button onClick={gs.startFree}>Start free</DS.Button>
             <DS.Button variant="secondary" onClick={gs.goHow}>See how it works</DS.Button>
@@ -117,9 +118,11 @@ export const GsHome = () => {
         <div className="gs-home-after">
           <p className="gs-muted gs-pu-wrap">{<CprHomeLine />}</p>
           <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
-          <p className="gs-small gs-pu-wrap">{GS.purchase}</p>
+          {/* The purchase line lives on the Pass pricing page, under Choose a plan, not here (the user, 2026-11-18). */}
         </div>
       </section>
+
+      <GsHomeBlock />
 
       <GsWhatsNew />
     </main>
