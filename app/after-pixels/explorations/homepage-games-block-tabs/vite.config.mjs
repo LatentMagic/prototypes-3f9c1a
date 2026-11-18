@@ -1,5 +1,5 @@
-// Builds the home block chat parts canvas: canvas.jsx, canon's main.jsx and everything they import, as build/canvas.js and build/canvas.css.
-// Run from the repo root: npx vite build --config app/after-pixels/canvas/home-block-chat-parts/vite.config.mjs
+// Builds the home block tabs canvas: canvas.jsx, canon's main.jsx and everything they import, as build/canvas.js and build/canvas.css.
+// Run from the repo root: npx vite build --config app/after-pixels/explorations/homepage-games-block-tabs/vite.config.mjs
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -10,7 +10,7 @@ export default {
   publicDir: false,
   esbuild: { jsx: 'transform', jsxFactory: 'React.createElement', jsxFragment: 'React.Fragment' },
   build: {
-    lib: { entry: path.join(root, 'canvas.jsx'), name: 'HomeBlockChatPartsCanvas', formats: ['iife'], fileName: () => 'canvas.js', cssFileName: 'canvas' },
+    lib: { entry: path.join(root, 'canvas.jsx'), name: 'HomeBlockTabsCanvas', formats: ['iife'], fileName: () => 'canvas.js', cssFileName: 'canvas' },
     outDir: path.join(root, 'build'),
     emptyOutDir: true,
     minify: false,
