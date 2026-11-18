@@ -279,3 +279,21 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .hb-chat .mcp-cb-steps { gap: 1px; }
   .hb-chat .mcp-cb-steps > i { min-width: 3px; }
 }
+
+/* Trial of the chosen tab (?hbtab=all). 1 is the rules above. */
+.hb-trial { margin-bottom: 48px; }
+.hb-trial-n { margin: 0 0 8px; font: 700 18px/1.3 var(--font-heading); color: var(--warning); }
+.hb-t2 .hb-tab.is-open { background: var(--card); color: var(--text); box-shadow: inset 0 0 0 1px var(--off-white); }
+.hb-t2 .hb-tab:not(.is-open) { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+.hb-t3 .hb-tab.is-open { background: var(--card); color: var(--text); }
+.hb-t3 .hb-tab:not(.is-open) { background: transparent; color: var(--text); opacity: .7; }
+.hb-t4 .hb-tab:not(.is-open) { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+.hb-t4 .hb-set { gap: 0; }
+.hb-t4 .hb.is-desktop .hb-set { column-gap: 0; }
+.hb-t4 .hb-tabs.is-desktop .hb-tab.is-open { border-radius: 8px 0 0 8px; margin-right: -1px; }
+.hb-t4 .hb.is-desktop .hb-stage { border-top-left-radius: 0; }
+.hb-t4 .hb-tabs:not(.is-desktop) .hb-tab.is-open { border-radius: 8px 8px 0 0; }
+.hb-t4 .hb-tabs.is-tablet, .hb-t4 .hb-tabs.is-phone { row-gap: 0; }
+.hb-t4 .hb-strip { background: var(--off-white); color: var(--page); padding: 6px 12px 0; }
+.hb-t4 .hb:not(.is-desktop) .hb-stage { border-top-left-radius: 0; border-top-right-radius: 0; }
+.hb-t4 .hb.is-phone .hb-stage { border-top: 1px solid var(--c-edge); }
