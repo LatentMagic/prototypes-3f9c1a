@@ -5,7 +5,7 @@
 import React from 'react';
 import { DS, GS_GAMES, useGs } from './gs-data.jsx';
 import { GsCard } from './gs-pass-home.jsx';
-import { chatTurn, chatShell, useChatScroll } from '../../design-system/components/media/ChatPicture.jsx';
+import { chatTurn, chatShell, useChatScroll, ToolCall } from '../../design-system/components/media/ChatPicture.jsx';
 import { TileGrid } from '../../design-system/components/chat/TileGrid.jsx';
 import { ClueCards } from '../../design-system/components/chat/ClueCards.jsx';
 import { GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
@@ -94,7 +94,7 @@ const HbChat = ({ game, size, onSend }) => {
   const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: undefined } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
   // Delve opens a phone chat with the picture of the scene, the AI's own, with the call that made it.
   if (pic) items.unshift(
-    <div key="pic" className="mcp-chat-ai hb-pic-turn"><span className="mcp-chat-call"><img src={GS_CHAT_MARK} alt="" width="16" height="16" />Called Delve<em>{GS_CHAT_BY}</em></span><HbPic /></div>);
+    <div key="pic" className="mcp-chat-ai hb-pic-turn"><ToolCall tool="Delve" mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} /><HbPic /></div>);
   // KEEP: the chat is all there when shown (nothing types in) and opens at its top, whichever tab or width. The chat scrolls; the block never changes height.
   // While more of the chat sits below, the design system's down pill shows above the reply bar, as on the hero chat (the user, 2026-11-18).
   const [more, toEnd] = useChatScroll(body, game + size, 'top');
@@ -127,6 +127,9 @@ const HbTabs = ({ open, size, pick, go }) => {
     </div>);
 };
 
+// TRY (remove once the user rules on spacing): ?hbgap=<px> sets the gap between the tabs and the panel, ?hbpad=<px> the panel's padding round the chat.
+const HB_TRY = (() => { const q = new URLSearchParams(window.location.search); const s = {}; if (q.get('hbgap')) s['--hb-gap'] = q.get('hbgap') + 'px'; if (q.get('hbpad')) s['--hb-pad'] = q.get('hbpad') + 'px'; return s; })();
+
 export const GsHomeBlock = () => {
   const gs = useGs(); const root = React.useRef(null); const size = useHbSize(root); const [open, setOpen] = React.useState('delve');
   const set = React.useRef(null); const notch = React.useRef(null); const placed = React.useRef(null);
@@ -145,7 +148,7 @@ export const GsHomeBlock = () => {
     const ro = new ResizeObserver(() => place(false)); ro.observe(s); return () => ro.disconnect();
   }, [open, size]);
   return (
-    <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h">
+    <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h" style={HB_TRY}>
       <h2 className="mcp-t-sec" id="gs-hb-h">{HB_HEADING}</h2>
       <p className="gs-muted hb-lead">{HB_SENTENCE}</p>
       <div className="hb-set" ref={set}>

@@ -214,12 +214,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb { gap: 12px; }
 .hb .mcp-t-sec, .hb-lead { margin: 0; }
 .hb-lead { max-width: 60ch; }
-.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; margin-top: 4px; }
+.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; margin-top: 4px; gap: var(--hb-gap, 16px); }
 /* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
-.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 16px 12px; }
+.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: var(--hb-gap, 16px) 12px; }
 .hb.is-list .hb-panel { grid-column: 1 / -1; }
 .hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
-.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 0; }
+.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: var(--hb-pad, 16px); background: var(--card); border: 1px solid var(--line); border-radius: 0; }
 .hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
 /* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
 .hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
@@ -259,7 +259,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-tab.is-open .hb-tab-b { cursor: default; }
 .hb-tab-b small { font: 600 12px/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
 .hb-tab-b b { font: 700 18px/1.2 var(--font-heading); letter-spacing: -.01em; overflow-wrap: normal; }
-.hb-tab.is-open .hb-tab-b b { font-size: 16px; }
 .hb-tab.is-open .hb-tab-b small { opacity: .75; }
 
 /* list (under 400px): the game's name only, so the list is no taller than the box beside it; the role heads the description */
@@ -278,7 +277,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 
 /* row (400 to 959px): the chosen tab is half the row (2fr of 4fr, set inline) and holds its description */
-.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 10px 16px 0; }
+/* the chosen tab's name and role sit at the same height and size as the others' */
+.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 8px 16px 0; }
 .hb-tab.is-open .hb-ins { padding: 8px 16px 14px; }
 
 /* column (960px up): the chosen tab fills the column and holds its description; the others are 72px */

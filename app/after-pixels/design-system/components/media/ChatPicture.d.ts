@@ -21,7 +21,7 @@ export interface ChatTurn{
   from:'user'|'ai';
   /** One paragraph, or several. Inline markup: `**bold**`, `*italic*`, `__underline__`; they nest, and a marker with no partner stays as typed. */
   text?:string|string[];
-  /** AI turns only. Shows a "Called <tool>" line before the blocks. Pass the game's display name in sentence case, two words at most (for example `Delve`, or `Hollowmere` for The Barrow of Hollowmere), shown as "Called Delve". */
+  /** AI turns only. Shows a "Called <tool>" line before the blocks. Pass the game's display name in full, whatever its length (for example `Delve` or `The Barrow of Hollowmere`), shown as "Called Delve". A long name wraps; it is never cut or shortened. */
   tool?:string;
   /** AI turns only. What the tool returned, shown above the text. */
   blocks?:ChatBlock[];
@@ -37,7 +37,7 @@ export interface ChatPictureProps{
   start?:'latest'|'top';
   /** Header label. Omit for no header; the page around it already says whose it is. */
   title?:string;
-  /** Shown after the tool name in the tool-call card, e.g. the store name. */
+  /** Shown before the tool name in the tool-call card, followed by a dot (`After Pixels · Called Delve`), e.g. the store name. It never breaks inside itself. Omit for no by-line and no dot. */
   toolBy?:string;
   /** Image URL for the logo in the tool-call card. Omit for none. */
   mark?:string;

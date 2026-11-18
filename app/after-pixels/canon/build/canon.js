@@ -372,20 +372,23 @@
       };
       return [up, toStart];
     }
+    function ToolCall2({ tool, mark, toolBy, style }) {
+      return /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call", style }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-calltxt" }, toolBy && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("em", null, toolBy, " ·"), " "), "Called ", tool));
+    }
     function chatTurn2(t, i, { mark, toolBy, fx }) {
       if (t.from === "user") {
         if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras2(t.text).map(chatRich2));
         const st = fx.piece(i, "u");
         return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras2(t.text).map(chatRich2));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall2, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
         return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block2, { b }));
       });
       const call = t.tool && fx.piece(i, "c");
       const kids = [
-        call && /* @__PURE__ */ React2.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)),
+        call && /* @__PURE__ */ React2.createElement(ToolCall2, { key: "c", tool: t.tool, mark, toolBy, style: call }),
         ...blk(t.blocks, "b"),
         ...paras2(t.text).map((p, k) => {
           const st = fx.piece(i, "p" + k);
@@ -1046,6 +1049,7 @@
     ns.Checkbox = Checkbox;
     ns.TextField = TextField;
     ns.SearchField = SearchField;
+    ns.ToolCall = ToolCall2;
     ns.ChatPicture = ChatPicture;
     ns.Cover = Cover;
     ns.GameArt = GameArt;
@@ -1976,17 +1980,17 @@
       groups: [
         { cap: "Ask for today’s groups and the board opens with all sixteen words.", turns: [
           gscU("Play Daily Groups on After Pixels"),
-          gscAi("Daily groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "One word out still costs a mistake. Get all four and the group is solved.", turns: [
           gscU("Bass, pike, carp, sole"),
-          gscAi("Daily groups", "One away. 3 mistakes left."),
+          gscAi("Daily Groups", "One away. 3 mistakes left."),
           gscU("Pike, carp, sole, perch"),
-          gscAi("Daily groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Afterwards, your AI explains the groups.", turns: [
           gscU("Rail, gate, post, panel"),
-          gscAi("Daily groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
+          gscAi("Daily Groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
       // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
@@ -2028,7 +2032,7 @@
       escape: [
         { cap: "The door locks behind you. Look around.", turns: [
           gscU("Play Escape on After Pixels"),
-          gscAi("Escape", ["Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
+          gscAi("Escape", ["**Escape No. 1, The Clockmaker’s Study.** Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
         ] },
         { cap: "Every lock has three hints. A hint never costs a try.", turns: [
           gscU("Examine the workbench"),
@@ -2044,7 +2048,7 @@
       casebook: [
         { cap: "Three guests were still up. Sixteen turns to find out why.", turns: [
           gscU("Play Casebook on After Pixels"),
-          gscAi("Casebook", ["The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
+          gscAi("Casebook", ["**The Last Night at Gull Point.** The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
         ] },
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
@@ -2056,7 +2060,7 @@
           gscU("Play Delve on After Pixels"),
           gscAi(
             "Delve",
-            ["Delve #40: The Orc Caves under Raven Hill", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
+            ["**Delve #40: The Orc Caves under Raven Hill**", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
             null,
             [{ type: "entities", title: "Heroes", items: [{ name: "Garrick, the Knight", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Tamsin, the Ranger", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Selwyn, the Wizard", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
           )
@@ -2073,7 +2077,7 @@
         ] },
         { cap: "Your result is ready to post, with the moments that made your run.", turns: [
           gscU("Sunder, on the orc chief"),
-          gscAi("Delve", ["The Orc Caves under Raven Hill: Won", "Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.", "You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe."], null, [{ type: "roll", label: "Sunder", roll: 20, mod: 3, target: 14, result: "hit", outcome: "Critical hit · 14 damage" }]),
+          gscAi("Delve", ["**The Orc Caves under Raven Hill: Won**", "Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.", "You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe."], null, [{ type: "roll", label: "Sunder", roll: 20, mod: 3, target: 14, result: "hit", outcome: "Critical hit · 14 damage" }]),
           gscU("Can I get the share card?"),
           gscAi("Delve", "Here’s your share card:", null, [{ type: "mono", text: "The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\nBest roll 🟩19 · Worst roll 🟥2 · Last roll ✨20\nhttps://afterpixels.com/discover/delve" }])
         ] }
@@ -2081,29 +2085,29 @@
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
           gscU("Play The Barrow of Hollowmere on After Pixels"),
-          gscAi("Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
+          gscAi("The Barrow of Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
           gscU("I attack the skeleton with my longsword"),
-          gscAi("Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
+          gscAi("The Barrow of Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
         ] },
         { cap: "Stop when you like. Your hero carries on to the next chapter.", turns: [
           gscU("I ring the bell in the chapel tower"),
-          gscAi("Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
+          gscAi("The Barrow of Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
         ] }
       ],
       hunter: [
         { cap: "Grey dawn. The band sets out without waiting.", turns: [
           gscU("Play 36,000 Summers Ago on After Pixels"),
-          gscAi("36,000 summers", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
+          gscAi("36,000 Summers Ago", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
         ] },
         { cap: "The engine rolls the dice and keeps the time.", turns: [
           gscU("I follow the gatherers up to the plateau"),
-          gscAi("36,000 summers", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
+          gscAi("36,000 Summers Ago", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
         ] },
         { cap: "At the fire you hear what you missed.", turns: [
           gscU("I head back to the fire at dusk"),
-          gscAi("36,000 summers", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
+          gscAi("36,000 Summers Ago", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
         ] }
       ]
     };
@@ -7403,20 +7407,23 @@
     };
     return [up, toStart];
   }
+  function ToolCall({ tool, mark, toolBy, style }) {
+    return /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call", style }, mark && /* @__PURE__ */ React$1.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-calltxt" }, toolBy && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("em", null, toolBy, " ·"), " "), "Called ", tool));
+  }
   function chatTurn(t, i, { mark, toolBy, fx }) {
     if (t.from === "user") {
       if (!fx) return /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
       const st = fx.piece(i, "u");
       return st && /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
     }
-    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, /* @__PURE__ */ React$1.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: "a" + k, b })));
+    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: "a" + k, b })));
     const blk = (list, pre) => (list || []).map((b, k) => {
       const st = fx.piece(i, pre + k);
       return st && /* @__PURE__ */ React$1.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React$1.createElement(Block, { b }));
     });
     const call = t.tool && fx.piece(i, "c");
     const kids = [
-      call && /* @__PURE__ */ React$1.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, /* @__PURE__ */ React$1.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, /* @__PURE__ */ React$1.createElement("em", null, toolBy)),
+      call && /* @__PURE__ */ React$1.createElement(ToolCall, { key: "c", tool: t.tool, mark, toolBy, style: call }),
       ...blk(t.blocks, "b"),
       ...paras(t.text).map((p, k) => {
         const st = fx.piece(i, "p" + k);
@@ -7507,7 +7514,7 @@
     const pic = phone && game === "delve";
     const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: void 0 } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
     if (pic) items.unshift(
-      /* @__PURE__ */ React$1.createElement("div", { key: "pic", className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: GS_CHAT_MARK, alt: "", width: "16", height: "16" }), "Called Delve", /* @__PURE__ */ React$1.createElement("em", null, GS_CHAT_BY)), /* @__PURE__ */ React$1.createElement(HbPic, null))
+      /* @__PURE__ */ React$1.createElement("div", { key: "pic", className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement(ToolCall, { tool: "Delve", mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }), /* @__PURE__ */ React$1.createElement(HbPic, null))
     );
     const [more, toEnd] = useChatScroll(body, game + size);
     return chatShell({
@@ -7535,6 +7542,13 @@
       return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", id: "hb-t-" + g.id, "aria-selected": on, "aria-controls": "hb-panel", className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && inTab && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
     }));
   };
+  const HB_TRY = (() => {
+    const q = new URLSearchParams(window.location.search);
+    const s = {};
+    if (q.get("hbgap")) s["--hb-gap"] = q.get("hbgap") + "px";
+    if (q.get("hbpad")) s["--hb-pad"] = q.get("hbpad") + "px";
+    return s;
+  })();
   const GsHomeBlock = () => {
     const gs = useGs();
     const root = React$1.useRef(null);
@@ -7567,7 +7581,7 @@
       ro.observe(s);
       return () => ro.disconnect();
     }, [open, size]);
-    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set", ref: set }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), size === "list" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", id: "hb-panel", role: "tabpanel", "aria-labelledby": "hb-t-" + open }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch hb-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h", style: HB_TRY }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set", ref: set }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), size === "list" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", id: "hb-panel", role: "tabpanel", "aria-labelledby": "hb-t-" + open }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch hb-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
   };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
@@ -7806,7 +7820,7 @@
         title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
-        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
+        turns: [{ from: "ai", text: ["**" + d.title + "**", d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
       }
     ), /* @__PURE__ */ React$1.createElement(
       GsStartChat,
@@ -7867,7 +7881,7 @@
     const g = GS_GAMES[id];
     const p = GS_PAGES[id];
     const others = GS_MORE_GAMES.filter((k) => k !== id);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id })), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-head-group" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id }))), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
   };
   function initGsGame() {
     GS_PAGES = {
@@ -11830,11 +11844,6 @@
     return /* @__PURE__ */ React$1.createElement("main", { key: gs.view, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, cprLocked(gs, id) ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, access: "none" }) : /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: id, title: e.title || edLabel(e), line: g.blurb, span: true, onPlay: () => gs.playReq({ kind: "edition", e }) })));
   };
   const GS_MORE_SCREENS = {};
-  const gsToolName = (d) => {
-    const words = d.name.replace(/^The /, "").split(" ");
-    const name = words.length <= 2 ? words.join(" ") : d.k;
-    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  };
   function initGsMoreGames() {
     GS_MORE.forEach((d) => {
       const tags = [d.when, d.long].filter(Boolean);
@@ -11854,7 +11863,7 @@
         who: { ai: d.page.ai, server: d.page.server },
         week: { title: d.page.heading, line: d.blurb }
       };
-      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(gsToolName(d), d.chat[2])] }];
+      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.name, d.chat[2])] }];
       GS_LIB_READY[d.k] = d.ready;
       GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
       GS_LIBRARY[d.k] = () => /* @__PURE__ */ React$1.createElement(MgLibrary, { id: d.k });

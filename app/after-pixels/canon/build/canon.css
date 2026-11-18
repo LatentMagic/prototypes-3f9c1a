@@ -432,9 +432,10 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 @media (prefers-reduced-motion:reduce){.mcp-chat-up{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
 .mcp-chat-me{align-self:flex-end;max-width:80%;background:var(--c-me);border-radius:18px;padding:7px 14px;flex:none}
 .mcp-chat-ai{display:grid;gap:8px;justify-items:start;max-width:94%;flex:none}
-.mcp-chat-call{display:inline-flex;align-items:center;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px}
+.mcp-chat-call{display:inline-flex;align-items:flex-start;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px;line-height:18px;max-width:100%}
+.mcp-chat-calltxt{min-width:0;overflow-wrap:anywhere}
 .mcp-chat-me strong,.mcp-chat-ai strong{font-weight:700}.mcp-chat-me em,.mcp-chat-ai em{font-style:italic}.mcp-chat-me u,.mcp-chat-ai u{text-decoration:underline;text-underline-offset:2px}
-.mcp-chat-call img{border-radius:4px}.mcp-chat-call em{font-style:normal;color:var(--c-call)}
+.mcp-chat-call img{border-radius:4px;flex:none;margin-top:1px}.mcp-chat-call em{font-style:normal;color:var(--c-call);white-space:nowrap}
 .mcp-chat-board{display:grid;gap:4px}.mcp-chat-row{display:flex;gap:4px}
 .mcp-chat-row>span{width:28px;height:28px;display:grid;place-items:center;border-radius:5px;font-weight:700;font-size:14px;background:var(--c-tile);color:var(--c-tile-fg)}
 .mcp-chat-row>.is-g{background:var(--c-g);color:var(--success-on)}.mcp-chat-row>.is-y{background:var(--c-y);color:var(--warning-on)}
@@ -1711,15 +1712,23 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 /* KEEP: on a phone the band drops its cover; the page's own cover sits right below it, and two stacked covers read as noise */
 .pg-band { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); }
 .pg-band > :first-child { display: none; }
-/* KEEP: the link's 48px hit area overlaps the band's gap and padding when stacked, so the visible space matches the rest of the band */
-.pg-band-link { grid-column: 1 / -1; margin-block: -12px; }
+/* KEEP: stacked (under 640px), the space above the link equals the space below it, 12px each whatever the font, and the link keeps a 48px tap area that adds no visible space. */
+@container gs (width < 640px) {
+  .pg-band-link { display: grid; justify-items: start; grid-column: 1 / -1; }
+  .pg-band-link > .mcp-lnk { display: inline-block; position: relative; min-height: 0; padding-block: 0 calc(4px + 1.5px); text-box: trim-both cap alphabetic; }
+  .pg-band-link > .mcp-lnk::after { content: ""; position: absolute; inset: calc((100% - 48px) / 2) 0; }
+  .pg-band .gs-small { text-box: trim-end text; }
+}
+/* KEEP: one owner for the space between the band and the head: this group. Stacked (under 720px) it is the head's own 24px to the play box below it; from 720px it is the page's 36px section gap */
+.gs-head-group { display: grid; gap: 24px; }
+@container gs (min-width: 720px) { .gs-head-group { gap: 36px; } }
 .pg-yours-pop { left: 0; right: auto; min-width: 220px; }
 .pg-menu-label { display: block; padding: 12px 16px 4px; }
 .pg-kv { justify-content: space-between; }
 .pg-ach { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 8px !important; align-items: start !important; padding: 12px 0 !important; }
 .pg-ach-bar { display: block; max-width: 280px; }
 .rf-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
-@container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band > :first-child { display: block; } .pg-band-link { grid-column: auto; margin-block: 0; } }
+@container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band > :first-child { display: block; } }
 @container gs (min-width: 720px) { .rf-head { grid-template-columns: 144px minmax(0, 1fr); } }
 /* KEEP: a pop-up with one action: it fills the row (the system's pair grid leaves half empty) */
 .mcp-pop .mcp-btn-pair > .mcp-btn:only-child { grid-column: 1 / -1; }
@@ -2437,12 +2446,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb { gap: 12px; }
 .hb .mcp-t-sec, .hb-lead { margin: 0; }
 .hb-lead { max-width: 60ch; }
-.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; margin-top: 4px; }
+.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; margin-top: 4px; gap: var(--hb-gap, 16px); }
 /* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
-.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 16px 12px; }
+.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: var(--hb-gap, 16px) 12px; }
 .hb.is-list .hb-panel { grid-column: 1 / -1; }
 .hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
-.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 0; }
+.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: var(--hb-pad, 16px); background: var(--card); border: 1px solid var(--line); border-radius: 0; }
 .hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
 /* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
 .hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
@@ -2482,7 +2491,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-tab.is-open .hb-tab-b { cursor: default; }
 .hb-tab-b small { font: 600 12px/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
 .hb-tab-b b { font: 700 18px/1.2 var(--font-heading); letter-spacing: -.01em; overflow-wrap: normal; }
-.hb-tab.is-open .hb-tab-b b { font-size: 16px; }
 .hb-tab.is-open .hb-tab-b small { opacity: .75; }
 
 /* list (under 400px): the game's name only, so the list is no taller than the box beside it; the role heads the description */
@@ -2501,7 +2509,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 
 /* row (400 to 959px): the chosen tab is half the row (2fr of 4fr, set inline) and holds its description */
-.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 10px 16px 0; }
+/* the chosen tab's name and role sit at the same height and size as the others' */
+.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 8px 16px 0; }
 .hb-tab.is-open .hb-ins { padding: 8px 16px 14px; }
 
 /* column (960px up): the chosen tab fills the column and holds its description; the others are 72px */
