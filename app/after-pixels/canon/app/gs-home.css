@@ -137,7 +137,7 @@
 /* home hero: one cover field (Delve's wine ground and banner art, as on the platform) with the screenshot set inside it (home-hero option 9) */
 /* KEEP: Delve's art sits in the hero grid on the row that ends at the chat card's top (art bottom-aligned, no row gap), so the foot of the arch touches the card's top edge by layout at every width, never by a measured offset; the name block keeps its 24px (20px from 900px) above the card as its own padding. The eyebrow stays on one line while the art keeps at least 100px beside it; below that it wraps (balanced) and the art stays at 100px, and the art is 46% of the field wide at most, so the two never overlap. */
 .gs-hero-field { position: relative; display: grid; grid-template-columns: fit-content(calc(100% - 108px)) minmax(0, 1fr); column-gap: 8px; row-gap: 0; --name-gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
-.gs-hero-delve-art { grid-column: 2; grid-row: 1; align-self: end; justify-self: end; width: min(46cqw, calc(100% - 8px)); margin-right: 8px; cursor: pointer; }
+.gs-hero-delve-art { grid-column: 2; grid-row: 1; align-self: end; justify-self: end; width: min(46cqw, 150px, calc(100% - 8px)); margin-right: 8px; cursor: pointer; }
 /* Motion on the hero art: Delve's own art-motion pieces. Hovering or focusing the name, or hovering the art, plays it. */
 .gs-hero-field { --on: 0; }
 .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) { --on: 1; }
@@ -155,16 +155,12 @@
 .gs-hero-field > .mcp-chat { grid-column: 1 / -1; grid-row: 2; --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
 .gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
-/* KEEP: from 720px the field takes the copy's height and never sets the hero's, so nothing overhangs and the hero fits one screen; the chat gives up its top turns to fit (home-product-hero option 4). The art's foot still touches the chat card's top edge: it stays in the grid row above the card. */
+/* KEEP: below 720 the art is at most 150px wide (75px tall, as on a 390 phone) so it never outgrows the title row; from 720 it is 46% of the field, small enough that the eyebrow stays on one line beside it (about 106px at 720, 87px tall at 899).
+   KEEP: from 720px the field takes the copy's height and never sets the hero's, so nothing overhangs and the hero fits one screen; the chat gives up its top turns to fit (home-product-hero option 4). The art's foot still touches the chat card's top edge: it stays in the grid row above the card. */
 @container gs (min-width: 720px) {
   .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); --name-gap: 20px; padding: 20px 16px 16px; }
   .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
-  .gs-hero-delve-art { margin-right: 12px; }
-}
-/* KEEP: in the narrow right column (720–899) the art is never smaller than 150px wide (75px tall), so the tunnel stays legible; wider, it is 46% of the field as on desktop */
-@container gs (720px <= width < 900px) {
-  .gs-hero-field { grid-template-columns: fit-content(calc(100% - 158px)) minmax(0, 1fr); }
-  .gs-hero-delve-art { width: min(max(46cqw, 150px), calc(100% - 8px)); }
+  .gs-hero-delve-art { margin-right: 12px; width: min(46cqw, calc(100% - 8px)); }
 }
 
 /* what's new: release feed on Home */
