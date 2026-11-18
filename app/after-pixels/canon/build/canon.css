@@ -2286,7 +2286,9 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 /* KEEP: home H1 below 900: sized so each sentence holds one line from ~350px; narrower, a sentence may wrap, and the H1 never drops below 25px */
 .gs-h1.gs-h1-home { font-size: clamp(25px, calc(7.6cqi - 3px), 34px); }
 .gs-h1.gs-h1-home > span { display: block; }
-.gs-hero3 .gs-hero-sub { max-width: 56ch; }
+.gs-hero3 .gs-hero-sub { max-width: 56ch; text-wrap: pretty; }
+/* KEEP: the hero's first sentence never leaves one word alone on its last row ("chat." at 300 to 339px): its rows are balanced. */
+.gs-hero3 .gs-hero-sub:first-of-type { text-wrap: balance; }
 .gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
 .gs-works p { text-wrap: pretty; }
 .gs-br-wide { display: none; }
@@ -2444,7 +2446,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* The homepage block under Available games: game tabs in Connect's app-picker theme, a card-grey panel with a notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
 .hb { gap: 12px; }
 .hb .mcp-t-sec, .hb-lead { margin: 0; }
-.hb-lead { max-width: 60ch; }
+.hb-lead { max-width: 60ch; text-wrap: balance; }
 .hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; margin-top: 4px; gap: 28px; }
 /* KEEP: 28px between the chosen game and the panel, as Connect's app picker leaves between its tiles and its card; the panel pads 16px, as Connect's card does. */
 /* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
