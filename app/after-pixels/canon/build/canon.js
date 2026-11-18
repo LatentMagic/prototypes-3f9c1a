@@ -298,7 +298,7 @@
       return null;
     }
     const paras2 = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-    const MARK2 = /\*\*(\S(?:.*?\S)?)\*\*|__(\S(?:.*?\S)?)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+    const MARK2 = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
     function chatRuns2(text, f = {}) {
       const s = String(text), out = [];
       let rest = s;
@@ -7339,7 +7339,7 @@
     return null;
   }
   const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-  const MARK = /\*\*(\S(?:.*?\S)?)\*\*|__(\S(?:.*?\S)?)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+  const MARK = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
   function chatRuns(text, f = {}) {
     const s = String(text), out = [];
     let rest = s;
