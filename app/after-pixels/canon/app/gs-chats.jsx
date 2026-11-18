@@ -88,7 +88,7 @@ GS_CHATS = {
   // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
   escape: [
     { cap: 'The door locks behind you. Look around.', turns: [gscU('Play Escape on After Pixels'),
-      gscAi('Escape', ['Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.', 'What do you examine first?'])] },
+      gscAi('Escape', ['**Escape No. 1, The Clockmaker’s Study.** Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.', 'What do you examine first?'])] },
     { cap: 'Every lock has three hints. A hint never costs a try.', turns: [gscU('Examine the workbench'),
       gscAi('Escape', GS_ES1.bench),
       gscU('Give me a hint for the drawer'),
@@ -98,7 +98,7 @@ GS_CHATS = {
   ],
   casebook: [
     { cap: 'Three guests were still up. Sixteen turns to find out why.', turns: [gscU('Play Casebook on After Pixels'),
-      gscAi('Casebook', ['The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.', 'You have sixteen turns. Where do you start?'])] },
+      gscAi('Casebook', ['**The Last Night at Gull Point.** The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.', 'You have sixteen turns. Where do you start?'])] },
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
   ],
@@ -106,7 +106,7 @@ GS_CHATS = {
   // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
   delve: [
     { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('Play Delve on After Pixels'),
-      gscAi('Delve', ['Delve #40: The Orc Caves under Raven Hill', 'Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.', 'Which hero will you take?'],
+      gscAi('Delve', ['**Delve #40: The Orc Caves under Raven Hill**', 'Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.', 'Which hero will you take?'],
         null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Garrick, the Knight', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Tamsin, the Ranger', line: 'Best at Agility, Charm · 21 HP · Defence 14' }, { name: 'Selwyn, the Wizard', line: 'Best at Wits, Wisdom · 17 HP · Defence 12' }]}])] },
     { cap: 'A slip costs you health. Then try it another way.', turns: [gscU('I cross slowly and test every plank'),
       gscAi('Delve', 'The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.', null, [{ type: 'roll', label: 'Agility', roll: 6, mod: 1, target: 12, result: 'miss', outcome: 'Failure · 4 damage' }, { type: 'track', items: [{ label: 'Garrick’s health', value: 19, max: 23, tone: 'health' }] }]),
@@ -115,7 +115,7 @@ GS_CHATS = {
     { cap: 'Every hero has a heavy swing of their own, and it hits harder.', turns: [gscU('I use Sunder on the troll'),
       gscAi('Delve', 'Your blade bites deep, and the troll roars loud enough to shake dust from the roof. Its club swings round in answer, and your shield takes the worst of it.', null, [{ type: 'roll', label: 'Sunder', roll: 13, mod: 3, target: 14, result: 'hit', outcome: 'Hit · 7 damage' }])] },
     { cap: 'Your result is ready to post, with the moments that made your run.', turns: [gscU('Sunder, on the orc chief'),
-      gscAi('Delve', ['The Orc Caves under Raven Hill: Won', 'Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.', 'You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe.'], null, [{ type: 'roll', label: 'Sunder', roll: 20, mod: 3, target: 14, result: 'hit', outcome: 'Critical hit · 14 damage' }]),
+      gscAi('Delve', ['**The Orc Caves under Raven Hill: Won**', 'Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.', 'You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe.'], null, [{ type: 'roll', label: 'Sunder', roll: 20, mod: 3, target: 14, result: 'hit', outcome: 'Critical hit · 14 damage' }]),
       gscU('Can I get the share card?'),
       gscAi('Delve', 'Here’s your share card:', null, [{ type: 'mono', text: 'The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\nBest roll 🟩19 · Worst roll 🟥2 · Last roll ✨20\nhttps://afterpixels.com/discover/delve' }])] },
   ],
