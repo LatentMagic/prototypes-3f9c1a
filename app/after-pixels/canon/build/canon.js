@@ -7478,7 +7478,7 @@
       id: "accuse",
       gid: "mystery",
       part: "Thinking partner",
-      intro: "Stuck? Ask, and it turns the case into smaller questions. The deduction stays yours.",
+      intro: "It helps you think through the clues without solving the case for you.",
       turns: [
         HB_U("I keep mixing up Coco, Zara and the weapons. Can we talk through the ringmaster’s murder?"),
         HB_A("Accuse", "Which clue would you like to start with?", null, [{ type: "clues", groups: HB_CLUES }]),

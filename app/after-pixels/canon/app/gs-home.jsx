@@ -50,7 +50,7 @@ const HB_GAMES = [
       HB_U('CLOUD'),
       HB_A('Guess', 'Two in place, three elsewhere. Four guesses left.', null, [HB_PLAYED(2)]),
     ] },
-  { id: 'accuse', gid: 'mystery', part: 'Thinking partner', intro: 'Stuck? Ask, and it turns the case into smaller questions. The deduction stays yours.',
+  { id: 'accuse', gid: 'mystery', part: 'Thinking partner', intro: 'It helps you think through the clues without solving the case for you.',
     turns: [
       HB_U('I keep mixing up Coco, Zara and the weapons. Can we talk through the ringmaster’s murder?'),
       HB_A('Accuse', 'Which clue would you like to start with?', null, [{ type: 'clues', groups: HB_CLUES }]),
