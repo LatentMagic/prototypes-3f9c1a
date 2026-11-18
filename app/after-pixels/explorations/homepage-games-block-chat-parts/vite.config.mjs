@@ -1,5 +1,5 @@
 // Builds the home block chat parts canvas: canvas.jsx, canon's main.jsx and everything they import, as build/canvas.js and build/canvas.css.
-// Run from the repo root: npx vite build --config app/after-pixels/canvas/home-block-chat-parts/vite.config.mjs
+// Run from the repo root: npx vite build --config app/after-pixels/explorations/homepage-games-block-chat-parts/vite.config.mjs
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
