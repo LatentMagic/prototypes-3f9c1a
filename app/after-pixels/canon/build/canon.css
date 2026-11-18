@@ -870,7 +870,8 @@ button.mcp-cb-ent{cursor:pointer}
 .dvS-fact dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
 .dvS-fact dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dvS-fact dd span { font-weight: 400; color: var(--muted); white-space: nowrap; }
-.dvS-fact dd span.is-does { display: inline; white-space: nowrap; }
+/* KEEP: what a used ability or gear does always sits on its own muted row under its name, in every card shape and at every width, so the layout never depends on how long the words are. */
+.dvS-fact dd span.is-does { display: block; white-space: normal; }
 .dvS-fact dd[class*="is-"] { color: var(--tc); }
 /* KEEP: line 2 is the foe's answer, under a 1px rule: its roll (a diamond, what it did, the defence), then the foe's health as a fact named for the foe, its bar and count beside it (8px apart). The bar grows to 240px and no further (96px at least), so it never runs to the box's right edge; a foe beaten with no strike-back shows the health fact alone, at 0. No foe, no rule and no line 2. */
 .dvS-line.is-foe { flex-wrap: nowrap; align-items: stretch; padding: 12px 0 0; border-top: 1px solid var(--line); gap: 12px 24px; }
