@@ -58,11 +58,11 @@ GS_CHATS = {
   ],
   groups: [
     { cap: 'Ask for today’s groups and the board opens with all sixteen words.', turns: [gscU('Play Daily Groups on After Pixels'),
-      gscAi('Daily groups', 'Find four groups of four. You can make four mistakes.', [{ type: 'wordboard', words: ['BASS', 'PIKE', 'FROST', 'RAIL', 'CARP', 'CHORD', 'MIST', 'GATE', 'SOLE', 'SCALE', 'HAIL', 'POST', 'PERCH', 'NOTE', 'SLEET', 'PANEL'] }])] },
-    { cap: 'One word out still costs a mistake. Get all four and the group is solved.', turns: [gscU('Bass, pike, carp, sole'), gscAi('Daily groups', 'One away. 3 mistakes left.'),
-      gscU('Pike, carp, sole, perch'), gscAi('Daily groups', 'Three groups to go.', [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }], words: ['BASS', 'FROST', 'RAIL', 'CHORD', 'MIST', 'GATE', 'SCALE', 'HAIL', 'POST', 'NOTE', 'SLEET', 'PANEL'] }])] },
+      gscAi('Daily Groups', 'Find four groups of four. You can make four mistakes.', [{ type: 'wordboard', words: ['BASS', 'PIKE', 'FROST', 'RAIL', 'CARP', 'CHORD', 'MIST', 'GATE', 'SOLE', 'SCALE', 'HAIL', 'POST', 'PERCH', 'NOTE', 'SLEET', 'PANEL'] }])] },
+    { cap: 'One word out still costs a mistake. Get all four and the group is solved.', turns: [gscU('Bass, pike, carp, sole'), gscAi('Daily Groups', 'One away. 3 mistakes left.'),
+      gscU('Pike, carp, sole, perch'), gscAi('Daily Groups', 'Three groups to go.', [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }], words: ['BASS', 'FROST', 'RAIL', 'CHORD', 'MIST', 'GATE', 'SCALE', 'HAIL', 'POST', 'NOTE', 'SLEET', 'PANEL'] }])] },
     { cap: 'Afterwards, your AI explains the groups.', turns: [gscU('Rail, gate, post, panel'),
-      gscAi('Daily groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }, { label: 'Weather', words: ['FROST', 'MIST', 'HAIL', 'SLEET'] }, { label: 'Music', words: ['BASS', 'CHORD', 'SCALE', 'NOTE'] }, { label: 'Parts of a fence', words: ['RAIL', 'GATE', 'POST', 'PANEL'] }], words: [] }])] },
+      gscAi('Daily Groups', ['All four groups, one mistake.', 'BASS was the trap: a fish, and a note.'], [{ type: 'wordboard', solved: [{ label: 'Fish', words: ['PIKE', 'CARP', 'SOLE', 'PERCH'] }, { label: 'Weather', words: ['FROST', 'MIST', 'HAIL', 'SLEET'] }, { label: 'Music', words: ['BASS', 'CHORD', 'SCALE', 'NOTE'] }, { label: 'Parts of a fence', words: ['RAIL', 'GATE', 'POST', 'PANEL'] }], words: [] }])] },
   ],
   // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
   // edition: the monorepo case generator's deal for an unused seed (900001), dressed in the circus cast, numbered 112 to clear every real edition.
@@ -88,7 +88,7 @@ GS_CHATS = {
   // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
   escape: [
     { cap: 'The door locks behind you. Look around.', turns: [gscU('Play Escape on After Pixels'),
-      gscAi('Escape', ['Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.', 'What do you examine first?'])] },
+      gscAi('Escape', ['**Escape No. 1, The Clockmaker’s Study.** Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.', 'What do you examine first?'])] },
     { cap: 'Every lock has three hints. A hint never costs a try.', turns: [gscU('Examine the workbench'),
       gscAi('Escape', GS_ES1.bench),
       gscU('Give me a hint for the drawer'),
@@ -98,7 +98,7 @@ GS_CHATS = {
   ],
   casebook: [
     { cap: 'Three guests were still up. Sixteen turns to find out why.', turns: [gscU('Play Casebook on After Pixels'),
-      gscAi('Casebook', ['The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.', 'You have sixteen turns. Where do you start?'])] },
+      gscAi('Casebook', ['**The Last Night at Gull Point.** The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.', 'You have sixteen turns. Where do you start?'])] },
     { cap: 'Every statement is kept word for word, so any story can be checked.', turns: GSC_CB_SEARCH },
     { cap: 'The evidence breaks her story.', turns: GSC_CB_LIE },
   ],
@@ -106,7 +106,7 @@ GS_CHATS = {
   // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
   delve: [
     { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('Play Delve on After Pixels'),
-      gscAi('Delve', ['Delve #40: The Orc Caves under Raven Hill', 'Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.', 'Which hero will you take?'],
+      gscAi('Delve', ['**Delve #40: The Orc Caves under Raven Hill**', 'Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.', 'Which hero will you take?'],
         null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Garrick, the Knight', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Tamsin, the Ranger', line: 'Best at Agility, Charm · 21 HP · Defence 14' }, { name: 'Selwyn, the Wizard', line: 'Best at Wits, Wisdom · 17 HP · Defence 12' }]}])] },
     { cap: 'A slip costs you health. Then try it another way.', turns: [gscU('I cross slowly and test every plank'),
       gscAi('Delve', 'The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.', null, [{ type: 'roll', label: 'Agility', roll: 6, mod: 1, target: 12, result: 'miss', outcome: 'Failure · 4 damage' }, { type: 'track', items: [{ label: 'Garrick’s health', value: 19, max: 23, tone: 'health' }] }]),
@@ -115,25 +115,25 @@ GS_CHATS = {
     { cap: 'Every hero has a heavy swing of their own, and it hits harder.', turns: [gscU('I use Sunder on the troll'),
       gscAi('Delve', 'Your blade bites deep, and the troll roars loud enough to shake dust from the roof. Its club swings round in answer, and your shield takes the worst of it.', null, [{ type: 'roll', label: 'Sunder', roll: 13, mod: 3, target: 14, result: 'hit', outcome: 'Hit · 7 damage' }])] },
     { cap: 'Your result is ready to post, with the moments that made your run.', turns: [gscU('Sunder, on the orc chief'),
-      gscAi('Delve', ['The Orc Caves under Raven Hill: Won', 'Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.', 'You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe.'], null, [{ type: 'roll', label: 'Sunder', roll: 20, mod: 3, target: 14, result: 'hit', outcome: 'Critical hit · 14 damage' }]),
+      gscAi('Delve', ['**The Orc Caves under Raven Hill: Won**', 'Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.', 'You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe.'], null, [{ type: 'roll', label: 'Sunder', roll: 20, mod: 3, target: 14, result: 'hit', outcome: 'Critical hit · 14 damage' }]),
       gscU('Can I get the share card?'),
       gscAi('Delve', 'Here’s your share card:', null, [{ type: 'mono', text: 'The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\nBest roll 🟩19 · Worst roll 🟥2 · Last roll ✨20\nhttps://afterpixels.com/discover/delve' }])] },
   ],
   barrow: [
     { cap: 'Choose a hero. The engine sets the world.', turns: [gscU('Play The Barrow of Hollowmere on After Pixels'),
-      gscAi('Hollowmere', ['Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.', 'Will you go as a fighter, a rogue or a wizard?'])] },
+      gscAi('The Barrow of Hollowmere', ['Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.', 'Will you go as a fighter, a rogue or a wizard?'])] },
     { cap: 'Every attack is a roll the engine makes, and the dice are the truth.', turns: [gscU('I attack the skeleton with my longsword'),
-      gscAi('Hollowmere', 'Your blade bites through old bone. The barrow skeleton falls apart on the stone.', [{ type: 'mono', text: 'Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage' }])] },
+      gscAi('The Barrow of Hollowmere', 'Your blade bites through old bone. The barrow skeleton falls apart on the stone.', [{ type: 'mono', text: 'Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage' }])] },
     { cap: 'Stop when you like. Your hero carries on to the next chapter.', turns: [gscU('I ring the bell in the chapel tower'),
-      gscAi('Hollowmere', 'The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.', [{ type: 'mono', text: 'Quest complete\n+100 XP' }])] },
+      gscAi('The Barrow of Hollowmere', 'The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.', [{ type: 'mono', text: 'Quest complete\n+100 XP' }])] },
   ],
   hunter: [
     { cap: 'Grey dawn. The band sets out without waiting.', turns: [gscU('Play 36,000 Summers Ago on After Pixels'),
-      gscAi('36,000 summers', ['Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.', 'What do you do?'])] },
+      gscAi('36,000 Summers Ago', ['Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.', 'What do you do?'])] },
     { cap: 'The engine rolls the dice and keeps the time.', turns: [gscU('I follow the gatherers up to the plateau'),
-      gscAi('36,000 summers', 'Ren shows you where wild onions grow under the scree. By midday your bag is heavy.', [{ type: 'roll', label: 'Foraging', roll: 14, mod: 2, target: 12, result: 'hit' }])] },
+      gscAi('36,000 Summers Ago', 'Ren shows you where wild onions grow under the scree. By midday your bag is heavy.', [{ type: 'roll', label: 'Foraging', roll: 14, mod: 2, target: 12, result: 'hit' }])] },
     { cap: 'At the fire you hear what you missed.', turns: [gscU('I head back to the fire at dusk'),
-      gscAi('36,000 summers', ['The hunters are back with one ibex and a story: the young ones lost the herd at the river.', 'You weren’t at the river. Next time, you might be.'])] },
+      gscAi('36,000 Summers Ago', ['The hunters are back with one ibex and a story: the young ones lost the herd at the river.', 'You weren’t at the river. Next time, you might be.'])] },
   ],
 };
 // The home hero's chat is the whole Delve conversation from its product page; the hero scrolls it (gs-home.jsx).

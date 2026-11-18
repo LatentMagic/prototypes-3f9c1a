@@ -372,20 +372,23 @@
       };
       return [up, toStart];
     }
+    function ToolCall({ tool, mark, toolBy, style }) {
+      return /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call", style }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-calltxt" }, toolBy && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("em", null, toolBy, " ·"), " "), "Called ", tool));
+    }
     function chatTurn(t, i, { mark, toolBy, fx }) {
       if (t.from === "user") {
         if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
         const st = fx.piece(i, "u");
         return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
         return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block, { b }));
       });
       const call = t.tool && fx.piece(i, "c");
       const kids = [
-        call && /* @__PURE__ */ React2.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)),
+        call && /* @__PURE__ */ React2.createElement(ToolCall, { key: "c", tool: t.tool, mark, toolBy, style: call }),
         ...blk(t.blocks, "b"),
         ...paras(t.text).map((p, k) => {
           const st = fx.piece(i, "p" + k);
@@ -1976,17 +1979,17 @@
       groups: [
         { cap: "Ask for today’s groups and the board opens with all sixteen words.", turns: [
           gscU("Play Daily Groups on After Pixels"),
-          gscAi("Daily groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "One word out still costs a mistake. Get all four and the group is solved.", turns: [
           gscU("Bass, pike, carp, sole"),
-          gscAi("Daily groups", "One away. 3 mistakes left."),
+          gscAi("Daily Groups", "One away. 3 mistakes left."),
           gscU("Pike, carp, sole, perch"),
-          gscAi("Daily groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Afterwards, your AI explains the groups.", turns: [
           gscU("Rail, gate, post, panel"),
-          gscAi("Daily groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
+          gscAi("Daily Groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
       // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
@@ -2028,7 +2031,7 @@
       escape: [
         { cap: "The door locks behind you. Look around.", turns: [
           gscU("Play Escape on After Pixels"),
-          gscAi("Escape", ["Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
+          gscAi("Escape", ["**Escape No. 1, The Clockmaker’s Study.** Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
         ] },
         { cap: "Every lock has three hints. A hint never costs a try.", turns: [
           gscU("Examine the workbench"),
@@ -2044,7 +2047,7 @@
       casebook: [
         { cap: "Three guests were still up. Sixteen turns to find out why.", turns: [
           gscU("Play Casebook on After Pixels"),
-          gscAi("Casebook", ["The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
+          gscAi("Casebook", ["**The Last Night at Gull Point.** The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
         ] },
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
@@ -2056,7 +2059,7 @@
           gscU("Play Delve on After Pixels"),
           gscAi(
             "Delve",
-            ["Delve #40: The Orc Caves under Raven Hill", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
+            ["**Delve #40: The Orc Caves under Raven Hill**", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
             null,
             [{ type: "entities", title: "Heroes", items: [{ name: "Garrick, the Knight", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Tamsin, the Ranger", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Selwyn, the Wizard", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
           )
@@ -2073,7 +2076,7 @@
         ] },
         { cap: "Your result is ready to post, with the moments that made your run.", turns: [
           gscU("Sunder, on the orc chief"),
-          gscAi("Delve", ["The Orc Caves under Raven Hill: Won", "Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.", "You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe."], null, [{ type: "roll", label: "Sunder", roll: 20, mod: 3, target: 14, result: "hit", outcome: "Critical hit · 14 damage" }]),
+          gscAi("Delve", ["**The Orc Caves under Raven Hill: Won**", "Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.", "You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe."], null, [{ type: "roll", label: "Sunder", roll: 20, mod: 3, target: 14, result: "hit", outcome: "Critical hit · 14 damage" }]),
           gscU("Can I get the share card?"),
           gscAi("Delve", "Here’s your share card:", null, [{ type: "mono", text: "The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\nBest roll 🟩19 · Worst roll 🟥2 · Last roll ✨20\nhttps://afterpixels.com/discover/delve" }])
         ] }
@@ -2081,29 +2084,29 @@
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
           gscU("Play The Barrow of Hollowmere on After Pixels"),
-          gscAi("Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
+          gscAi("The Barrow of Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
           gscU("I attack the skeleton with my longsword"),
-          gscAi("Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
+          gscAi("The Barrow of Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
         ] },
         { cap: "Stop when you like. Your hero carries on to the next chapter.", turns: [
           gscU("I ring the bell in the chapel tower"),
-          gscAi("Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
+          gscAi("The Barrow of Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
         ] }
       ],
       hunter: [
         { cap: "Grey dawn. The band sets out without waiting.", turns: [
           gscU("Play 36,000 Summers Ago on After Pixels"),
-          gscAi("36,000 summers", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
+          gscAi("36,000 Summers Ago", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
         ] },
         { cap: "The engine rolls the dice and keeps the time.", turns: [
           gscU("I follow the gatherers up to the plateau"),
-          gscAi("36,000 summers", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
+          gscAi("36,000 Summers Ago", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
         ] },
         { cap: "At the fire you hear what you missed.", turns: [
           gscU("I head back to the fire at dusk"),
-          gscAi("36,000 summers", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
+          gscAi("36,000 Summers Ago", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
         ] }
       ]
     };
@@ -7397,7 +7400,7 @@
         title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
-        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
+        turns: [{ from: "ai", text: ["**" + d.title + "**", d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
       }
     ), /* @__PURE__ */ React$1.createElement(
       GsStartChat,
@@ -11421,11 +11424,6 @@
     return /* @__PURE__ */ React$1.createElement("main", { key: gs.view, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, cprLocked(gs, id) ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, access: "none" }) : /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: id, title: e.title || edLabel(e), line: g.blurb, span: true, onPlay: () => gs.playReq({ kind: "edition", e }) })));
   };
   const GS_MORE_SCREENS = {};
-  const gsToolName = (d) => {
-    const words = d.name.replace(/^The /, "").split(" ");
-    const name = words.length <= 2 ? words.join(" ") : d.k;
-    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  };
   function initGsMoreGames() {
     GS_MORE.forEach((d) => {
       const tags = [d.when, d.long].filter(Boolean);
@@ -11445,7 +11443,7 @@
         who: { ai: d.page.ai, server: d.page.server },
         week: { title: d.page.heading, line: d.blurb }
       };
-      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(gsToolName(d), d.chat[2])] }];
+      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.name, d.chat[2])] }];
       GS_LIB_READY[d.k] = d.ready;
       GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
       GS_LIBRARY[d.k] = () => /* @__PURE__ */ React$1.createElement(MgLibrary, { id: d.k });

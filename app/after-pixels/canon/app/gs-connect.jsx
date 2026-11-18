@@ -292,7 +292,7 @@ const GsStart = () => {
           }) }] }]} />
         <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
           caption={<>Name a game, or a past edition, and your AI starts it. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
-          turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
+          turns={[{ from: 'ai', text: ['**' + d.title + '**', d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
         <GsStartChat plain title="For a reminder or a hint, type" say="Remind me how accusing works in Accuse"
           caption={<>Ask your AI how a game works, or for a hint when you’re stuck. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.mystery.route)}>Go to Accuse</button></>}
           turns={[

@@ -78,6 +78,11 @@ function useChatScroll(body,turns,start){
   const toStart=()=>{const b=body.current; if(b) b.scrollTo({top:top?b.scrollHeight:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
   return [up,toStart];
 }
+// The tool line: "<toolBy> · Called <tool>". The by-line leads and never breaks inside itself; the name follows and wraps in full, uncut. The mark sits on the first row.
+// With no toolBy there is no dot.
+function ToolCall({tool,mark,toolBy,style}){
+  return <span className="mcp-chat-call" style={style}>{mark&&<img src={mark} alt="" width="16" height="16"/>}<span className="mcp-chat-calltxt">{toolBy&&<><em>{toolBy} ·</em>{' '}</>}Called {tool}</span></span>;
+}
 // Shared drawing for ChatPicture and ChatPlayback. Without fx a turn draws whole, exactly as ChatPicture always has.
 // With fx (ChatPlayback): fx.piece(turn, key) gives null (not drawn yet) or the piece's entering style; fx.words(turn, key, text) draws a paragraph's words.
 // Piece keys: 'u' user line; 'c' tool call; 'b0'.. blocks; 'p0'.. paragraphs; 'a0'.. blocks after the text.
@@ -87,7 +92,7 @@ export function chatTurn(t,i,{mark,toolBy,fx}){
     const st=fx.piece(i,'u'); return st&&<p key={i} className="mcp-chat-me" style={st}>{paras(t.text).map(chatRich)}</p>;
   }
   if(!fx) return <div key={i} className="mcp-chat-ai">
-    {t.tool&&<span className="mcp-chat-call">{mark&&<img src={mark} alt="" width="16" height="16"/>}Called {t.tool}{toolBy&&<em>{toolBy}</em>}</span>}
+    {t.tool&&<ToolCall tool={t.tool} mark={mark} toolBy={toolBy}/>}
     {(t.blocks||[]).map((b,k)=><Block key={k} b={b}/>)}
     {paras(t.text).map((p,k)=><p key={k}>{chatRich(p)}</p>)}
     {(t.after||[]).map((b,k)=><Block key={'a'+k} b={b}/>)}
@@ -95,7 +100,7 @@ export function chatTurn(t,i,{mark,toolBy,fx}){
   const blk=(list,pre)=>(list||[]).map((b,k)=>{const st=fx.piece(i,pre+k); return st&&<div key={pre+k} className="mcp-chat-fx" style={st}><Block b={b}/></div>;});
   const call=t.tool&&fx.piece(i,'c');
   const kids=[
-    call&&<span key="c" className="mcp-chat-call" style={call}>{mark&&<img src={mark} alt="" width="16" height="16"/>}Called {t.tool}{toolBy&&<em>{toolBy}</em>}</span>,
+    call&&<ToolCall key="c" tool={t.tool} mark={mark} toolBy={toolBy} style={call}/>,
     ...blk(t.blocks,'b'),
     ...paras(t.text).map((p,k)=>{const st=fx.piece(i,'p'+k); return st&&<p key={'p'+k} style={st}>{fx.words(i,'p'+k,p)}</p>;}),
     ...blk(t.after,'a')].filter(Boolean);
