@@ -19,7 +19,7 @@ export type ChatBlock=
  |({type:'menu'}&import('../chat/MenuRows').MenuRowsProps);
 export interface ChatTurn{
   from:'user'|'ai';
-  /** One paragraph, or several. */
+  /** One paragraph, or several. Inline markup: `**bold**`, `*italic*`, `__underline__`; they nest, and a marker with no partner stays as typed. */
   text?:string|string[];
   /** AI turns only. Shows a "Called <tool>" line before the blocks. Pass the game's display name in sentence case, two words at most (for example `Delve`, or `Hollowmere` for The Barrow of Hollowmere), shown as "Called Delve". */
   tool?:string;
