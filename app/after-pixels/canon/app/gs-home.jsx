@@ -102,7 +102,7 @@ const HbChat = ({ game, size, onSend }) => {
   React.useEffect(() => {
     if (still) { setN(total); return undefined; }
     setN(0); const t0 = performance.now() + 500;
-    const id = setInterval(() => { const k = Math.floor((performance.now() - t0) / 18); setN(Math.max(0, Math.min(total, k))); if (k >= total) clearInterval(id); }, 40);
+    const id = setInterval(() => { const k = Math.floor((performance.now() - t0) / 18); setN(Math.max(0, Math.min(total, k))); const b = body.current; if (b && k >= 0) b.scrollTop = b.scrollHeight; if (k >= total) clearInterval(id); }, 40);
     return () => clearInterval(id);
   }, [game, still, total]);
   let from = 0;
@@ -113,7 +113,7 @@ const HbChat = ({ game, size, onSend }) => {
   // Delve opens a phone chat with the picture of the scene, the AI's own, with the call that made it.
   if (pic) items.unshift(
     <div key="pic" className="mcp-chat-ai hb-pic-turn"><span className="mcp-chat-call"><img src={GS_CHAT_MARK} alt="" width="16" height="16" />Called Delve<em>{GS_CHAT_BY}</em></span><HbPic name="Garrick" /></div>);
-  // KEEP: every chat opens at its top, whichever tab, width or turn is newest; the chat scrolls, the block never changes height.
+  // KEEP: every chat opens at its top, whichever tab, width or turn is newest; once the newest turn starts typing, the chat follows it down until it is typed, then stops following. The chat scrolls; the block never changes height.
   React.useEffect(() => { if (body.current) body.current.scrollTop = 0; }, [game, size]);
   return chatShell({ bodyRef: body, body: items, up: false, toStart: () => {}, start: 'top', height: phone ? 440 : undefined, width: 2000, fill: !phone,
     label: g.id + ' being played in a chat', more: 'Back to the start', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });

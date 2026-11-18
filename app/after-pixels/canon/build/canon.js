@@ -7483,6 +7483,8 @@
       const id = setInterval(() => {
         const k = Math.floor((performance.now() - t0) / 18);
         setN(Math.max(0, Math.min(total, k)));
+        const b = body.current;
+        if (b && k >= 0) b.scrollTop = b.scrollHeight;
         if (k >= total) clearInterval(id);
       }, 40);
       return () => clearInterval(id);
