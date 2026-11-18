@@ -254,6 +254,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-tab.is-open { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
 .hb-tab:not(.is-open):active { transform: scale(.97); }
 @media (hover: hover) { .hb-tab:not(.is-open):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .hb-tab { transition: none; } .hb-tab:not(.is-open):active { transform: none; } }
 /* KEEP: the ring shows for keyboard focus only (:focus-visible); on a tap or click the tab just opens, with no white flash. */
 .hb-tab:has(.hb-tab-b:focus-visible) { outline: 2px solid var(--off-white); outline-offset: 2px; }
 .hb-tab-b { -webkit-tap-highlight-color: transparent; display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 8px 10px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
