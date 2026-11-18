@@ -43,18 +43,19 @@ export const GsGamePage = ({ id, top }) => {
   const g = GS_GAMES[id]; const p = GS_PAGES[id];
   const others = GS_MORE_GAMES.filter((k) => k !== id);   return (
     <main className="gs-wrap gs-main">
-      {top}
-
-      <section className="gs-head-split">
-        <div className="gs-hero-cover">
-          <GsCover art={g.art} fit />
-          <div className="gs-cover-over">
-            <span className="gs-label">{g.category}</span>
-            <h1 className="gs-cover-title">{g.name}</h1>
+      <div className="gs-head-group">
+        {top}
+        <section className="gs-head-split">
+          <div className="gs-hero-cover">
+            <GsCover art={g.art} fit />
+            <div className="gs-cover-over">
+              <span className="gs-label">{g.category}</span>
+              <h1 className="gs-cover-title">{g.name}</h1>
+            </div>
           </div>
-        </div>
-        <GsPlayBox id={id} />
-      </section>
+          <GsPlayBox id={id} />
+        </section>
+      </div>
 
       <GsFacts id={id} />
 
