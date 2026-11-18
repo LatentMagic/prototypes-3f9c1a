@@ -86,14 +86,8 @@ export const GsHome = () => {
     <main className="gs-wrap gs-main gs-home">
       <section className="gs-hero3">
         <div className="gs-hero-copy">
-          {/* TRY (remove once the user picks): the user's hero is the default; ?hero=label shows the main thread's reading, the label above the old heading. */}
-          {new URLSearchParams(location.search).get('hero') === 'label' ? <>
-            <p className="gs-label">THE AI GAMING PLATFORM</p>
-            <h1 className="gs-h1 gs-h1-home"><span>Your AI does the talking.</span> <span>The game keeps the score.</span></h1>
-          </> : <>
-            <h1 className="gs-h1 gs-h1-home">The AI gaming platform</h1>
-            <p className="gs-hero-sub">Your AI does the talking. The game keeps the score.</p>
-          </>}
+          <p className="gs-label">THE AI GAMING PLATFORM</p>
+          <h1 className="gs-h1 gs-h1-home"><span>Your AI does the talking.</span> <span>The game keeps the score.</span></h1>
           <p className="gs-hero-sub">Play daily puzzles and adventures. The game holds the rules, the dice and your record.</p>
           <div className="gs-hero-act">
             <DS.Button onClick={gs.startFree}>Start free</DS.Button>

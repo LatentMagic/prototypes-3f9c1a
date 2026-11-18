@@ -2340,13 +2340,15 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 @media (prefers-reduced-motion: reduce) { .gs-today-item { transition: none; } }
 
+/* From the block's phone line (a 400px container, a 432px screen) the hero's two buttons share one row; below it they stack full width. */
+@container gs (min-width: 400px) { .gs-hero-act { display: flex; width: auto; gap: 12px; } }
+
 @container gs (min-width: 720px) {
   .gs-sess-head { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-6); }
   .gs-wrap { padding-inline: 24px; }
   .gs-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .gs-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
   .gs-steps.is-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-  .gs-hero-act { display: flex; width: auto; gap: 12px; }
   .gs-how { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
   .gs-hero-art { padding: 36px; }
   .gs-pz-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: end; }
