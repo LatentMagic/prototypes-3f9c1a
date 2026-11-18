@@ -2242,10 +2242,6 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .gs-hero-shapes { position: absolute; inset: 0; }
 .gs-hero-shapes > svg { width: 100%; height: 100%; display: block; }
 .gs-band { display: grid; gap: 24px; padding-top: 36px; border-top: 1px solid var(--line); }
-/* KEEP: the band's heading starts at its capital letters, so the 36px under the hairline is the gap the eye sees, matching the 36px above it. */
-.gs-band > .mcp-t-sec { text-box: trim-start cap alphabetic; }
-/* KEEP: a card row's title is centred on its 44px arrows, which puts its capitals 14px below the top of the row; the band pads 14px less so the gap under the hairline still reads as 36px. */
-.gs-band:has(> .mcp-crow:first-child) { padding-top: 22px; }
 .gs-how { list-style: none; padding: 0; display: grid; gap: 24px; }
 .gs-how > li { display: grid; gap: 8px; align-content: start; }
 .gs-how-num { font: 700 34px/1 var(--font-heading); color: var(--off-white); font-variant-numeric: tabular-nums; }
@@ -2443,7 +2439,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .gs-home-after > p { margin: 0; }
 /* All games keeps its 48px tap height, which centres its text in empty space; pulling the box in (more above, where the
    sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
-.gs-home-after > div { margin: -12px 0 -14px; }
+.gs-home-after > div { margin: -12px 0 -4px; }
 
 /* The homepage block under Available games: game tabs in Connect's app-picker theme, a card-grey panel with a notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
 .hb { gap: 12px; }
