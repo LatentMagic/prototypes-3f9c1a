@@ -7524,7 +7524,7 @@
       height: phone ? 300 : void 0,
       width: 2e3,
       fill: !phone,
-      label: g.id + " being played in a chat",
+      label: GS_GAMES[g.gid].name + " being played in a chat",
       more: "On to the latest",
       className: "hb-chat",
       comp: /* @__PURE__ */ React$1.createElement(HbReply, { onSend })

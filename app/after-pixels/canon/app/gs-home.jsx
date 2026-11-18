@@ -99,7 +99,7 @@ const HbChat = ({ game, size, onSend }) => {
   // While more of the chat sits below, the design system's down pill shows above the reply bar, as on the hero chat (the user, 2026-11-18).
   const [more, toEnd] = useChatScroll(body, game + size, 'top');
   return chatShell({ bodyRef: body, body: items, up: more, toStart: toEnd, start: 'top', height: phone ? 300 : undefined, width: 2000, fill: !phone,
-    label: g.id + ' being played in a chat', more: 'On to the latest', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
+    label: GS_GAMES[g.gid].name + ' being played in a chat', more: 'On to the latest', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
 };
 
 // KEEP: all three descriptions share one grid cell and only the chosen one shows (the others are visibility:hidden), so the block is as tall as the longest and nothing below it moves when a tab is tapped.
