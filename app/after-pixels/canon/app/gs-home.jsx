@@ -44,7 +44,7 @@ const HB_GAMES = [
   { id: 'guess', gid: 'word', part: 'Host', intro: 'It shows how each guess scored and keeps a hint back until you want it.',
     turns: [
       HB_U('COILS'),
-      HB_A('Guess', 'Three in place. Five guesses left. Your hint’s here when you want it.', [HB_BOARD]),
+      HB_A('Guess', 'Three in place. Five guesses left. Your hint’s here when you want it.', null, [HB_BOARD]),
     ] },
   { id: 'accuse', gid: 'mystery', part: 'Thinking partner', intro: 'Stuck? Ask, and it turns the case into smaller questions. The deduction stays yours.',
     turns: [
@@ -55,14 +55,14 @@ const HB_GAMES = [
     ] },
 ];
 // Where the game sits beside the chat (tablet and desktop), the chat does not repeat it: the board and the clues come out of its turns.
-const hbPlain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== 'tilegrid'), after: t.after && t.after.filter((b) => b.type !== 'clues') });
+const hbPlain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== 'tilegrid'), after: t.after && t.after.filter((b) => b.type !== 'clues' && b.type !== 'tilegrid') });
 
-// The block's layout class follows its own width, so it holds wherever the page sits: phone below 560, tablet to 819, desktop from 820.
+// The block's layout class follows its own width, so it holds wherever the page sits: phone below 640, tablet to 959, desktop from 960; the chat column never drops under 280px, where the Track's count would overlap its steps.
 const useHbSize = (ref) => {
   const [size, setSize] = React.useState('desktop');
   React.useLayoutEffect(() => {
     const el = ref.current; if (!el) return undefined;
-    const read = () => { const w = el.getBoundingClientRect().width; setSize(w < 560 ? 'phone' : w < 820 ? 'tablet' : 'desktop'); };
+    const read = () => { const w = el.getBoundingClientRect().width; setSize(w < 640 ? 'phone' : w < 960 ? 'tablet' : 'desktop'); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect();
   }, []);
   return size;
@@ -113,10 +113,9 @@ const HbTabs = ({ open, size, pick, go }) => (
       return (
         <div key={g.id} className={'hb-tab' + (on ? ' is-open' : '')}>
           <button type="button" role="tab" aria-selected={on} className="hb-tab-b" onClick={() => pick(g.id)}><small>{GS_GAMES[g.gid].name}</small><b>{g.part}</b></button>
-          {on && size !== 'phone' && <HbIntro open={open} go={go} />}
+          {on && size === 'desktop' && <HbIntro open={open} go={go} />}
         </div>);
     })}
-    {size === 'phone' && <div className="hb-strip"><HbIntro open={open} go={go} /></div>}
   </div>);
 
 export const GsHomeBlock = () => {
@@ -127,9 +126,12 @@ export const GsHomeBlock = () => {
       <p className="gs-muted hb-lead">{HB_SENTENCE}</p>
       <div className="hb-set">
         <HbTabs open={open} size={size} pick={setOpen} go={gs.go} />
-        <div className="hb-stage" role="tabpanel">
-          {size !== 'phone' && <div className="hb-side"><HbSide game={open} /></div>}
-          <div className="hb-talk"><HbChat game={open} size={size} onSend={gs.startFree} /></div>
+        <div className="hb-panel" role="tabpanel">
+          {size !== 'desktop' && <HbIntro open={open} go={gs.go} />}
+          <div className="hb-stage">
+            {size !== 'phone' && <div className="hb-side"><HbSide game={open} /></div>}
+            <div className="hb-talk"><HbChat game={open} size={size} onSend={gs.startFree} /></div>
+          </div>
         </div>
       </div>
     </section>);

@@ -7422,7 +7422,7 @@
       intro: "It shows how each guess scored and keeps a hint back until you want it.",
       turns: [
         HB_U("COILS"),
-        HB_A("Guess", "Three in place. Five guesses left. Your hint’s here when you want it.", [HB_BOARD])
+        HB_A("Guess", "Three in place. Five guesses left. Your hint’s here when you want it.", null, [HB_BOARD])
       ]
     },
     {
@@ -7438,7 +7438,7 @@
       ]
     }
   ];
-  const hbPlain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== "tilegrid"), after: t.after && t.after.filter((b) => b.type !== "clues") });
+  const hbPlain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== "tilegrid"), after: t.after && t.after.filter((b) => b.type !== "clues" && b.type !== "tilegrid") });
   const useHbSize = (ref) => {
     const [size, setSize] = React$1.useState("desktop");
     React$1.useLayoutEffect(() => {
@@ -7446,7 +7446,7 @@
       if (!el) return void 0;
       const read = () => {
         const w = el.getBoundingClientRect().width;
-        setSize(w < 560 ? "phone" : w < 820 ? "tablet" : "desktop");
+        setSize(w < 640 ? "phone" : w < 960 ? "tablet" : "desktop");
       };
       read();
       const ro = new ResizeObserver(read);
@@ -7491,14 +7491,14 @@
   const HbIntro = ({ open, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ›"))));
   const HbTabs = ({ open, size, pick, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-tabs is-" + size, role: "tablist", "aria-label": "Games" }, HB_GAMES.map((g) => {
     const on = g.id === open;
-    return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && size !== "phone" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
-  }), size === "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-strip" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go })));
+    return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && size === "desktop" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
+  }));
   const GsHomeBlock = () => {
     const gs = useGs();
     const root = React$1.useRef(null);
     const size = useHbSize(root);
     const [open, setOpen] = React$1.useState("delve");
-    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage", role: "tabpanel" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))));
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", role: "tabpanel" }, size !== "desktop" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
   };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
