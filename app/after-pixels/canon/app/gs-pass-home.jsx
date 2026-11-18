@@ -11,7 +11,7 @@ import React from 'react';
 import { GS_GAMES, useGs, DS, GS_ART, GS, GS_NAME, GS_SOON } from './gs-data.jsx';
 import { GsArt, useGsArtHost, gsKeepLast, GsTagList, GsSoonCard } from './gs-parts.jsx';
 import { GS_HERO_CHAT, GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
-import { GS_HOME_GAMES, GsFeature, GsWhatsNew } from './gs-home.jsx';
+import { GS_HOME_GAMES, GsFeature, GsHomeBlock, GsWhatsNew } from './gs-home.jsx';
 import { gsPlans } from './gs-billing.jsx';
 import { cprLocked, cprFirstFree, cprPassLine, CPR_SHOWN, CPR_STAGE } from './gs-pass-store.jsx';
 
@@ -120,6 +120,8 @@ export const GsHome = () => {
           <p className="gs-small gs-pu-wrap">{GS.purchase}</p>
         </div>
       </section>
+
+      <GsHomeBlock />
 
       <GsWhatsNew />
     </main>

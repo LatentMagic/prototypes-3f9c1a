@@ -13,38 +13,38 @@
       };
       return { pressed, handlers: { onPointerDown: down, onPointerUp: up, onPointerCancel: up, onPointerLeave: up } };
     }
-    const A = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"';
-    const LINE = {
-      search: "<g " + A + '><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g>',
-      back: "<g " + A + '><path d="M20 12H5"/><path d="M11 5L4 12L11 19"/></g>',
-      close: "<g " + A + '><path d="M5 5L19 19M19 5L5 19"/></g>',
-      lock: "<g " + A + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
-      play: "<g " + A + '><path d="M7 4L19 12L7 20Z"/></g>',
-      pause: "<g " + A + '><path d="M8 5V19M16 5V19"/></g>',
-      settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
-      mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
-      logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
-      card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
-      stats: "<g " + A + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
-      advantage: "<g " + A + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
-      pack: "<g " + A + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
-      ability: "<g " + A + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
-      fight: "<g " + A + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
+    const A2 = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"';
+    const LINE2 = {
+      search: "<g " + A2 + '><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g>',
+      back: "<g " + A2 + '><path d="M20 12H5"/><path d="M11 5L4 12L11 19"/></g>',
+      close: "<g " + A2 + '><path d="M5 5L19 19M19 5L5 19"/></g>',
+      lock: "<g " + A2 + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
+      play: "<g " + A2 + '><path d="M7 4L19 12L7 20Z"/></g>',
+      pause: "<g " + A2 + '><path d="M8 5V19M16 5V19"/></g>',
+      settings: "<g " + A2 + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
+      mail: "<g " + A2 + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
+      logout: "<g " + A2 + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
+      card: "<g " + A2 + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+      stats: "<g " + A2 + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
+      advantage: "<g " + A2 + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
+      pack: "<g " + A2 + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
+      ability: "<g " + A2 + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
+      fight: "<g " + A2 + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
     };
-    const UI = {
+    const UI2 = {
       check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
-      warn: "<g " + A + '><path d="M12 3L22 20H2Z"/><path d="M12 10V14M12 16.5V17.5"/></g>',
-      error: "<g " + A + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
-      down: "<g " + A + '><path d="M5 9L12 16L19 9"/></g>',
+      warn: "<g " + A2 + '><path d="M12 3L22 20H2Z"/><path d="M12 10V14M12 16.5V17.5"/></g>',
+      error: "<g " + A2 + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
+      down: "<g " + A2 + '><path d="M5 9L12 16L19 9"/></g>',
       send: '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></g>',
-      next: "<g " + A + '><path d="M9 5L16 12L9 19"/></g>',
-      out: "<g " + A + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
-      share: "<g " + A + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
-      list: "<g " + A + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
+      next: "<g " + A2 + '><path d="M9 5L16 12L9 19"/></g>',
+      out: "<g " + A2 + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
+      share: "<g " + A2 + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
+      list: "<g " + A2 + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
     };
-    const ICON_NAMES = [...Object.keys(LINE), ...Object.keys(UI)];
+    const ICON_NAMES = [...Object.keys(LINE2), ...Object.keys(UI2)];
     function Icon2({ name, size = 20, className = "", style, label }) {
-      const body = UI[name] || LINE[name];
+      const body = UI2[name] || LINE2[name];
       if (!body) return null;
       return /* @__PURE__ */ React2.createElement("svg", { className: ("mcp-ico " + className).trim(), viewBox: "0 0 24 24", width: size, height: size, style: { width: size, height: size, ...style }, role: label ? "img" : void 0, "aria-label": label, "aria-hidden": label ? void 0 : true, focusable: "false", dangerouslySetInnerHTML: { __html: body } });
     }
@@ -106,16 +106,16 @@
       if (href) return /* @__PURE__ */ React2.createElement("a", { href, className: cls, onClick, ...handlers, ...rest }, children);
       return /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, onClick, ...handlers, ...rest }, children);
     }
-    function cbPress(on, props, children) {
+    function cbPress2(on, props, children) {
       if (on) return React2.createElement("button", { type: "button", onClick: on, ...props }, children);
       const { ["aria-pressed"]: _p, disabled: _d, ...rest } = props;
       return React2.createElement("span", rest, children);
     }
-    function cbRich(t) {
+    function cbRich2(t) {
       if (typeof t !== "string") return t;
       return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React2.createElement("b", { key: i }, s) : s);
     }
-    function cbFold({ title, count: count2, closed, pad }, children) {
+    function cbFold2({ title, count: count2, closed, pad }, children) {
       return React2.createElement(
         "details",
         { className: "mcp-cb-fold", open: !closed },
@@ -129,93 +129,93 @@
         React2.createElement("div", { className: "mcp-cb-fold-b" + (pad ? " is-pad" : "") }, children)
       );
     }
-    function ChoiceButtons({ items = [], picked, onChoose, label, className = "" }) {
+    function ChoiceButtons2({ items = [], picked, onChoose, label, className = "" }) {
       const done = picked != null;
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-choices " + className).trim(), role: "group", "aria-label": label || "Moves" }, items.map((it, i) => {
         const t = typeof it === "string" ? it : it.label;
         const p = done && (picked === i || picked === t);
-        return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), t));
+        return cbPress2(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), t));
       }));
     }
-    function ClueCards({ groups = [], newLabel = "New", title, fold, className = "" }) {
+    function ClueCards2({ groups = [], newLabel = "New", title, fold, className = "" }) {
       const folded = !!fold, solo = folded && groups.length === 1;
       const sections = groups.map((g, i) => /* @__PURE__ */ React2.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, !solo && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React2.createElement("ul", null, g.facts.map((f, k) => {
         const t = typeof f === "string" ? { text: f } : f;
-        return /* @__PURE__ */ React2.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React2.createElement("span", null, cbRich(t.text)), t.new && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-new" }, newLabel));
+        return /* @__PURE__ */ React2.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React2.createElement("span", null, cbRich2(t.text)), t.new && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-new" }, newLabel));
       }))));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold2({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
     }
-    function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+    function FactRows2({ items = [], plain = false, label, title, fold, className = "" }) {
       const folded = !!fold;
-      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
+      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich2(f.value)))));
       if (!folded) return rows;
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold2({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
     }
-    function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
+    function ConfirmCard2({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
       const done = answer === "confirm" || answer === "cancel";
       const btn = (k, text, on, main) => {
         const p = answer === k;
-        return cbPress(!done && on, { className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), text));
+        return cbPress2(!done && on, { className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), text));
       };
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich2(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows2, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
     }
-    function EntityCards({ title, items = [], onPick, fold, className = "" }) {
+    function EntityCards2({ title, items = [], onPick, fold, className = "" }) {
       const folded = !!fold;
       const list = /* @__PURE__ */ React2.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
         const pic = it.pic ? /* @__PURE__ */ React2.createElement("img", { src: it.pic, alt: "" }) : it.icon ? /* @__PURE__ */ React2.createElement(Icon2, { name: it.icon, size: 16 }) : null;
-        return /* @__PURE__ */ React2.createElement("li", { key: i }, cbPress(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, pic && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line)))));
+        return /* @__PURE__ */ React2.createElement("li", { key: i }, cbPress2(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, pic && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line)))));
       }));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold2({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
     }
-    function StatusTag({ tone = "live", label, children, className = "" }) {
+    function StatusTag2({ tone = "live", label, children, className = "" }) {
       return /* @__PURE__ */ React2.createElement("span", { className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim() }, label ?? children);
     }
-    const Art = ({ art, icon }) => typeof art === "string" ? art.trim().startsWith("<svg") ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true", dangerouslySetInnerHTML: { __html: art } }) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("img", { src: art, alt: "" })) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart" + (art ? "" : " is-icon"), "aria-hidden": "true" }, art || icon && /* @__PURE__ */ React2.createElement(Icon2, { name: icon, size: 18 }));
-    function MenuRows({ items = [], search, onGo, onSearch, label, className = "" }) {
+    const Art2 = ({ art, icon }) => typeof art === "string" ? art.trim().startsWith("<svg") ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true", dangerouslySetInnerHTML: { __html: art } }) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("img", { src: art, alt: "" })) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart" + (art ? "" : " is-icon"), "aria-hidden": "true" }, art || icon && /* @__PURE__ */ React2.createElement(Icon2, { name: icon, size: 18 }));
+    function MenuRows2({ items = [], search, onGo, onSearch, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-menu " + className).trim(), role: "group", "aria-label": label || "Menu" }, search && /* @__PURE__ */ React2.createElement("label", { className: "mcp-cb-search" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "search", size: 16 }), /* @__PURE__ */ React2.createElement("input", { type: "search", placeholder: search, "aria-label": search, readOnly: !onSearch, tabIndex: onSearch ? void 0 : -1, onChange: onSearch ? ((e) => onSearch(e.target.value)) : void 0 })), /* @__PURE__ */ React2.createElement("ul", null, items.map((it, i) => {
         const act = typeof it.action === "string" ? { label: it.action } : it.action;
         const st = typeof it.status === "string" ? { label: it.status, tone: "idle" } : it.status;
-        return /* @__PURE__ */ React2.createElement("li", { key: i, className: "mcp-cb-mrow" }, /* @__PURE__ */ React2.createElement(Art, { art: it.art, icon: it.icon }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mtext" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mmeta" }, st && /* @__PURE__ */ React2.createElement(StatusTag, { tone: st.tone || "idle" }, st.label), it.meta && /* @__PURE__ */ React2.createElement("span", null, it.meta))), act && cbPress(onGo && (() => onGo(it, i)), { className: "mcp-cb-go" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, act.icon && /* @__PURE__ */ React2.createElement(Icon2, { name: act.icon, size: 16 }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-go-t" }, act.label))));
+        return /* @__PURE__ */ React2.createElement("li", { key: i, className: "mcp-cb-mrow" }, /* @__PURE__ */ React2.createElement(Art2, { art: it.art, icon: it.icon }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mtext" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mmeta" }, st && /* @__PURE__ */ React2.createElement(StatusTag2, { tone: st.tone || "idle" }, st.label), it.meta && /* @__PURE__ */ React2.createElement("span", null, it.meta))), act && cbPress2(onGo && (() => onGo(it, i)), { className: "mcp-cb-go" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, act.icon && /* @__PURE__ */ React2.createElement(Icon2, { name: act.icon, size: 16 }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-go-t" }, act.label))));
       })));
     }
-    function NavButtons({ items = [], stack = false, onGo, label, className = "" }) {
+    function NavButtons2({ items = [], stack = false, onGo, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-nav" + (stack ? " is-stack" : "") + " " + className).trim(), role: "group", "aria-label": label || "Go to" }, items.map((it, i) => {
         const cls = "mcp-cb-go" + (it.out ? " is-out" : "");
         const body = /* @__PURE__ */ React2.createElement(React2.Fragment, null, it.icon && /* @__PURE__ */ React2.createElement(Icon2, { name: it.icon, size: 16 }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-go-t" }, it.label, it.out && /* @__PURE__ */ React2.createElement("small", null, it.note || "Opens in your browser")), it.out && /* @__PURE__ */ React2.createElement(Icon2, { name: "out", size: 16, className: "mcp-cb-go-out" }));
         if (it.href) return /* @__PURE__ */ React2.createElement("a", { key: i, className: cls, href: it.href, target: it.out ? "_blank" : void 0, rel: it.out ? "noopener" : void 0 }, body);
-        return cbPress(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
+        return cbPress2(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
       }));
     }
-    function StatRow({ items = [], grid = false, label, className = "" }) {
+    function StatRow2({ items = [], grid = false, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-stats" + (grid ? " is-grid" : "") + " " + className).trim(), "aria-label": label, style: grid ? { "--cols": items.length === 3 ? 3 : Math.min(items.length, 2) } : void 0 }, items.map((s, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-stat" }, /* @__PURE__ */ React2.createElement("dt", null, s.label), /* @__PURE__ */ React2.createElement("dd", null, s.value))));
     }
-    function ResultCard({ title, status, line, stats = [], actions = [], onGo, className = "" }) {
+    function ResultCard2({ title, status, line, stats = [], actions = [], onGo, className = "" }) {
       const st = typeof status === "string" ? { label: status, tone: "won" } : status;
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(), role: "group", "aria-label": title || "Result" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-result-head" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), st && /* @__PURE__ */ React2.createElement(StatusTag, { tone: st.tone || "won" }, st.label)), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, line), stats.length > 0 && /* @__PURE__ */ React2.createElement(StatRow, { items: stats, grid: true }), actions.length > 0 && /* @__PURE__ */ React2.createElement(NavButtons, { items: actions, onGo, stack: true }));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(), role: "group", "aria-label": title || "Result" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-result-head" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), st && /* @__PURE__ */ React2.createElement(StatusTag2, { tone: st.tone || "won" }, st.label)), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, line), stats.length > 0 && /* @__PURE__ */ React2.createElement(StatRow2, { items: stats, grid: true }), actions.length > 0 && /* @__PURE__ */ React2.createElement(NavButtons2, { items: actions, onGo, stack: true }));
     }
-    const TONE = { hit: "won", weak: "warn", miss: "lost" };
-    const WORD = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
-    function RollLine({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
+    const TONE2 = { hit: "won", weak: "warn", miss: "lost" };
+    const WORD2 = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
+    function RollLine2({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
       const sum = total ?? roll + mod;
-      const text = outcome || WORD[result] || "";
+      const text = outcome || WORD2[result] || "";
       const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
-      return /* @__PURE__ */ React2.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React2.createElement("b", null, label), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React2.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React2.createElement("span", null, "= ", /* @__PURE__ */ React2.createElement("b", null, sum)), target != null && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React2.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
+      return /* @__PURE__ */ React2.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React2.createElement("b", null, label), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React2.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React2.createElement("span", null, "= ", /* @__PURE__ */ React2.createElement("b", null, sum)), target != null && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React2.createElement(StatusTag2, { tone: TONE2[result] || "idle", className: "mcp-cb-roll-out" }, text));
     }
-    const MARK$1 = { h: "hit", n: "near", x: "miss" };
-    const SAY = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
-    function TileGrid({ rows = [], length, count: count2, label, className = "" }) {
+    const MARK$12 = { h: "hit", n: "near", x: "miss" };
+    const SAY2 = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
+    function TileGrid2({ rows = [], length, count: count2, label, className = "" }) {
       const n = Math.max(1, length || Math.max(0, ...rows.map((r) => (r.letters || "").length)));
       const all = [...rows];
       while (count2 && all.length < count2) all.push({ letters: "" });
       const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
         const c = ((r.letters || "")[i] || " ").trim();
-        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK$1[(r.marks || "")[i]] || "filled" : "empty";
+        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK$12[(r.marks || "")[i]] || "filled" : "empty";
         return { c, s };
       }));
-      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY2[x.s] ? " " + SAY2[x.s] : "") : "blank").join(", "))).join(". ");
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s, "aria-hidden": x.s === "blank" || void 0 }, x.s === "blank" ? null : x.c))))));
     }
-    function Track({ items = [], className = "" }) {
+    function Track2({ items = [], className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-track " + className).trim() }, items.map((t, i) => {
         const max = t.max || 6;
         const v = Math.max(0, Math.min(max, t.value || 0));
@@ -223,12 +223,12 @@
         return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-track-row is-" + (t.tone || "progress"), role: "meter", "aria-label": t.label, "aria-valuemin": 0, "aria-valuemax": max, "aria-valuenow": v, "aria-valuetext": v + " of " + max }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-track-l" }, t.label), steps ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-steps", "aria-hidden": "true" }, Array.from({ length: max }, (_, k) => /* @__PURE__ */ React2.createElement("i", { key: k, className: k < v ? "is-on" : void 0 }))) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-bar", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("i", { style: { width: v / max * 100 + "%" } })), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-track-n" }, v, " of ", max));
       }));
     }
-    const TONES = ["amber", "teal", "orange", "lilac"];
-    function WordBoard({ words = [], solved = [], picked = [], cols = 4, onPick, label, className = "" }) {
+    const TONES2 = ["amber", "teal", "orange", "lilac"];
+    function WordBoard2({ words = [], solved = [], picked = [], cols = 4, onPick, label, className = "" }) {
       const on = new Set(picked.map((w) => String(w).toUpperCase()));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-board " + className).trim(), style: { "--cols": cols }, role: "group", "aria-label": label || "Word board" }, solved.map((g, i) => /* @__PURE__ */ React2.createElement("div", { key: "s" + i, className: "mcp-cb-band is-" + (g.tone || TONES[i % 4]) }, /* @__PURE__ */ React2.createElement("b", null, g.label), /* @__PURE__ */ React2.createElement("span", null, g.words.join(", ")))), words.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-chips" }, words.map((w) => {
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-board " + className).trim(), style: { "--cols": cols }, role: "group", "aria-label": label || "Word board" }, solved.map((g, i) => /* @__PURE__ */ React2.createElement("div", { key: "s" + i, className: "mcp-cb-band is-" + (g.tone || TONES2[i % 4]) }, /* @__PURE__ */ React2.createElement("b", null, g.label), /* @__PURE__ */ React2.createElement("span", null, g.words.join(", ")))), words.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-chips" }, words.map((w) => {
         const p = on.has(w.toUpperCase());
-        return cbPress(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
+        return cbPress2(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
       })));
     }
     const HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
@@ -280,56 +280,56 @@
       const fid = id || "mcp-" + auto;
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-fld " + className).trim() }, label && /* @__PURE__ */ React2.createElement("label", { htmlFor: fid }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-srch" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "search" }), /* @__PURE__ */ React2.createElement("input", { className: "mcp-in", id: fid, type: "search", placeholder, value, onChange, "aria-label": label ? void 0 : placeholder, ...rest })));
     }
-    const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows };
-    const WHO = { x: "not in the word", y: "in the word", g: "right spot" };
-    function Tiles({ rows }) {
-      const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
+    const PARTS2 = { tilegrid: TileGrid2, wordboard: WordBoard2, choices: ChoiceButtons2, confirm: ConfirmCard2, facts: FactRows2, stats: StatRow2, status: StatusTag2, entities: EntityCards2, clues: ClueCards2, result: ResultCard2, track: Track2, roll: RollLine2, nav: NavButtons2, menu: MenuRows2 };
+    const WHO2 = { x: "not in the word", y: "in the word", g: "right spot" };
+    function Tiles2({ rows }) {
+      const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO2[m]).join(", ")).join(". ");
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
     }
-    function Block({ b }) {
-      if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles, { rows: b.rows });
-      if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, chatRich(t))));
+    function Block2({ b }) {
+      if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles2, { rows: b.rows });
+      if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, chatRich2(t))));
       if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
-      const P = PARTS[b.type];
+      const P = PARTS2[b.type];
       if (P) {
         const { type, ...p } = b;
         return /* @__PURE__ */ React2.createElement(P, { ...p });
       }
       return null;
     }
-    const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-    const MARK = /\*\*(\S(?:.*?\S)?)\*\*|__(\S(?:.*?\S)?)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
-    function chatRuns(text, f = {}) {
+    const paras2 = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
+    const MARK2 = /\*\*(\S(?:.*?\S)?)\*\*|__(\S(?:.*?\S)?)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+    function chatRuns2(text, f = {}) {
       const s = String(text), out = [];
       let rest = s;
       for (; ; ) {
-        const m = MARK.exec(rest);
+        const m = MARK2.exec(rest);
         if (!m) {
           if (rest) out.push({ s: rest, ...f });
           return out;
         }
         if (m.index) out.push({ s: rest.slice(0, m.index), ...f });
         const g = m[1] != null ? { b: 1 } : m[2] != null ? { u: 1 } : { i: 1 };
-        out.push(...chatRuns(m[1] ?? m[2] ?? m[3], { ...f, ...g }));
+        out.push(...chatRuns2(m[1] ?? m[2] ?? m[3], { ...f, ...g }));
         rest = rest.slice(m.index + m[0].length);
       }
     }
-    const chatPlain = (t) => chatRuns(t).map((r) => r.s).join("");
-    const styled = (r, node, key) => {
+    const chatPlain = (t) => chatRuns2(t).map((r) => r.s).join("");
+    const styled2 = (r, node, key) => {
       let n = node;
       if (r.u) n = /* @__PURE__ */ React2.createElement("u", null, n);
       if (r.i) n = /* @__PURE__ */ React2.createElement("em", null, n);
       if (r.b) n = /* @__PURE__ */ React2.createElement("strong", null, n);
       return React2.isValidElement(n) && n !== node ? React2.cloneElement(n, { key }) : /* @__PURE__ */ React2.createElement(React2.Fragment, { key }, n);
     };
-    function chatRich(text) {
-      const runs = chatRuns(text);
+    function chatRich2(text) {
+      const runs = chatRuns2(text);
       if (runs.every((r) => !r.b && !r.i && !r.u)) return String(text);
-      return runs.map((r, k) => styled(r, r.s, k));
+      return runs.map((r, k) => styled2(r, r.s, k));
     }
     function chatRichWords(text, wordFn) {
       let j = 0;
-      return chatRuns(text).map((r, k) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: k }, styled(r, r.s.split(/(\s+)/).map((w, x) => !w || /^\s+$/.test(w) ? w : /* @__PURE__ */ React2.createElement(React2.Fragment, { key: x }, wordFn(w, j++))), "r")));
+      return chatRuns2(text).map((r, k) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: k }, styled2(r, r.s.split(/(\s+)/).map((w, x) => !w || /^\s+$/.test(w) ? w : /* @__PURE__ */ React2.createElement(React2.Fragment, { key: x }, wordFn(w, j++))), "r")));
     }
     function useChatScroll(body, turns, start) {
       const top = start === "top";
@@ -372,22 +372,22 @@
       };
       return [up, toStart];
     }
-    function chatTurn(t, i, { mark, toolBy, fx }) {
+    function chatTurn2(t, i, { mark, toolBy, fx }) {
       if (t.from === "user") {
-        if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
+        if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras2(t.text).map(chatRich2));
         const st = fx.piece(i, "u");
-        return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
+        return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras2(t.text).map(chatRich2));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
-        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block, { b }));
+        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block2, { b }));
       });
       const call = t.tool && fx.piece(i, "c");
       const kids = [
         call && /* @__PURE__ */ React2.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)),
         ...blk(t.blocks, "b"),
-        ...paras(t.text).map((p, k) => {
+        ...paras2(t.text).map((p, k) => {
           const st = fx.piece(i, "p" + k);
           return st && /* @__PURE__ */ React2.createElement("p", { key: "p" + k, style: st }, fx.words(i, "p" + k, p));
         }),
@@ -395,15 +395,15 @@
       ].filter(Boolean);
       return kids.length ? /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
     }
-    function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+    function chatShell2({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
       const name = label || "A game being played in a chat";
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
     }
-    const chatParas = paras;
+    const chatParas = paras2;
     function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
       const body = React2.useRef(null);
       const [up, toStart] = useChatScroll(body, turns, start);
-      return chatShell({
+      return chatShell2({
         bodyRef: body,
         up,
         toStart,
@@ -415,7 +415,7 @@
         label,
         more,
         className,
-        body: turns.map((t, i) => chatTurn(t, i, { mark, toolBy })),
+        body: turns.map((t, i) => chatTurn2(t, i, { mark, toolBy })),
         comp: composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
       });
     }
@@ -516,7 +516,7 @@
         },
         words: (i, k, text) => {
           const p = tl.turns[i] && tl.turns[i].pieces[k];
-          if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return chatRich(text);
+          if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return chatRich2(text);
           return chatRichWords(text, (w, j) => {
             const o = c01((T - (p.at + j * p.word)) / tl.wordIn);
             return /* @__PURE__ */ React2.createElement("span", { style: { opacity: +o.toFixed(4) } }, w);
@@ -535,7 +535,7 @@
       });
       return { fx, typed, sent };
     }
-    function useReducedMotion() {
+    function useReducedMotion2() {
       const q = "(prefers-reduced-motion: reduce)";
       const [r, setR] = React2.useState(() => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia(q).matches);
       React2.useEffect(() => {
@@ -594,7 +594,7 @@
       return [up, toStart, rejoin];
     }
     function ChatPlayback({ turns, time, autoplay = true, loop = false, speed = 1, pace, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = "Back to the start", pauseLabel = "Pause", playLabel = "Play", replayLabel = "Play again", className = "" }) {
-      const reduced = useReducedMotion();
+      const reduced = useReducedMotion2();
       const tl = React2.useMemo(() => timeline(turns, { ...pace, speed }, composer), [turns, JSON.stringify(pace || {}), speed, composer]);
       const given = typeof time === "number" && isFinite(time);
       const cycle = tl.total + tl.end;
@@ -642,7 +642,7 @@
         }
       };
       const ctl = given ? null : /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-pause", onClick: press, "aria-label": playing ? pauseLabel : done ? replayLabel : playLabel }, /* @__PURE__ */ React2.createElement(Icon2, { name: playing ? "pause" : "play", size: 16 }));
-      return chatShell({
+      return chatShell2({
         bodyRef: body,
         up,
         toStart,
@@ -655,7 +655,7 @@
         className,
         extraClass: "is-playback",
         control: ctl,
-        body: turns.map((t, i) => chatTurn(t, i, { mark, toolBy, fx })),
+        body: turns.map((t, i) => chatTurn2(t, i, { mark, toolBy, fx })),
         comp: composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, typed ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-typed" }, typed.text, /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-caret", style: { opacity: typed.caret ? 1 : 0 } })) : /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", { className: sent ? "is-sent" : void 0 }, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
       });
     }
@@ -1021,20 +1021,20 @@
     ns.Button = Button;
     ns.ButtonPair = ButtonPair;
     ns.TextLink = TextLink;
-    ns.ChoiceButtons = ChoiceButtons;
-    ns.ClueCards = ClueCards;
-    ns.ConfirmCard = ConfirmCard;
-    ns.EntityCards = EntityCards;
-    ns.FactRows = FactRows;
-    ns.MenuRows = MenuRows;
-    ns.NavButtons = NavButtons;
-    ns.ResultCard = ResultCard;
-    ns.RollLine = RollLine;
-    ns.StatRow = StatRow;
-    ns.StatusTag = StatusTag;
-    ns.TileGrid = TileGrid;
-    ns.Track = Track;
-    ns.WordBoard = WordBoard;
+    ns.ChoiceButtons = ChoiceButtons2;
+    ns.ClueCards = ClueCards2;
+    ns.ConfirmCard = ConfirmCard2;
+    ns.EntityCards = EntityCards2;
+    ns.FactRows = FactRows2;
+    ns.MenuRows = MenuRows2;
+    ns.NavButtons = NavButtons2;
+    ns.ResultCard = ResultCard2;
+    ns.RollLine = RollLine2;
+    ns.StatRow = StatRow2;
+    ns.StatusTag = StatusTag2;
+    ns.TileGrid = TileGrid2;
+    ns.Track = Track2;
+    ns.WordBoard = WordBoard2;
     ns.DelveDie = DelveDie;
     ns.DelveUseDie = DelveUseDie;
     ns.DelveFoeDie = DelveFoeDie;
@@ -1081,7 +1081,7 @@
     settings: '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>',
     list: '<line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><circle cx="4.5" cy="6" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="12" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none"></circle>'
   };
-  const Icon = ({ name, size = 20, color = "currentColor", style = {}, strokeWidth = 1.5 }) => {
+  const Icon$1 = ({ name, size = 20, color = "currentColor", style = {}, strokeWidth = 1.5 }) => {
     return /* @__PURE__ */ React$1.createElement(
       "svg",
       {
@@ -7152,14 +7152,384 @@
         ends.forEach((t) => f.removeEventListener(t, off));
       };
     }, []);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main gs-home" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-hero3" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-copy" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-h1-home" }, /* @__PURE__ */ React$1.createElement("span", null, "Your AI does the talking."), " ", /* @__PURE__ */ React$1.createElement("span", null, "The game keeps the score.")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-hero-sub" }, "Daily puzzles and immersive adventures, played in your own AI chat. The game holds the rules, the dice and your record."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: gs.startFree }, "Start free"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: gs.goHow }, "See how it works")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-works" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, GS.works))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-field mcp-art-host", ref: field }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-delve-art", "aria-hidden": "true", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement(GsArt, { art: "delve", shape: "banner" })), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-hero-name", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A NEW RUN EVERY WEEK"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-hero-name-t" }, GS_GAMES.delve.name, " ", /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 20, style: { transform: "rotate(-90deg)" } }))), /* @__PURE__ */ React$1.createElement(DS.ChatPlayback, { turns: GS_HERO_CHAT, loop: true, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height: 340, width: 480, label: "A Delve run being played in a chat" }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Available games", className: "gs-row4" }, [/* @__PURE__ */ React$1.createElement(CprPassCard, { key: "pass" }), ...GS_HOME_GAMES.map((k) => /* @__PURE__ */ React$1.createElement(GsFeature, { key: k, id: k }))]), /* @__PURE__ */ React$1.createElement("div", { className: "gs-home-after" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted gs-pu-wrap" }, /* @__PURE__ */ React$1.createElement(CprHomeLine, null)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, GS.purchase))), /* @__PURE__ */ React$1.createElement(GsWhatsNew, null));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main gs-home" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-hero3" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-copy" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-h1-home" }, /* @__PURE__ */ React$1.createElement("span", null, "Your AI does the talking."), " ", /* @__PURE__ */ React$1.createElement("span", null, "The game keeps the score.")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-hero-sub" }, "Daily puzzles and immersive adventures, played in your own AI chat. The game holds the rules, the dice and your record."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: gs.startFree }, "Start free"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: gs.goHow }, "See how it works")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-works" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, GS.works))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-field mcp-art-host", ref: field }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-delve-art", "aria-hidden": "true", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement(GsArt, { art: "delve", shape: "banner" })), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-hero-name", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A NEW RUN EVERY WEEK"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-hero-name-t" }, GS_GAMES.delve.name, " ", /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 20, style: { transform: "rotate(-90deg)" } }))), /* @__PURE__ */ React$1.createElement(DS.ChatPlayback, { turns: GS_HERO_CHAT, loop: true, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height: 340, width: 480, label: "A Delve run being played in a chat" }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Available games", className: "gs-row4" }, [/* @__PURE__ */ React$1.createElement(CprPassCard, { key: "pass" }), ...GS_HOME_GAMES.map((k) => /* @__PURE__ */ React$1.createElement(GsFeature, { key: k, id: k }))]), /* @__PURE__ */ React$1.createElement("div", { className: "gs-home-after" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted gs-pu-wrap" }, /* @__PURE__ */ React$1.createElement(CprHomeLine, null)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, GS.purchase))), /* @__PURE__ */ React$1.createElement(GsHomeBlock, null), /* @__PURE__ */ React$1.createElement(GsWhatsNew, null));
   };
   function initGsPassHome() {
     CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === "pass").map((k) => k === "salvage" ? "word" : k).slice(0, 8));
   }
+  const A = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"';
+  const LINE = {
+    search: "<g " + A + '><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g>',
+    back: "<g " + A + '><path d="M20 12H5"/><path d="M11 5L4 12L11 19"/></g>',
+    close: "<g " + A + '><path d="M5 5L19 19M19 5L5 19"/></g>',
+    lock: "<g " + A + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
+    play: "<g " + A + '><path d="M7 4L19 12L7 20Z"/></g>',
+    pause: "<g " + A + '><path d="M8 5V19M16 5V19"/></g>',
+    settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
+    mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
+    logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
+    card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+    stats: "<g " + A + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
+    advantage: "<g " + A + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
+    pack: "<g " + A + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
+    ability: "<g " + A + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
+    fight: "<g " + A + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
+  };
+  const UI = {
+    check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
+    warn: "<g " + A + '><path d="M12 3L22 20H2Z"/><path d="M12 10V14M12 16.5V17.5"/></g>',
+    error: "<g " + A + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
+    down: "<g " + A + '><path d="M5 9L12 16L19 9"/></g>',
+    send: '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></g>',
+    next: "<g " + A + '><path d="M9 5L16 12L9 19"/></g>',
+    out: "<g " + A + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
+    share: "<g " + A + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
+    list: "<g " + A + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
+  };
+  [...Object.keys(LINE), ...Object.keys(UI)];
+  function Icon({ name, size = 20, className = "", style, label }) {
+    const body = UI[name] || LINE[name];
+    if (!body) return null;
+    return /* @__PURE__ */ React$1.createElement("svg", { className: ("mcp-ico " + className).trim(), viewBox: "0 0 24 24", width: size, height: size, style: { width: size, height: size, ...style }, role: label ? "img" : void 0, "aria-label": label, "aria-hidden": label ? void 0 : true, focusable: "false", dangerouslySetInnerHTML: { __html: body } });
+  }
+  const MARK$1 = { h: "hit", n: "near", x: "miss" };
+  const SAY = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
+  function TileGrid({ rows = [], length, count, label, className = "" }) {
+    const n = Math.max(1, length || Math.max(0, ...rows.map((r) => (r.letters || "").length)));
+    const all = [...rows];
+    while (count && all.length < count) all.push({ letters: "" });
+    const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
+      const c = ((r.letters || "")[i] || " ").trim();
+      const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK$1[(r.marks || "")[i]] || "filled" : "empty";
+      return { c, s };
+    }));
+    const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s, "aria-hidden": x.s === "blank" || void 0 }, x.s === "blank" ? null : x.c))))));
+  }
+  function cbPress(on, props, children) {
+    if (on) return React$1.createElement("button", { type: "button", onClick: on, ...props }, children);
+    const { ["aria-pressed"]: _p, disabled: _d, ...rest } = props;
+    return React$1.createElement("span", rest, children);
+  }
+  function cbRich(t) {
+    if (typeof t !== "string") return t;
+    return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React$1.createElement("b", { key: i }, s) : s);
+  }
+  function cbFold({ title, count, closed, pad }, children) {
+    return React$1.createElement(
+      "details",
+      { className: "mcp-cb-fold", open: !closed },
+      React$1.createElement(
+        "summary",
+        { className: "mcp-cb-fold-s" },
+        React$1.createElement("span", { className: "mcp-cb-fold-t" }, title),
+        count != null && React$1.createElement("span", { className: "mcp-cb-fold-n" }, React$1.createElement("span", { "aria-hidden": "true" }, "·"), count),
+        React$1.createElement(Icon, { name: "down", size: 16 })
+      ),
+      React$1.createElement("div", { className: "mcp-cb-fold-b" + (pad ? " is-pad" : "") }, children)
+    );
+  }
+  const TONES = ["amber", "teal", "orange", "lilac"];
+  function WordBoard({ words = [], solved = [], picked = [], cols = 4, onPick, label, className = "" }) {
+    const on = new Set(picked.map((w) => String(w).toUpperCase()));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-board " + className).trim(), style: { "--cols": cols }, role: "group", "aria-label": label || "Word board" }, solved.map((g, i) => /* @__PURE__ */ React$1.createElement("div", { key: "s" + i, className: "mcp-cb-band is-" + (g.tone || TONES[i % 4]) }, /* @__PURE__ */ React$1.createElement("b", null, g.label), /* @__PURE__ */ React$1.createElement("span", null, g.words.join(", ")))), words.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-chips" }, words.map((w) => {
+      const p = on.has(w.toUpperCase());
+      return cbPress(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
+    })));
+  }
+  function ChoiceButtons({ items = [], picked, onChoose, label, className = "" }) {
+    const done = picked != null;
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-choices " + className).trim(), role: "group", "aria-label": label || "Moves" }, items.map((it, i) => {
+      const t = typeof it === "string" ? it : it.label;
+      const p = done && (picked === i || picked === t);
+      return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, p && /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 14 }), t));
+    }));
+  }
+  function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+    const folded = !!fold;
+    const rows = /* @__PURE__ */ React$1.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React$1.createElement("div", { key: i }, /* @__PURE__ */ React$1.createElement("dt", null, f.label), /* @__PURE__ */ React$1.createElement("dd", null, cbRich(f.value)))));
+    if (!folded) return rows;
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React$1.cloneElement(rows, { className: "mcp-cb-facts" })));
+  }
+  function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
+    const done = answer === "confirm" || answer === "cancel";
+    const btn = (k, text, on, main) => {
+      const p = answer === k;
+      return cbPress(!done && on, { className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, p && /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 14 }), text));
+    };
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React$1.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
+  }
+  function StatRow({ items = [], grid = false, label, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("dl", { className: ("mcp-cb mcp-cb-stats" + (grid ? " is-grid" : "") + " " + className).trim(), "aria-label": label, style: grid ? { "--cols": items.length === 3 ? 3 : Math.min(items.length, 2) } : void 0 }, items.map((s, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-cb-stat" }, /* @__PURE__ */ React$1.createElement("dt", null, s.label), /* @__PURE__ */ React$1.createElement("dd", null, s.value))));
+  }
+  function StatusTag({ tone = "live", label, children, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("span", { className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim() }, label ?? children);
+  }
+  function EntityCards({ title, items = [], onPick, fold, className = "" }) {
+    const folded = !!fold;
+    const list = /* @__PURE__ */ React$1.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
+      const pic = it.pic ? /* @__PURE__ */ React$1.createElement("img", { src: it.pic, alt: "" }) : it.icon ? /* @__PURE__ */ React$1.createElement(Icon, { name: it.icon, size: 16 }) : null;
+      return /* @__PURE__ */ React$1.createElement("li", { key: i }, cbPress(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, pic && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React$1.createElement("b", null, it.name), it.line && /* @__PURE__ */ React$1.createElement("small", null, it.line)))));
+    }));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, title && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-kind" }, title), list));
+  }
+  function ClueCards({ groups = [], newLabel = "New", title, fold, className = "" }) {
+    const folded = !!fold, solo = folded && groups.length === 1;
+    const sections = groups.map((g, i) => /* @__PURE__ */ React$1.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, !solo && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React$1.createElement("ul", null, g.facts.map((f, k) => {
+      const t = typeof f === "string" ? { text: f } : f;
+      return /* @__PURE__ */ React$1.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React$1.createElement("span", null, cbRich(t.text)), t.new && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-new" }, newLabel));
+    }))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
+  }
+  function NavButtons({ items = [], stack = false, onGo, label, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-nav" + (stack ? " is-stack" : "") + " " + className).trim(), role: "group", "aria-label": label || "Go to" }, items.map((it, i) => {
+      const cls = "mcp-cb-go" + (it.out ? " is-out" : "");
+      const body = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, it.icon && /* @__PURE__ */ React$1.createElement(Icon, { name: it.icon, size: 16 }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-go-t" }, it.label, it.out && /* @__PURE__ */ React$1.createElement("small", null, it.note || "Opens in your browser")), it.out && /* @__PURE__ */ React$1.createElement(Icon, { name: "out", size: 16, className: "mcp-cb-go-out" }));
+      if (it.href) return /* @__PURE__ */ React$1.createElement("a", { key: i, className: cls, href: it.href, target: it.out ? "_blank" : void 0, rel: it.out ? "noopener" : void 0 }, body);
+      return cbPress(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
+    }));
+  }
+  function ResultCard({ title, status, line, stats = [], actions = [], onGo, className = "" }) {
+    const st = typeof status === "string" ? { label: status, tone: "won" } : status;
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(), role: "group", "aria-label": title || "Result" }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-result-head" }, title && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-title" }, title), st && /* @__PURE__ */ React$1.createElement(StatusTag, { tone: st.tone || "won" }, st.label)), line && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-note" }, line), stats.length > 0 && /* @__PURE__ */ React$1.createElement(StatRow, { items: stats, grid: true }), actions.length > 0 && /* @__PURE__ */ React$1.createElement(NavButtons, { items: actions, onGo, stack: true }));
+  }
+  function Track({ items = [], className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-track " + className).trim() }, items.map((t, i) => {
+      const max = t.max || 6;
+      const v = Math.max(0, Math.min(max, t.value || 0));
+      const steps = t.steps ?? max <= 12;
+      return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-cb-track-row is-" + (t.tone || "progress"), role: "meter", "aria-label": t.label, "aria-valuemin": 0, "aria-valuemax": max, "aria-valuenow": v, "aria-valuetext": v + " of " + max }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-track-l" }, t.label), steps ? /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-steps", "aria-hidden": "true" }, Array.from({ length: max }, (_, k) => /* @__PURE__ */ React$1.createElement("i", { key: k, className: k < v ? "is-on" : void 0 }))) : /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-bar", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { style: { width: v / max * 100 + "%" } })), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-track-n" }, v, " of ", max));
+    }));
+  }
+  const TONE = { hit: "won", weak: "warn", miss: "lost" };
+  const WORD = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
+  function RollLine({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
+    const sum = total ?? roll + mod;
+    const text = outcome || WORD[result] || "";
+    const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
+    return /* @__PURE__ */ React$1.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React$1.createElement("b", null, label), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React$1.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React$1.createElement("span", null, "= ", /* @__PURE__ */ React$1.createElement("b", null, sum)), target != null && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React$1.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
+  }
+  const Art = ({ art, icon }) => typeof art === "string" ? art.trim().startsWith("<svg") ? /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true", dangerouslySetInnerHTML: { __html: art } }) : /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("img", { src: art, alt: "" })) : /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mart" + (art ? "" : " is-icon"), "aria-hidden": "true" }, art || icon && /* @__PURE__ */ React$1.createElement(Icon, { name: icon, size: 18 }));
+  function MenuRows({ items = [], search, onGo, onSearch, label, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-menu " + className).trim(), role: "group", "aria-label": label || "Menu" }, search && /* @__PURE__ */ React$1.createElement("label", { className: "mcp-cb-search" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "search", size: 16 }), /* @__PURE__ */ React$1.createElement("input", { type: "search", placeholder: search, "aria-label": search, readOnly: !onSearch, tabIndex: onSearch ? void 0 : -1, onChange: onSearch ? ((e) => onSearch(e.target.value)) : void 0 })), /* @__PURE__ */ React$1.createElement("ul", null, items.map((it, i) => {
+      const act = typeof it.action === "string" ? { label: it.action } : it.action;
+      const st = typeof it.status === "string" ? { label: it.status, tone: "idle" } : it.status;
+      return /* @__PURE__ */ React$1.createElement("li", { key: i, className: "mcp-cb-mrow" }, /* @__PURE__ */ React$1.createElement(Art, { art: it.art, icon: it.icon }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mtext" }, /* @__PURE__ */ React$1.createElement("b", null, it.name), it.line && /* @__PURE__ */ React$1.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mmeta" }, st && /* @__PURE__ */ React$1.createElement(StatusTag, { tone: st.tone || "idle" }, st.label), it.meta && /* @__PURE__ */ React$1.createElement("span", null, it.meta))), act && cbPress(onGo && (() => onGo(it, i)), { className: "mcp-cb-go" }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, act.icon && /* @__PURE__ */ React$1.createElement(Icon, { name: act.icon, size: 16 }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-go-t" }, act.label))));
+    })));
+  }
+  const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows };
+  const WHO = { x: "not in the word", y: "in the word", g: "right spot" };
+  function Tiles({ rows }) {
+    const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
+    return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
+  }
+  function Block({ b }) {
+    if (b.type === "tiles") return /* @__PURE__ */ React$1.createElement(Tiles, { rows: b.rows });
+    if (b.type === "list") return /* @__PURE__ */ React$1.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, chatRich(t))));
+    if (b.type === "mono") return /* @__PURE__ */ React$1.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, "/", /* @__PURE__ */ React$1.createElement("wbr", null)) : t));
+    const P = PARTS[b.type];
+    if (P) {
+      const { type, ...p } = b;
+      return /* @__PURE__ */ React$1.createElement(P, { ...p });
+    }
+    return null;
+  }
+  const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
+  const MARK = /\*\*(\S(?:.*?\S)?)\*\*|__(\S(?:.*?\S)?)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+  function chatRuns(text, f = {}) {
+    const s = String(text), out = [];
+    let rest = s;
+    for (; ; ) {
+      const m = MARK.exec(rest);
+      if (!m) {
+        if (rest) out.push({ s: rest, ...f });
+        return out;
+      }
+      if (m.index) out.push({ s: rest.slice(0, m.index), ...f });
+      const g = m[1] != null ? { b: 1 } : m[2] != null ? { u: 1 } : { i: 1 };
+      out.push(...chatRuns(m[1] ?? m[2] ?? m[3], { ...f, ...g }));
+      rest = rest.slice(m.index + m[0].length);
+    }
+  }
+  const styled = (r, node, key) => {
+    let n = node;
+    if (r.u) n = /* @__PURE__ */ React$1.createElement("u", null, n);
+    if (r.i) n = /* @__PURE__ */ React$1.createElement("em", null, n);
+    if (r.b) n = /* @__PURE__ */ React$1.createElement("strong", null, n);
+    return React$1.isValidElement(n) && n !== node ? React$1.cloneElement(n, { key }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key }, n);
+  };
+  function chatRich(text) {
+    const runs = chatRuns(text);
+    if (runs.every((r) => !r.b && !r.i && !r.u)) return String(text);
+    return runs.map((r, k) => styled(r, r.s, k));
+  }
+  function chatTurn(t, i, { mark, toolBy, fx }) {
+    if (t.from === "user") {
+      if (!fx) return /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
+      const st = fx.piece(i, "u");
+      return st && /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
+    }
+    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, /* @__PURE__ */ React$1.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: "a" + k, b })));
+    const blk = (list, pre) => (list || []).map((b, k) => {
+      const st = fx.piece(i, pre + k);
+      return st && /* @__PURE__ */ React$1.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React$1.createElement(Block, { b }));
+    });
+    const call = t.tool && fx.piece(i, "c");
+    const kids = [
+      call && /* @__PURE__ */ React$1.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, /* @__PURE__ */ React$1.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, /* @__PURE__ */ React$1.createElement("em", null, toolBy)),
+      ...blk(t.blocks, "b"),
+      ...paras(t.text).map((p, k) => {
+        const st = fx.piece(i, "p" + k);
+        return st && /* @__PURE__ */ React$1.createElement("p", { key: "p" + k, style: st }, fx.words(i, "p" + k, p));
+      }),
+      ...blk(t.after, "a")
+    ].filter(Boolean);
+    return kids.length ? /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
+  }
+  function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+    const name = label || "A game being played in a chat";
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + " is-top" + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React$1.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-chat-up" + (comp ? " is-down" : " is-down is-bare"), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React$1.createElement(Icon, { name: "down", size: 16, style: void 0 })), control, comp);
+  }
   const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
   const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
   const GS_MORE_GAMES = ["word", "chain", "salvage", "mystery", "common", "where", "delve"];
+  const HB_HEADING = "Your AI, cast for each game.";
+  const HB_SENTENCE = "Step into a story, crack a puzzle or talk through a mystery.";
+  const HB_U = (text) => ({ from: "user", text });
+  const HB_A = (tool, text, blocks, after) => ({ from: "ai", tool, text, blocks, after });
+  const HB_PICTURE = "assets/home-block-delve.svg";
+  const HB_TRACK = (advance) => ({ type: "track", items: [{ label: "Health", value: 23, max: 23, tone: "health" }, { label: "Orcs’ advance", value: advance, max: 12, tone: "threat" }] });
+  const HB_BOARD = { type: "tilegrid", length: 5, count: 6, rows: [{ letters: "POINT", marks: "xhxxx" }, { letters: "COILS", marks: "hhxhx" }] };
+  const HB_CLUES = [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }];
+  const HB_GAMES = [
+    {
+      id: "delve",
+      gid: "delve",
+      part: "Game Master",
+      intro: "It sets each scene, plays everyone you meet and asks what you do next.",
+      turns: [
+        HB_A("Delve", ["Dawn lights the ridge. Brackenford lies below you; across the slope, the watchtower burns. A watchman has his leg trapped beneath an overturned cart.", "“Get this off me. Please.”", "You can lift the cart with Strength for free, or take the path towards the caves under Raven Hill. What do you do?"], [HB_TRACK(0)]),
+        HB_U("I get my shoulder under the cart and lift."),
+        HB_A("Delve", ["You raise the cart far enough for him to pull his leg free. He grips the wheel and stands.", "“I thought you’d leave me.”", "The path towards the caves is open. What do you do?"], [{ type: "roll", label: "Strength", roll: 14, mod: 3, target: 12, result: "hit", outcome: "Success" }, HB_TRACK(0)]),
+        HB_U("Can you walk back to Brackenford?"),
+        HB_A(null, ["“I can limp. I’ll get there.”", "He takes a few steps downhill, then looks back at you.", "“You’re going up there alone?”", "You can answer him or take the path towards the caves. What do you do?"], [HB_TRACK(0)])
+      ]
+    },
+    {
+      id: "guess",
+      gid: "word",
+      part: "Host",
+      intro: "It shows how each guess scored and keeps a hint back until you want it.",
+      turns: [
+        HB_U("COILS"),
+        HB_A("Guess", "Three in place now. Four left.", [HB_BOARD]),
+        HB_U("Still got my hint?"),
+        HB_A("Guess", "Still yours. Say when you want it. Next word?")
+      ]
+    },
+    {
+      id: "accuse",
+      gid: "mystery",
+      part: "Thinking partner",
+      intro: "Stuck? Ask, and it turns the case into smaller questions. The deduction stays yours.",
+      turns: [
+        HB_U("I keep mixing up Coco, Zara and the weapons. Can we talk through the ringmaster’s murder?"),
+        HB_A("Accuse", "Which clue would you like to start with?", null, [{ type: "clues", groups: HB_CLUES }]),
+        HB_U("Clue 2. “Whoever handled the brass bugle was not in the costume tent.” I keep reading it backwards."),
+        HB_A(null, "Let’s take that sentence in two parts. What does it tell you about where the person with the bugle was? What does it leave unanswered?")
+      ]
+    }
+  ];
+  const hbPlain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== "tilegrid"), after: t.after && t.after.filter((b) => b.type !== "clues") });
+  const useHbSize = (ref) => {
+    const [size, setSize] = React$1.useState("desktop");
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => {
+        const w = el.getBoundingClientRect().width;
+        setSize(w < 560 ? "phone" : w < 820 ? "tablet" : "desktop");
+      };
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, []);
+    return size;
+  };
+  const useReducedMotion = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const HbPic = ({ name }) => /* @__PURE__ */ React$1.createElement("figure", { className: "hb-pic" }, /* @__PURE__ */ React$1.createElement("img", { src: HB_PICTURE, alt: "A hero in armour on a ridge at dawn, a burning tower behind" }), /* @__PURE__ */ React$1.createElement("figcaption", null, /* @__PURE__ */ React$1.createElement("span", null, "Delve #40 · The ridge"), /* @__PURE__ */ React$1.createElement("span", null, name, " · 23 HP")));
+  const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-sidebox" }, game === "delve" && /* @__PURE__ */ React$1.createElement(HbPic, { name: "Garrick" }), game === "guess" && /* @__PURE__ */ React$1.createElement(TileGrid, { ...HB_BOARD }), game === "accuse" && /* @__PURE__ */ React$1.createElement(ClueCards, { groups: HB_CLUES }));
+  const HbTyped = ({ text, from, n }) => {
+    const shown = Math.max(0, Math.min(text.length, n - from));
+    return /* @__PURE__ */ React$1.createElement("span", null, text.slice(0, shown), /* @__PURE__ */ React$1.createElement("span", { className: "hb-ghost" }, text.slice(shown)));
+  };
+  const HbReply = ({ onSend }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free"));
+  const HbChat = ({ game, size, onSend }) => {
+    const body = React$1.useRef(null);
+    const phone = size === "phone";
+    const g = HB_GAMES.find((x) => x.id === game);
+    const still = useReducedMotion();
+    const [n, setN] = React$1.useState(0);
+    const last = g.turns.length - 1;
+    const total = (Array.isArray(g.turns[last].text) ? g.turns[last].text : [g.turns[last].text]).join("").length;
+    React$1.useEffect(() => {
+      if (still) {
+        setN(total);
+        return void 0;
+      }
+      setN(0);
+      const t0 = performance.now() + 500;
+      const id = setInterval(() => {
+        const k = Math.floor((performance.now() - t0) / 18);
+        setN(Math.max(0, Math.min(total, k)));
+        if (k >= total) clearInterval(id);
+      }, 40);
+      return () => clearInterval(id);
+    }, [game, still, total]);
+    let from = 0;
+    const fx = { piece: () => ({}), words: (i, k, text) => {
+      const el = /* @__PURE__ */ React$1.createElement(HbTyped, { text, from, n });
+      from += text.length;
+      return el;
+    } };
+    const turns = phone ? g.turns : g.turns.map(hbPlain);
+    const pic = phone && game === "delve";
+    const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: void 0 } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, fx: i === last ? fx : void 0 }));
+    if (pic) items.unshift(
+      /* @__PURE__ */ React$1.createElement("div", { key: "pic", className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: GS_CHAT_MARK, alt: "", width: "16", height: "16" }), "Called Delve", /* @__PURE__ */ React$1.createElement("em", null, GS_CHAT_BY)), /* @__PURE__ */ React$1.createElement(HbPic, { name: "Garrick" }))
+    );
+    React$1.useEffect(() => {
+      if (body.current) body.current.scrollTop = 0;
+    }, [game, size]);
+    return chatShell({
+      bodyRef: body,
+      body: items,
+      up: false,
+      toStart: () => {
+      },
+      start: "top",
+      height: phone ? 440 : void 0,
+      width: 2e3,
+      fill: !phone,
+      label: g.id + " being played in a chat",
+      more: "Back to the start",
+      className: "hb-chat",
+      comp: /* @__PURE__ */ React$1.createElement(HbReply, { onSend })
+    });
+  };
+  const HbIntro = ({ open, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ›"))));
+  const HbTabs = ({ open, size, pick, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-tabs is-" + size, role: "tablist", "aria-label": "Games" }, HB_GAMES.map((g) => {
+    const on = g.id === open;
+    return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && size !== "phone" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
+  }), size === "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-strip" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go })));
+  const GsHomeBlock = () => {
+    const gs = useGs();
+    const root = React$1.useRef(null);
+    const size = useHbSize(root);
+    const [open, setOpen] = React$1.useState("delve");
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage", role: "tabpanel" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))));
+  };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
     { v: "1.8", d: "24 September 2026", t: "Streaks carry across devices", x: "Your daily streak and record now follow your account, so they stay intact wherever you connect your AI." },
@@ -10024,7 +10394,7 @@
         title: "Copy link to this state",
         "aria-label": "Copy link to " + state.label
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: copied && copied.ok ? "check" : "link", size: 15 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: copied && copied.ok ? "check" : "link", size: 15 })
     )), copied && /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-copied" }, /* @__PURE__ */ React$1.createElement("span", null, copied.ok ? "Copied" : "Copy by hand"), /* @__PURE__ */ React$1.createElement("input", { readOnly: true, value: copied.url, onFocus: (e) => e.target.select() })));
   };
   const StatesGroups = ({ groups, onGo, forceOpen = false }) => {
@@ -10044,7 +10414,7 @@
         },
         /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-group-title" }, g.title),
         /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-count" }, g.items.length),
-        /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-chev", "aria-hidden": "true", style: { transform: isOpen ? "rotate(180deg)" : "none" } }, /* @__PURE__ */ React$1.createElement(Icon, { name: "chevron-down", size: 16 }))
+        /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-chev", "aria-hidden": "true", style: { transform: isOpen ? "rotate(180deg)" : "none" } }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "chevron-down", size: 16 }))
       ), isOpen && /* @__PURE__ */ React$1.createElement("div", { id: bodyId }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-group-body" }, g.items.map((s) => /* @__PURE__ */ React$1.createElement(StatesRow, { key: s.id, state: s, onGo }))), g.notes && g.notes.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-notes" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-notes-title" }, "Notes"), /* @__PURE__ */ React$1.createElement("ul", null, g.notes.map((n, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, n))))));
     }));
   };
@@ -10098,7 +10468,7 @@
           "data-shown": shown ? "1" : void 0,
           style: { opacity: shown ? 1 : 0, transform: shown ? "scale(1)" : "scale(0.97)" }
         },
-        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "States"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Every staged state of the app. Jump to one, or copy its link.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "States"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Every staged state of the app. Jump to one, or copy its link.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "x", size: 18 }))),
         /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-body" }, /* @__PURE__ */ React$1.createElement(
           "input",
           {
@@ -10497,7 +10867,7 @@
           "data-shown": shown ? "1" : void 0,
           style: { opacity: shown ? 1 : 0, transform: shown ? "scale(1)" : "scale(0.97)" }
         },
-        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "QA"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Work in progress. The states to check for work in flight, in order.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "QA"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Work in progress. The states to check for work in flight, in order.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "x", size: 18 }))),
         /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-body" }, kitQaShown().length === 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "Nothing to check right now."), kitQaShown().map((w) => /* @__PURE__ */ React$1.createElement("div", { key: w.key, className: "kit-qa-work" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-group-title" }, w.title), w.note && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: "4px 0 8px" } }, w.note), /* @__PURE__ */ React$1.createElement("ol", { className: "kit-qa-steps" }, w.steps.map((id, i) => {
           const label = labels[id];
           return /* @__PURE__ */ React$1.createElement("li", { key: id }, label ? /* @__PURE__ */ React$1.createElement("button", { className: "kit-states-jump", onClick: () => onGo(id) }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, i + 1 + ". " + label), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", id)) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-qa-stale" }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, i + 1 + ". Not in the register"), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", id)));
@@ -10909,7 +11279,7 @@
         "aria-label": "Config",
         title: "Config — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: "settings", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: "settings", size: 20 })
     ), !fitted && hasStates && /* @__PURE__ */ React$1.createElement(
       "button",
       {
@@ -10922,7 +11292,7 @@
         "aria-label": "States",
         title: "States — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: "list", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: "list", size: 20 })
     ), !fitted && hasQa && /* @__PURE__ */ React$1.createElement(
       "button",
       {
@@ -10935,7 +11305,7 @@
         "aria-label": "QA",
         title: "QA — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: "check", size: 20 })
     ), /* @__PURE__ */ React$1.createElement(
       "button",
       {
@@ -10945,7 +11315,7 @@
         "aria-label": "Copy link to this view",
         title: "Copy link to this view — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: linkCopied ? "check" : "link", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: linkCopied ? "check" : "link", size: 20 })
     )), !fitted && hasQa && qaOpen && /* @__PURE__ */ React$1.createElement(
       QaPalette,
       {
@@ -11174,7 +11544,7 @@
           "data-shown": shown ? "1" : void 0,
           "data-view": inSection ? "section" : "list"
         },
-        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head" }, inSection ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "kit-config-back", onClick: () => setDrilled(false) }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "back", size: 20 }), /* @__PURE__ */ React$1.createElement("span", null, "Config")) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head-text" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-title" }, "Config"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-subtitle" }, "Prototype controls, not part of the product.")), /* @__PURE__ */ React$1.createElement("button", { type: "button", onClick: onClose, "aria-label": "Close", className: "kit-config-dialog-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head" }, inSection ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "kit-config-back", onClick: () => setDrilled(false) }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "back", size: 20 }), /* @__PURE__ */ React$1.createElement("span", null, "Config")) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head-text" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-title" }, "Config"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-subtitle" }, "Prototype controls, not part of the product.")), /* @__PURE__ */ React$1.createElement("button", { type: "button", onClick: onClose, "aria-label": "Close", className: "kit-config-dialog-close" }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "x", size: 18 }))),
         /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-main" }, /* @__PURE__ */ React$1.createElement("nav", { className: "kit-config-rail", "aria-label": "Config sections" }, railBtn(CONFIG_GLOBAL, "Whole prototype"), features.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-rail-label" }, "Features"), features.map((s) => railBtn(s))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-pane", "aria-label": active, onClickCapture: onPaneClickCapture }, /* @__PURE__ */ React$1.createElement("h2", { className: "kit-config-pane-title" }, active), /* @__PURE__ */ React$1.createElement(ConfigCtx.Provider, { value: ctx }, /* @__PURE__ */ React$1.createElement(ConfigGroup, { title: "Review", scope: "global" }, !fitted && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, onPlatformChange && /* @__PURE__ */ React$1.createElement(
           ConfigRow,
           {
