@@ -217,9 +217,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-set { box-sizing: border-box; display: grid; gap: 8px; padding: 8px; min-width: 0; margin-top: 4px; background: var(--page); border: 1px solid var(--line); border-radius: 20px; }
 .hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
 .hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 12px; overflow: hidden; box-sizing: border-box; }
-/* KEEP: the game side is a fixed height (380px desktop, 340px tablet) and the chat scrolls inside it; on a phone the chat body is 440px. The block is the same height whichever tab is open. */
+/* KEEP: the game side is a fixed height (380px desktop, 300px tablet) and the chat scrolls inside it; on a phone the chat body is 300px, so tabs, intro and chat fit one phone screen under the browser's bars. The block is the same height whichever tab is open. */
 .hb.is-desktop .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 380px; }
-.hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 340px; }
+.hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 300px; }
 .hb-side, .hb-talk { min-width: 0; min-height: 0; display: grid; }
 .hb-side { border-right: 1px solid var(--c-edge); }
 .hb-talk > .mcp-chat { height: 100%; }
@@ -283,4 +283,5 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 
 
-.hb-pic-turn .hb-pic { max-width: 200px; }
+/* On a phone the picture is a full-width banner across the chat. */
+.hb-pic-turn .hb-pic { max-width: none; aspect-ratio: 5 / 2; }

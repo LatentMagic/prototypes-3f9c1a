@@ -95,7 +95,7 @@ const HbChat = ({ game, size, onSend }) => {
     <div key="pic" className="mcp-chat-ai hb-pic-turn"><span className="mcp-chat-call"><img src={GS_CHAT_MARK} alt="" width="16" height="16" />Called Delve<em>{GS_CHAT_BY}</em></span><HbPic /></div>);
   // KEEP: the chat is all there when shown (nothing types in) and opens at its top, whichever tab or width. The chat scrolls; the block never changes height.
   React.useEffect(() => { if (body.current) body.current.scrollTop = 0; }, [game, size]);
-  return chatShell({ bodyRef: body, body: items, up: false, toStart: () => {}, start: 'top', height: phone ? 440 : undefined, width: 2000, fill: !phone,
+  return chatShell({ bodyRef: body, body: items, up: false, toStart: () => {}, start: 'top', height: phone ? 300 : undefined, width: 2000, fill: !phone,
     label: g.id + ' being played in a chat', more: 'Back to the start', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
 };
 

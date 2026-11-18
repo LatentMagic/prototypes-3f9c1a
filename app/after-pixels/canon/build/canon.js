@@ -7479,7 +7479,7 @@
       toStart: () => {
       },
       start: "top",
-      height: phone ? 440 : void 0,
+      height: phone ? 300 : void 0,
       width: 2e3,
       fill: !phone,
       label: g.id + " being played in a chat",
