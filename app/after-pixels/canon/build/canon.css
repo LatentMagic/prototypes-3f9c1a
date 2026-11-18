@@ -2504,6 +2504,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .hb-chat .mcp-cb-steps { gap: 1px; }
   .hb-chat .mcp-cb-steps > i { min-width: 3px; }
 }
+
+
+.hb-pic-turn .hb-pic { max-width: 200px; }
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 

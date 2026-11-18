@@ -282,3 +282,5 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .hb-chat .mcp-cb-steps > i { min-width: 3px; }
 }
 
+
+.hb-pic-turn .hb-pic { max-width: 200px; }
