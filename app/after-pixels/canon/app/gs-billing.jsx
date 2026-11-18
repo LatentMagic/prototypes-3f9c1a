@@ -249,7 +249,7 @@ export const GsSubscribe = () => {
           ))}
         </fieldset>
         <GsRows rows={[['Due today', plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
-        <p className="gs-small">{GS.tax}</p>
+        <p className="gs-small">{GS.tax}.</p>
         <DS.Button block onClick={gs.getPass}>Get the Pass</DS.Button>
       </section>
     </main>

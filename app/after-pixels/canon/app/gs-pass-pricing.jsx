@@ -21,7 +21,7 @@ export const GsPass = () => {
               <span className="gs-pass-price gs-num-text">{plans.yearly.price}<span className="gs-muted"> or {plans.monthly.price}</span></span>
               <DS.Button onClick={() => gs.go('subscribe')}>Choose a plan</DS.Button>
             </div>
-            <p className="gs-small gs-pu-wrap gs-pu-payline">{GS.tax} {GS.purchase}</p>
+            <p className="gs-small gs-pu-wrap gs-pu-payline">{GS.tax}. {GS.purchase}</p>
           </div>
         )} />
       </div>
