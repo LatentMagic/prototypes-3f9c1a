@@ -241,14 +241,17 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* the reply bar: the chat's reply box with the design system's Button as its send button */
 .hb-reply { padding-right: 4px; }
 .hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
-.hb-chat .hb-reply .mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
+.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
 
 /* tabs: all one height in a row (phone, tablet) or a column of 290px (desktop). Closed tabs are game cards at rest; the open tab drops the edge that meets its panel and overlaps it by 1px, so the two read as one surface. */
 .hb-tabs { box-sizing: border-box; position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: stretch; min-width: 0; }
 .hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; color: var(--text); background: var(--card); box-shadow: inset 0 0 0 1px var(--control-edge); border-radius: 0; }
 @media (hover: hover) { .hb-tab:not(.is-open):hover { background: var(--hb-sel); } }
 .hb-tab:not(.is-open):active { opacity: .8; }
-.hb-tab:focus-within:not(.is-open) { outline: 2px solid var(--off-white); outline-offset: 2px; }
+/* KEEP: the ring shows for keyboard focus only (:focus-visible); on a tap or click the tab just opens, with no white flash. */
+.hb-tab:not(.is-open):has(.hb-tab-b:focus-visible) { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.hb-tab-b { -webkit-tap-highlight-color: transparent; }
+.hb-tab-b:focus { outline: none; }
 .hb-tab.is-open { background: var(--hb-sel); box-shadow: none; border: 1px solid var(--off-white); border-bottom: 0; margin-bottom: -1px; padding: 9px 11px 15px; align-content: start; }
 .hb-tab-b { display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 10px 12px 15px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
 .hb-tab.is-open .hb-tab-b { padding: 0; cursor: default; }
