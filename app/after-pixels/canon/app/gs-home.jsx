@@ -27,7 +27,7 @@ const HB_SENTENCE = 'Step into a story, crack a puzzle or talk through a mystery
 const HB_U = (text) => ({ from: 'user', text });
 const HB_A = (tool, text, blocks, after) => ({ from: 'ai', tool, text, blocks, after });
 const HB_PICTURE = 'assets/home-block-delve.svg';
-const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Health', value: 23, max: 23, tone: 'health' }, { label: 'Orcs’ advance', value: advance, max: 12, tone: 'threat' }] });
+const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Garrick’s health', value: 23, max: 23, tone: 'health' }, { label: 'The drums', value: advance, max: 12, tone: 'threat' }] });
 const HB_BOARD = { type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'COILS', marks: 'hhxhx' }] };
 // OPEN: what Accuse shows beside the chat is not designed. For now it shows the clues the chat talks about, as the chat-parts canvas did.
 const HB_CLUES = [{ kind: 'Clues', facts: ['1. Madame Zara handled the brass bugle.', '2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.'] }];
@@ -35,7 +35,7 @@ const HB_CLUES = [{ kind: 'Clues', facts: ['1. Madame Zara handled the brass bug
 const HB_GAMES = [
   { id: 'delve', gid: 'delve', part: 'Game Master', intro: 'It sets each scene, plays everyone you meet and asks what you do next.',
     turns: [
-      HB_A('Delve', ['Dawn on the ridge above Brackenford. The watchtower burns, and orc tracks run up towards the caves under Raven Hill. A watchman lies pinned beneath an overturned cart.', '“Get this off me. Please.”', 'You can lift the cart with Strength, or follow the tracks to the caves. What do you do?'], [HB_TRACK(0)]),
+      HB_A('Delve', ['Before dawn on the ridge above Brackenford. The watchtower burns, and orc tracks run up towards the caves under Raven Hill. A watchman lies pinned beneath an overturned cart.', '“Get this off me. Please.”', 'You can lift the cart with Strength, or follow the tracks to the caves. What do you do?'], [HB_TRACK(0)]),
       HB_U('I lift the cart.'),
       HB_A('Delve', ['You heave the cart up, and he drags his leg free.', '“They went up to the caves. Dozens of them.”', 'The tracks climb towards Raven Hill. What do you do?'], [{ type: 'roll', label: 'Strength', roll: 14, mod: 3, target: 12, result: 'hit', outcome: 'Success' }, HB_TRACK(0)]),
     ] },
