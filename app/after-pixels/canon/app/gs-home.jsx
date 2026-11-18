@@ -29,7 +29,10 @@ const HB_A = (tool, text, blocks, after) => ({ from: 'ai', tool, text, blocks, a
 const HB_PICTURE = 'assets/home-block-delve.svg';
 // KEEP: the threat track's tone is the design system's `threat`; the platform's ChatBlock names that tone `danger`, so the platform record uses `danger`.
 const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Garrick’s health', value: 23, max: 23, tone: 'health' }, { label: 'The drums', value: advance, max: 12, tone: 'threat' }] });
-const HB_BOARD = { type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'COILS', marks: 'hhxhx' }] };
+const HB_ROWS = [{ letters: 'COILS', marks: 'hhxhx' }, { letters: 'CLOUD', marks: 'hnnnh' }];
+const HB_BOARD = { type: 'tilegrid', length: 5, count: 6, rows: HB_ROWS };
+// In the chat the board grows with the guesses, as on Guess's product page.
+const HB_PLAYED = (n) => ({ type: 'tilegrid', length: 5, count: n, rows: HB_ROWS.slice(0, n) });
 // Beside the chat, Accuse's panel shows the clues the chat talks about, the same clue cards as its product page.
 const HB_CLUES = [{ kind: 'Clues', facts: ['1. Madame Zara handled the brass bugle.', '2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.'] }];
 // The three tabs, in their fixed order, with their sample chats. Swap a chat by replacing its turns.
@@ -43,7 +46,9 @@ const HB_GAMES = [
   { id: 'guess', gid: 'word', part: 'Host', intro: 'It shows how each guess scored and keeps a hint back until you want it.',
     turns: [
       HB_U('COILS'),
-      HB_A('Guess', 'Three in place. Five guesses left. Your hint’s here when you want it.', null, [HB_BOARD]),
+      HB_A('Guess', 'Three in place. Five guesses left. Your hint’s here when you want it.', null, [HB_PLAYED(1)]),
+      HB_U('CLOUD'),
+      HB_A('Guess', 'Two in place, three elsewhere. Four guesses left.', null, [HB_PLAYED(2)]),
     ] },
   { id: 'accuse', gid: 'mystery', part: 'Thinking partner', intro: 'Stuck? Ask, and it turns the case into smaller questions. The deduction stays yours.',
     turns: [
