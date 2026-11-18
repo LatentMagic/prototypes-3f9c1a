@@ -117,7 +117,7 @@ export const GsHome = () => {
         <div className="gs-home-after">
           <p className="gs-muted gs-pu-wrap">{<CprHomeLine />}</p>
           <div><DS.TextLink onClick={() => gs.go('games')}>All games</DS.TextLink></div>
-          <p className="gs-small gs-pu-wrap">{GS.purchase}</p>
+          {/* The purchase line lives on the Pass pricing page, under Choose a plan, not here (the user, 2026-11-18). */}
         </div>
       </section>
 

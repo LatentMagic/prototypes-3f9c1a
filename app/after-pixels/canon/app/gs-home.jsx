@@ -83,7 +83,8 @@ const HbSide = ({ game }) => (
 const HbReply = ({ onSend }) => (
   <div className="mcp-chat-comp hb-reply" role="group" aria-label="Reply">
     <span>Reply</span>
-    <DS.Button onClick={onSend}>Start free</DS.Button>
+    {/* KEEP: Start free is the chat's send button, so it carries the send arrow; black, so it reads as the thing to press (the user, 2026-11-18). */}
+    <DS.Button onClick={onSend}>Start free<DS.Icon name="send" size={16} /></DS.Button>
   </div>);
 
 const HbChat = ({ game, size, onSend }) => {

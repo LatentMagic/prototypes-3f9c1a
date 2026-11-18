@@ -243,7 +243,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 
 /* the reply bar: the chat's reply box with the design system's Button as its send button */
 .hb-reply { padding-right: 4px; }
-.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
+.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; gap: 6px; background: var(--c-fg); color: var(--c-bg); flex: none; }
 .hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
 
 /* The tabs take Connect's app picker (.hw-app in gs-connect.css) exactly: outlined on the page colour, a faint hover, the chosen one inverted to off-white; the notch is Connect's own (.hw-notch). */
