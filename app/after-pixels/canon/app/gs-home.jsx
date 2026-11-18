@@ -30,9 +30,9 @@ const HB_PICTURE = 'assets/home-block-delve.svg';
 // KEEP: the threat track's tone is the design system's `threat`; the platform's ChatBlock names that tone `danger`, so the platform record uses `danger`.
 const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Garrick’s health', value: 23, max: 23, tone: 'health' }, { label: 'The drums', value: advance, max: 12, tone: 'threat' }] });
 const HB_BOARD = { type: 'tilegrid', length: 5, count: 6, rows: [{ letters: 'COILS', marks: 'hhxhx' }] };
-// OPEN: what Accuse shows beside the chat is not designed. For now it shows the clues the chat talks about, as the chat-parts canvas did.
+// Beside the chat, Accuse's panel shows the clues the chat talks about, the same clue cards as its product page.
 const HB_CLUES = [{ kind: 'Clues', facts: ['1. Madame Zara handled the brass bugle.', '2. Whoever handled the brass bugle was not in the costume tent.', '3. Coco was in the cook tent.', '4. Ivan the Mighty was in the generator truck.', '5. The killer was in the big top.'] }];
-// The three tabs, in their fixed order, with their sample chats. The last turn of a chat types itself in. Swap a chat by replacing its turns.
+// The three tabs, in their fixed order, with their sample chats. Swap a chat by replacing its turns.
 const HB_GAMES = [
   { id: 'delve', gid: 'delve', part: 'Game Master', intro: 'It sets each scene, plays everyone you meet and asks what you do next.',
     turns: [
