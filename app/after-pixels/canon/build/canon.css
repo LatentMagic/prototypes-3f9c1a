@@ -2447,7 +2447,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb { gap: 12px; }
 .hb .mcp-t-sec, .hb-lead { margin: 0; }
 .hb-lead { max-width: 60ch; text-wrap: balance; }
-.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; margin-top: 4px; gap: 28px; }
+.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; margin-top: 4px; gap: 28px; }
 /* KEEP: 28px between the chosen game and the panel, as Connect's app picker leaves between its tiles and its card; the panel pads 16px, as Connect's card does. */
 /* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
 .hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 28px 12px; }
