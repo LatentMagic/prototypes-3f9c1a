@@ -69,7 +69,7 @@ const CprPassCard = () => {
       art={<div ref={host} className="cpr-mosaic" aria-hidden="true" onClick={go}>{CPR_MOSAIC.map((k) => <GsArt key={k} art={GS_GAMES[k].art} shape="square" />)}</div>}
       title={<button type="button" className="gs-titlebtn mcp-art-link" onClick={go}><DS.Icon name="lock" size={18} className="cpr-lock" />The Pass<span className="cpr-chev" aria-hidden="true"><DS.Icon name="down" size={18} style={{ transform: 'rotate(-90deg)' }} /></span></button>}
       blurb="Every game, every edition."
-      tags={<span className="cpr-price"><span>{plans.monthly.price}</span> or <span>{plans.yearly.price}</span></span>} />
+      tags={<span className="cpr-price"><span>{plans.monthly.price}</span> or <span>{plans.yearly.price}</span><span className="cpr-tax">{GS.tax}</span></span>} />
   );
 };
 

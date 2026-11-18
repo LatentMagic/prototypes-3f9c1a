@@ -5,7 +5,7 @@
 // GsPass (the Pass page) is in gs-pass-pricing.jsx.
 // ============================================================================
 import React from 'react';
-import { useGs, DS, gsEndedOn } from './gs-data.jsx';
+import { useGs, DS, GS, gsEndedOn } from './gs-data.jsx';
 import { useGsBusy, gsAnnounce, GsGlyph } from './gs-site.jsx';
 import { GsXLine } from './gs-auth.jsx';
 
@@ -249,6 +249,7 @@ export const GsSubscribe = () => {
           ))}
         </fieldset>
         <GsRows rows={[['Due today', plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
+        <p className="gs-small">{GS.tax}</p>
         <DS.Button block onClick={gs.getPass}>Get the Pass</DS.Button>
       </section>
     </main>

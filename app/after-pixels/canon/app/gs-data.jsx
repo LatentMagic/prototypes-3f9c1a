@@ -12,6 +12,7 @@ export const GS = {
   today: 'Tuesday 6 October',
   link: 'https://play.afterpixels.com',
   email: 'you@example.com',
+  tax: 'Prices include tax.',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
   works: 'ChatGPT · Claude · Gemini · Grok · Muse · and more',
 };
