@@ -7542,13 +7542,6 @@
       return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", id: "hb-t-" + g.id, "aria-selected": on, "aria-controls": "hb-panel", className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && inTab && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
     }));
   };
-  const HB_TRY = (() => {
-    const q = new URLSearchParams(window.location.search);
-    const s = {};
-    if (q.get("hbgap")) s["--hb-gap"] = q.get("hbgap") + "px";
-    if (q.get("hbpad")) s["--hb-pad"] = q.get("hbpad") + "px";
-    return s;
-  })();
   const GsHomeBlock = () => {
     const gs = useGs();
     const root = React$1.useRef(null);
@@ -7581,7 +7574,7 @@
       ro.observe(s);
       return () => ro.disconnect();
     }, [open, size]);
-    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h", style: HB_TRY }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set", ref: set }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), size === "list" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", id: "hb-panel", role: "tabpanel", "aria-labelledby": "hb-t-" + open }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch hb-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set", ref: set }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), size === "list" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", id: "hb-panel", role: "tabpanel", "aria-labelledby": "hb-t-" + open }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch hb-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
   };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },

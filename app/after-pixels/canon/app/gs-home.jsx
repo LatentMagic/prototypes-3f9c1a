@@ -127,9 +127,6 @@ const HbTabs = ({ open, size, pick, go }) => {
     </div>);
 };
 
-// TRY (remove once the user rules on spacing): ?hbgap=<px> sets the gap between the tabs and the panel, ?hbpad=<px> the panel's padding round the chat.
-const HB_TRY = (() => { const q = new URLSearchParams(window.location.search); const s = {}; if (q.get('hbgap')) s['--hb-gap'] = q.get('hbgap') + 'px'; if (q.get('hbpad')) s['--hb-pad'] = q.get('hbpad') + 'px'; return s; })();
-
 export const GsHomeBlock = () => {
   const gs = useGs(); const root = React.useRef(null); const size = useHbSize(root); const [open, setOpen] = React.useState('delve');
   const set = React.useRef(null); const notch = React.useRef(null); const placed = React.useRef(null);
@@ -148,7 +145,7 @@ export const GsHomeBlock = () => {
     const ro = new ResizeObserver(() => place(false)); ro.observe(s); return () => ro.disconnect();
   }, [open, size]);
   return (
-    <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h" style={HB_TRY}>
+    <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h">
       <h2 className="mcp-t-sec" id="gs-hb-h">{HB_HEADING}</h2>
       <p className="gs-muted hb-lead">{HB_SENTENCE}</p>
       <div className="hb-set" ref={set}>
