@@ -35,18 +35,16 @@ const HB_CLUES = [{ kind: 'Clues', facts: ['1. Madame Zara handled the brass bug
 const HB_GAMES = [
   { id: 'delve', gid: 'delve', part: 'Game Master', intro: 'It sets each scene, plays everyone you meet and asks what you do next.',
     turns: [
-      HB_A('Delve', ['Dawn lights the ridge. Brackenford lies below you; across the slope, the watchtower burns. A watchman has his leg trapped beneath an overturned cart.', '“Get this off me. Please.”', 'You can lift the cart with Strength for free, or take the path towards the caves under Raven Hill. What do you do?'], [HB_TRACK(0)]),
-      HB_U('I get my shoulder under the cart and lift.'),
-      HB_A('Delve', ['You raise the cart far enough for him to pull his leg free. He grips the wheel and stands.', '“I thought you’d leave me.”', 'The path towards the caves is open. What do you do?'], [{ type: 'roll', label: 'Strength', roll: 14, mod: 3, target: 12, result: 'hit', outcome: 'Success' }, HB_TRACK(0)]),
-      HB_U('Can you walk back to Brackenford?'),
-      HB_A(null, ['“I can limp. I’ll get there.”', 'He takes a few steps downhill, then looks back at you.', '“You’re going up there alone?”', 'You can answer him or take the path towards the caves. What do you do?'], [HB_TRACK(0)]),
+      HB_A('Delve', ['Dawn on the ridge above Brackenford. The watchtower burns, and orc tracks run up towards the caves under Raven Hill. A watchman lies pinned beneath an overturned cart.', '“Get this off me. Please.”', 'You can lift the cart with Strength, or follow the tracks to the caves. What do you do?'], [HB_TRACK(0)]),
+      HB_U('I lift the cart.'),
+      HB_A('Delve', ['You heave the cart up, and he drags his leg free.', '“They went up to the caves. Dozens of them.”', 'The tracks climb towards Raven Hill. What do you do?'], [{ type: 'roll', label: 'Strength', roll: 14, mod: 3, target: 12, result: 'hit', outcome: 'Success' }, HB_TRACK(0)]),
+      HB_U('I follow the tracks.'),
+      HB_A('Delve', ['The path climbs through the heather to a cave mouth. Two orcs sit by a fire at the entrance, arguing over a sack of grain.', 'You can creep past with Agility, or charge them with Strength. What do you do?'], [HB_TRACK(0)]),
     ] },
   { id: 'guess', gid: 'word', part: 'Host', intro: 'It shows how each guess scored and keeps a hint back until you want it.',
     turns: [
       HB_U('COILS'),
-      HB_A('Guess', 'Three in place on your first go. Five left.', [HB_BOARD]),
-      HB_U('Still got my hint?'),
-      HB_A('Guess', 'Still yours. Say when you want it. Next word?'),
+      HB_A('Guess', 'Three in place. Five guesses left. Your hint’s here when you want it.', [HB_BOARD]),
     ] },
   { id: 'accuse', gid: 'mystery', part: 'Thinking partner', intro: 'Stuck? Ask, and it turns the case into smaller questions. The deduction stays yours.',
     turns: [
@@ -69,25 +67,18 @@ const useHbSize = (ref) => {
   }, []);
   return size;
 };
-const useReducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const HbPic = ({ name }) => (
-  <figure className="hb-pic">
-    <img src={HB_PICTURE} alt="A hero in armour on a ridge at dawn, a burning tower behind" />
-    <figcaption><span>Delve #40 · The ridge</span><span>{name} · 23 HP</span></figcaption>
-  </figure>);
+const HbPic = () => <img className="hb-pic" src={HB_PICTURE} alt="A hero in armour on a ridge at dawn, a burning tower behind" />;
+// Beside the chat (tablet and desktop) each game's side opens with its edition, in the same place for all three; a phone shows none.
+const HB_EDITION = { delve: 'Delve #40', guess: 'Guess #34', accuse: 'Accuse #112' };
 // What the AI draws for the game: beside the chat on tablet and desktop, inside it on a phone.
 const HbSide = ({ game }) => (
   <div className="mcp-chat hb-sidebox">
-    {game === 'delve' && <HbPic name="Garrick" />}
+    <p className="hb-ed">{HB_EDITION[game]}</p>
+    {game === 'delve' && <HbPic />}
     {game === 'guess' && <TileGrid {...HB_BOARD} />}
     {game === 'accuse' && <ClueCards groups={HB_CLUES} />}
   </div>);
-// The newest turn types itself in; the rest of its text holds its place unseen, so the turn never grows as it types.
-const HbTyped = ({ text, from, n }) => {
-  const shown = Math.max(0, Math.min(text.length, n - from));
-  return <span>{text.slice(0, shown)}<span className="hb-ghost">{text.slice(shown)}</span></span>;
-};
 const HbReply = ({ onSend }) => (
   <div className="mcp-chat-comp hb-reply" role="group" aria-label="Reply">
     <span>Reply</span>
@@ -96,24 +87,13 @@ const HbReply = ({ onSend }) => (
 
 const HbChat = ({ game, size, onSend }) => {
   const body = React.useRef(null); const phone = size === 'phone'; const g = HB_GAMES.find((x) => x.id === game);
-  const still = useReducedMotion(); const [n, setN] = React.useState(0);
-  const last = g.turns.length - 1;
-  const total = (Array.isArray(g.turns[last].text) ? g.turns[last].text : [g.turns[last].text]).join('').length;
-  React.useEffect(() => {
-    if (still) { setN(total); return undefined; }
-    setN(0); const t0 = performance.now() + 500;
-    const id = setInterval(() => { const k = Math.floor((performance.now() - t0) / 18); setN(Math.max(0, Math.min(total, k))); const b = body.current; if (b && k >= 0) b.scrollTop = b.scrollHeight; if (k >= total) clearInterval(id); }, 40);
-    return () => clearInterval(id);
-  }, [game, still, total]);
-  let from = 0;
-  const fx = { piece: () => ({}), words: (i, k, text) => { const el = <HbTyped text={text} from={from} n={n} />; from += text.length; return el; } };
   const turns = phone ? g.turns : g.turns.map(hbPlain);
   const pic = phone && game === 'delve';
-  const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: undefined } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, fx: i === last ? fx : undefined }));
+  const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: undefined } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
   // Delve opens a phone chat with the picture of the scene, the AI's own, with the call that made it.
   if (pic) items.unshift(
-    <div key="pic" className="mcp-chat-ai hb-pic-turn"><span className="mcp-chat-call"><img src={GS_CHAT_MARK} alt="" width="16" height="16" />Called Delve<em>{GS_CHAT_BY}</em></span><HbPic name="Garrick" /></div>);
-  // KEEP: every chat opens at its top, whichever tab, width or turn is newest; once the newest turn starts typing, the chat follows it down until it is typed, then stops following. The chat scrolls; the block never changes height.
+    <div key="pic" className="mcp-chat-ai hb-pic-turn"><span className="mcp-chat-call"><img src={GS_CHAT_MARK} alt="" width="16" height="16" />Called Delve<em>{GS_CHAT_BY}</em></span><HbPic /></div>);
+  // KEEP: the chat is all there when shown (nothing types in) and opens at its top, whichever tab or width. The chat scrolls; the block never changes height.
   React.useEffect(() => { if (body.current) body.current.scrollTop = 0; }, [game, size]);
   return chatShell({ bodyRef: body, body: items, up: false, toStart: () => {}, start: 'top', height: phone ? 440 : undefined, width: 2000, fill: !phone,
     label: g.id + ' being played in a chat', more: 'Back to the start', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
@@ -139,10 +119,13 @@ const HbTabs = ({ open, size, pick, go }) => (
     {size === 'phone' && <div className="hb-strip"><HbIntro open={open} go={go} /></div>}
   </div>);
 
+// Shades on trial for the closed tabs (?hbgrey=1, 2 or 3).
+const HB_GREYS = { 1: 'var(--card)', 2: 'var(--popup)', 3: 'color-mix(in oklab, var(--popup), var(--control-edge) 30%)' };
 export const GsHomeBlock = () => {
   const gs = useGs(); const root = React.useRef(null); const size = useHbSize(root); const [open, setOpen] = React.useState('delve');
+  const grey = HB_GREYS[new URLSearchParams(location.search).get('hbgrey')] || HB_GREYS[1];
   return (
-    <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h">
+    <section ref={root} className={'gs-band hb is-' + size} style={{ '--hb-grey': grey }} aria-labelledby="gs-hb-h">
       <h2 className="mcp-t-sec" id="gs-hb-h">{HB_HEADING}</h2>
       <p className="gs-muted hb-lead">{HB_SENTENCE}</p>
       <div className="hb-set">

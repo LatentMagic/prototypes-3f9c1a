@@ -535,7 +535,7 @@
       });
       return { fx, typed, sent };
     }
-    function useReducedMotion2() {
+    function useReducedMotion() {
       const q = "(prefers-reduced-motion: reduce)";
       const [r, setR] = React2.useState(() => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia(q).matches);
       React2.useEffect(() => {
@@ -594,7 +594,7 @@
       return [up, toStart, rejoin];
     }
     function ChatPlayback({ turns, time, autoplay = true, loop = false, speed = 1, pace, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = "Back to the start", pauseLabel = "Pause", playLabel = "Play", replayLabel = "Play again", className = "" }) {
-      const reduced = useReducedMotion2();
+      const reduced = useReducedMotion();
       const tl = React2.useMemo(() => timeline(turns, { ...pace, speed }, composer), [turns, JSON.stringify(pace || {}), speed, composer]);
       const given = typeof time === "number" && isFinite(time);
       const cycle = tl.total + tl.end;
@@ -7408,11 +7408,11 @@
       part: "Game Master",
       intro: "It sets each scene, plays everyone you meet and asks what you do next.",
       turns: [
-        HB_A("Delve", ["Dawn lights the ridge. Brackenford lies below you; across the slope, the watchtower burns. A watchman has his leg trapped beneath an overturned cart.", "“Get this off me. Please.”", "You can lift the cart with Strength for free, or take the path towards the caves under Raven Hill. What do you do?"], [HB_TRACK(0)]),
-        HB_U("I get my shoulder under the cart and lift."),
-        HB_A("Delve", ["You raise the cart far enough for him to pull his leg free. He grips the wheel and stands.", "“I thought you’d leave me.”", "The path towards the caves is open. What do you do?"], [{ type: "roll", label: "Strength", roll: 14, mod: 3, target: 12, result: "hit", outcome: "Success" }, HB_TRACK(0)]),
-        HB_U("Can you walk back to Brackenford?"),
-        HB_A(null, ["“I can limp. I’ll get there.”", "He takes a few steps downhill, then looks back at you.", "“You’re going up there alone?”", "You can answer him or take the path towards the caves. What do you do?"], [HB_TRACK(0)])
+        HB_A("Delve", ["Dawn on the ridge above Brackenford. The watchtower burns, and orc tracks run up towards the caves under Raven Hill. A watchman lies pinned beneath an overturned cart.", "“Get this off me. Please.”", "You can lift the cart with Strength, or follow the tracks to the caves. What do you do?"], [HB_TRACK(0)]),
+        HB_U("I lift the cart."),
+        HB_A("Delve", ["You heave the cart up, and he drags his leg free.", "“They went up to the caves. Dozens of them.”", "The tracks climb towards Raven Hill. What do you do?"], [{ type: "roll", label: "Strength", roll: 14, mod: 3, target: 12, result: "hit", outcome: "Success" }, HB_TRACK(0)]),
+        HB_U("I follow the tracks."),
+        HB_A("Delve", ["The path climbs through the heather to a cave mouth. Two orcs sit by a fire at the entrance, arguing over a sack of grain.", "You can creep past with Agility, or charge them with Strength. What do you do?"], [HB_TRACK(0)])
       ]
     },
     {
@@ -7422,9 +7422,7 @@
       intro: "It shows how each guess scored and keeps a hint back until you want it.",
       turns: [
         HB_U("COILS"),
-        HB_A("Guess", "Three in place on your first go. Five left.", [HB_BOARD]),
-        HB_U("Still got my hint?"),
-        HB_A("Guess", "Still yours. Say when you want it. Next word?")
+        HB_A("Guess", "Three in place. Five guesses left. Your hint’s here when you want it.", [HB_BOARD])
       ]
     },
     {
@@ -7457,49 +7455,19 @@
     }, []);
     return size;
   };
-  const useReducedMotion = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const HbPic = ({ name }) => /* @__PURE__ */ React$1.createElement("figure", { className: "hb-pic" }, /* @__PURE__ */ React$1.createElement("img", { src: HB_PICTURE, alt: "A hero in armour on a ridge at dawn, a burning tower behind" }), /* @__PURE__ */ React$1.createElement("figcaption", null, /* @__PURE__ */ React$1.createElement("span", null, "Delve #40 · The ridge"), /* @__PURE__ */ React$1.createElement("span", null, name, " · 23 HP")));
-  const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-sidebox" }, game === "delve" && /* @__PURE__ */ React$1.createElement(HbPic, { name: "Garrick" }), game === "guess" && /* @__PURE__ */ React$1.createElement(TileGrid, { ...HB_BOARD }), game === "accuse" && /* @__PURE__ */ React$1.createElement(ClueCards, { groups: HB_CLUES }));
-  const HbTyped = ({ text, from, n }) => {
-    const shown = Math.max(0, Math.min(text.length, n - from));
-    return /* @__PURE__ */ React$1.createElement("span", null, text.slice(0, shown), /* @__PURE__ */ React$1.createElement("span", { className: "hb-ghost" }, text.slice(shown)));
-  };
+  const HbPic = () => /* @__PURE__ */ React$1.createElement("img", { className: "hb-pic", src: HB_PICTURE, alt: "A hero in armour on a ridge at dawn, a burning tower behind" });
+  const HB_EDITION = { delve: "Delve #40", guess: "Guess #34", accuse: "Accuse #112" };
+  const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-sidebox" }, /* @__PURE__ */ React$1.createElement("p", { className: "hb-ed" }, HB_EDITION[game]), game === "delve" && /* @__PURE__ */ React$1.createElement(HbPic, null), game === "guess" && /* @__PURE__ */ React$1.createElement(TileGrid, { ...HB_BOARD }), game === "accuse" && /* @__PURE__ */ React$1.createElement(ClueCards, { groups: HB_CLUES }));
   const HbReply = ({ onSend }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free"));
   const HbChat = ({ game, size, onSend }) => {
     const body = React$1.useRef(null);
     const phone = size === "phone";
     const g = HB_GAMES.find((x) => x.id === game);
-    const still = useReducedMotion();
-    const [n, setN] = React$1.useState(0);
-    const last = g.turns.length - 1;
-    const total = (Array.isArray(g.turns[last].text) ? g.turns[last].text : [g.turns[last].text]).join("").length;
-    React$1.useEffect(() => {
-      if (still) {
-        setN(total);
-        return void 0;
-      }
-      setN(0);
-      const t0 = performance.now() + 500;
-      const id = setInterval(() => {
-        const k = Math.floor((performance.now() - t0) / 18);
-        setN(Math.max(0, Math.min(total, k)));
-        const b = body.current;
-        if (b && k >= 0) b.scrollTop = b.scrollHeight;
-        if (k >= total) clearInterval(id);
-      }, 40);
-      return () => clearInterval(id);
-    }, [game, still, total]);
-    let from = 0;
-    const fx = { piece: () => ({}), words: (i, k, text) => {
-      const el = /* @__PURE__ */ React$1.createElement(HbTyped, { text, from, n });
-      from += text.length;
-      return el;
-    } };
     const turns = phone ? g.turns : g.turns.map(hbPlain);
     const pic = phone && game === "delve";
-    const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: void 0 } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, fx: i === last ? fx : void 0 }));
+    const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: void 0 } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
     if (pic) items.unshift(
-      /* @__PURE__ */ React$1.createElement("div", { key: "pic", className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: GS_CHAT_MARK, alt: "", width: "16", height: "16" }), "Called Delve", /* @__PURE__ */ React$1.createElement("em", null, GS_CHAT_BY)), /* @__PURE__ */ React$1.createElement(HbPic, { name: "Garrick" }))
+      /* @__PURE__ */ React$1.createElement("div", { key: "pic", className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call" }, /* @__PURE__ */ React$1.createElement("img", { src: GS_CHAT_MARK, alt: "", width: "16", height: "16" }), "Called Delve", /* @__PURE__ */ React$1.createElement("em", null, GS_CHAT_BY)), /* @__PURE__ */ React$1.createElement(HbPic, null))
     );
     React$1.useEffect(() => {
       if (body.current) body.current.scrollTop = 0;
@@ -7525,12 +7493,14 @@
     const on = g.id === open;
     return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", role: "tab", "aria-selected": on, className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && size !== "phone" && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
   }), size === "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-strip" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go })));
+  const HB_GREYS = { 1: "var(--card)", 2: "var(--popup)", 3: "color-mix(in oklab, var(--popup), var(--control-edge) 30%)" };
   const GsHomeBlock = () => {
     const gs = useGs();
     const root = React$1.useRef(null);
     const size = useHbSize(root);
     const [open, setOpen] = React$1.useState("delve");
-    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage", role: "tabpanel" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))));
+    const grey = HB_GREYS[new URLSearchParams(location.search).get("hbgrey")] || HB_GREYS[1];
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, style: { "--hb-grey": grey }, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set" }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage", role: "tabpanel" }, size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))));
   };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
