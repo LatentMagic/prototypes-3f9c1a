@@ -135,7 +135,7 @@
 }
 
 /* home hero: one cover field (Delve's wine ground and banner art, as on the platform) with the screenshot set inside it (home-hero option 9) */
-/* KEEP: Delve's art sits in the hero grid on the row that ends at the chat card's top (art bottom-aligned, no row gap), so the foot of the arch touches the card's top edge by layout at every width, never by a measured offset; the name block keeps its 24px (20px from 900px) above the card as its own padding. The eyebrow stays on one line while the art keeps at least 100px beside it; below that it wraps (balanced) and the art stays at 100px, and the art is 46% of the field wide at most, so the two never overlap. */
+/* KEEP: Delve's art sits on the name row, bottom-aligned, so the arch's foot touches the chat card's top edge at every width. The eyebrow stays on one line while the art has at least 92px beside it, then wraps; the art is at most 46% of the field wide, so the two never overlap. */
 .gs-hero-field { position: relative; display: grid; grid-template-columns: fit-content(calc(100% - 108px)) minmax(0, 1fr); column-gap: 8px; row-gap: 0; --name-gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
 .gs-hero-delve-art { grid-column: 2; grid-row: 1; align-self: end; justify-self: end; width: min(46cqw, 150px, calc(100% - 8px)); margin-right: 8px; cursor: pointer; }
 /* Motion on the hero art: Delve's own art-motion pieces. Hovering or focusing the name, or hovering the art, plays it. */
