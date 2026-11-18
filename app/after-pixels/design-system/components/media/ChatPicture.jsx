@@ -31,9 +31,9 @@ function Block({b}){
   return null;
 }
 const paras=t=>t==null?[]:Array.isArray(t)?t:[t];
-// A bold or underline run closes at the first closing marker, so "**a** and **b**" is two runs (the lazy `??`).
 // Inline markup in a chat paragraph: **bold**, *italic*, __underline__ (nest freely; a marker with no partner stays as typed).
 // chatRuns -> [{s,b,i,u}] pieces of text with the styles in force; chatPlain -> the text without markers (what is typed in the reply box, and what is counted as words).
+// A bold or underline run closes at the first closing marker, so "**a** and **b**" is two runs (the lazy `??`).
 const MARK=/\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
 export function chatRuns(text,f={}){
   const s=String(text),out=[]; let rest=s;
