@@ -1979,17 +1979,17 @@
       groups: [
         { cap: "Ask for today’s groups and the board opens with all sixteen words.", turns: [
           gscU("Play Daily Groups on After Pixels"),
-          gscAi("Daily groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "One word out still costs a mistake. Get all four and the group is solved.", turns: [
           gscU("Bass, pike, carp, sole"),
-          gscAi("Daily groups", "One away. 3 mistakes left."),
+          gscAi("Daily Groups", "One away. 3 mistakes left."),
           gscU("Pike, carp, sole, perch"),
-          gscAi("Daily groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Afterwards, your AI explains the groups.", turns: [
           gscU("Rail, gate, post, panel"),
-          gscAi("Daily groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
+          gscAi("Daily Groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
       // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
@@ -2098,15 +2098,15 @@
       hunter: [
         { cap: "Grey dawn. The band sets out without waiting.", turns: [
           gscU("Play 36,000 Summers Ago on After Pixels"),
-          gscAi("36,000 summers", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
+          gscAi("36,000 Summers Ago", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
         ] },
         { cap: "The engine rolls the dice and keeps the time.", turns: [
           gscU("I follow the gatherers up to the plateau"),
-          gscAi("36,000 summers", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
+          gscAi("36,000 Summers Ago", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
         ] },
         { cap: "At the fire you hear what you missed.", turns: [
           gscU("I head back to the fire at dusk"),
-          gscAi("36,000 summers", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
+          gscAi("36,000 Summers Ago", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
         ] }
       ]
     };
@@ -11424,11 +11424,6 @@
     return /* @__PURE__ */ React$1.createElement("main", { key: gs.view, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, cprLocked(gs, id) ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, access: "none" }) : /* @__PURE__ */ React$1.createElement(LbFreshNow, { gid: id, title: e.title || edLabel(e), line: g.blurb, span: true, onPlay: () => gs.playReq({ kind: "edition", e }) })));
   };
   const GS_MORE_SCREENS = {};
-  const gsToolName = (d) => {
-    const words = d.name.replace(/^The /, "").split(" ");
-    const name = words.length <= 2 ? words.join(" ") : d.k;
-    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  };
   function initGsMoreGames() {
     GS_MORE.forEach((d) => {
       const tags = [d.when, d.long].filter(Boolean);
@@ -11448,7 +11443,7 @@
         who: { ai: d.page.ai, server: d.page.server },
         week: { title: d.page.heading, line: d.blurb }
       };
-      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(gsToolName(d), d.chat[2])] }];
+      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.name, d.chat[2])] }];
       GS_LIB_READY[d.k] = d.ready;
       GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
       GS_LIBRARY[d.k] = () => /* @__PURE__ */ React$1.createElement(MgLibrary, { id: d.k });
