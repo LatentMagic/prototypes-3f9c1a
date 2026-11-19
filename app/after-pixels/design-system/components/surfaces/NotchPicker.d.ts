@@ -6,7 +6,7 @@ export interface NotchPickerOption{
   /** A mark above the name (an SVG, 32px, drawn in currentColor so it takes the tile's ink). Decorative: the name is what a screen reader hears. */
   icon?:React.ReactNode;
 }
-/** A few options (2 to 4) as tiles in one row, one pressed at a time, and the panel the pressed one controls below, with a notch on the panel's top edge under the pressed tile. A group of toggle buttons (`aria-pressed`), not tabs. Outlined tiles on the page colour; the pressed tile is filled. A surface restyles it with `--np-ink`, `--np-edge`, `--np-on`, `--np-on-ink`, `--np-panel`, `--np-panel-line` and `--np-gap`. */
+/** A few options (2 to 4) as tiles in one row, one pressed at a time, and the panel the pressed one controls below, with a notch on the panel's top edge under the pressed tile. A group of toggle buttons (`aria-pressed`), not tabs. Outlined tiles on the page colour; the pressed tile is filled. A surface restyles it with `--np-ink`, `--np-edge`, `--np-on`, `--np-on-ink`, `--np-panel`, `--np-panel-line`, `--np-panel-ink` and `--np-gap`. */
 export interface NotchPickerProps{
   /** Names the group of tiles for a screen reader, such as "Which app do you use?". */
   label:string;
