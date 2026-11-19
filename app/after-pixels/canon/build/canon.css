@@ -298,8 +298,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-disc-body>div>*{margin:0;padding:0 var(--space-4) var(--space-4);color:var(--muted)}
 /* A list in a Disclosure runs to its edges, with a line above the first row; the rows keep their own padding and colours. */
 .mcp-disc-body>div>.mcp-rows{padding:0;color:var(--text);border-top:1px solid var(--line)}
-/* NotchPicker: tiles in one row, one pressed; the panel below has a notch under the pressed tile. A surface restyles it through the --np-* hooks. */
-.mcp-np{display:grid;min-width:0}
+/* NotchPicker: tiles, one picked; the panel below has a notch pointing at the picked tile. A surface restyles it through the --np-* hooks; a page arranges the tiles and the box beside them with its own classes. */
+.mcp-np{display:grid;row-gap:var(--space-4);min-width:0}
 .mcp-np-tiles{display:grid;grid-template-columns:repeat(var(--np-n),minmax(0,1fr));gap:var(--np-gap,8px)}
 .mcp-np-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;min-width:0;min-height:56px;margin:0;padding:12px 4px 10px;background:transparent;border:1.5px solid var(--np-edge,var(--control-edge));border-radius:0;color:var(--np-ink,var(--text));font:600 13px/1.2 var(--font-text);text-align:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease),color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}
 .mcp-np.has-icons .mcp-np-tile{min-height:88px}
@@ -310,10 +310,19 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-np-tile:active:not([aria-pressed="true"]){transform:scale(.97)}
 .mcp-np-tile:focus-visible{outline:2px solid var(--np-on,var(--off-white));outline-offset:2px}
 @media (hover:hover){.mcp-np-tile:not([aria-pressed="true"]):hover{background:color-mix(in srgb,var(--np-ink,var(--text)) 8%,transparent)}}
-.mcp-np-panel{position:relative;margin-top:var(--space-4);background:var(--np-panel,var(--card));border:1px solid var(--np-panel-line,var(--line));box-shadow:var(--shadow-card);color:var(--np-panel-ink,var(--text))}
+/* More options than fit: the tiles keep their size and the row scrolls sideways, about 4 1/2 showing so the half tile says there is more, and every tile fills the row again once all fit (700px). With a CardRow (the row option) the CardRow's track is the row. */
+.mcp-np.is-scroll .mcp-np-tiles,.mcp-np.is-scroll .mcp-crow-track{gap:var(--np-gap,8px);grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 4 * var(--np-gap,8px)) / 4.5);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.mcp-np.is-scroll .mcp-np-tiles{padding:4px;margin:-4px}
+.mcp-np.is-scroll .mcp-np-tiles::-webkit-scrollbar{display:none}
+.mcp-np.is-scroll .mcp-np-tile{scroll-snap-align:start}
+.mcp-np.is-scroll:not(.has-row){container:mcp-np/inline-size}
+@container mcp-np (min-width:700px){.mcp-np.is-scroll .mcp-np-tiles{grid-auto-columns:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n))}}
+@container mcp-crow (min-width:700px){.mcp-np.is-scroll .mcp-crow-track{grid-auto-columns:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n))}}
+.mcp-np-panel{position:relative;background:var(--np-panel,var(--card));border:1px solid var(--np-panel-line,var(--line));box-shadow:var(--np-panel-shadow,var(--shadow-card));color:var(--np-panel-ink,var(--text))}
 .mcp-np-panel[hidden]{display:none}
-.mcp-np-body{padding:var(--space-4)}
-.mcp-np-notch{position:absolute;z-index:1;top:-7px;left:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n) * (var(--np-i) + .5) + var(--np-i) * var(--np-gap,8px));width:14px;height:14px;background:var(--np-panel,var(--card));border-left:1px solid var(--np-panel-line,var(--line));border-top:1px solid var(--np-panel-line,var(--line));transform:translateX(-50%) rotate(45deg);pointer-events:none;transition:left var(--time-swap) var(--ease)}
+.mcp-np-body{padding:var(--np-body-pad,var(--space-4))}
+.mcp-np-notch{position:absolute;z-index:1;top:-7px;left:0;width:14px;height:14px;background:var(--np-panel,var(--card));border-left:1px solid var(--np-panel-line,var(--line));border-top:1px solid var(--np-panel-line,var(--line));transform:translateX(-50%) rotate(45deg);pointer-events:none;transition:left var(--time-swap) var(--ease)}
+.mcp-np[data-pointer="side"] .mcp-np-notch{top:auto;left:-7px;transform:translateY(-50%) rotate(-45deg);transition-property:top}
 @media (prefers-reduced-motion:reduce){.mcp-np-tile,.mcp-np-notch{transition:none!important}.mcp-np-tile:active{transform:none!important}}
 
 .mcp-cover{display:grid;gap:var(--space-2);align-content:start;margin:0}
@@ -2462,7 +2471,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
 .gs-home-after > div { margin: -12px 0 -4px; }
 
-/* The homepage block under Available games: game tabs in Connect's app-picker theme, a card-grey panel with a notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
+/* The homepage block under Available games: game tabs in the design system's picker (NotchPicker), a card-grey panel with its notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
 .hb { gap: 12px; }
 .hb .mcp-t-sec, .hb-lead { margin: 0; }
 .hb-lead { max-width: 60ch; text-wrap: balance; }
@@ -2472,7 +2481,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 28px 12px; }
 .hb.is-list .hb-panel { grid-column: 1 / -1; }
 .hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
-.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 0; }
+.hb-panel { box-sizing: border-box; display: grid; align-content: start; min-width: 0; padding: 16px; border-radius: 0; box-shadow: none; --np-body-pad: 0; }
+.hb-panel > .mcp-np-body { min-width: 0; }
 .hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
 /* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
 .hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
@@ -2501,7 +2511,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-reply .mcp-btn::before { content: ""; position: absolute; inset: calc(-4px - 1.5px) 0; }
 .hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
 
-/* The tabs take Connect's app picker (.hw-app in gs-connect.css) exactly: outlined on the page colour, a faint hover, the chosen one inverted to off-white; the notch is Connect's own (.hw-notch). */
+/* The tabs are drawn like the design system's picker tiles: outlined on the page colour, a faint hover, the chosen one inverted to off-white. */
 .hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }
 .hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
 .hb-tab.is-open { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
@@ -2548,9 +2558,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb.is-desktop .hb-tab.is-open .hb-tab-b b { font-size: 24px; }
 .hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b b { font-size: 16px; }
 .hb.is-desktop .hb-tab.is-open .hb-ins { padding: 12px 16px 16px; }
-
-/* the notch is Connect's (.hw-notch: top edge, gliding left); in the column it sits on the panel's left edge and glides in top */
-.hb.is-desktop .hb-notch { top: auto; left: -7px; transform: translateY(-50%) rotate(-45deg); transition-property: top; }
 
 /* the description: in the chosen tab (row, column) or the box beside the list; the three share one cell so the open game's height never changes */
 /* KEEP: the link's tap area is its 17px padding, pulled back by negative margins, as the design system does for a link in a cover head (`.mcp-cover-head-links`); the link's own 48px min-height would leave about 14px of dead space above and below it. */
@@ -2687,22 +2694,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-sec h2:focus { outline: none; }
 .hw-sec p { margin: 0; }
 
-/* Setup: the app picker, a CardRow of tiles, each an app mark and its name. The picked tile is filled, as a main Button is; the rest are outlined. */
-.hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
-.hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
-@container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
-.hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
-.hw-app > svg { flex: none; }
-.hw-app > span { max-width: 100%; overflow-wrap: normal; }
-.hw-app[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
-.hw-app:active { transform: scale(.97); }
-.hw-app:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
-@media (hover: hover) { .hw-app:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
-
-/* The picked app's card, its notch on the top edge pointing at the picked tile. One anatomy for every route: title row,
-   the thing to copy, then the steps. */
-.hw-pick { position: relative; }
-.hw-notch { position: absolute; z-index: 1; top: -7px; width: 14px; height: 14px; background: var(--card); border-left: 1px solid var(--line); border-top: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); transition: left var(--time-swap) var(--ease); pointer-events: none; }
+/* Setup: the design system's NotchPicker (tiles, scrolling row and notch are its). Its panel is only the place the card sits and the notch points from, so it draws nothing of its own; the card is the surface.
+   One anatomy for every route: title row, the thing to copy, then the steps. */
+.hw-pick { background: none; border: 0; box-shadow: none; --np-body-pad: 0; }
 .hw-pick-card.mcp-card { justify-items: stretch; gap: 16px; }
 .hw-pick-head { display: grid; gap: 16px; }
 /* The card title's linking words, Add and to, are set in the body font and weight, so the names stand out (the user, 2026-11-11). */
@@ -2723,7 +2717,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .gs-copy-field { position: relative; min-width: 0; }
 .gs-copy-field.has-more::after { content: ""; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 40px; pointer-events: none; background: linear-gradient(to right, transparent, var(--card)); }
 @container hw-card (max-width: 420px) { .gs-copy.is-address { grid-template-columns: minmax(0, 1fr); } .gs-copy.is-address .mcp-btn { width: 100%; } }
-@media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
 /* Start: three ChatPictures in the system's CardRow, at the system's own widths (three side by side from about 1000px, else scrolling). The typed line is a SpeechBubble in place of ChatPicture's own user message,
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */

@@ -952,19 +952,75 @@
       const c = needsPassCopy({ game, word, words, record, total });
       return /* @__PURE__ */ React2.createElement("section", { className: ("mcp-npass " + className).trim(), style, "aria-label": c.heading }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label", "aria-hidden": c.label ? void 0 : true }, c.label || " "), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-sec" }, c.heading), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, c.foot && /* @__PURE__ */ React2.createElement("p", { className: "mcp-npass-note" }, c.foot))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label" }, c.rightLabel), c.lines.map((l, i) => /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-npass-line" }, l)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, /* @__PURE__ */ React2.createElement(Button, { variant: "secondary", onClick: onGet }, c.action))));
     }
-    function NotchPicker({ label, options, value, defaultValue = null, onChange, children, className = "", style }) {
+    const reveal = (el) => {
+      const tile = el.closest("[data-np-tile]") || el, track = tile.parentElement;
+      if (!track || track.scrollWidth <= track.clientWidth + 1) return;
+      const r = tile.getBoundingClientRect(), b = track.getBoundingClientRect();
+      const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
+      const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (d) track.scrollBy({ left: d, behavior: still ? "auto" : "smooth" });
+    };
+    function NotchPicker({ label, options, value, defaultValue = null, onChange, children, closable = false, row, renderTile, tilesClassName = "", tilesStyle, aside, pointer = "top", target = "tile", panelProps, className = "", style }) {
       const [own, setOwn] = React2.useState(defaultValue);
       const picked = value === void 0 ? own : value;
       const at = options.findIndex((o) => o.id === picked);
       const base = (React2.useId ? React2.useId() : "np").replace(/:/g, "");
       const panelId = base + "-panel";
-      const press = (id) => {
-        if (id === picked) return;
-        if (value === void 0) setOwn(id);
-        if (onChange) onChange(id);
+      const root = React2.useRef(null), notch = React2.useRef(null), last = React2.useRef({ id: null, mode: null });
+      const mode = pointer + ":" + target;
+      const press = (id, el) => {
+        if (id === picked && !closable) return;
+        const next = id === picked ? null : id;
+        if (value === void 0) setOwn(next);
+        if (onChange) onChange(next);
+        if (next !== null) reveal(el);
       };
+      React2.useLayoutEffect(() => {
+        const r = root.current, n = notch.current;
+        if (!r || !n) return void 0;
+        const btn = r.querySelector('[aria-pressed="true"][aria-controls="' + panelId + '"]');
+        if (!btn) return void 0;
+        const tile = btn.closest("[data-np-tile]") || btn, track = tile.parentElement;
+        const place = (glide) => {
+          const pointed = target === "aside" ? r.querySelector("[data-np-aside]") : tile;
+          if (!pointed) return;
+          const pr = n.parentElement.getBoundingClientRect(), tr = pointed.getBoundingClientRect();
+          n.style.transition = glide ? "" : "none";
+          if (pointer === "side") {
+            n.style.left = "";
+            n.style.visibility = "";
+            n.style.top = tr.top + Math.min(tr.height / 2, 40) - pr.top + "px";
+          } else {
+            const x = tr.left + tr.width / 2 - pr.left;
+            n.style.top = "";
+            n.style.visibility = x < 16 || x > pr.width - 16 ? "hidden" : "";
+            n.style.left = x + "px";
+          }
+        };
+        place(last.current.id !== null && last.current.id !== picked && last.current.mode === mode);
+        last.current = { id: picked, mode };
+        const follow = () => place(false);
+        if (track) track.addEventListener("scroll", follow, { passive: true });
+        const ro = window.ResizeObserver ? new ResizeObserver(follow) : null;
+        if (ro) {
+          ro.observe(r);
+          ro.observe(tile);
+        }
+        return () => {
+          if (track) track.removeEventListener("scroll", follow);
+          if (ro) ro.disconnect();
+        };
+      }, [picked, mode, options.length, panelId, pointer, target]);
       const icons = options.some((o) => o.icon);
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-np" + (icons ? " has-icons" : "") + " " + className).trim(), style: { "--np-n": options.length, "--np-i": Math.max(at, 0), ...style } }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-tiles", role: "group", "aria-label": label }, options.map((o) => /* @__PURE__ */ React2.createElement("button", { key: o.id, type: "button", id: base + "-" + o.id, className: "mcp-np-tile", "aria-pressed": o.id === picked, "aria-controls": panelId, onClick: () => press(o.id) }, o.icon && /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-icon", "aria-hidden": "true" }, o.icon), /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-name" }, o.label)))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-panel", id: panelId, role: "region", "aria-labelledby": at < 0 ? void 0 : base + "-" + picked, hidden: at < 0 }, /* @__PURE__ */ React2.createElement("i", { className: "mcp-np-notch", "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-body" }, typeof children === "function" ? children(picked) : children)));
+      const scrolls = !!row || options.length > 4;
+      const tiles = options.map((o) => {
+        const on = o.id === picked;
+        const buttonProps = { id: base + "-" + o.id, type: "button", "aria-pressed": on, "aria-controls": panelId, onClick: (e) => press(o.id, e.currentTarget) };
+        if (renderTile) return /* @__PURE__ */ React2.createElement(React2.Fragment, { key: o.id }, renderTile(o, { on, buttonProps }));
+        return /* @__PURE__ */ React2.createElement("button", { key: o.id, ...buttonProps, className: "mcp-np-tile", "data-np-tile": "" }, o.icon && /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-icon", "aria-hidden": "true" }, o.icon), /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-name" }, o.label));
+      });
+      const { className: panelClass = "", ...panelRest } = panelProps || {};
+      return /* @__PURE__ */ React2.createElement("div", { ref: root, className: ("mcp-np" + (icons ? " has-icons" : "") + (scrolls ? " is-scroll" : "") + (row ? " has-row" : "") + " " + className).trim(), "data-pointer": pointer, style: { "--np-n": options.length, ...style } }, row ? /* @__PURE__ */ React2.createElement(CardRow, { title: row.title, sub: row.sub, label: row.label || label }, tiles) : /* @__PURE__ */ React2.createElement("div", { className: ("mcp-np-tiles " + tilesClassName).trim(), role: "group", "aria-label": label, style: tilesStyle }, tiles), aside, /* @__PURE__ */ React2.createElement("div", { ...panelRest, className: ("mcp-np-panel " + panelClass).trim(), id: panelId, role: "region", "aria-labelledby": at < 0 ? void 0 : base + "-" + picked, hidden: at < 0 }, /* @__PURE__ */ React2.createElement("i", { ref: notch, className: "mcp-np-notch", "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-body" }, typeof children === "function" ? children(picked) : children)));
     }
     function PageGrid({ children, split = "main", className = "", style }) {
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split + " " + className).trim(), style }, children));
@@ -7553,48 +7609,33 @@
     });
   };
   const HbIntro = ({ open, go, role }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, role && /* @__PURE__ */ React$1.createElement("b", { className: "hb-role" }, g.part), /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ", /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "›")))));
-  const HbTabs = ({ open, size, pick, go }) => {
-    const inTab = size !== "list";
-    const at = HB_GAMES.findIndex((g) => g.id === open);
-    const cols = size === "phone" || size === "tablet" ? { gridTemplateColumns: HB_GAMES.map((_, i) => i === at ? "minmax(0, 2fr)" : "minmax(0, 1fr)").join(" ") } : void 0;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "hb-tabs", role: "group", "aria-label": "Games", style: cols }, HB_GAMES.map((g) => {
-      const on = g.id === open;
-      return /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-tab" + (on ? " is-open" : "") }, /* @__PURE__ */ React$1.createElement("button", { type: "button", id: "hb-t-" + g.id, "aria-pressed": on, "aria-controls": "hb-panel", className: "hb-tab-b", onClick: () => pick(g.id) }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && inTab && /* @__PURE__ */ React$1.createElement(HbIntro, { open, go }));
-    }));
-  };
+  const HbTab = ({ g, on, buttonProps, inTab, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-tab" + (on ? " is-open" : ""), "data-np-tile": "" }, /* @__PURE__ */ React$1.createElement("button", { ...buttonProps, className: "hb-tab-b" }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && inTab && /* @__PURE__ */ React$1.createElement(HbIntro, { open: g.id, go }));
   const GsHomeBlock = () => {
     const gs = useGs();
     const root = React$1.useRef(null);
     const size = useHbSize(root);
     const [open, setOpen] = React$1.useState("delve");
-    const set = React$1.useRef(null);
-    const notch = React$1.useRef(null);
-    const placed = React$1.useRef(null);
-    React$1.useLayoutEffect(() => {
-      const s = set.current, n = notch.current;
-      if (!s || !n) return void 0;
-      const place = (glide) => {
-        const pr = n.parentElement.getBoundingClientRect();
-        const col = size === "desktop";
-        const t = size === "list" ? s.querySelector(".hb-desc") : s.querySelector(".hb-tab.is-open");
-        if (!t) return;
-        const r = t.getBoundingClientRect();
-        n.style.transition = glide && placed.current === size ? "" : "none";
-        if (col) {
-          n.style.left = "";
-          n.style.top = r.top + Math.min(r.height / 2, 40) - pr.top + "px";
-        } else {
-          n.style.top = "";
-          n.style.left = r.left + r.width / 2 - pr.left + "px";
-        }
-      };
-      place(true);
-      placed.current = size;
-      const ro = new ResizeObserver(() => place(false));
-      ro.observe(s);
-      return () => ro.disconnect();
-    }, [open, size]);
-    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement("div", { className: "hb-set", ref: set }, /* @__PURE__ */ React$1.createElement(HbTabs, { open, size, pick: setOpen, go: gs.go }), size === "list" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-panel", id: "hb-panel", role: "region", "aria-labelledby": "hb-t-" + open }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch hb-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree }))))));
+    const inTab = size !== "list";
+    const at = HB_GAMES.findIndex((g) => g.id === open);
+    const cols = size === "phone" || size === "tablet" ? { gridTemplateColumns: HB_GAMES.map((_, i) => i === at ? "minmax(0, 2fr)" : "minmax(0, 1fr)").join(" ") } : void 0;
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement(
+      DS.NotchPicker,
+      {
+        className: "hb-set",
+        label: "Games",
+        value: open,
+        onChange: setOpen,
+        options: HB_GAMES.map((g) => ({ id: g.id, label: GS_GAMES[g.gid].name })),
+        tilesClassName: "hb-tabs",
+        tilesStyle: cols,
+        renderTile: (o, { on, buttonProps }) => /* @__PURE__ */ React$1.createElement(HbTab, { g: HB_GAMES.find((g) => g.id === o.id), on, buttonProps, inTab, go: gs.go }),
+        aside: size === "list" ? /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc", "data-np-aside": "" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })) : null,
+        pointer: size === "desktop" ? "side" : "top",
+        target: size === "list" ? "aside" : "tile",
+        panelProps: { className: "hb-panel" }
+      },
+      /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))
+    ));
   };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
@@ -7749,12 +7790,6 @@
     ],
     gsPermStep(a)
   ];
-  const gsRevealTile = (el) => {
-    const tr = el.parentElement, r = el.getBoundingClientRect(), b = tr.getBoundingClientRect();
-    const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
-    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (d) tr.scrollBy({ left: d, behavior: still ? "auto" : "smooth" });
-  };
   const GsSetup = () => {
     useGs();
     const [tile, setTile] = React$1.useState("chatgpt");
@@ -7762,35 +7797,9 @@
     const t = gsApp(tile || "chatgpt");
     const a = gsApp(t.subs ? sub : t.id);
     const [copyLabel, copyText] = gsAppCopy(a);
-    const wrap = React$1.useRef(null), card = React$1.useRef(null), notch = React$1.useRef(null), placed = React$1.useRef(false);
-    React$1.useLayoutEffect(() => {
-      const w = wrap.current;
-      if (!w) return void 0;
-      const track = w.querySelector(".mcp-crow-track");
-      const place = (glide) => {
-        const p = w.querySelector('.hw-app[aria-pressed="true"]'), c = card.current, n = notch.current;
-        if (!p || !c || !n) return;
-        const r = p.getBoundingClientRect(), cr = c.getBoundingClientRect(), x = r.left + r.width / 2 - cr.left;
-        if (glide !== void 0) n.style.transition = glide && placed.current ? "" : "none";
-        n.style.visibility = x < 16 || x > cr.width - 16 ? "hidden" : "";
-        n.style.left = x + "px";
-      };
-      const follow = () => place(false), refit = () => place();
-      place(true);
-      placed.current = true;
-      if (track) track.addEventListener("scroll", follow, { passive: true });
-      const ro = window.ResizeObserver ? new ResizeObserver(refit) : null;
-      if (ro) ro.observe(w);
-      return () => {
-        if (track) track.removeEventListener("scroll", follow);
-        if (ro) ro.disconnect();
-      };
-    }, [tile]);
     const ask = "Which app do you use?";
-    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", ref: wrap }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Setup", sub: ask, label: "Which app do you use?", className: "hw-apps" }, GS_APPS.filter((x) => !x.sub).map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "hw-app", "aria-pressed": tile === x.id, "aria-expanded": tile === x.id, "aria-controls": "hw-pick", "aria-label": x.name, onClick: (e) => {
-      setTile(tile === x.id ? null : x.id);
-      if (tile !== x.id) gsRevealTile(e.currentTarget);
-    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : "message" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet.")))));
+    const apps = GS_APPS.filter((x) => !x.sub).map((x) => ({ id: x.id, label: x.name, icon: /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }) }));
+    return /* @__PURE__ */ React$1.createElement(DS.NotchPicker, { className: "gs-stack-md", label: ask, options: apps, row: { title: "Setup", sub: ask }, value: tile, onChange: setTile, closable: true, panelProps: { className: "hw-pick", "aria-live": "polite" } }, /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : "message" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet."))));
   };
   const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
   const GS_START_DELVE = {

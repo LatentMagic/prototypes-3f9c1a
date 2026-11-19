@@ -115,56 +115,36 @@ const HbIntro = ({ open, go, role }) => (
       <p>{g.intro}</p>
       <DS.TextLink onClick={() => go(GS_GAMES[g.gid].route)} tabIndex={g.id === open ? 0 : -1}>See {GS_GAMES[g.gid].name} <span aria-hidden="true">›</span></DS.TextLink>
     </div>))}</div>);
-// The games are a group of toggle buttons, not ARIA tabs: a tablist may own only tabs, and the chosen game's description (with its link) sits inside its box.
-// The tabs take Connect's app picker: outlined on the page colour, the chosen one inverted. From 400px the chosen tab holds the description, so the tab is a button plus the description beside it, never a link inside a button.
-const HbTabs = ({ open, size, pick, go }) => {
-  const inTab = size !== 'list'; const at = HB_GAMES.findIndex((g) => g.id === open);
-  const cols = size === 'phone' || size === 'tablet' ? { gridTemplateColumns: HB_GAMES.map((_, i) => (i === at ? 'minmax(0, 2fr)' : 'minmax(0, 1fr)')).join(' ') } : undefined;
-  return (
-    <div className="hb-tabs" role="group" aria-label="Games" style={cols}>
-      {HB_GAMES.map((g) => {
-        const on = g.id === open;
-        return (
-          <div key={g.id} className={'hb-tab' + (on ? ' is-open' : '')}>
-            <button type="button" id={'hb-t-' + g.id} aria-pressed={on} aria-controls="hb-panel" className="hb-tab-b" onClick={() => pick(g.id)}><small>{GS_GAMES[g.gid].name}</small><b>{g.part}</b></button>
-            {on && inTab && <HbIntro open={open} go={go} />}
-          </div>);
-      })}
-    </div>);
-};
+// The games are the design system's NotchPicker (a group of toggle buttons, not ARIA tabs: a tablist may own only tabs). The picker owns which game is chosen and the notch; this block owns how the tabs are laid out and what each holds.
+// From 400px the chosen tab holds the description, so the tab is a button plus the description beside it, never a link inside a button.
+const HbTab = ({ g, on, buttonProps, inTab, go }) => (
+  <div className={'hb-tab' + (on ? ' is-open' : '')} data-np-tile="">
+    <button {...buttonProps} className="hb-tab-b"><small>{GS_GAMES[g.gid].name}</small><b>{g.part}</b></button>
+    {on && inTab && <HbIntro open={g.id} go={go} />}
+  </div>
+);
 
 export const GsHomeBlock = () => {
   const gs = useGs(); const root = React.useRef(null); const size = useHbSize(root); const [open, setOpen] = React.useState('delve');
-  const set = React.useRef(null); const notch = React.useRef(null); const placed = React.useRef(null);
-  // KEEP: the notch sits on the grey panel's edge and points at the chosen game, as Connect's does at its picked app: at the box's centre under it (list), the tab's centre (row), or level with the tab on the panel's left edge (column). It glides to a newly chosen tab and follows a resize at once.
-  React.useLayoutEffect(() => {
-    const s = set.current, n = notch.current; if (!s || !n) return undefined;
-    const place = (glide) => {
-      const pr = n.parentElement.getBoundingClientRect(); const col = size === 'desktop';
-      const t = (size === 'list' ? s.querySelector('.hb-desc') : s.querySelector('.hb-tab.is-open')); if (!t) return;
-      const r = t.getBoundingClientRect();
-      n.style.transition = glide && placed.current === size ? '' : 'none';
-      if (col) { n.style.left = ''; n.style.top = (r.top + Math.min(r.height / 2, 40) - pr.top) + 'px'; }
-      else { n.style.top = ''; n.style.left = (r.left + r.width / 2 - pr.left) + 'px'; }
-    };
-    place(true); placed.current = size;
-    const ro = new ResizeObserver(() => place(false)); ro.observe(s); return () => ro.disconnect();
-  }, [open, size]);
+  const inTab = size !== 'list'; const at = HB_GAMES.findIndex((g) => g.id === open);
+  const cols = size === 'phone' || size === 'tablet' ? { gridTemplateColumns: HB_GAMES.map((_, i) => (i === at ? 'minmax(0, 2fr)' : 'minmax(0, 1fr)')).join(' ') } : undefined;
+  // KEEP: the notch sits on the grey panel's edge and points at the chosen game: at the box's centre under it (list), the tab's centre (row), or level with the tab on the panel's left edge (column). It glides to a newly chosen tab and follows a resize at once.
   return (
     <section ref={root} className={'gs-band hb is-' + size} aria-labelledby="gs-hb-h">
       <h2 className="mcp-t-sec" id="gs-hb-h">{HB_HEADING}</h2>
       <p className="gs-muted hb-lead">{HB_SENTENCE}</p>
-      <div className="hb-set" ref={set}>
-        <HbTabs open={open} size={size} pick={setOpen} go={gs.go} />
-        {size === 'list' && <div className="hb-desc"><HbIntro open={open} go={gs.go} role /></div>}
-        <div className="hb-panel" id="hb-panel" role="region" aria-labelledby={'hb-t-' + open}>
-          <i className="hw-notch hb-notch" ref={notch} aria-hidden="true" />
-          <div className="hb-stage">
-            {size !== 'list' && size !== 'phone' && <div className="hb-side"><HbSide game={open} /></div>}
-            <div className="hb-talk"><HbChat game={open} size={size} onSend={gs.startFree} /></div>
-          </div>
+      <DS.NotchPicker className="hb-set" label="Games" value={open} onChange={setOpen}
+        options={HB_GAMES.map((g) => ({ id: g.id, label: GS_GAMES[g.gid].name }))}
+        tilesClassName="hb-tabs" tilesStyle={cols}
+        renderTile={(o, { on, buttonProps }) => <HbTab g={HB_GAMES.find((g) => g.id === o.id)} on={on} buttonProps={buttonProps} inTab={inTab} go={gs.go} />}
+        aside={size === 'list' ? <div className="hb-desc" data-np-aside=""><HbIntro open={open} go={gs.go} role /></div> : null}
+        pointer={size === 'desktop' ? 'side' : 'top'} target={size === 'list' ? 'aside' : 'tile'}
+        panelProps={{ className: 'hb-panel' }}>
+        <div className="hb-stage">
+          {size !== 'list' && size !== 'phone' && <div className="hb-side"><HbSide game={open} /></div>}
+          <div className="hb-talk"><HbChat game={open} size={size} onSend={gs.startFree} /></div>
         </div>
-      </div>
+      </DS.NotchPicker>
     </section>);
 };
 

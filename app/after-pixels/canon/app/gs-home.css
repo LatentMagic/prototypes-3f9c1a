@@ -213,7 +213,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
 .gs-home-after > div { margin: -12px 0 -4px; }
 
-/* The homepage block under Available games: game tabs in Connect's app-picker theme, a card-grey panel with a notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
+/* The homepage block under Available games: game tabs in the design system's picker (NotchPicker), a card-grey panel with its notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
 .hb { gap: 12px; }
 .hb .mcp-t-sec, .hb-lead { margin: 0; }
 .hb-lead { max-width: 60ch; text-wrap: balance; }
@@ -223,7 +223,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 28px 12px; }
 .hb.is-list .hb-panel { grid-column: 1 / -1; }
 .hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
-.hb-panel { box-sizing: border-box; position: relative; display: grid; align-content: start; min-width: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 0; }
+.hb-panel { box-sizing: border-box; display: grid; align-content: start; min-width: 0; padding: 16px; border-radius: 0; box-shadow: none; --np-body-pad: 0; }
+.hb-panel > .mcp-np-body { min-width: 0; }
 .hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
 /* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
 .hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
@@ -252,7 +253,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-reply .mcp-btn::before { content: ""; position: absolute; inset: calc(-4px - 1.5px) 0; }
 .hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
 
-/* The tabs take Connect's app picker (.hw-app in gs-connect.css) exactly: outlined on the page colour, a faint hover, the chosen one inverted to off-white; the notch is Connect's own (.hw-notch). */
+/* The tabs are drawn like the design system's picker tiles: outlined on the page colour, a faint hover, the chosen one inverted to off-white. */
 .hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }
 .hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
 .hb-tab.is-open { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
@@ -299,9 +300,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb.is-desktop .hb-tab.is-open .hb-tab-b b { font-size: 24px; }
 .hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b b { font-size: 16px; }
 .hb.is-desktop .hb-tab.is-open .hb-ins { padding: 12px 16px 16px; }
-
-/* the notch is Connect's (.hw-notch: top edge, gliding left); in the column it sits on the panel's left edge and glides in top */
-.hb.is-desktop .hb-notch { top: auto; left: -7px; transform: translateY(-50%) rotate(-45deg); transition-property: top; }
 
 /* the description: in the chosen tab (row, column) or the box beside the list; the three share one cell so the open game's height never changes */
 /* KEEP: the link's tap area is its 17px padding, pulled back by negative margins, as the design system does for a link in a cover head (`.mcp-cover-head-links`); the link's own 48px min-height would leave about 14px of dead space above and below it. */
