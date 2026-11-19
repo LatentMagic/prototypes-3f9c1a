@@ -298,6 +298,23 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-disc-body>div>*{margin:0;padding:0 var(--space-4) var(--space-4);color:var(--muted)}
 /* A list in a Disclosure runs to its edges, with a line above the first row; the rows keep their own padding and colours. */
 .mcp-disc-body>div>.mcp-rows{padding:0;color:var(--text);border-top:1px solid var(--line)}
+/* NotchPicker: tiles in one row, one pressed; the panel below has a notch under the pressed tile. A surface restyles it through the --np-* hooks. */
+.mcp-np{display:grid;min-width:0}
+.mcp-np-tiles{display:grid;grid-template-columns:repeat(var(--np-n),minmax(0,1fr));gap:var(--np-gap,8px)}
+.mcp-np-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;min-width:0;min-height:56px;margin:0;padding:12px 4px 10px;background:transparent;border:1.5px solid var(--np-edge,var(--control-edge));border-radius:0;color:var(--np-ink,var(--text));font:600 13px/1.2 var(--font-text);text-align:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease),color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}
+.mcp-np.has-icons .mcp-np-tile{min-height:88px}
+.mcp-np-icon{display:flex;flex:none}
+.mcp-np-icon>svg{display:block;width:32px;height:32px}
+.mcp-np-name{max-width:100%;overflow-wrap:normal}
+.mcp-np-tile[aria-pressed="true"]{background:var(--np-on,var(--off-white));border-color:var(--np-on,var(--off-white));color:var(--np-on-ink,var(--page));cursor:default}
+.mcp-np-tile:active:not([aria-pressed="true"]){transform:scale(.97)}
+.mcp-np-tile:focus-visible{outline:2px solid var(--np-on,var(--off-white));outline-offset:2px}
+@media (hover:hover){.mcp-np-tile:not([aria-pressed="true"]):hover{background:color-mix(in srgb,var(--np-ink,var(--text)) 8%,transparent)}}
+.mcp-np-panel{position:relative;margin-top:var(--space-4);background:var(--np-panel,var(--card));border:1px solid var(--np-panel-line,var(--line));box-shadow:var(--shadow-card);color:var(--np-panel-ink,var(--text))}
+.mcp-np-panel[hidden]{display:none}
+.mcp-np-body{padding:var(--space-4)}
+.mcp-np-notch{position:absolute;z-index:1;top:-7px;left:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n) * (var(--np-i) + .5) + var(--np-i) * var(--np-gap,8px));width:14px;height:14px;background:var(--np-panel,var(--card));border-left:1px solid var(--np-panel-line,var(--line));border-top:1px solid var(--np-panel-line,var(--line));transform:translateX(-50%) rotate(45deg);pointer-events:none;transition:left var(--time-swap) var(--ease)}
+@media (prefers-reduced-motion:reduce){.mcp-np-tile,.mcp-np-notch{transition:none!important}.mcp-np-tile:active{transform:none!important}}
 
 .mcp-cover{display:grid;gap:var(--space-2);align-content:start;margin:0}
 .mcp-cover-art{aspect-ratio:4/3;overflow:hidden;background:var(--line)}

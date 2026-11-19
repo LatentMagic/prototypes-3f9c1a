@@ -952,6 +952,20 @@
       const c = needsPassCopy({ game, word, words, record, total });
       return /* @__PURE__ */ React2.createElement("section", { className: ("mcp-npass " + className).trim(), style, "aria-label": c.heading }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label", "aria-hidden": c.label ? void 0 : true }, c.label || " "), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-sec" }, c.heading), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, c.foot && /* @__PURE__ */ React2.createElement("p", { className: "mcp-npass-note" }, c.foot))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label" }, c.rightLabel), c.lines.map((l, i) => /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-npass-line" }, l)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, /* @__PURE__ */ React2.createElement(Button, { variant: "secondary", onClick: onGet }, c.action))));
     }
+    function NotchPicker({ label, options, value, defaultValue = null, onChange, children, className = "", style }) {
+      const [own, setOwn] = React2.useState(defaultValue);
+      const picked = value === void 0 ? own : value;
+      const at = options.findIndex((o) => o.id === picked);
+      const base = (React2.useId ? React2.useId() : "np").replace(/:/g, "");
+      const panelId = base + "-panel";
+      const press = (id) => {
+        if (id === picked) return;
+        if (value === void 0) setOwn(id);
+        if (onChange) onChange(id);
+      };
+      const icons = options.some((o) => o.icon);
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-np" + (icons ? " has-icons" : "") + " " + className).trim(), style: { "--np-n": options.length, "--np-i": Math.max(at, 0), ...style } }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-tiles", role: "group", "aria-label": label }, options.map((o) => /* @__PURE__ */ React2.createElement("button", { key: o.id, type: "button", id: base + "-" + o.id, className: "mcp-np-tile", "aria-pressed": o.id === picked, "aria-controls": panelId, onClick: () => press(o.id) }, o.icon && /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-icon", "aria-hidden": "true" }, o.icon), /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-name" }, o.label)))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-panel", id: panelId, role: "region", "aria-labelledby": at < 0 ? void 0 : base + "-" + picked, hidden: at < 0 }, /* @__PURE__ */ React2.createElement("i", { className: "mcp-np-notch", "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-body" }, typeof children === "function" ? children(picked) : children)));
+    }
     function PageGrid({ children, split = "main", className = "", style }) {
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split + " " + className).trim(), style }, children));
     }
@@ -1071,6 +1085,7 @@
     ns.MoveList = MoveList;
     ns.MoveRow = MoveRow;
     ns.NeedsPass = NeedsPass;
+    ns.NotchPicker = NotchPicker;
     ns.PageGrid = PageGrid;
     ns.Popup = Popup;
     ns.SoonCard = SoonCard;
