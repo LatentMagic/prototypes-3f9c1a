@@ -2,7 +2,7 @@ ChatSide is the game drawn beside a chat on a wide page, with its edition label.
 
 ```jsx
 <ChatSide label="Delve #40" blocks={[{type:'picture',src:'assets/scene.svg',alt:'A hero on a ridge at dawn'}]}/>
-<ChatSide label="Guess #33" blocks={[{type:'tilegrid',length:5,count:6,rows}]}/>
+<ChatSide label="Guess #197" blocks={[{type:'tilegrid',length:5,count:6,rows}]}/>
 <ChatSide label="Accuse #112" blocks={[{type:'clues',groups}]}/>
 ```
 

@@ -43,18 +43,18 @@ export const GsChatRow = ({ id }) => {
 // Load-time code, run by main.jsx in index.html's old tag order.
 export function initGsChats() {
 GS_CHATS = {
-  // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
+  // Guess: the product page's three chats, written for the page from the game spec, as an invented edition (No. 198), never a real one:
   // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, GUARD, then the word)
-  // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives No. 34's word away.
+  // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives the invented edition's word away.
   word: [
     { cap: 'Ask for today’s word and the board opens on your first guess.', turns: [gscU('Play Guess on After Pixels'),
-      gscAi('Guess', ['Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.', 'What’s your first guess?'])] },
+      gscAi('Guess', ['Guess No. 198 is ready. You have six guesses and one hint to find the hidden five-letter word.', 'What’s your first guess?'])] },
     { cap: 'Each guess builds on the letters the one before it found.', turns: [gscU('Spray'),
       gscAi('Guess', ['R and A are in the word, both in other places.'], [{ type: 'tilegrid', length: 5, count: 1, rows: [{ letters: 'SPRAY', marks: 'xxnnx' }] }]),
       gscU('Guard'),
       gscAi('Guess', ['A is in place now.'], [{ type: 'tilegrid', length: 5, count: 2, rows: [{ letters: 'SPRAY', marks: 'xxnnx' }, { letters: 'GUARD', marks: 'xxhnx' }] }])] },
     { cap: 'Your shared result shows how you did and hides every letter.', turns: [gscU('Share my result'),
-      gscAi('Guess', 'You found it in 3 of 6 guesses, and you didn’t use your hint.', null, [{ type: 'mono', text: 'Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess' }])] },
+      gscAi('Guess', 'You found it in 3 of 6 guesses, and you didn’t use your hint.', null, [{ type: 'mono', text: 'Guess No. 198 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess' }])] },
   ],
   groups: [
     { cap: 'Ask for today’s groups and the board opens with all sixteen words.', turns: [gscU('Play Daily Groups on After Pixels'),

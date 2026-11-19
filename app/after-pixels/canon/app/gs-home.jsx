@@ -75,8 +75,8 @@ const useHbSize = (ref) => {
 };
 
 // Beside the chat (tablet and desktop) each game's side opens with its edition, in the same place for all three; a phone shows none.
-// KEEP: the edition numbers are invented, so no real edition is shown: #40 is Delve's product page sample, #112 is Accuse's, and Guess's #33 is one before that page's No. 34, so the two never contradict.
-const HB_EDITION = { delve: 'Delve #40', guess: 'Guess #33', accuse: 'Accuse #112' };
+// KEEP: the edition numbers are invented, so no real edition is shown: #40 is Delve's product page sample, #112 is Accuse's, and Guess's #197 is one before that page's invented No. 198, so the two never contradict.
+const HB_EDITION = { delve: 'Delve #40', guess: 'Guess #197', accuse: 'Accuse #112' };
 // What the AI draws for the game: beside the chat on tablet and desktop, inside it on a phone.
 const HB_SIDE = { delve: [HB_PICTURE], guess: [HB_BOARD], accuse: [{ type: 'clues', groups: HB_CLUES }] };
 const HbSide = ({ game }) => <ChatSide label={HB_EDITION[game]} blocks={HB_SIDE[game]} name={GS_GAMES[HB_GAMES.find((x) => x.id === game).gid].name + ' beside the chat'} />;

@@ -2046,13 +2046,13 @@
   };
   function initGsChats() {
     GS_CHATS = {
-      // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
+      // Guess: the product page's three chats, written for the page from the game spec, as an invented edition (No. 198), never a real one:
       // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, GUARD, then the word)
-      // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives No. 34's word away.
+      // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives the invented edition's word away.
       word: [
         { cap: "Ask for today’s word and the board opens on your first guess.", turns: [
           gscU("Play Guess on After Pixels"),
-          gscAi("Guess", ["Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
+          gscAi("Guess", ["Guess No. 198 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
         { cap: "Each guess builds on the letters the one before it found.", turns: [
           gscU("Spray"),
@@ -2062,7 +2062,7 @@
         ] },
         { cap: "Your shared result shows how you did and hides every letter.", turns: [
           gscU("Share my result"),
-          gscAi("Guess", "You found it in 3 of 6 guesses, and you didn’t use your hint.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
+          gscAi("Guess", "You found it in 3 of 6 guesses, and you didn’t use your hint.", null, [{ type: "mono", text: "Guess No. 198 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
         ] }
       ],
       groups: [
@@ -7604,7 +7604,7 @@
     }, []);
     return size;
   };
-  const HB_EDITION = { delve: "Delve #40", guess: "Guess #33", accuse: "Accuse #112" };
+  const HB_EDITION = { delve: "Delve #40", guess: "Guess #197", accuse: "Accuse #112" };
   const HB_SIDE = { delve: [HB_PICTURE], guess: [HB_BOARD], accuse: [{ type: "clues", groups: HB_CLUES }] };
   const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement(ChatSide, { label: HB_EDITION[game], blocks: HB_SIDE[game], name: GS_GAMES[HB_GAMES.find((x) => x.id === game).gid].name + " beside the chat" });
   const HB_ACTION = (onSend) => /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free");
