@@ -289,7 +289,7 @@
       const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO2[m]).join(", ")).join(". ");
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
     }
-    function ChatPart2({ b }) {
+    function chatPart2({ b }) {
       if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles2, { rows: b.rows });
       if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, chatRich2(t))));
       if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
@@ -300,6 +300,7 @@
       }
       return null;
     }
+    const Part$12 = chatPart2;
     const paras2 = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
     const MARK2 = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
     function chatRuns2(text, f = {}) {
@@ -384,10 +385,10 @@
         const st = fx.piece(i, "u");
         return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras2(t.text).map(chatRich2));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall2, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(ChatPart2, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(ChatPart2, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall2, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Part$12, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Part$12, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
-        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(ChatPart2, { b }));
+        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Part$12, { b }));
       });
       const call = t.tool && fx.piece(i, "c");
       const kids = [
@@ -406,9 +407,10 @@
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
     }
     const chatParas = paras2;
-    function ChatReply2({ action, placeholder = "Reply" }) {
+    function chatReply2({ action, placeholder = "Reply" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp has-action", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), action);
     }
+    const Reply2 = chatReply2;
     function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, action, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
       const body = React2.useRef(null);
       const [up, toStart] = useChatScroll2(body, turns, start);
@@ -425,11 +427,12 @@
         more,
         className,
         body: turns.map((t, i) => chatTurn2(t, i, { mark, toolBy })),
-        comp: composer && action ? /* @__PURE__ */ React2.createElement(ChatReply2, { action, placeholder }) : composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
+        comp: composer && action ? /* @__PURE__ */ React2.createElement(Reply2, { action, placeholder }) : composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
       });
     }
+    const Part2 = chatPart2;
     function ChatSide2({ label, blocks, name, className = "" }) {
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React2.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React2.createElement(ChatPart2, { key: k, b }))));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React2.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React2.createElement(Part2, { key: k, b }))));
     }
     const ART = {
       "daily-puzzles": '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#1D1B3A"/><rect x="14" y="14" width="22" height="22" fill="#E5A63B"/><rect x="39" y="14" width="22" height="22" fill="#328A88"/><rect x="64" y="14" width="22" height="22" fill="#E5A63B"/><rect x="14" y="39" width="22" height="22" fill="#328A88"/><rect x="39" y="39" width="22" height="22" fill="#D66847"/><rect x="64" y="39" width="22" height="22" fill="#328A88"/><rect x="14" y="64" width="22" height="22" fill="#E5A63B"/><rect x="39" y="64" width="22" height="22" fill="#328A88"/><rect x="64" y="64" width="22" height="22" fill="#E5A63B"/></svg>',
@@ -1129,9 +1132,7 @@
     ns.Checkbox = Checkbox;
     ns.TextField = TextField;
     ns.SearchField = SearchField;
-    ns.ChatPart = ChatPart2;
     ns.ToolCall = ToolCall2;
-    ns.ChatReply = ChatReply2;
     ns.ChatPicture = ChatPicture;
     ns.ChatSide = ChatSide2;
     ns.Cover = Cover;
@@ -7417,7 +7418,7 @@
     const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
     return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
   }
-  function ChatPart({ b }) {
+  function chatPart({ b }) {
     if (b.type === "tiles") return /* @__PURE__ */ React$1.createElement(Tiles, { rows: b.rows });
     if (b.type === "list") return /* @__PURE__ */ React$1.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, chatRich(t))));
     if (b.type === "mono") return /* @__PURE__ */ React$1.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, "/", /* @__PURE__ */ React$1.createElement("wbr", null)) : t));
@@ -7428,6 +7429,7 @@
     }
     return null;
   }
+  const Part$1 = chatPart;
   const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
   const MARK = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
   function chatRuns(text, f = {}) {
@@ -7506,10 +7508,10 @@
       const st = fx.piece(i, "u");
       return st && /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
     }
-    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(ChatPart, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(ChatPart, { key: "a" + k, b })));
+    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Part$1, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Part$1, { key: "a" + k, b })));
     const blk = (list, pre) => (list || []).map((b, k) => {
       const st = fx.piece(i, pre + k);
-      return st && /* @__PURE__ */ React$1.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React$1.createElement(ChatPart, { b }));
+      return st && /* @__PURE__ */ React$1.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React$1.createElement(Part$1, { b }));
     });
     const call = t.tool && fx.piece(i, "c");
     const kids = [
@@ -7527,12 +7529,14 @@
     const name = label || "A game being played in a chat";
     return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + " is-top" + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React$1.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-chat-up" + (comp ? " is-down" : " is-down is-bare"), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React$1.createElement(Icon, { name: "down", size: 16, style: void 0 })), control, comp);
   }
-  function ChatReply({ action, placeholder = "Reply" }) {
+  function chatReply({ action, placeholder = "Reply" }) {
     return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp has-action", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, placeholder), action);
   }
+  const Part = chatPart;
   function ChatSide({ label, blocks, name, className = "" }) {
-    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React$1.createElement(ChatPart, { key: k, b }))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React$1.createElement(Part, { key: k, b }))));
   }
+  const Reply = chatReply;
   const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
   const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
   const GS_MORE_GAMES = ["word", "chain", "salvage", "mystery", "common", "where", "delve"];
@@ -7625,7 +7629,7 @@
       label: GS_GAMES[g.gid].name + " being played in a chat",
       more: "On to the latest",
       className: "hb-chat",
-      comp: /* @__PURE__ */ React$1.createElement(ChatReply, { action: HB_ACTION(onSend) })
+      comp: /* @__PURE__ */ React$1.createElement(Reply, { action: HB_ACTION(onSend) })
     });
   };
   const HbIntro = ({ open, go, role }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, role && /* @__PURE__ */ React$1.createElement("b", { className: "hb-role" }, g.part), /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ", /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "›")))));

@@ -52,7 +52,7 @@ export interface ChatPictureProps{
   more?:string;
   /** Show the reply box. Default true. */
   composer?:boolean;
-  /** A real action in the reply bar, in place of the send button: pass the ready-made Button or TextLink. The chat draws its place, its black text-only look and its tap size, and names the bar "Reply" for a screen reader. Without it the bar is a pretend one, hidden from screen readers. Ignored when `composer` is false. */
+  /** A real action in the reply bar, in place of the send button: pass the design system's Button, and only a Button. The chat draws its place, its black look and its tap size, and names the bar "Reply" for a screen reader. Without it the bar is a pretend one, hidden from screen readers. Ignored when `composer` is false. */
   action?:React.ReactNode;
   placeholder?:string;
   /** Accessible name for the picture. */

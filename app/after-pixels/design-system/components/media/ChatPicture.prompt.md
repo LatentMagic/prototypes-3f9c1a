@@ -26,7 +26,7 @@ ChatPicture shows a game being played in a plain chat window; use it on a game's
 - `fill` stretches it to the box it sits in (e.g. a hero field) instead of the 290px height; give that box a height.
 - One colour only: the off-white ground, var(--off-white) (#EDE8DF), with the warm grey send button (var(--control-edge), white arrow). Never dark.
 - To show the chat being played rather than finished, use `ChatPlayback` with the same turns (see `playback/ChatPlayback.prompt.md`).
-- `action` puts a real action in the reply bar in place of the pretend send button: pass the ready-made Button (`<Button onClick={…}>Start free</Button>`) or a link. The chat draws the bar's place, the action's black text-only look and its 44px tap size, and names the bar "Reply" for a screen reader; the page supplies only the action. Without it the bar is a pretend one and stays hidden from screen readers. Use it where the picture is a demo that leads somewhere; ChatPlayback keeps the pretend bar.
+- `action` puts a real action in the reply bar in place of the pretend send button: pass the ready-made Button (`<Button onClick={…}>Start free</Button>`) and only a Button: a TextLink is not styled for the bar. The chat draws the bar's place, the Button's black look and its 44px tap size, and names the bar "Reply" for a screen reader; the page supplies only the action. Without it the bar is a pretend one and stays hidden from screen readers. Use it where the picture is a demo that leads somewhere; ChatPlayback keeps the pretend bar.
 - `height="auto"` grows the picture to the whole conversation with no scroll. Only for specimen pages and previews; product pages keep the scrolling picture.
 
 ## Chat parts

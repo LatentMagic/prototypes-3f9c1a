@@ -22,8 +22,8 @@ function Tiles({rows}){
   const label=rows.map(r=>r.word+': '+r.marks.split('').map((m,i)=>r.word[i]+' '+WHO[m]).join(', ')).join('. ');
   return <div className="mcp-chat-board" role="img" aria-label={label}>{rows.map((r,i)=><div key={i} className="mcp-chat-row">{r.word.split('').map((c,k)=><span key={k} className={'is-'+r.marks[k]}>{c}</span>)}</div>)}</div>;
 }
-// One block drawn (also used by ChatSide).
-export function ChatPart({b}){
+// One block drawn (also used by ChatSide). Lower case, so the design-system build keeps it out of the component list.
+export function chatPart({b}){
   if(b.type==='tiles') return <Tiles rows={b.rows}/>;
   if(b.type==='list') return <ul className="mcp-chat-list">{b.items.map((t,i)=><li key={i}>{chatRich(t)}</li>)}</ul>;
   // A link breaks at a "/", never mid-word; the CSS wrap is only the fallback for a run with no "/".
@@ -32,6 +32,8 @@ export function ChatPart({b}){
   if(P){const {type,...p}=b; return <P {...p}/>;}
   return null;
 }
+// JSX needs a capital to treat it as a component.
+const Part=chatPart;
 const paras=t=>t==null?[]:Array.isArray(t)?t:[t];
 // Inline markup in a chat paragraph: **bold**, *italic*, __underline__ (nest freely; a marker with no partner stays as typed).
 // chatRuns -> [{s,b,i,u}] pieces of text with the styles in force; chatPlain -> the text without markers (what is typed in the reply box, and what is counted as words).
@@ -96,11 +98,11 @@ export function chatTurn(t,i,{mark,toolBy,fx}){
   }
   if(!fx) return <div key={i} className="mcp-chat-ai">
     {t.tool&&<ToolCall tool={t.tool} mark={mark} toolBy={toolBy}/>}
-    {(t.blocks||[]).map((b,k)=><ChatPart key={k} b={b}/>)}
+    {(t.blocks||[]).map((b,k)=><Part key={k} b={b}/>)}
     {paras(t.text).map((p,k)=><p key={k}>{chatRich(p)}</p>)}
-    {(t.after||[]).map((b,k)=><ChatPart key={'a'+k} b={b}/>)}
+    {(t.after||[]).map((b,k)=><Part key={'a'+k} b={b}/>)}
   </div>;
-  const blk=(list,pre)=>(list||[]).map((b,k)=>{const st=fx.piece(i,pre+k); return st&&<div key={pre+k} className="mcp-chat-fx" style={st}><ChatPart b={b}/></div>;});
+  const blk=(list,pre)=>(list||[]).map((b,k)=>{const st=fx.piece(i,pre+k); return st&&<div key={pre+k} className="mcp-chat-fx" style={st}><Part b={b}/></div>;});
   const call=t.tool&&fx.piece(i,'c');
   const kids=[
     call&&<ToolCall key="c" tool={t.tool} mark={mark} toolBy={toolBy} style={call}/>,
@@ -123,15 +125,16 @@ export function chatShell({body,bodyRef,up,toStart,start,title,height,width,fill
   </div>;
 }
 export const chatParas=paras;
-// The reply bar with a real action in it (for a chat built with chatShell). A group named "Reply", so the action is reachable; without an action the bar is a pretend one and stays hidden from screen readers.
-export function ChatReply({action,placeholder='Reply'}){
+// The reply bar with a real action in it (for a chat built with chatShell). Lower case, so the design-system build keeps it out of the component list. A group named "Reply", so the action is reachable; without an action the bar is a pretend one and stays hidden from screen readers.
+export function chatReply({action,placeholder='Reply'}){
   return <div className="mcp-chat-comp has-action" role="group" aria-label="Reply"><span>{placeholder}</span>{action}</div>;
 }
+const Reply=chatReply;
 export function ChatPicture({turns,start,title,toolBy,mark,height=290,width=360,fill=false,composer=true,action,placeholder='Reply',label,more=start==='top'?'On to the latest':'Back to the start',className=''}){
   const body=React.useRef(null);
   const [up,toStart]=useChatScroll(body,turns,start);
   return chatShell({bodyRef:body,up,toStart,start,title,height,width,fill,label,more,className,
     body:turns.map((t,i)=>chatTurn(t,i,{mark,toolBy})),
-    comp:composer&&action?<ChatReply action={action} placeholder={placeholder}/>
+    comp:composer&&action?<Reply action={action} placeholder={placeholder}/>
       :composer&&<div className="mcp-chat-comp" aria-hidden="true"><span>{placeholder}</span><i><Icon name="send" size={16}/></i></div>});
 }
