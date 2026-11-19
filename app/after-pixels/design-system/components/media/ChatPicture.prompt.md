@@ -26,6 +26,7 @@ ChatPicture shows a game being played in a plain chat window; use it on a game's
 - `fill` stretches it to the box it sits in (e.g. a hero field) instead of the 290px height; give that box a height.
 - One colour only: the off-white ground, var(--off-white) (#EDE8DF), with the warm grey send button (var(--control-edge), white arrow). Never dark.
 - To show the chat being played rather than finished, use `ChatPlayback` with the same turns (see `playback/ChatPlayback.prompt.md`).
+- `action` puts a real action in the reply bar in place of the pretend send button: pass the ready-made Button (`<Button onClick={…}>Start free</Button>`) or a link. The chat draws the bar's place, the action's black text-only look and its 44px tap size, and names the bar "Reply" for a screen reader; the page supplies only the action. Without it the bar is a pretend one and stays hidden from screen readers. Use it where the picture is a demo that leads somewhere; ChatPlayback keeps the pretend bar.
 - `height="auto"` grows the picture to the whole conversation with no scroll. Only for specimen pages and previews; product pages keep the scrolling picture.
 
 ## Chat parts
@@ -45,6 +46,7 @@ What a game draws inside an AI turn. Each is a component in `components/chat/` a
 - `track` · Track: progress, threat or health as steps or a bar.
 - `roll` · RollLine: one roll, the number needed and the outcome.
 - `nav` · NavButtons: buttons that go somewhere (Show games, Back, Play again, Open in browser), drawn apart from moves. One that leaves the chat says so.
+- `picture` · Picture: an image in the turn, such as a game's scene; it scrolls with the turns.
 - `menu` · MenuRows: one row per game with its art, line, status and action. The only part that may hold a text field.
 
 Moves and going somewhere share one button shape: full-width rows, stacked. A move is its words alone (ChoiceButtons, ConfirmCard); going somewhere leads with an icon (NavButtons, MenuRows, ResultCard). Keep that split: a player must tell “do this in the game” from “go somewhere”.

@@ -233,25 +233,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-talk > .mcp-chat { height: 100%; }
 .hb-stage .mcp-chat { background: transparent; border: 0; border-radius: 0; }
 
-/* what the AI draws, beside the chat: the edition label in flow at the top, the drawing centred in the space left */
-.hb-sidebox { display: grid; grid-template-rows: auto minmax(0, 1fr); align-items: center; justify-items: center; padding: 16px; overflow: visible; min-width: 0; }
-.hb.is-desktop .hb-sidebox { padding: 24px; }
-.hb-sidebox .mcp-cb-tiles { text-align: center; }
-.hb-sidebox .mcp-cb-tiles-in { --t: min(40px, calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n))); }
-.hb-sidebox .mcp-cb-clues { max-width: 360px; }
-.hb-pic { display: block; min-width: 0; border-radius: 8px; }
-.hb-sidebox .hb-pic { width: 100%; max-width: 400px; aspect-ratio: 2 / 1; object-fit: cover; }
-.hb-ed { justify-self: start; align-self: start; margin: 0; font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--c-fg2); }
-/* On a phone the picture is a full-width banner across the chat, 96px tall and cropped to fit. */
-.hb-pic-turn .hb-pic { width: 100%; max-width: none; height: 96px; aspect-ratio: auto; object-fit: cover; }
-.hb-pic-turn + .mcp-chat-ai { margin-top: -6px; }
-
-/* the reply bar: the chat's reply box with the design system's Button as its send button */
-.hb-reply { padding-right: 4px; }
-.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
-/* KEEP: Start free is drawn 36px tall and its hit area is 44px: the ::before extends 4px beyond the 1.5px border above and below. */
-.hb-reply .mcp-btn::before { content: ""; position: absolute; inset: calc(-4px - 1.5px) 0; }
-.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
+/* The side panel (the design system's ChatSide) takes more room on a desktop stage. */
+.hb.is-desktop .hb-side .mcp-chat-side { padding: 24px; }
 
 /* The tabs are drawn like the design system's picker tiles: outlined on the page colour, a faint hover, the chosen one inverted to off-white. */
 .hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }

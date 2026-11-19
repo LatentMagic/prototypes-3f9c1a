@@ -126,7 +126,7 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-btn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .mcp-btn-pair>:only-child{grid-column:1/-1}
 /* KEEP: One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups and menu triggers keep their own rule. Button block stays full width at any width. */
-@media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
+@media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.mcp-chat-comp .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
 @media (min-width:640px){.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){display:inline-grid;grid-template-columns:repeat(2,1fr);justify-self:start}}
 
 .mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:opacity var(--time-press) var(--ease),color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
@@ -471,6 +471,22 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-comp{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 12px 12px;min-height:44px;padding:0 6px 0 16px;border:1px solid var(--c-edge);border-radius:22px;color:var(--c-fg2)}
 .mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
 .mcp-chat-body.is-auto{overflow:visible}
+.mcp-chat-pic{display:block;width:100%;height:96px;object-fit:cover;border-radius:8px}
+.mcp-chat-ai:has(>.mcp-chat-pic:last-child)+.mcp-chat-ai{margin-top:-6px}
+/* ChatSide: the game beside a chat. The label sits top left in flow; what the AI draws is centred in the space left. */
+.mcp-chat-side{display:grid;grid-template-rows:auto minmax(0,1fr);align-items:center;justify-items:center;padding:16px;overflow:visible;min-width:0}
+.mcp-chat-side-ed{justify-self:start;align-self:start;margin:0;font:600 var(--size-2xs)/1.3 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:var(--c-fg2)}
+.mcp-chat-side-body{display:grid;justify-items:center;gap:12px;min-width:0;width:100%}
+.mcp-chat-side .mcp-cb-tiles{text-align:center}
+.mcp-chat-side .mcp-cb-tiles-in{--t:min(40px,calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n)))}
+.mcp-chat-side .mcp-cb-clues{max-width:360px}
+.mcp-chat-side .mcp-chat-pic{width:100%;max-width:400px;height:auto;aspect-ratio:2/1}
+/* A real reply action: the pretend bar's send button gives way to the page's own, drawn black and text-only so it reads as the thing to press, never the chat's grey send button. */
+.mcp-chat-comp.has-action{padding-right:4px}
+/* KEEP: the action is drawn 36px tall and its hit area is 44px: the ::before extends 4px beyond the 1.5px border above and below. */
+.mcp-chat-comp.has-action .mcp-btn.mcp-btn{display:inline-flex;width:auto;min-height:36px;padding:0 16px;border-radius:18px;font-size:14px;background:var(--c-fg);color:var(--c-bg);flex:none}
+.mcp-chat-comp.has-action .mcp-btn::before{content:"";position:absolute;inset:calc(-4px - 1.5px) 0}
+.mcp-chat-comp.has-action .mcp-btn.mcp-btn:is(:hover,:active,.is-pressed){background:color-mix(in oklab,var(--c-fg),var(--c-bg) 18%)}
 .mcp-chat-ai>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
 /* ChatPlayback: a piece entering is wrapped so it can fade; the wrapper keeps the part's own width rules */
 .mcp-chat-fx{display:grid;justify-items:start;justify-self:stretch;min-width:0}.mcp-chat-fx>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
@@ -2491,25 +2507,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hb-talk > .mcp-chat { height: 100%; }
 .hb-stage .mcp-chat { background: transparent; border: 0; border-radius: 0; }
 
-/* what the AI draws, beside the chat: the edition label in flow at the top, the drawing centred in the space left */
-.hb-sidebox { display: grid; grid-template-rows: auto minmax(0, 1fr); align-items: center; justify-items: center; padding: 16px; overflow: visible; min-width: 0; }
-.hb.is-desktop .hb-sidebox { padding: 24px; }
-.hb-sidebox .mcp-cb-tiles { text-align: center; }
-.hb-sidebox .mcp-cb-tiles-in { --t: min(40px, calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n))); }
-.hb-sidebox .mcp-cb-clues { max-width: 360px; }
-.hb-pic { display: block; min-width: 0; border-radius: 8px; }
-.hb-sidebox .hb-pic { width: 100%; max-width: 400px; aspect-ratio: 2 / 1; object-fit: cover; }
-.hb-ed { justify-self: start; align-self: start; margin: 0; font: 600 var(--size-2xs)/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; color: var(--c-fg2); }
-/* On a phone the picture is a full-width banner across the chat, 96px tall and cropped to fit. */
-.hb-pic-turn .hb-pic { width: 100%; max-width: none; height: 96px; aspect-ratio: auto; object-fit: cover; }
-.hb-pic-turn + .mcp-chat-ai { margin-top: -6px; }
-
-/* the reply bar: the chat's reply box with the design system's Button as its send button */
-.hb-reply { padding-right: 4px; }
-.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn { display: inline-flex; width: auto; min-height: 36px; padding: 0 16px; border-radius: 18px; font-size: 14px; background: var(--c-fg); color: var(--c-bg); flex: none; }
-/* KEEP: Start free is drawn 36px tall and its hit area is 44px: the ::before extends 4px beyond the 1.5px border above and below. */
-.hb-reply .mcp-btn::before { content: ""; position: absolute; inset: calc(-4px - 1.5px) 0; }
-.hb-chat .hb-reply .mcp-btn.mcp-btn.mcp-btn.mcp-btn.mcp-btn:is(:hover, :active, .is-pressed) { background: color-mix(in oklab, var(--c-fg), var(--c-bg) 18%); }
+/* The side panel (the design system's ChatSide) takes more room on a desktop stage. */
+.hb.is-desktop .hb-side .mcp-chat-side { padding: 24px; }
 
 /* The tabs are drawn like the design system's picker tiles: outlined on the page colour, a faint hover, the chosen one inverted to off-white. */
 .hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }
@@ -2900,7 +2899,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    reads the window. Under 640px every button is full width and a pair stacks; from 640px natural width. Popup actions and menu triggers keep their own rule,
    and so does a button attached to a field (the Connect page's Copy) or to the home block's reply bar, which keep their own width. */
 @container gs (max-width: 639.98px) {
-  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn):not(.hb-reply .mcp-btn) { display: flex; width: 100%; }
+  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn):not(.mcp-chat-comp .mcp-btn) { display: flex; width: 100%; }
   .mcp-btn-pair:not(.mcp-pop .mcp-btn-pair) { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .mcp-npass { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .mcp-npass-half { padding: var(--space-4); }

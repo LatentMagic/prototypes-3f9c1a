@@ -80,7 +80,7 @@
    reads the window. Under 640px every button is full width and a pair stacks; from 640px natural width. Popup actions and menu triggers keep their own rule,
    and so does a button attached to a field (the Connect page's Copy) or to the home block's reply bar, which keep their own width. */
 @container gs (max-width: 639.98px) {
-  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn):not(.hb-reply .mcp-btn) { display: flex; width: 100%; }
+  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn):not(.mcp-chat-comp .mcp-btn) { display: flex; width: 100%; }
   .mcp-btn-pair:not(.mcp-pop .mcp-btn-pair) { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .mcp-npass { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .mcp-npass-half { padding: var(--space-4); }

@@ -16,7 +16,8 @@ export type ChatBlock=
  |({type:'track'}&import('../chat/Track').TrackProps)
  |({type:'roll'}&import('../chat/RollLine').RollLineProps)
  |({type:'nav'}&import('../chat/NavButtons').NavButtonsProps)
- |({type:'menu'}&import('../chat/MenuRows').MenuRowsProps);
+ |({type:'menu'}&import('../chat/MenuRows').MenuRowsProps)
+ |({type:'picture'}&import('../chat/Picture').PictureProps);
 export interface ChatTurn{
   from:'user'|'ai';
   /** One paragraph, or several. Inline markup: `**bold**`, `*italic*`, `__underline__`; they nest, and a marker with no partner stays as typed. */
@@ -51,6 +52,8 @@ export interface ChatPictureProps{
   more?:string;
   /** Show the reply box. Default true. */
   composer?:boolean;
+  /** A real action in the reply bar, in place of the send button: pass the ready-made Button or TextLink. The chat draws its place, its black text-only look and its tap size, and names the bar "Reply" for a screen reader. Without it the bar is a pretend one, hidden from screen readers. Ignored when `composer` is false. */
+  action?:React.ReactNode;
   placeholder?:string;
   /** Accessible name for the picture. */
   label?:string;

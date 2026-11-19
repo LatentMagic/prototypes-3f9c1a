@@ -186,6 +186,9 @@
         return cbPress2(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
       }));
     }
+    function Picture2({ src, alt, className = "" }) {
+      return /* @__PURE__ */ React2.createElement("img", { className: ("mcp-cb mcp-chat-pic " + className).trim(), src, alt });
+    }
     function StatRow2({ items = [], grid = false, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-stats" + (grid ? " is-grid" : "") + " " + className).trim(), "aria-label": label, style: grid ? { "--cols": items.length === 3 ? 3 : Math.min(items.length, 2) } : void 0 }, items.map((s, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-stat" }, /* @__PURE__ */ React2.createElement("dt", null, s.label), /* @__PURE__ */ React2.createElement("dd", null, s.value))));
     }
@@ -280,13 +283,13 @@
       const fid = id || "mcp-" + auto;
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-fld " + className).trim() }, label && /* @__PURE__ */ React2.createElement("label", { htmlFor: fid }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-srch" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "search" }), /* @__PURE__ */ React2.createElement("input", { className: "mcp-in", id: fid, type: "search", placeholder, value, onChange, "aria-label": label ? void 0 : placeholder, ...rest })));
     }
-    const PARTS2 = { tilegrid: TileGrid2, wordboard: WordBoard2, choices: ChoiceButtons2, confirm: ConfirmCard2, facts: FactRows2, stats: StatRow2, status: StatusTag2, entities: EntityCards2, clues: ClueCards2, result: ResultCard2, track: Track2, roll: RollLine2, nav: NavButtons2, menu: MenuRows2 };
+    const PARTS2 = { tilegrid: TileGrid2, wordboard: WordBoard2, choices: ChoiceButtons2, confirm: ConfirmCard2, facts: FactRows2, stats: StatRow2, status: StatusTag2, entities: EntityCards2, clues: ClueCards2, result: ResultCard2, track: Track2, roll: RollLine2, nav: NavButtons2, menu: MenuRows2, picture: Picture2 };
     const WHO2 = { x: "not in the word", y: "in the word", g: "right spot" };
     function Tiles2({ rows }) {
       const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO2[m]).join(", ")).join(". ");
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
     }
-    function Block2({ b }) {
+    function ChatPart2({ b }) {
       if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles2, { rows: b.rows });
       if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, chatRich2(t))));
       if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
@@ -381,10 +384,10 @@
         const st = fx.piece(i, "u");
         return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras2(t.text).map(chatRich2));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall2, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block2, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall2, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(ChatPart2, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(ChatPart2, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
-        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block2, { b }));
+        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(ChatPart2, { b }));
       });
       const call = t.tool && fx.piece(i, "c");
       const kids = [
@@ -403,7 +406,10 @@
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
     }
     const chatParas = paras2;
-    function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
+    function ChatReply2({ action, placeholder = "Reply" }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp has-action", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), action);
+    }
+    function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, action, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
       const body = React2.useRef(null);
       const [up, toStart] = useChatScroll2(body, turns, start);
       return chatShell2({
@@ -419,8 +425,11 @@
         more,
         className,
         body: turns.map((t, i) => chatTurn2(t, i, { mark, toolBy })),
-        comp: composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
+        comp: composer && action ? /* @__PURE__ */ React2.createElement(ChatReply2, { action, placeholder }) : composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
       });
+    }
+    function ChatSide2({ label, blocks, name, className = "" }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React2.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React2.createElement(ChatPart2, { key: k, b }))));
     }
     const ART = {
       "daily-puzzles": '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#1D1B3A"/><rect x="14" y="14" width="22" height="22" fill="#E5A63B"/><rect x="39" y="14" width="22" height="22" fill="#328A88"/><rect x="64" y="14" width="22" height="22" fill="#E5A63B"/><rect x="14" y="39" width="22" height="22" fill="#328A88"/><rect x="39" y="39" width="22" height="22" fill="#D66847"/><rect x="64" y="39" width="22" height="22" fill="#328A88"/><rect x="14" y="64" width="22" height="22" fill="#E5A63B"/><rect x="39" y="64" width="22" height="22" fill="#328A88"/><rect x="64" y="64" width="22" height="22" fill="#E5A63B"/></svg>',
@@ -1101,6 +1110,7 @@
     ns.FactRows = FactRows2;
     ns.MenuRows = MenuRows2;
     ns.NavButtons = NavButtons2;
+    ns.Picture = Picture2;
     ns.ResultCard = ResultCard2;
     ns.RollLine = RollLine2;
     ns.StatRow = StatRow2;
@@ -1119,8 +1129,11 @@
     ns.Checkbox = Checkbox;
     ns.TextField = TextField;
     ns.SearchField = SearchField;
+    ns.ChatPart = ChatPart2;
     ns.ToolCall = ToolCall2;
+    ns.ChatReply = ChatReply2;
     ns.ChatPicture = ChatPicture;
+    ns.ChatSide = ChatSide2;
     ns.Cover = Cover;
     ns.GameArt = GameArt;
     ns.ICON_NAMES = ICON_NAMES;
@@ -7395,13 +7408,16 @@
       return /* @__PURE__ */ React$1.createElement("li", { key: i, className: "mcp-cb-mrow" }, /* @__PURE__ */ React$1.createElement(Art, { art: it.art, icon: it.icon }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mtext" }, /* @__PURE__ */ React$1.createElement("b", null, it.name), it.line && /* @__PURE__ */ React$1.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mmeta" }, st && /* @__PURE__ */ React$1.createElement(StatusTag, { tone: st.tone || "idle" }, st.label), it.meta && /* @__PURE__ */ React$1.createElement("span", null, it.meta))), act && cbPress(onGo && (() => onGo(it, i)), { className: "mcp-cb-go" }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, act.icon && /* @__PURE__ */ React$1.createElement(Icon, { name: act.icon, size: 16 }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-go-t" }, act.label))));
     })));
   }
-  const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows };
+  function Picture({ src, alt, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("img", { className: ("mcp-cb mcp-chat-pic " + className).trim(), src, alt });
+  }
+  const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows, picture: Picture };
   const WHO = { x: "not in the word", y: "in the word", g: "right spot" };
   function Tiles({ rows }) {
     const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
     return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
   }
-  function Block({ b }) {
+  function ChatPart({ b }) {
     if (b.type === "tiles") return /* @__PURE__ */ React$1.createElement(Tiles, { rows: b.rows });
     if (b.type === "list") return /* @__PURE__ */ React$1.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, chatRich(t))));
     if (b.type === "mono") return /* @__PURE__ */ React$1.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, "/", /* @__PURE__ */ React$1.createElement("wbr", null)) : t));
@@ -7490,10 +7506,10 @@
       const st = fx.piece(i, "u");
       return st && /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
     }
-    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Block, { key: "a" + k, b })));
+    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(ChatPart, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(ChatPart, { key: "a" + k, b })));
     const blk = (list, pre) => (list || []).map((b, k) => {
       const st = fx.piece(i, pre + k);
-      return st && /* @__PURE__ */ React$1.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React$1.createElement(Block, { b }));
+      return st && /* @__PURE__ */ React$1.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React$1.createElement(ChatPart, { b }));
     });
     const call = t.tool && fx.piece(i, "c");
     const kids = [
@@ -7511,6 +7527,12 @@
     const name = label || "A game being played in a chat";
     return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + " is-top" + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React$1.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-chat-up" + (comp ? " is-down" : " is-down is-bare"), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React$1.createElement(Icon, { name: "down", size: 16, style: void 0 })), control, comp);
   }
+  function ChatReply({ action, placeholder = "Reply" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp has-action", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, placeholder), action);
+  }
+  function ChatSide({ label, blocks, name, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React$1.createElement(ChatPart, { key: k, b }))));
+  }
   const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
   const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
   const GS_MORE_GAMES = ["word", "chain", "salvage", "mystery", "common", "where", "delve"];
@@ -7518,7 +7540,7 @@
   const HB_SENTENCE = "Step into a story, crack a puzzle or talk through a mystery.";
   const HB_U = (text) => ({ from: "user", text });
   const HB_A = (tool, text, blocks, after) => ({ from: "ai", tool, text, blocks, after });
-  const HB_PICTURE = "assets/home-block-delve.svg";
+  const HB_PICTURE = { type: "picture", src: "assets/home-block-delve.svg", alt: "A hero in armour on a ridge at dawn, a burning tower behind" };
   const HB_TRACK = (advance) => ({ type: "track", items: [{ label: "Garrick’s health", value: 23, max: 23, tone: "health" }, { label: "The drums", value: advance, max: 12, tone: "threat" }] });
   const HB_ROWS = [{ letters: "COILS", marks: "hhxhx" }, { letters: "CLOUD", marks: "hnnnh" }];
   const HB_BOARD = { type: "tilegrid", length: 5, count: 6, rows: HB_ROWS };
@@ -7578,20 +7600,18 @@
     }, []);
     return size;
   };
-  const HbPic = () => /* @__PURE__ */ React$1.createElement("img", { className: "hb-pic", src: HB_PICTURE, alt: "A hero in armour on a ridge at dawn, a burning tower behind" });
   const HB_EDITION = { delve: "Delve #40", guess: "Guess #33", accuse: "Accuse #112" };
-  const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat hb-sidebox" }, /* @__PURE__ */ React$1.createElement("p", { className: "hb-ed" }, HB_EDITION[game]), game === "delve" && /* @__PURE__ */ React$1.createElement(HbPic, null), game === "guess" && /* @__PURE__ */ React$1.createElement(TileGrid, { ...HB_BOARD }), game === "accuse" && /* @__PURE__ */ React$1.createElement(ClueCards, { groups: HB_CLUES }));
-  const HbReply = ({ onSend }) => /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp hb-reply", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, "Reply"), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free"));
+  const HB_SIDE = { delve: [HB_PICTURE], guess: [HB_BOARD], accuse: [{ type: "clues", groups: HB_CLUES }] };
+  const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement(ChatSide, { label: HB_EDITION[game], blocks: HB_SIDE[game], name: GS_GAMES[HB_GAMES.find((x) => x.id === game).gid].name + " beside the chat" });
+  const HB_ACTION = (onSend) => /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free");
   const HbChat = ({ game, size, onSend }) => {
     const body = React$1.useRef(null);
     const phone = size === "list" || size === "phone";
     const g = HB_GAMES.find((x) => x.id === game);
     const turns = phone ? g.turns : g.turns.map(hbPlain);
     const pic = phone && game === "delve";
-    const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: void 0 } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
-    if (pic) items.unshift(
-      /* @__PURE__ */ React$1.createElement("div", { key: "pic", className: "mcp-chat-ai hb-pic-turn" }, /* @__PURE__ */ React$1.createElement(ToolCall, { tool: "Delve", mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }), /* @__PURE__ */ React$1.createElement(HbPic, null))
-    );
+    const shown = pic ? [{ from: "ai", tool: "Delve", blocks: [HB_PICTURE] }, { ...turns[0], tool: void 0 }, ...turns.slice(1)] : turns;
+    const items = shown.map((t, i) => chatTurn(t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
     const [more, toEnd] = useChatScroll(body, game + size);
     return chatShell({
       bodyRef: body,
@@ -7605,7 +7625,7 @@
       label: GS_GAMES[g.gid].name + " being played in a chat",
       more: "On to the latest",
       className: "hb-chat",
-      comp: /* @__PURE__ */ React$1.createElement(HbReply, { onSend })
+      comp: /* @__PURE__ */ React$1.createElement(ChatReply, { action: HB_ACTION(onSend) })
     });
   };
   const HbIntro = ({ open, go, role }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, role && /* @__PURE__ */ React$1.createElement("b", { className: "hb-role" }, g.part), /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ", /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "›")))));
