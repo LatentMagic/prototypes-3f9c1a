@@ -5,9 +5,9 @@
 import React from 'react';
 import { DS, GS_GAMES, useGs } from './gs-data.jsx';
 import { GsCard } from './gs-pass-home.jsx';
-import { chatTurn, chatShell, useChatScroll, ToolCall } from '../../design-system/components/media/ChatPicture.jsx';
-import { TileGrid } from '../../design-system/components/chat/TileGrid.jsx';
-import { ClueCards } from '../../design-system/components/chat/ClueCards.jsx';
+import { chatTurn, chatShell, useChatScroll, chatReply } from '../../design-system/components/media/ChatPicture.jsx';
+const Reply = chatReply;
+import { ChatSide } from '../../design-system/components/media/ChatSide.jsx';
 import { GS_CHAT_MARK, GS_CHAT_BY } from './gs-chats.jsx';
 
 export const GsFeature = ({ id }) => <GsCard id={id} />;
@@ -26,7 +26,8 @@ const HB_HEADING = 'Your AI, cast for each game.';
 const HB_SENTENCE = 'Step into a story, crack a puzzle or talk through a mystery.';
 const HB_U = (text) => ({ from: 'user', text });
 const HB_A = (tool, text, blocks, after) => ({ from: 'ai', tool, text, blocks, after });
-const HB_PICTURE = 'assets/home-block-delve.svg';
+// The scene the AI shows in Delve's chat: a picture turn of the chat on a phone, the side panel beside it.
+const HB_PICTURE = { type: 'picture', src: 'assets/home-block-delve.svg', alt: 'A hero in armour on a ridge at dawn, a burning tower behind' };
 // KEEP: the threat track's tone is the design system's `threat`; the platform's ChatBlock names that tone `danger`, so the platform record uses `danger`.
 const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Garrick’s health', value: 23, max: 23, tone: 'health' }, { label: 'The drums', value: advance, max: 12, tone: 'threat' }] });
 const HB_ROWS = [{ letters: 'COILS', marks: 'hhxhx' }, { letters: 'CLOUD', marks: 'hnnnh' }];
@@ -73,38 +74,27 @@ const useHbSize = (ref) => {
   return size;
 };
 
-const HbPic = () => <img className="hb-pic" src={HB_PICTURE} alt="A hero in armour on a ridge at dawn, a burning tower behind" />;
 // Beside the chat (tablet and desktop) each game's side opens with its edition, in the same place for all three; a phone shows none.
-// KEEP: the edition numbers are invented, so no real edition is shown: #40 is Delve's product page sample, #112 is Accuse's, and Guess's #33 is one before that page's No. 34, so the two never contradict.
-const HB_EDITION = { delve: 'Delve #40', guess: 'Guess #33', accuse: 'Accuse #112' };
+// KEEP: the edition numbers are invented, so no real edition is shown: #40 is Delve's product page sample, #112 is Accuse's, and Guess's #197 is one before that page's invented No. 198, so the two never contradict.
+const HB_EDITION = { delve: 'Delve #40', guess: 'Guess #197', accuse: 'Accuse #112' };
 // What the AI draws for the game: beside the chat on tablet and desktop, inside it on a phone.
-const HbSide = ({ game }) => (
-  <div className="mcp-chat hb-sidebox">
-    <p className="hb-ed">{HB_EDITION[game]}</p>
-    {game === 'delve' && <HbPic />}
-    {game === 'guess' && <TileGrid {...HB_BOARD} />}
-    {game === 'accuse' && <ClueCards groups={HB_CLUES} />}
-  </div>);
-const HbReply = ({ onSend }) => (
-  <div className="mcp-chat-comp hb-reply" role="group" aria-label="Reply">
-    <span>Reply</span>
-    {/* KEEP: Start free is black so it reads as the thing to press, never the chat's grey send button (the user, 2026-11-18). */}
-    <DS.Button onClick={onSend}>Start free</DS.Button>
-  </div>);
+const HB_SIDE = { delve: [HB_PICTURE], guess: [HB_BOARD], accuse: [{ type: 'clues', groups: HB_CLUES }] };
+const HbSide = ({ game }) => <ChatSide label={HB_EDITION[game]} blocks={HB_SIDE[game]} name={GS_GAMES[HB_GAMES.find((x) => x.id === game).gid].name + ' beside the chat'} />;
+// KEEP: Start free is the demo chat's own reply action, drawn black so it reads as the thing to press, never the chat's grey send button (the user, 2026-11-18).
+const HB_ACTION = (onSend) => <DS.Button onClick={onSend}>Start free</DS.Button>;
 
 const HbChat = ({ game, size, onSend }) => {
   const body = React.useRef(null); const phone = size === 'list' || size === 'phone'; const g = HB_GAMES.find((x) => x.id === game);
   const turns = phone ? g.turns : g.turns.map(hbPlain);
+  // Delve opens a phone chat with the picture of the scene, the AI's own, with the call that made it; that call stands for the first turn's.
   const pic = phone && game === 'delve';
-  const items = turns.map((t, i) => chatTurn(pic && i === 0 ? { ...t, tool: undefined } : t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
-  // Delve opens a phone chat with the picture of the scene, the AI's own, with the call that made it.
-  if (pic) items.unshift(
-    <div key="pic" className="mcp-chat-ai hb-pic-turn"><ToolCall tool="Delve" mark={GS_CHAT_MARK} toolBy={GS_CHAT_BY} /><HbPic /></div>);
+  const shown = pic ? [{ from: 'ai', tool: 'Delve', blocks: [HB_PICTURE] }, { ...turns[0], tool: undefined }, ...turns.slice(1)] : turns;
+  const items = shown.map((t, i) => chatTurn(t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
   // KEEP: the chat is all there when shown (nothing types in) and opens at its top, whichever tab or width. The chat scrolls; the block never changes height.
   // While more of the chat sits below, the design system's down pill shows above the reply bar, as on the hero chat (the user, 2026-11-18).
   const [more, toEnd] = useChatScroll(body, game + size, 'top');
   return chatShell({ bodyRef: body, body: items, up: more, toStart: toEnd, start: 'top', height: phone ? 300 : undefined, width: 2000, fill: !phone,
-    label: GS_GAMES[g.gid].name + ' being played in a chat', more: 'On to the latest', className: 'hb-chat', comp: <HbReply onSend={onSend} /> });
+    label: GS_GAMES[g.gid].name + ' being played in a chat', more: 'On to the latest', className: 'hb-chat', comp: <Reply action={HB_ACTION(onSend)} /> });
 };
 
 // KEEP: all three descriptions share one grid cell and only the chosen one shows (the others are visibility:hidden), so the block is as tall as the longest and nothing below it moves when a tab is tapped.
