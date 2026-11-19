@@ -25,7 +25,7 @@ export interface NotchPickerProps{
   defaultValue?:string|null;
   /** Called with the new id, or with `null` when `closable` and the picked tile is pressed again. */
   onChange?:(id:string|null)=>void;
-  /** Pressing the picked tile again unpicks it and closes the panel. Off by default: the panel is never empty once one is picked. */
+  /** Pressing the picked tile again unpicks it and closes the panel; every tile then carries `aria-expanded`, true on the picked one, so a screen reader hears whether the panel is open. Off by default: the panel is never empty once one is picked. */
   closable?:boolean;
   /** Put the tiles in a CardRow headed `title`, with `sub` as its sentence: the row scrolls sideways with Previous and Next. `label` names the row for a screen reader (defaults to the picker's `label`). */
   row?:{title:string;sub?:string;label?:string};
@@ -42,8 +42,8 @@ export interface NotchPickerProps{
   target?:'tile'|'aside';
   /** Props for the panel element, such as a `className` or `aria-live`. */
   panelProps?:React.HTMLAttributes<HTMLDivElement>;
-  /** The panel's content, or a function of the picked id. Keep every option's content in one box if the page below must not move when the picked tile changes. */
-  children?:React.ReactNode|((id:string|null)=>React.ReactNode);
+  /** The panel's content, or a function of the picked id (called only while one is picked). Keep every option's content in one box if the page below must not move when the picked tile changes. */
+  children?:React.ReactNode|((id:string)=>React.ReactNode);
   className?:string;
   style?:React.CSSProperties;
 }

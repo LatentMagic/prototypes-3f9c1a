@@ -49,7 +49,7 @@ export function NotchPicker({label,options,value,defaultValue=null,onChange,chil
   const scrolls=!!row||options.length>4;
   const tiles=options.map(o=>{
     const on=o.id===picked;
-    const buttonProps={id:base+'-'+o.id,type:'button','aria-pressed':on,'aria-controls':panelId,onClick:(e)=>press(o.id,e.currentTarget)};
+    const buttonProps={id:base+'-'+o.id,type:'button','aria-pressed':on,'aria-controls':panelId,...(closable?{'aria-expanded':on}:null),onClick:(e)=>press(o.id,e.currentTarget)};
     if(renderTile)return <React.Fragment key={o.id}>{renderTile(o,{on,buttonProps})}</React.Fragment>;
     return <button key={o.id} {...buttonProps} className="mcp-np-tile" data-np-tile="">
       {o.icon&&<span className="mcp-np-icon" aria-hidden="true">{o.icon}</span>}
@@ -63,7 +63,7 @@ export function NotchPicker({label,options,value,defaultValue=null,onChange,chil
     {aside}
     <div {...panelRest} className={('mcp-np-panel '+panelClass).trim()} id={panelId} role="region" aria-labelledby={at<0?undefined:base+'-'+picked} hidden={at<0}>
       <i ref={notch} className="mcp-np-notch" aria-hidden="true"/>
-      <div className="mcp-np-body">{typeof children==='function'?children(picked):children}</div>
+      <div className="mcp-np-body">{at<0?null:typeof children==='function'?children(picked):children}</div>
     </div>
   </div>;
 }

@@ -34,7 +34,9 @@ function App(){
   return <div className="row">
     <div className="cell"><p className="cap">With marks, keeping its own state</p>
       <NotchPicker label="Which app do you use?" defaultValue="a0" options={APPS.slice(0,3)}>{(id)=><p style={{margin:0}}>Setup steps for {APPS.find(o=>o.id===id).label}.</p>}</NotchPicker></div>
-    <div className="cell"><p className="cap">Six apps in a scrolling row (the row option); pressing the picked tile closes the panel (closable)</p>
+    <div className="cell"><p className="cap"><b>Closes on a second tap, like Connect's (closable).</b> Press the picked tile again: the panel closes and no tile is picked. Press any tile to open it.</p>
+      <NotchPicker label="Which app do you use?" defaultValue="a0" closable options={APPS.slice(0,3)}>{(id)=><p style={{margin:0}}>Setup steps for {APPS.find(o=>o.id===id).label}. Press {APPS.find(o=>o.id===id).label} again to close this.</p>}</NotchPicker></div>
+    <div className="cell"><p className="cap">Six apps in a scrolling row (the row option), also closable, as Connect's is</p>
       <NotchPicker label="Which app do you use?" row={{title:'Setup',sub:'Which app do you use?'}} defaultValue="a0" closable options={APPS}>{(id)=><p style={{margin:0}}>Setup steps for {APPS.find(o=>o.id===id).label}.</p>}</NotchPicker></div>
     <div className="cell"><p className="cap">Names only, controlled, a fourth option</p>
       <NotchPicker label="Who the AI is" value={v} onChange={setV} options={[{id:'a',label:'Game Master'},{id:'b',label:'Host'},{id:'c',label:'Thinking partner'},{id:'d',label:'Judge'}]}><p style={{margin:0}}>Panel for {v}.</p></NotchPicker></div>
