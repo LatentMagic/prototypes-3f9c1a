@@ -22,3 +22,4 @@
 .wc-over-pic .wh-chart svg { width: var(--fig); height: var(--fig); }
 .wc-over-pic .wh-say { font-size: 12px; max-width: 76px; text-wrap: balance; }
 .wc-concept { margin-top: 28px; }
+.wh-ch-sweep { fill: none; }

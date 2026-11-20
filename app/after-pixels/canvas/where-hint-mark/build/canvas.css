@@ -125,8 +125,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-btn.is-done .mcp-swap .b{opacity:1;transform:none}
 .mcp-btn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .mcp-btn-pair>:only-child{grid-column:1/-1}
-/* KEEP: One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups and menu triggers keep their own rule. Button block stays full width at any width. */
-@media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
+/* KEEP: One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups, menu triggers and a button in a chat reply bar (.mcp-chat-comp) keep their own rule. Button block stays full width at any width. */
+@media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.mcp-chat-comp .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
 @media (min-width:640px){.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){display:inline-grid;grid-template-columns:repeat(2,1fr);justify-self:start}}
 
 .mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:opacity var(--time-press) var(--ease),color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
@@ -298,6 +298,32 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-disc-body>div>*{margin:0;padding:0 var(--space-4) var(--space-4);color:var(--muted)}
 /* A list in a Disclosure runs to its edges, with a line above the first row; the rows keep their own padding and colours. */
 .mcp-disc-body>div>.mcp-rows{padding:0;color:var(--text);border-top:1px solid var(--line)}
+/* NotchPicker: tiles, one picked; the panel below has a notch pointing at the picked tile. A surface restyles it through the --np-* hooks; a page arranges the tiles and the box beside them with its own classes. */
+.mcp-np{display:grid;row-gap:var(--space-4);min-width:0}
+.mcp-np-tiles{display:grid;grid-template-columns:repeat(var(--np-n),minmax(0,1fr));gap:var(--np-gap,8px)}
+.mcp-np-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;min-width:0;min-height:56px;margin:0;padding:12px 4px 10px;background:transparent;border:1.5px solid var(--np-edge,var(--control-edge));border-radius:0;color:var(--np-ink,var(--text));font:600 13px/1.2 var(--font-text);text-align:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease),color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}
+.mcp-np.has-icons .mcp-np-tile{min-height:88px}
+.mcp-np-icon{display:flex;flex:none}
+.mcp-np-icon>svg{display:block;width:32px;height:32px}
+.mcp-np-name{max-width:100%;overflow-wrap:normal}
+.mcp-np-tile[aria-pressed="true"]{background:var(--np-on,var(--off-white));border-color:var(--np-on,var(--off-white));color:var(--np-on-ink,var(--page));cursor:default}
+.mcp-np-tile:active:not([aria-pressed="true"]){transform:scale(.97)}
+.mcp-np-tile:focus-visible{outline:2px solid var(--np-on,var(--off-white));outline-offset:2px}
+@media (hover:hover){.mcp-np-tile:not([aria-pressed="true"]):hover{background:color-mix(in srgb,var(--np-ink,var(--text)) 8%,transparent)}}
+/* More options than fit: the tiles keep their size and the row scrolls sideways, about 4 1/2 showing so the half tile says there is more, and every tile fills the row again once all fit (700px). With a CardRow (the row option) the CardRow's track is the row. */
+.mcp-np.is-scroll .mcp-np-tiles,.mcp-np.is-scroll .mcp-crow-track{gap:var(--np-gap,8px);grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 4 * var(--np-gap,8px)) / 4.5);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.mcp-np.is-scroll .mcp-np-tiles{padding:4px;margin:-4px}
+.mcp-np.is-scroll .mcp-np-tiles::-webkit-scrollbar{display:none}
+.mcp-np.is-scroll .mcp-np-tile{scroll-snap-align:start}
+.mcp-np.is-scroll:not(.has-row){container:mcp-np/inline-size}
+@container mcp-np (min-width:700px){.mcp-np.is-scroll .mcp-np-tiles{grid-auto-columns:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n))}}
+@container mcp-crow (min-width:700px){.mcp-np.is-scroll .mcp-crow-track{grid-auto-columns:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n))}}
+.mcp-np-panel{position:relative;background:var(--np-panel,var(--card));border:1px solid var(--np-panel-line,var(--line));box-shadow:var(--np-panel-shadow,var(--shadow-card));color:var(--np-panel-ink,var(--text))}
+.mcp-np-panel[hidden]{display:none}
+.mcp-np-body{padding:var(--np-body-pad,var(--space-4))}
+.mcp-np-notch{position:absolute;z-index:1;top:-7px;left:0;width:14px;height:14px;background:var(--np-panel,var(--card));border-left:1px solid var(--np-panel-line,var(--line));border-top:1px solid var(--np-panel-line,var(--line));transform:translateX(-50%) rotate(45deg);pointer-events:none;transition:left var(--time-swap) var(--ease)}
+.mcp-np[data-pointer="side"] .mcp-np-notch{top:auto;left:-7px;transform:translateY(-50%) rotate(-45deg);transition-property:top}
+@media (prefers-reduced-motion:reduce){.mcp-np-tile,.mcp-np-notch{transition:none!important}.mcp-np-tile:active{transform:none!important}}
 
 .mcp-cover{display:grid;gap:var(--space-2);align-content:start;margin:0}
 .mcp-cover-art{aspect-ratio:4/3;overflow:hidden;background:var(--line)}
@@ -425,15 +451,17 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-up.is-down[hidden]{transform:translate(-50%,6px)}
 .mcp-chat.is-top .mcp-chat-body>:first-child{margin-top:0}
 .mcp-chat-body[data-more="down"]{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 56px);mask-image:linear-gradient(to top,transparent 0,#000 56px)}
-.mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
+.mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;visibility:hidden;transform:translate(-50%,-6px);transition:opacity var(--time-press) var(--ease),transform var(--time-press) var(--ease),background var(--time-press) var(--ease),visibility 0s linear var(--time-press)}
 @media (hover:hover){.mcp-chat-up:not([hidden]):hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg));transform:translate(-50%,-1px)}}
 .mcp-chat-up:not([hidden]):active{transform:translateX(-50%) scale(.97)}
 .mcp-chat-up:focus-visible{outline:2px solid var(--c-send);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.mcp-chat-up{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.mcp-chat-up,.mcp-chat-up[hidden]{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
 .mcp-chat-me{align-self:flex-end;max-width:80%;background:var(--c-me);border-radius:18px;padding:7px 14px;flex:none}
 .mcp-chat-ai{display:grid;gap:8px;justify-items:start;max-width:94%;flex:none}
-.mcp-chat-call{display:inline-flex;align-items:center;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px}
-.mcp-chat-call img{border-radius:4px}.mcp-chat-call em{font-style:normal;color:var(--c-call)}
+.mcp-chat-call{display:inline-flex;align-items:flex-start;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px;line-height:18px;max-width:100%}
+.mcp-chat-calltxt{min-width:0;overflow-wrap:anywhere}
+.mcp-chat-me strong,.mcp-chat-ai strong{font-weight:700}.mcp-chat-me em,.mcp-chat-ai em{font-style:italic}.mcp-chat-me u,.mcp-chat-ai u{text-decoration:underline;text-underline-offset:2px}
+.mcp-chat-call img{border-radius:4px;flex:none;margin-top:1px}.mcp-chat-call em{font-style:normal;color:var(--c-call);white-space:nowrap}
 .mcp-chat-board{display:grid;gap:4px}.mcp-chat-row{display:flex;gap:4px}
 .mcp-chat-row>span{width:28px;height:28px;display:grid;place-items:center;border-radius:5px;font-weight:700;font-size:14px;background:var(--c-tile);color:var(--c-tile-fg)}
 .mcp-chat-row>.is-g{background:var(--c-g);color:var(--success-on)}.mcp-chat-row>.is-y{background:var(--c-y);color:var(--warning-on)}
@@ -443,6 +471,22 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-comp{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 12px 12px;min-height:44px;padding:0 6px 0 16px;border:1px solid var(--c-edge);border-radius:22px;color:var(--c-fg2)}
 .mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
 .mcp-chat-body.is-auto{overflow:visible}
+.mcp-chat-pic{display:block;width:100%;height:96px;object-fit:cover;border-radius:8px}
+.mcp-chat-ai:has(>.mcp-chat-pic:last-child)+.mcp-chat-ai{margin-top:-6px}
+/* ChatSide: the game beside a chat. The label sits top left in flow; what the AI draws is centred in the space left. */
+.mcp-chat-side{display:grid;grid-template-rows:auto minmax(0,1fr);align-items:center;justify-items:center;padding:16px;overflow:visible;min-width:0}
+.mcp-chat-side-ed{justify-self:start;align-self:start;margin:0;font:600 var(--size-2xs)/1.3 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:var(--c-fg2)}
+.mcp-chat-side-body{display:grid;justify-items:center;gap:12px;min-width:0;width:100%}
+.mcp-chat-side .mcp-cb-tiles{text-align:center}
+.mcp-chat-side .mcp-cb-tiles-in{--t:min(40px,calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n)))}
+.mcp-chat-side .mcp-cb-clues{max-width:360px}
+.mcp-chat-side .mcp-chat-pic{width:100%;max-width:400px;height:auto;aspect-ratio:2/1}
+/* A real reply action: the pretend bar's send button gives way to the page's own, drawn black and text-only so it reads as the thing to press, never the chat's grey send button. */
+.mcp-chat-comp.has-action{padding-right:4px}
+/* KEEP: the action is drawn 36px tall and its hit area is 44px: the ::before extends 4px beyond the 1.5px border above and below. */
+.mcp-chat-comp.has-action .mcp-btn.mcp-btn{display:inline-flex;width:auto;min-height:36px;padding:0 16px;border-radius:18px;font-size:14px;background:var(--c-fg);color:var(--c-bg);flex:none}
+.mcp-chat-comp.has-action .mcp-btn::before{content:"";position:absolute;inset:calc(-4px - 1.5px) 0}
+.mcp-chat-comp.has-action .mcp-btn.mcp-btn:is(:hover,:active,.is-pressed){background:color-mix(in oklab,var(--c-fg),var(--c-bg) 18%)}
 .mcp-chat-ai>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
 /* ChatPlayback: a piece entering is wrapped so it can fade; the wrapper keeps the part's own width rules */
 .mcp-chat-fx{display:grid;justify-items:start;justify-self:stretch;min-width:0}.mcp-chat-fx>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
@@ -692,10 +736,10 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-passmark.is-link:active,.mcp-passmark.is-link.is-pressed{background:color-mix(in srgb,var(--text) 16%,var(--page));transform:scale(.97)}
 .mcp-passmark.is-link:focus-visible,.mcp-passmark.is-link.is-focus{outline:2px solid var(--off-white);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.mcp-passmark.is-link{transition:none}.mcp-passmark.is-link:active{transform:none}}
-/* KEEP: Coming soon on a game card, pick or tile (soon): the picture, name, blurb, kind and tags dim to 45% while the chip stays at full strength, and the card takes no pointer at all, so nothing reacts to hover, focus or press and the cursor stays an arrow. The card cannot be opened; its name is plain text. */
+/* KEEP: Coming soon on a game card, pick or tile (soon): only the picture dims to 45%. The name, blurb, kind and tags stay at full strength, as does the chip. The card takes no pointer at all, so nothing reacts to hover, focus or press and the cursor stays an arrow. The card cannot be opened; its name is plain text. */
 :is(.mcp-gcard,.mcp-gpick,.mcp-gtile).is-soon{pointer-events:none;cursor:default}
 .mcp-gtile.is-soon>.mcp-gtile-name{min-height:24px}
-.is-soon>:is(.mcp-gcard-art,.mcp-gpick-art,.mcp-gtile-art)>:not(.mcp-passmark),.is-soon>:is(.mcp-gcard-text,.mcp-gcard-tags,.mcp-gpick-text,.mcp-gpick-tags,.mcp-gtile-name,.mcp-gtile-kind){opacity:.45}
+.is-soon>:is(.mcp-gcard-art,.mcp-gpick-art,.mcp-gtile-art)>:not(.mcp-passmark){opacity:.45}
 
 /* KEEP: Touch: whatever you press to open something is not selectable text, and the phone's selection and callout stay out of the way of a hold. Body text elsewhere stays selectable. */
 .mcp-card.is-link,.mcp-row.is-link,.mcp-btn,.mcp-lnk,.mcp-art-host,.mcp-disc-btn,.mcp-menu-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -869,7 +913,8 @@ button.mcp-cb-ent{cursor:pointer}
 .dvS-fact dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
 .dvS-fact dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dvS-fact dd span { font-weight: 400; color: var(--muted); white-space: nowrap; }
-.dvS-fact dd span.is-does { display: inline; white-space: nowrap; }
+/* KEEP: what a used ability or gear does always sits on its own muted row under its name, in every card shape and at every width, so the layout never depends on how long the words are. */
+.dvS-fact dd span.is-does { display: block; white-space: normal; }
 .dvS-fact dd[class*="is-"] { color: var(--tc); }
 /* KEEP: line 2 is the foe's answer, under a 1px rule: its roll (a diamond, what it did, the defence), then the foe's health as a fact named for the foe, its bar and count beside it (8px apart). The bar grows to 240px and no further (96px at least), so it never runs to the box's right edge; a foe beaten with no strike-back shows the health fact alone, at 0. No foe, no rule and no line 2. */
 .dvS-line.is-foe { flex-wrap: nowrap; align-items: stretch; padding: 12px 0 0; border-top: 1px solid var(--line); gap: 12px 24px; }
@@ -1709,15 +1754,23 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 /* KEEP: on a phone the band drops its cover; the page's own cover sits right below it, and two stacked covers read as noise */
 .pg-band { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); }
 .pg-band > :first-child { display: none; }
-/* KEEP: the link's 48px hit area overlaps the band's gap and padding when stacked, so the visible space matches the rest of the band */
-.pg-band-link { grid-column: 1 / -1; margin-block: -12px; }
+/* KEEP: stacked (under 640px), the space above the link equals the space below it, 12px each whatever the font, and the link keeps a 48px tap area that adds no visible space. */
+@container gs (width < 640px) {
+  .pg-band-link { display: grid; justify-items: start; grid-column: 1 / -1; }
+  .pg-band-link > .mcp-lnk { display: inline-block; position: relative; min-height: 0; padding-block: 0 calc(4px + 1.5px); text-box: trim-both cap alphabetic; }
+  .pg-band-link > .mcp-lnk::after { content: ""; position: absolute; inset: calc((100% - 48px) / 2) 0; }
+  .pg-band .gs-small { text-box: trim-end text; }
+}
+/* KEEP: one owner for the space between the band and the head: this group. Stacked (under 720px) it is the head's own 24px to the play box below it; from 720px it is the page's 36px section gap */
+.gs-head-group { display: grid; gap: 24px; }
+@container gs (min-width: 720px) { .gs-head-group { gap: 36px; } }
 .pg-yours-pop { left: 0; right: auto; min-width: 220px; }
 .pg-menu-label { display: block; padding: 12px 16px 4px; }
 .pg-kv { justify-content: space-between; }
 .pg-ach { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 8px !important; align-items: start !important; padding: 12px 0 !important; }
 .pg-ach-bar { display: block; max-width: 280px; }
 .rf-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
-@container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band > :first-child { display: block; } .pg-band-link { grid-column: auto; margin-block: 0; } }
+@container gs (min-width: 640px) { .pg-band { grid-template-columns: 64px minmax(0, 1fr) auto; } .pg-band > :first-child { display: block; } }
 @container gs (min-width: 720px) { .rf-head { grid-template-columns: 144px minmax(0, 1fr); } }
 /* KEEP: a pop-up with one action: it fills the row (the system's pair grid leaves half empty) */
 .mcp-pop .mcp-btn-pair > .mcp-btn:only-child { grid-column: 1 / -1; }
@@ -2275,9 +2328,10 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 /* KEEP: home H1 below 900: sized so each sentence holds one line from ~350px; narrower, a sentence may wrap, and the H1 never drops below 25px */
 .gs-h1.gs-h1-home { font-size: clamp(25px, calc(7.6cqi - 3px), 34px); }
 .gs-h1.gs-h1-home > span { display: block; }
-.gs-hero3 .gs-hero-sub { max-width: 56ch; }
-.gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
-.gs-works p { text-wrap: pretty; }
+.gs-hero3 .gs-hero-sub { max-width: 56ch; text-wrap: pretty; }
+/* The hairline runs the copy column's full width at every size; only the text keeps its measure. */
+.gs-works { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-works p { max-width: 44ch; text-wrap: pretty; }
 .gs-br-wide { display: none; }
 .gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
 .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
@@ -2310,24 +2364,32 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .gs-who2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
   .gs-who2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
 }
-@container gs (min-width: 900px) {
-  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; align-items: stretch; }
+/* KEEP: home hero is two columns from 720px (copy left, the Delve block right), as on desktop, so a tablet's hero fits one screen; below 720 it is the phone's single column. From 720 to 899 the columns are equal and the headline is smaller so each sentence still holds one line; from 900 the copy column is wider. */
+@container gs (min-width: 720px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding-top: 28px; align-items: stretch; }
   .gs-hero3 > .gs-hero-copy { gap: 24px; }
+  .gs-h1.gs-h1-home { font-size: clamp(22px, calc(3.6cqi - 1px), 32px); }
+  .gs-hero-art3 { padding: 36px 16px; align-content: center; }
+}
+@container gs (min-width: 900px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; }
   /* KEEP: the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
-  .gs-hero3 + .gs-band { margin-top: -12px; }
   .gs-h1.gs-h1-home { font-size: clamp(32px, calc(3.9cqi - 4px), 46px); text-wrap: initial; }
   .gs-h1.gs-h1-home > span { display: block; white-space: nowrap; }
   .gs-hero-art3 { padding: 36px 16px; align-content: center; }
 }
 @media (prefers-reduced-motion: reduce) { .gs-today-item { transition: none; } }
 
+/* The hero's two buttons: stacked full width on a phone; from a 432px screen, the line where the games block stops being a list (its own 400px, inside the page's 16px gutters), one row, still full width, two equal halves; from 720px, beside the chat, their own width. The gs container is the full page width. */
+@container gs (min-width: 432px) { .gs-hero-act { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 @container gs (min-width: 720px) {
   .gs-sess-head { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-6); }
+  .gs-hero-act { display: flex; width: auto; }
   .gs-wrap { padding-inline: 24px; }
   .gs-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .gs-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
   .gs-steps.is-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-  .gs-hero-act { display: flex; width: auto; gap: 12px; }
   .gs-how { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
   .gs-hero-art { padding: 36px; }
   .gs-pz-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: end; }
@@ -2349,40 +2411,34 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
 }
 
-/* home hero: one cover field (bars and sun) with the screenshot set inside it (home-hero option 9) */
-.gs-hero-field { position: relative; display: grid; gap: 24px; padding: 20px 12px 12px; background: #1D1B3A; overflow: hidden; min-width: 0; align-self: center; }
-.gs-hero-shapes4 { position: absolute; top: 0; right: 20px; width: 46%; height: 132px; display: flex; align-items: flex-end; gap: 12%; padding-left: 4%; }
-/* Motion on the hero art: the game-art-motion rules (400ms --ease-art, bars round and rise by different amounts, sun squares and sinks 50ms behind). Hovering or focusing the name, or hovering the art, plays it. */
+/* home hero: one cover field (Delve's wine ground and banner art, as on the platform) with the screenshot set inside it (home-hero option 9) */
+/* KEEP: Delve's art sits on the name row, bottom-aligned, so the arch's foot touches the chat card's top edge at every width. The eyebrow stays on one line while the art has at least 92px beside it, then wraps; the art is at most 46% of the field wide, so the two never overlap. */
+.gs-hero-field { position: relative; display: grid; grid-template-columns: fit-content(calc(100% - 108px)) minmax(0, 1fr); column-gap: 8px; row-gap: 0; --name-gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
+.gs-hero-delve-art { grid-column: 2; grid-row: 1; align-self: end; justify-self: end; width: min(46cqw, 150px, calc(100% - 8px)); margin-right: 8px; cursor: pointer; }
+/* Motion on the hero art: Delve's own art-motion pieces. Hovering or focusing the name, or hovering the art, plays it. */
 .gs-hero-field { --on: 0; }
-.gs-hero-shapes4 { cursor: pointer; }
-.gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: transform var(--time-art) var(--ease-art) 0ms, border-radius var(--time-art) var(--ease-art) 0ms; }
-.gs-hero-shapes4 > i { display: block; width: 14%; height: calc(var(--h) + 24px); margin-bottom: -24px; border-radius: calc(var(--on) * 3cqw) calc(var(--on) * 3cqw) 0 0; transform: translateY(calc(var(--on) * var(--rise) * -1)); }
-.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) { --on: 1; }
+.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) { --on: 1; }
 .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
-@media (hover: hover) { .gs-hero-field:hover { --on: 1; } }
-.gs-hero-shapes4 > b { position: absolute; top: 18px; right: 0; width: 40px; height: 40px; border-radius: calc((1 - var(--on)) * 50%); background: #E5A63B; transform: translateY(calc(var(--on) * 6px)); }
-.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) .gs-hero-shapes4 > b { transition-delay: 50ms; }
-@media (hover: hover) { .gs-hero-field:hover .gs-hero-shapes4 > b { transition-delay: 50ms; } }
-@media (prefers-reduced-motion: reduce) { .gs-hero-shapes4 { --on: 0 !important; } .gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: none; } }
-.gs-hero-name { position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0; color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
+.gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); }
+@media (hover: hover) { .gs-hero-field:hover { --on: 1; } .gs-hero-field:hover .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); } }
+.gs-hero-name { grid-column: 1; grid-row: 1; align-self: start; position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0 0 var(--name-gap); color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
 .gs-hero-name:active { opacity: .55; }
 .gs-hero-name-t .mcp-ico { transition: transform var(--time-press) var(--ease); }
 @media (hover: hover) { .gs-hero-field:hover .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; } }
 @media (prefers-reduced-motion: reduce) { .gs-hero-name-t .mcp-ico, .gs-inlink, .gs-ft-link, .gs-ft-mail, .gs-support, .gs-legal-col a { transition: none; } }
 .gs-hero-name-t { display: inline-flex; align-items: center; gap: 8px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
 .gs-hero-field { container-type: inline-size; }
-.gs-hero-field > .mcp-chat { --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
-.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
+.gs-hero-field > .gs-hero-name .gs-label { text-wrap: balance; }
+.gs-hero-field > .mcp-chat { grid-column: 1 / -1; grid-row: 2; --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
+/* KEEP: below 720 the chat is 5:4 but at most 400px tall (328px on screen after the .82 scale, as at 500px wide), so from 500 to 719 the hero ends within one 1024px screen instead of growing with the width */
+.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; max-height: 400px; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
-@container gs (min-width: 900px) {
-  .gs-hero-field { padding: 28px 16px 16px; gap: 36px; }
-  .gs-hero-shapes4 { right: 28px; height: 160px; }
-  .gs-hero-shapes4 > b { width: 48px; height: 48px; top: 24px; }
-}
-/* KEEP: the field takes the copy's height and never sets the hero's, so nothing overhangs; the chat gives up its top turns to fit (home-product-hero option 4) */
-@container gs (min-width: 900px) {
-  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); gap: 20px; padding: 20px 16px 16px; }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
+/* KEEP: below 720 the art is at most 150px wide (75px tall, as on a 390 phone) so it never outgrows the title row; from 720 it is 46% of the field, small enough that the eyebrow stays on one line beside it (about 106px at 720, 87px tall at 899).
+   KEEP: from 720px the field takes the copy's height and never sets the hero's, so nothing overhangs and the hero fits one screen; the chat gives up its top turns to fit (home-product-hero option 4). The art's foot still touches the chat card's top edge: it stays in the grid row above the card. */
+@container gs (min-width: 720px) {
+  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); --name-gap: 20px; padding: 20px 16px 16px; }
+  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; max-height: none; }
+  .gs-hero-delve-art { margin-right: 12px; width: min(46cqw, calc(100% - 8px)); }
 }
 
 /* what's new: release feed on Home */
@@ -2423,15 +2479,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @supports (animation-timeline: scroll()) { .wn-nest:has(> .wn-e:nth-child(5))::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
 
-/* KEEP: tablet (720–899): the hero stays stacked, but the headline and line run full width, Works with sits beside the buttons, and the chat is a short strip that gives up its top turns, as on desktop (home-hero-tablet concept 4) */
-@container gs (720px <= width < 900px) {
-  .gs-hero3 > .gs-hero-copy { grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; justify-items: stretch; }
-  .gs-hero3 > .gs-hero-copy > .gs-h1, .gs-hero3 > .gs-hero-copy > .gs-hero-sub { grid-column: 1 / -1; }
-  .gs-hero3 .gs-hero-sub { max-width: none; }
-  .gs-hero3 .gs-hero-act { align-self: center; }
-  .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
-}
 /* KEEP: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
    The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
 .gs-home-after { display: grid; gap: 16px; justify-items: start; margin-top: -16px; }
@@ -2439,6 +2486,98 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* All games keeps its 48px tap height, which centres its text in empty space; pulling the box in (more above, where the
    sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
 .gs-home-after > div { margin: -12px 0 -4px; }
+
+/* The homepage block under Available games: game tabs in the design system's picker (NotchPicker), a card-grey panel with its notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
+.hb { gap: 12px; }
+.hb .mcp-t-sec, .hb-lead { margin: 0; }
+.hb-lead { max-width: 60ch; text-wrap: balance; }
+.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; margin-top: 4px; gap: 28px; }
+/* KEEP: 28px between the chosen game and the panel, as Connect's app picker leaves between its tiles and its card; the panel pads 16px, as Connect's card does. */
+/* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
+.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 28px 12px; }
+.hb.is-list .hb-panel { grid-column: 1 / -1; }
+.hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
+.hb-panel { box-sizing: border-box; display: grid; align-content: start; min-width: 0; padding: 16px; border-radius: 0; box-shadow: none; --np-body-pad: 0; }
+.hb-panel > .mcp-np-body { min-width: 0; }
+.hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
+/* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
+.hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
+.hb-side, .hb-talk { min-width: 0; min-height: 0; display: grid; }
+.hb-side { border-right: 1px solid var(--c-edge); }
+.hb-talk > .mcp-chat { height: 100%; }
+.hb-stage .mcp-chat { background: transparent; border: 0; border-radius: 0; }
+
+/* The side panel (the design system's ChatSide) takes more room on a desktop stage. */
+.hb.is-desktop .hb-side .mcp-chat-side { padding: 24px; }
+
+/* The tabs are drawn like the design system's picker tiles: outlined on the page colour, a faint hover, the chosen one inverted to off-white. */
+.hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }
+.hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
+.hb-tab.is-open { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+.hb-tab:not(.is-open):active { transform: scale(.97); }
+@media (hover: hover) { .hb-tab:not(.is-open):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .hb-tab { transition: none; } .hb-tab:not(.is-open):active { transform: none; } }
+/* KEEP: the ring shows for keyboard focus only (:focus-visible); on a tap or click the tab just opens, with no white flash. */
+.hb-tab:has(.hb-tab-b:focus-visible) { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.hb-tab-b { -webkit-tap-highlight-color: transparent; display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 8px 10px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
+.hb-tab-b:focus { outline: none; }
+.hb-tab.is-open .hb-tab-b { cursor: default; }
+.hb-tab-b small { font: 600 12px/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+.hb-tab-b b { font: 700 18px/1.2 var(--font-heading); letter-spacing: -.01em; overflow-wrap: normal; }
+.hb-tab.is-open .hb-tab-b small { opacity: .75; }
+
+/* list (under 400px): the game's name only, so the list is no taller than the box beside it; the role heads the description */
+.hb.is-list .hb-tabs { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; }
+/* KEEP: a list tab's whole box is its button, and its hit area reaches at least 44px tall (the box is 42px at 390) without growing the drawn box: the ::before extends 3px above and below, into the 8px between tabs. */
+.hb.is-list .hb-tab { min-height: 40px; align-content: stretch; }
+.hb.is-list .hb-tab-b { position: relative; align-content: center; padding: 8px 12px; }
+.hb.is-list .hb-tab-b::before { content: ""; position: absolute; inset: -3px 0; }
+.hb.is-list .hb-tab-b b { display: none; }
+.hb.is-list .hb-tab-b small { font-size: 13px; letter-spacing: .02em; text-transform: none; font-weight: 700; opacity: 1; }
+.hb-desc { box-sizing: border-box; min-width: 0; padding: 16px; background: var(--off-white); color: var(--page); border-radius: 0; }
+.hb-role { display: block; margin-bottom: 4px; font: 700 16px/1.2 var(--font-heading); letter-spacing: -.01em; }
+@container gs (max-width: 359px) {
+  .hb.is-list .hb-set { grid-template-columns: 84px minmax(0, 1fr); gap: 16px 8px; }
+  .hb.is-list .hb-tab-b { padding: 8px; }
+  .hb.is-list .hb-tab-b small { font-size: 12px; letter-spacing: 0; }
+  .hb-desc { padding: 12px; }
+}
+
+/* row (400 to 959px): the chosen tab is half the row (2fr of 4fr, set inline) and holds its description */
+/* the chosen tab's name and role sit at the same height and size as the others' */
+.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 8px 16px 0; }
+.hb-tab.is-open .hb-ins { padding: 8px 16px 14px; }
+
+/* column (960px up): the chosen tab fills the column and holds its description; the others are 72px */
+.hb.is-desktop .hb-tabs { display: flex; flex-direction: column; }
+.hb.is-desktop .hb-tab { min-height: 72px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b { align-content: center; padding: 10px 16px; height: 100%; }
+.hb.is-desktop .hb-tab.is-open { flex: 1; align-content: start; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b { padding: 16px 16px 0; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b b { font-size: 24px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b b { font-size: 16px; }
+.hb.is-desktop .hb-tab.is-open .hb-ins { padding: 12px 16px 16px; }
+
+/* the description: in the chosen tab (row, column) or the box beside the list; the three share one cell so the open game's height never changes */
+/* KEEP: the link's tap area is its 17px padding, pulled back by negative margins, as the design system does for a link in a cover head (`.mcp-cover-head-links`); the link's own 48px min-height would leave about 14px of dead space above and below it. */
+.hb-ins { display: grid; }
+.hb-intro { grid-area: 1 / 1; display: grid; gap: 12px; align-content: start; justify-items: start; }
+.hb-intro.is-ghost { visibility: hidden; }
+.hb-intro p { margin: 0; font: var(--type-body); font-size: 14px; line-height: 1.4; color: inherit; text-wrap: balance; }
+.hb:is(.is-tablet, .is-desktop) .hb-intro p { font-size: 16px; line-height: 1.5; }
+.hb-intro .hb-role { margin-bottom: -8px; }
+.hb-intro .mcp-lnk { display: inline-block; min-height: 0; padding: 17px 0; margin: -17px 0 calc(-17px + 5.5px); text-box: trim-both cap alphabetic; color: inherit; }
+/* KEEP: the link sits on the off-white chosen tab, so hover, press and focus keep its ink colour; the design system's link turns white for dark ground. */
+.hb-intro .mcp-lnk.mcp-lnk.mcp-lnk:is(:hover, :active, .is-pressed, :focus-visible) { color: inherit; }
+.hb-intro .mcp-lnk:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+/* Under 320px the three tab names still fit their cells whole, with a smaller name and less padding. */
+@container gs (max-width: 319px) { .hb-tab-b b { font-size: 14px; } .hb-tab-b small { font-size: 10px; letter-spacing: .04em; } .hb-tab:not(.is-open) .hb-tab-b { padding: 8px 6px; } }
+/* KEEP: below 360px the chat's Track keeps its steps and its count apart: a 12-step row at the design system's own minimum widths runs into the count at 280px, so the steps shrink to 3px with a 1px gap. */
+@container gs (max-width: 359px) {
+  .hb-chat .mcp-cb-track { grid-template-columns: fit-content(5.5em) minmax(4em, 1fr) auto; column-gap: 8px; }
+  .hb-chat .mcp-cb-steps { gap: 1px; }
+  .hb-chat .mcp-cb-steps > i { min-width: 3px; }
+}
 /* Discover and Library lists, game cards, card hover and the game-art motion, SoonCard on a phone (app/gs-discover.jsx, app/gs-parts.jsx).
    Imported by canon.css in the order listed there; later files win ties. */
 
@@ -2470,6 +2609,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .gs-host .gs-tagbtn { position: relative; z-index: 2; }
 .gs-host .gs-titlebtn:focus-visible { outline: none; }
 .gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
+/* Banner ratio (2:1) the design system's GameArt lacks; used by the home hero. */
+.mcp-art-2 { aspect-ratio: 2 / 1; }
 /* KEEP: Motion art for Guess, Accuse, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
 .mcp-art.is-wine { background: var(--cover-bg-wine); }
 .mcp-art.is-forest { background: var(--cover-bg-forest); }
@@ -2552,22 +2693,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .hw-sec h2:focus { outline: none; }
 .hw-sec p { margin: 0; }
 
-/* Setup: the app picker, a CardRow of tiles, each an app mark and its name. The picked tile is filled, as a main Button is; the rest are outlined. */
-.hw-apps .mcp-crow-track { gap: 8px; grid-auto-columns: calc((100% - 4 * 8px) / 4.5); scroll-snap-type: x mandatory; }
-.hw-apps .mcp-crow-track > * { scroll-snap-align: start; }
-@container mcp-crow (min-width: 700px) { .hw-apps .mcp-crow-track { grid-auto-columns: calc((100% - (var(--n) - 1) * 8px) / var(--n)); } }
-.hw-app { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 88px; margin: 0; padding: 12px 4px 10px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); font: 600 13px/1.2 var(--font-text); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
-.hw-app > svg { flex: none; }
-.hw-app > span { max-width: 100%; overflow-wrap: normal; }
-.hw-app[aria-pressed="true"] { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
-.hw-app:active { transform: scale(.97); }
-.hw-app:focus-visible { outline: 2px solid var(--off-white); outline-offset: 2px; }
-@media (hover: hover) { .hw-app:not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
-
-/* The picked app's card, its notch on the top edge pointing at the picked tile. One anatomy for every route: title row,
-   the thing to copy, then the steps. */
-.hw-pick { position: relative; }
-.hw-notch { position: absolute; z-index: 1; top: -7px; width: 14px; height: 14px; background: var(--card); border-left: 1px solid var(--line); border-top: 1px solid var(--line); transform: translateX(-50%) rotate(45deg); transition: left var(--time-swap) var(--ease); pointer-events: none; }
+/* Setup: the design system's NotchPicker (tiles, scrolling row and notch are its). Its panel is only the place the card sits and the notch points from, so it draws nothing of its own; the card is the surface.
+   One anatomy for every route: title row, the thing to copy, then the steps. */
+.hw-pick { background: none; border: 0; box-shadow: none; --np-body-pad: 0; }
 .hw-pick-card.mcp-card { justify-items: stretch; gap: 16px; }
 .hw-pick-head { display: grid; gap: 16px; }
 /* The card title's linking words, Add and to, are set in the body font and weight, so the names stand out (the user, 2026-11-11). */
@@ -2588,7 +2716,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .gs-copy-field { position: relative; min-width: 0; }
 .gs-copy-field.has-more::after { content: ""; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 40px; pointer-events: none; background: linear-gradient(to right, transparent, var(--card)); }
 @container hw-card (max-width: 420px) { .gs-copy.is-address { grid-template-columns: minmax(0, 1fr); } .gs-copy.is-address .mcp-btn { width: 100%; } }
-@media (prefers-reduced-motion: reduce) { .hw-notch, .hw-app { transition: none; } }
 
 /* Start: three ChatPictures in the system's CardRow, at the system's own widths (three side by side from about 1000px, else scrolling). The typed line is a SpeechBubble in place of ChatPicture's own user message,
    so the grey message shape behind it is dropped; the hero cards sit in one row of three. */
@@ -2751,6 +2878,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @media (prefers-reduced-motion: reduce) { .cpr-pcard .cpr-chev { transition: none; } }
 .cpr-price { font: 400 16px/1.5 var(--font-text); color: var(--muted); }
 .cpr-price > span { white-space: nowrap; }
+.gs-row-note { font-size: 13px; white-space: nowrap; }
+.cpr-price > .cpr-tax { display: block; font-size: 13px; line-height: 1.4; }
 
 /* ---- The Pass upsell (1153): app/gs-pass-*.jsx ---- */
 .gs-pu-wrap { text-wrap: pretty; }
@@ -2759,7 +2888,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP: Pricing: right-aligned beside Choose a plan, left-aligned once the button is full width (the 640px switch of .gs-pass-foot). */
 @container gs (min-width: 640px) { .gs-pu-payline { text-align: right; } }
 .gs-pu-libbody { display: grid; gap: 24px; min-width: 0; }
-.gs-pu-libgrp { display: grid; gap: 12px; min-width: 0; }
+/* Your games: the heading sits 24px above its list, as New for you does (--space-5 is the design system's 24px). On the platform this is Tailwind gap-6, not gap-5. */
+.gs-pu-libgrp { display: grid; gap: var(--space-5); min-width: 0; }
 /* KEEP: At phone width no Library heading or line ends on one or two words alone. */
 @container gs (max-width: 559px) {
   .lb-lay .lb-card :is(h2, .lb-big) { text-wrap: balance; }
@@ -2767,9 +2897,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 }
 /* KEEP: One button width (design system Layout), keyed to the width the page is handed so the phone frame gets it too: the system's own rule
    reads the window. Under 640px every button is full width and a pair stacks; from 640px natural width. Popup actions and menu triggers keep their own rule,
-   and so does a button attached to a field (the Connect page's Copy), which keeps its own width. */
+   and so does a button attached to a field (the Connect page's Copy) or a chat reply bar (`.mcp-chat-comp`, as in the home block), which keep their own width. */
 @container gs (max-width: 639.98px) {
-  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn) { display: flex; width: 100%; }
+  .mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.gs-copy .mcp-btn):not(.mcp-chat-comp .mcp-btn) { display: flex; width: 100%; }
   .mcp-btn-pair:not(.mcp-pop .mcp-btn-pair) { grid-template-columns: minmax(0, 1fr); width: 100%; }
   .mcp-npass { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .mcp-npass-half { padding: var(--space-4); }
@@ -3727,3 +3857,4 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wc-over-pic .wh-chart svg { width: var(--fig); height: var(--fig); }
 .wc-over-pic .wh-say { font-size: 12px; max-width: 76px; text-wrap: balance; }
 .wc-concept { margin-top: 28px; }
+.wh-ch-sweep { fill: none; }

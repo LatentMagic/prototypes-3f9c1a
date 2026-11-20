@@ -2,7 +2,7 @@
 // Hi-fi canvas: three versions of the hint picture on the Where now card. The square keeps its place beside the globe and its
 // caption ("1 hint", "No hint", "Not used yet"), but its picture no longer draws the real direction: it evokes one without being one,
 // so a Solved card's last guess is never read as pointing the wrong way. Every card is canon's now card frame (LbNowCard) with Where's own
-// parts and canon's CSS (gs-where.css, as on branch candidate/where-now-drop); only the end of the line inside the square differs (the N is dropped). Nothing here is
+// parts and canon's CSS (gs-where.css, as on branch candidate/where-now-drop); only the direction point inside the square differs (the N is dropped). Nothing here is
 // ruled. Game data is rough.
 // ============================================================================
 import './candidate.js';
@@ -55,18 +55,18 @@ const TodayPic = ({ p }) => {
       {h && <circle cx={c + Math.cos(a) * L} cy={c + Math.sin(a) * L} r="4" className="wh-ch-end" />}
     </Base>);
 };
-// The concepts: a fixed line straight up from the centre dot, drawn only when the hint is used. No ring, no arrowhead, no N.
-const upTo = (y) => ({ p }) => (<Base>{p.hint && <line x1="60" y1="60" x2="60" y2={y} className="wh-ch-bear" />}</Base>);
+// The concepts: each draws only when the hint is used, in canon's bearing ink (wh-ch-bear: dashed, weight 2) or canon's open ring
+// (wh-ch-end). None has a heading: nothing here turns with the real hint. No N.
 const MARKS = {
-  plain: upTo(16),   // canon's length (44), ring dropped
-  edge: upTo(8),     // runs to the box's edge
-  short: upTo(32),   // stops short (28)
+  axes: () => (<Base>{[[0, -1], [0, 1], [-1, 0], [1, 0]].map(([x, y]) => <line key={x + ',' + y} x1="60" y1="60" x2={60 + x * 48} y2={60 + y * 48} className="wh-ch-bear" />)}</Base>),
+  sweep: () => (<Base><circle cx="60" cy="60" r="44" pathLength="272" className="wh-ch-bear wh-ch-sweep" /></Base>),
+  target: () => (<Base><circle cx="60" cy="60" r="20" className="wh-ch-end" /></Base>),
 };
 const WhHint = ({ p, mark }) => {
   const Pic = mark ? MARKS[mark] : TodayPic;
   return (
     <div className={'wh-chart' + (p.hint ? '' : ' is-none')} role="img" aria-label={whSay(p)}>
-      <svg viewBox="0 0 120 120" aria-hidden="true"><Pic used={!!p.hint} p={p} /></svg>
+      <svg viewBox="0 0 120 120" aria-hidden="true">{p.hint || !mark ? <Pic p={p} /> : <Base />}</svg>
       <span className="wh-say">{whSay(p)}</span>
     </div>);
 };
@@ -109,18 +109,18 @@ const Card = ({ p, tone, mark, n = 21 }) => {
 const Frame = ({ w, children }) => <div className="wc-frame lb-lay" style={w ? { width: w } : undefined}>{children}</div>;
 
 const CONCEPTS = [
-  { k: 'plain', n: '1', h: 'Line up, no ring', mark: 'plain',
-    note: "Canon's dashed line, fixed straight up from the centre dot at canon's length, with the ring dropped and no N." },
-  { k: 'edge', n: '2', h: 'Line to the edge', mark: 'edge',
-    note: 'The same dashed line, fixed straight up, running on until it meets the top of the box. No ring, no N.' },
-  { k: 'short', n: '3', h: 'Line stopping short', mark: 'short',
-    note: 'The same dashed line, fixed straight up, stopping a little way from the dot. No ring, no N.' },
+  { k: 'axes', n: '1', h: 'Two axes through the dot', mark: 'axes',
+    note: "The grid's two middle lines are picked out in the bearing's dashed ink, running both ways from the dot: it evokes a bearing's frame, but every way at once, so no way is the answer." },
+  { k: 'sweep', n: '2', h: 'The bearing swept all round', mark: 'sweep',
+    note: "The bearing's dashed line, drawn as the whole circle its end could reach from the dot: it evokes a bearing being taken, with every direction drawn and none chosen." },
+  { k: 'target', n: '3', h: 'Ring on the dot', mark: 'target',
+    note: "Canon's open ring, the mark for where the country is, sits on the dot with no line: it says a country is out there to be found, with no way marked." },
 ];
 
 const Overview = () => (
   <section className="wc-item" aria-labelledby="wc-over">
-    <h2 id="wc-over" className="wc-h">The hint square with and without the line</h2>
-    <p className="gs-muted wc-note">The same box and grid with no line is the No hint picture; a used hint is that picture plus the line. Today's is first, for comparison only.</p>
+    <h2 id="wc-over" className="wc-h">The hint square with and without the mark</h2>
+    <p className="gs-muted wc-note">The same box and grid with no mark is the No hint picture; a used hint is that picture plus the mark. Today's is first, for comparison only.</p>
     <div className="wc-over">
       <div className="wc-over-row wc-over-head"><span /><span className="wh-cap">1 hint</span><span className="wh-cap">No hint</span></div>
       {[{ n: 'Today', mark: null }, ...CONCEPTS].map((c) => (
@@ -135,12 +135,12 @@ const Overview = () => (
 const Canvas = () => (
   <main className="wc">
     <h1 className="gs-h1">Where: the hint's mark on the now card</h1>
-    <p className="gs-muted wc-intro">On a Pass. Three versions of the hint's picture beside the globe. Each is today's box and grid with the N dropped and only the line's end changed, and the line is fixed, so it evokes a direction without being one. Captions stay ("1 hint", "No hint", "Not used yet"). Nothing is decided. Game data is rough; buttons do nothing.</p>
+    <p className="gs-muted wc-intro">On a Pass. Three ideas for the hint's picture beside the globe. Each is today's box and grid with the N dropped and only the direction point changed, and each is fixed, so it evokes a direction without being one. Captions stay ("1 hint", "No hint", "Not used yet"). Nothing is decided. Game data is rough; buttons do nothing.</p>
 
     <section className="wc-item wc-notes" aria-labelledby="wc-how">
       <h2 id="wc-how" className="wc-h">What you cannot see here</h2>
       <ul className="wc-list gs-muted">
-        <li>The line is fixed straight up. It never turns with the real hint, so the card never says which way the country lies; the session page still does.</li>
+        <li>Every mark is fixed and the same for every player. It never turns with the real hint, so the card never says which way the country lies; the session page still does.</li>
         <li>Each picture is canon's chart in its own 120 box with the same caption, so no concept can widen the caption. At 280px "Not used yet" wraps to two words stacked, as canon's does today.</li>
         <li>Before the first guess the hint is drawn as No hint (box and grid only, faded), as the spec asks (the hint is refused before a guess). The dot where the line starts stays in every state, as in canon.</li>
         <li>The cards are canon's now card frame and parts with canon's CSS, from branch candidate/where-now-drop, copied here because canon does not export them.</li>
@@ -151,7 +151,7 @@ const Canvas = () => (
 
     <section className="wc-item" aria-labelledby="wc-today">
       <h2 id="wc-today" className="wc-h">Today: the real direction</h2>
-      <p className="gs-muted wc-note">Canon's card now, Solved, with the N and the ring. A real direction beside the answer reads as wrong.</p>
+      <p className="gs-muted wc-note">Canon's card now, Solved, with the N and the real bearing. A real direction beside the answer reads as wrong.</p>
       <Frame><Card p={STATES[0].p} tone={STATES[0].tone} mark={null} /></Frame>
     </section>
 

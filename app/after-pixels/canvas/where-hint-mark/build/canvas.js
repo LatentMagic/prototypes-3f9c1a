@@ -14,38 +14,38 @@
       };
       return { pressed, handlers: { onPointerDown: down, onPointerUp: up, onPointerCancel: up, onPointerLeave: up } };
     }
-    const A = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"';
-    const LINE = {
-      search: "<g " + A + '><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g>',
-      back: "<g " + A + '><path d="M20 12H5"/><path d="M11 5L4 12L11 19"/></g>',
-      close: "<g " + A + '><path d="M5 5L19 19M19 5L5 19"/></g>',
-      lock: "<g " + A + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
-      play: "<g " + A + '><path d="M7 4L19 12L7 20Z"/></g>',
-      pause: "<g " + A + '><path d="M8 5V19M16 5V19"/></g>',
-      settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
-      mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
-      logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
-      card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
-      stats: "<g " + A + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
-      advantage: "<g " + A + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
-      pack: "<g " + A + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
-      ability: "<g " + A + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
-      fight: "<g " + A + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
+    const A2 = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"';
+    const LINE2 = {
+      search: "<g " + A2 + '><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g>',
+      back: "<g " + A2 + '><path d="M20 12H5"/><path d="M11 5L4 12L11 19"/></g>',
+      close: "<g " + A2 + '><path d="M5 5L19 19M19 5L5 19"/></g>',
+      lock: "<g " + A2 + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
+      play: "<g " + A2 + '><path d="M7 4L19 12L7 20Z"/></g>',
+      pause: "<g " + A2 + '><path d="M8 5V19M16 5V19"/></g>',
+      settings: "<g " + A2 + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
+      mail: "<g " + A2 + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
+      logout: "<g " + A2 + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
+      card: "<g " + A2 + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+      stats: "<g " + A2 + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
+      advantage: "<g " + A2 + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
+      pack: "<g " + A2 + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
+      ability: "<g " + A2 + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
+      fight: "<g " + A2 + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
     };
-    const UI = {
+    const UI2 = {
       check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
-      warn: "<g " + A + '><path d="M12 3L22 20H2Z"/><path d="M12 10V14M12 16.5V17.5"/></g>',
-      error: "<g " + A + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
-      down: "<g " + A + '><path d="M5 9L12 16L19 9"/></g>',
+      warn: "<g " + A2 + '><path d="M12 3L22 20H2Z"/><path d="M12 10V14M12 16.5V17.5"/></g>',
+      error: "<g " + A2 + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
+      down: "<g " + A2 + '><path d="M5 9L12 16L19 9"/></g>',
       send: '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></g>',
-      next: "<g " + A + '><path d="M9 5L16 12L9 19"/></g>',
-      out: "<g " + A + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
-      share: "<g " + A + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
-      list: "<g " + A + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
+      next: "<g " + A2 + '><path d="M9 5L16 12L9 19"/></g>',
+      out: "<g " + A2 + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
+      share: "<g " + A2 + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
+      list: "<g " + A2 + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
     };
-    const ICON_NAMES = [...Object.keys(LINE), ...Object.keys(UI)];
+    const ICON_NAMES = [...Object.keys(LINE2), ...Object.keys(UI2)];
     function Icon2({ name, size = 20, className = "", style, label }) {
-      const body = UI[name] || LINE[name];
+      const body = UI2[name] || LINE2[name];
       if (!body) return null;
       return /* @__PURE__ */ React2.createElement("svg", { className: ("mcp-ico " + className).trim(), viewBox: "0 0 24 24", width: size, height: size, style: { width: size, height: size, ...style }, role: label ? "img" : void 0, "aria-label": label, "aria-hidden": label ? void 0 : true, focusable: "false", dangerouslySetInnerHTML: { __html: body } });
     }
@@ -107,16 +107,16 @@
       if (href) return /* @__PURE__ */ React2.createElement("a", { href, className: cls, onClick, ...handlers, ...rest }, children);
       return /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, onClick, ...handlers, ...rest }, children);
     }
-    function cbPress(on, props, children) {
+    function cbPress2(on, props, children) {
       if (on) return React2.createElement("button", { type: "button", onClick: on, ...props }, children);
       const { ["aria-pressed"]: _p, disabled: _d, ...rest } = props;
       return React2.createElement("span", rest, children);
     }
-    function cbRich(t) {
+    function cbRich2(t) {
       if (typeof t !== "string") return t;
       return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React2.createElement("b", { key: i }, s) : s);
     }
-    function cbFold({ title, count: count2, closed, pad }, children) {
+    function cbFold2({ title, count: count2, closed, pad }, children) {
       return React2.createElement(
         "details",
         { className: "mcp-cb-fold", open: !closed },
@@ -130,93 +130,96 @@
         React2.createElement("div", { className: "mcp-cb-fold-b" + (pad ? " is-pad" : "") }, children)
       );
     }
-    function ChoiceButtons({ items = [], picked, onChoose, label, className = "" }) {
+    function ChoiceButtons2({ items = [], picked, onChoose, label, className = "" }) {
       const done = picked != null;
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-choices " + className).trim(), role: "group", "aria-label": label || "Moves" }, items.map((it, i) => {
         const t = typeof it === "string" ? it : it.label;
         const p = done && (picked === i || picked === t);
-        return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), t));
+        return cbPress2(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), t));
       }));
     }
-    function ClueCards({ groups = [], newLabel = "New", title, fold, className = "" }) {
+    function ClueCards2({ groups = [], newLabel = "New", title, fold, className = "" }) {
       const folded = !!fold, solo = folded && groups.length === 1;
       const sections = groups.map((g, i) => /* @__PURE__ */ React2.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, !solo && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React2.createElement("ul", null, g.facts.map((f, k) => {
         const t = typeof f === "string" ? { text: f } : f;
-        return /* @__PURE__ */ React2.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React2.createElement("span", null, cbRich(t.text)), t.new && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-new" }, newLabel));
+        return /* @__PURE__ */ React2.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React2.createElement("span", null, cbRich2(t.text)), t.new && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-new" }, newLabel));
       }))));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold2({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
     }
-    function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+    function FactRows2({ items = [], plain = false, label, title, fold, className = "" }) {
       const folded = !!fold;
-      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
+      const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich2(f.value)))));
       if (!folded) return rows;
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold2({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
     }
-    function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
+    function ConfirmCard2({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
       const done = answer === "confirm" || answer === "cancel";
       const btn = (k, text, on, main) => {
         const p = answer === k;
-        return cbPress(!done && on, { className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), text));
+        return cbPress2(!done && on, { className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon2, { name: "check", size: 14 }), text));
       };
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich2(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows2, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
     }
-    function EntityCards({ title, items = [], onPick, fold, className = "" }) {
+    function EntityCards2({ title, items = [], onPick, fold, className = "" }) {
       const folded = !!fold;
       const list = /* @__PURE__ */ React2.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
         const pic = it.pic ? /* @__PURE__ */ React2.createElement("img", { src: it.pic, alt: "" }) : it.icon ? /* @__PURE__ */ React2.createElement(Icon2, { name: it.icon, size: 16 }) : null;
-        return /* @__PURE__ */ React2.createElement("li", { key: i }, cbPress(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, pic && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line)))));
+        return /* @__PURE__ */ React2.createElement("li", { key: i }, cbPress2(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, pic && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line)))));
       }));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold2({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
     }
-    function StatusTag({ tone = "live", label, children, className = "" }) {
+    function StatusTag2({ tone = "live", label, children, className = "" }) {
       return /* @__PURE__ */ React2.createElement("span", { className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim() }, label ?? children);
     }
-    const Art = ({ art, icon }) => typeof art === "string" ? art.trim().startsWith("<svg") ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true", dangerouslySetInnerHTML: { __html: art } }) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("img", { src: art, alt: "" })) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart" + (art ? "" : " is-icon"), "aria-hidden": "true" }, art || icon && /* @__PURE__ */ React2.createElement(Icon2, { name: icon, size: 18 }));
-    function MenuRows({ items = [], search, onGo, onSearch, label, className = "" }) {
+    const Art2 = ({ art, icon }) => typeof art === "string" ? art.trim().startsWith("<svg") ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true", dangerouslySetInnerHTML: { __html: art } }) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("img", { src: art, alt: "" })) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mart" + (art ? "" : " is-icon"), "aria-hidden": "true" }, art || icon && /* @__PURE__ */ React2.createElement(Icon2, { name: icon, size: 18 }));
+    function MenuRows2({ items = [], search, onGo, onSearch, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-menu " + className).trim(), role: "group", "aria-label": label || "Menu" }, search && /* @__PURE__ */ React2.createElement("label", { className: "mcp-cb-search" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "search", size: 16 }), /* @__PURE__ */ React2.createElement("input", { type: "search", placeholder: search, "aria-label": search, readOnly: !onSearch, tabIndex: onSearch ? void 0 : -1, onChange: onSearch ? ((e) => onSearch(e.target.value)) : void 0 })), /* @__PURE__ */ React2.createElement("ul", null, items.map((it, i) => {
         const act = typeof it.action === "string" ? { label: it.action } : it.action;
         const st = typeof it.status === "string" ? { label: it.status, tone: "idle" } : it.status;
-        return /* @__PURE__ */ React2.createElement("li", { key: i, className: "mcp-cb-mrow" }, /* @__PURE__ */ React2.createElement(Art, { art: it.art, icon: it.icon }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mtext" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mmeta" }, st && /* @__PURE__ */ React2.createElement(StatusTag, { tone: st.tone || "idle" }, st.label), it.meta && /* @__PURE__ */ React2.createElement("span", null, it.meta))), act && cbPress(onGo && (() => onGo(it, i)), { className: "mcp-cb-go" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, act.icon && /* @__PURE__ */ React2.createElement(Icon2, { name: act.icon, size: 16 }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-go-t" }, act.label))));
+        return /* @__PURE__ */ React2.createElement("li", { key: i, className: "mcp-cb-mrow" }, /* @__PURE__ */ React2.createElement(Art2, { art: it.art, icon: it.icon }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mtext" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-mmeta" }, st && /* @__PURE__ */ React2.createElement(StatusTag2, { tone: st.tone || "idle" }, st.label), it.meta && /* @__PURE__ */ React2.createElement("span", null, it.meta))), act && cbPress2(onGo && (() => onGo(it, i)), { className: "mcp-cb-go" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, act.icon && /* @__PURE__ */ React2.createElement(Icon2, { name: act.icon, size: 16 }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-go-t" }, act.label))));
       })));
     }
-    function NavButtons({ items = [], stack = false, onGo, label, className = "" }) {
+    function NavButtons2({ items = [], stack = false, onGo, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-nav" + (stack ? " is-stack" : "") + " " + className).trim(), role: "group", "aria-label": label || "Go to" }, items.map((it, i) => {
         const cls = "mcp-cb-go" + (it.out ? " is-out" : "");
         const body = /* @__PURE__ */ React2.createElement(React2.Fragment, null, it.icon && /* @__PURE__ */ React2.createElement(Icon2, { name: it.icon, size: 16 }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-go-t" }, it.label, it.out && /* @__PURE__ */ React2.createElement("small", null, it.note || "Opens in your browser")), it.out && /* @__PURE__ */ React2.createElement(Icon2, { name: "out", size: 16, className: "mcp-cb-go-out" }));
         if (it.href) return /* @__PURE__ */ React2.createElement("a", { key: i, className: cls, href: it.href, target: it.out ? "_blank" : void 0, rel: it.out ? "noopener" : void 0 }, body);
-        return cbPress(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
+        return cbPress2(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
       }));
     }
-    function StatRow({ items = [], grid = false, label, className = "" }) {
+    function Picture2({ src, alt, className = "" }) {
+      return /* @__PURE__ */ React2.createElement("img", { className: ("mcp-cb mcp-chat-pic " + className).trim(), src, alt });
+    }
+    function StatRow2({ items = [], grid = false, label, className = "" }) {
       return /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-stats" + (grid ? " is-grid" : "") + " " + className).trim(), "aria-label": label, style: grid ? { "--cols": items.length === 3 ? 3 : Math.min(items.length, 2) } : void 0 }, items.map((s, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-stat" }, /* @__PURE__ */ React2.createElement("dt", null, s.label), /* @__PURE__ */ React2.createElement("dd", null, s.value))));
     }
-    function ResultCard({ title, status, line, stats = [], actions = [], onGo, className = "" }) {
+    function ResultCard2({ title, status, line, stats = [], actions = [], onGo, className = "" }) {
       const st = typeof status === "string" ? { label: status, tone: "won" } : status;
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(), role: "group", "aria-label": title || "Result" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-result-head" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), st && /* @__PURE__ */ React2.createElement(StatusTag, { tone: st.tone || "won" }, st.label)), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, line), stats.length > 0 && /* @__PURE__ */ React2.createElement(StatRow, { items: stats, grid: true }), actions.length > 0 && /* @__PURE__ */ React2.createElement(NavButtons, { items: actions, onGo, stack: true }));
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(), role: "group", "aria-label": title || "Result" }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-result-head" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), st && /* @__PURE__ */ React2.createElement(StatusTag2, { tone: st.tone || "won" }, st.label)), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, line), stats.length > 0 && /* @__PURE__ */ React2.createElement(StatRow2, { items: stats, grid: true }), actions.length > 0 && /* @__PURE__ */ React2.createElement(NavButtons2, { items: actions, onGo, stack: true }));
     }
-    const TONE = { hit: "won", weak: "warn", miss: "lost" };
-    const WORD = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
-    function RollLine({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
+    const TONE2 = { hit: "won", weak: "warn", miss: "lost" };
+    const WORD2 = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
+    function RollLine2({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
       const sum = total ?? roll + mod;
-      const text = outcome || WORD[result] || "";
+      const text = outcome || WORD2[result] || "";
       const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
-      return /* @__PURE__ */ React2.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React2.createElement("b", null, label), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React2.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React2.createElement("span", null, "= ", /* @__PURE__ */ React2.createElement("b", null, sum)), target != null && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React2.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
+      return /* @__PURE__ */ React2.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React2.createElement("b", null, label), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React2.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React2.createElement("span", null, "= ", /* @__PURE__ */ React2.createElement("b", null, sum)), target != null && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React2.createElement(StatusTag2, { tone: TONE2[result] || "idle", className: "mcp-cb-roll-out" }, text));
     }
-    const MARK = { h: "hit", n: "near", x: "miss" };
-    const SAY = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
-    function TileGrid({ rows = [], length, count: count2, label, className = "" }) {
+    const MARK$12 = { h: "hit", n: "near", x: "miss" };
+    const SAY2 = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
+    function TileGrid2({ rows = [], length, count: count2, label, className = "" }) {
       const n = Math.max(1, length || Math.max(0, ...rows.map((r) => (r.letters || "").length)));
       const all = [...rows];
       while (count2 && all.length < count2) all.push({ letters: "" });
       const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
         const c = ((r.letters || "")[i] || " ").trim();
-        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
+        const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK$12[(r.marks || "")[i]] || "filled" : "empty";
         return { c, s };
       }));
-      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+      const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY2[x.s] ? " " + SAY2[x.s] : "") : "blank").join(", "))).join(". ");
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s, "aria-hidden": x.s === "blank" || void 0 }, x.s === "blank" ? null : x.c))))));
     }
-    function Track({ items = [], className = "" }) {
+    function Track2({ items = [], className = "" }) {
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-track " + className).trim() }, items.map((t, i) => {
         const max = t.max || 6;
         const v = Math.max(0, Math.min(max, t.value || 0));
@@ -224,12 +227,12 @@
         return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-track-row is-" + (t.tone || "progress"), role: "meter", "aria-label": t.label, "aria-valuemin": 0, "aria-valuemax": max, "aria-valuenow": v, "aria-valuetext": v + " of " + max }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-track-l" }, t.label), steps ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-steps", "aria-hidden": "true" }, Array.from({ length: max }, (_, k) => /* @__PURE__ */ React2.createElement("i", { key: k, className: k < v ? "is-on" : void 0 }))) : /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-bar", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("i", { style: { width: v / max * 100 + "%" } })), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-track-n" }, v, " of ", max));
       }));
     }
-    const TONES = ["amber", "teal", "orange", "lilac"];
-    function WordBoard({ words = [], solved = [], picked = [], cols = 4, onPick, label, className = "" }) {
+    const TONES2 = ["amber", "teal", "orange", "lilac"];
+    function WordBoard2({ words = [], solved = [], picked = [], cols = 4, onPick, label, className = "" }) {
       const on = new Set(picked.map((w) => String(w).toUpperCase()));
-      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-board " + className).trim(), style: { "--cols": cols }, role: "group", "aria-label": label || "Word board" }, solved.map((g, i) => /* @__PURE__ */ React2.createElement("div", { key: "s" + i, className: "mcp-cb-band is-" + (g.tone || TONES[i % 4]) }, /* @__PURE__ */ React2.createElement("b", null, g.label), /* @__PURE__ */ React2.createElement("span", null, g.words.join(", ")))), words.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-chips" }, words.map((w) => {
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-board " + className).trim(), style: { "--cols": cols }, role: "group", "aria-label": label || "Word board" }, solved.map((g, i) => /* @__PURE__ */ React2.createElement("div", { key: "s" + i, className: "mcp-cb-band is-" + (g.tone || TONES2[i % 4]) }, /* @__PURE__ */ React2.createElement("b", null, g.label), /* @__PURE__ */ React2.createElement("span", null, g.words.join(", ")))), words.length > 0 && /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-chips" }, words.map((w) => {
         const p = on.has(w.toUpperCase());
-        return cbPress(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
+        return cbPress2(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
       })));
     }
     const HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
@@ -281,25 +284,59 @@
       const fid = id || "mcp-" + auto;
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-fld " + className).trim() }, label && /* @__PURE__ */ React2.createElement("label", { htmlFor: fid }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-srch" }, /* @__PURE__ */ React2.createElement(Icon2, { name: "search" }), /* @__PURE__ */ React2.createElement("input", { className: "mcp-in", id: fid, type: "search", placeholder, value, onChange, "aria-label": label ? void 0 : placeholder, ...rest })));
     }
-    const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows };
-    const WHO = { x: "not in the word", y: "in the word", g: "right spot" };
-    function Tiles({ rows }) {
-      const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
+    const PARTS2 = { tilegrid: TileGrid2, wordboard: WordBoard2, choices: ChoiceButtons2, confirm: ConfirmCard2, facts: FactRows2, stats: StatRow2, status: StatusTag2, entities: EntityCards2, clues: ClueCards2, result: ResultCard2, track: Track2, roll: RollLine2, nav: NavButtons2, menu: MenuRows2, picture: Picture2 };
+    const WHO2 = { x: "not in the word", y: "in the word", g: "right spot" };
+    function Tiles2({ rows }) {
+      const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO2[m]).join(", ")).join(". ");
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
     }
-    function Block({ b }) {
-      if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles, { rows: b.rows });
-      if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, t)));
+    function chatPart2({ b }) {
+      if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles2, { rows: b.rows });
+      if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, chatRich2(t))));
       if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
-      const P = PARTS[b.type];
+      const P = PARTS2[b.type];
       if (P) {
         const { type, ...p } = b;
         return /* @__PURE__ */ React2.createElement(P, { ...p });
       }
       return null;
     }
-    const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-    function useChatScroll(body, turns, start) {
+    const Part$12 = chatPart2;
+    const paras2 = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
+    const MARK2 = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+    function chatRuns2(text, f = {}) {
+      const s = String(text), out = [];
+      let rest = s;
+      for (; ; ) {
+        const m = MARK2.exec(rest);
+        if (!m) {
+          if (rest) out.push({ s: rest, ...f });
+          return out;
+        }
+        if (m.index) out.push({ s: rest.slice(0, m.index), ...f });
+        const g = m[1] != null ? { b: 1 } : m[2] != null ? { u: 1 } : { i: 1 };
+        out.push(...chatRuns2(m[1] ?? m[2] ?? m[3], { ...f, ...g }));
+        rest = rest.slice(m.index + m[0].length);
+      }
+    }
+    const chatPlain = (t) => chatRuns2(t).map((r) => r.s).join("");
+    const styled2 = (r, node, key) => {
+      let n = node;
+      if (r.u) n = /* @__PURE__ */ React2.createElement("u", null, n);
+      if (r.i) n = /* @__PURE__ */ React2.createElement("em", null, n);
+      if (r.b) n = /* @__PURE__ */ React2.createElement("strong", null, n);
+      return React2.isValidElement(n) && n !== node ? React2.cloneElement(n, { key }) : /* @__PURE__ */ React2.createElement(React2.Fragment, { key }, n);
+    };
+    function chatRich2(text) {
+      const runs = chatRuns2(text);
+      if (runs.every((r) => !r.b && !r.i && !r.u)) return String(text);
+      return runs.map((r, k) => styled2(r, r.s, k));
+    }
+    function chatRichWords(text, wordFn) {
+      let j = 0;
+      return chatRuns2(text).map((r, k) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: k }, styled2(r, r.s.split(/(\s+)/).map((w, x) => !w || /^\s+$/.test(w) ? w : /* @__PURE__ */ React2.createElement(React2.Fragment, { key: x }, wordFn(w, j++))), "r")));
+    }
+    function useChatScroll2(body, turns, start) {
       const top = start === "top";
       const [up, setUp] = React2.useState(false);
       React2.useEffect(() => {
@@ -340,22 +377,25 @@
       };
       return [up, toStart];
     }
-    function chatTurn(t, i, { mark, toolBy, fx }) {
+    function ToolCall2({ tool, mark, toolBy, style }) {
+      return /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call", style }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-calltxt" }, toolBy && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("em", null, toolBy, " ·"), " "), "Called ", tool));
+    }
+    function chatTurn2(t, i, { mark, toolBy, fx }) {
       if (t.from === "user") {
-        if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text));
+        if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras2(t.text).map(chatRich2));
         const st = fx.piece(i, "u");
-        return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text));
+        return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras2(t.text).map(chatRich2));
       }
-      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, p)), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
+      if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall2, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Part$12, { key: k, b })), paras2(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich2(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Part$12, { key: "a" + k, b })));
       const blk = (list, pre) => (list || []).map((b, k) => {
         const st = fx.piece(i, pre + k);
-        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block, { b }));
+        return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Part$12, { b }));
       });
       const call = t.tool && fx.piece(i, "c");
       const kids = [
-        call && /* @__PURE__ */ React2.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)),
+        call && /* @__PURE__ */ React2.createElement(ToolCall2, { key: "c", tool: t.tool, mark, toolBy, style: call }),
         ...blk(t.blocks, "b"),
-        ...paras(t.text).map((p, k) => {
+        ...paras2(t.text).map((p, k) => {
           const st = fx.piece(i, "p" + k);
           return st && /* @__PURE__ */ React2.createElement("p", { key: "p" + k, style: st }, fx.words(i, "p" + k, p));
         }),
@@ -363,15 +403,19 @@
       ].filter(Boolean);
       return kids.length ? /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
     }
-    function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+    function chatShell2({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
       const name = label || "A game being played in a chat";
       return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon2, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
     }
-    const chatParas = paras;
-    function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
+    const chatParas = paras2;
+    function chatReply2({ action, placeholder = "Reply" }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp has-action", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), action);
+    }
+    const Reply2 = chatReply2;
+    function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, action, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
       const body = React2.useRef(null);
-      const [up, toStart] = useChatScroll(body, turns, start);
-      return chatShell({
+      const [up, toStart] = useChatScroll2(body, turns, start);
+      return chatShell2({
         bodyRef: body,
         up,
         toStart,
@@ -383,9 +427,13 @@
         label,
         more,
         className,
-        body: turns.map((t, i) => chatTurn(t, i, { mark, toolBy })),
-        comp: composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
+        body: turns.map((t, i) => chatTurn2(t, i, { mark, toolBy })),
+        comp: composer && action ? /* @__PURE__ */ React2.createElement(Reply2, { action, placeholder }) : composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
       });
+    }
+    const Part2 = chatPart2;
+    function ChatSide2({ label, blocks, name, className = "" }) {
+      return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React2.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React2.createElement(Part2, { key: k, b }))));
     }
     const ART = {
       "daily-puzzles": '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#1D1B3A"/><rect x="14" y="14" width="22" height="22" fill="#E5A63B"/><rect x="39" y="14" width="22" height="22" fill="#328A88"/><rect x="64" y="14" width="22" height="22" fill="#E5A63B"/><rect x="14" y="39" width="22" height="22" fill="#328A88"/><rect x="39" y="39" width="22" height="22" fill="#D66847"/><rect x="64" y="39" width="22" height="22" fill="#328A88"/><rect x="14" y="64" width="22" height="22" fill="#E5A63B"/><rect x="39" y="64" width="22" height="22" fill="#328A88"/><rect x="64" y="64" width="22" height="22" fill="#E5A63B"/></svg>',
@@ -429,7 +477,7 @@
       return ((ay * t + by) * t + cy) * t;
     }
     const c01 = (v) => v < 0 ? 0 : v > 1 ? 1 : v;
-    const nWords = (s) => String(s).split(/\s+/).filter(Boolean).length;
+    const nWords = (s) => chatPlain(s).split(/\s+/).filter(Boolean).length;
     function timeline(turns, pace, composer) {
       const p = { ...PACE, ...pace };
       const sp = p.speed > 0 ? p.speed : 1;
@@ -446,7 +494,7 @@
         let type = null;
         if (tu.from === "user") {
           if (composer) {
-            const text = chatParas(tu.text).join(" ");
+            const text = chatParas(tu.text).map(chatPlain).join(" ");
             const dur = d(Math.min(p.typeMax, Math.max(p.typeMin, text.length / p.type * 1e3)));
             type = { start: t, end: t + dur, text };
             t += dur + d(p.send);
@@ -484,12 +532,10 @@
         },
         words: (i, k, text) => {
           const p = tl.turns[i] && tl.turns[i].pieces[k];
-          if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return text;
-          let j = 0;
-          return String(text).split(/(\s+)/).map((w, x) => {
-            if (!w || /^\s+$/.test(w)) return w;
-            const o = c01((T - (p.at + j++ * p.word)) / tl.wordIn);
-            return /* @__PURE__ */ React2.createElement("span", { key: x, style: { opacity: +o.toFixed(4) } }, w);
+          if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return chatRich2(text);
+          return chatRichWords(text, (w, j) => {
+            const o = c01((T - (p.at + j * p.word)) / tl.wordIn);
+            return /* @__PURE__ */ React2.createElement("span", { style: { opacity: +o.toFixed(4) } }, w);
           });
         }
       };
@@ -612,7 +658,7 @@
         }
       };
       const ctl = given ? null : /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-pause", onClick: press, "aria-label": playing ? pauseLabel : done ? replayLabel : playLabel }, /* @__PURE__ */ React2.createElement(Icon2, { name: playing ? "pause" : "play", size: 16 }));
-      return chatShell({
+      return chatShell2({
         bodyRef: body,
         up,
         toStart,
@@ -625,7 +671,7 @@
         className,
         extraClass: "is-playback",
         control: ctl,
-        body: turns.map((t, i) => chatTurn(t, i, { mark, toolBy, fx })),
+        body: turns.map((t, i) => chatTurn2(t, i, { mark, toolBy, fx })),
         comp: composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, typed ? /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-typed" }, typed.text, /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-caret", style: { opacity: typed.caret ? 1 : 0 } })) : /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", { className: sent ? "is-sent" : void 0 }, /* @__PURE__ */ React2.createElement(Icon2, { name: "send", size: 16 })))
       });
     }
@@ -919,6 +965,76 @@
       const c = needsPassCopy({ game, word, words, record, total });
       return /* @__PURE__ */ React2.createElement("section", { className: ("mcp-npass " + className).trim(), style, "aria-label": c.heading }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label", "aria-hidden": c.label ? void 0 : true }, c.label || " "), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-sec" }, c.heading), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, c.foot && /* @__PURE__ */ React2.createElement("p", { className: "mcp-npass-note" }, c.foot))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label" }, c.rightLabel), c.lines.map((l, i) => /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-npass-line" }, l)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, /* @__PURE__ */ React2.createElement(Button, { variant: "secondary", onClick: onGet }, c.action))));
     }
+    const reveal = (el) => {
+      const tile = el.closest("[data-np-tile]") || el, track = tile.parentElement;
+      if (!track || track.scrollWidth <= track.clientWidth + 1) return;
+      const r = tile.getBoundingClientRect(), b = track.getBoundingClientRect();
+      const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
+      const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (d) track.scrollBy({ left: d, behavior: still ? "auto" : "smooth" });
+    };
+    function NotchPicker({ label, options, value, defaultValue = null, onChange, children, closable = false, row, renderTile, tilesClassName = "", tilesStyle, aside, pointer = "top", target = "tile", panelProps, className = "", style }) {
+      const [own, setOwn] = React2.useState(defaultValue);
+      const picked = value === void 0 ? own : value;
+      const at = options.findIndex((o) => o.id === picked);
+      const base = (React2.useId ? React2.useId() : "np").replace(/:/g, "");
+      const panelId = base + "-panel";
+      const root = React2.useRef(null), notch = React2.useRef(null), last = React2.useRef({ id: null, mode: null });
+      const mode = pointer + ":" + target;
+      const press = (id, el) => {
+        if (id === picked && !closable) return;
+        const next = id === picked ? null : id;
+        if (value === void 0) setOwn(next);
+        if (onChange) onChange(next);
+        if (next !== null) reveal(el);
+      };
+      React2.useLayoutEffect(() => {
+        const r = root.current, n = notch.current;
+        if (!r || !n) return void 0;
+        const btn = r.querySelector('[aria-pressed="true"][aria-controls="' + panelId + '"]');
+        if (!btn) return void 0;
+        const tile = btn.closest("[data-np-tile]") || btn, track = tile.parentElement;
+        const place = (glide) => {
+          const pointed = target === "aside" ? r.querySelector("[data-np-aside]") : tile;
+          if (!pointed) return;
+          const pr = n.parentElement.getBoundingClientRect(), tr = pointed.getBoundingClientRect();
+          n.style.transition = glide ? "" : "none";
+          if (pointer === "side") {
+            n.style.left = "";
+            n.style.visibility = "";
+            n.style.top = tr.top + Math.min(tr.height / 2, 40) - pr.top + "px";
+          } else {
+            const x = tr.left + tr.width / 2 - pr.left;
+            n.style.top = "";
+            n.style.visibility = x < 16 || x > pr.width - 16 ? "hidden" : "";
+            n.style.left = x + "px";
+          }
+        };
+        place(last.current.id !== null && last.current.id !== picked && last.current.mode === mode);
+        last.current = { id: picked, mode };
+        const follow = () => place(false);
+        if (track) track.addEventListener("scroll", follow, { passive: true });
+        const ro = window.ResizeObserver ? new ResizeObserver(follow) : null;
+        if (ro) {
+          ro.observe(r);
+          ro.observe(tile);
+        }
+        return () => {
+          if (track) track.removeEventListener("scroll", follow);
+          if (ro) ro.disconnect();
+        };
+      }, [picked, mode, options.length, panelId, pointer, target]);
+      const icons = options.some((o) => o.icon);
+      const scrolls = !!row || options.length > 4;
+      const tiles = options.map((o) => {
+        const on = o.id === picked;
+        const buttonProps = { id: base + "-" + o.id, type: "button", "aria-pressed": on, "aria-controls": panelId, ...closable ? { "aria-expanded": on } : null, onClick: (e) => press(o.id, e.currentTarget) };
+        if (renderTile) return /* @__PURE__ */ React2.createElement(React2.Fragment, { key: o.id }, renderTile(o, { on, buttonProps }));
+        return /* @__PURE__ */ React2.createElement("button", { key: o.id, ...buttonProps, className: "mcp-np-tile", "data-np-tile": "" }, o.icon && /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-icon", "aria-hidden": "true" }, o.icon), /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-name" }, o.label));
+      });
+      const { className: panelClass = "", ...panelRest } = panelProps || {};
+      return /* @__PURE__ */ React2.createElement("div", { ref: root, className: ("mcp-np" + (icons ? " has-icons" : "") + (scrolls ? " is-scroll" : "") + (row ? " has-row" : "") + " " + className).trim(), "data-pointer": pointer, style: { "--np-n": options.length, ...style } }, row ? /* @__PURE__ */ React2.createElement(CardRow, { title: row.title, sub: row.sub, label: row.label || label }, tiles) : /* @__PURE__ */ React2.createElement("div", { className: ("mcp-np-tiles " + tilesClassName).trim(), role: "group", "aria-label": label, style: tilesStyle }, tiles), aside, /* @__PURE__ */ React2.createElement("div", { ...panelRest, className: ("mcp-np-panel " + panelClass).trim(), id: panelId, role: "region", "aria-labelledby": at < 0 ? void 0 : base + "-" + picked, hidden: at < 0 }, /* @__PURE__ */ React2.createElement("i", { ref: notch, className: "mcp-np-notch", "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-body" }, at < 0 ? null : typeof children === "function" ? children(picked) : children)));
+    }
     function PageGrid({ children, split = "main", className = "", style }) {
       return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split + " " + className).trim(), style }, children));
     }
@@ -991,20 +1107,21 @@
     ns.Button = Button;
     ns.ButtonPair = ButtonPair;
     ns.TextLink = TextLink;
-    ns.ChoiceButtons = ChoiceButtons;
-    ns.ClueCards = ClueCards;
-    ns.ConfirmCard = ConfirmCard;
-    ns.EntityCards = EntityCards;
-    ns.FactRows = FactRows;
-    ns.MenuRows = MenuRows;
-    ns.NavButtons = NavButtons;
-    ns.ResultCard = ResultCard;
-    ns.RollLine = RollLine;
-    ns.StatRow = StatRow;
-    ns.StatusTag = StatusTag;
-    ns.TileGrid = TileGrid;
-    ns.Track = Track;
-    ns.WordBoard = WordBoard;
+    ns.ChoiceButtons = ChoiceButtons2;
+    ns.ClueCards = ClueCards2;
+    ns.ConfirmCard = ConfirmCard2;
+    ns.EntityCards = EntityCards2;
+    ns.FactRows = FactRows2;
+    ns.MenuRows = MenuRows2;
+    ns.NavButtons = NavButtons2;
+    ns.Picture = Picture2;
+    ns.ResultCard = ResultCard2;
+    ns.RollLine = RollLine2;
+    ns.StatRow = StatRow2;
+    ns.StatusTag = StatusTag2;
+    ns.TileGrid = TileGrid2;
+    ns.Track = Track2;
+    ns.WordBoard = WordBoard2;
     ns.DelveDie = DelveDie;
     ns.DelveUseDie = DelveUseDie;
     ns.DelveFoeDie = DelveFoeDie;
@@ -1016,7 +1133,9 @@
     ns.Checkbox = Checkbox;
     ns.TextField = TextField;
     ns.SearchField = SearchField;
+    ns.ToolCall = ToolCall2;
     ns.ChatPicture = ChatPicture;
+    ns.ChatSide = ChatSide2;
     ns.Cover = Cover;
     ns.GameArt = GameArt;
     ns.ICON_NAMES = ICON_NAMES;
@@ -1037,6 +1156,7 @@
     ns.MoveList = MoveList;
     ns.MoveRow = MoveRow;
     ns.NeedsPass = NeedsPass;
+    ns.NotchPicker = NotchPicker;
     ns.PageGrid = PageGrid;
     ns.Popup = Popup;
     ns.SoonCard = SoonCard;
@@ -1051,7 +1171,7 @@
     settings: '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>',
     list: '<line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><circle cx="4.5" cy="6" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="12" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none"></circle>'
   };
-  const Icon = ({ name, size = 20, color = "currentColor", style = {}, strokeWidth = 1.5 }) => {
+  const Icon$1 = ({ name, size = 20, color = "currentColor", style = {}, strokeWidth = 1.5 }) => {
     return /* @__PURE__ */ React$1.createElement(
       "svg",
       {
@@ -1109,6 +1229,9 @@
   const GS = {
     today: "Tuesday 6 October",
     link: "https://play.afterpixels.com",
+    tax: "Prices include tax",
+    // KEEP: no full stop where it stands alone (the user, 2026-11-18); Pricing adds one because it runs into the purchase sentence.
+    taxShort: "includes tax",
     purchase: "Purchases only ever happen on this site; your AI will never ask you to pay.",
     works: "ChatGPT · Claude · Gemini · Grok · Muse · and more"
   };
@@ -1730,6 +1853,7 @@
     if (m = /^All 4 groups, (.+)$/.exec(s)) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
     if ((m = /^Found in (.+)$/.exec(s)) || (m = /^All 5 wrecks, (.+)$/.exec(s))) return [s, m[1]];
     if (m = /^Solved, (.+)$/.exec(s)) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
+    if (s === "Fell in the warren") return [s, "Fallen"];
     if (/ (is|are) ready$/.test(s)) return [s, "Ready"];
     if (/^Done (today|this week)$/.test(s) || /^(Every|Free) \w+ done$/.test(s)) return [s, "Done"];
     return s;
@@ -1906,13 +2030,13 @@
   const GSC_WIN = [{ label: "Share result", icon: "share" }, { label: "Back to the games", icon: "list" }];
   const GSC_CB_SEARCH = [
     gscU("Ask Maeve Doyle where she was at ten"),
-    gscAi("casebook", "“In the bar, all evening. Ask anyone.” Maeve doesn’t look up from her glass."),
+    gscAi("Casebook", "“In the bar, all evening. Ask anyone.” Maeve doesn’t look up from her glass."),
     gscU("Search the bar"),
-    gscAi("casebook", "The last drink on Maeve’s tab was poured at 9.40.", [{ type: "clues", groups: [{ kind: "Evidence", facts: [{ text: "The bar ledger", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "4 of 16" }] }])
+    gscAi("Casebook", "The last drink on Maeve’s tab was poured at 9.40.", [{ type: "clues", groups: [{ kind: "Evidence", facts: [{ text: "The bar ledger", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "4 of 16" }] }])
   ];
   const GSC_CB_LIE = [
     gscU("Show Maeve the bar ledger"),
-    gscAi("casebook", "“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”", [{ type: "clues", groups: [{ kind: "Evidence", facts: ["The bar ledger"] }, { kind: "Statements", facts: [{ text: "Maeve Doyle: lie exposed", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "5 of 16" }] }])
+    gscAi("Casebook", "“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”", [{ type: "clues", groups: [{ kind: "Evidence", facts: ["The bar ledger"] }, { kind: "Statements", facts: [{ text: "Maeve Doyle: lie exposed", new: true }] }] }, { type: "stats", items: [{ label: "Turn", value: "5 of 16" }] }])
   ];
   let GS_CHATS;
   let GS_HERO_CHAT;
@@ -1923,39 +2047,39 @@
   };
   function initGsChats() {
     GS_CHATS = {
-      // Guess: the product page's three chats, written for the page from a real play (2026-11-07, No. 34) and the game spec:
+      // Guess: the product page's three chats, written for the page from the game spec, as an invented edition (No. 198), never a real one:
       // every turn shows something the game really does, marked as the engine marks. The demo path (SPRAY, GUARD, then the word)
-      // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives No. 34's word away.
+      // is chosen so that the two guesses shown and the share row leave fifteen words open: no chat gives the invented edition's word away.
       word: [
         { cap: "Ask for today’s word and the board opens on your first guess.", turns: [
           gscU("Play Guess on After Pixels"),
-          gscAi("guess", ["Guess No. 34 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
+          gscAi("Guess", ["Guess No. 198 is ready. You have six guesses and one hint to find the hidden five-letter word.", "What’s your first guess?"])
         ] },
         { cap: "Each guess builds on the letters the one before it found.", turns: [
           gscU("Spray"),
-          gscAi("guess", ["R and A are in the word, both in other places."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
+          gscAi("Guess", ["R and A are in the word, both in other places."], [{ type: "tilegrid", length: 5, count: 1, rows: [{ letters: "SPRAY", marks: "xxnnx" }] }]),
           gscU("Guard"),
-          gscAi("guess", ["A is in place now."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
+          gscAi("Guess", ["A is in place now."], [{ type: "tilegrid", length: 5, count: 2, rows: [{ letters: "SPRAY", marks: "xxnnx" }, { letters: "GUARD", marks: "xxhnx" }] }])
         ] },
         { cap: "Your shared result shows how you did and hides every letter.", turns: [
           gscU("Share my result"),
-          gscAi("guess", "You found it in 3 of 6 guesses, and you didn’t use your hint.", null, [{ type: "mono", text: "Guess No. 34 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
+          gscAi("Guess", "You found it in 3 of 6 guesses, and you didn’t use your hint.", null, [{ type: "mono", text: "Guess No. 198 · 3/6\n\n⬛⬛🟨🟨⬛\n⬛⬛🟩🟨⬛\n🟩🟩🟩🟩🟩\nhttps://afterpixels.com/discover/guess" }])
         ] }
       ],
       groups: [
         { cap: "Ask for today’s groups and the board opens with all sixteen words.", turns: [
           gscU("Play Daily Groups on After Pixels"),
-          gscAi("daily-groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Find four groups of four. You can make four mistakes.", [{ type: "wordboard", words: ["BASS", "PIKE", "FROST", "RAIL", "CARP", "CHORD", "MIST", "GATE", "SOLE", "SCALE", "HAIL", "POST", "PERCH", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "One word out still costs a mistake. Get all four and the group is solved.", turns: [
           gscU("Bass, pike, carp, sole"),
-          gscAi("daily-groups", "One away. 3 mistakes left."),
+          gscAi("Daily Groups", "One away. 3 mistakes left."),
           gscU("Pike, carp, sole, perch"),
-          gscAi("daily-groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
+          gscAi("Daily Groups", "Three groups to go.", [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }], words: ["BASS", "FROST", "RAIL", "CHORD", "MIST", "GATE", "SCALE", "HAIL", "POST", "NOTE", "SLEET", "PANEL"] }])
         ] },
         { cap: "Afterwards, your AI explains the groups.", turns: [
           gscU("Rail, gate, post, panel"),
-          gscAi("daily-groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
+          gscAi("Daily Groups", ["All four groups, one mistake.", "BASS was the trap: a fish, and a note."], [{ type: "wordboard", solved: [{ label: "Fish", words: ["PIKE", "CARP", "SOLE", "PERCH"] }, { label: "Weather", words: ["FROST", "MIST", "HAIL", "SLEET"] }, { label: "Music", words: ["BASS", "CHORD", "SCALE", "NOTE"] }, { label: "Parts of a fence", words: ["RAIL", "GATE", "POST", "PANEL"] }], words: [] }])
         ] }
       ],
       // Accuse: the product page's three chats, written for the page from a real play (2026-11-07) and the game spec. The case is not a real
@@ -1965,7 +2089,7 @@
         { cap: "You can set the clues against each other before you commit to anything.", turns: [
           gscU("Play Accuse on After Pixels"),
           gscAi(
-            "accuse",
+            "Accuse",
             [
               "The Marvello Circus has played its last show, and Signor Marvello, the ringmaster, is dead.",
               "Each suspect was in a different place with a different weapon. One of them is the killer.",
@@ -1982,38 +2106,38 @@
         ] },
         { cap: "When you’re stuck, a hint shows you the next step toward the answer.", turns: [
           gscU("A hint, please"),
-          gscAi("accuse", ["Madame Zara was not in the costume tent."], null, [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }])
+          gscAi("Accuse", ["Madame Zara was not in the costume tent."], null, [{ type: "clues", groups: [{ kind: "Hint", facts: [{ text: "Madame Zara was not in the costume tent.", new: true }] }] }])
         ] },
         { cap: "You get the verdict on your accusation, and a short ending.", turns: [
           gscU("Madame Zara, the brass bugle, the big top"),
-          gscAi("accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?", confirm: "Confirm accusation", cancel: "Cancel" }]),
+          gscAi("Accuse", null, [{ type: "confirm", title: "Confirm your accusation", question: "Accuse **Madame Zara**, with the **brass bugle**, in the **big top**?", confirm: "Confirm accusation", cancel: "Cancel" }]),
           gscU("Confirm accusation"),
-          gscAi("accuse", ["Solved: suspect, weapon and place were all right.", "Madame Zara did it, with the brass bugle, in the big top. She left incense behind."]),
+          gscAi("Accuse", ["Solved: suspect, weapon and place were all right.", "Madame Zara did it, with the brass bugle, in the big top. She left incense behind."]),
           gscU("Share my result"),
-          gscAi("accuse", null, null, [{ type: "mono", text: "Accuse No. 112 · solved · 1 hint 💡\nhttps://afterpixels.com/discover/accuse" }])
+          gscAi("Accuse", null, null, [{ type: "mono", text: "Accuse No. 112 · solved · 1 hint 💡\nhttps://afterpixels.com/discover/accuse" }])
         ] }
       ],
       // Escape No. 1 as played in the staged record (gs-data.jsx GS_ES1). No answer is ever printed.
       escape: [
         { cap: "The door locks behind you. Look around.", turns: [
           gscU("Play Escape on After Pixels"),
-          gscAi("escape", ["Escape No. 1, The Clockmaker’s Study. Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
+          gscAi("Escape", ["**Escape No. 1, The Clockmaker’s Study.** Ezra Vale, the clockmaker, has not been seen for a week. You let yourself into his study to look for him, and the door locks behind you.", "What do you examine first?"])
         ] },
         { cap: "Every lock has three hints. A hint never costs a try.", turns: [
           gscU("Examine the workbench"),
-          gscAi("escape", GS_ES1.bench),
+          gscAi("Escape", GS_ES1.bench),
           gscU("Give me a hint for the drawer"),
-          gscAi("escape", "Count the gears’ teeth, and read each count as a letter.", [{ type: "facts", items: [{ label: "Lock", value: "The workbench drawer" }, { label: "Hint", value: "1 of 3" }] }])
+          gscAi("Escape", "Count the gears’ teeth, and read each count as a letter.", [{ type: "facts", items: [{ label: "Lock", value: "The workbench drawer" }, { label: "Hint", value: "1 of 3" }] }])
         ] },
         { cap: "Out, with your time against par.", turns: [
           gscU("I try my answer on the oak door lock"),
-          gscAi("escape", "The lock gives and the oak door swings open. Escaped in 28 min, under par, with 1 hint and 2 wrong tries.", null, [{ type: "result", title: "The Clockmaker’s Study", status: "Escaped", stats: [{ label: "Time", value: "28 min, under par" }, { label: "Hints", value: 1 }, { label: "Wrong tries", value: 2 }], actions: GSC_WIN }])
+          gscAi("Escape", "The lock gives and the oak door swings open. Escaped in 28 min, under par, with 1 hint and 2 wrong tries.", null, [{ type: "result", title: "The Clockmaker’s Study", status: "Escaped", stats: [{ label: "Time", value: "28 min, under par" }, { label: "Hints", value: 1 }, { label: "Wrong tries", value: 2 }], actions: GSC_WIN }])
         ] }
       ],
       casebook: [
         { cap: "Three guests were still up. Sixteen turns to find out why.", turns: [
           gscU("Play Casebook on After Pixels"),
-          gscAi("casebook", ["The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
+          gscAi("Casebook", ["**The Last Night at Gull Point.** The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.", "You have sixteen turns. Where do you start?"])
         ] },
         { cap: "Every statement is kept word for word, so any story can be checked.", turns: GSC_CB_SEARCH },
         { cap: "The evidence breaks her story.", turns: GSC_CB_LIE }
@@ -2024,55 +2148,55 @@
         { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
           gscU("Play Delve on After Pixels"),
           gscAi(
-            "delve",
-            ["Delve #40: The Orc Caves under Raven Hill", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
+            "Delve",
+            ["**Delve #40: The Orc Caves under Raven Hill**", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
             null,
             [{ type: "entities", title: "Heroes", items: [{ name: "Garrick, the Knight", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Tamsin, the Ranger", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Selwyn, the Wizard", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
           )
         ] },
         { cap: "A slip costs you health. Then try it another way.", turns: [
           gscU("I cross slowly and test every plank"),
-          gscAi("delve", "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", null, [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 19, max: 23, tone: "health" }] }]),
+          gscAi("Delve", "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", null, [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 19, max: 23, tone: "health" }] }]),
           gscU("I haul myself along the ropes"),
-          gscAi("delve", "You grip the ropes and haul yourself across, hand over hand, to the far side.", null, [{ type: "roll", label: "Strength", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success" }])
+          gscAi("Delve", "You grip the ropes and haul yourself across, hand over hand, to the far side.", null, [{ type: "roll", label: "Strength", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success" }])
         ] },
         { cap: "Every hero has a heavy swing of their own, and it hits harder.", turns: [
           gscU("I use Sunder on the troll"),
-          gscAi("delve", "Your blade bites deep, and the troll roars loud enough to shake dust from the roof. Its club swings round in answer, and your shield takes the worst of it.", null, [{ type: "roll", label: "Sunder", roll: 13, mod: 3, target: 14, result: "hit", outcome: "Hit · 7 damage" }])
+          gscAi("Delve", "Your blade bites deep, and the troll roars loud enough to shake dust from the roof. Its club swings round in answer, and your shield takes the worst of it.", null, [{ type: "roll", label: "Sunder", roll: 13, mod: 3, target: 14, result: "hit", outcome: "Hit · 7 damage" }])
         ] },
         { cap: "Your result is ready to post, with the moments that made your run.", turns: [
           gscU("Sunder, on the orc chief"),
-          gscAi("delve", ["The Orc Caves under Raven Hill: Won", "Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.", "You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe."], null, [{ type: "roll", label: "Sunder", roll: 20, mod: 3, target: 14, result: "hit", outcome: "Critical hit · 14 damage" }]),
+          gscAi("Delve", ["**The Orc Caves under Raven Hill: Won**", "Skarn, the orc chief, crashes down among his own war drums, and the caves fall silent.", "You climb out into the grey light of dawn. The drums are silent, and Brackenford wakes safe."], null, [{ type: "roll", label: "Sunder", roll: 20, mod: 3, target: 14, result: "hit", outcome: "Critical hit · 14 damage" }]),
           gscU("Can I get the share card?"),
-          gscAi("delve", "Here’s your share card:", null, [{ type: "mono", text: "The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\nBest roll 🟩19 · Worst roll 🟥2 · Last roll ✨20\nhttps://afterpixels.com/discover/delve" }])
+          gscAi("Delve", "Here’s your share card:", null, [{ type: "mono", text: "The Orc Caves under Raven Hill\nGarrick the Knight · ✅ Brackenford is safe · 17 rolls · longest streak 3\nBest roll 🟩19 · Worst roll 🟥2 · Last roll ✨20\nhttps://afterpixels.com/discover/delve" }])
         ] }
       ],
       barrow: [
         { cap: "Choose a hero. The engine sets the world.", turns: [
           gscU("Play The Barrow of Hollowmere on After Pixels"),
-          gscAi("hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
+          gscAi("The Barrow of Hollowmere", ["Mist lies on the marsh, and the village of Hollowmere has lost its bell to the barrow. Elder Maud is asking for help.", "Will you go as a fighter, a rogue or a wizard?"])
         ] },
         { cap: "Every attack is a roll the engine makes, and the dice are the truth.", turns: [
           gscU("I attack the skeleton with my longsword"),
-          gscAi("hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
+          gscAi("The Barrow of Hollowmere", "Your blade bites through old bone. The barrow skeleton falls apart on the stone.", [{ type: "mono", text: "Attack  d20 14 + 5 = 19 vs 13\nHit, 8 damage" }])
         ] },
         { cap: "Stop when you like. Your hero carries on to the next chapter.", turns: [
           gscU("I ring the bell in the chapel tower"),
-          gscAi("hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
+          gscAi("The Barrow of Hollowmere", "The Bell of Hollowmere is home. The mist draws back from the marsh. Your hero is ready for the next chapter.", [{ type: "mono", text: "Quest complete\n+100 XP" }])
         ] }
       ],
       hunter: [
         { cap: "Grey dawn. The band sets out without waiting.", turns: [
           gscU("Play 36,000 Summers Ago on After Pixels"),
-          gscAi("summers", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
+          gscAi("36,000 Summers Ago", ["Grey dawn. The fire is ash and the band is already moving. Hunters head for the cliffs; gatherers set out for the plateau.", "What do you do?"])
         ] },
         { cap: "The engine rolls the dice and keeps the time.", turns: [
           gscU("I follow the gatherers up to the plateau"),
-          gscAi("summers", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
+          gscAi("36,000 Summers Ago", "Ren shows you where wild onions grow under the scree. By midday your bag is heavy.", [{ type: "roll", label: "Foraging", roll: 14, mod: 2, target: 12, result: "hit" }])
         ] },
         { cap: "At the fire you hear what you missed.", turns: [
           gscU("I head back to the fire at dusk"),
-          gscAi("summers", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
+          gscAi("36,000 Summers Ago", ["The hunters are back with one ibex and a story: the young ones lost the herd at the river.", "You weren’t at the river. Next time, you might be."])
         ] }
       ]
     };
@@ -2453,7 +2577,7 @@
     return sub.plan === "yearly" ? new Date(2027, 8, 18) : new Date(2026, 9, 18);
   };
   const GS_SUB_HOLDS = ["active", "failed", "ending"];
-  const GsRows = ({ rows }) => /* @__PURE__ */ React$1.createElement("dl", { className: "gs-rows-dl" }, rows.map(([k, v]) => /* @__PURE__ */ React$1.createElement("div", { key: k, className: "gs-row-kv" }, /* @__PURE__ */ React$1.createElement("dt", { className: "gs-muted" }, k), /* @__PURE__ */ React$1.createElement("dd", { className: "gs-num-text" }, v))));
+  const GsRows = ({ rows }) => /* @__PURE__ */ React$1.createElement("dl", { className: "gs-rows-dl" }, rows.map(([k, v], i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "gs-row-kv" }, /* @__PURE__ */ React$1.createElement("dt", { className: "gs-muted" }, k), /* @__PURE__ */ React$1.createElement("dd", { className: "gs-num-text" }, v))));
   const GsActs = ({ children }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-acts" }, children);
   const GsPopTitle = ({ children }) => /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-card" }, children);
   const GsKeepLock = ({ lead }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("p", null, lead), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("b", null, "You keep"), " your results, your history and the achievements you earned."), /* @__PURE__ */ React$1.createElement("p", null, /* @__PURE__ */ React$1.createElement("b", null, "What freezes:"), " your streaks, and progress toward achievements you haven’t earned yet."));
@@ -2591,7 +2715,7 @@
     const gs = useGs();
     const plans = gsPlans(gs.review.cur);
     const plan = plans[gs.choice];
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React$1.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React$1.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React$1.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React$1.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-name" }, plans[k].name), k === "yearly" && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "success" }, gsYearMonth(gs.review.cur)), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-price gs-num-text" }, plans[k].per)))), /* @__PURE__ */ React$1.createElement(GsRows, { rows: [["Due today", plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-buy-block", "aria-labelledby": "gs-buy-h" }, /* @__PURE__ */ React$1.createElement("h1", { id: "gs-buy-h", className: "mcp-t-sec gs-buy-head" }, "Start your Pass"), /* @__PURE__ */ React$1.createElement("fieldset", { className: "gs-plans" }, /* @__PURE__ */ React$1.createElement("legend", { className: "gs-vh" }, "Plan"), ["yearly", "monthly"].map((k) => /* @__PURE__ */ React$1.createElement("label", { key: k, className: "gs-plan" + (gs.choice === k ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement("input", { type: "radio", name: "gs-plan", value: k, checked: gs.choice === k, onChange: () => gs.setChoice(k) }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-dot", "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-name" }, plans[k].name), k === "yearly" && /* @__PURE__ */ React$1.createElement(DS.Tag, { kind: "success" }, gsYearMonth(gs.review.cur)), /* @__PURE__ */ React$1.createElement("span", { className: "gs-plan-price gs-num-text" }, plans[k].per)))), /* @__PURE__ */ React$1.createElement(GsRows, { rows: [[/* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Due today ", /* @__PURE__ */ React$1.createElement("span", { className: "gs-row-note" }, "· ", GS.taxShort)), plan.due], ["Renews", gsLong(gsAddMonths(GS_DAY0, plan.months))]] }), /* @__PURE__ */ React$1.createElement(DS.Button, { block: true, onClick: gs.getPass }, "Get the Pass")));
   };
   const GsProviderFrame = ({ merchant, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "gs-auth" }, /* @__PURE__ */ React$1.createElement("main", { className: "gs-auth-col" }, children, /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-center" }, "This is a simulated provider boundary.")));
   const gsFmt = {
@@ -6131,7 +6255,7 @@
         tags: [],
         pitch: { h: "Five wrecks lie somewhere on the sea bed. Find them in twenty dives.", ps: [
           "Some rows and columns of the sea carry a count in the margin, the number of wreck squares that lie along them. Each dive comes back a miss, a hit or a whole wreck raised, and from the counts and the dives you work out where the other wrecks must lie.",
-          "You also get three tools: a sonar sweep, a metal detector and a dragnet. Every sea can be solved by reasoning from its counts and these tools."
+          "You also get three tools: a sonar sweep counts the wreck squares along a row or column whose margin is blank, a metal detector counts them in and around one square, and a dragnet hauls along a line until it catches on a wreck. Every sea can be solved by reasoning from its counts and these tools."
         ] },
         who: { ai: "Draws the whole sea after every dive, with the counts in the margins, the dives and tools you have left, and the wrecks still to find.", server: "Keeps the wrecks secret, answers every dive and tool, and counts what you have left." },
         week: { title: "Today’s sea", line: "You get twenty dives to find five wrecks.", session: "salvage-today" }
@@ -6160,23 +6284,23 @@
       where: [
         { cap: "You get six guesses and one hint.", turns: [
           gscU("Play Where on After Pixels"),
-          gscAi("where", ["Where No. 112 is ready: find today’s country in six guesses. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?"])
+          gscAi("Where", ["Where No. 112 is ready: find today’s country in six guesses. After your first guess, your one hint gives the compass direction from your latest guess. Which country first?"])
         ] },
         { cap: "Each guess comes back as a distance from the country.", turns: [
           gscU("Brazil"),
-          gscAi("where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }]),
+          gscAi("Where", "Brazil is 7,290 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }] }]),
           gscU("Give me the hint"),
-          gscAi("where", "From Brazil, today’s country lies northeast.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }]),
+          gscAi("Where", "From Brazil, today’s country lies northeast.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "Hint", value: "Northeast of Brazil" }] }]),
           gscU("France"),
-          gscAi("where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }])
+          gscAi("Where", "France is 140 km away.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }] }])
         ] },
         { cap: "A guess at 0 km means the answer is one of its neighbours.", turns: [
           gscU("Germany"),
-          gscAi("where", "Germany shares a border with today’s country.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }]),
+          gscAi("Where", "Germany shares a border with today’s country.", [{ type: "facts", items: [{ label: "Brazil", value: "7,290 km" }, { label: "France", value: "140 km" }, { label: "Germany", value: "0 km, shares a border" }] }]),
           gscU("Austria"),
-          gscAi("where", ["Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
+          gscAi("Where", ["Today’s country is Austria.", "It sits in the Alps, and Vienna is its capital."], [{ type: "result", title: "Where No. 112", status: "Found", stats: [{ label: "Guesses", value: "4 of 6" }, { label: "Hints used", value: 1 }] }]),
           gscU("Share my result"),
-          gscAi("where", null, null, [{ type: "mono", text: "Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where" }])
+          gscAi("Where", null, null, [{ type: "mono", text: "Where No. 112 · found in 4 of 6 · 1 hint\n○ ◐ ● ◉\nhttps://afterpixels.com/discover/where" }])
         ] }
       ],
       // Chain: the product page's four chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (chain.md §2 to §5).
@@ -6185,21 +6309,21 @@
       chain: [
         { cap: "You get both ends and each word’s first letter. Only a word marked open can be guessed.", turns: [
           gscU("Play Chain on After Pixels"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "W", "P", "B", "TRACK"], [1, 3])])
+          gscAi("Chain", null, null, [chBoard(["CROSS", "W", "P", "B", "TRACK"], [1, 3])])
         ] },
         { cap: "A wrong guess shows the next letter of that word.", turns: [
           gscU("Wire"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "WO", "P", "B", "TRACK"], [1, 3])]),
+          gscAi("Chain", null, null, [chBoard(["CROSS", "WO", "P", "B", "TRACK"], [1, 3])]),
           gscU("Word"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "B", "TRACK"], [2, 3])])
+          gscAi("Chain", null, null, [chBoard(["CROSS", "WORD", "P", "B", "TRACK"], [2, 3])])
         ] },
         { cap: "Once it is solved, you get every link and a result that names no word.", turns: [
           gscU("Back"),
-          gscAi("chain", null, null, [chBoard(["CROSS", "WORD", "P", "BACK", "TRACK"], [2])]),
+          gscAi("Chain", null, null, [chBoard(["CROSS", "WORD", "P", "BACK", "TRACK"], [2])]),
           gscU("Play"),
-          gscAi("chain", "The links are crossword, wordplay, playback and backtrack.", null, [chBoard(["CROSS", "WORD", "PLAY", "BACK", "TRACK"], [])]),
+          gscAi("Chain", "The links are crossword, wordplay, playback and backtrack.", null, [chBoard(["CROSS", "WORD", "PLAY", "BACK", "TRACK"], [])]),
           gscU("Share my result"),
-          gscAi("chain", null, null, [{ type: "mono", text: "Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain" }])
+          gscAi("Chain", null, null, [{ type: "mono", text: "Chain No. 112 · solved · 1 wrong guess\n●—◐—●—●—●\nhttps://afterpixels.com/discover/chain" }])
         ] }
       ],
       // Salvage: the product page's three chats, written for the page from a real play (2026-11-08, No. 20) and the game spec (salvage.md §1 to §5). The sea is not a real
@@ -6207,17 +6331,17 @@
       salvage: [
         { cap: "Five wrecks lie hidden, and the margins count some rows and columns.", turns: [
           gscU("Play Salvage on After Pixels"),
-          gscAi("salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.", [svGrid([], [], [])])
+          gscAi("Salvage", "The bell goes down over a grey, quiet sea. The five wrecks lie hidden, none touching.", [svGrid([], [], [])])
         ] },
         { cap: "A dragnet snags the first wreck square on a line.", turns: [
           gscU("Row 1 counts 4, so dragnet along it from the left"),
-          gscAi("salvage", "The dragnet snagged at D1, a hit.", [svGrid([], ["D1"], [])])
+          gscAi("Salvage", "The dragnet snagged at D1, a hit.", [svGrid([], ["D1"], [])])
         ] },
         { cap: "The last wreck raised wins the day.", turns: [
           gscU("D5 to finish it"),
-          gscAi("salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
+          gscAi("Salvage", "D5 raised the wreck of 3, covering B5 to D5.", [svGrid(["A4"], [], SV_WRECK_SQUARES, { cols: { A: 3 } }), { type: "result", title: "Salvage No. 112", status: "All 5 wrecks", stats: [{ label: "Dives used", value: "14 of 20" }, { label: "Tools used", value: 3 }] }]),
           gscU("Share my result"),
-          gscAi("salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
+          gscAi("Salvage", null, null, [{ type: "mono", text: "Salvage No. 112 · all 5 wrecks · 14 of 20 dives\n\n🕸️ ✕ ✕ ■ 🧲 ✕ ■ 📡 ○ ✕\n■ ✕ ✕ ■ ✕ ✕ ■\nhttps://afterpixels.com/discover/salvage" }])
         ] }
       ],
       // Common: the product page's three chats, written for the page from a real play (2026-11-08, No. 35) and the game spec (common.md §2, §4, §5).
@@ -6226,24 +6350,24 @@
       common: [
         { cap: "Each thread opens with a single item.", turns: [
           gscU("Play Common on After Pixels"),
-          gscAi("common", null, null, cmBoard(["A RIVER"]))
+          gscAi("Common", null, null, cmBoard(["A RIVER"]))
         ] },
         { cap: "Every extra item you see lowers what a right guess scores.", turns: [
           gscU("Another item"),
-          gscAi("common", null, null, cmBoard(["A RIVER", "A BOTTLE"])),
+          gscAi("Common", null, null, cmBoard(["A RIVER", "A BOTTLE"])),
           gscU("Things that hold water"),
-          gscAi("common", "“Things that hold water” wasn’t it.", null, cmBoard(["A RIVER", "A BOTTLE", "A CAVE"]))
+          gscAi("Common", "“Things that hold water” wasn’t it.", null, cmBoard(["A RIVER", "A BOTTLE", "A CAVE"]))
         ] },
         { cap: "When a thread closes, your AI gives the connection and how each item fits.", turns: [
           gscU("Things with a hinge"),
           gscAi(
-            "common",
+            "Common",
             "Correct! Thread 3 was Things with a hinge, worth 3 points. A laptop and a door swing on one, a clam’s two shells open on one, and so do the arms of a pair of glasses.",
             null,
             [{ type: "result", title: "Common No. 112", status: "Completed", stats: [{ label: "Score", value: "10 of 15" }, { label: "Connections found", value: "3 of 3" }] }]
           ),
           gscU("Share my result"),
-          gscAi("common", null, null, [{ type: "mono", text: "Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nhttps://afterpixels.com/discover/common" }])
+          gscAi("Common", null, null, [{ type: "mono", text: "Common No. 112 · 10/15\n\n🟧🟧🟧⬛  2\n🟦⬛⬛⬛  5\n🟪🟪⬛⬛  3\nhttps://afterpixels.com/discover/common" }])
         ] }
       ]
     });
@@ -7099,7 +7223,7 @@
         art: /* @__PURE__ */ React$1.createElement("div", { ref: host, className: "cpr-mosaic", "aria-hidden": "true", onClick: go }, CPR_MOSAIC.map((k) => /* @__PURE__ */ React$1.createElement(GsArt, { key: k, art: GS_GAMES[k].art, shape: "square" }))),
         title: /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-titlebtn mcp-art-link", onClick: go }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "lock", size: 18, className: "cpr-lock" }), "The Pass", /* @__PURE__ */ React$1.createElement("span", { className: "cpr-chev", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 18, style: { transform: "rotate(-90deg)" } }))),
         blurb: "Every game, every edition.",
-        tags: /* @__PURE__ */ React$1.createElement("span", { className: "cpr-price" }, /* @__PURE__ */ React$1.createElement("span", null, plans.monthly.price), " or ", /* @__PURE__ */ React$1.createElement("span", null, plans.yearly.price))
+        tags: /* @__PURE__ */ React$1.createElement("span", { className: "cpr-price" }, /* @__PURE__ */ React$1.createElement("span", null, plans.monthly.price), " or ", /* @__PURE__ */ React$1.createElement("span", null, plans.yearly.price), /* @__PURE__ */ React$1.createElement("span", { className: "cpr-tax" }, GS.tax))
       }
     );
   };
@@ -7110,7 +7234,7 @@
       const f = field.current;
       if (!f) return void 0;
       const on = (e) => {
-        if (e.pointerType !== "mouse" && e.target.closest(".gs-hero-name, .gs-hero-shapes4")) f.classList.add("is-on");
+        if (e.pointerType !== "mouse" && e.target.closest(".gs-hero-name, .gs-hero-delve-art")) f.classList.add("is-on");
       };
       const off = () => f.classList.remove("is-on");
       const ends = ["pointerup", "pointercancel", "pointerleave"];
@@ -7121,14 +7245,423 @@
         ends.forEach((t) => f.removeEventListener(t, off));
       };
     }, []);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main gs-home" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-hero3" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-copy" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-h1-home" }, /* @__PURE__ */ React$1.createElement("span", null, "Your AI does the talking."), " ", /* @__PURE__ */ React$1.createElement("span", null, "The game keeps the score.")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-hero-sub" }, "Daily puzzles and immersive adventures, played in your own AI chat. The game holds the rules, the dice and your record."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: gs.startFree }, "Start free"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: gs.goHow }, "See how it works")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-works" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, GS.works))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-field", ref: field }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-shapes4", "aria-hidden": "true", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement("i", { style: { background: "#D66847", "--h": "62%", "--rise": "12px" } }), /* @__PURE__ */ React$1.createElement("i", { style: { background: "#A390B2", "--h": "86%", "--rise": "6px" } }), /* @__PURE__ */ React$1.createElement("i", { style: { background: "#F2EBE0", "--h": "66%", "--rise": "18px" } }), /* @__PURE__ */ React$1.createElement("b", null)), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-hero-name", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A NEW RUN EVERY WEEK"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-hero-name-t" }, GS_GAMES.delve.name, " ", /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 20, style: { transform: "rotate(-90deg)" } }))), /* @__PURE__ */ React$1.createElement(DS.ChatPlayback, { turns: GS_HERO_CHAT, loop: true, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height: 340, width: 480, label: "A Delve run being played in a chat" }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Available games", className: "gs-row4" }, [/* @__PURE__ */ React$1.createElement(CprPassCard, { key: "pass" }), ...GS_HOME_GAMES.map((k) => /* @__PURE__ */ React$1.createElement(GsFeature, { key: k, id: k }))]), /* @__PURE__ */ React$1.createElement("div", { className: "gs-home-after" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted gs-pu-wrap" }, /* @__PURE__ */ React$1.createElement(CprHomeLine, null)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap" }, GS.purchase))), /* @__PURE__ */ React$1.createElement(GsWhatsNew, null));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main gs-home" }, /* @__PURE__ */ React$1.createElement("section", { className: "gs-hero3" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label" }, "THE AI GAMING PLATFORM"), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1 gs-h1-home" }, /* @__PURE__ */ React$1.createElement("span", null, "Your AI does the talking."), " ", /* @__PURE__ */ React$1.createElement("span", null, "The game keeps the score.")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-hero-sub" }, "Play daily puzzles and adventures. The game holds the rules, the dice and your record."), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-act" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: gs.startFree }, "Start free"), /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "secondary", onClick: gs.goHow }, "See how it works")), /* @__PURE__ */ React$1.createElement("div", { className: "gs-works" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "WORKS WITH"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted" }, GS.works))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-field mcp-art-host", ref: field }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-delve-art", "aria-hidden": "true", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement(GsArt, { art: "delve", shape: "banner" })), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-hero-name", onClick: () => gs.go(GS_GAMES.delve.route) }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "A NEW RUN EVERY WEEK"), /* @__PURE__ */ React$1.createElement("span", { className: "gs-hero-name-t" }, GS_GAMES.delve.name, " ", /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "down", size: 20, style: { transform: "rotate(-90deg)" } }))), /* @__PURE__ */ React$1.createElement(DS.ChatPlayback, { turns: GS_HERO_CHAT, loop: true, mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY, height: 340, width: 480, label: "A Delve run being played in a chat" }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-band" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Available games", className: "gs-row4" }, [/* @__PURE__ */ React$1.createElement(CprPassCard, { key: "pass" }), ...GS_HOME_GAMES.map((k) => /* @__PURE__ */ React$1.createElement(GsFeature, { key: k, id: k }))]), /* @__PURE__ */ React$1.createElement("div", { className: "gs-home-after" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted gs-pu-wrap" }, /* @__PURE__ */ React$1.createElement(CprHomeLine, null)), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games")))), /* @__PURE__ */ React$1.createElement(GsHomeBlock, null), /* @__PURE__ */ React$1.createElement(GsWhatsNew, null));
   };
   function initGsPassHome() {
     CPR_MOSAIC = cprMix(CPR_SHOWN.filter((k) => CPR_STAGE[k] === "pass").map((k) => k === "salvage" ? "word" : k).slice(0, 8));
   }
+  const A = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="square" stroke-linejoin="miter"';
+  const LINE = {
+    search: "<g " + A + '><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></g>',
+    back: "<g " + A + '><path d="M20 12H5"/><path d="M11 5L4 12L11 19"/></g>',
+    close: "<g " + A + '><path d="M5 5L19 19M19 5L5 19"/></g>',
+    lock: "<g " + A + '><path d="M4.5 11H19.5V21H4.5Z"/><path d="M8 11V5H16V11"/><path d="M12 15V17"/></g>',
+    play: "<g " + A + '><path d="M7 4L19 12L7 20Z"/></g>',
+    pause: "<g " + A + '><path d="M8 5V19M16 5V19"/></g>',
+    settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
+    mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
+    logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
+    card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+    stats: "<g " + A + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
+    advantage: "<g " + A + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
+    pack: "<g " + A + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
+    ability: "<g " + A + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
+    fight: "<g " + A + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
+  };
+  const UI = {
+    check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
+    warn: "<g " + A + '><path d="M12 3L22 20H2Z"/><path d="M12 10V14M12 16.5V17.5"/></g>',
+    error: "<g " + A + '><circle cx="12" cy="12" r="9"/><path d="M12 7V13M12 16V17"/></g>',
+    down: "<g " + A + '><path d="M5 9L12 16L19 9"/></g>',
+    send: '<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></g>',
+    next: "<g " + A + '><path d="M9 5L16 12L9 19"/></g>',
+    out: "<g " + A + '><path d="M14 4H20V10"/><path d="M20 4L11 13"/><path d="M17 14V20H4V7H10"/></g>',
+    share: "<g " + A + '><path d="M12 15V4"/><path d="M7.5 8.5L12 4L16.5 8.5"/><path d="M8 11H5V20H19V11H16"/></g>',
+    list: "<g " + A + '><path d="M4 5H20V10H4Z"/><path d="M4 14H20V19H4Z"/></g>'
+  };
+  [...Object.keys(LINE), ...Object.keys(UI)];
+  function Icon({ name, size = 20, className = "", style, label }) {
+    const body = UI[name] || LINE[name];
+    if (!body) return null;
+    return /* @__PURE__ */ React$1.createElement("svg", { className: ("mcp-ico " + className).trim(), viewBox: "0 0 24 24", width: size, height: size, style: { width: size, height: size, ...style }, role: label ? "img" : void 0, "aria-label": label, "aria-hidden": label ? void 0 : true, focusable: "false", dangerouslySetInnerHTML: { __html: body } });
+  }
+  const MARK$1 = { h: "hit", n: "near", x: "miss" };
+  const SAY = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
+  function TileGrid({ rows = [], length, count, label, className = "" }) {
+    const n = Math.max(1, length || Math.max(0, ...rows.map((r) => (r.letters || "").length)));
+    const all = [...rows];
+    while (count && all.length < count) all.push({ letters: "" });
+    const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
+      const c = ((r.letters || "")[i] || " ").trim();
+      const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK$1[(r.marks || "")[i]] || "filled" : "empty";
+      return { c, s };
+    }));
+    const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s, "aria-hidden": x.s === "blank" || void 0 }, x.s === "blank" ? null : x.c))))));
+  }
+  function cbPress(on, props, children) {
+    if (on) return React$1.createElement("button", { type: "button", onClick: on, ...props }, children);
+    const { ["aria-pressed"]: _p, disabled: _d, ...rest } = props;
+    return React$1.createElement("span", rest, children);
+  }
+  function cbRich(t) {
+    if (typeof t !== "string") return t;
+    return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React$1.createElement("b", { key: i }, s) : s);
+  }
+  function cbFold({ title, count, closed, pad }, children) {
+    return React$1.createElement(
+      "details",
+      { className: "mcp-cb-fold", open: !closed },
+      React$1.createElement(
+        "summary",
+        { className: "mcp-cb-fold-s" },
+        React$1.createElement("span", { className: "mcp-cb-fold-t" }, title),
+        count != null && React$1.createElement("span", { className: "mcp-cb-fold-n" }, React$1.createElement("span", { "aria-hidden": "true" }, "·"), count),
+        React$1.createElement(Icon, { name: "down", size: 16 })
+      ),
+      React$1.createElement("div", { className: "mcp-cb-fold-b" + (pad ? " is-pad" : "") }, children)
+    );
+  }
+  const TONES = ["amber", "teal", "orange", "lilac"];
+  function WordBoard({ words = [], solved = [], picked = [], cols = 4, onPick, label, className = "" }) {
+    const on = new Set(picked.map((w) => String(w).toUpperCase()));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-board " + className).trim(), style: { "--cols": cols }, role: "group", "aria-label": label || "Word board" }, solved.map((g, i) => /* @__PURE__ */ React$1.createElement("div", { key: "s" + i, className: "mcp-cb-band is-" + (g.tone || TONES[i % 4]) }, /* @__PURE__ */ React$1.createElement("b", null, g.label), /* @__PURE__ */ React$1.createElement("span", null, g.words.join(", ")))), words.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-chips" }, words.map((w) => {
+      const p = on.has(w.toUpperCase());
+      return cbPress(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
+    })));
+  }
+  function ChoiceButtons({ items = [], picked, onChoose, label, className = "" }) {
+    const done = picked != null;
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-choices " + className).trim(), role: "group", "aria-label": label || "Moves" }, items.map((it, i) => {
+      const t = typeof it === "string" ? it : it.label;
+      const p = done && (picked === i || picked === t);
+      return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, p && /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 14 }), t));
+    }));
+  }
+  function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+    const folded = !!fold;
+    const rows = /* @__PURE__ */ React$1.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React$1.createElement("div", { key: i }, /* @__PURE__ */ React$1.createElement("dt", null, f.label), /* @__PURE__ */ React$1.createElement("dd", null, cbRich(f.value)))));
+    if (!folded) return rows;
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React$1.cloneElement(rows, { className: "mcp-cb-facts" })));
+  }
+  function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
+    const done = answer === "confirm" || answer === "cancel";
+    const btn = (k, text, on, main) => {
+      const p = answer === k;
+      return cbPress(!done && on, { className: "mcp-cb-choice" + (main ? " is-main" : "") + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, p && /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 14 }), text));
+    };
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React$1.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
+  }
+  function StatRow({ items = [], grid = false, label, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("dl", { className: ("mcp-cb mcp-cb-stats" + (grid ? " is-grid" : "") + " " + className).trim(), "aria-label": label, style: grid ? { "--cols": items.length === 3 ? 3 : Math.min(items.length, 2) } : void 0 }, items.map((s, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-cb-stat" }, /* @__PURE__ */ React$1.createElement("dt", null, s.label), /* @__PURE__ */ React$1.createElement("dd", null, s.value))));
+  }
+  function StatusTag({ tone = "live", label, children, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("span", { className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim() }, label ?? children);
+  }
+  function EntityCards({ title, items = [], onPick, fold, className = "" }) {
+    const folded = !!fold;
+    const list = /* @__PURE__ */ React$1.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
+      const pic = it.pic ? /* @__PURE__ */ React$1.createElement("img", { src: it.pic, alt: "" }) : it.icon ? /* @__PURE__ */ React$1.createElement(Icon, { name: it.icon, size: 16 }) : null;
+      return /* @__PURE__ */ React$1.createElement("li", { key: i }, cbPress(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, pic && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React$1.createElement("b", null, it.name), it.line && /* @__PURE__ */ React$1.createElement("small", null, it.line)))));
+    }));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, title && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-kind" }, title), list));
+  }
+  function ClueCards({ groups = [], newLabel = "New", title, fold, className = "" }) {
+    const folded = !!fold, solo = folded && groups.length === 1;
+    const sections = groups.map((g, i) => /* @__PURE__ */ React$1.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, !solo && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React$1.createElement("ul", null, g.facts.map((f, k) => {
+      const t = typeof f === "string" ? { text: f } : f;
+      return /* @__PURE__ */ React$1.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React$1.createElement("span", null, cbRich(t.text)), t.new && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-new" }, newLabel));
+    }))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
+  }
+  function NavButtons({ items = [], stack = false, onGo, label, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-nav" + (stack ? " is-stack" : "") + " " + className).trim(), role: "group", "aria-label": label || "Go to" }, items.map((it, i) => {
+      const cls = "mcp-cb-go" + (it.out ? " is-out" : "");
+      const body = /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, it.icon && /* @__PURE__ */ React$1.createElement(Icon, { name: it.icon, size: 16 }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-go-t" }, it.label, it.out && /* @__PURE__ */ React$1.createElement("small", null, it.note || "Opens in your browser")), it.out && /* @__PURE__ */ React$1.createElement(Icon, { name: "out", size: 16, className: "mcp-cb-go-out" }));
+      if (it.href) return /* @__PURE__ */ React$1.createElement("a", { key: i, className: cls, href: it.href, target: it.out ? "_blank" : void 0, rel: it.out ? "noopener" : void 0 }, body);
+      return cbPress(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
+    }));
+  }
+  function ResultCard({ title, status, line, stats = [], actions = [], onGo, className = "" }) {
+    const st = typeof status === "string" ? { label: status, tone: "won" } : status;
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-result " + className).trim(), role: "group", "aria-label": title || "Result" }, /* @__PURE__ */ React$1.createElement("div", { className: "mcp-cb-result-head" }, title && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-title" }, title), st && /* @__PURE__ */ React$1.createElement(StatusTag, { tone: st.tone || "won" }, st.label)), line && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-cb-note" }, line), stats.length > 0 && /* @__PURE__ */ React$1.createElement(StatRow, { items: stats, grid: true }), actions.length > 0 && /* @__PURE__ */ React$1.createElement(NavButtons, { items: actions, onGo, stack: true }));
+  }
+  function Track({ items = [], className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-track " + className).trim() }, items.map((t, i) => {
+      const max = t.max || 6;
+      const v = Math.max(0, Math.min(max, t.value || 0));
+      const steps = t.steps ?? max <= 12;
+      return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-cb-track-row is-" + (t.tone || "progress"), role: "meter", "aria-label": t.label, "aria-valuemin": 0, "aria-valuemax": max, "aria-valuenow": v, "aria-valuetext": v + " of " + max }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-track-l" }, t.label), steps ? /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-steps", "aria-hidden": "true" }, Array.from({ length: max }, (_, k) => /* @__PURE__ */ React$1.createElement("i", { key: k, className: k < v ? "is-on" : void 0 }))) : /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-bar", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("i", { style: { width: v / max * 100 + "%" } })), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-track-n" }, v, " of ", max));
+    }));
+  }
+  const TONE = { hit: "won", weak: "warn", miss: "lost" };
+  const WORD = { hit: "Hit", weak: "Weak hit", miss: "Miss" };
+  function RollLine({ label, die = "d20", roll, mod = 0, total, target, result = "hit", outcome, className = "" }) {
+    const sum = total ?? roll + mod;
+    const text = outcome || WORD[result] || "";
+    const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
+    return /* @__PURE__ */ React$1.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React$1.createElement("b", null, label), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React$1.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React$1.createElement("span", null, "= ", /* @__PURE__ */ React$1.createElement("b", null, sum)), target != null && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React$1.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
+  }
+  const Art = ({ art, icon }) => typeof art === "string" ? art.trim().startsWith("<svg") ? /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true", dangerouslySetInnerHTML: { __html: art } }) : /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mart", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("img", { src: art, alt: "" })) : /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mart" + (art ? "" : " is-icon"), "aria-hidden": "true" }, art || icon && /* @__PURE__ */ React$1.createElement(Icon, { name: icon, size: 18 }));
+  function MenuRows({ items = [], search, onGo, onSearch, label, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-menu " + className).trim(), role: "group", "aria-label": label || "Menu" }, search && /* @__PURE__ */ React$1.createElement("label", { className: "mcp-cb-search" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "search", size: 16 }), /* @__PURE__ */ React$1.createElement("input", { type: "search", placeholder: search, "aria-label": search, readOnly: !onSearch, tabIndex: onSearch ? void 0 : -1, onChange: onSearch ? ((e) => onSearch(e.target.value)) : void 0 })), /* @__PURE__ */ React$1.createElement("ul", null, items.map((it, i) => {
+      const act = typeof it.action === "string" ? { label: it.action } : it.action;
+      const st = typeof it.status === "string" ? { label: it.status, tone: "idle" } : it.status;
+      return /* @__PURE__ */ React$1.createElement("li", { key: i, className: "mcp-cb-mrow" }, /* @__PURE__ */ React$1.createElement(Art, { art: it.art, icon: it.icon }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mtext" }, /* @__PURE__ */ React$1.createElement("b", null, it.name), it.line && /* @__PURE__ */ React$1.createElement("small", null, it.line), (st || it.meta) && /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-mmeta" }, st && /* @__PURE__ */ React$1.createElement(StatusTag, { tone: st.tone || "idle" }, st.label), it.meta && /* @__PURE__ */ React$1.createElement("span", null, it.meta))), act && cbPress(onGo && (() => onGo(it, i)), { className: "mcp-cb-go" }, /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, act.icon && /* @__PURE__ */ React$1.createElement(Icon, { name: act.icon, size: 16 }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-cb-go-t" }, act.label))));
+    })));
+  }
+  function Picture({ src, alt, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("img", { className: ("mcp-cb mcp-chat-pic " + className).trim(), src, alt });
+  }
+  const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows, picture: Picture };
+  const WHO = { x: "not in the word", y: "in the word", g: "right spot" };
+  function Tiles({ rows }) {
+    const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
+    return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
+  }
+  function chatPart({ b }) {
+    if (b.type === "tiles") return /* @__PURE__ */ React$1.createElement(Tiles, { rows: b.rows });
+    if (b.type === "list") return /* @__PURE__ */ React$1.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, chatRich(t))));
+    if (b.type === "mono") return /* @__PURE__ */ React$1.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, "/", /* @__PURE__ */ React$1.createElement("wbr", null)) : t));
+    const P = PARTS[b.type];
+    if (P) {
+      const { type, ...p } = b;
+      return /* @__PURE__ */ React$1.createElement(P, { ...p });
+    }
+    return null;
+  }
+  const Part$1 = chatPart;
+  const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
+  const MARK = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+  function chatRuns(text, f = {}) {
+    const s = String(text), out = [];
+    let rest = s;
+    for (; ; ) {
+      const m = MARK.exec(rest);
+      if (!m) {
+        if (rest) out.push({ s: rest, ...f });
+        return out;
+      }
+      if (m.index) out.push({ s: rest.slice(0, m.index), ...f });
+      const g = m[1] != null ? { b: 1 } : m[2] != null ? { u: 1 } : { i: 1 };
+      out.push(...chatRuns(m[1] ?? m[2] ?? m[3], { ...f, ...g }));
+      rest = rest.slice(m.index + m[0].length);
+    }
+  }
+  const styled = (r, node, key) => {
+    let n = node;
+    if (r.u) n = /* @__PURE__ */ React$1.createElement("u", null, n);
+    if (r.i) n = /* @__PURE__ */ React$1.createElement("em", null, n);
+    if (r.b) n = /* @__PURE__ */ React$1.createElement("strong", null, n);
+    return React$1.isValidElement(n) && n !== node ? React$1.cloneElement(n, { key }) : /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key }, n);
+  };
+  function chatRich(text) {
+    const runs = chatRuns(text);
+    if (runs.every((r) => !r.b && !r.i && !r.u)) return String(text);
+    return runs.map((r, k) => styled(r, r.s, k));
+  }
+  function useChatScroll(body, turns, start) {
+    const [up, setUp] = React$1.useState(false);
+    React$1.useEffect(() => {
+      const b = body.current;
+      if (!b) return void 0;
+      let moved = false;
+      const mark = () => {
+        const u = b.scrollTop + b.clientHeight < b.scrollHeight - 4;
+        b.dataset.more = u ? "down" : "";
+        setUp(u);
+      };
+      const end = () => {
+        if (!moved) b.scrollTop = 0;
+        mark();
+      };
+      const stop = () => {
+        moved = true;
+      };
+      b.addEventListener("scroll", mark, { passive: true });
+      ["wheel", "touchstart", "keydown"].forEach((t2) => b.addEventListener(t2, stop, { passive: true }));
+      const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(end) : null;
+      if (ro) {
+        ro.observe(b);
+        [...b.children].forEach((c) => ro.observe(c));
+      }
+      end();
+      const t = setTimeout(end, 600);
+      return () => {
+        clearTimeout(t);
+        if (ro) ro.disconnect();
+        b.removeEventListener("scroll", mark);
+        ["wheel", "touchstart", "keydown"].forEach((t2) => b.removeEventListener(t2, stop));
+      };
+    }, [turns]);
+    const toStart = () => {
+      const b = body.current;
+      if (b) b.scrollTo({ top: b.scrollHeight, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    };
+    return [up, toStart];
+  }
+  function ToolCall({ tool, mark, toolBy, style }) {
+    return /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-call", style }, mark && /* @__PURE__ */ React$1.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), /* @__PURE__ */ React$1.createElement("span", { className: "mcp-chat-calltxt" }, toolBy && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("em", null, toolBy, " ·"), " "), "Called ", tool));
+  }
+  function chatTurn(t, i, { mark, toolBy, fx }) {
+    if (t.from === "user") {
+      if (!fx) return /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
+      const st = fx.piece(i, "u");
+      return st && /* @__PURE__ */ React$1.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
+    }
+    if (!fx) return /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React$1.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Part$1, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React$1.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React$1.createElement(Part$1, { key: "a" + k, b })));
+    const blk = (list, pre) => (list || []).map((b, k) => {
+      const st = fx.piece(i, pre + k);
+      return st && /* @__PURE__ */ React$1.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React$1.createElement(Part$1, { b }));
+    });
+    const call = t.tool && fx.piece(i, "c");
+    const kids = [
+      call && /* @__PURE__ */ React$1.createElement(ToolCall, { key: "c", tool: t.tool, mark, toolBy, style: call }),
+      ...blk(t.blocks, "b"),
+      ...paras(t.text).map((p, k) => {
+        const st = fx.piece(i, "p" + k);
+        return st && /* @__PURE__ */ React$1.createElement("p", { key: "p" + k, style: st }, fx.words(i, "p" + k, p));
+      }),
+      ...blk(t.after, "a")
+    ].filter(Boolean);
+    return kids.length ? /* @__PURE__ */ React$1.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
+  }
+  function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+    const name = label || "A game being played in a chat";
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + " is-top" + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React$1.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "mcp-chat-up" + (comp ? " is-down" : " is-down is-bare"), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React$1.createElement(Icon, { name: "down", size: 16, style: void 0 })), control, comp);
+  }
+  function chatReply({ action, placeholder = "Reply" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-comp has-action", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React$1.createElement("span", null, placeholder), action);
+  }
+  const Part = chatPart;
+  function ChatSide({ label, blocks, name, className = "" }) {
+    return /* @__PURE__ */ React$1.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React$1.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React$1.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React$1.createElement(Part, { key: k, b }))));
+  }
+  const Reply = chatReply;
   const GsFeature = ({ id }) => /* @__PURE__ */ React$1.createElement(GsCard, { id });
   const GS_HOME_GAMES = ["word", "mystery", "escape", "delve", "barrow", "hunter"];
   const GS_MORE_GAMES = ["word", "chain", "salvage", "mystery", "common", "where", "delve"];
+  const HB_HEADING = "Your AI, cast for each game.";
+  const HB_SENTENCE = "Step into a story, crack a puzzle or talk through a mystery.";
+  const HB_U = (text) => ({ from: "user", text });
+  const HB_A = (tool, text, blocks, after) => ({ from: "ai", tool, text, blocks, after });
+  const HB_PICTURE = { type: "picture", src: "assets/home-block-delve.svg", alt: "A hero in armour on a ridge at dawn, a burning tower behind" };
+  const HB_TRACK = (advance) => ({ type: "track", items: [{ label: "Garrick’s health", value: 23, max: 23, tone: "health" }, { label: "The drums", value: advance, max: 12, tone: "threat" }] });
+  const HB_ROWS = [{ letters: "COILS", marks: "hhxhx" }, { letters: "CLOUD", marks: "hnnnh" }];
+  const HB_BOARD = { type: "tilegrid", length: 5, count: 6, rows: HB_ROWS };
+  const HB_PLAYED = (n) => ({ type: "tilegrid", length: 5, count: n, rows: HB_ROWS.slice(0, n) });
+  const HB_CLUES = [{ kind: "Clues", facts: ["1. Madame Zara handled the brass bugle.", "2. Whoever handled the brass bugle was not in the costume tent.", "3. Coco was in the cook tent.", "4. Ivan the Mighty was in the generator truck.", "5. The killer was in the big top."] }];
+  const HB_GAMES = [
+    {
+      id: "delve",
+      gid: "delve",
+      part: "Game Master",
+      intro: "It sets each scene, plays everyone you meet and asks what you do next.",
+      turns: [
+        HB_A("Delve", ["Before dawn on the ridge above Brackenford. The watchtower burns, and orc tracks run up towards the caves under Raven Hill. A watchman lies pinned beneath an overturned cart.", "“Get this off me. Please.”", "You can lift the cart with Strength, or follow the tracks to the caves. What do you do?"], [HB_TRACK(0)]),
+        HB_U("I lift the cart."),
+        HB_A("Delve", ["You heave the cart up, and he drags his leg free.", "“They went up to the caves. Dozens of them.”", "The tracks climb towards Raven Hill. What do you do?"], [{ type: "roll", label: "Strength", roll: 14, mod: 3, target: 12, result: "hit", outcome: "Success" }, HB_TRACK(0)])
+      ]
+    },
+    {
+      id: "guess",
+      gid: "word",
+      part: "Host",
+      intro: "It shows how each guess scored and keeps a hint back until you want it.",
+      turns: [
+        HB_U("COILS"),
+        HB_A("Guess", "Three in place. Five guesses left. Your hint’s here when you want it.", null, [HB_PLAYED(1)]),
+        HB_U("CLOUD"),
+        HB_A("Guess", "Two in place, three elsewhere. Four guesses left.", null, [HB_PLAYED(2)])
+      ]
+    },
+    {
+      id: "accuse",
+      gid: "mystery",
+      part: "Thinking partner",
+      intro: "It helps you think through the clues without solving the case for you.",
+      turns: [
+        HB_U("I keep mixing up Coco, Zara and the weapons. Can we talk through the ringmaster’s murder?"),
+        HB_A("Accuse", "Which clue would you like to start with?", null, [{ type: "clues", groups: HB_CLUES }]),
+        HB_U("Clue 2. “Whoever handled the brass bugle was not in the costume tent.” I keep reading it backwards."),
+        HB_A(null, "Let’s take that sentence in two parts. What does it tell you about where the person with the bugle was? What does it leave unanswered?")
+      ]
+    }
+  ];
+  const hbPlain = (t) => ({ ...t, blocks: t.blocks && t.blocks.filter((b) => b.type !== "tilegrid"), after: t.after && t.after.filter((b) => b.type !== "clues" && b.type !== "tilegrid") });
+  const useHbSize = (ref) => {
+    const [size, setSize] = React$1.useState("desktop");
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => {
+        const w = el.getBoundingClientRect().width;
+        setSize(w < 400 ? "list" : w < 640 ? "phone" : w < 960 ? "tablet" : "desktop");
+      };
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, []);
+    return size;
+  };
+  const HB_EDITION = { delve: "Delve #40", guess: "Guess #197", accuse: "Accuse #112" };
+  const HB_SIDE = { delve: [HB_PICTURE], guess: [HB_BOARD], accuse: [{ type: "clues", groups: HB_CLUES }] };
+  const HbSide = ({ game }) => /* @__PURE__ */ React$1.createElement(ChatSide, { label: HB_EDITION[game], blocks: HB_SIDE[game], name: GS_GAMES[HB_GAMES.find((x) => x.id === game).gid].name + " beside the chat" });
+  const HB_ACTION = (onSend) => /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: onSend }, "Start free");
+  const HbChat = ({ game, size, onSend }) => {
+    const body = React$1.useRef(null);
+    const phone = size === "list" || size === "phone";
+    const g = HB_GAMES.find((x) => x.id === game);
+    const turns = phone ? g.turns : g.turns.map(hbPlain);
+    const pic = phone && game === "delve";
+    const shown = pic ? [{ from: "ai", tool: "Delve", blocks: [HB_PICTURE] }, { ...turns[0], tool: void 0 }, ...turns.slice(1)] : turns;
+    const items = shown.map((t, i) => chatTurn(t, i, { mark: GS_CHAT_MARK, toolBy: GS_CHAT_BY }));
+    const [more, toEnd] = useChatScroll(body, game + size);
+    return chatShell({
+      bodyRef: body,
+      body: items,
+      up: more,
+      toStart: toEnd,
+      start: "top",
+      height: phone ? 300 : void 0,
+      width: 2e3,
+      fill: !phone,
+      label: GS_GAMES[g.gid].name + " being played in a chat",
+      more: "On to the latest",
+      className: "hb-chat",
+      comp: /* @__PURE__ */ React$1.createElement(Reply, { action: HB_ACTION(onSend) })
+    });
+  };
+  const HbIntro = ({ open, go, role }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-ins" }, HB_GAMES.map((g) => /* @__PURE__ */ React$1.createElement("div", { key: g.id, className: "hb-intro" + (g.id === open ? "" : " is-ghost"), "aria-hidden": g.id === open ? void 0 : true }, role && /* @__PURE__ */ React$1.createElement("b", { className: "hb-role" }, g.part), /* @__PURE__ */ React$1.createElement("p", null, g.intro), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => go(GS_GAMES[g.gid].route), tabIndex: g.id === open ? 0 : -1 }, "See ", GS_GAMES[g.gid].name, " ", /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "›")))));
+  const HbTab = ({ g, on, buttonProps, inTab, go }) => /* @__PURE__ */ React$1.createElement("div", { className: "hb-tab" + (on ? " is-open" : ""), "data-np-tile": "" }, /* @__PURE__ */ React$1.createElement("button", { ...buttonProps, className: "hb-tab-b" }, /* @__PURE__ */ React$1.createElement("small", null, GS_GAMES[g.gid].name), /* @__PURE__ */ React$1.createElement("b", null, g.part)), on && inTab && /* @__PURE__ */ React$1.createElement(HbIntro, { open: g.id, go }));
+  const GsHomeBlock = () => {
+    const gs = useGs();
+    const root = React$1.useRef(null);
+    const size = useHbSize(root);
+    const [open, setOpen] = React$1.useState("delve");
+    const inTab = size !== "list";
+    const at = HB_GAMES.findIndex((g) => g.id === open);
+    const cols = size === "phone" || size === "tablet" ? { gridTemplateColumns: HB_GAMES.map((_, i) => i === at ? "minmax(0, 2fr)" : "minmax(0, 1fr)").join(" ") } : void 0;
+    return /* @__PURE__ */ React$1.createElement("section", { ref: root, className: "gs-band hb is-" + size, "aria-labelledby": "gs-hb-h" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec", id: "gs-hb-h" }, HB_HEADING), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted hb-lead" }, HB_SENTENCE), /* @__PURE__ */ React$1.createElement(
+      DS.NotchPicker,
+      {
+        className: "hb-set",
+        label: "Games",
+        value: open,
+        onChange: setOpen,
+        options: HB_GAMES.map((g) => ({ id: g.id, label: GS_GAMES[g.gid].name })),
+        tilesClassName: "hb-tabs",
+        tilesStyle: cols,
+        renderTile: (o, { on, buttonProps }) => /* @__PURE__ */ React$1.createElement(HbTab, { g: HB_GAMES.find((g) => g.id === o.id), on, buttonProps, inTab, go: gs.go }),
+        aside: size === "list" ? /* @__PURE__ */ React$1.createElement("div", { className: "hb-desc", "data-np-aside": "" }, /* @__PURE__ */ React$1.createElement(HbIntro, { open, go: gs.go, role: true })) : null,
+        pointer: size === "desktop" ? "side" : "top",
+        target: size === "list" ? "aside" : "tile",
+        panelProps: { className: "hb-panel" }
+      },
+      /* @__PURE__ */ React$1.createElement("div", { className: "hb-stage" }, size !== "list" && size !== "phone" && /* @__PURE__ */ React$1.createElement("div", { className: "hb-side" }, /* @__PURE__ */ React$1.createElement(HbSide, { game: open })), /* @__PURE__ */ React$1.createElement("div", { className: "hb-talk" }, /* @__PURE__ */ React$1.createElement(HbChat, { game: open, size, onSend: gs.startFree })))
+    ));
+  };
   const GS_WHATSNEW = [
     { v: "1.9", d: "1 October 2026", t: "Copy any result as text", x: "You can copy any finished result as text and paste it anywhere. The full record of rolls, guesses and statements stays on its session page." },
     { v: "1.8", d: "24 September 2026", t: "Streaks carry across devices", x: "Your daily streak and record now follow your account, so they stay intact wherever you connect your AI." },
@@ -7282,12 +7815,6 @@
     ],
     gsPermStep(a)
   ];
-  const gsRevealTile = (el) => {
-    const tr = el.parentElement, r = el.getBoundingClientRect(), b = tr.getBoundingClientRect();
-    const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
-    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (d) tr.scrollBy({ left: d, behavior: still ? "auto" : "smooth" });
-  };
   const GsSetup = () => {
     useGs();
     const [tile, setTile] = React$1.useState("chatgpt");
@@ -7295,35 +7822,9 @@
     const t = gsApp(tile || "chatgpt");
     const a = gsApp(t.subs ? sub : t.id);
     const [copyLabel, copyText] = gsAppCopy(a);
-    const wrap = React$1.useRef(null), card = React$1.useRef(null), notch = React$1.useRef(null), placed = React$1.useRef(false);
-    React$1.useLayoutEffect(() => {
-      const w = wrap.current;
-      if (!w) return void 0;
-      const track = w.querySelector(".mcp-crow-track");
-      const place = (glide) => {
-        const p = w.querySelector('.hw-app[aria-pressed="true"]'), c = card.current, n = notch.current;
-        if (!p || !c || !n) return;
-        const r = p.getBoundingClientRect(), cr = c.getBoundingClientRect(), x = r.left + r.width / 2 - cr.left;
-        if (glide !== void 0) n.style.transition = glide && placed.current ? "" : "none";
-        n.style.visibility = x < 16 || x > cr.width - 16 ? "hidden" : "";
-        n.style.left = x + "px";
-      };
-      const follow = () => place(false), refit = () => place();
-      place(true);
-      placed.current = true;
-      if (track) track.addEventListener("scroll", follow, { passive: true });
-      const ro = window.ResizeObserver ? new ResizeObserver(refit) : null;
-      if (ro) ro.observe(w);
-      return () => {
-        if (track) track.removeEventListener("scroll", follow);
-        if (ro) ro.disconnect();
-      };
-    }, [tile]);
     const ask = "Which app do you use?";
-    return /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md", ref: wrap }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "Setup", sub: ask, label: "Which app do you use?", className: "hw-apps" }, GS_APPS.filter((x) => !x.sub).map((x) => /* @__PURE__ */ React$1.createElement("button", { key: x.id, type: "button", className: "hw-app", "aria-pressed": tile === x.id, "aria-expanded": tile === x.id, "aria-controls": "hw-pick", "aria-label": x.name, onClick: (e) => {
-      setTile(tile === x.id ? null : x.id);
-      if (tile !== x.id) gsRevealTile(e.currentTarget);
-    } }, /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }), /* @__PURE__ */ React$1.createElement("span", null, x.name)))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick", id: "hw-pick", ref: card, "aria-live": "polite", hidden: !tile }, /* @__PURE__ */ React$1.createElement("i", { className: "hw-notch", ref: notch, "aria-hidden": "true" }), /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : "message" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet.")))));
+    const apps = GS_APPS.filter((x) => !x.sub).map((x) => ({ id: x.id, label: x.name, icon: /* @__PURE__ */ React$1.createElement(GsAiLogo, { ai: x.id, size: 32 }) }));
+    return /* @__PURE__ */ React$1.createElement(DS.NotchPicker, { className: "gs-stack-md", label: ask, options: apps, row: { title: "Setup", sub: ask }, value: tile, onChange: setTile, closable: true, panelProps: { className: "hw-pick", "aria-live": "polite" } }, /* @__PURE__ */ React$1.createElement(DS.Card, { className: "hw-pick-card" }, /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-head" }, /* @__PURE__ */ React$1.createElement("h3", { className: "mcp-t-card" }, /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "Add"), " After Pixels ", /* @__PURE__ */ React$1.createElement("span", { className: "hw-soft" }, "to"), " ", a.id === "other" ? "your app" : a.name), t.subs && /* @__PURE__ */ React$1.createElement("div", { className: "hw-seg", role: "group", "aria-label": "Which Grok" }, t.subs.map((id) => /* @__PURE__ */ React$1.createElement(DS.Button, { key: id, "aria-pressed": sub === id, variant: sub === id ? "main" : "secondary", onClick: () => setSub(id) }, GS_SUB_LABEL[id])))), /* @__PURE__ */ React$1.createElement("div", { className: "hw-pick-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm hw-pick-copy" }, /* @__PURE__ */ React$1.createElement("p", { className: "gs-label hw-eyebrow" }, copyLabel), /* @__PURE__ */ React$1.createElement(GsCopyBox, { text: copyText, label: copyLabel, address: a.route === "settings", what: a.route === "settings" ? "address" : "message" })), /* @__PURE__ */ React$1.createElement(GsSteps, { items: gsAppSteps(a) }), a.route === "settings" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted" }, "Don’t see ", a.look ? /* @__PURE__ */ React$1.createElement("b", null, a.look) : "this option", "? Not every plan or country offers it yet."))));
   };
   const GS_START_GAMES = ["word", "mystery", "delve", "salvage"];
   const GS_START_DELVE = {
@@ -7366,7 +7867,7 @@
         title: "To go straight to one, type",
         say: gsPromptText({ kind: "game", gid: "delve" }),
         caption: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Name a game, or a past edition, and your AI starts it. ", /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go(GS_GAMES.delve.route) }, "Go to Delve")),
-        turns: [{ from: "ai", text: [/* @__PURE__ */ React$1.createElement("b", null, d.title), d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
+        turns: [{ from: "ai", text: ["**" + d.title + "**", d.first + d.rest], after: [{ type: "entities", items: d.heroes, className: "hw-heroes" }] }, ...d.more]
       }
     ), /* @__PURE__ */ React$1.createElement(
       GsStartChat,
@@ -7427,7 +7928,7 @@
     const g = GS_GAMES[id];
     const p = GS_PAGES[id];
     const others = GS_MORE_GAMES.filter((k) => k !== id);
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id })), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-head-group" }, top, /* @__PURE__ */ React$1.createElement("section", { className: "gs-head-split" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-hero-cover" }, /* @__PURE__ */ React$1.createElement(GsCover, { art: g.art, fit: true }), /* @__PURE__ */ React$1.createElement("div", { className: "gs-cover-over" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, g.category), /* @__PURE__ */ React$1.createElement("h1", { className: "gs-cover-title" }, g.name))), /* @__PURE__ */ React$1.createElement(GsPlayBox, { id }))), /* @__PURE__ */ React$1.createElement(GsFacts, { id }), /* @__PURE__ */ React$1.createElement("section", { className: "gs-pitch" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, p.pitch.h), p.pitch.ps.map((t, i) => /* @__PURE__ */ React$1.createElement("p", { key: i }, t))), /* @__PURE__ */ React$1.createElement(DS.Card, { style: { gap: 16, justifyItems: "stretch", alignContent: "start", alignSelf: "center" } }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, "HOW IT PLAYS"), /* @__PURE__ */ React$1.createElement(GsWhoCols, { ai: p.who.ai, server: p.who.server }))), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(GsChatRow, { id }), id === "barrow" && /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-muted gs-credit", style: { overflowWrap: "anywhere", maxWidth: "72ch" } }, GS_BARROW_CREDIT)), /* @__PURE__ */ React$1.createElement("section", { className: "gs-stack-md" }, /* @__PURE__ */ React$1.createElement(DS.CardRow, { title: "More games", className: "gs-row4" }, others.map((k) => /* @__PURE__ */ React$1.createElement(GsGameCard, { key: k, id: k }))), /* @__PURE__ */ React$1.createElement("div", { className: "gs-grid2" }, GS_SOON.map((s) => /* @__PURE__ */ React$1.createElement(GsSoonCard, { key: s.name, g: s }))), /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("games") }, "All games"))));
   };
   function initGsGame() {
     GS_PAGES = {
@@ -8023,7 +8524,7 @@
     escape: { bg: "", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-e-door"), I("ga-e-knob"), I("ga-e-win")) },
     delve: { bg: "is-wine", body: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, I("ga-d-out"), I("ga-d-in"), I("ga-d-st"), I("ga-d-st2"), I("ga-d-st3"), I("ga-d-post l"), I("ga-d-post r"), I("ga-d-fl l"), I("ga-d-fl r")) }
   };
-  const GS_RATIO = { square: "mcp-art-1", landscape: "mcp-art-43", wide: "mcp-art-3" };
+  const GS_RATIO = { banner: "mcp-art-2", square: "mcp-art-1", landscape: "mcp-art-43", wide: "mcp-art-3" };
   const GsArt = ({ art, shape }) => {
     if (GS_ART_MOTION.includes(art)) return /* @__PURE__ */ React$1.createElement(DS.GameArt, { art, shape });
     const p = GS_ART_LOCAL[art];
@@ -9375,6 +9876,12 @@
         c.setSub({ hadPass: true });
         c.go("hunter", { page: "record" });
       } },
+      { group: "Library", id: "history-delve-fallen", label: "History, with a Delve run that fell", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "failed" });
+        c.go("history");
+      } },
       { group: "Library", id: "history-in-progress", label: "History, today and this week in progress", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -9987,7 +10494,7 @@
         title: "Copy link to this state",
         "aria-label": "Copy link to " + state.label
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: copied && copied.ok ? "check" : "link", size: 15 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: copied && copied.ok ? "check" : "link", size: 15 })
     )), copied && /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-copied" }, /* @__PURE__ */ React$1.createElement("span", null, copied.ok ? "Copied" : "Copy by hand"), /* @__PURE__ */ React$1.createElement("input", { readOnly: true, value: copied.url, onFocus: (e) => e.target.select() })));
   };
   const StatesGroups = ({ groups, onGo, forceOpen = false }) => {
@@ -10007,7 +10514,7 @@
         },
         /* @__PURE__ */ React$1.createElement("span", { className: "kit-config-group-title" }, g.title),
         /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-count" }, g.items.length),
-        /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-chev", "aria-hidden": "true", style: { transform: isOpen ? "rotate(180deg)" : "none" } }, /* @__PURE__ */ React$1.createElement(Icon, { name: "chevron-down", size: 16 }))
+        /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-group-chev", "aria-hidden": "true", style: { transform: isOpen ? "rotate(180deg)" : "none" } }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "chevron-down", size: 16 }))
       ), isOpen && /* @__PURE__ */ React$1.createElement("div", { id: bodyId }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-group-body" }, g.items.map((s) => /* @__PURE__ */ React$1.createElement(StatesRow, { key: s.id, state: s, onGo }))), g.notes && g.notes.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-notes" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-states-notes-title" }, "Notes"), /* @__PURE__ */ React$1.createElement("ul", null, g.notes.map((n, i) => /* @__PURE__ */ React$1.createElement("li", { key: i }, n))))));
     }));
   };
@@ -10061,7 +10568,7 @@
           "data-shown": shown ? "1" : void 0,
           style: { opacity: shown ? 1 : 0, transform: shown ? "scale(1)" : "scale(0.97)" }
         },
-        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "States"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Every staged state of the app. Jump to one, or copy its link.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "States"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Every staged state of the app. Jump to one, or copy its link.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "x", size: 18 }))),
         /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-body" }, /* @__PURE__ */ React$1.createElement(
           "input",
           {
@@ -10460,7 +10967,7 @@
           "data-shown": shown ? "1" : void 0,
           style: { opacity: shown ? 1 : 0, transform: shown ? "scale(1)" : "scale(0.97)" }
         },
-        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "QA"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Work in progress. The states to check for work in flight, in order.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-head" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-title" }, "QA"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-subtitle" }, "Work in progress. The states to check for work in flight, in order.")), /* @__PURE__ */ React$1.createElement("button", { onClick: onClose, "aria-label": "Close", className: "kit-config-close" }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "x", size: 18 }))),
         /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-body" }, kitQaShown().length === 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: 0 } }, "Nothing to check right now."), kitQaShown().map((w) => /* @__PURE__ */ React$1.createElement("div", { key: w.key, className: "kit-qa-work" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-group-title" }, w.title), w.note && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-hint", style: { margin: "4px 0 8px" } }, w.note), /* @__PURE__ */ React$1.createElement("ol", { className: "kit-qa-steps" }, w.steps.map((id, i) => {
           const label = labels[id];
           return /* @__PURE__ */ React$1.createElement("li", { key: id }, label ? /* @__PURE__ */ React$1.createElement("button", { className: "kit-states-jump", onClick: () => onGo(id) }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, i + 1 + ". " + label), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", id)) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-qa-stale" }, /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-label" }, i + 1 + ". Not in the register"), /* @__PURE__ */ React$1.createElement("span", { className: "kit-states-id" }, "?state=", id)));
@@ -10872,7 +11379,7 @@
         "aria-label": "Config",
         title: "Config — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: "settings", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: "settings", size: 20 })
     ), !fitted && hasStates && /* @__PURE__ */ React$1.createElement(
       "button",
       {
@@ -10885,7 +11392,7 @@
         "aria-label": "States",
         title: "States — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: "list", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: "list", size: 20 })
     ), !fitted && hasQa && /* @__PURE__ */ React$1.createElement(
       "button",
       {
@@ -10898,7 +11405,7 @@
         "aria-label": "QA",
         title: "QA — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: "check", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: "check", size: 20 })
     ), /* @__PURE__ */ React$1.createElement(
       "button",
       {
@@ -10908,7 +11415,7 @@
         "aria-label": "Copy link to this view",
         title: "Copy link to this view — drag to move"
       },
-      /* @__PURE__ */ React$1.createElement(Icon, { name: linkCopied ? "check" : "link", size: 20 })
+      /* @__PURE__ */ React$1.createElement(Icon$1, { name: linkCopied ? "check" : "link", size: 20 })
     )), !fitted && hasQa && qaOpen && /* @__PURE__ */ React$1.createElement(
       QaPalette,
       {
@@ -11137,7 +11644,7 @@
           "data-shown": shown ? "1" : void 0,
           "data-view": inSection ? "section" : "list"
         },
-        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head" }, inSection ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "kit-config-back", onClick: () => setDrilled(false) }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "back", size: 20 }), /* @__PURE__ */ React$1.createElement("span", null, "Config")) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head-text" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-title" }, "Config"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-subtitle" }, "Prototype controls, not part of the product.")), /* @__PURE__ */ React$1.createElement("button", { type: "button", onClick: onClose, "aria-label": "Close", className: "kit-config-dialog-close" }, /* @__PURE__ */ React$1.createElement(Icon, { name: "x", size: 18 }))),
+        /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head" }, inSection ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "kit-config-back", onClick: () => setDrilled(false) }, /* @__PURE__ */ React$1.createElement(ConfigGlyph, { name: "back", size: 20 }), /* @__PURE__ */ React$1.createElement("span", null, "Config")) : /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-head-text" }, /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-title" }, "Config"), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-dialog-subtitle" }, "Prototype controls, not part of the product.")), /* @__PURE__ */ React$1.createElement("button", { type: "button", onClick: onClose, "aria-label": "Close", className: "kit-config-dialog-close" }, /* @__PURE__ */ React$1.createElement(Icon$1, { name: "x", size: 18 }))),
         /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-main" }, /* @__PURE__ */ React$1.createElement("nav", { className: "kit-config-rail", "aria-label": "Config sections" }, railBtn(CONFIG_GLOBAL, "Whole prototype"), features.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-rail-label" }, "Features"), features.map((s) => railBtn(s))), /* @__PURE__ */ React$1.createElement("div", { className: "kit-config-pane", "aria-label": active, onClickCapture: onPaneClickCapture }, /* @__PURE__ */ React$1.createElement("h2", { className: "kit-config-pane-title" }, active), /* @__PURE__ */ React$1.createElement(ConfigCtx.Provider, { value: ctx }, /* @__PURE__ */ React$1.createElement(ConfigGroup, { title: "Review", scope: "global" }, !fitted && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, onPlatformChange && /* @__PURE__ */ React$1.createElement(
           ConfigRow,
           {
@@ -11403,7 +11910,7 @@
         who: { ai: d.page.ai, server: d.page.server },
         week: { title: d.page.heading, line: d.blurb }
       };
-      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.k, d.chat[2])] }];
+      GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.name, d.chat[2])] }];
       GS_LIB_READY[d.k] = d.ready;
       GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
       GS_LIBRARY[d.k] = () => /* @__PURE__ */ React$1.createElement(MgLibrary, { id: d.k });
@@ -11418,7 +11925,7 @@
     const gs = useGs();
     const plans = gsPlans(gs.review.cur);
     const holds = gs.view === "pass";
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React$1.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-pass-price gs-num-text" }, plans.yearly.price, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, " or ", plans.monthly.price)), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.purchase)) })));
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-page" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-head" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "After Pixels Pass"), holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-have" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-marker" }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "check" }), "You have the Pass"), /* @__PURE__ */ React$1.createElement(DS.TextLink, { onClick: () => gs.go("account") }, "Manage in account"))), /* @__PURE__ */ React$1.createElement(GsCompare, { foot: !holds && /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-pass-foot" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-pass-price gs-num-text" }, plans.yearly.price, /* @__PURE__ */ React$1.createElement("span", { className: "gs-muted" }, " or ", plans.monthly.price)), /* @__PURE__ */ React$1.createElement(DS.Button, { onClick: () => gs.go("subscribe") }, "Choose a plan")), /* @__PURE__ */ React$1.createElement("p", { className: "gs-small gs-pu-wrap gs-pu-payline" }, GS.tax, ". ", GS.purchase)) })));
   };
   const CPR_PICKS = [["delve", "A NEW RUN EVERY WEEK"], ["word", "A NEW WORD EVERY DAY"]];
   const cprSelection = (gs) => {
@@ -12245,18 +12752,14 @@
     const L = 44;
     return /* @__PURE__ */ React$1.createElement(Base, { n: true }, h && /* @__PURE__ */ React$1.createElement("line", { x1: c, y1: c, x2: c + Math.cos(a) * L, y2: c + Math.sin(a) * L, className: "wh-ch-bear" }), h && /* @__PURE__ */ React$1.createElement("circle", { cx: c + Math.cos(a) * L, cy: c + Math.sin(a) * L, r: "4", className: "wh-ch-end" }));
   };
-  const upTo = (y) => ({ p }) => /* @__PURE__ */ React$1.createElement(Base, null, p.hint && /* @__PURE__ */ React$1.createElement("line", { x1: "60", y1: "60", x2: "60", y2: y, className: "wh-ch-bear" }));
   const MARKS = {
-    plain: upTo(16),
-    // canon's length (44), ring dropped
-    edge: upTo(8),
-    // runs to the box's edge
-    short: upTo(32)
-    // stops short (28)
+    axes: () => /* @__PURE__ */ React$1.createElement(Base, null, [[0, -1], [0, 1], [-1, 0], [1, 0]].map(([x, y]) => /* @__PURE__ */ React$1.createElement("line", { key: x + "," + y, x1: "60", y1: "60", x2: 60 + x * 48, y2: 60 + y * 48, className: "wh-ch-bear" }))),
+    sweep: () => /* @__PURE__ */ React$1.createElement(Base, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "60", cy: "60", r: "44", pathLength: "272", className: "wh-ch-bear wh-ch-sweep" })),
+    target: () => /* @__PURE__ */ React$1.createElement(Base, null, /* @__PURE__ */ React$1.createElement("circle", { cx: "60", cy: "60", r: "20", className: "wh-ch-end" }))
   };
   const WhHint = ({ p, mark }) => {
     const Pic = mark ? MARKS[mark] : TodayPic;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-chart" + (p.hint ? "" : " is-none"), role: "img", "aria-label": whSay(p) }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement(Pic, { used: !!p.hint, p })), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, whSay(p)));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "wh-chart" + (p.hint ? "" : " is-none"), role: "img", "aria-label": whSay(p) }, /* @__PURE__ */ React$1.createElement("svg", { viewBox: "0 0 120 120", "aria-hidden": "true" }, p.hint || !mark ? /* @__PURE__ */ React$1.createElement(Pic, { p }) : /* @__PURE__ */ React$1.createElement(Base, null)), /* @__PURE__ */ React$1.createElement("span", { className: "wh-say" }, whSay(p)));
   };
   const guesses = (rows) => rows.map(([c, km], i) => ({ n: i + 1, c, km, band: whBand(km) }));
   const HINT = { dir: "northeast", from: "Romania" };
@@ -12301,28 +12804,28 @@
   const Frame = ({ w, children }) => /* @__PURE__ */ React$1.createElement("div", { className: "wc-frame lb-lay", style: w ? { width: w } : void 0 }, children);
   const CONCEPTS = [
     {
-      k: "plain",
+      k: "axes",
       n: "1",
-      h: "Line up, no ring",
-      mark: "plain",
-      note: "Canon's dashed line, fixed straight up from the centre dot at canon's length, with the ring dropped and no N."
+      h: "Two axes through the dot",
+      mark: "axes",
+      note: "The grid's two middle lines are picked out in the bearing's dashed ink, running both ways from the dot: it evokes a bearing's frame, but every way at once, so no way is the answer."
     },
     {
-      k: "edge",
+      k: "sweep",
       n: "2",
-      h: "Line to the edge",
-      mark: "edge",
-      note: "The same dashed line, fixed straight up, running on until it meets the top of the box. No ring, no N."
+      h: "The bearing swept all round",
+      mark: "sweep",
+      note: "The bearing's dashed line, drawn as the whole circle its end could reach from the dot: it evokes a bearing being taken, with every direction drawn and none chosen."
     },
     {
-      k: "short",
+      k: "target",
       n: "3",
-      h: "Line stopping short",
-      mark: "short",
-      note: "The same dashed line, fixed straight up, stopping a little way from the dot. No ring, no N."
+      h: "Ring on the dot",
+      mark: "target",
+      note: "Canon's open ring, the mark for where the country is, sits on the dot with no line: it says a country is out there to be found, with no way marked."
     }
   ];
-  const Overview = () => /* @__PURE__ */ React$1.createElement("section", { className: "wc-item", "aria-labelledby": "wc-over" }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-over", className: "wc-h" }, "The hint square with and without the line"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, "The same box and grid with no line is the No hint picture; a used hint is that picture plus the line. Today's is first, for comparison only."), /* @__PURE__ */ React$1.createElement("div", { className: "wc-over" }, /* @__PURE__ */ React$1.createElement("div", { className: "wc-over-row wc-over-head" }, /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "1 hint"), /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "No hint")), [{ n: "Today", mark: null }, ...CONCEPTS].map((c) => /* @__PURE__ */ React$1.createElement("div", { key: c.k || "t", className: "wc-over-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-over-n" }, c.n === "Today" ? "Today" : c.n + ". " + c.h), /* @__PURE__ */ React$1.createElement("div", { className: "wc-over-pic" }, /* @__PURE__ */ React$1.createElement(WhHint, { p: { g: [1], hint: HINT }, mark: c.mark })), /* @__PURE__ */ React$1.createElement("div", { className: "wc-over-pic" }, /* @__PURE__ */ React$1.createElement(WhHint, { p: { g: [1], hint: null }, mark: c.mark }))))));
-  const Canvas = () => /* @__PURE__ */ React$1.createElement("main", { className: "wc" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Where: the hint's mark on the now card"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-intro" }, `On a Pass. Three versions of the hint's picture beside the globe. Each is today's box and grid with the N dropped and only the line's end changed, and the line is fixed, so it evokes a direction without being one. Captions stay ("1 hint", "No hint", "Not used yet"). Nothing is decided. Game data is rough; buttons do nothing.`), /* @__PURE__ */ React$1.createElement("section", { className: "wc-item wc-notes", "aria-labelledby": "wc-how" }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-how", className: "wc-h" }, "What you cannot see here"), /* @__PURE__ */ React$1.createElement("ul", { className: "wc-list gs-muted" }, /* @__PURE__ */ React$1.createElement("li", null, "The line is fixed straight up. It never turns with the real hint, so the card never says which way the country lies; the session page still does."), /* @__PURE__ */ React$1.createElement("li", null, `Each picture is canon's chart in its own 120 box with the same caption, so no concept can widen the caption. At 280px "Not used yet" wraps to two words stacked, as canon's does today.`), /* @__PURE__ */ React$1.createElement("li", null, "Before the first guess the hint is drawn as No hint (box and grid only, faded), as the spec asks (the hint is refused before a guess). The dot where the line starts stays in every state, as in canon."), /* @__PURE__ */ React$1.createElement("li", null, "The cards are canon's now card frame and parts with canon's CSS, from branch candidate/where-now-drop, copied here because canon does not export them."))), /* @__PURE__ */ React$1.createElement(Overview, null), /* @__PURE__ */ React$1.createElement("section", { className: "wc-item", "aria-labelledby": "wc-today" }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-today", className: "wc-h" }, "Today: the real direction"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, "Canon's card now, Solved, with the N and the ring. A real direction beside the answer reads as wrong."), /* @__PURE__ */ React$1.createElement(Frame, null, /* @__PURE__ */ React$1.createElement(Card, { p: STATES[0].p, tone: STATES[0].tone, mark: null }))), CONCEPTS.map((c) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c.k }, /* @__PURE__ */ React$1.createElement("section", { className: "wc-item wc-concept wc-" + c.k, "aria-labelledby": "wc-" + c.k }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-" + c.k, className: "wc-h" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), c.h), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, c.note)), STATES.map((s) => /* @__PURE__ */ React$1.createElement("section", { key: s.k, className: "wc-item", "aria-label": c.n + ". " + c.h + ": " + s.h }, /* @__PURE__ */ React$1.createElement("p", { className: "wc-state" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), s.h), /* @__PURE__ */ React$1.createElement(Frame, null, /* @__PURE__ */ React$1.createElement(Card, { p: s.p, tone: s.tone, mark: c.mark })))), /* @__PURE__ */ React$1.createElement("section", { className: "wc-item", "aria-label": c.n + ". " + c.h + " at 320 and 280" }, /* @__PURE__ */ React$1.createElement("p", { className: "wc-state" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), "Solved at 320"), /* @__PURE__ */ React$1.createElement(Frame, { w: 320 }, /* @__PURE__ */ React$1.createElement(Card, { p: STATES[0].p, tone: STATES[0].tone, mark: c.mark })), /* @__PURE__ */ React$1.createElement("p", { className: "wc-state" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), "Not used yet, before the first guess, at 280"), /* @__PURE__ */ React$1.createElement(Frame, { w: 280 }, /* @__PURE__ */ React$1.createElement(Card, { p: BEFORE, tone: { kind: "live", label: "In progress" }, mark: c.mark }))))));
+  const Overview = () => /* @__PURE__ */ React$1.createElement("section", { className: "wc-item", "aria-labelledby": "wc-over" }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-over", className: "wc-h" }, "The hint square with and without the mark"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, "The same box and grid with no mark is the No hint picture; a used hint is that picture plus the mark. Today's is first, for comparison only."), /* @__PURE__ */ React$1.createElement("div", { className: "wc-over" }, /* @__PURE__ */ React$1.createElement("div", { className: "wc-over-row wc-over-head" }, /* @__PURE__ */ React$1.createElement("span", null), /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "1 hint"), /* @__PURE__ */ React$1.createElement("span", { className: "wh-cap" }, "No hint")), [{ n: "Today", mark: null }, ...CONCEPTS].map((c) => /* @__PURE__ */ React$1.createElement("div", { key: c.k || "t", className: "wc-over-row" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-over-n" }, c.n === "Today" ? "Today" : c.n + ". " + c.h), /* @__PURE__ */ React$1.createElement("div", { className: "wc-over-pic" }, /* @__PURE__ */ React$1.createElement(WhHint, { p: { g: [1], hint: HINT }, mark: c.mark })), /* @__PURE__ */ React$1.createElement("div", { className: "wc-over-pic" }, /* @__PURE__ */ React$1.createElement(WhHint, { p: { g: [1], hint: null }, mark: c.mark }))))));
+  const Canvas = () => /* @__PURE__ */ React$1.createElement("main", { className: "wc" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Where: the hint's mark on the now card"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-intro" }, `On a Pass. Three ideas for the hint's picture beside the globe. Each is today's box and grid with the N dropped and only the direction point changed, and each is fixed, so it evokes a direction without being one. Captions stay ("1 hint", "No hint", "Not used yet"). Nothing is decided. Game data is rough; buttons do nothing.`), /* @__PURE__ */ React$1.createElement("section", { className: "wc-item wc-notes", "aria-labelledby": "wc-how" }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-how", className: "wc-h" }, "What you cannot see here"), /* @__PURE__ */ React$1.createElement("ul", { className: "wc-list gs-muted" }, /* @__PURE__ */ React$1.createElement("li", null, "Every mark is fixed and the same for every player. It never turns with the real hint, so the card never says which way the country lies; the session page still does."), /* @__PURE__ */ React$1.createElement("li", null, `Each picture is canon's chart in its own 120 box with the same caption, so no concept can widen the caption. At 280px "Not used yet" wraps to two words stacked, as canon's does today.`), /* @__PURE__ */ React$1.createElement("li", null, "Before the first guess the hint is drawn as No hint (box and grid only, faded), as the spec asks (the hint is refused before a guess). The dot where the line starts stays in every state, as in canon."), /* @__PURE__ */ React$1.createElement("li", null, "The cards are canon's now card frame and parts with canon's CSS, from branch candidate/where-now-drop, copied here because canon does not export them."))), /* @__PURE__ */ React$1.createElement(Overview, null), /* @__PURE__ */ React$1.createElement("section", { className: "wc-item", "aria-labelledby": "wc-today" }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-today", className: "wc-h" }, "Today: the real direction"), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, "Canon's card now, Solved, with the N and the real bearing. A real direction beside the answer reads as wrong."), /* @__PURE__ */ React$1.createElement(Frame, null, /* @__PURE__ */ React$1.createElement(Card, { p: STATES[0].p, tone: STATES[0].tone, mark: null }))), CONCEPTS.map((c) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: c.k }, /* @__PURE__ */ React$1.createElement("section", { className: "wc-item wc-concept wc-" + c.k, "aria-labelledby": "wc-" + c.k }, /* @__PURE__ */ React$1.createElement("h2", { id: "wc-" + c.k, className: "wc-h" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), c.h), /* @__PURE__ */ React$1.createElement("p", { className: "gs-muted wc-note" }, c.note)), STATES.map((s) => /* @__PURE__ */ React$1.createElement("section", { key: s.k, className: "wc-item", "aria-label": c.n + ". " + c.h + ": " + s.h }, /* @__PURE__ */ React$1.createElement("p", { className: "wc-state" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), s.h), /* @__PURE__ */ React$1.createElement(Frame, null, /* @__PURE__ */ React$1.createElement(Card, { p: s.p, tone: s.tone, mark: c.mark })))), /* @__PURE__ */ React$1.createElement("section", { className: "wc-item", "aria-label": c.n + ". " + c.h + " at 320 and 280" }, /* @__PURE__ */ React$1.createElement("p", { className: "wc-state" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), "Solved at 320"), /* @__PURE__ */ React$1.createElement(Frame, { w: 320 }, /* @__PURE__ */ React$1.createElement(Card, { p: STATES[0].p, tone: STATES[0].tone, mark: c.mark })), /* @__PURE__ */ React$1.createElement("p", { className: "wc-state" }, /* @__PURE__ */ React$1.createElement("span", { className: "wc-n" }, c.n), "Not used yet, before the first guess, at 280"), /* @__PURE__ */ React$1.createElement(Frame, { w: 280 }, /* @__PURE__ */ React$1.createElement(Card, { p: BEFORE, tone: { kind: "live", label: "In progress" }, mark: c.mark }))))));
   window.KitCandidate.Screen = Canvas;
 })(React, ReactDOM);
