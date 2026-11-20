@@ -12,13 +12,13 @@ const mark='../../../assets/logo.svg';
 const u=text=>({from:'user',text});
 const ai=(tool,text,blocks)=>({from:'ai',tool,text,blocks});
 const turns=[u('I want to play Casebook.'),
-ai('casebook',['The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.','You have sixteen turns. Where do you start?']),
+ai('Casebook',['The Last Night at Gull Point. The hotel’s owner was found at the foot of the cliff stair at midnight. Three guests were still up.','You have sixteen turns. Where do you start?']),
 u('Ask Maeve Doyle where she was at ten.'),
-ai('casebook','“In the bar, all evening. Ask anyone.” Maeve doesn’t look up from her glass.'),
+ai('Casebook','“In the bar, all evening. Ask anyone.” Maeve doesn’t look up from her glass.'),
 u('Search the bar.'),
-ai('casebook','The last drink on Maeve’s tab was poured at 9.40.',[{type:'clues',groups:[{kind:'Evidence',facts:[{text:'The bar ledger',new:true}]}]},{type:'stats',items:[{label:'Turn',value:'4 of 16'}]}]),
+ai('Casebook','The last drink on Maeve’s tab was poured at 9.40.',[{type:'clues',groups:[{kind:'Evidence',facts:[{text:'The bar ledger',new:true}]}]},{type:'stats',items:[{label:'Turn',value:'4 of 16'}]}]),
 u('Show Maeve the bar ledger.'),
-ai('casebook','“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”',[{type:'clues',groups:[{kind:'Evidence',facts:['The bar ledger']},{kind:'Statements',facts:[{text:'Maeve Doyle: lie exposed',new:true}]}]},{type:'stats',items:[{label:'Turn',value:'5 of 16'}]}])];
+ai('Casebook','“Fine. I stepped out at quarter to ten. I went to the cliff stair, but he was already gone.”',[{type:'clues',groups:[{kind:'Evidence',facts:['The bar ledger']},{kind:'Statements',facts:[{text:'Maeve Doyle: lie exposed',new:true}]}]},{type:'stats',items:[{label:'Turn',value:'5 of 16'}]}])];
 const end=ChatPlayback.duration(turns);
 const fmt=ms=>(ms/1000).toFixed(1)+'s';
 const Seek=()=>{const [t,setT]=React.useState(Math.round(end*.42));return <div style={{width:'min(100%,440px)'}}>

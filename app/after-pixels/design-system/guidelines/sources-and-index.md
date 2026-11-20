@@ -17,7 +17,7 @@
 - `components/actions/`: **Button**, **ButtonPair**, **TextLink**
 - `components/forms/`: **TextField**, **SearchField**, **Checkbox**
 - `components/feedback/`: **Tag**, **StatusMessage**, **ProgressBar**, **Loader**
-- `components/surfaces/`: **Card**, **Heading**, **FormCard**, **Popup** (dialog, panel), **Menu**, **Disclosure**, **PageGrid**, **CardRow** + **GameCard**, **GamePick**, **GameTile**, **ListRow** + **RowList**
+- `components/surfaces/`: **Card**, **Heading**, **FormCard**, **Popup** (dialog, panel), **Menu**, **Disclosure**, **PageGrid**, **CardRow** + **GameCard**, **GamePick**, **GameTile**, **ListRow** + **RowList**, **NotchPicker**
 - `components/media/`: **Cover**, **Icon**, **GameArt** (moves only with the link or button it sits in, otherwise still; its built-in pieces are examples, not the game library)
 - `ui_kits/shop/`: click-through composing the components (All games, game page with delete dialog, sign in; working states on Add to Claude, Delete save and Sign in).
 - `guidelines/cards/`: foundation and pattern specimen cards.

@@ -130,7 +130,7 @@ GS_MORE.forEach((d) => {
     who: { ai: d.page.ai, server: d.page.server },
     week: { title: d.page.heading, line: d.blurb },
   };
-  GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.k, d.chat[2])] }];
+  GS_CHATS[d.k] = [{ cap: d.chat[0], turns: [gscU(d.chat[1]), gscAi(d.name, d.chat[2])] }];
   GS_LIB_READY[d.k] = d.ready;
   GS_EDITIONS[d.k] = (gs) => edSample(gs, d.k, d.editions);
   GS_LIBRARY[d.k] = () => <MgLibrary id={d.k} />;

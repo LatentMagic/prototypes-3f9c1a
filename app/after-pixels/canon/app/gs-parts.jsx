@@ -29,7 +29,7 @@ export const GS_ART_LOCAL = {
   escape: { bg: '', body: <>{I('ga-e-door')}{I('ga-e-knob')}{I('ga-e-win')}</> },
   delve: { bg: 'is-wine', body: <>{I('ga-d-out')}{I('ga-d-in')}{I('ga-d-st')}{I('ga-d-st2')}{I('ga-d-st3')}{I('ga-d-post l')}{I('ga-d-post r')}{I('ga-d-fl l')}{I('ga-d-fl r')}</> },
 };
-const GS_RATIO = { square: 'mcp-art-1', landscape: 'mcp-art-43', wide: 'mcp-art-3' };
+const GS_RATIO = { banner: 'mcp-art-2', square: 'mcp-art-1', landscape: 'mcp-art-43', wide: 'mcp-art-3' };
 export const GsArt = ({ art, shape }) => {
   if (GS_ART_MOTION.includes(art)) return <DS.GameArt art={art} shape={shape} />;
   const p = GS_ART_LOCAL[art];

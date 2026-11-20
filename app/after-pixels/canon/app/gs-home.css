@@ -54,9 +54,10 @@
 /* KEEP: home H1 below 900: sized so each sentence holds one line from ~350px; narrower, a sentence may wrap, and the H1 never drops below 25px */
 .gs-h1.gs-h1-home { font-size: clamp(25px, calc(7.6cqi - 3px), 34px); }
 .gs-h1.gs-h1-home > span { display: block; }
-.gs-hero3 .gs-hero-sub { max-width: 56ch; }
-.gs-works { display: grid; gap: 4px; width: 100%; max-width: 44ch; padding-top: 16px; border-top: 1px solid var(--line); }
-.gs-works p { text-wrap: pretty; }
+.gs-hero3 .gs-hero-sub { max-width: 56ch; text-wrap: pretty; }
+/* The hairline runs the copy column's full width at every size; only the text keeps its measure. */
+.gs-works { display: grid; gap: 4px; width: 100%; padding-top: 16px; border-top: 1px solid var(--line); }
+.gs-works p { max-width: 44ch; text-wrap: pretty; }
 .gs-br-wide { display: none; }
 .gs-hero-art3 { position: relative; display: grid; padding: 36px 16px; overflow: hidden; }
 .gs-hero-covers { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; }
@@ -89,24 +90,32 @@
   .gs-who2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
   .gs-who2 > div + div { border-left: 1px solid var(--line); padding-left: 36px; }
 }
-@container gs (min-width: 900px) {
-  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; align-items: stretch; }
+/* KEEP: home hero is two columns from 720px (copy left, the Delve block right), as on desktop, so a tablet's hero fits one screen; below 720 it is the phone's single column. From 720 to 899 the columns are equal and the headline is smaller so each sentence still holds one line; from 900 the copy column is wider. */
+@container gs (min-width: 720px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding-top: 28px; align-items: stretch; }
   .gs-hero3 > .gs-hero-copy { gap: 24px; }
+  .gs-h1.gs-h1-home { font-size: clamp(22px, calc(3.6cqi - 1px), 32px); }
+  .gs-hero-art3 { padding: 36px 16px; align-content: center; }
+}
+@container gs (min-width: 900px) {
+  .gs-hero3 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; padding-top: 36px; }
   /* KEEP: the rule under the hero sits the hero copy's own step (24px) below Works with, matching the step above it */
-  .gs-hero3 + .gs-band { margin-top: -12px; }
   .gs-h1.gs-h1-home { font-size: clamp(32px, calc(3.9cqi - 4px), 46px); text-wrap: initial; }
   .gs-h1.gs-h1-home > span { display: block; white-space: nowrap; }
   .gs-hero-art3 { padding: 36px 16px; align-content: center; }
 }
 @media (prefers-reduced-motion: reduce) { .gs-today-item { transition: none; } }
 
+/* The hero's two buttons: stacked full width on a phone; from a 432px screen, the line where the games block stops being a list (its own 400px, inside the page's 16px gutters), one row, still full width, two equal halves; from 720px, beside the chat, their own width. The gs container is the full page width. */
+@container gs (min-width: 432px) { .gs-hero-act { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 @container gs (min-width: 720px) {
   .gs-sess-head { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-6); }
+  .gs-hero-act { display: flex; width: auto; }
   .gs-wrap { padding-inline: 24px; }
   .gs-grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .gs-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
   .gs-steps.is-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-  .gs-hero-act { display: flex; width: auto; gap: 12px; }
   .gs-how { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
   .gs-hero-art { padding: 36px; }
   .gs-pz-head { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; align-items: end; }
@@ -128,40 +137,34 @@
   .gs-pitch { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 36px; align-items: start; }
 }
 
-/* home hero: one cover field (bars and sun) with the screenshot set inside it (home-hero option 9) */
-.gs-hero-field { position: relative; display: grid; gap: 24px; padding: 20px 12px 12px; background: #1D1B3A; overflow: hidden; min-width: 0; align-self: center; }
-.gs-hero-shapes4 { position: absolute; top: 0; right: 20px; width: 46%; height: 132px; display: flex; align-items: flex-end; gap: 12%; padding-left: 4%; }
-/* Motion on the hero art: the game-art-motion rules (400ms --ease-art, bars round and rise by different amounts, sun squares and sinks 50ms behind). Hovering or focusing the name, or hovering the art, plays it. */
+/* home hero: one cover field (Delve's wine ground and banner art, as on the platform) with the screenshot set inside it (home-hero option 9) */
+/* KEEP: Delve's art sits on the name row, bottom-aligned, so the arch's foot touches the chat card's top edge at every width. The eyebrow stays on one line while the art has at least 92px beside it, then wraps; the art is at most 46% of the field wide, so the two never overlap. */
+.gs-hero-field { position: relative; display: grid; grid-template-columns: fit-content(calc(100% - 108px)) minmax(0, 1fr); column-gap: 8px; row-gap: 0; --name-gap: 24px; padding: 20px 12px 12px; background: var(--cover-bg-wine); overflow: hidden; min-width: 0; align-self: center; }
+.gs-hero-delve-art { grid-column: 2; grid-row: 1; align-self: end; justify-self: end; width: min(46cqw, 150px, calc(100% - 8px)); margin-right: 8px; cursor: pointer; }
+/* Motion on the hero art: Delve's own art-motion pieces. Hovering or focusing the name, or hovering the art, plays it. */
 .gs-hero-field { --on: 0; }
-.gs-hero-shapes4 { cursor: pointer; }
-.gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: transform var(--time-art) var(--ease-art) 0ms, border-radius var(--time-art) var(--ease-art) 0ms; }
-.gs-hero-shapes4 > i { display: block; width: 14%; height: calc(var(--h) + 24px); margin-bottom: -24px; border-radius: calc(var(--on) * 3cqw) calc(var(--on) * 3cqw) 0 0; transform: translateY(calc(var(--on) * var(--rise) * -1)); }
-.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) { --on: 1; }
+.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) { --on: 1; }
 .gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active))) .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; }
-@media (hover: hover) { .gs-hero-field:hover { --on: 1; } }
-.gs-hero-shapes4 > b { position: absolute; top: 18px; right: 0; width: 40px; height: 40px; border-radius: calc((1 - var(--on)) * 50%); background: #E5A63B; transform: translateY(calc(var(--on) * 6px)); }
-.gs-hero-field:is(.is-on, :active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-shapes4:active)) .gs-hero-shapes4 > b { transition-delay: 50ms; }
-@media (hover: hover) { .gs-hero-field:hover .gs-hero-shapes4 > b { transition-delay: 50ms; } }
-@media (prefers-reduced-motion: reduce) { .gs-hero-shapes4 { --on: 0 !important; } .gs-hero-shapes4 > i, .gs-hero-shapes4 > b { transition: none; } }
-.gs-hero-name { position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0; color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
+.gs-hero-field:is(:active, :has(.gs-hero-name:is(:focus-visible, :active), .gs-hero-delve-art:active)) .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); }
+@media (hover: hover) { .gs-hero-field:hover { --on: 1; } .gs-hero-field:hover .gs-hero-delve-art .mcp-art :is(i, b) { transition-delay: calc(var(--s, 0) * 1ms); } }
+.gs-hero-name { grid-column: 1; grid-row: 1; align-self: start; position: relative; z-index: 1; display: grid; gap: 4px; justify-items: start; justify-self: start; background: none; border: 0; padding: 0 0 var(--name-gap); color: var(--text); text-align: left; cursor: pointer; min-height: 44px; }
 .gs-hero-name:active { opacity: .55; }
 .gs-hero-name-t .mcp-ico { transition: transform var(--time-press) var(--ease); }
 @media (hover: hover) { .gs-hero-field:hover .gs-hero-name-t .mcp-ico { transform: translateX(4px) rotate(-90deg) !important; } }
 @media (prefers-reduced-motion: reduce) { .gs-hero-name-t .mcp-ico, .gs-inlink, .gs-ft-link, .gs-ft-mail, .gs-support, .gs-legal-col a { transition: none; } }
 .gs-hero-name-t { display: inline-flex; align-items: center; gap: 8px; font: 700 24px/1.15 var(--font-heading); letter-spacing: -.01em; }
 .gs-hero-field { container-type: inline-size; }
-.gs-hero-field > .mcp-chat { --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
-.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; }
+.gs-hero-field > .gs-hero-name .gs-label { text-wrap: balance; }
+.gs-hero-field > .mcp-chat { grid-column: 1 / -1; grid-row: 2; --z: .82; zoom: var(--z); position: relative; z-index: 1; width: 100% !important; border: calc(2px / var(--z)) solid var(--page); }
+/* KEEP: below 720 the chat is 5:4 but at most 400px tall (328px on screen after the .82 scale, as at 500px wide), so from 500 to 719 the hero ends within one 1024px screen instead of growing with the width */
+.gs-hero-field > .mcp-chat { aspect-ratio: 5 / 4; max-height: 400px; }
 .gs-hero-field > .mcp-chat .mcp-chat-body { flex: 1; min-height: 0; height: auto !important; }
-@container gs (min-width: 900px) {
-  .gs-hero-field { padding: 28px 16px 16px; gap: 36px; }
-  .gs-hero-shapes4 { right: 28px; height: 160px; }
-  .gs-hero-shapes4 > b { width: 48px; height: 48px; top: 24px; }
-}
-/* KEEP: the field takes the copy's height and never sets the hero's, so nothing overhangs; the chat gives up its top turns to fit (home-product-hero option 4) */
-@container gs (min-width: 900px) {
-  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); gap: 20px; padding: 20px 16px 16px; }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; }
+/* KEEP: below 720 the art is at most 150px wide (75px tall, as on a 390 phone) so it never outgrows the title row; from 720 it is 46% of the field, small enough that the eyebrow stays on one line beside it (about 106px at 720, 87px tall at 899).
+   KEEP: from 720px the field takes the copy's height and never sets the hero's, so nothing overhangs and the hero fits one screen; the chat gives up its top turns to fit (home-product-hero option 4). The art's foot still touches the chat card's top edge: it stays in the grid row above the card. */
+@container gs (min-width: 720px) {
+  .gs-hero-field { contain: size; align-self: stretch; grid-template-rows: auto minmax(0, 1fr); --name-gap: 20px; padding: 20px 16px 16px; }
+  .gs-hero-field > .mcp-chat { aspect-ratio: auto; min-height: 0; max-height: none; }
+  .gs-hero-delve-art { margin-right: 12px; width: min(46cqw, calc(100% - 8px)); }
 }
 
 /* what's new: release feed on Home */
@@ -202,15 +205,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @supports (animation-timeline: scroll()) { .wn-nest:has(> .wn-e:nth-child(5))::after { animation: wn-edge auto linear; animation-timeline: scroll(nearest block); } @keyframes wn-edge { 0%, 86% { opacity: 1; } 100% { opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .wn-sum, .wn-caret { transition: none; } }
 
-/* KEEP: tablet (720–899): the hero stays stacked, but the headline and line run full width, Works with sits beside the buttons, and the chat is a short strip that gives up its top turns, as on desktop (home-hero-tablet concept 4) */
-@container gs (720px <= width < 900px) {
-  .gs-hero3 > .gs-hero-copy { grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; justify-items: stretch; }
-  .gs-hero3 > .gs-hero-copy > .gs-h1, .gs-hero3 > .gs-hero-copy > .gs-hero-sub { grid-column: 1 / -1; }
-  .gs-hero3 .gs-hero-sub { max-width: none; }
-  .gs-hero3 .gs-hero-act { align-self: center; }
-  .gs-hero3 .gs-works { max-width: none; align-self: center; padding: 0 0 0 24px; border-top: 0; border-left: 1px solid var(--line); }
-  .gs-hero-field > .mcp-chat { aspect-ratio: auto; height: 400px !important; }
-}
 /* KEEP: what follows the Available games cards, as one block hugging them: the free line, All games, then the purchase line.
    The track pads 12px below the cards, so the block pulls up to sit 16px under them. */
 .gs-home-after { display: grid; gap: 16px; justify-items: start; margin-top: -16px; }
@@ -218,3 +212,95 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* All games keeps its 48px tap height, which centres its text in empty space; pulling the box in (more above, where the
    sentence's leading adds space, less below, where the underline takes some) leaves the same visible gap on each side. */
 .gs-home-after > div { margin: -12px 0 -4px; }
+
+/* The homepage block under Available games: game tabs in the design system's picker (NotchPicker), a card-grey panel with its notch pointing at the chosen game, and the chat stage in the panel. Square throughout; the chat stage stays rounded, as the host chat. */
+.hb { gap: 12px; }
+.hb .mcp-t-sec, .hb-lead { margin: 0; }
+.hb-lead { max-width: 60ch; text-wrap: balance; }
+.hb-set { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; margin-top: 4px; gap: 28px; }
+/* KEEP: 28px between the chosen game and the panel, as Connect's app picker leaves between its tiles and its card; the panel pads 16px, as Connect's card does. */
+/* KEEP: under 400px the games are a list of names (112px, 84px under 360px) beside one off-white description box; the panel runs under both. From 960px the tabs are a 290px column beside the panel. */
+.hb.is-list .hb-set { grid-template-columns: 112px minmax(0, 1fr); gap: 28px 12px; }
+.hb.is-list .hb-panel { grid-column: 1 / -1; }
+.hb.is-desktop .hb-set { grid-template-columns: 290px minmax(0, 1fr); }
+.hb-panel { box-sizing: border-box; display: grid; align-content: start; min-width: 0; padding: 16px; border-radius: 0; box-shadow: none; --np-body-pad: 0; }
+.hb-panel > .mcp-np-body { min-width: 0; }
+.hb-stage { --c-edge: color-mix(in oklab, var(--off-white), #000 8%); display: grid; min-width: 0; background: var(--off-white); border-radius: 16px; overflow: hidden; box-sizing: border-box; }
+/* KEEP: the chat stage is about 360px at every width (phone: a 300px chat body plus the reply bar, about 356px; tablet and desktop 360px) and the chat scrolls inside it, so the block never changes height when a tab is tapped. */
+.hb.is-desktop .hb-stage, .hb.is-tablet .hb-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: 360px; }
+.hb-side, .hb-talk { min-width: 0; min-height: 0; display: grid; }
+.hb-side { border-right: 1px solid var(--c-edge); }
+.hb-talk > .mcp-chat { height: 100%; }
+.hb-stage .mcp-chat { background: transparent; border: 0; border-radius: 0; }
+
+/* The side panel (the design system's ChatSide) takes more room on a desktop stage. */
+.hb.is-desktop .hb-side .mcp-chat-side { padding: 24px; }
+
+/* The tabs are drawn like the design system's picker tiles: outlined on the page colour, a faint hover, the chosen one inverted to off-white. */
+.hb-tabs { box-sizing: border-box; display: grid; gap: 8px; align-items: stretch; min-width: 0; }
+.hb-tab { box-sizing: border-box; min-width: 0; display: grid; align-content: stretch; min-height: 56px; border: 1.5px solid var(--control-edge); background: transparent; color: var(--text); -webkit-tap-highlight-color: transparent; transition: background-color var(--time-press) var(--ease), color var(--time-press) var(--ease), transform var(--time-press) var(--ease); }
+.hb-tab.is-open { background: var(--off-white); border-color: var(--off-white); color: var(--page); }
+.hb-tab:not(.is-open):active { transform: scale(.97); }
+@media (hover: hover) { .hb-tab:not(.is-open):hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .hb-tab { transition: none; } .hb-tab:not(.is-open):active { transform: none; } }
+/* KEEP: the ring shows for keyboard focus only (:focus-visible); on a tap or click the tab just opens, with no white flash. */
+.hb-tab:has(.hb-tab-b:focus-visible) { outline: 2px solid var(--off-white); outline-offset: 2px; }
+.hb-tab-b { -webkit-tap-highlight-color: transparent; display: grid; gap: 2px; align-content: start; justify-items: start; width: 100%; min-width: 0; padding: 8px 10px; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; touch-action: manipulation; }
+.hb-tab-b:focus { outline: none; }
+.hb-tab.is-open .hb-tab-b { cursor: default; }
+.hb-tab-b small { font: 600 12px/1.3 var(--font-text); letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+.hb-tab-b b { font: 700 18px/1.2 var(--font-heading); letter-spacing: -.01em; overflow-wrap: normal; }
+.hb-tab.is-open .hb-tab-b small { opacity: .75; }
+
+/* list (under 400px): the game's name only, so the list is no taller than the box beside it; the role heads the description */
+.hb.is-list .hb-tabs { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; }
+/* KEEP: a list tab's whole box is its button, and its hit area reaches at least 44px tall (the box is 42px at 390) without growing the drawn box: the ::before extends 3px above and below, into the 8px between tabs. */
+.hb.is-list .hb-tab { min-height: 40px; align-content: stretch; }
+.hb.is-list .hb-tab-b { position: relative; align-content: center; padding: 8px 12px; }
+.hb.is-list .hb-tab-b::before { content: ""; position: absolute; inset: -3px 0; }
+.hb.is-list .hb-tab-b b { display: none; }
+.hb.is-list .hb-tab-b small { font-size: 13px; letter-spacing: .02em; text-transform: none; font-weight: 700; opacity: 1; }
+.hb-desc { box-sizing: border-box; min-width: 0; padding: 16px; background: var(--off-white); color: var(--page); border-radius: 0; }
+.hb-role { display: block; margin-bottom: 4px; font: 700 16px/1.2 var(--font-heading); letter-spacing: -.01em; }
+@container gs (max-width: 359px) {
+  .hb.is-list .hb-set { grid-template-columns: 84px minmax(0, 1fr); gap: 16px 8px; }
+  .hb.is-list .hb-tab-b { padding: 8px; }
+  .hb.is-list .hb-tab-b small { font-size: 12px; letter-spacing: 0; }
+  .hb-desc { padding: 12px; }
+}
+
+/* row (400 to 959px): the chosen tab is half the row (2fr of 4fr, set inline) and holds its description */
+/* the chosen tab's name and role sit at the same height and size as the others' */
+.hb:not(.is-list) .hb-tab.is-open .hb-tab-b { padding: 8px 16px 0; }
+.hb-tab.is-open .hb-ins { padding: 8px 16px 14px; }
+
+/* column (960px up): the chosen tab fills the column and holds its description; the others are 72px */
+.hb.is-desktop .hb-tabs { display: flex; flex-direction: column; }
+.hb.is-desktop .hb-tab { min-height: 72px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b { align-content: center; padding: 10px 16px; height: 100%; }
+.hb.is-desktop .hb-tab.is-open { flex: 1; align-content: start; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b { padding: 16px 16px 0; }
+.hb.is-desktop .hb-tab.is-open .hb-tab-b b { font-size: 24px; }
+.hb.is-desktop .hb-tab:not(.is-open) .hb-tab-b b { font-size: 16px; }
+.hb.is-desktop .hb-tab.is-open .hb-ins { padding: 12px 16px 16px; }
+
+/* the description: in the chosen tab (row, column) or the box beside the list; the three share one cell so the open game's height never changes */
+/* KEEP: the link's tap area is its 17px padding, pulled back by negative margins, as the design system does for a link in a cover head (`.mcp-cover-head-links`); the link's own 48px min-height would leave about 14px of dead space above and below it. */
+.hb-ins { display: grid; }
+.hb-intro { grid-area: 1 / 1; display: grid; gap: 12px; align-content: start; justify-items: start; }
+.hb-intro.is-ghost { visibility: hidden; }
+.hb-intro p { margin: 0; font: var(--type-body); font-size: 14px; line-height: 1.4; color: inherit; text-wrap: balance; }
+.hb:is(.is-tablet, .is-desktop) .hb-intro p { font-size: 16px; line-height: 1.5; }
+.hb-intro .hb-role { margin-bottom: -8px; }
+.hb-intro .mcp-lnk { display: inline-block; min-height: 0; padding: 17px 0; margin: -17px 0 calc(-17px + 5.5px); text-box: trim-both cap alphabetic; color: inherit; }
+/* KEEP: the link sits on the off-white chosen tab, so hover, press and focus keep its ink colour; the design system's link turns white for dark ground. */
+.hb-intro .mcp-lnk.mcp-lnk.mcp-lnk:is(:hover, :active, .is-pressed, :focus-visible) { color: inherit; }
+.hb-intro .mcp-lnk:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+/* Under 320px the three tab names still fit their cells whole, with a smaller name and less padding. */
+@container gs (max-width: 319px) { .hb-tab-b b { font-size: 14px; } .hb-tab-b small { font-size: 10px; letter-spacing: .04em; } .hb-tab:not(.is-open) .hb-tab-b { padding: 8px 6px; } }
+/* KEEP: below 360px the chat's Track keeps its steps and its count apart: a 12-step row at the design system's own minimum widths runs into the count at 280px, so the steps shrink to 3px with a 1px gap. */
+@container gs (max-width: 359px) {
+  .hb-chat .mcp-cb-track { grid-template-columns: fit-content(5.5em) minmax(4em, 1fr) auto; column-gap: 8px; }
+  .hb-chat .mcp-cb-steps { gap: 1px; }
+  .hb-chat .mcp-cb-steps > i { min-width: 3px; }
+}
