@@ -3441,11 +3441,15 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cn { container: cn / inline-size; }
 .cn .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
 .cn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
-.cn-pic { align-self: center; justify-self: stretch; min-width: 0; }
+.cn-pic { align-self: center; justify-self: stretch; min-width: 0; container: cnpic / inline-size; }
 .cn-stack { display: grid; justify-items: center; gap: 16px; }
 
+/* KEEP: a single word's tiles (--cn-n of them, set where the word is drawn) are 48px, shrunk only when the word would not fit the picture, so a long
+   word's tiles and letters get smaller and never run past the card or widen the page (the platform's Chain Now card does the same). The picture is its
+   own container, so 100cqi is its width, not the card's. */
 /* Tiles: one size for the word (--t), letters at half, never under 13px. */
 .cn { --t: 48px; }
+.cn-focus { --t: min(48px, (100cqi - (var(--cn-n, 1) - 1) * 4px) / var(--cn-n, 1)); }
 .cn-word { display: inline-flex; gap: 4px; flex: none; }
 .cn-t { width: var(--t); height: var(--t); font-size: max(13px, calc(var(--t) * .5)); }
 .cn-t.is-end { background: var(--off-white); color: var(--page); }

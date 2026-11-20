@@ -95,7 +95,7 @@ const CnPic = ({ p }) => {
     <div className="cn-pic cn-stack">
       {solved
         ? <div className="cn-focus is-ends"><CnWord x={p.w[0]} /><span className="cn-joints" role="img" aria-label={p.mid.length + ' words between'}>{p.mid.map((m) => <CnJoint key={m.i} />)}</span><CnWord x={p.w[p.w.length - 1]} /></div>
-        : <div className="cn-focus"><CnWord x={x} /></div>}
+        : <div className="cn-focus" style={{ '--cn-n': x.state === 'hidden' ? x.shown + 1 : x.word.length }}><CnWord x={x} /></div>}
       <div className="cn-under">{p.g.length > 0 && <CnLinks g={p.g} />}<CnCount p={p} /></div>
     </div>);
 };
