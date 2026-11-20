@@ -4940,7 +4940,7 @@
     const done = st === "done";
     const pass = done && gs.view !== "pass";
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
-    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass });
+    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass: pass && "nostop" });
     if (id === "delve") return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { label: f.label, title: f.title, rooms: DV_ROOMS, onPlay: f.play });
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
@@ -8493,17 +8493,17 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "main", onClick: () => setOpen(true) }, "Share"), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open, onClose: () => setOpen(false), lines }));
   };
   const LbActions = ({ label = "Go to session", onClick, slot }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick }, label), slot && /* @__PURE__ */ React$1.createElement("div", { className: "lb-slot gs-muted" }, slot));
-  const CprPassEnd = ({ text, className }) => {
+  const CprPassEnd = ({ text, className, nostop }) => {
     const gs = useGs();
     const head = text.slice(0, -"the Pass.".length);
-    return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
+    return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), !nostop && ".");
   };
   const lbNowLabel = (gid) => {
     const r = gsRhythm(gid);
     return r === "daily" ? "TODAY" : r === "weekly" ? "THIS WEEK" : "A " + GS_GAMES[gid].ed[0].toUpperCase();
   };
   const LbNowResult = ({ s, tag }) => s.kind === "live" || tag ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s })) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-vd is-" + (s.kind === "ok" ? "ok" : "over") }, s.label);
-  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }) : next }));
+  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass.", nostop: pass === "nostop" }) : next }));
   const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid, title, play: onPlay, next, span }, /* @__PURE__ */ React$1.createElement("p", null, line));
   const lbWeekDone = (gs) => (gs.review && gs.review.week) !== "live";
   const lbNow = (gs, id) => {
