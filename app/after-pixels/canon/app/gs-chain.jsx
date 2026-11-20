@@ -68,12 +68,14 @@ const ChnChain = ({ g, across }) => {
 };
 const CHN_KINDS = [['right', 'Right'], ['wrong', 'Wrong'], ['near', 'Near miss'], ['given', 'Given away']];
 // KEEP: a link is drawn at least 0.7px per drawing unit (21 by 11px, its number 8.4px); a chain that would be drawn smaller folds, across
-// into balanced rows, or down beside the board into balanced columns, each link then 1px per unit (30 by 16px, its number 13px) as Chain's
-// now card draws them, the numbers running on from one row or column to the next. A chain that is drawn at 0.7px or more is not folded. Measured:
-// the rows by the room the panel gives them (never the guesses' own width, which shrinks as they fold), the columns by the board's height
-// (the platform needs the same measuring).
+// into balanced rows, or down beside the board into balanced columns, each link then CHN_FOLD_SCALE px per unit (0.7: 21 by 11px, its number
+// 9px, between the shrunk size of a long chain and Chain's now card at 1px), the numbers running on from one row or column to the next. A chain
+// that is drawn at 0.7px or more is not folded. A row or column that is not full (the last) is centred on the full ones, rows across, columns
+// vertically. Measured: the rows by the room the panel gives them (never the guesses' own width, which shrinks as they fold), the columns by
+// the board's height (the platform needs the same measuring).
 const CHN_FLOOR = 0.7;
-const chnPer = (room) => Math.max(1, Math.floor((room - chnLen(1)) / CHN_STEP) + 1);
+const CHN_FOLD_SCALE = 0.7;
+const chnPer = (room) => Math.max(1, Math.floor((room / CHN_FOLD_SCALE - chnLen(1)) / CHN_STEP) + 1);
 const chnFold = (g, per) => { const size = Math.ceil(g.length / Math.ceil(g.length / per)); const out = [];
   for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
   return out; };
@@ -90,8 +92,8 @@ const ChnGuesses = ({ g }) => {
   const kinds = CHN_KINDS.map(([k, label]) => [k, label, g.filter((t) => t.res === k).length]).filter((x) => x[2] > 0);
   return (
     <div ref={ref} className="chn-guesses" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + kinds.map((x) => x[2] + ' ' + x[1].toLowerCase()).join(', ')}>
-      {fold.a ? <div className="chn-rows">{chnFold(g, fold.a).map((row, r) => <ChnChain key={r} g={row} across />)}</div> : <ChnChain g={g} across />}
-      {fold.d ? <div className="chn-cols">{chnFold(g, fold.d).map((col, r) => <ChnChain key={r} g={col} />)}</div> : <ChnChain g={g} />}
+      {fold.a ? <div className="chn-rows" style={{ '--chn-fs': CHN_FOLD_SCALE }}>{chnFold(g, fold.a).map((row, r) => <ChnChain key={r} g={row} across />)}</div> : <ChnChain g={g} across />}
+      {fold.d ? <div className="chn-cols" style={{ '--chn-fs': CHN_FOLD_SCALE }}>{chnFold(g, fold.d).map((col, r) => <ChnChain key={r} g={col} />)}</div> : <ChnChain g={g} />}
       <ul className="chn-key" aria-hidden="true">{kinds.map(([k, label, n]) => (
         <li key={k}><svg width="12" height="20" viewBox="0 0 20 34"><ChnLoop res={k} x={2} y={2} /></svg>{label} <b>{n}</b></li>))}</ul>
     </div>);

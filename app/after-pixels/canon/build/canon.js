@@ -12209,7 +12209,8 @@
   };
   const CHN_KINDS = [["right", "Right"], ["wrong", "Wrong"], ["near", "Near miss"], ["given", "Given away"]];
   const CHN_FLOOR = 0.7;
-  const chnPer = (room) => Math.max(1, Math.floor((room - chnLen(1)) / CHN_STEP) + 1);
+  const CHN_FOLD_SCALE = 0.7;
+  const chnPer = (room) => Math.max(1, Math.floor((room / CHN_FOLD_SCALE - chnLen(1)) / CHN_STEP) + 1);
   const chnFold = (g, per) => {
     const size = Math.ceil(g.length / Math.ceil(g.length / per));
     const out = [];
@@ -12241,7 +12242,7 @@
       return () => ro.disconnect();
     }, [g.length]);
     const kinds = CHN_KINDS.map(([k, label]) => [k, label, g.filter((t) => t.res === k).length]).filter((x) => x[2] > 0);
-    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "chn-guesses", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + kinds.map((x) => x[2] + " " + x[1].toLowerCase()).join(", ") }, fold.a ? /* @__PURE__ */ React$1.createElement("div", { className: "chn-rows" }, chnFold(g, fold.a).map((row, r) => /* @__PURE__ */ React$1.createElement(ChnChain, { key: r, g: row, across: true }))) : /* @__PURE__ */ React$1.createElement(ChnChain, { g, across: true }), fold.d ? /* @__PURE__ */ React$1.createElement("div", { className: "chn-cols" }, chnFold(g, fold.d).map((col, r) => /* @__PURE__ */ React$1.createElement(ChnChain, { key: r, g: col }))) : /* @__PURE__ */ React$1.createElement(ChnChain, { g }), /* @__PURE__ */ React$1.createElement("ul", { className: "chn-key", "aria-hidden": "true" }, kinds.map(([k, label, n]) => /* @__PURE__ */ React$1.createElement("li", { key: k }, /* @__PURE__ */ React$1.createElement("svg", { width: "12", height: "20", viewBox: "0 0 20 34" }, /* @__PURE__ */ React$1.createElement(ChnLoop, { res: k, x: 2, y: 2 })), label, " ", /* @__PURE__ */ React$1.createElement("b", null, n)))));
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "chn-guesses", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + kinds.map((x) => x[2] + " " + x[1].toLowerCase()).join(", ") }, fold.a ? /* @__PURE__ */ React$1.createElement("div", { className: "chn-rows", style: { "--chn-fs": CHN_FOLD_SCALE } }, chnFold(g, fold.a).map((row, r) => /* @__PURE__ */ React$1.createElement(ChnChain, { key: r, g: row, across: true }))) : /* @__PURE__ */ React$1.createElement(ChnChain, { g, across: true }), fold.d ? /* @__PURE__ */ React$1.createElement("div", { className: "chn-cols", style: { "--chn-fs": CHN_FOLD_SCALE } }, chnFold(g, fold.d).map((col, r) => /* @__PURE__ */ React$1.createElement(ChnChain, { key: r, g: col }))) : /* @__PURE__ */ React$1.createElement(ChnChain, { g }), /* @__PURE__ */ React$1.createElement("ul", { className: "chn-key", "aria-hidden": "true" }, kinds.map(([k, label, n]) => /* @__PURE__ */ React$1.createElement("li", { key: k }, /* @__PURE__ */ React$1.createElement("svg", { width: "12", height: "20", viewBox: "0 0 20 34" }, /* @__PURE__ */ React$1.createElement(ChnLoop, { res: k, x: 2, y: 2 })), label, " ", /* @__PURE__ */ React$1.createElement("b", null, n)))));
   };
   const ChnSessBody = ({ s }) => {
     if (!s.play) return s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;

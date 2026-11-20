@@ -3416,12 +3416,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 @container gs (min-width: 760px) { .chn-chain.is-down { width: auto; height: min(calc(var(--ch) * var(--lu)), var(--bh)); } }
 @container gs (min-width: 1100px) { .chn-guesses { grid-auto-flow: column; align-items: center; gap: 24px; } }
 .chn-chain text { font: 600 12px/1 var(--font-text); fill: var(--muted); }
-/* A folded chain (gs-chain.jsx, CHN_FLOOR): rows across, or columns beside the board, each link drawn at 1px per unit and never scaled up to fill
-   the card, the numbers 13px; the rows share the card's width as evenly as they can and sit centred. */
+/* A folded chain (gs-chain.jsx, CHN_FOLD_SCALE): rows across, or columns beside the board, each link drawn at --chn-fs px per unit and never scaled
+   up to fill the card; the rows share the card's width as evenly as they can, and a short last row or column is centred on the full ones. */
 .chn-rows { display: grid; justify-items: center; gap: 4px; width: 100%; }
-.chn-rows .chn-chain.is-across { width: min(calc(var(--cw) * 1px), 100%); }
-.chn-cols { display: none; gap: 12px; align-items: flex-start; justify-content: center; }
-.chn-cols .chn-chain.is-down { display: block; width: calc(var(--cw) * 1px); height: calc(var(--ch) * 1px); }
+.chn-rows .chn-chain.is-across { width: min(calc(var(--cw) * var(--chn-fs) * 1px), 100%); }
+.chn-cols { display: none; gap: 12px; align-items: center; justify-content: center; }
+.chn-cols .chn-chain.is-down { display: block; width: calc(var(--cw) * var(--chn-fs) * 1px); height: calc(var(--ch) * var(--chn-fs) * 1px); }
 .chn-rows .chn-chain text, .chn-cols .chn-chain text { font-size: 13px; }
 .chn-chain.is-down { display: none; }
 @container dv2 (min-width: 672px) {
