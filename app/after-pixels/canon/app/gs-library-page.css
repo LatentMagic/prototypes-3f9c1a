@@ -13,7 +13,8 @@
 /* The now card (LbNowCard): its head and the game's picture in one stack, the action row below it. */
 .lb-now-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 /* KEEP: a now card's result chip holds the top right, on the row of the small label above the title, at every width. The title sits on the rows below and takes the card's full width, cut after 3 lines with "…", so a long title is never squeezed into a narrow column beside the chip. A long result takes at most half the row and wraps itself, right-aligned. Cards with no chip are unchanged. */
-.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(50%); column-gap: 12px; row-gap: 4px; align-items: start; }
+/* KEEP: the label and the title under it stay together at the top left, with the 4px between them, at every width. A game's now card holds a 132px least height from 640px, which would otherwise stretch the head's two rows and drop the title to the middle of the card, away from the label. */
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(50%); column-gap: 12px; row-gap: 4px; align-items: start; align-content: start; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { display: contents; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .gs-label { grid-column: 1; grid-row: 1; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; }
