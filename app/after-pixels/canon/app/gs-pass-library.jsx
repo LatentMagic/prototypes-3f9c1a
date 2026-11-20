@@ -87,7 +87,7 @@ export const LbNeedsPass = ({ id, had, ach, access }) => {
   }
   return <DS.NeedsPass game={GS_NAME[id] || g.name} word={word} words={words} record={record} total={items.length} onGet={() => gs.go('pass')} style={id === 'barrow' || id === 'casebook' ? { gridColumn: '1 / -1' } : undefined} />;
 };
-const cprNowCard = (gs, id, ach) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass ? <LbNeedsPass id={id} had ach={ach} /> : <CprFirst id={id} />; };
+const cprNowCard = (gs, id, ach) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass && cprFirstState(gs, id) !== 'live' ? <LbNeedsPass id={id} had ach={ach} /> : <CprFirst id={id} />; };
 const cprKey = (gs) => gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gsFresh(gs) ? 'f' : '') + cprStore.get().lapsed;
 
 // ---- The library game pages for a free or Pass-ended player (canon's composition). Casebook is Pass-only, as Daily Groups:

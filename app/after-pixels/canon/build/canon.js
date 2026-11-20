@@ -5004,7 +5004,7 @@
   };
   const cprNowCard = (gs, id, ach) => {
     const f = cprLapsedOf(id);
-    return gsLapsed(gs) && f.used && f.pass ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach }) : /* @__PURE__ */ React$1.createElement(CprFirst, { id });
+    return gsLapsed(gs) && f.used && f.pass && cprFirstState(gs, id) !== "live" ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach }) : /* @__PURE__ */ React$1.createElement(CprFirst, { id });
   };
   const cprKey = (gs) => gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gsFresh(gs) ? "f" : "") + cprStore.get().lapsed;
   const CprCbLibrary = () => {
@@ -7095,7 +7095,7 @@
   const cprFirstState = (gs, id) => {
     if (gs.view === "pass") return id === "barrow" && cprStore.get().bwDone && !!phFirstPlay(gs, id) ? "done" : "pass";
     if (!phFirstPlay(gs, id)) return "none";
-    if (gsLapsed(gs)) return cprLapsedOf(id).used ? "done" : "none";
+    if (gsLapsed(gs)) return cprLapsedOf(id).used ? id === "delve" && !lbWeekDone(gs) ? "live" : "done" : "none";
     if (gsFresh(gs)) return "none";
     if (id === "barrow") return cprStore.get().bwDone ? "done" : "none";
     if (id === "escape" && phSeedNew(gs, "escape")) return "none";
@@ -9696,6 +9696,13 @@
         c.setReview({ ed: "won-by-use" });
         c.go("delve", { page: "record" });
       } },
+      { group: "Library", id: "library-delve-pass-ended-first-in-progress", label: "Delve in your library, Pass ended, first run still in progress", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setSub({ hadPass: true });
+        c.setReview({ week: "live" });
+        c.go("delve", { page: "record" });
+      } },
       { group: "Library", id: "library-list-free-in-progress", label: "Library list, free account, Delve’s first run in progress", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
@@ -11024,7 +11031,7 @@
     key: "delve-free-card",
     title: "Delve: the free player’s now card (LM-1602, not signed off)",
     note: "Each at phone and desktop width, in the free account: no Pass button or line before or during the run; finished, “Keep playing with the Pass” with only the Pass linked.",
-    steps: ["library-delve-free-not-started", "library-delve-free-nothing-played", "library-delve-free-in-progress", "pur-first-done", "library-delve-free-lost-no-roll", "library-delve-free-fallen", "library-delve-free-won-by-use"]
+    steps: ["library-delve-free-not-started", "library-delve-free-nothing-played", "library-delve-free-in-progress", "pur-first-done", "library-delve-free-lost-no-roll", "library-delve-free-fallen", "library-delve-free-won-by-use", "library-delve-pass-ended-first-in-progress"]
   });
   KIT_QA.unshift({
     key: "delve-1236",

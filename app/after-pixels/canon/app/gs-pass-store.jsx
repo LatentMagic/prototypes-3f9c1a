@@ -33,7 +33,8 @@ export const cprFirstState = (gs, id) => {
   // A first edition whose play the record does not hold (Config → This edition: Not played) is not started in every view, a Pass-ended player's included.
   if (gs.view === 'pass') return id === 'barrow' && cprStore.get().bwDone && !!phFirstPlay(gs, id) ? 'done' : 'pass';
   if (!phFirstPlay(gs, id)) return 'none';
-  if (gsLapsed(gs)) return cprLapsedOf(id).used ? 'done' : 'none';
+  // A Pass-ended player's Delve first run can still be in progress (Config → This edition: In progress).
+  if (gsLapsed(gs)) return cprLapsedOf(id).used ? (id === 'delve' && !lbWeekDone(gs) ? 'live' : 'done') : 'none';
   if (gsFresh(gs)) return 'none';
   if (id === 'barrow') return cprStore.get().bwDone ? 'done' : 'none';
   if (id === 'escape' && phSeedNew(gs, 'escape')) return 'none';
