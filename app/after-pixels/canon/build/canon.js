@@ -9684,6 +9684,18 @@
         c.setReview({ ed: "lost-no-roll" });
         c.go("delve", { page: "record" });
       } },
+      { group: "Library", id: "library-delve-free-fallen", label: "Delve in your library, free account, first run lost on a roll (fell in the warren)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ ed: "failed" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-won-by-use", label: "Delve in your library, free account, first run won by an ability (the last turn is a use)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ ed: "won-by-use" });
+        c.go("delve", { page: "record" });
+      } },
       { group: "Library", id: "library-list-free-in-progress", label: "Library list, free account, Delve’s first run in progress", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
@@ -11012,7 +11024,7 @@
     key: "delve-free-card",
     title: "Delve: the free player’s now card (LM-1602, not signed off)",
     note: "Each at phone and desktop width, in the free account: no Pass button or line before or during the run; finished, “Keep playing with the Pass” with only the Pass linked.",
-    steps: ["library-delve-free-not-started", "library-delve-free-nothing-played", "library-delve-free-in-progress", "pur-first-done", "library-delve-free-lost-no-roll"]
+    steps: ["library-delve-free-not-started", "library-delve-free-nothing-played", "library-delve-free-in-progress", "pur-first-done", "library-delve-free-lost-no-roll", "library-delve-free-fallen", "library-delve-free-won-by-use"]
   });
   KIT_QA.unshift({
     key: "delve-1236",
