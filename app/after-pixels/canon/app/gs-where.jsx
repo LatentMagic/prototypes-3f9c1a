@@ -60,13 +60,13 @@ const WhGlobe = ({ p }) => {
 
 // The chart: a ruled box with a faint grid, N at the top, the bearing dashed out from the guessed country to an open ring. The box
 // is unfilled, so it takes the card's colour.
-// KEEP: on the Now card (count) the caption only counts the hint, "1 hint" or "No hint" ("Not used yet" while live), as the share text does: the card's last guess is rarely the guess the hint pointed from, so a direction beside it would mislead. The session page keeps the full "North of …" caption.
+// KEEP: on the Now card (count) the caption only counts the hint, "1 hint" or "No hint" ("Not used yet" while live), as the share text does: the card's last guess is rarely the guess the hint pointed from, so a direction beside it would mislead. The label says the same, never the real direction. The session page keeps the full "North of …" caption and label.
 // KEEP: on the Now card (count) the picture is a fixed stand-in: a dashed line straight up from the centre dot, 44 long, no ring and no N, the same for every player and never turning with the real hint. It evokes a bearing without being one, because a real direction beside "Last guess" reads as wrong on a Solved card (the last guess is the answer). The session page keeps the real chart: the real bearing, the ring and the N.
 const WhChart = ({ p, count }) => {
   // KEEP: the same 120 box and 104 span as the globe (WhGlobe), so the square is exactly as wide as the globe (Joe, 2026-10-31).
-  const h = p.hint; const a = h ? (WH_POINTS.indexOf(h.dir) * 45 - 90) * Math.PI / 180 : 0; const c = 60; const L = 44;
+  const h = p.hint; const say = count && h ? '1 hint' : whSay(p); const a = h ? (WH_POINTS.indexOf(h.dir) * 45 - 90) * Math.PI / 180 : 0; const c = 60; const L = 44;
   return (
-    <div className={'wh-chart' + (h ? '' : ' is-none')} role="img" aria-label={h ? 'Hint: the country lies ' + h.dir + ' of ' + h.from : whSay(p)}>
+    <div className={'wh-chart' + (h ? '' : ' is-none')} role="img" aria-label={count && h ? 'Hint: ' + say : h ? 'Hint: the country lies ' + h.dir + ' of ' + h.from : say}>
       <svg viewBox="0 0 120 120" aria-hidden="true">
         <rect x="8" y="8" width="104" height="104" className="wh-ch-box" />
         {[34, 60, 86].map((v) => <g key={v}><line x1={v} y1="8" x2={v} y2="112" className="wh-ch-grid" /><line x1="8" y1={v} x2="112" y2={v} className="wh-ch-grid" /></g>)}
@@ -76,7 +76,7 @@ const WhChart = ({ p, count }) => {
         {h && !count && <circle cx={c + Math.cos(a) * L} cy={c + Math.sin(a) * L} r="4" className="wh-ch-end" />}
         <circle cx={c} cy={c} r="5" className="wh-ch-from" />
       </svg>
-      <span className="wh-say">{count && p.hint ? '1 hint' : whSay(p)}</span>
+      <span className="wh-say">{say}</span>
     </div>);
 };
 
