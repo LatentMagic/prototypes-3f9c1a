@@ -3258,10 +3258,17 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   border-bottom: 1px solid var(--line); font: 600 14px/1 var(--font-text); }
 .wh-card .gs-sc-panel { border-top: 0; }
 /* KEEP: a guess row is 44px tall at least and grows with a country name that wraps (Democratic Republic of the Congo takes up to four
-   lines on a phone), its number and margin rule stretching with it, so a long name never runs into the rows around it. */
-/* KEEP: the margin rule is inset 8px from each line's top, so it never touches the rule above (Joe, 2026-10-31). */
-.wh-line > .wh-n, .wh-line.is-head > span:first-child { align-self: stretch; display: grid; place-items: end center; margin-top: 8px; border-right: 1px solid var(--control-edge); }
-.wh-line b { font: 700 18px/1 var(--font-heading); color: var(--text); min-width: 0; padding-top: 8px; overflow-wrap: anywhere; }
+   lines on a phone), so a long name never runs into the rows around it. Its number and distance are centred on the name's full height,
+   whether it runs to one line or four: the name sits in the row's second track, the first track is the 8px (taller on a one-line row)
+   above it, and the number and distance take the second track too. */
+.wh-line:not(.is-head) { grid-template-rows: minmax(8px, 1fr) auto; row-gap: 0; }
+.wh-line:not(.is-head) > b { grid-column: 2; grid-row: 2; }
+.wh-line:not(.is-head) > .wh-n { grid-column: 1; grid-row: 2; align-self: center; justify-self: center; }
+.wh-line:not(.is-head) > .wh-km { grid-column: 3; grid-row: 2; align-self: center; }
+/* KEEP: the margin rule is inset 8px from each line's top, so it never touches the rule above (Joe, 2026-10-31); it stretches with the row. */
+.wh-line:not(.is-head)::before { content: ''; grid-column: 1; grid-row: 1 / -1; align-self: stretch; margin-top: 8px; border-right: 1px solid var(--control-edge); }
+.wh-line.is-head > span:first-child { align-self: stretch; display: grid; place-items: end center; margin-top: 8px; border-right: 1px solid var(--control-edge); }
+.wh-line b { font: 700 18px/1 var(--font-heading); color: var(--text); min-width: 0; overflow-wrap: anywhere; }
 .wh-line.is-found b, .wh-line.is-found .wh-km { color: var(--success); }
 .wh-line.is-head { height: 32px; min-height: 0; font: 600 11px/1 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .wh-line.is-head > span:last-child { text-align: right; }
