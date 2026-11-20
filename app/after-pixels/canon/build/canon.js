@@ -1653,7 +1653,7 @@
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
-    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use" },
+    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use", "lost-no-roll": "delve-lost-no-roll" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
   const gsSessStatus = (s) => ({ kind: s.loss ? "bad" : "ok", label: s.result });
@@ -3700,7 +3700,7 @@
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const open = (turn) => gs.go("session", turn ? { id: sid, turn } : { id: sid });
     const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, m.turns.length ? /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open }) : /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms: s.tracks && s.tracks.rooms || 5, reached: true })));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, m.turns.length || m.lost ? /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open }) : /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms: s.tracks && s.tracks.rooms || 5, reached: true })));
   };
   const registerDelve = () => {
     GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
@@ -3733,6 +3733,21 @@
         ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
         ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
       ]
+    };
+    GS_SESSIONS["delve-lost-no-roll"] = {
+      ...GS_SESSIONS.delve,
+      loss: true,
+      end: "fallen",
+      lostOff: { name: "Collapsing tunnel", harm: 23 },
+      result: "Fell in the warren",
+      reached: "Fell in the warren",
+      share: "Fell in the warren",
+      shareLines: null,
+      figures: ["Threat 0/12", "0 rolls", "HP 0/23"],
+      tracks: { progress: 1, rooms: 5, threat: 0, threatMax: 12 },
+      threat: 0,
+      sheet: { used: {}, insp: true },
+      lines: [["Room", "Entered the warren"]]
     };
     GS_SESSIONS["delve-story-fall"] = {
       ...GS_SESSIONS.delve,
@@ -9663,6 +9678,12 @@
         c.setReview({ week: "live", begun: true });
         c.go("delve", { page: "record" });
       } },
+      { group: "Library", id: "library-delve-free-lost-no-roll", label: "Delve in your library, free account, first run lost with no roll or use (the loss cross in its room)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ ed: "lost-no-roll" });
+        c.go("delve", { page: "record" });
+      } },
       { group: "Library", id: "library-list-free-in-progress", label: "Library list, free account, Delve’s first run in progress", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
@@ -10987,6 +11008,12 @@
       )
     );
   };
+  KIT_QA.unshift({
+    key: "delve-free-card",
+    title: "Delve: the free player’s now card (LM-1602, not signed off)",
+    note: "Each at phone and desktop width, in the free account: no Pass button or line before or during the run; finished, “Keep playing with the Pass” with only the Pass linked.",
+    steps: ["library-delve-free-not-started", "library-delve-free-nothing-played", "library-delve-free-in-progress", "pur-first-done", "library-delve-free-lost-no-roll"]
+  });
   KIT_QA.unshift({
     key: "delve-1236",
     title: "Delve: session page and now card (1236, not signed off)",
