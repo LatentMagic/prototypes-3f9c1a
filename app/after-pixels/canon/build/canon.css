@@ -827,7 +827,7 @@ button.mcp-cb-ent{cursor:pointer}
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
 .dvA2-route { display: flex; min-width: 0; }
 .dvA2-stop { flex: 1 1 0; min-width: 0; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 10px; padding: 8px 0 9px; }
-.dvA2-stop.is-on, .dl-now-stop.is-on { background: color-mix(in srgb, var(--text) 5%, var(--card)); }
+.dvA2-stop.is-on { background: color-mix(in srgb, var(--text) 5%, var(--card)); }
 .dvA2-stop.is-on .dv2-num, .dl-now-stop.is-on .dv2-num { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dvA2-head { position: relative; width: 100%; display: grid; justify-items: center; gap: 4px; text-align: center; padding: 0 4px; box-sizing: border-box; }
 .dvA2-head::before { content: ''; position: absolute; top: 13px; left: 0; right: 0; height: 2px; background: var(--control-edge); }

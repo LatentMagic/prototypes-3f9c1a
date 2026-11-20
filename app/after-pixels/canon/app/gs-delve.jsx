@@ -543,7 +543,7 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(t), hov: DL_
   })}</div>);
 };
 // The Now card's route with nothing rolled: the run's rooms drawn empty. `reached` marks room 1 as the session page's empty route does
-// (a tinted room, its number lit, a small square where the dice will go); a run not started marks none.
+// (its number lit, a small square where the dice will go); a run not started marks none.
 const DlNowEmptyRoute = ({ rooms, reached }) => { const [ref, cols] = useDlNowCols(rooms);
   return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} role="img" aria-label={'The run has ' + rooms + ' rooms, ' + (reached ? 'the first reached, no rolls yet' : 'none entered yet')}>{dlEmptyStops(rooms).map((st, i) => (
     <div key={st.i} className={'dl-now-stop' + (reached ? (i === 0 ? ' is-on' : ' is-far') : '') + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
