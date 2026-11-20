@@ -277,10 +277,9 @@ export const LbActions = ({ label = 'Go to session', onClick, slot }) => (
   </div>
 );
 
-// A sentence ending "…the Pass." with "the Pass" linked, or with the whole sentence as the link (whole).
-export const CprPassEnd = ({ text, className, whole }) => {
+// A sentence ending "…the Pass." with "the Pass" linked.
+export const CprPassEnd = ({ text, className }) => {
   const gs = useGs(); const head = text.slice(0, -'the Pass.'.length);
-  if (whole) return <p className={className}><button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>{text}</button></p>;
   return <p className={className}>{head}<button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>;
 };
 
@@ -295,7 +294,7 @@ const LbNowResult = ({ s, tag }) => (s.kind === 'live' || tag
   : <p className={'gs-vd is-' + (s.kind === 'ok' ? 'ok' : 'over')}>{s.label}</p>);
 // gid; label: overrides the schedule's; title; result: { kind, label } or none (not shown); play: the button reads Play, else open
 // and "Go to session"; next: the next-time line; pass: the free player's first part is done, and the Pass line takes the next-time
-// line's place (pass: 'whole' makes the whole sentence the link, as Delve's free card has it); span: the card takes the whole row; className: the game's hook for laying out its picture.
+// line's place; span: the card takes the whole row; className: the game's hook for laying out its picture.
 export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => (
   <section className={'lb-card' + (className ? ' ' + className : '')} style={span ? { gridColumn: '1 / -1' } : undefined}>
     <div className="lb-now-in">
@@ -305,7 +304,7 @@ export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pa
       </div>
       {children}
     </div>
-    <LbActions label={play ? 'Play' : undefined} onClick={play || open} slot={pass ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." whole={pass === 'whole'} /> : next} />
+    <LbActions label={play ? 'Play' : undefined} onClick={play || open} slot={pass ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." /> : next} />
   </section>
 );
 
