@@ -3411,6 +3411,17 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .chn-card .gs-sc-panel { grid-template-columns: 1fr; }
 .chn-guesses { display: grid; justify-items: center; gap: 16px; }
 .chn-chain { display: block; overflow: visible; width: min(calc(var(--cw) * var(--lu)), 100%); height: auto; aspect-ratio: var(--cw) / var(--ch); }
+/* The across chain's rows (gs-chain.jsx ChnAcross) are one size: the widest row is drawn up to --lu and no wider than the card, and the shorter ones at the same scale. */
+.chn-rows { display: grid; justify-items: center; gap: 4px; width: 100%; }
+.chn-chain.is-across { width: min(calc(var(--cw) * var(--lu)), calc(100% * var(--cw) / var(--cmax))); }
+/* KEEP: a chain too long for the board's height at 1px per unit (gs-chain.jsx) takes the phone layout at every card width: the board, then
+   the guesses across the card's full width, folded into rows, the key under them. */
+.chn-card.is-long .gs-sc-duo { grid-template-columns: none; justify-content: stretch; column-gap: 0; }
+.chn-card.is-long .gs-sc-panel { grid-template-columns: 1fr; align-self: auto; margin-top: 0; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); width: 100%; }
+.chn-card.is-long .chn-guesses { grid-auto-flow: row; grid-template-columns: minmax(0, 1fr); width: 100%; gap: 16px; }
+.chn-card.is-long .chn-chain.is-down { display: none; }
+.chn-card.is-long .chn-rows { display: grid; }
+.chn-card.is-long .chn-key { flex-direction: row; align-items: center; }
 /* KEEP: under 760px the guesses take the card's full width; from 760px the chain down never runs longer than the board (--bh);
    from 1100px the key stands beside the chain, so the board sets the card's height (between, a tablet has no room beside). */
 @container gs (max-width: 759.98px) { .chn-guesses { grid-template-columns: minmax(0, 1fr); width: 100%; } }
@@ -3420,7 +3431,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .chn-chain.is-down { display: none; }
 @container dv2 (min-width: 672px) {
   .chn-chain.is-down { display: block; }
-  .chn-chain.is-across { display: none; }
+  .chn-rows { display: none; }
 }
 .chn-loop { fill: none; stroke-width: 3.5; }
 .chn-bar { stroke: #918B80; stroke-width: 2; }

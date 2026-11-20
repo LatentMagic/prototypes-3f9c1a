@@ -53,24 +53,48 @@ const chnOffset = (res, across) => (res === 'right' ? undefined : CHN_P - CHN_GA
 const ChnLoop = ({ res, x, y, across }) => (
   <rect x={x} y={y} width={across ? CHN_H : CHN_W} height={across ? CHN_W : CHN_H} rx={CHN_W / 2} className={'chn-loop is-' + res}
     strokeDasharray={chnDash(res)} strokeDashoffset={chnOffset(res, across)} />);
-const ChnChain = ({ g, across }) => {
-  const len = 8 + (g.length - 1) * CHN_STEP + CHN_H;
-  return across
-    ? <svg className="chn-chain is-across" width={len} height="46" viewBox={'0 0 ' + len + ' 46'} style={{ '--cw': len, '--ch': 46 }} aria-hidden="true">
-      {g.slice(1).map((t, i) => <line key={'b' + i} className="chn-bar" x1={4 + i * CHN_STEP + CHN_H} y1={4 + CHN_W / 2} x2={4 + (i + 1) * CHN_STEP} y2={4 + CHN_W / 2} />)}
-      {g.map((t, i) => <ChnLoop key={i} res={t.res} across x={4 + i * CHN_STEP} y={4} />)}
-      {g.map((t, i) => <text key={'n' + i} x={4 + i * CHN_STEP + CHN_H / 2} y="42" textAnchor="middle">{t.n}</text>)}</svg>
-    : <svg className="chn-chain is-down" width="56" height={len} viewBox={'0 0 56 ' + len} style={{ '--cw': 56, '--ch': len }} aria-hidden="true">
+const chnLen = (k) => 8 + (k - 1) * CHN_STEP + CHN_H;
+// KEEP: a link is never drawn under 1px per drawing unit (30 by 16px, its number 12px). A chain too long for one row at that size folds
+// into balanced rows, the numbers running on across them, as Chain's now card does; a chain too long for the board's height at that size
+// leaves the side-by-side layout (the card's `is-long`) and runs across under the board, so the guesses never shrink to marks too small
+// to read, and never scroll sideways.
+const CHN_MIN = 1;
+const chnFold = (g, per) => { const rows = Math.ceil(g.length / per); const size = Math.ceil(g.length / rows); const out = [];
+  for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
+  return out; };
+const ChnAcross = ({ g, per }) => {
+  const rows = chnFold(g, per); const cmax = chnLen(rows[0].length);
+  return (
+    <div className="chn-rows">{rows.map((row, r) => { const len = chnLen(row.length);
+      return (
+        <svg key={r} className="chn-chain is-across" width={len} height="46" viewBox={'0 0 ' + len + ' 46'} style={{ '--cw': len, '--ch': 46, '--cmax': cmax }} aria-hidden="true">
+          {row.slice(1).map((t, i) => <line key={'b' + i} className="chn-bar" x1={4 + i * CHN_STEP + CHN_H} y1={4 + CHN_W / 2} x2={4 + (i + 1) * CHN_STEP} y2={4 + CHN_W / 2} />)}
+          {row.map((t, i) => <ChnLoop key={i} res={t.res} across x={4 + i * CHN_STEP} y={4} />)}
+          {row.map((t, i) => <text key={'n' + i} x={4 + i * CHN_STEP + CHN_H / 2} y="42" textAnchor="middle">{t.n}</text>)}</svg>); })}
+    </div>);
+};
+const ChnDown = ({ g }) => {
+  const len = chnLen(g.length);
+  return (
+    <svg className="chn-chain is-down" width="56" height={len} viewBox={'0 0 56 ' + len} style={{ '--cw': 56, '--ch': len }} aria-hidden="true">
       {g.slice(1).map((t, i) => <line key={'b' + i} className="chn-bar" x1={32 + CHN_W / 2} y1={4 + i * CHN_STEP + CHN_H} x2={32 + CHN_W / 2} y2={4 + (i + 1) * CHN_STEP} />)}
       {g.map((t, i) => <ChnLoop key={i} res={t.res} x={32} y={4 + i * CHN_STEP} />)}
-      {g.map((t, i) => <text key={'n' + i} x="20" y={4 + i * CHN_STEP + CHN_H / 2 + 4} textAnchor="end">{t.n}</text>)}</svg>;
+      {g.map((t, i) => <text key={'n' + i} x="20" y={4 + i * CHN_STEP + CHN_H / 2 + 4} textAnchor="end">{t.n}</text>)}</svg>);
 };
 const CHN_KINDS = [['right', 'Right'], ['wrong', 'Wrong'], ['near', 'Near miss'], ['given', 'Given away']];
-const ChnGuesses = ({ g }) => {
+const ChnGuesses = ({ g, setLong }) => {
+  const ref = React.useRef(null); const [per, setPer] = React.useState(8);
+  React.useLayoutEffect(() => {
+    const me = ref.current; const card = me.closest('.chn-card'); const board = card && card.querySelector('.chn-board'); if (!board) return undefined;
+    const fit = () => { const room = me.clientWidth;
+      if (room > 0) setPer(Math.max(1, Math.floor((room / CHN_MIN - 8 - CHN_H) / CHN_STEP) + 1));
+      setLong(g.length > Math.max(1, Math.floor((board.offsetHeight / CHN_MIN - 8 - CHN_H) / CHN_STEP) + 1)); };
+    fit(); const ro = new ResizeObserver(fit); ro.observe(me); ro.observe(board); return () => ro.disconnect();
+  }, [g.length]);
   const kinds = CHN_KINDS.map(([k, label]) => [k, label, g.filter((t) => t.res === k).length]).filter((x) => x[2] > 0);
   return (
-    <div className="chn-guesses" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + kinds.map((x) => x[2] + ' ' + x[1].toLowerCase()).join(', ')}>
-      <ChnChain g={g} across /><ChnChain g={g} />
+    <div ref={ref} className="chn-guesses" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + kinds.map((x) => x[2] + ' ' + x[1].toLowerCase()).join(', ')}>
+      <ChnAcross g={g} per={per} /><ChnDown g={g} />
       <ul className="chn-key" aria-hidden="true">{kinds.map(([k, label, n]) => (
         <li key={k}><svg width="12" height="20" viewBox="0 0 20 34"><ChnLoop res={k} x={2} y={2} /></svg>{label} <b>{n}</b></li>))}</ul>
     </div>);
@@ -78,13 +102,14 @@ const ChnGuesses = ({ g }) => {
 
 // --cw and --ch (each chain's drawn size) and --chn-rows (the board's rows) size the chains against the board (gs-chain.css).
 export const ChnSessBody = ({ s }) => {
+  const [long, setLong] = React.useState(false);
   if (!s.play) return s.lines.length ? <GsMoves s={s} /> : null;
   const p = chnRead(s);
   return <>
-    <GsSessCard r={p.r} className="chn-card" style={{ '--chn-n': p.long, '--chn-rows': p.w.length }}
+    <GsSessCard r={p.r} className={'chn-card' + (long ? ' is-long' : '')} style={{ '--chn-n': p.long, '--chn-rows': p.w.length }}
       board={<div className="chn-board">{p.w.map((x, i) => (
         <React.Fragment key={i}><ChnTiles x={x} />{i < p.w.length - 1 && <ChnJoint />}</React.Fragment>))}</div>}
-      rows={[['Guesses', <ChnGuesses g={p.g} />]]} />
+      rows={[['Guesses', <ChnGuesses g={p.g} setLong={setLong} />]]} />
     <GsMoves s={s} />
   </>;
 };

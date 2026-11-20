@@ -12202,26 +12202,62 @@
       strokeDashoffset: chnOffset(res, across)
     }
   );
-  const ChnChain = ({ g, across }) => {
-    const len = 8 + (g.length - 1) * CHN_STEP + CHN_H;
-    return across ? /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-across", width: len, height: "46", viewBox: "0 0 " + len + " 46", style: { "--cw": len, "--ch": 46 }, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 4 + i * CHN_STEP + CHN_H, y1: 4 + CHN_W / 2, x2: 4 + (i + 1) * CHN_STEP, y2: 4 + CHN_W / 2 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, across: true, x: 4 + i * CHN_STEP, y: 4 })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CHN_STEP + CHN_H / 2, y: "42", textAnchor: "middle" }, t.n))) : /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-down", width: "56", height: len, viewBox: "0 0 56 " + len, style: { "--cw": 56, "--ch": len }, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 32 + CHN_W / 2, y1: 4 + i * CHN_STEP + CHN_H, x2: 32 + CHN_W / 2, y2: 4 + (i + 1) * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, x: 32, y: 4 + i * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: "20", y: 4 + i * CHN_STEP + CHN_H / 2 + 4, textAnchor: "end" }, t.n)));
+  const chnLen = (k) => 8 + (k - 1) * CHN_STEP + CHN_H;
+  const CHN_MIN = 1;
+  const chnFold = (g, per) => {
+    const rows = Math.ceil(g.length / per);
+    const size = Math.ceil(g.length / rows);
+    const out = [];
+    for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
+    return out;
+  };
+  const ChnAcross = ({ g, per }) => {
+    const rows = chnFold(g, per);
+    const cmax = chnLen(rows[0].length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "chn-rows" }, rows.map((row, r) => {
+      const len = chnLen(row.length);
+      return /* @__PURE__ */ React$1.createElement("svg", { key: r, className: "chn-chain is-across", width: len, height: "46", viewBox: "0 0 " + len + " 46", style: { "--cw": len, "--ch": 46, "--cmax": cmax }, "aria-hidden": "true" }, row.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 4 + i * CHN_STEP + CHN_H, y1: 4 + CHN_W / 2, x2: 4 + (i + 1) * CHN_STEP, y2: 4 + CHN_W / 2 })), row.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, across: true, x: 4 + i * CHN_STEP, y: 4 })), row.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CHN_STEP + CHN_H / 2, y: "42", textAnchor: "middle" }, t.n)));
+    }));
+  };
+  const ChnDown = ({ g }) => {
+    const len = chnLen(g.length);
+    return /* @__PURE__ */ React$1.createElement("svg", { className: "chn-chain is-down", width: "56", height: len, viewBox: "0 0 56 " + len, style: { "--cw": 56, "--ch": len }, "aria-hidden": "true" }, g.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "chn-bar", x1: 32 + CHN_W / 2, y1: 4 + i * CHN_STEP + CHN_H, x2: 32 + CHN_W / 2, y2: 4 + (i + 1) * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement(ChnLoop, { key: i, res: t.res, x: 32, y: 4 + i * CHN_STEP })), g.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: "20", y: 4 + i * CHN_STEP + CHN_H / 2 + 4, textAnchor: "end" }, t.n)));
   };
   const CHN_KINDS = [["right", "Right"], ["wrong", "Wrong"], ["near", "Near miss"], ["given", "Given away"]];
-  const ChnGuesses = ({ g }) => {
+  const ChnGuesses = ({ g, setLong }) => {
+    const ref = React$1.useRef(null);
+    const [per, setPer] = React$1.useState(8);
+    React$1.useLayoutEffect(() => {
+      const me = ref.current;
+      const card = me.closest(".chn-card");
+      const board = card && card.querySelector(".chn-board");
+      if (!board) return void 0;
+      const fit = () => {
+        const room = me.clientWidth;
+        if (room > 0) setPer(Math.max(1, Math.floor((room / CHN_MIN - 8 - CHN_H) / CHN_STEP) + 1));
+        setLong(g.length > Math.max(1, Math.floor((board.offsetHeight / CHN_MIN - 8 - CHN_H) / CHN_STEP) + 1));
+      };
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(me);
+      ro.observe(board);
+      return () => ro.disconnect();
+    }, [g.length]);
     const kinds = CHN_KINDS.map(([k, label]) => [k, label, g.filter((t) => t.res === k).length]).filter((x) => x[2] > 0);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "chn-guesses", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + kinds.map((x) => x[2] + " " + x[1].toLowerCase()).join(", ") }, /* @__PURE__ */ React$1.createElement(ChnChain, { g, across: true }), /* @__PURE__ */ React$1.createElement(ChnChain, { g }), /* @__PURE__ */ React$1.createElement("ul", { className: "chn-key", "aria-hidden": "true" }, kinds.map(([k, label, n]) => /* @__PURE__ */ React$1.createElement("li", { key: k }, /* @__PURE__ */ React$1.createElement("svg", { width: "12", height: "20", viewBox: "0 0 20 34" }, /* @__PURE__ */ React$1.createElement(ChnLoop, { res: k, x: 2, y: 2 })), label, " ", /* @__PURE__ */ React$1.createElement("b", null, n)))));
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "chn-guesses", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + kinds.map((x) => x[2] + " " + x[1].toLowerCase()).join(", ") }, /* @__PURE__ */ React$1.createElement(ChnAcross, { g, per }), /* @__PURE__ */ React$1.createElement(ChnDown, { g }), /* @__PURE__ */ React$1.createElement("ul", { className: "chn-key", "aria-hidden": "true" }, kinds.map(([k, label, n]) => /* @__PURE__ */ React$1.createElement("li", { key: k }, /* @__PURE__ */ React$1.createElement("svg", { width: "12", height: "20", viewBox: "0 0 20 34" }, /* @__PURE__ */ React$1.createElement(ChnLoop, { res: k, x: 2, y: 2 })), label, " ", /* @__PURE__ */ React$1.createElement("b", null, n)))));
   };
   const ChnSessBody = ({ s }) => {
+    const [long, setLong] = React$1.useState(false);
     if (!s.play) return s.lines.length ? /* @__PURE__ */ React$1.createElement(GsMoves, { s }) : null;
     const p = chnRead(s);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(
       GsSessCard,
       {
         r: p.r,
-        className: "chn-card",
+        className: "chn-card" + (long ? " is-long" : ""),
         style: { "--chn-n": p.long, "--chn-rows": p.w.length },
         board: /* @__PURE__ */ React$1.createElement("div", { className: "chn-board" }, p.w.map((x, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, /* @__PURE__ */ React$1.createElement(ChnTiles, { x }), i < p.w.length - 1 && /* @__PURE__ */ React$1.createElement(ChnJoint, null)))),
-        rows: [["Guesses", /* @__PURE__ */ React$1.createElement(ChnGuesses, { g: p.g })]]
+        rows: [["Guesses", /* @__PURE__ */ React$1.createElement(ChnGuesses, { g: p.g, setLong })]]
       }
     ), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
