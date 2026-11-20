@@ -3291,7 +3291,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wh-ch-bear { stroke: var(--text); stroke-width: 2; stroke-dasharray: 5 3; }
 .wh-ch-end { fill: none; stroke: var(--text); stroke-width: 2; }
 .wh-ch-from { fill: var(--text); }
-.wh-chart.is-none svg { opacity: .5; }
+/* KEEP: the faded no-hint picture is at 75% opacity, not less: its box edge then keeps 3:1 against the card (3.23:1; at 50% it was 2.18:1), still visibly dimmer than the used picture (4.62:1). */
+.wh-chart.is-none svg { opacity: .75; }
 
 /* ---- The session card ---- */
 /* The country on a loss: the panel's last row, full width on a phone (as Guess's word). */
@@ -3318,13 +3319,15 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wh-last { display: grid; justify-items: center; gap: 4px; text-align: center; }
 .wh-last b { font: 700 28px/1.1 var(--font-heading); color: var(--text); }
 .wh-last .wh-km { font: 600 15px/1.2 var(--font-text); }
+/* KEEP: the Now card's figure captions are 12px at every width. At 13px "Not used yet" is about 73px wide, more than the 72px
+   figure above it, so from 640px it wrapped to "Not used / yet" at some widths, a word alone on the last line. */
+.wh-now .wh-say { font-size: 12px; }
 .wh-last.is-found b, .wh-last.is-found .wh-km { color: var(--success); }
 .wh-last.is-lost b, .wh-last.is-none b { color: var(--muted); }
 /* On a page under 640px (a phone): everything on one row under the head, the figures 48px and their words wrapped short, the country 22px.
    KEEP: the gaps grow with the card (12 to 40px between the guess and the figures, 8 to 24px between the figures), so a phone's
    spare width goes between them instead of to the card's edges (Joe, 2026-10-31). */
 @container gs (max-width: 639.98px) {
-  .wh-now .wh-say { font-size: 12px; }
   .wh-row { column-gap: clamp(12px, 8cqi, 40px); }
   .wh-figs { --fig: 48px; column-gap: clamp(8px, 5cqi, 24px); }
   .wh-figs .wh-say { max-width: 76px; text-wrap: balance; }
