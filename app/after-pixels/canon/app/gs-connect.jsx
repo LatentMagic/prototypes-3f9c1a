@@ -169,72 +169,39 @@ const gsAppSteps = (a) => [
   gsPermStep(a),
 ];
 
-// Setup: one CardRow, its heading the section's and its sentence asking for the app; the picked app's card under it.
+// Setup: the design system's NotchPicker in its CardRow form, its heading the section's and its sentence asking for the app; the picked app's card under it.
 // KEEP: the tiles fill the row when all fit (about 700px and up); narrower, about 4½ show and the row swipes, with Previous
 // and Next, so the half tile says there is more. Every tile keeps its name at every width: our own marks don't name the app
 // (the user, 2026-11-11: "we can't lose the words anymore"). A tile picked while partly off the row's edge scrolls fully into view. The card's notch points at the picked tile and
 // follows it as the row scrolls, and hides once that tile is out of view. Pressing the picked tile again closes the card and
 // leaves no tile picked; the page opens with the first app picked.
-const gsRevealTile = (el) => {
-  const tr = el.parentElement, r = el.getBoundingClientRect(), b = tr.getBoundingClientRect();
-  const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
-  const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (d) tr.scrollBy({ left: d, behavior: still ? 'auto' : 'smooth' });
-};
 const GsSetup = () => {
   const gs = useGs();
   const [tile, setTile] = React.useState('chatgpt');
   const [sub, setSub] = React.useState('grok');
   const t = gsApp(tile || 'chatgpt'); const a = gsApp(t.subs ? sub : t.id);
   const [copyLabel, copyText] = gsAppCopy(a);
-  const wrap = React.useRef(null), card = React.useRef(null), notch = React.useRef(null), placed = React.useRef(false);
-  React.useLayoutEffect(() => {
-    const w = wrap.current; if (!w) return undefined;
-    const track = w.querySelector('.mcp-crow-track');
-    // KEEP: the notch glides to a newly picked tile, but tracks a scrolling row directly, so it never trails the tile.
-    const place = (glide) => {
-      const p = w.querySelector('.hw-app[aria-pressed="true"]'), c = card.current, n = notch.current; if (!p || !c || !n) return;
-      const r = p.getBoundingClientRect(), cr = c.getBoundingClientRect(), x = r.left + r.width / 2 - cr.left;
-      if (glide !== undefined) n.style.transition = glide && placed.current ? '' : 'none';
-      n.style.visibility = x < 16 || x > cr.width - 16 ? 'hidden' : '';
-      n.style.left = x + 'px';
-    };
-    const follow = () => place(false), refit = () => place();
-    place(true); placed.current = true;
-    if (track) track.addEventListener('scroll', follow, { passive: true });
-    const ro = window.ResizeObserver ? new ResizeObserver(refit) : null; if (ro) ro.observe(w);
-    return () => { if (track) track.removeEventListener('scroll', follow); if (ro) ro.disconnect(); };
-  }, [tile]);
   // KEEP: no account sentence. The sign-in an AI app opens also offers sign-up, so a player with no account makes one while connecting (the user, 2026-11-11).
   const ask = 'Which app do you use?';
+  const apps = GS_APPS.filter((x) => !x.sub).map((x) => ({ id: x.id, label: x.name, icon: <GsAiLogo ai={x.id} size={32} /> }));
   return (
-    <div className="gs-stack-md" ref={wrap}>
-      <DS.CardRow title="Setup" sub={ask} label="Which app do you use?" className="hw-apps">
-        {GS_APPS.filter((x) => !x.sub).map((x) => (
-          <button key={x.id} type="button" className="hw-app" aria-pressed={tile === x.id} aria-expanded={tile === x.id} aria-controls="hw-pick" aria-label={x.name} onClick={(e) => { setTile(tile === x.id ? null : x.id); if (tile !== x.id) gsRevealTile(e.currentTarget); }}>
-            <GsAiLogo ai={x.id} size={32} /><span>{x.name}</span>
-          </button>
-        ))}
-      </DS.CardRow>
-      <div className="hw-pick" id="hw-pick" ref={card} aria-live="polite" hidden={!tile}>
-        <i className="hw-notch" ref={notch} aria-hidden="true" />
-        <DS.Card className="hw-pick-card">
-          <div className="hw-pick-head">
-            <h3 className="mcp-t-card"><span className="hw-soft">Add</span> After Pixels <span className="hw-soft">to</span> {a.id === 'other' ? 'your app' : a.name}</h3>
-            {t.subs && (
-              <div className="hw-seg" role="group" aria-label="Which Grok">
-                {t.subs.map((id) => <DS.Button key={id} aria-pressed={sub === id} variant={sub === id ? 'main' : 'secondary'} onClick={() => setSub(id)}>{GS_SUB_LABEL[id]}</DS.Button>)}
-              </div>
-            )}
-          </div>
-          <div className="hw-pick-body">
-            <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : 'message'} /></div>
-            <GsSteps items={gsAppSteps(a)} />
-            {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see {a.look ? <b>{a.look}</b> : 'this option'}? Not every plan or country offers it yet.</p>}
-          </div>
-        </DS.Card>
-      </div>
-    </div>
+    <DS.NotchPicker className="gs-stack-md" label={ask} options={apps} row={{ title: 'Setup', sub: ask }} value={tile} onChange={setTile} closable panelProps={{ className: 'hw-pick', 'aria-live': 'polite' }}>
+      <DS.Card className="hw-pick-card">
+        <div className="hw-pick-head">
+          <h3 className="mcp-t-card"><span className="hw-soft">Add</span> After Pixels <span className="hw-soft">to</span> {a.id === 'other' ? 'your app' : a.name}</h3>
+          {t.subs && (
+            <div className="hw-seg" role="group" aria-label="Which Grok">
+              {t.subs.map((id) => <DS.Button key={id} aria-pressed={sub === id} variant={sub === id ? 'main' : 'secondary'} onClick={() => setSub(id)}>{GS_SUB_LABEL[id]}</DS.Button>)}
+            </div>
+          )}
+        </div>
+        <div className="hw-pick-body">
+          <div className="gs-stack-sm hw-pick-copy"><p className="gs-label hw-eyebrow">{copyLabel}</p><GsCopyBox text={copyText} label={copyLabel} address={a.route === 'settings'} what={a.route === 'settings' ? 'address' : 'message'} /></div>
+          <GsSteps items={gsAppSteps(a)} />
+          {a.route === 'settings' && <p className="gs-small gs-muted">Don’t see {a.look ? <b>{a.look}</b> : 'this option'}? Not every plan or country offers it yet.</p>}
+        </div>
+      </DS.Card>
+    </DS.NotchPicker>
   );
 };
 
@@ -292,7 +259,7 @@ const GsStart = () => {
           }) }] }]} />
         <GsStartChat title="To go straight to one, type" say={gsPromptText({ kind: 'game', gid: 'delve' })}
           caption={<>Name a game, or a past edition, and your AI starts it. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.delve.route)}>Go to Delve</button></>}
-          turns={[{ from: 'ai', text: [<b>{d.title}</b>, d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
+          turns={[{ from: 'ai', text: ['**' + d.title + '**', d.first + d.rest], after: [{ type: 'entities', items: d.heroes, className: 'hw-heroes' }] }, ...d.more]} />
         <GsStartChat plain title="For a reminder or a hint, type" say="Remind me how accusing works in Accuse"
           caption={<>Ask your AI how a game works, or for a hint when you’re stuck. <button type="button" className="gs-inlink" onClick={() => gs.go(GS_GAMES.mystery.route)}>Go to Accuse</button></>}
           turns={[

@@ -25,8 +25,8 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-btn.is-done .mcp-swap .b{opacity:1;transform:none}
 .mcp-btn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .mcp-btn-pair>:only-child{grid-column:1/-1}
-/* KEEP: One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups and menu triggers keep their own rule. Button block stays full width at any width. */
-@media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
+/* KEEP: One button width (visual-foundations.md Layout): under 640px of screen every button is full width and a pair stacks; at 640px and up natural width, a pair shares the wider label's width. Popups, menu triggers and a button in a chat reply bar (.mcp-chat-comp) keep their own rule. Button block stays full width at any width. */
+@media (max-width:639.98px){.mcp-btn:not(.mcp-pop .mcp-btn):not(.mcp-menu-wrap .mcp-btn):not(.mcp-chat-comp .mcp-btn){display:flex;width:100%}.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){grid-template-columns:minmax(0,1fr);width:100%}}
 @media (min-width:640px){.mcp-btn-pair:not(.mcp-pop .mcp-btn-pair){display:inline-grid;grid-template-columns:repeat(2,1fr);justify-self:start}}
 
 .mcp-lnk{display:inline-flex;align-items:center;justify-content:flex-start;min-height:48px;padding:0;background:none;border:0;cursor:pointer;color:var(--off-white);font:600 16px/1.2 var(--font-text);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);transition:opacity var(--time-press) var(--ease),color var(--time-swap) var(--ease),text-decoration-color var(--time-swap) var(--ease),text-underline-offset var(--time-swap) var(--ease)}
@@ -198,6 +198,32 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-disc-body>div>*{margin:0;padding:0 var(--space-4) var(--space-4);color:var(--muted)}
 /* A list in a Disclosure runs to its edges, with a line above the first row; the rows keep their own padding and colours. */
 .mcp-disc-body>div>.mcp-rows{padding:0;color:var(--text);border-top:1px solid var(--line)}
+/* NotchPicker: tiles, one picked; the panel below has a notch pointing at the picked tile. A surface restyles it through the --np-* hooks; a page arranges the tiles and the box beside them with its own classes. */
+.mcp-np{display:grid;row-gap:var(--space-4);min-width:0}
+.mcp-np-tiles{display:grid;grid-template-columns:repeat(var(--np-n),minmax(0,1fr));gap:var(--np-gap,8px)}
+.mcp-np-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;min-width:0;min-height:56px;margin:0;padding:12px 4px 10px;background:transparent;border:1.5px solid var(--np-edge,var(--control-edge));border-radius:0;color:var(--np-ink,var(--text));font:600 13px/1.2 var(--font-text);text-align:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background-color var(--time-press) var(--ease),color var(--time-press) var(--ease),transform var(--time-press) var(--ease)}
+.mcp-np.has-icons .mcp-np-tile{min-height:88px}
+.mcp-np-icon{display:flex;flex:none}
+.mcp-np-icon>svg{display:block;width:32px;height:32px}
+.mcp-np-name{max-width:100%;overflow-wrap:normal}
+.mcp-np-tile[aria-pressed="true"]{background:var(--np-on,var(--off-white));border-color:var(--np-on,var(--off-white));color:var(--np-on-ink,var(--page));cursor:default}
+.mcp-np-tile:active:not([aria-pressed="true"]){transform:scale(.97)}
+.mcp-np-tile:focus-visible{outline:2px solid var(--np-on,var(--off-white));outline-offset:2px}
+@media (hover:hover){.mcp-np-tile:not([aria-pressed="true"]):hover{background:color-mix(in srgb,var(--np-ink,var(--text)) 8%,transparent)}}
+/* More options than fit: the tiles keep their size and the row scrolls sideways, about 4 1/2 showing so the half tile says there is more, and every tile fills the row again once all fit (700px). With a CardRow (the row option) the CardRow's track is the row. */
+.mcp-np.is-scroll .mcp-np-tiles,.mcp-np.is-scroll .mcp-crow-track{gap:var(--np-gap,8px);grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 4 * var(--np-gap,8px)) / 4.5);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.mcp-np.is-scroll .mcp-np-tiles{padding:4px;margin:-4px}
+.mcp-np.is-scroll .mcp-np-tiles::-webkit-scrollbar{display:none}
+.mcp-np.is-scroll .mcp-np-tile{scroll-snap-align:start}
+.mcp-np.is-scroll:not(.has-row){container:mcp-np/inline-size}
+@container mcp-np (min-width:700px){.mcp-np.is-scroll .mcp-np-tiles{grid-auto-columns:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n))}}
+@container mcp-crow (min-width:700px){.mcp-np.is-scroll .mcp-crow-track{grid-auto-columns:calc((100% - (var(--np-n) - 1) * var(--np-gap,8px)) / var(--np-n))}}
+.mcp-np-panel{position:relative;background:var(--np-panel,var(--card));border:1px solid var(--np-panel-line,var(--line));box-shadow:var(--np-panel-shadow,var(--shadow-card));color:var(--np-panel-ink,var(--text))}
+.mcp-np-panel[hidden]{display:none}
+.mcp-np-body{padding:var(--np-body-pad,var(--space-4))}
+.mcp-np-notch{position:absolute;z-index:1;top:-7px;left:0;width:14px;height:14px;background:var(--np-panel,var(--card));border-left:1px solid var(--np-panel-line,var(--line));border-top:1px solid var(--np-panel-line,var(--line));transform:translateX(-50%) rotate(45deg);pointer-events:none;transition:left var(--time-swap) var(--ease)}
+.mcp-np[data-pointer="side"] .mcp-np-notch{top:auto;left:-7px;transform:translateY(-50%) rotate(-45deg);transition-property:top}
+@media (prefers-reduced-motion:reduce){.mcp-np-tile,.mcp-np-notch{transition:none!important}.mcp-np-tile:active{transform:none!important}}
 
 .mcp-cover{display:grid;gap:var(--space-2);align-content:start;margin:0}
 .mcp-cover-art{aspect-ratio:4/3;overflow:hidden;background:var(--line)}
@@ -325,15 +351,17 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-up.is-down[hidden]{transform:translate(-50%,6px)}
 .mcp-chat.is-top .mcp-chat-body>:first-child{margin-top:0}
 .mcp-chat-body[data-more="down"]{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 56px);mask-image:linear-gradient(to top,transparent 0,#000 56px)}
-.mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
+.mcp-chat-up[hidden]{display:inline-flex;opacity:0;pointer-events:none;visibility:hidden;transform:translate(-50%,-6px);transition:opacity var(--time-press) var(--ease),transform var(--time-press) var(--ease),background var(--time-press) var(--ease),visibility 0s linear var(--time-press)}
 @media (hover:hover){.mcp-chat-up:not([hidden]):hover{background:color-mix(in srgb,var(--c-send) 88%,var(--c-send-fg));transform:translate(-50%,-1px)}}
 .mcp-chat-up:not([hidden]):active{transform:translateX(-50%) scale(.97)}
 .mcp-chat-up:focus-visible{outline:2px solid var(--c-send);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.mcp-chat-up{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.mcp-chat-up,.mcp-chat-up[hidden]{transition:none}.mcp-chat-up:not([hidden]):hover{transform:translateX(-50%)}}
 .mcp-chat-me{align-self:flex-end;max-width:80%;background:var(--c-me);border-radius:18px;padding:7px 14px;flex:none}
 .mcp-chat-ai{display:grid;gap:8px;justify-items:start;max-width:94%;flex:none}
-.mcp-chat-call{display:inline-flex;align-items:center;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px}
-.mcp-chat-call img{border-radius:4px}.mcp-chat-call em{font-style:normal;color:var(--c-call)}
+.mcp-chat-call{display:inline-flex;align-items:flex-start;gap:6px;background:var(--c-me);border-radius:9px;padding:5px 10px 5px 8px;font-size:12.5px;line-height:18px;max-width:100%}
+.mcp-chat-calltxt{min-width:0;overflow-wrap:anywhere}
+.mcp-chat-me strong,.mcp-chat-ai strong{font-weight:700}.mcp-chat-me em,.mcp-chat-ai em{font-style:italic}.mcp-chat-me u,.mcp-chat-ai u{text-decoration:underline;text-underline-offset:2px}
+.mcp-chat-call img{border-radius:4px;flex:none;margin-top:1px}.mcp-chat-call em{font-style:normal;color:var(--c-call);white-space:nowrap}
 .mcp-chat-board{display:grid;gap:4px}.mcp-chat-row{display:flex;gap:4px}
 .mcp-chat-row>span{width:28px;height:28px;display:grid;place-items:center;border-radius:5px;font-weight:700;font-size:14px;background:var(--c-tile);color:var(--c-tile-fg)}
 .mcp-chat-row>.is-g{background:var(--c-g);color:var(--success-on)}.mcp-chat-row>.is-y{background:var(--c-y);color:var(--warning-on)}
@@ -343,6 +371,22 @@ transition:transform var(--time-press) var(--ease),background-color var(--time-p
 .mcp-chat-comp{flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 12px 12px;min-height:44px;padding:0 6px 0 16px;border:1px solid var(--c-edge);border-radius:22px;color:var(--c-fg2)}
 .mcp-chat-comp>i{width:32px;height:32px;border-radius:50%;background:var(--c-send);color:var(--c-send-fg);display:grid;place-items:center}
 .mcp-chat-body.is-auto{overflow:visible}
+.mcp-chat-pic{display:block;width:100%;height:96px;object-fit:cover;border-radius:8px}
+.mcp-chat-ai:has(>.mcp-chat-pic:last-child)+.mcp-chat-ai{margin-top:-6px}
+/* ChatSide: the game beside a chat. The label sits top left in flow; what the AI draws is centred in the space left. */
+.mcp-chat-side{display:grid;grid-template-rows:auto minmax(0,1fr);align-items:center;justify-items:center;padding:16px;overflow:visible;min-width:0}
+.mcp-chat-side-ed{justify-self:start;align-self:start;margin:0;font:600 var(--size-2xs)/1.3 var(--font-text);letter-spacing:.08em;text-transform:uppercase;color:var(--c-fg2)}
+.mcp-chat-side-body{display:grid;justify-items:center;gap:12px;min-width:0;width:100%}
+.mcp-chat-side .mcp-cb-tiles{text-align:center}
+.mcp-chat-side .mcp-cb-tiles-in{--t:min(40px,calc((100cqi - 14px - (var(--n) - 1) * 4px) / var(--n)))}
+.mcp-chat-side .mcp-cb-clues{max-width:360px}
+.mcp-chat-side .mcp-chat-pic{width:100%;max-width:400px;height:auto;aspect-ratio:2/1}
+/* A real reply action: the pretend bar's send button gives way to the page's own, drawn black and text-only so it reads as the thing to press, never the chat's grey send button. */
+.mcp-chat-comp.has-action{padding-right:4px}
+/* KEEP: the action is drawn 36px tall and its hit area is 44px: the ::before extends 4px beyond the 1.5px border above and below. */
+.mcp-chat-comp.has-action .mcp-btn.mcp-btn{display:inline-flex;width:auto;min-height:36px;padding:0 16px;border-radius:18px;font-size:14px;background:var(--c-fg);color:var(--c-bg);flex:none}
+.mcp-chat-comp.has-action .mcp-btn::before{content:"";position:absolute;inset:calc(-4px - 1.5px) 0}
+.mcp-chat-comp.has-action .mcp-btn.mcp-btn:is(:hover,:active,.is-pressed){background:color-mix(in oklab,var(--c-fg),var(--c-bg) 18%)}
 .mcp-chat-ai>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
 /* ChatPlayback: a piece entering is wrapped so it can fade; the wrapper keeps the part's own width rules */
 .mcp-chat-fx{display:grid;justify-items:start;justify-self:stretch;min-width:0}.mcp-chat-fx>.mcp-cb:not(.mcp-cb-status){justify-self:stretch}
@@ -592,10 +636,10 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-passmark.is-link:active,.mcp-passmark.is-link.is-pressed{background:color-mix(in srgb,var(--text) 16%,var(--page));transform:scale(.97)}
 .mcp-passmark.is-link:focus-visible,.mcp-passmark.is-link.is-focus{outline:2px solid var(--off-white);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.mcp-passmark.is-link{transition:none}.mcp-passmark.is-link:active{transform:none}}
-/* KEEP: Coming soon on a game card, pick or tile (soon): the picture, name, blurb, kind and tags dim to 45% while the chip stays at full strength, and the card takes no pointer at all, so nothing reacts to hover, focus or press and the cursor stays an arrow. The card cannot be opened; its name is plain text. */
+/* KEEP: Coming soon on a game card, pick or tile (soon): only the picture dims to 45%. The name, blurb, kind and tags stay at full strength, as does the chip. The card takes no pointer at all, so nothing reacts to hover, focus or press and the cursor stays an arrow. The card cannot be opened; its name is plain text. */
 :is(.mcp-gcard,.mcp-gpick,.mcp-gtile).is-soon{pointer-events:none;cursor:default}
 .mcp-gtile.is-soon>.mcp-gtile-name{min-height:24px}
-.is-soon>:is(.mcp-gcard-art,.mcp-gpick-art,.mcp-gtile-art)>:not(.mcp-passmark),.is-soon>:is(.mcp-gcard-text,.mcp-gcard-tags,.mcp-gpick-text,.mcp-gpick-tags,.mcp-gtile-name,.mcp-gtile-kind){opacity:.45}
+.is-soon>:is(.mcp-gcard-art,.mcp-gpick-art,.mcp-gtile-art)>:not(.mcp-passmark){opacity:.45}
 
 /* KEEP: Touch: whatever you press to open something is not selectable text, and the phone's selection and callout stay out of the way of a hold. Body text elsewhere stays selectable. */
 .mcp-card.is-link,.mcp-row.is-link,.mcp-btn,.mcp-lnk,.mcp-art-host,.mcp-disc-btn,.mcp-menu-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
