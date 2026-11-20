@@ -14,7 +14,7 @@ import { LbNowCard, lbAchEarned, lbAchView, lbAccess, lbWeekDone, LbHead, LbAch,
 import { DP_IDS } from './gs-where-chain-salvage.jsx';
 import { CB_ACH, CB_BADGES, cbRecap } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
-import { DV_FIRST, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
+import { DV_FIRST, DV_ROOMS, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
 import { PZ, pzRun } from './gs-puzzles-library.jsx';
 import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
 import { GS_LIB_READY, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
@@ -22,7 +22,7 @@ import { phVisible, phThis, phAch, LbRecent, phWhen, PH_FIRST, PhLead, edList } 
 import { useCpr, cprFirstState, CprPassEnd, cprLapsedOf, cprStore, cprLocked, CPR_STAGE, cprPlayed, CPR_SHOWN } from './gs-pass-store.jsx';
 import { EsNow } from './gs-escape.jsx';
 import { WdNow } from './gs-word.jsx';
-import { DlNow } from './gs-delve.jsx';
+import { DlNow, DlNowEmpty } from './gs-delve.jsx';
 import { ChNow } from './gs-chain-now.jsx';
 import { SvNow } from './gs-salvage-now.jsx';
 import { AcNow } from './gs-accuse-now.jsx';
@@ -43,7 +43,9 @@ const CprFirst = ({ id }) => {
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
   if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} first />;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
-  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass} />;
+  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass && 'whole'} />;
+  // Before the run: the empty route and Play, as the Pass holder's not-started card, in the free label. No Pass button or line.
+  if (id === 'delve') return <DlNowEmpty label={f.label} title={f.title} rooms={DV_ROOMS} onPlay={f.play} />;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? 'Chapter 3: coming soon' : null;
@@ -326,8 +328,7 @@ export function initGsPassLibrary() {
 CPR_FIRST = {
   // Delve's and Escape's first parts: this card only before a play (Play); once played or started, DlNow and EsNow take over.
   delve: (gs) => ({
-    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title,
-    none: 'The game’s very first run, the same for everyone. Play it free.', play: () => gs.play('Delve') }),
+    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title, play: () => gs.play('Delve') }),
   escape: (gs) => ({
     label: 'THE FIRST ROOM · FREE', title: cprEscFirst().title,
     none: 'The game’s very first room, the same for everyone. Play it free.', play: () => gs.play('Escape') }),

@@ -10,7 +10,7 @@ let DV_RUN1;
 export let DV_ALL;
 export let DV_LIVE;
 export let DV_DONE;
-let DV_ROOMS;
+export let DV_ROOMS;
 let DV_RITUAL;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play

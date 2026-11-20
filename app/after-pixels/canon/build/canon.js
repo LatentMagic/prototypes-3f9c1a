@@ -3692,7 +3692,7 @@
     const [ref, cols] = useDlNowCols(rooms);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, role: "img", "aria-label": "The run has " + rooms + " rooms, " + (reached ? "the first reached, no rolls yet" : "none entered yet") }, dlEmptyStops(rooms).map((st, i) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + (reached ? i === 0 ? " is-on" : " is-far" : "") + (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === rooms - 1 ? " is-row-end" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num)), reached && i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-hidden": "true" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))));
   };
-  const DlNowEmpty = ({ title, rooms, next, onPlay }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", title, play: onPlay, next }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms })));
+  const DlNowEmpty = ({ label, title, rooms, next, onPlay }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title, play: onPlay, next }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms })));
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
     const gs = useGs();
     const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
@@ -4940,7 +4940,8 @@
     const done = st === "done";
     const pass = done && gs.view !== "pass";
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
-    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass });
+    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass: pass && "whole" });
+    if (id === "delve") return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { label: f.label, title: f.title, rooms: DV_ROOMS, onPlay: f.play });
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
     if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "barrow", label: GS_PAGES.barrow.week2.label, title: BW_CH2.title, play: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }), next: soon, span: true }, /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line));
@@ -5146,7 +5147,6 @@
       delve: (gs) => ({
         label: "THE FIRST RUN · FREE",
         title: DV_FIRST.title,
-        none: "The game’s very first run, the same for everyone. Play it free.",
         play: () => gs.play("Delve")
       }),
       escape: (gs) => ({
@@ -7028,7 +7028,7 @@
       return [{ ...f, pid: "word1-broken-0", status: { kind: "bad", label: c.bad }, open: phSess("word-broken-first") }];
     })();
     PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: "bw1" };
-    PH_FIRST_LIVE = { delve: phSess("delve-first-live"), escape: phSess("escape-first-live") };
+    PH_FIRST_LIVE = { delve: phLive("delve-first-live"), escape: phSess("escape-first-live") };
     PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
       let id = null;
       try {
@@ -7055,6 +7055,7 @@
     (() => {
       const dv = GS_SESSIONS.delve;
       GS_SESSIONS["delve-first-live"] = { ...GS_SESSIONS["delve-live"], date: dv.date, __dated: true };
+      GS_SESSIONS["delve-first-begun"] = { ...GS_SESSIONS["delve-begun"], date: dv.date, __dated: true };
       const es = GS_SESSIONS["escape-week"];
       GS_SESSIONS["escape-first-live"] = { ...GS_SESSIONS["escape-live"], date: es.date, lines: es.lines.slice(0, 4), __dated: true };
     })();
@@ -8492,9 +8493,10 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "main", onClick: () => setOpen(true) }, "Share"), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open, onClose: () => setOpen(false), lines }));
   };
   const LbActions = ({ label = "Go to session", onClick, slot }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick }, label), slot && /* @__PURE__ */ React$1.createElement("div", { className: "lb-slot gs-muted" }, slot));
-  const CprPassEnd = ({ text, className }) => {
+  const CprPassEnd = ({ text, className, whole }) => {
     const gs = useGs();
     const head = text.slice(0, -"the Pass.".length);
+    if (whole) return /* @__PURE__ */ React$1.createElement("p", { className }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, text));
     return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
   };
   const lbNowLabel = (gid) => {
@@ -8502,7 +8504,7 @@
     return r === "daily" ? "TODAY" : r === "weekly" ? "THIS WEEK" : "A " + GS_GAMES[gid].ed[0].toUpperCase();
   };
   const LbNowResult = ({ s, tag }) => s.kind === "live" || tag ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s })) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-vd is-" + (s.kind === "ok" ? "ok" : "over") }, s.label);
-  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }) : next }));
+  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass.", whole: pass === "whole" }) : next }));
   const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid, title, play: onPlay, next, span }, /* @__PURE__ */ React$1.createElement("p", null, line));
   const lbWeekDone = (gs) => (gs.review && gs.review.week) !== "live";
   const lbNow = (gs, id) => {
@@ -9648,6 +9650,18 @@
         c.setView("free");
         c.setConnected(true);
         c.setReview({ week: "live" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-not-started", label: "Delve in your library, free account, first run not started", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ today: "none" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-nothing-played", label: "Delve in your library, free account, first run in progress, nothing played yet", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ week: "live", begun: true });
         c.go("delve", { page: "record" });
       } },
       { group: "Library", id: "library-list-free-in-progress", label: "Library list, free account, Delve’s first run in progress", stage: (c) => {
