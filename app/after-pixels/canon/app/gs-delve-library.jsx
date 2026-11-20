@@ -60,12 +60,12 @@ export function initGsDelveLibrary() {
 // ============================================================================
 // After Pixels — Delve's library page.
 // This week's run: the ending beside the title, rooms reached as the bar. Weeks in a row. The game's five achievements.
-// Your runs. One run so far: No. 1, The Goblin Warren beneath Ashford Mill, both the free
+// Your runs. One run so far: No. 1, The Goblin Warren, both the free
 // first run and this week's. Its finished form is session 'delve' (Bryn, won), its in-progress form 'delve-live' (Wren).
 // Without the Pass the page is replaced by gs-pass-library.jsx (CprDvLibrary); a Pass holder gets this one.
 // ============================================================================
 DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, ritual: { kind: 'bad', label: GS_RESULT.delve({ end: 'ritual' }) }, fell: { kind: 'bad', label: GS_RESULT.delve({ end: 'fell' }) } };
-DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'October', title: 'The Goblin Warren beneath Ashford Mill', played: true, end: null };
+DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'October', title: 'The Goblin Warren', played: true, end: null };
 // Every run, newest first.
 DV_ALL = [DV_RUN1];
 DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 9, rooms: 4, ritual: 3 };
