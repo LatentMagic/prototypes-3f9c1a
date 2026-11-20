@@ -67,13 +67,16 @@ const ChnChain = ({ g, across }) => {
       {g.map((t, i) => <text key={'n' + i} x="20" y={4 + i * CHN_STEP + CHN_H / 2 + 4} textAnchor="end">{t.n}</text>)}</svg>;
 };
 const CHN_KINDS = [['right', 'Right'], ['wrong', 'Wrong'], ['near', 'Near miss'], ['given', 'Given away']];
-// KEEP: a link is drawn at least 0.7px per drawing unit (21 by 11px, its number 8.4px); a chain that would be drawn smaller folds, across
-// into balanced rows, or down beside the board into balanced columns, the numbers running on from one row or column to the next. Each link
-// is then drawn at CHN_FOLD_SCALE px per unit in columns (0.7: 21 by 11px, its number 9px) and CHN_FOLD_SCALE_PHONE in rows, which show where
-// the card is under 672px (0.66: 20 by 10.5px, number 8.6px), so a long play takes fewer rows on a phone; both sit between the shrunk size
-// of a long chain and Chain's now card at 1px. A chain that is drawn at 0.7px or more is not folded. A row or column that is not full
-// (the last) is centred on the full ones, rows across, columns vertically. Measured: the rows by the room the panel gives them (never the
-// guesses' own width, which shrinks as they fold), the columns by the board's height (the platform needs the same measuring).
+// KEEP: a chain with less than 0.7px per drawing unit of room is folded, so a link is never drawn smaller than 0.66px per unit. Folded
+// across into balanced rows where the card is under 672px, each link 19.8 by 10.6px (CHN_FOLD_SCALE_PHONE, 0.66); folded down beside
+// the board into balanced columns from 672px, each link 21 by 11.2px (CHN_FOLD_SCALE, 0.7); the numbers run on from one row or column
+// to the next. Both sit between the shrunk size of a long chain and Chain's now card at 1px, so a long play takes fewer rows on a phone.
+// The rows are decided with the 0.7 floor but drawn at 0.66, so a chain that fits one row at 0.66 stays one row at that size, without
+// folding, in a narrow band of widths: 10 links from 317 to 331px, 14 from 418 to 438px, 19 from 543 to 571px. Above a band the chain is
+// unfolded at 0.7 or more. A folded chain's numbers are 13px on screen, the smallest text a card carries, so they are drawn at 13
+// divided by the scale in drawing units. A row or column that is not full (the last) is centred on the full ones, rows across, columns
+// vertically. Measured: the rows by the room the panel gives them (never the guesses' own width, which shrinks as they fold), the
+// columns by the board's height (the platform needs the same measuring).
 const CHN_FLOOR = 0.7;
 const CHN_FOLD_SCALE = 0.7;
 const CHN_FOLD_SCALE_PHONE = 0.66;
