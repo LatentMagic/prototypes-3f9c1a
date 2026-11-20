@@ -14,7 +14,7 @@ import { LbNowCard, lbAchEarned, lbAchView, lbAccess, lbWeekDone, LbHead, LbAch,
 import { DP_IDS } from './gs-where-chain-salvage.jsx';
 import { CB_ACH, CB_BADGES, cbRecap } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
-import { DV_FIRST, DV_ROOMS, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
+import { DV_FIRST, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
 import { PZ, pzRun } from './gs-puzzles-library.jsx';
 import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
 import { GS_LIB_READY, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
@@ -45,7 +45,8 @@ const CprFirst = ({ id }) => {
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
   if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass && 'nostop'} />;
   // Before the run: the empty route and Play, as the Pass holder's not-started card, in the free label. No Pass button or line.
-  if (id === 'delve') return <DlNowEmpty label={f.label} title={f.title} rooms={DV_ROOMS} onPlay={f.play} />;
+  // KEEP: five empty rooms before play, whatever the edition's own room count; the edition's count shows only once the run begins.
+  if (id === 'delve') return <DlNowEmpty label={f.label} title={f.title} rooms={5} onPlay={f.play} />;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? 'Chapter 3: coming soon' : null;

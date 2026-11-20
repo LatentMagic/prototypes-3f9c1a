@@ -4941,7 +4941,7 @@
     const pass = done && gs.view !== "pass";
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
     if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass: pass && "nostop" });
-    if (id === "delve") return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { label: f.label, title: f.title, rooms: DV_ROOMS, onPlay: f.play });
+    if (id === "delve") return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { label: f.label, title: f.title, rooms: 5, onPlay: f.play });
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
     if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "barrow", label: GS_PAGES.barrow.week2.label, title: BW_CH2.title, play: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }), next: soon, span: true }, /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line));
