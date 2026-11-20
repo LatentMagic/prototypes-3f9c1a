@@ -123,8 +123,6 @@ const CprDvLibrary = () => {
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
       </div>
-      {/* Earlier runs come with the Pass (delve.md section 4); a Pass holder gets canon's page, so never sees it. "the Pass" is the line's only link, as the dailies'. */}
-      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Earlier ' + GS_GAMES.delve.ed[1] + ' need the Pass.'} />
     </main>
   );
 };
