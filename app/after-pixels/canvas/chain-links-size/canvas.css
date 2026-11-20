@@ -1,0 +1,43 @@
+/* The canvas page: canon's app is hidden except the canvas. Each card sits in a frame as wide as the screen it stands for; the frame is a
+   "gs" container so canon's width rules apply to it whatever the browser's width. */
+.gs-root > :not(.wc), .kit-config-wrap { display: none !important; }
+.gs-moves { display: none; }
+.wc { display: grid; gap: 20px; width: 100%; max-width: 1264px; margin: 0 auto; padding: 24px 16px 64px; box-sizing: border-box; }
+.wc-intro { margin: -8px 0 8px; max-width: 60ch; }
+.wc-item { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; }
+.wc-h { margin: 0; display: flex; align-items: baseline; gap: 10px; font: 700 18px/1.25 var(--font-heading); }
+.wc-sub { margin: 12px 0 0; font: 700 15px/1.3 var(--font-heading); }
+.wc-n { font: 700 18px/1 var(--font-heading); color: var(--muted); min-width: 1.2em; }
+.wc-note { margin: 0 0 4px; max-width: 60ch; }
+.wc-state { margin: 0 0 6px; font: 600 14px/1.3 var(--font-text); color: var(--text); }
+.wc-list { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 60ch; }
+.wc-notes { margin-bottom: 12px; }
+.wc-concept { margin-top: 36px; gap: 4px; }
+.wc-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.wc-fig { margin: 0; min-width: 0; }
+.wc-fit { overflow: visible; }
+.wc-fit-in { transform-origin: 0 0; }
+.wc .wc-frame { container: gs / inline-size; grid-template-columns: minmax(0, 1fr) !important; box-sizing: border-box; padding: 0 16px; }
+.wc .wc-frame[style*="1200"] { padding: 0 24px; }
+
+/* The options' guesses. Phone: rows (each strip centred on the full ones). From a 672px card: columns beside the board, each centred
+   against the longest. */
+.o-guesses { display: grid; justify-items: center; gap: 16px; width: 100%; }
+.o-rows { display: grid; justify-items: center; gap: 4px; width: 100%; }
+.o-row { display: flex; justify-content: center; align-items: center; }
+.o-cell { display: grid; justify-items: center; min-width: 0; }
+.o-row[style] { display: grid; justify-content: center; }
+.o-row[style] .o-cell { justify-self: center; }
+.o-cols { display: none; gap: 12px; align-items: center; justify-content: center; }
+.o-col { display: grid; justify-items: center; gap: 4px; }
+.o-colcell { display: grid; align-items: center; justify-items: center; }
+.o-strip { display: block; overflow: visible; }
+.o-num { font-family: var(--font-text); font-weight: 700; fill: var(--text); text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums; }
+.o-lab { font: 600 12px/1 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; padding-right: 8px; }
+.o-lab-top { padding-right: 0; text-align: center; }
+@container dv2 (min-width: 672px) {
+  .o-rows { display: none; }
+  .o-cols { display: flex; }
+}
+@container gs (min-width: 1100px) { .o-guesses { grid-auto-flow: column; align-items: center; gap: 24px; } }
+.wc-fig[style] .wc-state { padding-left: 16px; }
