@@ -3775,13 +3775,15 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP: a name never breaks inside a word, on any window from 280px: each column is at least as wide as its longest word and the
    columns share the rest equally, so with ordinary names they stay three equal columns and one long word (the deployed cases'
    longest are Conservatory and Clapperboard) widens its column and narrows the others. Where the columns get narrow the board's gaps
-   and type step down: 14px names with 16px gaps on a phone and on a wide card under 752px, and 11px (the text-size floor) with 8px
-   gaps under a 271px card (a window up to 336px), where 14px would leave a word wider than its share. A name too long for any
-   column still wraps at its spaces; the pen marks are measured from the words, so they follow it. */
+   and type step down: 14px names with 16px gaps on a phone and on a wide card under 752px; the gaps close to 8px under a 271px
+   card (a window up to 336px) so a 320px phone keeps its 14px; and the names drop to 11px (the text-size floor) only under a 253px
+   card (a window up to 318px), where 14px would push the board past the card. A name too long for any column still wraps at its
+   spaces; the pen marks are measured from the words, so they follow it. */
 .acc-bd { grid-template-columns: repeat(3, minmax(min-content, 1fr)); }
 .acc-bd li { overflow-wrap: break-word; }
 @container dv2 (max-width: 460px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding: 10px 0; } }
-@container dv2 (max-width: 270px) { .acc-bd { gap: 0 8px; } .acc-bd li { font-size: 11px; } }
+@container dv2 (max-width: 270px) { .acc-bd { gap: 0 8px; } }
+@container dv2 (max-width: 252px) { .acc-bd li { font-size: 11px; } }
 @container dv2 (min-width: 672px) and (max-width: 751px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding-inline: 0; } }
 .acc-m { font-weight: 600; }
 .acc-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
