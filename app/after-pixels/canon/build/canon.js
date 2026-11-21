@@ -4439,11 +4439,17 @@
     return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cn-links", style: { "--cn-s": CN_SCALE }, role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CN_SAY[t.res]).join(", ") }, cnFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnLinkRow, { key: r, items: row })));
   };
   const CnCount = ({ p }) => /* @__PURE__ */ React$1.createElement("span", { className: "cn-cap", role: "img", "aria-label": p.found + " of " + p.mid.length + " words" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
+  const cnEndsSize = (p) => {
+    const a = p.w[0].word.length;
+    const b = p.w[p.w.length - 1].word.length;
+    const j = p.mid.length;
+    return { "--cn-n": a + b, "--cn-m": Math.max(a, b), "--cn-x": (a - 1 + b - 1) * 4 + 24 + j * 22 + Math.max(0, j - 1) * 4 + "px" };
+  };
   const CnPic = ({ p }) => {
     const solved = p.r.kind === "ok";
     const k = p.last == null ? 1 : p.last;
     const x = p.w[k];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus is-ends" }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": x.state === "hidden" ? x.shown + 1 : x.word.length } }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus is-ends", style: cnEndsSize(p) }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": x.state === "hidden" ? x.shown + 1 : x.word.length } }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
   };
   const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
   const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": 5 } }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, /* @__PURE__ */ React$1.createElement(CnCount, { p: CN_FRESH })));
