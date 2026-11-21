@@ -6137,6 +6137,21 @@
         now: { line: ok ? "You found the country on your sixth guess, with the hint." : "You used all six guesses and the hint without finding the country.", bar: ["Guess 6 of 6", 6, 6] }
       };
     };
+    const dpLongWh = { a: "Democratic Republic of the Congo", g: [["Kenya", 390], ["Central African Republic", 0]], hint: "From Central African Republic, the country lies south" };
+    const dpPickWhLong = () => {
+      const r = dpWhere(dpLongWh, true);
+      const res = GS_RESULT.where({ ok: true, guesses: r.guesses });
+      return {
+        ...GS_SESSIONS["where-today"],
+        hints: r.hints,
+        result: res,
+        share: res,
+        figures: [r.guesses + " of 6 guesses", "1 hint"],
+        shareLines: [dpWhHead(DP_NO, r, true), r.marks],
+        lines: r.lines,
+        now: { line: "You found the Democratic Republic of the Congo on your third guess, with the hint.", bar: ["Guess " + r.guesses + " of 6", r.guesses, 6] }
+      };
+    };
     const dpPickCh = (play) => {
       const r = dpChain(play);
       const res = dpChResult(r);
@@ -6149,6 +6164,7 @@
     Object.assign(GS_SESSIONS, {
       "where-today-hard": dpPickWh(true),
       "where-today-failed": dpPickWh(false),
+      "where-today-long": dpPickWhLong(),
       "chain-today-hard": dpPickCh(CH_HARD),
       "chain-today-failed": dpPickCh(CH_FAIL),
       "salvage-today-hard": { ...svSession("hard"), now: { line: "You found all five wrecks on your last dive.", bar: [SLV_PLAYS.hard.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.hard.dives, SLV_DIVES] } },
@@ -6159,6 +6175,7 @@
     DP_IDS.forEach((k) => {
       GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed" };
     });
+    GS_ED_SIDS.where.long = "where-today-long";
     DP_PZ = {
       where: {
         count: DP_NO,
@@ -6499,6 +6516,20 @@
             c.setConnected(true);
             c.setReview({ ed: "hard" });
             c.go(k, { page: "record" });
+          } }
+        ] : [],
+        ...k === "where" ? [
+          { group: g, id: "library-where-long-country", label: "Where in your library, today found, a long country name", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "long" });
+            c.go(k, { page: "record" });
+          } },
+          { group: "Daily puzzles 1213", id: "session-where-long-country", label: "Session page: Where today, a long country name", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "long" });
+            c.go("session", { id: "where-today-long" });
           } }
         ] : [],
         ...k === "salvage" ? [
