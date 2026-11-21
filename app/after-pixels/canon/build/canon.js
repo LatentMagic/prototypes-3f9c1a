@@ -4461,11 +4461,33 @@
     return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cn-links", style: { "--cn-s": CN_SCALE }, role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CN_SAY[t.res]).join(", ") }, cnFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnLinkRow, { key: r, items: row })));
   };
   const CnCount = ({ p }) => /* @__PURE__ */ React$1.createElement("span", { className: "cn-cap", role: "img", "aria-label": p.found + " of " + p.mid.length + " words" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
+  const CN_MIN_TILE = 32;
+  const cnEndsSize = (p) => {
+    const a = p.w[0].word.length;
+    const b = p.w[p.w.length - 1].word.length;
+    const j = p.mid.length;
+    const x = (a - 1 + b - 1) * 4 + 24 + j * 22 + Math.max(0, j - 1) * 4;
+    return { n: a + b, m: Math.max(a, b), x };
+  };
+  const CnEnds = ({ p }) => {
+    const ref = React$1.useRef(null);
+    const sz = cnEndsSize(p);
+    const [stack, setStack] = React$1.useState(false);
+    React$1.useLayoutEffect(() => {
+      const pic = ref.current.closest(".cn-pic");
+      const fit = () => setStack((pic.clientWidth - sz.x) / sz.n < CN_MIN_TILE);
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(pic);
+      return () => ro.disconnect();
+    }, [sz.n, sz.x]);
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "cn-focus is-ends" + (stack ? " is-stacked" : ""), style: { "--cn-n": sz.n, "--cn-m": sz.m, "--cn-x": sz.x + "px" } }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] }));
+  };
   const CnPic = ({ p }) => {
     const solved = p.r.kind === "ok";
     const k = p.last == null ? 1 : p.last;
     const x = p.w[k];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus is-ends" }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": x.state === "hidden" ? x.shown + 1 : x.word.length } }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement(CnEnds, { p }) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": x.state === "hidden" ? x.shown + 1 : x.word.length } }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
   };
   const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
   const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": 5 } }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, /* @__PURE__ */ React$1.createElement(CnCount, { p: CN_FRESH })));
@@ -5596,6 +5618,7 @@
   let CH_OK;
   let CH_FAIL;
   let CH_HARD;
+  let CH_LONG;
   let SV_COLS;
   const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
   const svAt = (ships) => {
@@ -6021,6 +6044,7 @@
       ["STATIC", 4],
       ["STATION", 4]
     ] };
+    CH_LONG = { w: ["STREET", "BASKETBALL", "COURT", "ROOM", "SERVICE", "STATION", "WAGON"], p: [["BASEBALL", 1], ["BASKETBALL", 1], ["COURT", 2], ["ROOM", 3], ["SERVICE", 4], ["STATION", 5]] };
     CH_FAIL = { w: CH_TODAY.w, p: [["BELL", 1], ["BALL", 1], ["RACE", 2], ["ROAD", 2], ["ROOF", 2], ["SUITE", 3], ["SERVICE", 3], ["STORE", 4], ["STATION", 4]] };
     SV_COLS = "ABCDEFGH";
     dpSvDay = /* @__PURE__ */ (() => {
@@ -6192,6 +6216,7 @@
       "where-today-failed": dpPickWh(false),
       "where-today-long": dpPickWhLong(),
       "chain-today-hard": dpPickCh(CH_HARD),
+      "chain-today-long": dpPickCh(CH_LONG),
       "chain-today-failed": dpPickCh(CH_FAIL),
       "salvage-today-hard": { ...svSession("hard"), now: { line: "You found all five wrecks on your last dive.", bar: [SLV_PLAYS.hard.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.hard.dives, SLV_DIVES] } },
       "salvage-today-failed": { ...svSession("lost"), now: { line: "You used all " + SLV_PLAYS.lost.dives + " dives and found " + SLV_PLAYS.lost.raised.size + " of the 5 wrecks.", bar: [SLV_PLAYS.lost.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.lost.dives, SLV_DIVES] } },
@@ -6202,6 +6227,7 @@
       GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed" };
     });
     GS_ED_SIDS.where.long = "where-today-long";
+    GS_ED_SIDS.chain.long = "chain-today-long";
     DP_PZ = {
       where: {
         count: DP_NO,
@@ -6542,6 +6568,18 @@
             c.setConnected(true);
             c.setReview({ ed: "hard" });
             c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-chain-long", label: "Chain in your library, a seven-word chain with a ten-letter word", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "long" });
+            c.go(k, { page: "record" });
+          } },
+          { group: "Screens", id: "session-chain-long", label: "7. Session page: Chain, a seven-word chain with a ten-letter word", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "long" });
+            c.go("session", { id: "chain-today-long" });
           } }
         ] : [],
         ...k === "where" ? [

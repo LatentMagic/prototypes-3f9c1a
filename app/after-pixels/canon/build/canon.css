@@ -3468,6 +3468,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* Tiles: one size for the word (--t), letters at half, never under 13px. */
 .cn { --t: 48px; }
 .cn-focus { --t: min(48px, (100cqi - (var(--cn-n, 1) - 1) * 4px) / var(--cn-n, 1)); }
+/* KEEP: a solved chain's two ends side by side are 48px, shrunk until both words and the joints between them fit the picture (two 10-letter ends included); stacked on a
+   phone, or when side by side would need tiles under 32px, they are 36px, shrunk until the longer end fits. The platform's ends are fixed at 48px and 36px and overflow when long. */
+.cn-focus.is-ends { --t: min(48px, (100cqi - var(--cn-x, 0px)) / var(--cn-n, 1)); }
 .cn-word { display: inline-flex; gap: 4px; flex: none; }
 .cn-t { width: var(--t); height: var(--t); font-size: max(13px, calc(var(--t) * .5)); }
 .cn-t.is-end { background: var(--off-white); color: var(--page); }
@@ -3501,9 +3504,10 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP: on a phone (card under 640px) a solved chain's two ends stack with the joints between them, each tile 36px, and the count
    sits 16px under the links instead of beside them. Tiles stay 48px: a container query cannot restyle its own container. */
 @container cn (max-width: 639.98px) {
-  .cn .is-ends { flex-direction: column; gap: 8px; --t: 36px; }
+  .cn .is-ends { flex-direction: column; gap: 8px; --t: min(36px, (100cqi - (var(--cn-m, 1) - 1) * 4px) / var(--cn-m, 1)); }
   .cn-under { flex-direction: column; gap: 16px; }
 }
+.cn .is-ends.is-stacked { flex-direction: column; gap: 8px; --t: min(36px, (100cqi - (var(--cn-m, 1) - 1) * 4px) / var(--cn-m, 1)); }
 /* Common's session page body and now card (app/gs-common.jsx), on the shared session card (gs-sess-card.css) and the now card frame. */
 
 /* Each thread's own colour, from Common's cover: orange, teal (lifted 20% toward cream so dark text reads on it), lilac. */
