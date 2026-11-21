@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+  PLACEHOLDER, NOT PRECEDENT.
+  The current screen, seed data, states and tokens.css values are kit scaffolding,
+  there only to prove the wiring. They carry no design, copy, layout or visual
+  decision for this product. Nothing in them is a convention to follow, keep or match.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>After Pixels</title>
+<link rel="icon" href="assets/logo-32.png" sizes="32x32" />
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/logo-180.png" />
+<link rel="stylesheet" href="tokens.css" />
+<!-- The build loads with a fresh query on every visit, so a phone never shows a cached build after a push (GitHub Pages caches
+     files for 10 minutes, and Safari keeps them longer). Owner's complaint, 2026-11-06. -->
+<script>window.__canonV = Date.now(); document.write('<link rel="stylesheet" href="build/canon.css?v=' + window.__canonV + '" />');</script>
+</head>
+<body>
+<!-- ============================================================================
+     React loads as a page script; build/canon.js is the product (app/*.jsx and the design system's component bundle,
+     bundled by `npm run build`, never edited here). build/canon.css is the design system's stylesheet and app/canon.css's
+     stylesheets in their cascade order. main.jsx finds nothing on `window` except the external interface.
+
+     Addresses:
+         ?state=<id>     that state (the register is app/states.jsx)
+         ?state=index    the states index
+         an unknown id   the states index, so a stale link shows itself
+         nothing         the app as it opens
+     ============================================================================ -->
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+
+<script>document.write('<script src="build/canon.js?v=' + window.__canonV + '"><\/script>');</script>
+</body>
+</html>

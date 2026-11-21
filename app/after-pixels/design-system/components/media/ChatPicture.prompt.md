@@ -3,12 +3,14 @@ ChatPicture shows a game being played in a plain chat window; use it on a game's
 ```jsx
 <ChatPicture mark="assets/logo.svg" toolBy="After Pixels" turns={[
   {from:'user',text:'I want to play Daily Word.'},
-  {from:'ai',tool:'daily-word',text:'Six tries to find the hidden five-letter word. What’s your first guess?'},
+  {from:'ai',tool:'Guess',text:'Six tries to find the hidden five-letter word. What’s your first guess?'},
   {from:'user',text:'amaze'},
-  {from:'ai',tool:'daily-word',blocks:[{type:'tiles',rows:[{word:'AMAZE',marks:'xxxxx'}]}],text:'No hits. 5 guesses left.'},
+  {from:'ai',tool:'Guess',blocks:[{type:'tiles',rows:[{word:'AMAZE',marks:'xxxxx'}]}],text:'No hits. 5 guesses left.'},
 ]}/>
 ```
 
+- `tool` is the game's display name in full, whatever its length (for example `Delve` or `The Barrow of Hollowmere`), shown as "Called Delve". The tool line reads `After Pixels · Called Delve`: the by-line (`toolBy`) leads and stays whole, the mark sits on the first row, and a long name wraps beside and under the by-line, never cut. With no `toolBy` there is no dot.
+- A paragraph of `text` (user or AI) takes inline markup: `**bold**`, `*italic*`, `__underline__`. They nest; a marker with no partner stays as typed. ChatPlayback fades the words in with their styling and types the user's line without the markers.
 - The chat has no logo or store name in its header. The branding is the tool-call card (`mark`, `toolBy`). Leave `title` off on product pages.
 - `blocks` is what a game returns, shown above the turn's text; `after` holds blocks shown under it (the moves and buttons at the foot of a turn). `tiles`, `list` and `mono` are the original three. Every other block is a chat part (below). Reach for a part before a `list` or `mono`, and add a part to `components/chat/` before drawing a one-off.
 - Keep it short: the default 290px body, about 360px wide. Pass the whole conversation, latest turn last.
@@ -20,9 +22,11 @@ ChatPicture shows a game being played in a plain chat window; use it on a game's
 </CardRow>
 ```
 - It scrolls. It opens on the latest turn and the reader can scroll up to every earlier one; a longer conversation scrolls, it never makes the picture taller. Once scrolled up, the top edge fades and a small arrow-only pill appears at the top centre (28px tall, 12px down, tap target 44px); pressing it scrolls back to the first turn. Its spoken name is "Back to the start" (`more`). Don't build your own scroll or pill around it.
+- `start="top"` opens it on the first turn instead of the latest, for a picture whose point is its first turn (the line a player types). A short conversation sits at the top. The pill flips: a down arrow just above the reply box (its spoken name is "On to the latest"), which scrolls to the latest turn and hides once it is there; the fade moves to the bottom edge. Everything else is as above; leave it off on product pages.
 - `fill` stretches it to the box it sits in (e.g. a hero field) instead of the 290px height; give that box a height.
 - One colour only: the off-white ground, var(--off-white) (#EDE8DF), with the warm grey send button (var(--control-edge), white arrow). Never dark.
 - To show the chat being played rather than finished, use `ChatPlayback` with the same turns (see `playback/ChatPlayback.prompt.md`).
+- `action` puts a real action in the reply bar in place of the pretend send button: pass the ready-made Button (`<Button onClick={…}>Start free</Button>`) and only a Button: a TextLink is not styled for the bar. The chat draws the bar's place, the Button's black look and its 44px tap size, and names the bar "Reply" for a screen reader; the page supplies only the action. Without it the bar is a pretend one and stays hidden from screen readers. Use it where the picture is a demo that leads somewhere; ChatPlayback keeps the pretend bar.
 - `height="auto"` grows the picture to the whole conversation with no scroll. Only for specimen pages and previews; product pages keep the scrolling picture.
 
 ## Chat parts
@@ -42,6 +46,7 @@ What a game draws inside an AI turn. Each is a component in `components/chat/` a
 - `track` · Track: progress, threat or health as steps or a bar.
 - `roll` · RollLine: one roll, the number needed and the outcome.
 - `nav` · NavButtons: buttons that go somewhere (Show games, Back, Play again, Open in browser), drawn apart from moves. One that leaves the chat says so.
+- `picture` · Picture: an image in the turn, such as a game's scene; it scrolls with the turns.
 - `menu` · MenuRows: one row per game with its art, line, status and action. The only part that may hold a text field.
 
 Moves and going somewhere share one button shape: full-width rows, stacked. A move is its words alone (ChoiceButtons, ConfirmCard); going somewhere leads with an icon (NavButtons, MenuRows, ResultCard). Keep that split: a player must tell “do this in the game” from “go somewhere”.

@@ -22,7 +22,7 @@ import { phVisible, phThis, phAch, LbRecent, phWhen, PH_FIRST, PhLead, edList } 
 import { useCpr, cprFirstState, CprPassEnd, cprLapsedOf, cprStore, cprLocked, CPR_STAGE, cprPlayed, CPR_SHOWN } from './gs-pass-store.jsx';
 import { EsNow } from './gs-escape.jsx';
 import { WdNow } from './gs-word.jsx';
-import { DlNow } from './gs-delve.jsx';
+import { DlNow, DlNowEmpty } from './gs-delve.jsx';
 import { ChNow } from './gs-chain-now.jsx';
 import { SvNow } from './gs-salvage-now.jsx';
 import { AcNow } from './gs-accuse-now.jsx';
@@ -42,8 +42,14 @@ const CprFirst = ({ id }) => {
   const pass = done && gs.view !== 'pass';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
   if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} first />;
+  // A free player who has finished the first run, once a later week is current (Config → Editions → Delve’s free first run): this week's
+  // run as a Pass holder sees it before play, with no Play and "Play it with the Pass" in the Pass line's place. The run's name is not known before play.
+  if (id === 'delve' && done && gs.review.later) return <DlNowEmpty title="Not started" rooms={5} laterWeek />;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
-  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass} />;
+  if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass && 'nostop'} />;
+  // Before the run: the empty route and Play, as the Pass holder's not-started card, in the free label. No Pass button or line.
+  // KEEP: five empty rooms before play, whatever the edition's own room count; the edition's count shows only once the run begins.
+  if (id === 'delve') return <DlNowEmpty label={f.label} title={f.title} rooms={5} onPlay={f.play} />;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
   const soon = id === 'barrow' && gs.view === 'pass' ? 'Chapter 3: coming soon' : null;
@@ -84,7 +90,7 @@ export const LbNeedsPass = ({ id, had, ach, access }) => {
   }
   return <DS.NeedsPass game={GS_NAME[id] || g.name} word={word} words={words} record={record} total={items.length} onGet={() => gs.go('pass')} style={id === 'barrow' || id === 'casebook' ? { gridColumn: '1 / -1' } : undefined} />;
 };
-const cprNowCard = (gs, id, ach) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass ? <LbNeedsPass id={id} had ach={ach} /> : <CprFirst id={id} />; };
+const cprNowCard = (gs, id, ach) => { const f = cprLapsedOf(id); return gsLapsed(gs) && f.used && f.pass && cprFirstState(gs, id) !== 'live' ? <LbNeedsPass id={id} had ach={ach} /> : <CprFirst id={id} />; };
 const cprKey = (gs) => gs.view + (gs.sub.hadPass ? 'u' : '') + (lbWeekDone(gs) ? 'd' : '') + (gsFresh(gs) ? 'f' : '') + cprStore.get().lapsed;
 
 // ---- The library game pages for a free or Pass-ended player (canon's composition). Casebook is Pass-only, as Daily Groups:
@@ -121,8 +127,6 @@ const CprDvLibrary = () => {
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
       </div>
-      {/* Earlier runs come with the Pass (delve.md section 4); a Pass holder gets canon's page, so never sees it. "the Pass" is the line's only link, as the dailies'. */}
-      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES.delve.ed[1] + ' comes with the Pass.'} />
     </main>
   );
 };
@@ -144,7 +148,7 @@ const CprEsLibrary = () => {
         <LbRecent title="Your rooms" allLabel="See in History" empty="Your rooms appear here once you have played one." />
       </div>
       {/* Earlier rooms come with the Pass (escape.md section 4). */}
-      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES.escape.ed[1] + ' comes with the Pass.'} />
+      <CprPassEnd className="gs-muted gs-pu-wrap" text={'Earlier ' + GS_GAMES.escape.ed[1] + ' need the Pass.'} />
     </main>
   );
 };
@@ -189,7 +193,7 @@ const cprPzLibrary = (id) => () => {
         <LbAch items={ach} badges={c.badges} access="all" />
         <LbRecent title={recent} allLabel="See in History" empty={recent + ' appear here once you have played one.'} />
       </div>
-      {gs.view !== 'pass' && !locked && <CprPassEnd className="gs-muted gs-pu-wrap" text={'Playing earlier ' + GS_GAMES[id].ed[1] + ' comes with the Pass.'} />}
+      {gs.view !== 'pass' && !locked && <CprPassEnd className="gs-muted gs-pu-wrap" text={'Earlier ' + GS_GAMES[id].ed[1] + ' need the Pass.'} />}
     </main>
   );
 };
@@ -326,8 +330,7 @@ export function initGsPassLibrary() {
 CPR_FIRST = {
   // Delve's and Escape's first parts: this card only before a play (Play); once played or started, DlNow and EsNow take over.
   delve: (gs) => ({
-    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title,
-    none: 'The game’s very first run, the same for everyone. Play it free.', play: () => gs.play('Delve') }),
+    label: 'THE FIRST RUN · FREE', title: DV_FIRST.title, play: () => gs.play('Delve') }),
   escape: (gs) => ({
     label: 'THE FIRST ROOM · FREE', title: cprEscFirst().title,
     none: 'The game’s very first room, the same for everyone. Play it free.', play: () => gs.play('Escape') }),

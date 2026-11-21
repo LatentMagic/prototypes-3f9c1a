@@ -8,3 +8,4 @@ ClueCards sorts the facts found so far by kind. Block type `clues`.
 - Always grouped. A flat list of clues didn't help players; sorted under kinds, it did.
 - Mark only what this turn added. Next turn, drop the mark.
 - Keep the kinds a game uses stable from turn to turn so the player finds the same heading in the same place.
+- Optional fold: `fold="open"` or `fold="closed"` (block: `fold:'closed'`) puts the card behind a disclosure whose summary shows the title, a count (number of facts) and a chevron that turns when open. It is a native `<details>`, so it opens in a chat picture too. A long list set out once, such as a case's clues, may start closed. Don't fold the card that answers the player's latest move. With one group the title (default: its kind) stands for it and the group's own heading is dropped; with several, the default title is "Clues".

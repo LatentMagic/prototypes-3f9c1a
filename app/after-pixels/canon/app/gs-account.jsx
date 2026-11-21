@@ -159,7 +159,7 @@ const GsDeleteAccount = () => {
   // What happens to the Pass, by kind (MCPG-009 AF-01 to AF-04). A free account has no Pass line.
   const st = gs.sub.status;
   const passLine = !holds ? null : st === 'failed' ? 'Your Pass ends straight away.'
-    : 'Your Pass is cancelled. No more payments are taken, and nothing is refunded.';
+    : 'Your Pass is cancelled and no more payments are taken. You lose any time left on it. Deleting doesn\'t refund anything by itself. You can still ask for a refund within 30 days of a payment.';
   return (
     <DS.Card style={GS_ACCT_CARD}>
       <h2 className="mcp-t-card">Delete account</h2>

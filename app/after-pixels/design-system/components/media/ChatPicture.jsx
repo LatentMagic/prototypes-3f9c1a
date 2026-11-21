@@ -14,31 +14,64 @@ import { Track } from '../chat/Track.jsx';
 import { RollLine } from '../chat/RollLine.jsx';
 import { NavButtons } from '../chat/NavButtons.jsx';
 import { MenuRows } from '../chat/MenuRows.jsx';
+import { Picture } from '../chat/Picture.jsx';
 // Block type -> chat part. A block is the part's props plus its type, so a turn stays plain data.
-const PARTS={tilegrid:TileGrid,wordboard:WordBoard,choices:ChoiceButtons,confirm:ConfirmCard,facts:FactRows,stats:StatRow,status:StatusTag,entities:EntityCards,clues:ClueCards,result:ResultCard,track:Track,roll:RollLine,nav:NavButtons,menu:MenuRows};
+const PARTS={tilegrid:TileGrid,wordboard:WordBoard,choices:ChoiceButtons,confirm:ConfirmCard,facts:FactRows,stats:StatRow,status:StatusTag,entities:EntityCards,clues:ClueCards,result:ResultCard,track:Track,roll:RollLine,nav:NavButtons,menu:MenuRows,picture:Picture};
 const WHO={x:'not in the word',y:'in the word',g:'right spot'};
 function Tiles({rows}){
   const label=rows.map(r=>r.word+': '+r.marks.split('').map((m,i)=>r.word[i]+' '+WHO[m]).join(', ')).join('. ');
   return <div className="mcp-chat-board" role="img" aria-label={label}>{rows.map((r,i)=><div key={i} className="mcp-chat-row">{r.word.split('').map((c,k)=><span key={k} className={'is-'+r.marks[k]}>{c}</span>)}</div>)}</div>;
 }
-function Block({b}){
+// One block drawn (also used by ChatSide). Lower case, so the design-system build keeps it out of the component list.
+export function chatPart({b}){
   if(b.type==='tiles') return <Tiles rows={b.rows}/>;
-  if(b.type==='list') return <ul className="mcp-chat-list">{b.items.map((t,i)=><li key={i}>{t}</li>)}</ul>;
-  if(b.type==='mono') return <pre className="mcp-chat-mono">{b.text}</pre>;
+  if(b.type==='list') return <ul className="mcp-chat-list">{b.items.map((t,i)=><li key={i}>{chatRich(t)}</li>)}</ul>;
+  // A link breaks at a "/", never mid-word; the CSS wrap is only the fallback for a run with no "/".
+  if(b.type==='mono') return <pre className="mcp-chat-mono">{b.text.split(/(\/(?!\/))/).map((t,i)=>t==='/'?<React.Fragment key={i}>/<wbr/></React.Fragment>:t)}</pre>;
   const P=PARTS[b.type];
   if(P){const {type,...p}=b; return <P {...p}/>;}
   return null;
 }
+// JSX needs a capital to treat it as a component.
+const Part=chatPart;
 const paras=t=>t==null?[]:Array.isArray(t)?t:[t];
+// Inline markup in a chat paragraph: **bold**, *italic*, __underline__ (nest freely; a marker with no partner stays as typed).
+// chatRuns -> [{s,b,i,u}] pieces of text with the styles in force; chatPlain -> the text without markers (what is typed in the reply box, and what is counted as words).
+// A bold or underline run closes at the first closing marker, so "**a** and **b**" is two runs (the lazy `??`).
+const MARK=/\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+export function chatRuns(text,f={}){
+  const s=String(text),out=[]; let rest=s;
+  for(;;){
+    const m=MARK.exec(rest); if(!m){if(rest) out.push({s:rest,...f}); return out;}
+    if(m.index) out.push({s:rest.slice(0,m.index),...f});
+    const g=m[1]!=null?{b:1}:m[2]!=null?{u:1}:{i:1};
+    out.push(...chatRuns(m[1]??m[2]??m[3],{...f,...g}));
+    rest=rest.slice(m.index+m[0].length);
+  }
+}
+export const chatPlain=t=>chatRuns(t).map(r=>r.s).join('');
+const styled=(r,node,key)=>{let n=node; if(r.u) n=<u>{n}</u>; if(r.i) n=<em>{n}</em>; if(r.b) n=<strong>{n}</strong>; return React.isValidElement(n)&&n!==node?React.cloneElement(n,{key}):<React.Fragment key={key}>{n}</React.Fragment>;};
+// A paragraph with its markup drawn. Plain text comes back as the string itself.
+export function chatRich(text){
+  const runs=chatRuns(text); if(runs.every(r=>!r.b&&!r.i&&!r.u)) return String(text);
+  return runs.map((r,k)=>styled(r,r.s,k));
+}
+// The same, a word at a time: wordFn(word, index) draws one word (ChatPlayback fades them in); whitespace stays as it is. Word numbering runs across the whole paragraph.
+export function chatRichWords(text,wordFn){
+  let j=0;
+  return chatRuns(text).map((r,k)=><React.Fragment key={k}>{styled(r,r.s.split(/(\s+)/).map((w,x)=>!w||/^\s+$/.test(w)?w:<React.Fragment key={x}>{wordFn(w,j++)}</React.Fragment>),'r')}</React.Fragment>);
+}
 // Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
 // KEEP: Stays at the latest turn while it lays out, until the reader scrolls it themselves.
-function useChatScroll(body,turns){
+// start="top": opens on the first turn instead; the pill then points down and scrolls to the latest turn, and hides once the body is at the bottom.
+export function useChatScroll(body,turns,start){
+  const top=start==='top';
   const [up,setUp]=React.useState(false);
   React.useEffect(()=>{
     const b=body.current; if(!b) return undefined;
     let moved=false;
-    const mark=()=>{const u=b.scrollTop>4; b.dataset.more=u?'up':''; setUp(u);};
-    const end=()=>{if(!moved) b.scrollTop=b.scrollHeight; mark();};
+    const mark=()=>{const u=top?b.scrollTop+b.clientHeight<b.scrollHeight-4:b.scrollTop>4; b.dataset.more=u?(top?'down':'up'):''; setUp(u);};
+    const end=()=>{if(!moved) b.scrollTop=top?0:b.scrollHeight; mark();};
     const stop=()=>{moved=true;};
     b.addEventListener('scroll',mark,{passive:true});
     ['wheel','touchstart','keydown'].forEach(t=>b.addEventListener(t,stop,{passive:true}));
@@ -47,50 +80,61 @@ function useChatScroll(body,turns){
     end(); const t=setTimeout(end,600);
     return ()=>{clearTimeout(t); if(ro) ro.disconnect(); b.removeEventListener('scroll',mark); ['wheel','touchstart','keydown'].forEach(t=>b.removeEventListener(t,stop));};
   },[turns]);
-  const toStart=()=>{const b=body.current; if(b) b.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
+  const toStart=()=>{const b=body.current; if(b) b.scrollTo({top:top?b.scrollHeight:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});};
   return [up,toStart];
+}
+// The tool line: "<toolBy> · Called <tool>". The by-line leads and never breaks inside itself; the name follows and wraps in full, uncut. The mark sits on the first row.
+// With no toolBy there is no dot.
+export function ToolCall({tool,mark,toolBy,style}){
+  return <span className="mcp-chat-call" style={style}>{mark&&<img src={mark} alt="" width="16" height="16"/>}<span className="mcp-chat-calltxt">{toolBy&&<><em>{toolBy} ·</em>{' '}</>}Called {tool}</span></span>;
 }
 // Shared drawing for ChatPicture and ChatPlayback. Without fx a turn draws whole, exactly as ChatPicture always has.
 // With fx (ChatPlayback): fx.piece(turn, key) gives null (not drawn yet) or the piece's entering style; fx.words(turn, key, text) draws a paragraph's words.
 // Piece keys: 'u' user line; 'c' tool call; 'b0'.. blocks; 'p0'.. paragraphs; 'a0'.. blocks after the text.
 export function chatTurn(t,i,{mark,toolBy,fx}){
   if(t.from==='user'){
-    if(!fx) return <p key={i} className="mcp-chat-me">{paras(t.text)}</p>;
-    const st=fx.piece(i,'u'); return st&&<p key={i} className="mcp-chat-me" style={st}>{paras(t.text)}</p>;
+    if(!fx) return <p key={i} className="mcp-chat-me">{paras(t.text).map(chatRich)}</p>;
+    const st=fx.piece(i,'u'); return st&&<p key={i} className="mcp-chat-me" style={st}>{paras(t.text).map(chatRich)}</p>;
   }
   if(!fx) return <div key={i} className="mcp-chat-ai">
-    {t.tool&&<span className="mcp-chat-call">{mark&&<img src={mark} alt="" width="16" height="16"/>}Called {t.tool}{toolBy&&<em>{toolBy}</em>}</span>}
-    {(t.blocks||[]).map((b,k)=><Block key={k} b={b}/>)}
-    {paras(t.text).map((p,k)=><p key={k}>{p}</p>)}
-    {(t.after||[]).map((b,k)=><Block key={'a'+k} b={b}/>)}
+    {t.tool&&<ToolCall tool={t.tool} mark={mark} toolBy={toolBy}/>}
+    {(t.blocks||[]).map((b,k)=><Part key={k} b={b}/>)}
+    {paras(t.text).map((p,k)=><p key={k}>{chatRich(p)}</p>)}
+    {(t.after||[]).map((b,k)=><Part key={'a'+k} b={b}/>)}
   </div>;
-  const blk=(list,pre)=>(list||[]).map((b,k)=>{const st=fx.piece(i,pre+k); return st&&<div key={pre+k} className="mcp-chat-fx" style={st}><Block b={b}/></div>;});
+  const blk=(list,pre)=>(list||[]).map((b,k)=>{const st=fx.piece(i,pre+k); return st&&<div key={pre+k} className="mcp-chat-fx" style={st}><Part b={b}/></div>;});
   const call=t.tool&&fx.piece(i,'c');
   const kids=[
-    call&&<span key="c" className="mcp-chat-call" style={call}>{mark&&<img src={mark} alt="" width="16" height="16"/>}Called {t.tool}{toolBy&&<em>{toolBy}</em>}</span>,
+    call&&<ToolCall key="c" tool={t.tool} mark={mark} toolBy={toolBy} style={call}/>,
     ...blk(t.blocks,'b'),
     ...paras(t.text).map((p,k)=>{const st=fx.piece(i,'p'+k); return st&&<p key={'p'+k} style={st}>{fx.words(i,'p'+k,p)}</p>;}),
     ...blk(t.after,'a')].filter(Boolean);
   return kids.length?<div key={i} className="mcp-chat-ai">{kids}</div>:null;
 }
 // The window around the turns: header, scrolling body, the back-to-the-start pill, the reply box, and an optional control (ChatPlayback's pause).
-export function chatShell({body,bodyRef,up,toStart,title,height,width,fill,label,more,className,comp,control,extraClass}){
+export function chatShell({body,bodyRef,up,toStart,start,title,height,width,fill,label,more,className,comp,control,extraClass}){
   const name=label||'A game being played in a chat';
-  return <div className={('mcp-chat'+(fill?' is-fill':'')+(extraClass?' '+extraClass:'')+' '+className).trim()} style={fill?undefined:{width:'min(100%,'+width+'px)'}} role="group" aria-label={name}>
+  return <div className={('mcp-chat'+(fill?' is-fill':'')+(start==='top'?' is-top':'')+(extraClass?' '+extraClass:'')+' '+className).trim()} style={fill?undefined:{width:'min(100%,'+width+'px)'}} role="group" aria-label={name}>
     {title&&<div className="mcp-chat-head">{title}</div>}
     <div ref={bodyRef} className={'mcp-chat-body'+(height==='auto'&&!fill?' is-auto':'')} style={fill||height==='auto'?undefined:{height}} tabIndex={0} role="region" aria-label={name+', scrolls'}>
       {body}
     </div>
-    <button type="button" className="mcp-chat-up" hidden={!up} onClick={toStart} aria-label={more}><Icon name="down" size={16} style={{transform:'rotate(180deg)'}}/></button>
+    <button type="button" className={'mcp-chat-up'+(start==='top'?(comp?' is-down':' is-down is-bare'):'')} hidden={!up} onClick={toStart} aria-label={more}><Icon name="down" size={16} style={start==='top'?undefined:{transform:'rotate(180deg)'}}/></button>
     {control}
     {comp}
   </div>;
 }
 export const chatParas=paras;
-export function ChatPicture({turns,title,toolBy,mark,height=290,width=360,fill=false,composer=true,placeholder='Reply',label,more='Back to the start',className=''}){
+// The reply bar with a real action in it (for a chat built with chatShell). Lower case, so the design-system build keeps it out of the component list. A group named "Reply", so the action is reachable; without an action the bar is a pretend one and stays hidden from screen readers.
+export function chatReply({action,placeholder='Reply'}){
+  return <div className="mcp-chat-comp has-action" role="group" aria-label="Reply"><span>{placeholder}</span>{action}</div>;
+}
+const Reply=chatReply;
+export function ChatPicture({turns,start,title,toolBy,mark,height=290,width=360,fill=false,composer=true,action,placeholder='Reply',label,more=start==='top'?'On to the latest':'Back to the start',className=''}){
   const body=React.useRef(null);
-  const [up,toStart]=useChatScroll(body,turns);
-  return chatShell({bodyRef:body,up,toStart,title,height,width,fill,label,more,className,
+  const [up,toStart]=useChatScroll(body,turns,start);
+  return chatShell({bodyRef:body,up,toStart,start,title,height,width,fill,label,more,className,
     body:turns.map((t,i)=>chatTurn(t,i,{mark,toolBy})),
-    comp:composer&&<div className="mcp-chat-comp" aria-hidden="true"><span>{placeholder}</span><i><Icon name="send" size={16}/></i></div>});
+    comp:composer&&action?<Reply action={action} placeholder={placeholder}/>
+      :composer&&<div className="mcp-chat-comp" aria-hidden="true"><span>{placeholder}</span><i><Icon name="send" size={16}/></i></div>});
 }

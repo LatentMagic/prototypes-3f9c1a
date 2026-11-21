@@ -7,4 +7,4 @@ Menu is a short list of commands opened from a control. It opens at that control
 
 - Commands only. A list that can grow or scroll, or anything the user works inside, is a panel (`Popup kind="panel"`).
 - A command that needs a question answered opens a dialog (`Popup`), as "Delete save" does above.
-- Labels name the action, sentence case.
+- Labels are in sentence case.

@@ -30,10 +30,6 @@
   .gs-hero-cover > .mcp-cover { position: absolute; inset: 0; grid-template-rows: minmax(0, 1fr); }
   .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; }
 }
-@container gs (min-width: 1000px) {
-  .hw-ai { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
-  .hw-ai-act { grid-column: auto; }
-}
 
 /* KEEP: Covers on a phone: the head of the product and session pages shows the cover small beside the title, as the library game page does, so the first action is in view; a More games card's art is 2:1 */
 @container gs (max-width: 719px) {

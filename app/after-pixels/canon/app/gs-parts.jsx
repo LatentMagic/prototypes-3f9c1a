@@ -29,7 +29,7 @@ export const GS_ART_LOCAL = {
   escape: { bg: '', body: <>{I('ga-e-door')}{I('ga-e-knob')}{I('ga-e-win')}</> },
   delve: { bg: 'is-wine', body: <>{I('ga-d-out')}{I('ga-d-in')}{I('ga-d-st')}{I('ga-d-st2')}{I('ga-d-st3')}{I('ga-d-post l')}{I('ga-d-post r')}{I('ga-d-fl l')}{I('ga-d-fl r')}</> },
 };
-const GS_RATIO = { square: 'mcp-art-1', landscape: 'mcp-art-43', wide: 'mcp-art-3' };
+const GS_RATIO = { banner: 'mcp-art-2', square: 'mcp-art-1', landscape: 'mcp-art-43', wide: 'mcp-art-3' };
 export const GsArt = ({ art, shape }) => {
   if (GS_ART_MOTION.includes(art)) return <DS.GameArt art={art} shape={shape} />;
   const p = GS_ART_LOCAL[art];
@@ -94,7 +94,7 @@ const GS_COMPARE = [
   { name: 'Your results and history', free: true },
   { name: 'Sharing a result', free: true },
   { name: 'Play earlier editions', free: false },
-  { name: 'The full game catalog', free: false },
+  { name: 'The full game catalogue', free: false },
   { name: 'New releases', free: false },
 ];
 const GsCmpMark = ({ on }) => on
@@ -311,7 +311,7 @@ export const GsDemoBar = () => {
           {[['live', 'in progress'], ['done', daily ? 'day complete' : 'finished']].map(([v, l], i) => (
             <React.Fragment key={v}>
               {i > 0 && <span aria-hidden="true">/</span>}
-              <button type="button" className="gs-demo-opt" aria-pressed={(gs.review.week === 'live' ? 'live' : 'done') === v} onClick={() => gs.setReview({ week: v })}>{l}</button>
+              <button type="button" className="gs-demo-opt" aria-pressed={(gs.review.week === 'live' ? 'live' : 'done') === v} onClick={() => gs.setReview({ week: v, begun: false })}>{l}</button>
             </React.Fragment>
           ))}
         </>}

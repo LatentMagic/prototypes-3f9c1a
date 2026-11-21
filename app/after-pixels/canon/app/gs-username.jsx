@@ -14,7 +14,7 @@ import { lbDate } from './gs-library.jsx';
 import { GsLabelled, useGsForm, GsAuthFrame } from './gs-auth.jsx';
 import { gsAddDays, GS_DAY0 } from './gs-billing.jsx';
 
-const GS_TAKEN = 'That username is taken';
+const GS_TAKEN = 'That username is taken.';
 export const gsUsernameRules = (current) => {
   const t = (v) => v.trim();
   return [

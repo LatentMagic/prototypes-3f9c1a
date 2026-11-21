@@ -1,5 +1,5 @@
 import React from 'react';
-import { gsMis, GS_RESULT, GS_SESSIONS, GS_GAMES, gsGuessParts, gsEdPick, useGs, gsFresh, GS_ES_WORDS4, gsEsHint } from './gs-data.jsx';
+import { gsMis, GS_RESULT, GS_SESSIONS, GS_GAMES, gsGuessParts, gsEdPick, useGs, gsFresh, GS_ES_WORDS4, gsEsHint, gsLiveSid } from './gs-data.jsx';
 import { lbDate, lbMonth, lbAutoBadges, lbWeekDone, lbNow, lbStreak, LbHead, LbRun, lbRunOf, LbAch } from './gs-library.jsx';
 import { DP_PZ, dpSession, DP_IDS } from './gs-where-chain-salvage.jsx';
 import { phVisible, phAch, LbRecent, edPuzzle } from './gs-history.jsx';
@@ -22,7 +22,7 @@ export const pzSession = (id, c, x) => {
   else if (id === 'word') {
     const answer = PZ_WORDS[i % PZ_WORDS.length]; const n = x.ok ? 3 + (i % 4) : 6;
     const guesses = Array.from({ length: n }, (_, k) => (x.ok && k === n - 1 ? answer : k === 0 ? PZ_OPEN[i % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length] === answer ? PZ_OPEN[(i + k) % PZ_OPEN.length] : PZ_WORDS[(i + k * 5) % PZ_WORDS.length]));
-    s = { ...base, number: 212 - i, answer, share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
+    s = { ...base, number: 34 - i, answer, share: x.line, lines: guesses.map((g, k) => ['Guess ' + (k + 1), g, ...gsGuessParts(g, answer)]) };
   } else if (id === 'groups') {
     const mis = x.ok ? (i === 1 ? 0 : i % 4) : 4; const found = x.ok ? 4 : 2; const lines = []; const rows = [];
     for (let k = 0, f = 0, m = 0; f < found || m < mis; k++) {
@@ -89,7 +89,7 @@ export function initGsPuzzlesLibrary() {
 pzMis = gsMis;
 PZ = {
   word: {
-    no: (i) => 'Guess #' + (212 - i), salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', liveSid: 'word-live',
+    no: (i) => 'Guess #' + (34 - i), count: 34, salt: 0, keep: { 1: true }, pin: { 2: 'word-hard', 4: 'word-failed' }, past: 'word-1005', today: 'word-today', get liveSid() { return gsLiveSid('word-live'); },
     ok: (i) => GS_RESULT.word({ ok: true, guesses: 3 + (i % 4) }), bad: GS_RESULT.word({ ok: false }),
     title: 'Today’s word', next: 'Next word: tomorrow',
     live: { line: 'You’ve used 2 of your 6 guesses. One letter is in place and two more are in the word.', bar: ['Guess 2 of 6', 2, 6] },
@@ -103,7 +103,7 @@ PZ = {
       { k: 'w10', n: 'Ten Wins', how: 'Solve 10 words.', of: 10, count: (ps) => ps.filter((p) => p.status.kind === 'ok') }],
   },
   groups: {
-    no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', liveSid: 'groups-live',
+    no: (i) => 'Daily Groups #' + (88 - i), salt: 1, keep: { 1: true }, past: 'groups-1005', today: 'groups-today', get liveSid() { return gsLiveSid('groups-live'); },
     ok: (i) => GS_RESULT.groups({ found: 4, mistakes: i === 1 ? 0 : i % 4 }), bad: GS_RESULT.groups({ found: 2 }),
     // tag: not a launch game, so its now card keeps the finished result as the tag with its icon.
     title: 'Today’s groups', next: 'Next groups: tomorrow', tag: true,
@@ -114,7 +114,7 @@ PZ = {
       { k: 'g7', n: 'Seven Days in a Row', how: 'Play Daily Groups seven days running.', of: 7 }],
   },
   mystery: {
-    no: (i) => 'Accuse #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', liveSid: 'mystery-live',
+    no: (i) => 'Accuse #' + (64 - i), salt: 2, keep: { 2: true }, past: 'mystery-1004', today: 'mystery-today', get liveSid() { return gsLiveSid('mystery-live'); },
     ok: () => GS_RESULT.mystery({ ok: true }), bad: GS_RESULT.mystery({ ok: false }),
     title: 'Today’s case', next: 'Next case: tomorrow',
     done: { st: { kind: 'bad', label: GS_RESULT.mystery({ ok: false }) } }, recent: 'Your cases',
@@ -125,7 +125,7 @@ PZ = {
   // Escape: this week's room is No. 1 The Clockmaker’s Study; its finished play is escape-week. Earlier rooms: the foot of this file.
   escape: {
     weekly: true, count: 1, rooms: ['The Clockmaker’s Study'],
-    no: (i) => PZ.escape.rooms[i] || PZ.escape.rooms[0], salt: 3, keep: {}, past: 'escape-week', today: 'escape-week', liveSid: 'escape-live',
+    no: (i) => PZ.escape.rooms[i] || PZ.escape.rooms[0], salt: 3, keep: {}, past: 'escape-week', today: 'escape-week', get liveSid() { return gsLiveSid('escape-live'); },
     ok: () => GS_RESULT.escape({ min: 28, par: 'under par' }), bad: GS_RESULT.escape({ min: 28, par: 'under par' }),
     title: 'The Clockmaker’s Study', next: 'Next room: Monday 12 October',
     live: { line: 'You’ve made three moves.' },
@@ -145,7 +145,7 @@ PZ_WORDS = ['TORCH', 'SHIRE', 'GLOVE', 'PLANK', 'CRISP', 'BLOOM', 'FROST', 'NERV
 PZ_OPEN = ['SLATE', 'CRANE', 'AUDIO', 'ROUTE', 'MOIST', 'PRISM'];
 PZ_GROUPS = [['🟦', 'colours: TEAL · RUBY · JADE · AMBER'], ['🟨', 'birds: WREN · KITE · ROOK · TERN'], ['🟩', 'card games: SNAP · BRAG · RUMMY · WHIST'], ['🟪', 'things with keys: PIANO · MAP · LOCK · CODE']];
 PZ_MOVES = [];
-// Seed: forty days (thirty weeks for Escape), newest first; index 0 is this edition.
+// Seed: forty days (thirty weeks for Escape; Guess has only 34, its No. 1 to No. 34), newest first; index 0 is this edition.
 Object.entries(PZ).forEach(([id, c]) => {
   c.gid = id;
   c.all = Array.from({ length: c.count || (c.weekly ? 30 : 40) }, (_, i) => {

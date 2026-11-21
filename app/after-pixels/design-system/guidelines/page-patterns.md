@@ -49,7 +49,7 @@ The Library band sits above the Product page head.
 
 The cover sits beside the play box.
 
-- From a 720px page there are two columns: the cover takes 2fr and the play box takes 1fr, with 24px between them.
+- From a 720px page there are two columns: the cover takes 3fr and the play box takes 2fr, with 24px between them.
 - The cover takes the play box's height, so the two end level. The cover is at least 320px tall.
 - The cover's 4:3 drawing shows whole, never stretched or cropped. Where the frame is taller than 4:3, the cover's `extend` (bottom or centre) grows its ground to fill it. Where the frame is wider, ground shows at the sides.
 - The label and the game's name sit at the cover's bottom left. The cover pads them 16px, and 24px from a 720px page. The label sits 4px above the name. The name is 34px.

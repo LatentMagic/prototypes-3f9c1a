@@ -1,7 +1,7 @@
 /* Salvage's now card on its library game page (app/gs-salvage-now.jsx): the five hulls in a row, the dives and the three tools on
    one line under them. Hulls and tools are the session page's (gs-salvage.css .slv-bx, .slv-tool). */
-.svn { container: svn / inline-size; position: relative; --slv-sonar: #2563eb; --slv-detector: #7c3aed; --slv-net: #db2777; --slv-ink: #fff; }
-.svn .t-sonar { --tc: var(--slv-sonar); } .svn .t-detector { --tc: var(--slv-detector); } .svn .t-net { --tc: var(--slv-net); }
+.svn { container: svn / inline-size; position: relative; }
+.svn .t-sonar { --tc: var(--tool-sonar); } .svn .t-detector { --tc: var(--tool-detector); } .svn .t-net { --tc: var(--tool-dragnet); }
 .svn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
 .svn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 

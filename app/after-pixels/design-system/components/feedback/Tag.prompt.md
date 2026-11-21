@@ -19,3 +19,4 @@ A game's time is one of two standard chips, `TIME_CHIPS.tiny` ("5–15 min") and
 - A game with no size shows its own time text, held once on the game.
 - Medium and large are not defined yet.
 - The ranges come from the size line in the monorepo's `specs/projects/mcp-games/game-specs/README.md`. When a range changes there, change it here.
+- Inside a chat part (`.mcp-cb`, so in a ChatPicture too) the locked and open tags take the chat's ink and an ink2 edge instead of the page's light text, which would vanish on the chat's light ground.

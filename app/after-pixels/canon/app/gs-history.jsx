@@ -7,7 +7,7 @@
 // ============================================================================
 // ---- Dates ----
 import React from 'react';
-import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED_SIDS, gsEndedOn, GS_TODAY_PLAYED, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
+import { GS_GAMES, gsFresh, gsLapsed, GS_SESSIONS, gsEdPick, gsSessStatus, GS_ED_SIDS, gsLiveSid, gsEndedOn, GS_TODAY_PLAYED, useGs, DS, GS_GAME_ORDER, gsScrollTop, gsForms, gsGameOfRoute, gsRhythm, GS_RHYTHMS } from './gs-data.jsx';
 import { useGsPart, GsPart } from './gs-site.jsx';
 import { GsArt } from './gs-parts.jsx';
 import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, LbChoice } from './gs-library.jsx';
@@ -33,8 +33,8 @@ const phTime = (d) => String(d.getHours()).padStart(2, '0') + ':' + String(d.get
 const phShort = (d) => lbShort(lbDate(d));
 
 // An edition's name, as a History row and the session page write it: the edition's name where it has one ("The Clockmaker’s Study"),
-// the number where it has none ("#212"). A named edition shows no number. edLabel puts the game's name first:
-// "Guess #212", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
+// the number where it has none ("#34"). A named edition shows no number. edLabel puts the game's name first:
+// "Guess #34", "Escape · The Clockmaker’s Study". A one-game list (the game's own page or filter) writes edName alone.
 export const edName = (e) => (e.title ? e.title : '#' + e.n);
 export const edLabel = (e) => GS_GAMES[e.gid].name + (e.title ? ' · ' + e.title : ' #' + e.n);
 let ED_NONE;
@@ -104,6 +104,8 @@ const phEd = (gid, ed, edTitle, edDate, plays, cur) => {
   PH_EDS[ed] = e; PH_PLAYS.push(...e.plays);
 };
 const phSess = (id) => (gs) => gs.go('session', { id });
+// The in-progress play's page, or its begun form while Config → This edition is In progress, nothing played yet.
+const phLive = (id) => (gs) => gs.go('session', { id: gsLiveSid(id, gs) });
 let PH_LIVE;
 let PH_PAST;
 let PH_LIVE_SID;
@@ -298,7 +300,7 @@ export const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
 // listed on its own page). Search and one Filters panel that only narrows: Genre, Schedule, Game, Order.
 // When nothing matches, Clear all clears search and narrowing. Narrowed to a game when the library game page's "See in History" opens it.
 // Every row opens its session page. No Pass mark on any row or filter.
-// A row's title comes from its edition: edLabel ("Guess #212"), or edName in a one-game list ("#212").
+// A row's title comes from its edition: edLabel ("Guess #34"), or edName in a one-game list ("#34").
 const phTitle = (p, one) => { const m = phMeta()[p.ed]; if (m) return one ? edName(m) : edLabel(m);
   return one || (p.edTitle.includes(GS_GAMES[p.gid].name) && p.gid !== 'barrow') ? p.edTitle : GS_GAMES[p.gid].name + ' · ' + p.edTitle; };
 // A row's parts: the edition's own name, and the game's name for a list that mixes games (ListRow joins them).
@@ -394,14 +396,14 @@ PH_MORE = {
 GS_SESSIONS['escape-r0-live'] = { ...GS_SESSIONS['escape-live'], edKey: 'escape-r0', __dated: true, date: pzLong(PH_MORE.escape.at) + ', ' + phTime(PH_MORE.escape.at),
   lines: [['Move 1', 'Examined the logbook on the desk', 'The last entry stops mid-sentence, three nights before the storm.'], ['Move 2', 'Examined the lamp room hatch', 'The hatch is bolted from above.']] };
 GS_SESSIONS['delve-r0-live'] = { ...GS_SESSIONS['delve-live'], edKey: 'dv-r0', __dated: true, date: pzLong(PH_MORE.delve.at) + ', ' + phTime(PH_MORE.delve.at),
-  figures: ['Threat 2/12', '4 rolls', 'HP 10/11'], threat: 2, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 2, threatMax: 12 }, endings: null, reached: null, shareLines: null,
-  lines: [['Room', 'Entered the flooded nave'], ['Dexterity', 'Cross the sunken pews', 'Success', 'Rolled 14 + 2 = 16 against DC 12'], ['Room', 'Entered the bell loft']] };
+  figures: ['Threat 0/12', '1 roll', 'HP 21/21'], threat: 0, foeMax: {}, lightName: undefined, light: undefined, lightMax: undefined, sheet: { used: {}, insp: true }, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 0, threatMax: 12 }, endings: null, reached: null, shareLines: null,
+  lines: [['Room', 'Entered the flooded nave'], ['Dexterity', 'Cross the sunken pews', 'Success', 'd20 14 + 3 = 17 vs 12'], ['Room', 'Entered the bell loft']] };
 PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + '-0', at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
 Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
   if (!x.played) return;
   const cur = x.i === 0; const sid = cur ? c.today : x.sid;
   let first;
-  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phSess(PH_LIVE_SID[id]) } }; }
+  if (cur) { const s = GS_SESSIONS[c.today]; first = { at: phAt(PH_TODAY, 8 + c.salt, 5 + c.salt * 11), status: gsSessStatus(s), now: { status: PH_LIVE, open: phLive(PH_LIVE_SID[id]) } }; }
   else first = { at: phAt(x.d, 7 + ((x.i * 5 + c.salt * 3) % 15), (x.i * 17 + c.salt * 7) % 60, c.weekly ? x.i % 4 : 0), status: { kind: x.ok ? 'ok' : 'bad', label: x.line } };
   first.open = phSess(sid); first.sid = sid; first.src = x;
   phEd(id, x.id, x.title, x.d, [first], cur);
@@ -417,7 +419,7 @@ CB_ALL.forEach((cb, k) => {
 DV_ALL.forEach((s, i) => {
   if (!s.played) return;
   const ed = phParse(s.date); const cur = i === 0;
-  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phSess('delve-live') } }
+  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phLive('delve-live') } }
     : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
   phEd('delve', s.id, s.title, ed, [first], cur);
 });
@@ -446,7 +448,7 @@ PH_BROKEN = (() => {
 // the day it was played. It has an in-progress form and an ended form, switched by the same control as this week's play
 // (cprFirstState reads it), or not started. ----
 PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: 'bw1' };
-PH_FIRST_LIVE = { delve: phSess('delve-first-live'), escape: phSess('escape-first-live') };
+PH_FIRST_LIVE = { delve: phLive('delve-first-live'), escape: phSess('escape-first-live') };
 // A record shows the time it was played.
 PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
   let id = null; try { q.open({ go: (n, a) => { if (n === 'session' && a) id = a.id; } }); } catch (e) {}
@@ -460,6 +462,7 @@ Object.values(GS_ED_SIDS).forEach((m) => Object.values(m).forEach((sid) => { con
 (() => {
   const dv = GS_SESSIONS.delve;
   GS_SESSIONS['delve-first-live'] = { ...GS_SESSIONS['delve-live'], date: dv.date, __dated: true };
+  GS_SESSIONS['delve-first-begun'] = { ...GS_SESSIONS['delve-begun'], date: dv.date, __dated: true };
   const es = GS_SESSIONS['escape-week'];
   GS_SESSIONS['escape-first-live'] = { ...GS_SESSIONS['escape-live'], date: es.date, lines: es.lines.slice(0, 4), __dated: true };
 })();

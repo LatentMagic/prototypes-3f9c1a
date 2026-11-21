@@ -2,6 +2,8 @@
 
 Games you play with your AI assistant. Crack today's puzzle, solve a mystery, go on an adventure. You make the moves; the game holds the rules. Players connect their AI assistant to the After Pixels platform (afterpixels.com) using MCP. They can browse games on the platform, where each game's page has a prompt that starts it in their assistant. Or they can ask their assistant to show all the games and pick one there. New games arrive every day: daily puzzles, a weekly interrogation, murder mysteries, escape rooms, dungeon quests, word puzzles.
 
+This design system follows the monorepo's UI standard, `specs/governance/standards/ui-design.md`. That file holds every rule about how a screen behaves; this one holds the tokens, sizes, components and patterns that are After Pixels' own ([how they meet it](guidelines/ui-standard.md)).
+
 The system is one dark surface: warm near-black pages, off-white type and actions, and square corners. Colour is used to make things stand out against it.
 
 ## Where things are
@@ -20,6 +22,7 @@ The system is one dark surface: warm near-black pages, off-white type and action
 - `components/actions/`: Button, ButtonPair, TextLink
 - `components/forms/`: TextField, SearchField, Checkbox
 - `components/feedback/`: Tag, StatusMessage, ProgressBar, Loader
-- `components/surfaces/`: Card, Heading, FormCard, Popup, Menu, Disclosure, PageGrid, CardRow, GameCard, GamePick, GameTile, SoonCard, NeedsPass, ListRow, RowList, MoveRow, MoveList
-- `components/media/`: Cover, Icon, GameArt, ChatPicture (a game played in a generic chat, for product pages; the one light picture on the dark surface), ChatPlayback (the same chat played out turn by turn; can be shown at any given time)
-- `components/chat/`: the parts a game draws inside a ChatPicture AI turn, each also a block type: TileGrid, WordBoard, ChoiceButtons, ConfirmCard, FactRows, StatRow, StatusTag, EntityCards, ClueCards, ResultCard, Track, RollLine, NavButtons, MenuRows
+- `components/surfaces/`: Card, Heading, FormCard, Popup, Menu, Disclosure, NotchPicker, PageGrid, CardRow, GameCard, GamePick, GameTile, SoonCard, StepCard (a step as a card, never a game), NeedsPass, ListRow, RowList, MoveRow, MoveList
+- `components/media/`: Cover, Icon, GameArt, ChatPicture (a game played in a generic chat, for product pages; the one light picture on the dark surface; it can carry a real reply action), ChatSide (the game beside a chat, with its edition label), ChatPlayback (the same chat played out turn by turn; can be shown at any given time), SpeechBubble (words the player types, inline as a sent message)
+- `components/chat/`: the parts a game draws inside a ChatPicture AI turn, each also a block type: TileGrid, WordBoard, ChoiceButtons, ConfirmCard, FactRows, StatRow, StatusTag, EntityCards, ClueCards, Picture, ResultCard, Track, RollLine, NavButtons, MenuRows
+- `components/delve/`: the dice Delve draws on its route and held roll: DelveDie, DelveUseDie, DelveFoeDie

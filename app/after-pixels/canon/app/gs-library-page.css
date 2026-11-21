@@ -12,12 +12,12 @@
 .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }
 /* The now card (LbNowCard): its head and the game's picture in one stack, the action row below it. */
 .lb-now-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
-/* KEEP: a now card's result never wraps under the title: it holds the top right at every width and the title wraps beside it.
-   A long result takes at most half the head and wraps itself, right-aligned. Heads with a link or buttons still wrap.
-   Known problem, unsolved: Delve's long endings ("Too late: the ritual was completed") crowd a phone; solve when Delve's page is designed. */
-.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { flex-wrap: nowrap; }
-.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { flex: 1 1 0; }
-.lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { flex: 0 1 auto; max-width: 50%; text-align: right; }
+/* KEEP: a now card's result chip holds the top right, on the row of the small label above the title, at every width. The title sits on the rows below and takes the card's full width, cut after 3 lines with "…", so a long title is never squeezed into a narrow column beside the chip. A long result takes at most half the row and wraps itself, right-aligned. Cards with no chip are unchanged. */
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(50%); column-gap: 12px; row-gap: 4px; align-items: start; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { display: contents; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .gs-label { grid-column: 1; grid-row: 1; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .mcp-t-sec { grid-column: 1 / -1; grid-row: 2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 /* KEEP: A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
 .lb-sechead > .mcp-lnk { margin-block: -12px; }
@@ -31,9 +31,12 @@
 .lb-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); margin-top: auto; padding-top: var(--space-2); }
 .lb-foot > .lb-slot { min-width: 0; text-wrap: pretty; }
 .lb-foot > .lb-slot > p { margin: 0; }
+/* KEEP: a row with no button (bare) keeps its slot at the right edge on desktop; on a phone the slot centres, as with a button. */
+.lb-foot > .lb-slot:only-child { margin-left: auto; }
 @container gs (max-width: 639.98px) {
   .lb-foot { flex-direction: column; align-items: stretch; gap: var(--space-3); }
   .lb-foot > .lb-slot { text-align: center; }
+  .lb-foot > .lb-slot:only-child { margin-left: 0; }
   .lb-pass { flex-direction: column; align-items: stretch; gap: 8px; flex: 1 1 100%; }
   .lbf-bar { flex-wrap: wrap; }
   .lbf-search { flex: 1 1 100%; max-width: none; }
@@ -252,13 +255,18 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .lb-runbody { align-items: center; }
   .lb-runbody .lb-run { grid-template-columns: repeat(10, 32.6px) !important; }
   .lb-runbody .lb-legend { justify-content: center; }
-  /* KEEP: Stacked, the card need not match a row, so it is trimmed: square slots (30.6px box in a 32.6px column), the card's own padding, and tighter gaps, all from the spacing tokens. */
+  /* KEEP: Stacked, the card need not match a row, so it is trimmed: square slots (a 30.6px box in a 32.6px column), the card's own padding, and tighter gaps, all from the spacing tokens. */
   .lb-runcard { padding: var(--space-4); }
   .lb-runbody { gap: var(--space-3); padding-block: var(--space-2); }
   .lb-runbody .lb-wk { grid-template-rows: 17px 30.6px auto; }
+  /* KEEP: Every slot is the same 30.6px square, centred in its 32.6px column, joined or not; a joined slot reaches back over the 2px gap (and 1px into the slot before) so a run of completed days still reads as one bar. */
+  .lb-runbody .lb-run .lb-wk > i { width: 30.6px; margin: 0; justify-self: center; }
+  .lb-runbody .lb-run .lb-wk.is-join > i { position: relative; }
+  .lb-runbody .lb-run .lb-wk.is-join > i::before { content: ''; position: absolute; top: 0; bottom: 0; left: -3px; width: 3px; background: inherit; }
 }
 @container gs (max-width: 479px) {
   .lb-runbody .lb-run { grid-template-columns: repeat(6, 32.6px) !important; }
+  .lb-runbody .lb-run > .is-cut > i::before { content: none; }
 }
 @container gs (min-width: 900px) {
   .lb-lay { grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); }
@@ -274,7 +282,6 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 
 /* C2: achievement items align to the top */
 .lb-achbtn { align-items: start; }
-/* KEEP: C1, reversed by the owner 2026-10-13: cards side by side on the library game page end level; the shorter one takes the spare space at its foot */
 /* KEEP: C1, C2: beside the plays card the achievements wrap into as many columns as fit, each at least 260px wide, so a description wraps to two lines at most and every achievement shows (Common has eight) */
 @container gs (min-width: 900px) { .lb-lay .lb-card > .lb-ach { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); } }
 

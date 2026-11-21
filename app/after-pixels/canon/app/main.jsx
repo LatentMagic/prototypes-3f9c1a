@@ -91,7 +91,7 @@ import { registerDelve } from './gs-delve.jsx';
 import { PgBar, pgActive, pgTabName, pgSubscribe } from './playground.jsx';
 import { initGsSalvage } from './gs-salvage.jsx';
 import { initGsAccuse } from './gs-accuse.jsx';
-import { FitView, isFramed, useFit } from './fit.jsx';
+import { FitView, isFramed, isDemoHidden, useFit } from './fit.jsx';
 import { initGsWhere } from './gs-where.jsx';
 import { initGsChain } from './gs-chain.jsx';
 import { initGsCommon } from './gs-common.jsx';
@@ -392,7 +392,7 @@ const KitApp = () => {
   const appTree = (
     <GsCtx.Provider value={gs}>
       <div className={'gs-root' + (fitted ? ' fitted' : '')} ref={rootRef}>
-        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? <PgBar /> : !fitted && <GsTopBar />)}
+        {GS_ROUTES.includes(route.name) && !gsWithout(GS_BARE, route) && (pgActive() ? (!isDemoHidden() && <PgBar />) : !fitted && <GsTopBar />)}
         {fitted ? <FitView /> : <>
         {Cand && Cand.Screen
           ? <Cand.Screen api={gs} />
@@ -401,7 +401,7 @@ const KitApp = () => {
         <div id="gs-announce" className="gs-vh" role="status" aria-live="polite"></div>
         {!gsWithout(GS_LISTING, route) && <>
           <GsPlayPopup />
-          <GsDemoBar />
+          {!isDemoHidden() && <GsDemoBar />}
         </>}
         </>}
       </div>
@@ -424,7 +424,7 @@ const KitApp = () => {
       ) : appTree}
 
       {/* KEEP: the Config pill stays fixed to the window in the phone frame too (mounted outside it: the frame's transform would capture position: fixed). */}
-      {ConfigLauncher && !isFramed() && <ConfigLauncher
+      {ConfigLauncher && !isFramed() && !isDemoHidden() && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => { setLanding({ kind: 'index', name: 'index' }); setShown({ kind: 'index' }); }}
         onReset={resetAndShow}
@@ -446,7 +446,7 @@ registerPassLibrary();
 registerEscape();
 registerWord();
 registerDelve();
-GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', today: null, pastDay: 'none', several: false, escape: 'under', ed: null, cur: GS_CUR_SEED };
+GS_REVIEW_DEFAULT = { providerFail: false, device: 'known', passFail: false, sheet: 'completes', week: 'done', begun: false, today: null, pastDay: 'none', several: false, escape: 'under', ed: null, later: false, cur: GS_CUR_SEED };
 // first, last: the names asked at sign-up by email. since: the day the username last changed (or the account was made); the next change waits 30 days from it.
 // fresh: an account made in this session (or Config Account: New), with nothing played yet.
 GS_USER_DEFAULT = { username: 'MonaLaser', first: 'Mona', last: 'Lasker', locked: false, since: null, fresh: false, email: 'you@example.com' };

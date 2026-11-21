@@ -969,6 +969,13 @@
           desc: 'The agreed Circlists line — the single working prototype ahead of product. Changes accrete here rather than into new tabs; alternatives are explored as playgrounds and candidates beside it. What it carries is in Recent changes.',
           changelog: [
             {
+              date: '2026-11-11',
+              title: 'Hand edit to carry: ?nodemo hides the Config pill',
+              items: [
+                'Hand edit in app/config.jsx, not from a Claude Design export: with ?nodemo in the address, the file publishes no window.ConfigLauncher, so main.jsx renders no Config pill and a screenshot shows the page alone. Without the flag nothing changes. The kit has the same change in kit/project/app/config.jsx; carry it with the next export (the last lines of config.jsx, the CONFIG_NODEMO constant and the Object.assign beside it), or this reverts.',
+              ],
+            },
+            {
               date: '2026-10-28',
               title: 'Kit 7–9: Config redesigned as a section rail; comments cleaned',
               items: [

@@ -33,7 +33,8 @@ export const cprFirstState = (gs, id) => {
   // A first edition whose play the record does not hold (Config → This edition: Not played) is not started in every view, a Pass-ended player's included.
   if (gs.view === 'pass') return id === 'barrow' && cprStore.get().bwDone && !!phFirstPlay(gs, id) ? 'done' : 'pass';
   if (!phFirstPlay(gs, id)) return 'none';
-  if (gsLapsed(gs)) return cprLapsedOf(id).used ? 'done' : 'none';
+  // A Pass-ended player's Delve first run can still be in progress (Config → This edition: In progress).
+  if (gsLapsed(gs)) return cprLapsedOf(id).used ? (id === 'delve' && !lbWeekDone(gs) ? 'live' : 'done') : 'none';
   if (gsFresh(gs)) return 'none';
   if (id === 'barrow') return cprStore.get().bwDone ? 'done' : 'none';
   if (id === 'escape' && phSeedNew(gs, 'escape')) return 'none';
@@ -71,8 +72,8 @@ export { CprPassEnd };
 export const cprBoxCopy = (id) => {
   const k = CPR_STAGE[id]; const u = GS_GAMES[id].ed[0]; const U = u.toUpperCase();
   if (k === 'daily' && id === 'groups') return null; // not reached while Daily Groups is staged 'pass'; "a new groups" doesn't read, so canon's copy stays until worded
-  if (k === 'daily') { const no = { word: 212, mystery: 64 }[id]; return ['TODAY’S ' + U + ' · #' + no, 'Free with an account. A new ' + u + ' every day.']; }
-  if (k === 'first') return [id === 'barrow' ? 'CHAPTER 1' : 'THE FIRST ' + U, 'Free with an account. Every other ' + u + ' comes with the Pass.'];
+  if (k === 'daily') { const no = { word: 34, mystery: 64 }[id]; return ['TODAY’S ' + U + ' · #' + no, 'Free with an account. A new ' + u + ' every day.']; }
+  if (k === 'first') return [id === 'barrow' ? 'CHAPTER 1' : 'THE FIRST ' + U, 'The first ' + u + ' is free with an account. Every ' + u + ' after it needs the Pass.'];
   if (k === 'pass') return ['WITH THE PASS', (GS_NAME[id] || GS_GAMES[id].name) + ' comes with the Pass.'];
   return null;
 };

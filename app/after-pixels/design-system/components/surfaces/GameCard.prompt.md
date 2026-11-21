@@ -13,6 +13,7 @@ GameCard is the one game card. It works anywhere; inside a CardRow every card is
   - GameTile, in the all-games wall or a tile row;
   - ListRow, in a list of games or plays.
   A game not out yet has its own card, SoonCard; a game out for now in a row is a GameCard with `soon`. Don't write a page's own game card.
+- A step of how something goes (a picture, a name, a line, never a game) is a StepCard, not a GameCard: GameCard's rules are about games, and its chip line leaves a blank row when empty.
 - Name and blurb sit snug under the picture, whatever the name's length.
 - Chips: the row shares one chip line, as tall as the tallest chip set, and each card's chips are centred in it. One line of chips sits level with the middle of another card's two, with no blank space under it. This has regressed before: never pin chips to the card's bottom edge, and never give the card its own row heights inside a CardRow.
 - A sized game's time chip is its size's chip, `Tag` `kind="daily"` with `TIME_CHIPS[size]` (see Tag); never type its time.

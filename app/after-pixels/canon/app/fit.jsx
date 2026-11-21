@@ -10,6 +10,8 @@ import React from 'react';
 const fitQuery = () => new URLSearchParams(window.location.search);
 export const isFitted = () => fitQuery().get('fit') === '1';
 export const isFramed = () => fitQuery().get('pgframe') === '1';  // true only inside Fit's iframe
+// ?nodemo hides the prototype's demo controls (the Config pill and the demo bar) so a screenshot shows the page alone. Present = on, any value.
+export const isDemoHidden = () => fitQuery().has('nodemo');
 
 const fitSubs = new Set();
 export const useFit = () => {

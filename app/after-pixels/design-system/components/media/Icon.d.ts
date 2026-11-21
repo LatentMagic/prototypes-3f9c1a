@@ -1,4 +1,4 @@
-export type IconName='search'|'back'|'close'|'lock'|'play'|'settings'|'mail'|'logout'|'card'|'check'|'warn'|'error'|'down'|'next'|'send'|'out'|'share'|'list';
+export type IconName='search'|'back'|'close'|'lock'|'play'|'settings'|'mail'|'logout'|'card'|'stats'|'advantage'|'pack'|'ability'|'fight'|'check'|'warn'|'error'|'down'|'next'|'send'|'out'|'share'|'list';
 /** One of the hand-off's 24px icons. Line drawings: 1.75 stroke, square ends, mitred joins. */
 export interface IconProps{
   name:IconName;

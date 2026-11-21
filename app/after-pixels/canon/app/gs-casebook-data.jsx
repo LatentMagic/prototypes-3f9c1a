@@ -15,6 +15,7 @@ const CB_TITLE = 'The Last Night at Gull Point';
 const CB_CAST = ['Maeve Doyle', 'Tobias Pike', 'Dr. Celia Rourke'];
 export let CB_DONE;
 export let CB_LIVE;
+export let CB_BEGUN;
 export let CB_ALL;
 // Case 1's finished play by session id, as Config → This edition picks it (GS_ED_SIDS.casebook).
 let CB_BY_SID;
@@ -43,17 +44,19 @@ CB_BY_SID = { casebook: CB_DONE,
   'casebook-failed': { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, 'wrong', 4, GS_CB_FAILED), cast: CB_CAST, places: 4 } };
 // In progress: the same play after its first six turns (1 lie exposed). The total stays held back while the case is open.
 CB_LIVE = { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, null, 4, GS_CB_REC.filter((r) => r.c !== 'A').slice(0, 6)), cast: CB_CAST };
+// In progress, nothing played yet (Config → This edition): the case opened, no turn taken.
+CB_BEGUN = { ...cbMake(CB_ID, '5 October', 'October', CB_TITLE, true, null, 4, []), cast: CB_CAST };
 // Every case, newest first. One so far; its row in the log is the in-progress form, finished by the Config switch (cbWeek).
 CB_ALL = [CB_LIVE];
 CB_ACH = [
-  { k: 'first', n: 'First lie exposed', how: 'Expose a suspect’s lie with proof.', first: true, by: (p) => p.src.lies >= 1 },
-  { k: 'solved', n: 'Case solved', how: 'Name the killer.', first: true, by: cbRight },
-  { k: 'eleven', n: 'Solved in eleven turns', how: 'Name the killer using eleven turns or fewer.', first: true, by: (p) => cbRight(p) && p.src.turns <= 11 },
-  { k: 'every', n: 'Every lie exposed', how: 'Expose every lie in one case.', first: true, by: (p) => p.src.lies === p.src.total },
-  { k: 'rooms', n: 'Every room searched', how: 'Search every place in one case.', first: true, by: (p) => p.src.searched >= p.src.places },
-  { k: 'quick', n: 'Solved in eight turns', how: 'Name the killer using eight turns or fewer.', first: true, by: (p) => cbRight(p) && p.src.turns <= 8 },
-  { k: 'five', n: 'Five cases solved', how: 'Solve five cases.', of: 5, count: (ps) => ps.filter(cbRight) },
-  { k: 'ten', n: 'Ten cases solved', how: 'Solve ten cases.', of: 10, count: (ps) => ps.filter(cbRight) },
+  { k: 'first', n: 'First Lie Exposed', how: 'Expose a suspect’s lie with proof.', first: true, by: (p) => p.src.lies >= 1 },
+  { k: 'solved', n: 'Case Solved', how: 'Name the killer.', first: true, by: cbRight },
+  { k: 'eleven', n: 'Solved in Eleven Turns', how: 'Name the killer using eleven turns or fewer.', first: true, by: (p) => cbRight(p) && p.src.turns <= 11 },
+  { k: 'every', n: 'Every Lie Exposed', how: 'Expose every lie in one case.', first: true, by: (p) => p.src.lies === p.src.total },
+  { k: 'rooms', n: 'Every Room Searched', how: 'Search every place in one case.', first: true, by: (p) => p.src.searched >= p.src.places },
+  { k: 'quick', n: 'Solved in Eight Turns', how: 'Name the killer using eight turns or fewer.', first: true, by: (p) => cbRight(p) && p.src.turns <= 8 },
+  { k: 'five', n: 'Five Cases Solved', how: 'Solve five cases.', of: 5, count: (ps) => ps.filter(cbRight) },
+  { k: 'ten', n: 'Ten Cases Solved', how: 'Solve ten cases.', of: 10, count: (ps) => ps.filter(cbRight) },
 ];
 // The system's flat shapes on the cover grounds.
 CB_BADGES = {

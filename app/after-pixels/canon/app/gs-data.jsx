@@ -12,8 +12,10 @@ export const GS = {
   today: 'Tuesday 6 October',
   link: 'https://play.afterpixels.com',
   email: 'you@example.com',
+  tax: 'Prices include tax', // KEEP: no full stop where it stands alone (the user, 2026-11-18); Pricing adds one because it runs into the purchase sentence.
+  taxShort: 'includes tax',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
-  works: 'ChatGPT · Claude · Gemini · OpenClaw · any assistant that supports MCP connectors',
+  works: 'ChatGPT · Claude · Gemini · Grok · Muse · and more',
 };
 
 // Covers: a few flat basic shapes in the cover colours on a cover background. Each declares its ground and how it extends
@@ -21,7 +23,7 @@ export const GS = {
 // bottom when the shapes stand on the bottom edge, centre when they float. { ground, extend, svg }
 export const GS_SVG = (body) => '<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice">' + body + '</svg>';
 export const GS_ART = {
-  delve: { ground: 'wine', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="29" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="32" cy="54" r="8" fill="#D66847"/><rect x="125" y="62" width="6" height="30" fill="#F2EBE0"/><circle cx="128" cy="54" r="8" fill="#D66847"/>') },
+  delve: { ground: 'wine', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><rect x="50" y="40" width="60" height="80" fill="#A390B2"/><circle cx="80" cy="40" r="30" fill="#A390B2"/><rect x="64" y="52" width="32" height="68" fill="#1D1B3A"/><circle cx="80" cy="52" r="16" fill="#1D1B3A"/><rect x="64" y="88" width="32" height="8" fill="#E5A63B"/><rect x="68" y="100" width="24" height="8" fill="#E5A63B"/><rect x="72" y="112" width="16" height="8" fill="#E5A63B"/><rect x="29" y="46" width="6" height="30" fill="#F2EBE0"/><circle cx="32" cy="38" r="8" fill="#D66847"/><rect x="125" y="46" width="6" height="30" fill="#F2EBE0"/><circle cx="128" cy="38" r="8" fill="#D66847"/>') },
   escape: { ground: 'indigo', extend: 'bottom', svg: GS_SVG('<rect width="160" height="120" fill="#1D1B3A"/><rect x="60" y="26" width="44" height="94" fill="#328A88"/><circle cx="94" cy="76" r="5" fill="#E5A63B"/><rect x="22" y="22" width="16" height="16" fill="#F2EBE0"/>') },
   murder: { ground: 'wine', extend: 'centre', svg: GS_SVG('<rect width="160" height="120" fill="#421A28"/><circle cx="72" cy="60" r="30" fill="none" stroke="#D66847" stroke-width="12"/><rect x="114" y="24" width="10" height="72" fill="#F2EBE0"/><rect x="114" y="24" width="10" height="20" fill="#E5A63B"/>') },
   // Daily Groups: four rows of four, one colour a group, as a solved board.
@@ -37,27 +39,29 @@ export const GS_ART = {
 export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 
 // 'FREE' and 'PASS' render as the system's Free and Locked ("Pass") tags.
-// category: one per game, printed before the rhythm in the product page's label (proposed values).
+// category: one per game, printed as the product page’s cover label (proposed values).
 // access: who plays what, held here once. 'daily' free to play (the current edition, a streak, its achievements); 'first' a free player
 // gets the game's one first edition; 'pass' only with the Pass. free, first and the card's access tag are derived from it (gsAccess); never type them.
 // once: the game has a fixed answer, so a finished play is never started again, with or without a schedule. Read it through gsStartsOver only.
 // size: 'tiny' or 'small', mirroring the game spec's size line. A sized game's time chip is derived from it (gsAccess), never typed in tags or a page's facts.long. A game with no size types its own time once.
 // edAll: the editions list's H1 and Show option where "Every " + ed[0] doesn't read (Daily Groups).
 // edLink: the editions link's own text, where "Every " + ed[0] doesn't read (Daily Groups).
-// edLine: SAMPLE, the line every edition's panel prints about it (the editions list, gs-editions.jsx). Optional.
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
+// real: whether the game is a real After Pixels game. Only Guess, Accuse, Escape, Delve, Where, Chain, Salvage and Common are; every
+// other game here is fake, a proof of concept or canned sample content, kept to show a kind of game or page. Nothing on screen reads it.
+// KEEP: a game with real: false is not a product game. Build nothing for it, and read no rule about the product from its pages.
 // soon: the game is out for now and coming back. Every card, pick and tile shows it Coming soon, dimmed, with no way in.
 export const GS_GAMES = {
-  word: { access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], edLine: 'Five letters. Six guesses.', daily: true, once: true, blurb: 'Six guesses to find today’s five-letter word.', tags: ['Daily'], size: 'tiny' },
-  groups: { access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', edLine: 'Sixteen words hide four groups. Find all four.', daily: true, once: true, blurb: 'Sixteen words hide four groups. Find all four.', tags: ['Daily', '10 min'] },
-  mystery: { access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], edLine: 'One suspect, one weapon, one room. One accusation.', daily: true, once: true, blurb: 'There’s a body and a story that doesn’t add up.', tags: ['Daily'], size: 'tiny' },
-  escape: { access: 'first', soon: true, name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly'], size: 'small' },
+  word: { real: true, access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], daily: true, once: true, blurb: 'One hidden word a day: find it in six guesses.', tags: ['Daily'], size: 'tiny' },
+  groups: { real: false, access: 'pass', name: 'Daily Groups', category: 'PUZZLE', art: 'groups', route: 'groups', ed: ['puzzle', 'puzzles'], edLink: 'See all groups', edAll: 'All groups', daily: true, once: true, blurb: 'Sixteen words hide four groups of four.', tags: ['Daily', '10 min'] },
+  mystery: { real: true, access: 'daily', name: 'Accuse', category: 'PUZZLE', art: 'murder', route: 'mystery', ed: ['case', 'cases'], daily: true, once: true, blurb: 'Four suspects, four weapons, four places. Who do you accuse?', tags: ['Daily'], size: 'tiny' },
+  escape: { real: true, access: 'first', soon: true, name: 'Escape', category: 'PUZZLE', art: 'escape', route: 'escape', ed: ['room', 'rooms'], blurb: 'The door’s locked and you’re on the wrong side of it.', tags: ['Weekly'], size: 'small' },
   // Casebook is episodic: cases are its editions, with no schedule.
-  casebook: { access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
-  delve: { access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'Get her out before the ritual is complete.', tags: ['Weekly'], size: 'small' },
+  casebook: { real: false, access: 'pass', name: GS_NAME.casebook, category: 'MYSTERY', art: 'casebook', route: 'casebook', ed: ['case', 'cases'], once: true, blurb: 'Ask the question they haven’t prepared for.', tags: ['25–40 min'] },
+  delve: { real: true, access: 'first', name: 'Delve', category: 'ADVENTURE', art: 'delve', route: 'delve', ed: ['run', 'runs'], blurb: 'A new world every week: fight room by room to the villain at its heart.', tags: ['Weekly'], size: 'small' },
   // Chapters are its editions; a free player gets chapter 1. Sample content.
-  barrow: { access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
-  hunter: { access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', ed: ['summer', 'summers'], blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
+  barrow: { real: false, access: 'first', name: 'The Barrow of Hollowmere', category: 'ADVENTURE', art: 'barrow', route: 'barrow', ed: ['chapter', 'chapters'], edLink: 'All chapters', edAll: 'All chapters', blurb: 'Bring the lost bell home from the barrow. Your hero carries on.', tags: ['Several sessions'] },
+  hunter: { real: false, access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', ed: ['summer', 'summers'], blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
 };
 // Derives a game's free, first and its access tag ('FREE' | 'FIRST' | 'PASS', first in tags) from access, and a sized game's time chip (last in tags).
 // KEEP: a sized game's time chip is its size's chip from the design system (DS.TIME_CHIPS), never typed per game.
@@ -133,44 +137,47 @@ const GS_ES_WORDS5 = ['TRAIN', 'STEAM', 'TRACK', 'PLATE']; const GS_ES_DIG3 = ['
 // Delve: a name sits mid-sentence in lower case ("Entered the warren"), as the engine writes it.
 const gsDvName = (n) => n.replace(/^The /, 'the ');
 
-// ---- Delve run 1, The Goblin Warren beneath Ashford Mill: two recorded plays of the deployed engine. ----
+// ---- Delve run 1, The Goblin Warren: two recorded plays of the deployed engine. ----
 export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.';
 const GS_DV_WON = [
-  ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'Rolled 1 + 0 = 1 against DC 12', 'HP 12/13'],
+  ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 17 + 0 = 17 vs 12'],
   ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Miss', 'Rolled 9 + 1 = 10 against DC 12', 'HP 11/13'],
-  ['Dexterity', 'Weak hit', 'Rolled 11 + 1 = 12 against DC 12'],
-  ['Dexterity', 'Strong hit', 'Rolled 18 + 1 = 19 against DC 12'],
+  ['Strength', 'Failure', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'HP 21/23'],
+  ['Strength', 'Success', 'd20 16 + 3 = 19 vs 12'],
+  ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 11 + 1 = 12 vs 12'],
   ['Room', 'Entered the warren'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Strength', 'Weak hit', 'Rolled 9 + 3 = 12 against DC 12'],
-  ['Strength', 'Weak hit', 'Rolled 13 + 3 = 16 against DC 12', 'HP 9/13'],
-  ['Strength', 'Strong hit', 'Rolled 17 + 3 = 20 against DC 12'],
-  ['Dexterity', 'Rifle the stolen sacks', 'Success', 'Natural 20', 'Rolled 20 + 1 = 21 against DC 12'],
+  ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23'],
+  ['Strength', 'Hit', 'd20 13 + 3 = 16 vs 12', 'Struck back: d20 8 vs 10, missed'],
+  ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
+  ['Dexterity', 'Rifle the stolen sacks', 'Success', 'Natural 20', 'd20 20 + 1 = 21 vs 12'],
   ['Room', 'Entered Snaggle\'s den'],
-  ['Gear', 'Used a pepper pouch', 'Snaggle: track 3 → 1'],
-  ['Strength', 'Strong hit', 'Rolled 18, the higher of 15 and 18, + 3 = 21 against DC 12'],
+  ['Gear', 'Used a healing draught', 'Healed 4, HP 22/23', 'Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23'],
+  ['Strength', 'Hit', 'd20s 15 and 18, kept 18 + 3 = 21 vs 12'],
   ['Gear', 'Took the iron key'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
   ['Lock', 'Opened the bone gate with the iron key'],
   ['Room', 'Entered the shrine cavern'],
-  ['Strength', 'Strong hit', 'Rolled 19, the higher of 11 and 19, + 3 = 22 against DC 12'],
-  ['Strength', 'Strong hit', 'Rolled 17, the higher of 17 and 9, + 3 = 20 against DC 12'],
+  ['Strength', 'Hit', 'd20s 11 and 19, kept 19 + 3 = 22 vs 12', 'Struck back: d20 5 vs 10, missed'],
+  ['Ability', 'Used shield bash', 'Grizzletooth: health 4 → 3', 'Struck back: d20 7 vs 10, missed'],
+  ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 3 → 1'],
+  ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12'],
 ];
 const GS_DV_LIVE = [
-  ['Oracle', 'Is anyone awake down here?', 'Yes', 'Rolled d100 23 against 25'],
   ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Weak hit', 'Rolled 13 + 3 = 16 against DC 12'],
-  ['Dexterity', 'Strong hit', 'Rolled 16 + 3 = 19 against DC 12'],
+  ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'],
+  ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 13 + 3 = 16 vs 12'],
   ['Room', 'Entered the warren'],
+  ['Gear', 'Took a pepper pouch'],
   ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Dexterity', 'Strong hit', 'Rolled 14 + 3 = 17 against DC 12'],
-  ['Dexterity', 'Strong hit', 'Rolled 14, the higher of 8 and 14, + 3 = 17 against DC 12'],
-  ['Intelligence', 'Study the wall scratchings', 'Success', 'Rolled 19, the higher of 19 and 15, + 1 = 20 against DC 12'],
+  ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 3 vs 14, missed'],
+  ['Dexterity', 'Hit', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
+  ['Dexterity', 'Hit', 'd20 12 + 3 = 15 vs 12'],
+  ['Intelligence', 'Study the wall scratchings', 'Success', 'd20s 19 and 15, kept 19 + 1 = 20 vs 12'],
   ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'Strong hit', 'Rolled 14, the higher of 14 and 5, + 3 = 17 against DC 12'],
-  ['Dexterity', 'Strong hit', 'Rolled 18, the higher of 18 and 7, + 3 = 21 against DC 12'],
-  ['Dexterity', 'Climb to the skeleton on the high ledge', 'Success', 'Natural 20', 'Rolled 20, the higher of 20 and 6, + 3 = 23 against DC 12'],
+  ['Dexterity', 'Hit', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
+  ['Dexterity', 'Hit', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12'],
+  ['Dexterity', 'Climb to the skeleton on the high ledge', 'Success', 'Natural 20', 'd20s 20 and 6, kept 20 + 3 = 23 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
 ];
 export const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the ritual was completed', 'Fell in the warren'];
@@ -244,30 +251,30 @@ export const GS_SESSIONS = {
   // Delve run 1 won, Bryn the Fighter.
   delve: {
     kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Elsie rescued', date: 'Monday 5 October',
-    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 9/13'],
+    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 22/23'],
     tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
     lines: GS_DV_WON,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
-    setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 13, threat: 5, threatMax: 12, sheet: { used: { 'Shield bash': 1 }, insp: true },
-    share: 'Elsie rescued',
-    shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 5', '💀🟥🟨🟩🟨🟨🟩✨🟩🟩🟩'],
+    setting: 'The Goblin Warren', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, lightName: 'the torch', light: 1, lightMax: 6, sheet: { used: { 'Shield bash': 1 }, insp: true },
+    share: 'Elsie rescued', foeMax: { "snaggle's den": 1, 'the shrine cavern': 5 },
+    shareLines: ['The Goblin Warren', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩'],
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 34, answer: 'STILL', hints: 1, result: 'Solved in 3 of 6', date: GS.today,
     share: 'Solved in 3 of 6',
     lines: gsWordLines('STILL', ['CRANE', 'SLATE', ['Hint', 'Letter 2 is T.'], 'STILL']),
   },
   // Sample plays for the session page (1236). No. 210, the hard play (pushes the guess count to the limit, 6 of 6): solved on the sixth and last guess with the hint; after ROBOT only
-  // letter 4 was green, so the hint gave letter 1. No. 208, lost: the SHA_E trap, four letters in place from guess 2 to 6.
+  // letter 4 was green, so the hint gave letter 1. No. 30, lost: the SHA_E trap, four letters in place from guess 2 to 6.
   'word-hard': {
     kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 210, answer: 'FLOOR', hints: 1, result: 'Solved in 6 of 6', date: 'Sunday 4 October',
     share: 'Solved in 6 of 6',
     lines: gsWordLines('FLOOR', ['CRANE', 'ROBOT', ['Hint', 'Letter 1 is F.'], 'FROGS', 'FLOAT', 'FLOUR', 'FLOOR']),
   },
   'word-failed': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 208, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 30, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
     share: 'Failed',
     lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 4 is A.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
   },
@@ -279,7 +286,7 @@ export const GS_SESSIONS = {
     lines: GS_ES1_LINES,
   },
   'word-1005': {
-    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 211, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
+    kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 33, answer: 'CHAIN', result: 'Solved in 4 of 6', date: 'Monday 5 October',
     share: 'Solved in 4 of 6',
     lines: gsWordLines('CHAIN', ['CRANE', 'CHANT', 'CHAIR', 'CHAIN']),
   },
@@ -337,7 +344,7 @@ export const GS_ED_SIDS = {
   groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
   mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
   escape: { hard: 'escape-hard' },
-  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live' },
+  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use', 'lost-no-roll': 'delve-lost-no-roll' },
   casebook: { average: 'casebook', hard: 'casebook-hard', failed: 'casebook-failed' },
 };
 // How a finished session reads in a row: a loss (`loss`) is bad, anything else is ok.
@@ -346,15 +353,25 @@ export const gsSessStatus = (s) => ({ kind: s.loss ? 'bad' : 'ok', label: s.resu
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
 Object.assign(GS_SESSIONS, {
-  'word-live': { kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 212, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
+  'word-live': { kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 34, answer: 'STILL', live: true, result: 'In progress', date: GS.today, share: null,
     lines: gsWordLines('STILL', ['CRANE', 'SLATE']) },
   'groups-live': { kind: 'puzzle', gid: 'groups', game: 'Daily Groups', art: 'groups', live: true, result: 'In progress', date: GS.today, figures: ['2 of 4 groups', '1 mistake'], share: null,
     lines: [['Try 1', 'BASS · PIKE · CARP · SOLE', 'One away'], ['Try 2', 'PIKE · CARP · SOLE · PERCH', 'Found: fish'], ['Try 3', 'FROST · MIST · HAIL · SLEET', 'Found: weather']] },
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
-  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '8 rolls', '1 natural 20', 'HP 11/11'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
-    hero: 'Wren the Rogue', hpMax: 11, threat: 3, sheet: { used: { Backstab: 1 }, insp: true } },
+  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '9 rolls', '1 natural 20', 'HP 21/21'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
+    hero: 'Wren the Rogue', hpMax: 21, threat: 3, light: 2, foeMax: { "snaggle's den": 2 }, sheet: { used: {}, insp: true } },
+});
+// In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets
+// review.begun beside week 'live'; every surface that opens the in-progress play reads its id through gsLiveSid.
+export const gsBegunId = (sid) => sid.replace(/-live$/, '-begun');
+export const gsLiveSid = (sid, gs) => { gs = gs || window.gsApi; const b = gsBegunId(sid); return gs && gs.review && gs.review.begun && GS_SESSIONS[b] ? b : sid; };
+Object.assign(GS_SESSIONS, {
+  'word-begun': { ...GS_SESSIONS['word-live'], lines: [] },
+  'groups-begun': { ...GS_SESSIONS['groups-live'], figures: ['0 of 4 groups', 'No mistakes'], lines: [] },
+  'escape-begun': { ...GS_SESSIONS['escape-live'], lines: [] },
+  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 21/21'], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } },
 });
 // The old earlier-room id reads this week's.
 GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];
@@ -376,7 +393,7 @@ export const GS_RESULT = {
   // Escape has no lost outcome: every room can be finished. par: 'under par' | 'at par' | 'over par'.
   escape: (r) => 'Escaped in ' + r.min + ' min, ' + r.par,
   casebook: (r) => (r.ok ? 'Solved' : 'Wrong accusation'),
-  // The setting's own ending words (The Goblin Warren beneath Ashford Mill).
+  // The setting's own ending words (The Goblin Warren).
   delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the ritual was completed', fell: 'Fell in the warren' })[r.end],
   // A restarted day (no ending) reads Not finished.
   hunter: (r) => (r.restarted ? 'Not finished' : 'Finished'),
@@ -477,6 +494,8 @@ export const gsForms = (s) => {
   if ((m = /^All 4 groups, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
   if ((m = /^Found in (.+)$/.exec(s)) || (m = /^All 5 wrecks, (.+)$/.exec(s))) return [s, m[1]];
   if ((m = /^Solved, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
+  // KEEP: a fallen Delve run's row reads "Fallen" in place of "Fell in the warren" when the row itself is under 440px wide (not the screen), so the library's plays column shows "Fallen" at every screen width and History only on narrow phones; ListRow picks the form from the row's width.
+  if (s === 'Fell in the warren') return [s, 'Fallen'];
   if (/ (is|are) ready$/.test(s)) return [s, 'Ready'];
   if (/^Done (today|this week)$/.test(s) || /^(Every|Free) \w+ done$/.test(s)) return [s, 'Done'];
   return s;

@@ -84,6 +84,7 @@ const slvDive = (s) => s.split(' ').map((d) => ({ dive: d }));
 const SLV_WON_HEAD = [{ sonar: { axis: 'col', name: 'G' } }, ...slvDive('A5 B5 C5 D5'), { detector: 'F4' }, ...slvDive('D3 E3 F3 G3'),
   { net: { axis: 'row', name: 6, from: 'left' } }, ...slvDive('G6 H6 G7 G8 H8')];
 export const SLV_MOVES = {
+  begun: [],
   won: [...SLV_WON_HEAD, ...slvDive('C3 C2 C1')],
   hard: [...SLV_WON_HEAD, ...slvDive('A1 H1 H2 A8 C3 C2 C1')],
   // Lost: all 20 dives spent with two wrecks not raised; the dragnet not used.

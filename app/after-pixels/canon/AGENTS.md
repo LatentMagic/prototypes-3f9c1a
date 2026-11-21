@@ -8,7 +8,7 @@ Paths below are relative to this folder (`app/after-pixels/canon/`); run command
 
 - `app/` — the source, ES modules. `main.jsx` imports every `.jsx` file, maps each route to a component (its `switch`), and calls each exported `init<File>()` in order. Edit here.
 - `app/registry.js` — the per-game registries: `GS_LIBRARY`, `GS_EDITIONS`, `GS_SESSION_BODY`.
-- `app/gs-data.jsx` — seed data (games in `GS_GAMES`, sessions in `GS_SESSIONS`, the player) and `DS`, the design system's components.
+- `app/gs-data.jsx` — seed data (games in `GS_GAMES`, sessions in `GS_SESSIONS`, the player) and `DS`, the design system's components. Each game's `real` says whether it is a real After Pixels game: only Guess, Accuse, Escape, Delve, Where, Chain, Salvage and Common are. Every game with `real: false` is fake, a proof of concept or canned sample content: build nothing for it, and take no product rule from its pages.
 - `app/states.jsx` — the state register (`KIT_STATE_REGISTER`).
 - `app/canon.css` — imports the design system's `styles.css`, then every `app/*.css`.
 - `build/` — `canon.js` and `canon.css`, which `index.html` loads. Generated; never edit.
@@ -44,6 +44,7 @@ A design or copy decision is the owner's. Build what the brief says; name anythi
 - A state is a URL: `?state=<id>`. `?state=index` lists every id; many come from lists the game files export (such as `DP_STATES`), so a grep of `app/states.jsx` misses them. `&fast` skips the 1.2 s page-arrival wait. Content still arriving carries `aria-busy="true"`.
 - Screenshot with the check, not by hand, and name only the states your change touches: that takes seconds. It builds first (`--no-build` skips that), starts the server if none answers and stops it afterwards (run `npm start` yourself to click through), waits until the page is ready, writes `<dir>/<id>-<width>.png` (full page) and prints console errors per shot. An unknown id prints FAIL. Rerun a crashing state with `--react-dev` for React's warnings and full error messages.
 - To prove a refactor changed nothing, run `--states all` (about 90 s) before and after, then `npm run diff` (diff images in `<dirB>/_diff/`; exit 1 on any difference). The `loading-*` states and `home` differ run to run on their own.
+- Every screenshot carries `&nodemo` (the root `AGENTS.md`, *Screenshots carry `nodemo`*); `npm run check` adds it itself.
 - Use `playwright-cli` only to click or type through a flow. Pass the session first: `playwright-cli -s=<name> open "<url>"`, then `-s=<name> click <ref>` with a ref from `-s=<name> snapshot`, and `-s=<name> screenshot --filename=<absolute path>`.
 - A reload restarts the prototype on its seed data; that is not a finding.
 </important>
@@ -99,6 +100,9 @@ Read the copy rules in the monorepo (`LatentMagic/monorepo`) first: the shop-wid
 - Before adding a class, grep `app/` for it: a name already used elsewhere restyles that too. After a change to shared styles, check the home page and one page you did not touch.
 - `!important` is kept where it beats an inline `style={{}}` or a design-system rule it cannot out-rank; test any removal with the check.
 - If spacing needs a negative margin or a nudge value to look right, fix the structure instead.
+- **A hairline between two blocks sits midway: the gap above it equals the gap below it.**
+- **A heading's gap above it is larger than its gap below it.**
+- Measure both on the rendered page at each width you check, before anyone sees it: a gap runs between the visible edges of what is drawn (the hairline, the last text or box above it, the top of the heading's capital letters), not between element boxes, whose line-height and tap padding the eye does not see.
 - Centre by default: a short or lone row (dice, marks, tiles, a last row that does not fill) is centred on its row, and content is centred on the cross axis, unless the design says otherwise. Grid and flex start at the left and top; set the centring.
 - Never draw a dashed edge with `border` or `outline` `dashed` on a small box: iPhone Safari drops its side dashes, leaving only the top and bottom. Draw the dashes with four `linear-gradient` backgrounds, as `.wd-t.is-hint` (`gs-word.css`) and Delve's free pack slot (`gs-delve.css`) do.
 - Content in the app posture reads its insets as `var(--safe-area-inset-top, env(safe-area-inset-top, 0px))`; only the app posture (Config → Platform, `isApp`) sets them.
@@ -118,11 +122,11 @@ The top section is the platform's and the same for every game; below it the play
 </important>
 
 <important if="you are changing the library game page">
-Four cards on one grid: the **now card** (the current or latest edition, carrying down the game's result statement, the element that states the outcome outright) and the **streak card** (the run of days or weeks played) above Achievements and Your plays. Never break, reorder or restack the rows on desktop. Cards in a row end level by arranging what is inside, never by stretching; check each card with its fewest and most items. On a phone they stack in the same order.
+The now card carries down the game's **result statement**, the element that states the outcome outright.
 </important>
 
 <important if="you are changing the product page">
-It tells a stranger what they will do and why they would want it, using only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
+Use only true things; cut any line that excuses, hedges or lowers expectations, and never leave a slot blank.
 </important>
 
 <important if="your change makes a situation hard to reach (an account state, a failed play, a game mid-run)">
@@ -130,14 +134,17 @@ Add its state to `KIT_STATE_REGISTER` in `app/states.jsx` in the same change; th
 </important>
 
 <important if="you are building or testing a game, or adding one">
-Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape cannot fail: its `GS_ED_SIDS` row in `gs-data.jsx` has no `failed`). Make each other state reachable from Config and register it on the library game page, even where a click from the library list reaches it. `library-<game>` opens the game's seeded play, whichever state that is; each other state adds its name: `-not-started`, `-in-progress`, `-completed`, `-failed`, or a variant's own, such as `-hard`. Ids already registered that name a state another way (`library-mystery-solved`, `library-escape-on-par`) stay: ids are public links. Give a new game its row in `GS_ED_SIDS` so the This edition picks reach it, and its Not started entry in the per-game list in `states.jsx`. Where a game has no row (the Barrow) or its row lacks a pick (Escape's Average), that state is staged from the game's own Config group instead. A session-page entry is optional and does not stand in for the library-page entry.
+Build and test every game against the standard states it can have. Skip a state the game cannot have (Escape cannot fail: its `GS_ED_SIDS` row in `gs-data.jsx` has no `failed`). Make each other state reachable from Config and register it on the library game page, even where a click from the library list reaches it. `library-<game>` opens the game's seeded play, whichever state that is; each other state adds its name: `-not-started`, `-in-progress`, `-nothing-played`, `-completed`, `-failed`, or a variant's own, such as `-hard`. Ids already registered that name a state another way (`library-mystery-solved`, `library-escape-on-par`) stay: ids are public links. Give a new game its row in `GS_ED_SIDS` so the This edition picks reach it, and its Not started entry in the per-game list in `states.jsx`. Where a game has no row (the Barrow) or its row lacks a pick (Escape's Average), that state is staged from the game's own Config group instead. A session-page entry is optional and does not stand in for the library-page entry.
 
 | State | Meaning | Config → Editions → This edition |
 |---|---|---|
 | Not started | The edition is unplayed | Not played |
-| In progress | Play has begun and not ended | In progress |
+| In progress | Play has begun and not ended, with moves made | In progress |
+| In progress, nothing played yet | Play has begun, no move made yet | In progress, nothing played yet |
 | Completed | A finished play that ended well | Average |
 | Failed | Play ended in a loss | Failed |
+
+In progress, nothing played yet is its own state because a game's page can fail on zero moves where In progress, seeded with moves, never does. A game has it where it has an in-progress play: add its `<game>-begun` session, that play with no moves, beside its `-live` one, and its entries in the per-game lists in `states.jsx`.
 
 Hard (a play that took most of the tries or hints; it can end in a loss, as Delve's does) and Past day's Finished late and In progress are variants: cover them where the game has one. A variant's entry follows its group's ids: `library-delve-hard`, `past-day-word-late-library`.
 

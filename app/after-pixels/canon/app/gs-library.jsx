@@ -137,7 +137,7 @@ export const LbAch = ({ items, badges, access, ended, ed }) => {
   return (
     <section className="lb-card">
       <div className="lb-sechead"><h2 className="mcp-t-card">Achievements</h2>{list.length > 0 && <span className="gs-muted">{lbAchEarned(list) + ' of ' + of + ' earned'}</span>}</div>
-      {access === 'first' && <p className="gs-muted">{'These are the achievements the first ' + (ed || ['edition'])[0] + ' can earn. Every other ' + (ed || ['edition'])[0] + ' comes with the Pass.'}</p>}
+      {access === 'first' && <p className="gs-muted">{'These are the achievements the first ' + (ed || ['edition'])[0] + ' can earn. Every ' + (ed || ['edition'])[0] + ' after it needs the Pass.'}</p>}
       {kept && <p className="gs-muted">You can’t earn the rest until the Pass returns.</p>}
       <ul className="lb-ach">
         {list.map((a) => (
@@ -238,21 +238,26 @@ export const LbTools = LbFilters;
 const LbToolsColumn = ({ children }) => <aside className="lb-tools">{children}</aside>;
 // ---- Share: a panel with the text and Copy ------------------------------------------
 // KEEP: Copy works inside the preview iframe, which can refuse the Clipboard API silently: the textarea copy runs first, inside the click.
+// Returns true when copied, false when refused, or a promise of that when only the Clipboard API is left to try.
+// KEEP: ?copy=fail on the page's address forces every copy to be refused, so the refused state can be seen. A demo switch only: the platform reacts to the real clipboard refusal, never to a switch.
 export const lbCopy = (lines) => {
   // KEEP: after Copy, focus is back on the control pressed, never the page root.
   const was = document.activeElement;
   const t = lines.join('\n'); const ta = document.createElement('textarea');
   ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
   document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
-  let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+  const forced = /[?&]copy=fail(&|$)/.test(window.location.search);
+  let ok = false; try { ok = !forced && document.execCommand('copy'); } catch (e) {}
   document.body.removeChild(ta);
   if (was && was !== document.body && was.focus) was.focus({ preventScroll: true });
-  if (!ok && navigator.clipboard) navigator.clipboard.writeText(t).catch(() => {});
+  if (ok) return true;
+  if (forced || !navigator.clipboard) return false;
+  return navigator.clipboard.writeText(t).then(() => true, () => false);
 };
 const LbCopyBtn = ({ lines }) => {
   const [done, setDone] = React.useState(false);
   React.useEffect(() => { if (!done) return undefined; const t = setTimeout(() => setDone(false), 2400); return () => clearTimeout(t); }, [done]);
-  return <DS.Button variant="main" done={done} doneLabel="Copied" onClick={() => { lbCopy(lines); setDone(true); }}>Copy</DS.Button>;
+  return <DS.Button variant="main" done={done} doneLabel="Copied" onClick={() => { Promise.resolve(lbCopy(lines)).then((ok) => ok && setDone(true)); }}>Copy</DS.Button>;
 };
 // Share on a library game page: the page's own button, the session page's pop-up (GsSharePopup).
 export const LbShare = ({ lines }) => {
@@ -265,17 +270,18 @@ export const LbShare = ({ lines }) => {
 
 // The now card's action row: the one main button at the left (Play before a play; "Go to session" while one is under way
 // and once it is done) and the slot at the right (the next-time line, or the free player's Pass line). Its card pins it to the card's foot (css: .lb-foot).
-export const LbActions = ({ label = 'Go to session', onClick, slot }) => (
+// bare: no button, the left stays empty (the free player's later-week Delve card, which has nothing to press).
+export const LbActions = ({ label = 'Go to session', onClick, slot, bare }) => (
   <div className="lb-foot">
-    <DS.Button onClick={onClick}>{label}</DS.Button>
+    {!bare && <DS.Button onClick={onClick}>{label}</DS.Button>}
     {slot && <div className="lb-slot gs-muted">{slot}</div>}
   </div>
 );
 
-// A sentence ending "…the Pass." with "the Pass" linked.
-export const CprPassEnd = ({ text, className }) => {
+// A sentence ending "…the Pass." with "the Pass" linked; nostop drops the full stop after the link.
+export const CprPassEnd = ({ text, className, nostop }) => {
   const gs = useGs(); const head = text.slice(0, -'the Pass.'.length);
-  return <p className={className}>{head}<button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</p>;
+  return <p className={className}>{head}<button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>{!nostop && '.'}</p>;
 };
 
 // ---- The now card: the frame every game's now card is built on. A game passes data and its picture (children); the frame draws the
@@ -289,8 +295,9 @@ const LbNowResult = ({ s, tag }) => (s.kind === 'live' || tag
   : <p className={'gs-vd is-' + (s.kind === 'ok' ? 'ok' : 'over')}>{s.label}</p>);
 // gid; label: overrides the schedule's; title; result: { kind, label } or none (not shown); play: the button reads Play, else open
 // and "Go to session"; next: the next-time line; pass: the free player's first part is done, and the Pass line takes the next-time
-// line's place; span: the card takes the whole row; className: the game's hook for laying out its picture.
-export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => (
+// line's place (pass: 'nostop' drops the full stop after the link, as Delve's free card has it); span: the card takes the whole row; className: the game's hook for laying out its picture.
+// passText: the Pass sentence's words, ending "the Pass." (default "Keep playing with the Pass."); bare: no button, only the slot.
+export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, passText = 'Keep playing with the Pass.', bare, span, className, children }) => (
   <section className={'lb-card' + (className ? ' ' + className : '')} style={span ? { gridColumn: '1 / -1' } : undefined}>
     <div className="lb-now-in">
       <div className="lb-top">
@@ -299,7 +306,7 @@ export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pa
       </div>
       {children}
     </div>
-    <LbActions label={play ? 'Play' : undefined} onClick={play || open} slot={pass ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." /> : next} />
+    <LbActions label={play ? 'Play' : undefined} onClick={play || open} bare={bare} slot={pass ? <CprPassEnd className="gs-pu-wrap" text={passText} nostop={pass === 'nostop'} /> : next} />
   </section>
 );
 

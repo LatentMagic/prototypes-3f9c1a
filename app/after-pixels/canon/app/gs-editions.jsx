@@ -13,8 +13,8 @@ const pgeNoNum = (gid) => !GS_GAMES[gid].daily && gsRhythm(gid) !== 'daily';
 // A named edition carries the game's word and number beside its title: “Room 1 · The Clockmaker’s Study”. A daily's is its number.
 const pgeRowTitle = (gid, e) => (pgeNoNum(gid) ? pgeW(gid).charAt(0).toUpperCase() + pgeW(gid).slice(1) + ' ' + e.n + ' · ' + e.title : e.title ? '#' + e.n + ' · ' + e.name : e.name);
 const pgeAnd = (a) => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
-// What an edition says about itself: the game's edLine (SAMPLE, gs-data.jsx), and how long a play takes (gsGameTime, gs-game.jsx).
-const pgeInfo = (e) => ({ line: GS_GAMES[e.gid].edLine || '', len: gsGameTime(e.gid), who: null });
+// What an edition says about itself: how long a play takes (gsGameTime, gs-game.jsx). Its panel shows the title and no line under it.
+const pgeInfo = (e) => ({ len: gsGameTime(e.gid), who: null });
 // Only a game with a schedule (gsRhythm) prints an edition's date.
 const pgeDated = (gid) => !!gsRhythm(gid);
 
@@ -99,7 +99,6 @@ const PgeEdPanel = ({ gid, k, onClose }) => {
     <DS.Popup kind="panel" open={!!e0} onClose={onClose} title={e.title || edLabel(e)} actions={acts}>
       <div className="pge-panel">
         <span className="gs-label">{[e.title && (pgeNoNum(gid) ? g.name : g.name + ' #' + e.n), when, e.info.len].filter(Boolean).join(' · ').toUpperCase()}</span>
-        {e.info.line && <p style={{ margin: 0 }}>{e.info.line}</p>}
         {e.info.who && <p className="gs-muted" style={{ margin: 0 }}>{e.info.who}</p>}
         {done ? (
           <div className="pge-done">

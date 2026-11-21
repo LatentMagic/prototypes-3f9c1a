@@ -7,7 +7,7 @@
    keep the guesses in proportion to it. */
 .chn-card { --wcap: calc((100cqi - (var(--chn-n) - 1) * var(--g)) / var(--chn-n)); --ct: min(var(--wcap), 40px); --jh: 20px; --lu: 1.3px; --kf: 14px;
   --bh: calc(var(--chn-rows) * var(--ct) + (var(--chn-rows) - 1) * var(--jh)); }
-@media (min-width: 760px) { .chn-card { --ct: min(var(--wcap), 44px); --lu: 1.5px; --kf: 15px; } }
+@container gs (min-width: 760px) { .chn-card { --ct: min(var(--wcap), 44px); --lu: 1.5px; --kf: 15px; } }
 .chn-board { --tc: var(--ct); display: grid; justify-items: center; }
 .chn-row { display: flex; justify-content: center; gap: var(--g); }
 .chn-t { width: var(--tc); height: var(--tc); font-size: calc(var(--tc) * .5); }
@@ -26,9 +26,9 @@
 .chn-chain { display: block; overflow: visible; width: min(calc(var(--cw) * var(--lu)), 100%); height: auto; aspect-ratio: var(--cw) / var(--ch); }
 /* KEEP: under 760px the guesses take the card's full width; from 760px the chain down never runs longer than the board (--bh);
    from 1100px the key stands beside the chain, so the board sets the card's height (between, a tablet has no room beside). */
-@media (max-width: 759.98px) { .chn-guesses { grid-template-columns: minmax(0, 1fr); width: 100%; } }
-@media (min-width: 760px) { .chn-chain.is-down { width: auto; height: min(calc(var(--ch) * var(--lu)), var(--bh)); } }
-@media (min-width: 1100px) { .chn-guesses { grid-auto-flow: column; align-items: center; gap: 24px; } }
+@container gs (max-width: 759.98px) { .chn-guesses { grid-template-columns: minmax(0, 1fr); width: 100%; } }
+@container gs (min-width: 760px) { .chn-chain.is-down { width: auto; height: min(calc(var(--ch) * var(--lu)), var(--bh)); } }
+@container gs (min-width: 1100px) { .chn-guesses { grid-auto-flow: column; align-items: center; gap: 24px; } }
 .chn-chain text { font: 600 12px/1 var(--font-text); fill: var(--muted); }
 .chn-chain.is-down { display: none; }
 @container dv2 (min-width: 672px) {

@@ -29,6 +29,8 @@
 .gs-host .gs-tagbtn { position: relative; z-index: 2; }
 .gs-host .gs-titlebtn:focus-visible { outline: none; }
 .gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
+/* Banner ratio (2:1) the design system's GameArt lacks; used by the home hero. */
+.mcp-art-2 { aspect-ratio: 2 / 1; }
 /* KEEP: Motion art for Guess, Accuse, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
 .mcp-art.is-wine { background: var(--cover-bg-wine); }
 .mcp-art.is-forest { background: var(--cover-bg-forest); }

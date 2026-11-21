@@ -5,7 +5,7 @@
 // GsPass (the Pass page) is in gs-pass-pricing.jsx.
 // ============================================================================
 import React from 'react';
-import { useGs, DS, gsEndedOn } from './gs-data.jsx';
+import { useGs, DS, GS, gsEndedOn } from './gs-data.jsx';
 import { useGsBusy, gsAnnounce, GsGlyph } from './gs-site.jsx';
 import { GsXLine } from './gs-auth.jsx';
 
@@ -53,7 +53,7 @@ export const GS_SUB_HOLDS = ['active', 'failed', 'ending'];
 // ---- Shared bits ------------------------------------------------------------------
 const GsRows = ({ rows }) => (
   <dl className="gs-rows-dl">
-    {rows.map(([k, v]) => <div key={k} className="gs-row-kv"><dt className="gs-muted">{k}</dt><dd className="gs-num-text">{v}</dd></div>)}
+    {rows.map(([k, v], i) => <div key={i} className="gs-row-kv"><dt className="gs-muted">{k}</dt><dd className="gs-num-text">{v}</dd></div>)}
   </dl>
 );
 // KEEP: two actions stack with the primary first on a phone, and sit in one row (secondary left) when wider.
@@ -99,7 +99,7 @@ export const GsPassCard = () => {
       <h2 className="mcp-t-card">Pass</h2>
       {sub.hadPass
         ? <GsKeepLock lead={<>Your Pass ended on {gsLong(gsEndedOn(gs))}.</>} />
-        : <p>You have a free account. Free play needs no card, and your results and history are kept. The Pass opens every game in full.</p>}
+        : <p>You have a free account. Free play needs no card, and your results and history are kept. Everything else comes with the Pass.</p>}
       <div className="gs-card-acts"><DS.Button data-gs-focus="getpass" variant="secondary" onClick={() => gs.go('pass')}>{sub.hadPass ? 'Get the Pass again' : 'Get the Pass'}</DS.Button></div>
     </DS.Card>
   );
@@ -248,7 +248,8 @@ export const GsSubscribe = () => {
             </label>
           ))}
         </fieldset>
-        <GsRows rows={[['Due today', plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
+        {/* KEEP: the tax note shares the Due today row so the summary keeps its rhythm, and fits on one line down to 280 (the user, 2026-11-18). */}
+        <GsRows rows={[[<>Due today <span className="gs-row-note">· {GS.taxShort}</span></>, plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
         <DS.Button block onClick={gs.getPass}>Get the Pass</DS.Button>
       </section>
     </main>

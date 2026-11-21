@@ -16,12 +16,13 @@ export type ChatBlock=
  |({type:'track'}&import('../chat/Track').TrackProps)
  |({type:'roll'}&import('../chat/RollLine').RollLineProps)
  |({type:'nav'}&import('../chat/NavButtons').NavButtonsProps)
- |({type:'menu'}&import('../chat/MenuRows').MenuRowsProps);
+ |({type:'menu'}&import('../chat/MenuRows').MenuRowsProps)
+ |({type:'picture'}&import('../chat/Picture').PictureProps);
 export interface ChatTurn{
   from:'user'|'ai';
-  /** One paragraph, or several. */
+  /** One paragraph, or several. Inline markup: `**bold**`, `*italic*`, `__underline__`; they nest, and a marker with no partner stays as typed. */
   text?:string|string[];
-  /** AI turns only. Shows a "Called <tool>" line before the blocks. */
+  /** AI turns only. Shows a "Called <tool>" line before the blocks. Pass the game's display name in full, whatever its length (for example `Delve` or `The Barrow of Hollowmere`), shown as "Called Delve". A long name wraps; it is never cut or shortened. */
   tool?:string;
   /** AI turns only. What the tool returned, shown above the text. */
   blocks?:ChatBlock[];
@@ -33,9 +34,11 @@ export interface ChatTurn{
  */
 export interface ChatPictureProps{
   turns:ChatTurn[];
+  /** Where the conversation opens. Default: on the latest turn, with a pill at the top that scrolls back to the first. 'top': on the first turn (a short conversation sits at the top, not the bottom), with a down-arrow pill above the reply box that scrolls to the latest turn and hides once it is there. Use it where the first turn is the point, such as the line a player types. */
+  start?:'latest'|'top';
   /** Header label. Omit for no header; the page around it already says whose it is. */
   title?:string;
-  /** Shown after the tool name in the tool-call card, e.g. the store name. */
+  /** Shown before the tool name in the tool-call card, followed by a dot (`After Pixels · Called Delve`), e.g. the store name. It never breaks inside itself. Omit for no by-line and no dot. */
   toolBy?:string;
   /** Image URL for the logo in the tool-call card. Omit for none. */
   mark?:string;
@@ -45,10 +48,12 @@ export interface ChatPictureProps{
   width?:number;
   /** Stretch to the box it sits in (width and height) instead of using `height` and `width`. The box must have a height. Default false. */
   fill?:boolean;
-  /** Spoken name of the arrow pill that scrolls back to the first turn. Default "Back to the start". */
+  /** Spoken name of the arrow pill that scrolls back to the first turn. Default "Back to the start", or "On to the latest" with start='top'. */
   more?:string;
   /** Show the reply box. Default true. */
   composer?:boolean;
+  /** A real action in the reply bar, in place of the send button: pass the design system's Button, and only a Button. The chat draws its place, its black look and its tap size, and names the bar "Reply" for a screen reader. Without it the bar is a pretend one, hidden from screen readers. Ignored when `composer` is false. */
+  action?:React.ReactNode;
   placeholder?:string;
   /** Accessible name for the picture. */
   label?:string;

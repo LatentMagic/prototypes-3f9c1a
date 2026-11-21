@@ -58,9 +58,9 @@ GS_SESSIONS['gs-pu-barrow-ch1'] = { kind: 'chapter', gid: 'barrow', edKey: 'bw1'
   shareLines: ['Adventure: The Barrow of Hollowmere', 'Wren the Rogue, level 2 · ✅ Bell returned · 3 sessions'], credit: true };
 // Sample achievements. Those naming cut content (the seal, loot, the bronze ring, five levels, the sheep) are cut or reworded to the authored world.
 BW_ACH = [
-  { k: 'seal', n: 'Into the barrow', how: 'Open the barrow door.', first: true, by: (p) => p.src.earns.includes('seal') },
-  { k: 'deep', n: 'The wight’s crypt', how: 'Reach the wight’s crypt.', first: true, by: (p) => p.src.earns.includes('deep') },
-  { k: 'unhurt', n: 'Out without a scratch', how: 'Finish Chapter 1 with full HP.', first: true, by: (p) => p.src.earns.includes('unhurt') },
+  { k: 'seal', n: 'Into the Barrow', how: 'Open the barrow door.', first: true, by: (p) => p.src.earns.includes('seal') },
+  { k: 'deep', n: 'The Wight’s Crypt', how: 'Reach the wight’s crypt.', first: true, by: (p) => p.src.earns.includes('deep') },
+  { k: 'unhurt', n: 'Out Without a Scratch', how: 'Finish Chapter 1 with full HP.', first: true, by: (p) => p.src.earns.includes('unhurt') },
 ];
 BW_BADGES = lbAutoBadges(BW_ACH);
 }

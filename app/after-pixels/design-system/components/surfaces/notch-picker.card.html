@@ -1,0 +1,53 @@
+<!-- @dsCard group="Components · Layout" viewport="1000x2200" name="NotchPicker" subtitle="Tiles, one picked; the panel below has a notch pointing at it" -->
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page);margin:0}.cap{font:400 13px/1.3 var(--font-text);color:var(--muted);margin:0 0 8px}.cell{display:grid;gap:8px;align-content:start;min-width:0;max-width:560px}.wide{max-width:960px}.row{display:grid;gap:32px}.themed{--np-ink:#2a1f14;--np-panel-ink:#2a1f14;--np-edge:#8a6a3c;--np-on:#2a1f14;--np-on-ink:#f4ead8;--np-panel:#f4ead8;--np-panel-line:#8a6a3c;padding:16px;background:#e8d9bd;color:#2a1f14}
+/* How a page arranges its own tiles: these classes are the page's, not the picker's. */
+.g-tab{min-width:0;display:grid;align-content:stretch;min-height:56px;border:1.5px solid var(--control-edge);color:var(--text)}.g-tab.is-open{background:var(--off-white);border-color:var(--off-white);color:var(--page)}.g-tab button{display:grid;gap:2px;justify-items:start;width:100%;padding:8px 10px;border:0;background:none;color:inherit;font:700 16px/1.2 var(--font-heading);text-align:left;cursor:pointer}.g-tab small{font:600 12px/1.3 var(--font-text);letter-spacing:.08em;text-transform:uppercase;opacity:.75}.g-tab p{margin:0;padding:0 10px 10px;font:400 14px/1.4 var(--font-text)}
+.g-list{grid-template-columns:112px minmax(0,1fr);gap:28px 12px}.g-list .mcp-np-panel{grid-column:1/-1}.g-list .g-tabs{grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr}.g-desc{padding:16px;background:var(--off-white);color:var(--page);font:400 14px/1.4 var(--font-text)}.g-desc p{margin:0}
+.g-col{grid-template-columns:260px minmax(0,1fr);gap:28px}.g-col .g-tabs{display:flex;flex-direction:column}.g-col .g-tab{min-height:72px}.g-col .g-tab.is-open{flex:1;align-content:start}
+</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS=window.MCPGameStoreDesignSystem_ef1abd;
+const {NotchPicker}=NS;
+const mark=(d)=><svg viewBox="6 6 28 28" width="32" height="32" focusable="false"><path d={d} fill="none" stroke="currentColor" strokeWidth="2.5"/></svg>;
+const SHAPES=['M10 30 L20 10 L30 30 Z','M12 12 H28 V28 H12 Z','M20 10 A10 10 0 1 0 20.01 10 Z','M10 20 L20 10 L30 20 L20 30 Z','M12 28 L20 10 L28 28 Z','M10 14 H30 V26 H10 Z'];
+const APPS=['Claude','ChatGPT','Gemini','Grok','Muse','Other apps'].map((label,i)=>({id:'a'+i,label,icon:mark(SHAPES[i])}));
+const PLAIN=[{id:'delve',label:'Game Master'},{id:'guess',label:'Host'},{id:'accuse',label:'Thinking partner'}];
+const GAMES={delve:['Delve','Game Master','It sets the scene and rolls the dice.'],guess:['Guess','Host','It shows how each guess scored.'],accuse:['Accuse','Thinking partner','It helps you weigh the clues.']};
+const tile=(wide)=>(o,{on,buttonProps})=>{const g=GAMES[o.id];return <div className={'g-tab'+(on?' is-open':'')} data-np-tile=""><button {...buttonProps}><small>{g[0]}</small>{g[1]}</button>{on&&wide&&<p>{g[2]}</p>}</div>;};
+const Panel=({id})=><div style={{minHeight:80}}>Panel for {id}.</div>;
+function Games({mode}){
+  const [v,setV]=React.useState('delve');
+  const list=mode==='list',col=mode==='col';
+  return <NotchPicker className={list?'g-list':col?'g-col':''} label="Games" value={v} onChange={setV} options={PLAIN}
+    tilesClassName="g-tabs" tilesStyle={mode==='row'?{gridTemplateColumns:PLAIN.map(o=>o.id===v?'minmax(0,2fr)':'minmax(0,1fr)').join(' ')}:undefined}
+    renderTile={tile(!list)} aside={list?<div className="g-desc" data-np-aside=""><p>{GAMES[v][2]}</p></div>:null}
+    pointer={col?'side':'top'} target={list?'aside':'tile'} >
+    <Panel id={v}/></NotchPicker>;
+}
+function App(){
+  const [v,setV]=React.useState('b');
+  return <div className="row">
+    <div className="cell"><p className="cap">With marks, keeping its own state</p>
+      <NotchPicker label="Which app do you use?" defaultValue="a0" options={APPS.slice(0,3)}>{(id)=><p style={{margin:0}}>Setup steps for {APPS.find(o=>o.id===id).label}.</p>}</NotchPicker></div>
+    <div className="cell"><p className="cap"><b>Closes on a second tap, like Connect's (closable).</b> Press the picked tile again: the panel closes and no tile is picked. Press any tile to open it.</p>
+      <NotchPicker label="Which app do you use?" defaultValue="a0" closable options={APPS.slice(0,3)}>{(id)=><p style={{margin:0}}>Setup steps for {APPS.find(o=>o.id===id).label}. Press {APPS.find(o=>o.id===id).label} again to close this.</p>}</NotchPicker></div>
+    <div className="cell"><p className="cap">Six apps in a scrolling row (the row option), also closable, as Connect's is</p>
+      <NotchPicker label="Which app do you use?" row={{title:'Setup',sub:'Which app do you use?'}} defaultValue="a0" closable options={APPS}>{(id)=><p style={{margin:0}}>Setup steps for {APPS.find(o=>o.id===id).label}.</p>}</NotchPicker></div>
+    <div className="cell"><p className="cap">Names only, controlled, a fourth option</p>
+      <NotchPicker label="Who the AI is" value={v} onChange={setV} options={[{id:'a',label:'Game Master'},{id:'b',label:'Host'},{id:'c',label:'Thinking partner'},{id:'d',label:'Judge'}]}><p style={{margin:0}}>Panel for {v}.</p></NotchPicker></div>
+    <div className="cell"><p className="cap">Nothing picked yet: the panel is closed</p>
+      <NotchPicker label="Pick one" options={PLAIN}>{(id)=><p style={{margin:0}}>{id}</p>}</NotchPicker></div>
+    <div className="cell"><p className="cap">A page's own list: names beside a description box, the notch pointing at the box (renderTile, aside, target="aside")</p><Games mode="list"/></div>
+    <div className="cell"><p className="cap">A page's own row: the picked tile is wider and holds its description (renderTile)</p><Games mode="row"/></div>
+    <div className="cell wide"><p className="cap">A page's own column: the notch on the panel's left edge (pointer="side")</p><Games mode="col"/></div>
+    <div className="cell themed"><p className="cap" style={{color:'#2a1f14'}}>A surface that recolours it through the --np-* hooks</p>
+      <NotchPicker label="Themed" defaultValue="guess" options={PLAIN}>{(id)=><p style={{margin:0}}>On a light, themed surface: {id}.</p>}</NotchPicker></div>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

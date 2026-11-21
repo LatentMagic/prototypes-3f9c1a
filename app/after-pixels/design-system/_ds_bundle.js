@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"TIME_CHIPS","sourcePath":"components/feedback/Tag.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"MoveList","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"MoveRow","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"NeedsPass","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"e9b7de29de70","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/chat-press.js":"6e03f8f25294","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"1076011d15a4","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"82d661b65f58","components/chat/FactRows.jsx":"d31d5aaa8b25","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"b4c102af5f53","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"777e144e3413","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"953868a55bdb","components/media/Cover.jsx":"b407bbdd73fb","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"d86f4e425ed0","components/media/playback/ChatPlayback.jsx":"2b754c72f7ec","components/press.js":"894b196527ca","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"0c7a7f7490df","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/game-mark.jsx":"c8c47394b3b0","components/surfaces/GameCard.jsx":"e81a49b9177d","components/surfaces/GamePick.jsx":"cf90bfffa50e","components/surfaces/GameTile.jsx":"43daa3a9d3c2","components/surfaces/ListRow.jsx":"43f5ddb69d8e","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/MoveRow.jsx":"2861e1d636c0","components/surfaces/NeedsPass.jsx":"2f0af79b834e","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"f0715a8a576a","components/surfaces/SoonCard.jsx":"f4eebe3c025b"},"inlinedExternals":[],"unexposedExports":[{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"gameMark","sourcePath":"components/surfaces/game-mark.jsx"},{"name":"needsPassCopy","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MCPGameStoreDesignSystem_ef1abd","components":[{"name":"Button","sourcePath":"components/actions/Button.jsx"},{"name":"ButtonPair","sourcePath":"components/actions/Button.jsx"},{"name":"TextLink","sourcePath":"components/actions/TextLink.jsx"},{"name":"ChoiceButtons","sourcePath":"components/chat/ChoiceButtons.jsx"},{"name":"ClueCards","sourcePath":"components/chat/ClueCards.jsx"},{"name":"ConfirmCard","sourcePath":"components/chat/ConfirmCard.jsx"},{"name":"EntityCards","sourcePath":"components/chat/EntityCards.jsx"},{"name":"FactRows","sourcePath":"components/chat/FactRows.jsx"},{"name":"MenuRows","sourcePath":"components/chat/MenuRows.jsx"},{"name":"NavButtons","sourcePath":"components/chat/NavButtons.jsx"},{"name":"Picture","sourcePath":"components/chat/Picture.jsx"},{"name":"ResultCard","sourcePath":"components/chat/ResultCard.jsx"},{"name":"RollLine","sourcePath":"components/chat/RollLine.jsx"},{"name":"StatRow","sourcePath":"components/chat/StatRow.jsx"},{"name":"StatusTag","sourcePath":"components/chat/StatusTag.jsx"},{"name":"TileGrid","sourcePath":"components/chat/TileGrid.jsx"},{"name":"Track","sourcePath":"components/chat/Track.jsx"},{"name":"WordBoard","sourcePath":"components/chat/WordBoard.jsx"},{"name":"DelveDie","sourcePath":"components/delve/DelveDie.jsx"},{"name":"DelveUseDie","sourcePath":"components/delve/DelveDie.jsx"},{"name":"DelveFoeDie","sourcePath":"components/delve/DelveFoeDie.jsx"},{"name":"Loader","sourcePath":"components/feedback/Loader.jsx"},{"name":"ProgressBar","sourcePath":"components/feedback/ProgressBar.jsx"},{"name":"StatusMessage","sourcePath":"components/feedback/StatusMessage.jsx"},{"name":"TIME_CHIPS","sourcePath":"components/feedback/Tag.jsx"},{"name":"Tag","sourcePath":"components/feedback/Tag.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"TextField","sourcePath":"components/forms/TextField.jsx"},{"name":"SearchField","sourcePath":"components/forms/TextField.jsx"},{"name":"ToolCall","sourcePath":"components/media/ChatPicture.jsx"},{"name":"ChatPicture","sourcePath":"components/media/ChatPicture.jsx"},{"name":"ChatSide","sourcePath":"components/media/ChatSide.jsx"},{"name":"Cover","sourcePath":"components/media/Cover.jsx"},{"name":"GameArt","sourcePath":"components/media/GameArt.jsx"},{"name":"ICON_NAMES","sourcePath":"components/media/Icon.jsx"},{"name":"Icon","sourcePath":"components/media/Icon.jsx"},{"name":"ChatPlayback","sourcePath":"components/media/playback/ChatPlayback.jsx"},{"name":"SpeechBubble","sourcePath":"components/media/SpeechBubble.jsx"},{"name":"Card","sourcePath":"components/surfaces/Card.jsx"},{"name":"Heading","sourcePath":"components/surfaces/Card.jsx"},{"name":"CardRow","sourcePath":"components/surfaces/CardRow.jsx"},{"name":"Disclosure","sourcePath":"components/surfaces/Disclosure.jsx"},{"name":"FormCard","sourcePath":"components/surfaces/FormCard.jsx"},{"name":"GameCard","sourcePath":"components/surfaces/GameCard.jsx"},{"name":"GamePick","sourcePath":"components/surfaces/GamePick.jsx"},{"name":"GameTile","sourcePath":"components/surfaces/GameTile.jsx"},{"name":"RowList","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"ListRow","sourcePath":"components/surfaces/ListRow.jsx"},{"name":"Menu","sourcePath":"components/surfaces/Menu.jsx"},{"name":"MoveList","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"MoveRow","sourcePath":"components/surfaces/MoveRow.jsx"},{"name":"NeedsPass","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"NotchPicker","sourcePath":"components/surfaces/NotchPicker.jsx"},{"name":"PageGrid","sourcePath":"components/surfaces/PageGrid.jsx"},{"name":"Popup","sourcePath":"components/surfaces/Popup.jsx"},{"name":"SoonCard","sourcePath":"components/surfaces/SoonCard.jsx"},{"name":"StepCard","sourcePath":"components/surfaces/StepCard.jsx"},{"name":"StepCards","sourcePath":"components/surfaces/StepCard.jsx"}],"sourceHashes":{"components/actions/Button.jsx":"e9b7de29de70","components/actions/TextLink.jsx":"c27d39f10f18","components/chat/chat-press.js":"90ce6ed8e95a","components/chat/ChoiceButtons.jsx":"ef1432be3495","components/chat/ClueCards.jsx":"e7815cacb6fc","components/chat/ConfirmCard.jsx":"ed2c0356d5eb","components/chat/EntityCards.jsx":"c1dac12da45d","components/chat/FactRows.jsx":"9407326d8b7e","components/chat/MenuRows.jsx":"38eb18d06fe3","components/chat/NavButtons.jsx":"805ce76faf8d","components/chat/Picture.jsx":"31afa04b168f","components/chat/ResultCard.jsx":"a466c8c49d2f","components/chat/RollLine.jsx":"6729394a122f","components/chat/StatRow.jsx":"0486006e5409","components/chat/StatusTag.jsx":"24ff23fd885b","components/chat/TileGrid.jsx":"efa644681b48","components/chat/Track.jsx":"52e742e598c4","components/chat/WordBoard.jsx":"ba79db7b917b","components/delve/DelveDie.jsx":"fc99fda7adf0","components/delve/DelveFoeDie.jsx":"cfff9b62c09f","components/feedback/Loader.jsx":"c73ab4148abc","components/feedback/ProgressBar.jsx":"4c208225b868","components/feedback/StatusMessage.jsx":"d26f3a1fef7e","components/feedback/Tag.jsx":"777e144e3413","components/forms/Checkbox.jsx":"855feb3266b9","components/forms/TextField.jsx":"b114099835d3","components/media/ChatPicture.jsx":"5ad8edebbfba","components/media/ChatSide.jsx":"fd8bf1c7b6a6","components/media/Cover.jsx":"b407bbdd73fb","components/media/GameArt.jsx":"80ec58299013","components/media/Icon.jsx":"e68d83fa9c6e","components/media/playback/ChatPlayback.jsx":"583d266b9e82","components/media/SpeechBubble.jsx":"078c2bcd84be","components/press.js":"894b196527ca","components/surfaces/Card.jsx":"5866138b458a","components/surfaces/CardRow.jsx":"f53dd3b518dd","components/surfaces/Disclosure.jsx":"e56f91fb306d","components/surfaces/FormCard.jsx":"8e545dcfdcb5","components/surfaces/game-mark.jsx":"c8c47394b3b0","components/surfaces/GameCard.jsx":"e81a49b9177d","components/surfaces/GamePick.jsx":"cf90bfffa50e","components/surfaces/GameTile.jsx":"43daa3a9d3c2","components/surfaces/ListRow.jsx":"43f5ddb69d8e","components/surfaces/Menu.jsx":"79e87747cff5","components/surfaces/MoveRow.jsx":"ff433b211bdb","components/surfaces/NeedsPass.jsx":"2f0af79b834e","components/surfaces/NotchPicker.jsx":"188a339ba53c","components/surfaces/PageGrid.jsx":"276b99e364b1","components/surfaces/Popup.jsx":"f0715a8a576a","components/surfaces/SoonCard.jsx":"f4eebe3c025b","components/surfaces/StepCard.jsx":"40287270aef7"},"inlinedExternals":[],"unexposedExports":[{"name":"cbFold","sourcePath":"components/chat/chat-press.js"},{"name":"cbPress","sourcePath":"components/chat/chat-press.js"},{"name":"cbRich","sourcePath":"components/chat/chat-press.js"},{"name":"chatParas","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatPart","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatPlain","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatReply","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatRich","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatRichWords","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatRuns","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatShell","sourcePath":"components/media/ChatPicture.jsx"},{"name":"chatTurn","sourcePath":"components/media/ChatPicture.jsx"},{"name":"gameMark","sourcePath":"components/surfaces/game-mark.jsx"},{"name":"needsPassCopy","sourcePath":"components/surfaces/NeedsPass.jsx"},{"name":"useChatScroll","sourcePath":"components/media/ChatPicture.jsx"},{"name":"usePress","sourcePath":"components/press.js"}]} */
 (function(React2) {
   "use strict";
   function usePress() {
@@ -24,7 +24,12 @@
     settings: "<g " + A + '><path d="M4 6H11M17 6H20"/><path d="M4 12H6M12 12H20"/><path d="M4 18H13M19 18H20"/><path d="M11 4H17V8H11Z"/><path d="M6 10H12V14H6Z"/><path d="M13 16H19V20H13Z"/></g>',
     mail: "<g " + A + '><path d="M3 5.5H21V18.5H3Z"/><path d="M3.5 6.5L12 13L20.5 6.5"/></g>',
     logout: "<g " + A + '><path d="M10 4H4V20H10"/><path d="M15 8L19 12L15 16"/><path d="M19 12H9"/></g>',
-    card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>'
+    card: "<g " + A + '><path d="M2.5 5.5H21.5V18.5H2.5Z"/><path d="M2.5 10H21.5"/><path d="M6 15H10"/></g>',
+    stats: "<g " + A + '><path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25Z"/><path d="M12 9V15M9 12H15"/></g>',
+    advantage: "<g " + A + '><path d="M5 12.5L12 5.5L19 12.5"/><path d="M5 19L12 12L19 19"/></g>',
+    pack: "<g " + A + '><path d="M4 10H20V20.5H4Z"/><path d="M4 10A8 6 0 0 1 20 10"/><path d="M10.5 10H13.5V14H10.5Z"/></g>',
+    ability: "<g " + A + '><path d="M3 8H11V16H3Z"/></g><path fill="currentColor" stroke="none" d="M13 8H21V16H13Z"/>',
+    fight: "<g " + A + '><path d="M12 3V21"/><path d="M12 5.5L4 4V12.5L12 9.5"/><path d="M12 5.5L20 4V12.5L12 9.5"/></g>'
   };
   const UI = {
     check: '<g fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M4.5 12.5L9.5 17.5L19.5 6.5"/></g>',
@@ -110,6 +115,20 @@
     if (typeof t !== "string") return t;
     return t.split(/\*\*(.+?)\*\*/g).map((s, i) => i % 2 ? React2.createElement("b", { key: i }, s) : s);
   }
+  function cbFold({ title, count: count2, closed, pad }, children) {
+    return React2.createElement(
+      "details",
+      { className: "mcp-cb-fold", open: !closed },
+      React2.createElement(
+        "summary",
+        { className: "mcp-cb-fold-s" },
+        React2.createElement("span", { className: "mcp-cb-fold-t" }, title),
+        count2 != null && React2.createElement("span", { className: "mcp-cb-fold-n" }, React2.createElement("span", { "aria-hidden": "true" }, "·"), count2),
+        React2.createElement(Icon, { name: "down", size: 16 })
+      ),
+      React2.createElement("div", { className: "mcp-cb-fold-b" + (pad ? " is-pad" : "") }, children)
+    );
+  }
   function ChoiceButtons({ items = [], picked, onChoose, label, className = "" }) {
     const done = picked != null;
     return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-choices " + className).trim(), role: "group", "aria-label": label || "Moves" }, items.map((it, i) => {
@@ -118,14 +137,19 @@
       return cbPress(onChoose && !done && (() => onChoose(t, i)), { key: i, className: "mcp-cb-choice" + (p ? " is-picked" : done ? " is-spent" : ""), "aria-pressed": p }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, p && /* @__PURE__ */ React2.createElement(Icon, { name: "check", size: 14 }), t));
     }));
   }
-  function ClueCards({ groups = [], newLabel = "New", className = "" }) {
-    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, groups.map((g, i) => /* @__PURE__ */ React2.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React2.createElement("ul", null, g.facts.map((f, k) => {
+  function ClueCards({ groups = [], newLabel = "New", title, fold, className = "" }) {
+    const folded = !!fold, solo = folded && groups.length === 1;
+    const sections = groups.map((g, i) => /* @__PURE__ */ React2.createElement("section", { key: i, className: "mcp-cb-clue", "aria-label": g.kind }, !solo && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-clue-h" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-kind" }, g.kind), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-clue-n" }, g.facts.length)), /* @__PURE__ */ React2.createElement("ul", null, g.facts.map((f, k) => {
       const t = typeof f === "string" ? { text: f } : f;
       return /* @__PURE__ */ React2.createElement("li", { key: k, className: t.new ? "is-new" : void 0 }, /* @__PURE__ */ React2.createElement("span", null, cbRich(t.text)), t.new && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-new" }, newLabel));
-    })))));
+    }))));
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-clues mcp-cb-fence " + className).trim() }, folded ? cbFold({ title: title || (solo ? groups[0].kind : "Clues"), count: groups.reduce((n, g) => n + g.facts.length, 0), closed: fold === "closed" }, sections) : sections);
   }
-  function FactRows({ items = [], plain = false, label, className = "" }) {
-    return /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
+  function FactRows({ items = [], plain = false, label, title, fold, className = "" }) {
+    const folded = !!fold;
+    const rows = /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-facts" + (plain || folded ? "" : " mcp-cb-fence") + " " + className).trim(), "aria-label": label || title }, items.map((f, i) => /* @__PURE__ */ React2.createElement("div", { key: i }, /* @__PURE__ */ React2.createElement("dt", null, f.label), /* @__PURE__ */ React2.createElement("dd", null, cbRich(f.value)))));
+    if (!folded) return rows;
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb" + (plain ? "" : " mcp-cb-fence") + " " + className).trim() }, cbFold({ title: title || label || "Details", count: items.length, closed: fold === "closed", pad: true }, React2.cloneElement(rows, { className: "mcp-cb-facts" })));
   }
   function ConfirmCard({ title, question, facts, note, confirm = "Confirm", cancel = "Cancel", answer, onConfirm, onCancel, className = "" }) {
     const done = answer === "confirm" || answer === "cancel";
@@ -135,11 +159,13 @@
     };
     return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-fence mcp-cb-card mcp-cb-confirm " + className).trim(), role: "group", "aria-label": title || "Confirm" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-title" }, title), question && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-q" }, cbRich(question)), facts && facts.length > 0 && /* @__PURE__ */ React2.createElement(FactRows, { items: facts, plain: true }), note && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-note" }, note), /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-pair" }, btn("cancel", cancel, onCancel, false), btn("confirm", confirm, onConfirm, true)));
   }
-  function EntityCards({ title, items = [], onPick, className = "" }) {
-    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents " + className).trim(), role: "group", "aria-label": title || "In the game" }, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), /* @__PURE__ */ React2.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
+  function EntityCards({ title, items = [], onPick, fold, className = "" }) {
+    const folded = !!fold;
+    const list = /* @__PURE__ */ React2.createElement("ul", { className: "mcp-cb-ents-list" }, items.map((it, i) => {
       const pic = it.pic ? /* @__PURE__ */ React2.createElement("img", { src: it.pic, alt: "" }) : it.icon ? /* @__PURE__ */ React2.createElement(Icon, { name: it.icon, size: 16 }) : null;
       return /* @__PURE__ */ React2.createElement("li", { key: i }, cbPress(onPick && (() => onPick(it, i)), { className: "mcp-cb-ent" + (it.state ? " is-" + it.state : ""), "aria-pressed": it.state === "picked" }, /* @__PURE__ */ React2.createElement(React2.Fragment, null, pic && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-pic " + (it.pic ? "is-" + (it.tone || "cream") : "is-icon"), "aria-hidden": "true" }, pic), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-ent-t" }, /* @__PURE__ */ React2.createElement("b", null, it.name), it.line && /* @__PURE__ */ React2.createElement("small", null, it.line)))));
-    })));
+    }));
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-ents" + (folded ? " mcp-cb-fence" : "") + " " + className).trim(), role: "group", "aria-label": title || "In the game" }, folded ? cbFold({ title: title || "In the game", count: items.length, closed: fold === "closed", pad: true }, list) : /* @__PURE__ */ React2.createElement(React2.Fragment, null, title && /* @__PURE__ */ React2.createElement("p", { className: "mcp-cb-kind" }, title), list));
   }
   function StatusTag({ tone = "live", label, children, className = "" }) {
     return /* @__PURE__ */ React2.createElement("span", { className: ("mcp-cb mcp-cb-status is-" + tone + " " + className).trim() }, label ?? children);
@@ -160,6 +186,9 @@
       return cbPress(onGo && (() => onGo(it, i)), { key: i, className: cls }, body);
     }));
   }
+  function Picture({ src, alt, className = "" }) {
+    return /* @__PURE__ */ React2.createElement("img", { className: ("mcp-cb mcp-chat-pic " + className).trim(), src, alt });
+  }
   function StatRow({ items = [], grid = false, label, className = "" }) {
     return /* @__PURE__ */ React2.createElement("dl", { className: ("mcp-cb mcp-cb-stats" + (grid ? " is-grid" : "") + " " + className).trim(), "aria-label": label, style: grid ? { "--cols": items.length === 3 ? 3 : Math.min(items.length, 2) } : void 0 }, items.map((s, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-stat" }, /* @__PURE__ */ React2.createElement("dt", null, s.label), /* @__PURE__ */ React2.createElement("dd", null, s.value))));
   }
@@ -175,7 +204,7 @@
     const say = (label ? label + ": " : "") + die + " rolled " + roll + (mod ? (mod > 0 ? " plus " : " minus ") + Math.abs(mod) : "") + ", " + sum + (target != null ? " against " + target : "") + ". " + text + ".";
     return /* @__PURE__ */ React2.createElement("p", { className: ("mcp-cb mcp-cb-roll " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-sr" }, say), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-in", "aria-hidden": "true" }, label && /* @__PURE__ */ React2.createElement("b", null, label), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-die" }, die), /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-pip" }, roll), mod !== 0 && /* @__PURE__ */ React2.createElement("span", null, mod > 0 ? "+ " + mod : "− " + Math.abs(mod)), /* @__PURE__ */ React2.createElement("span", null, "= ", /* @__PURE__ */ React2.createElement("b", null, sum)), target != null && /* @__PURE__ */ React2.createElement("span", { className: "mcp-cb-roll-vs" }, "vs ", target)), /* @__PURE__ */ React2.createElement(StatusTag, { tone: TONE[result] || "idle", className: "mcp-cb-roll-out" }, text));
   }
-  const MARK = { h: "hit", n: "near", x: "miss" };
+  const MARK$1 = { h: "hit", n: "near", x: "miss" };
   const SAY = { hit: "right place", near: "in it, wrong place", miss: "not in it", filled: "" };
   function TileGrid({ rows = [], length, count: count2, label, className = "" }) {
     const n = Math.max(1, length || Math.max(0, ...rows.map((r) => (r.letters || "").length)));
@@ -183,11 +212,11 @@
     while (count2 && all.length < count2) all.push({ letters: "" });
     const grid = all.map((r) => Array.from({ length: n }, (_, i) => {
       const c = ((r.letters || "")[i] || " ").trim();
-      const s = c ? MARK[(r.marks || "")[i]] || "filled" : "empty";
+      const s = (r.marks || "")[i] === "_" ? "blank" : c ? MARK$1[(r.marks || "")[i]] || "filled" : "empty";
       return { c, s };
     }));
-    const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty") ? " empty" : ": " + row.map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
-    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s }, x.c))))));
+    const say = label || grid.map((row, i) => "Row " + (i + 1) + (row.every((x) => x.s === "empty" || x.s === "blank") ? " empty" : ": " + row.filter((x) => x.s !== "blank").map((x) => x.c ? x.c + (SAY[x.s] ? " " + SAY[x.s] : "") : "blank").join(", "))).join(". ");
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-tiles " + className).trim(), role: "img", "aria-label": say }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-cb-tiles-in" + (all.length > 1 ? " mcp-cb-fence" : ""), style: { "--n": n } }, grid.map((row, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-cb-tiles-row" }, row.map((x, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "mcp-cb-tile is-" + x.s, "aria-hidden": x.s === "blank" || void 0 }, x.s === "blank" ? null : x.c))))));
   }
   function Track({ items = [], className = "" }) {
     return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-cb mcp-cb-track " + className).trim() }, items.map((t, i) => {
@@ -204,6 +233,24 @@
       const p = on.has(w.toUpperCase());
       return cbPress(onPick && (() => onPick(w)), { key: w, className: "mcp-cb-chip" + (p ? " is-picked" : ""), "aria-pressed": p }, w);
     })));
+  }
+  const HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
+  const RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
+  const SPARKLE = "M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z";
+  const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-5, -4.5] : adv ? [-7, -6] : [-3.5, -3];
+  function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+    const big = size >= 64;
+    const adv = other != null && !big && !selected;
+    const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
+    const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+    return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
+  }
+  function DelveUseDie({ won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+    return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", won, foe, selected, surface, size, className });
+  }
+  function DelveFoeDie({ value, other, hit = false, surface = "card", size = 34, className = "" }) {
+    const cls = ["mcp-dl-foe", other != null && "has-other", hit && "is-hit", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+    return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-2 -2 40 44", width: size, height: Math.round(size * 44 / 40), "aria-hidden": "true" }, other != null && /* @__PURE__ */ React2.createElement("polygon", { className: "gf", points: "18,0 36,20 18,40 0,20", transform: "translate(-3.5 -4.5)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "fx", points: "18,0 36,20 18,40 0,20" }), /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value));
   }
   function Loader({ size = 64, label = "Loading" }) {
     return /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader", role: "status", "aria-label": label, style: { width: size, height: size } }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-loader-m", style: { zoom: size / 120 } }, /* @__PURE__ */ React2.createElement("i", { className: "tl" }), /* @__PURE__ */ React2.createElement("i", { className: "tr" }), /* @__PURE__ */ React2.createElement("i", { className: "br" }), /* @__PURE__ */ React2.createElement("i", { className: "bl" })));
@@ -236,16 +283,16 @@
     const fid = id || "mcp-" + auto;
     return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-fld " + className).trim() }, label && /* @__PURE__ */ React2.createElement("label", { htmlFor: fid }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-srch" }, /* @__PURE__ */ React2.createElement(Icon, { name: "search" }), /* @__PURE__ */ React2.createElement("input", { className: "mcp-in", id: fid, type: "search", placeholder, value, onChange, "aria-label": label ? void 0 : placeholder, ...rest })));
   }
-  const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows };
+  const PARTS = { tilegrid: TileGrid, wordboard: WordBoard, choices: ChoiceButtons, confirm: ConfirmCard, facts: FactRows, stats: StatRow, status: StatusTag, entities: EntityCards, clues: ClueCards, result: ResultCard, track: Track, roll: RollLine, nav: NavButtons, menu: MenuRows, picture: Picture };
   const WHO = { x: "not in the word", y: "in the word", g: "right spot" };
   function Tiles({ rows }) {
     const label = rows.map((r) => r.word + ": " + r.marks.split("").map((m, i) => r.word[i] + " " + WHO[m]).join(", ")).join(". ");
     return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-board", role: "img", "aria-label": label }, rows.map((r, i) => /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-row" }, r.word.split("").map((c, k) => /* @__PURE__ */ React2.createElement("span", { key: k, className: "is-" + r.marks[k] }, c)))));
   }
-  function Block({ b }) {
+  function chatPart({ b }) {
     if (b.type === "tiles") return /* @__PURE__ */ React2.createElement(Tiles, { rows: b.rows });
-    if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, t)));
-    if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text);
+    if (b.type === "list") return /* @__PURE__ */ React2.createElement("ul", { className: "mcp-chat-list" }, b.items.map((t, i) => /* @__PURE__ */ React2.createElement("li", { key: i }, chatRich(t))));
+    if (b.type === "mono") return /* @__PURE__ */ React2.createElement("pre", { className: "mcp-chat-mono" }, b.text.split(/(\/(?!\/))/).map((t, i) => t === "/" ? /* @__PURE__ */ React2.createElement(React2.Fragment, { key: i }, "/", /* @__PURE__ */ React2.createElement("wbr", null)) : t));
     const P = PARTS[b.type];
     if (P) {
       const { type, ...p } = b;
@@ -253,20 +300,55 @@
     }
     return null;
   }
+  const Part$1 = chatPart;
   const paras = (t) => t == null ? [] : Array.isArray(t) ? t : [t];
-  function useChatScroll(body, turns) {
+  const MARK = /\*\*(\S(?:.*?\S)??)\*\*|__(\S(?:.*?\S)??)__|\*([^*\s](?:[^*]*?[^*\s])?)\*/;
+  function chatRuns(text, f = {}) {
+    const s = String(text), out = [];
+    let rest = s;
+    for (; ; ) {
+      const m = MARK.exec(rest);
+      if (!m) {
+        if (rest) out.push({ s: rest, ...f });
+        return out;
+      }
+      if (m.index) out.push({ s: rest.slice(0, m.index), ...f });
+      const g = m[1] != null ? { b: 1 } : m[2] != null ? { u: 1 } : { i: 1 };
+      out.push(...chatRuns(m[1] ?? m[2] ?? m[3], { ...f, ...g }));
+      rest = rest.slice(m.index + m[0].length);
+    }
+  }
+  const chatPlain = (t) => chatRuns(t).map((r) => r.s).join("");
+  const styled = (r, node, key) => {
+    let n = node;
+    if (r.u) n = /* @__PURE__ */ React2.createElement("u", null, n);
+    if (r.i) n = /* @__PURE__ */ React2.createElement("em", null, n);
+    if (r.b) n = /* @__PURE__ */ React2.createElement("strong", null, n);
+    return React2.isValidElement(n) && n !== node ? React2.cloneElement(n, { key }) : /* @__PURE__ */ React2.createElement(React2.Fragment, { key }, n);
+  };
+  function chatRich(text) {
+    const runs = chatRuns(text);
+    if (runs.every((r) => !r.b && !r.i && !r.u)) return String(text);
+    return runs.map((r, k) => styled(r, r.s, k));
+  }
+  function chatRichWords(text, wordFn) {
+    let j = 0;
+    return chatRuns(text).map((r, k) => /* @__PURE__ */ React2.createElement(React2.Fragment, { key: k }, styled(r, r.s.split(/(\s+)/).map((w, x) => !w || /^\s+$/.test(w) ? w : /* @__PURE__ */ React2.createElement(React2.Fragment, { key: x }, wordFn(w, j++))), "r")));
+  }
+  function useChatScroll(body, turns, start) {
+    const top = start === "top";
     const [up, setUp] = React2.useState(false);
     React2.useEffect(() => {
       const b = body.current;
       if (!b) return void 0;
       let moved = false;
       const mark = () => {
-        const u = b.scrollTop > 4;
-        b.dataset.more = u ? "up" : "";
+        const u = top ? b.scrollTop + b.clientHeight < b.scrollHeight - 4 : b.scrollTop > 4;
+        b.dataset.more = u ? top ? "down" : "up" : "";
         setUp(u);
       };
       const end = () => {
-        if (!moved) b.scrollTop = b.scrollHeight;
+        if (!moved) b.scrollTop = top ? 0 : b.scrollHeight;
         mark();
       };
       const stop = () => {
@@ -290,24 +372,27 @@
     }, [turns]);
     const toStart = () => {
       const b = body.current;
-      if (b) b.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      if (b) b.scrollTo({ top: top ? b.scrollHeight : 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     };
     return [up, toStart];
   }
+  function ToolCall({ tool, mark, toolBy, style }) {
+    return /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call", style }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-calltxt" }, toolBy && /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("em", null, toolBy, " ·"), " "), "Called ", tool));
+  }
   function chatTurn(t, i, { mark, toolBy, fx }) {
     if (t.from === "user") {
-      if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text));
+      if (!fx) return /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me" }, paras(t.text).map(chatRich));
       const st = fx.piece(i, "u");
-      return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text));
+      return st && /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-chat-me", style: st }, paras(t.text).map(chatRich));
     }
-    if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement("span", { className: "mcp-chat-call" }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, p)), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Block, { key: "a" + k, b })));
+    if (!fx) return /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, t.tool && /* @__PURE__ */ React2.createElement(ToolCall, { tool: t.tool, mark, toolBy }), (t.blocks || []).map((b, k) => /* @__PURE__ */ React2.createElement(Part$1, { key: k, b })), paras(t.text).map((p, k) => /* @__PURE__ */ React2.createElement("p", { key: k }, chatRich(p))), (t.after || []).map((b, k) => /* @__PURE__ */ React2.createElement(Part$1, { key: "a" + k, b })));
     const blk = (list, pre) => (list || []).map((b, k) => {
       const st = fx.piece(i, pre + k);
-      return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Block, { b }));
+      return st && /* @__PURE__ */ React2.createElement("div", { key: pre + k, className: "mcp-chat-fx", style: st }, /* @__PURE__ */ React2.createElement(Part$1, { b }));
     });
     const call = t.tool && fx.piece(i, "c");
     const kids = [
-      call && /* @__PURE__ */ React2.createElement("span", { key: "c", className: "mcp-chat-call", style: call }, mark && /* @__PURE__ */ React2.createElement("img", { src: mark, alt: "", width: "16", height: "16" }), "Called ", t.tool, toolBy && /* @__PURE__ */ React2.createElement("em", null, toolBy)),
+      call && /* @__PURE__ */ React2.createElement(ToolCall, { key: "c", tool: t.tool, mark, toolBy, style: call }),
       ...blk(t.blocks, "b"),
       ...paras(t.text).map((p, k) => {
         const st = fx.piece(i, "p" + k);
@@ -317,18 +402,23 @@
     ].filter(Boolean);
     return kids.length ? /* @__PURE__ */ React2.createElement("div", { key: i, className: "mcp-chat-ai" }, kids) : null;
   }
-  function chatShell({ body, bodyRef, up, toStart, title, height, width, fill, label, more, className, comp, control, extraClass }) {
+  function chatShell({ body, bodyRef, up, toStart, start, title, height, width, fill, label, more, className, comp, control, extraClass }) {
     const name = label || "A game being played in a chat";
-    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up", hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon, { name: "down", size: 16, style: { transform: "rotate(180deg)" } })), control, comp);
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat" + (fill ? " is-fill" : "") + (start === "top" ? " is-top" : "") + (extraClass ? " " + extraClass : "") + " " + className).trim(), style: fill ? void 0 : { width: "min(100%," + width + "px)" }, role: "group", "aria-label": name }, title && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-head" }, title), /* @__PURE__ */ React2.createElement("div", { ref: bodyRef, className: "mcp-chat-body" + (height === "auto" && !fill ? " is-auto" : ""), style: fill || height === "auto" ? void 0 : { height }, tabIndex: 0, role: "region", "aria-label": name + ", scrolls" }, body), /* @__PURE__ */ React2.createElement("button", { type: "button", className: "mcp-chat-up" + (start === "top" ? comp ? " is-down" : " is-down is-bare" : ""), hidden: !up, onClick: toStart, "aria-label": more }, /* @__PURE__ */ React2.createElement(Icon, { name: "down", size: 16, style: start === "top" ? void 0 : { transform: "rotate(180deg)" } })), control, comp);
   }
   const chatParas = paras;
-  function ChatPicture({ turns, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, placeholder = "Reply", label, more = "Back to the start", className = "" }) {
+  function chatReply({ action, placeholder = "Reply" }) {
+    return /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp has-action", role: "group", "aria-label": "Reply" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), action);
+  }
+  const Reply = chatReply;
+  function ChatPicture({ turns, start, title, toolBy, mark, height = 290, width = 360, fill = false, composer = true, action, placeholder = "Reply", label, more = start === "top" ? "On to the latest" : "Back to the start", className = "" }) {
     const body = React2.useRef(null);
-    const [up, toStart] = useChatScroll(body, turns);
+    const [up, toStart] = useChatScroll(body, turns, start);
     return chatShell({
       bodyRef: body,
       up,
       toStart,
+      start,
       title,
       height,
       width,
@@ -337,8 +427,12 @@
       more,
       className,
       body: turns.map((t, i) => chatTurn(t, i, { mark, toolBy })),
-      comp: composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon, { name: "send", size: 16 })))
+      comp: composer && action ? /* @__PURE__ */ React2.createElement(Reply, { action, placeholder }) : composer && /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-comp", "aria-hidden": "true" }, /* @__PURE__ */ React2.createElement("span", null, placeholder), /* @__PURE__ */ React2.createElement("i", null, /* @__PURE__ */ React2.createElement(Icon, { name: "send", size: 16 })))
     });
+  }
+  const Part = chatPart;
+  function ChatSide({ label, blocks, name, className = "" }) {
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-chat mcp-chat-side " + className).trim(), role: "group", "aria-label": name || "The game beside the chat" }, label && /* @__PURE__ */ React2.createElement("p", { className: "mcp-chat-side-ed" }, label), /* @__PURE__ */ React2.createElement("div", { className: "mcp-chat-side-body" }, blocks.map((b, k) => /* @__PURE__ */ React2.createElement(Part, { key: k, b }))));
   }
   const ART = {
     "daily-puzzles": '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#1D1B3A"/><rect x="14" y="14" width="22" height="22" fill="#E5A63B"/><rect x="39" y="14" width="22" height="22" fill="#328A88"/><rect x="64" y="14" width="22" height="22" fill="#E5A63B"/><rect x="14" y="39" width="22" height="22" fill="#328A88"/><rect x="39" y="39" width="22" height="22" fill="#D66847"/><rect x="64" y="39" width="22" height="22" fill="#328A88"/><rect x="14" y="64" width="22" height="22" fill="#E5A63B"/><rect x="39" y="64" width="22" height="22" fill="#328A88"/><rect x="64" y="64" width="22" height="22" fill="#E5A63B"/></svg>',
@@ -382,7 +476,7 @@
     return ((ay * t + by) * t + cy) * t;
   }
   const c01 = (v) => v < 0 ? 0 : v > 1 ? 1 : v;
-  const nWords = (s) => String(s).split(/\s+/).filter(Boolean).length;
+  const nWords = (s) => chatPlain(s).split(/\s+/).filter(Boolean).length;
   function timeline(turns, pace, composer) {
     const p = { ...PACE, ...pace };
     const sp = p.speed > 0 ? p.speed : 1;
@@ -399,7 +493,7 @@
       let type = null;
       if (tu.from === "user") {
         if (composer) {
-          const text = chatParas(tu.text).join(" ");
+          const text = chatParas(tu.text).map(chatPlain).join(" ");
           const dur = d(Math.min(p.typeMax, Math.max(p.typeMin, text.length / p.type * 1e3)));
           type = { start: t, end: t + dur, text };
           t += dur + d(p.send);
@@ -437,12 +531,10 @@
       },
       words: (i, k, text) => {
         const p = tl.turns[i] && tl.turns[i].pieces[k];
-        if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return text;
-        let j = 0;
-        return String(text).split(/(\s+)/).map((w, x) => {
-          if (!w || /^\s+$/.test(w)) return w;
-          const o = c01((T - (p.at + j++ * p.word)) / tl.wordIn);
-          return /* @__PURE__ */ React2.createElement("span", { key: x, style: { opacity: +o.toFixed(4) } }, w);
+        if (!p || T >= p.at + Math.max(0, p.n - 1) * p.word + tl.wordIn) return chatRich(text);
+        return chatRichWords(text, (w, j) => {
+          const o = c01((T - (p.at + j * p.word)) / tl.wordIn);
+          return /* @__PURE__ */ React2.createElement("span", { style: { opacity: +o.toFixed(4) } }, w);
         });
       }
     };
@@ -583,6 +675,29 @@
     });
   }
   ChatPlayback.duration = (turns, { pace, speed = 1, composer = true } = {}) => timeline(turns, { ...pace, speed }, composer).total;
+  function SpeechBubble({ children, wrap = false, copy = false, edge = false, onCopy, className = "" }) {
+    const [done, setDone] = React2.useState(false);
+    React2.useEffect(() => {
+      if (!done) return void 0;
+      const t = setTimeout(() => setDone(false), 2400);
+      return () => clearTimeout(t);
+    }, [done]);
+    const cls = ("mcp-say" + (wrap ? " is-wrap" : "") + (edge ? " is-edge" : "") + (copy ? " is-copy" : "") + (copy && done ? " is-done" : "") + " " + className).trim();
+    if (!copy) return /* @__PURE__ */ React2.createElement("span", { className: cls }, children);
+    const text = React2.Children.toArray(children).filter((c) => typeof c === "string" || typeof c === "number").join("");
+    const click = () => {
+      if (!onCopy) {
+        if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {
+        });
+        setDone(true);
+        return;
+      }
+      Promise.resolve(onCopy(text)).then((ok) => {
+        if (ok !== false) setDone(true);
+      });
+    };
+    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("button", { type: "button", className: cls, "aria-label": "Copy: " + text, onClick: click }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-in" }, /* @__PURE__ */ React2.createElement("span", { className: "a" }, children), done && /* @__PURE__ */ React2.createElement("span", { className: "b", "aria-hidden": "true" }, "Copied"))), /* @__PURE__ */ React2.createElement("span", { className: "mcp-say-live", role: "status" }, done ? "Copied" : ""));
+  }
   function Card({ title, action, children, className = "", style, href, onClick, label, chevron = true }) {
     const { pressed, handlers } = usePress();
     const live = !!(href || onClick);
@@ -637,7 +752,7 @@
       el.scrollBy({ left: d * step, behavior: still ? "auto" : "smooth" });
     };
     const T = as, name = label || (typeof title === "string" ? title : "Cards"), n = React2.Children.count(children);
-    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-crow" + (kind === "chat" ? " is-chat" : kind === "tiles" ? " is-tiles" : "") + " " + className).trim() }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-head" }, /* @__PURE__ */ React2.createElement(T, { className: "mcp-t-sec mcp-crow-title" }, title), at.over && /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-nav" }, /* @__PURE__ */ React2.createElement("button", { ref: prev, type: "button", className: "mcp-crow-btn", "aria-label": "Previous, " + name, style: at.start ? { visibility: "hidden" } : null, onClick: () => move(-1) }, /* @__PURE__ */ React2.createElement(Icon, { name: "next", style: { transform: "rotate(180deg)" } })), /* @__PURE__ */ React2.createElement("button", { ref: next, type: "button", className: "mcp-crow-btn", "aria-label": "Next, " + name, style: at.end ? { visibility: "hidden" } : null, onClick: () => move(1) }, /* @__PURE__ */ React2.createElement(Icon, { name: "next" }))), sub && /* @__PURE__ */ React2.createElement("p", { className: "mcp-crow-sub" }, sub)), /* @__PURE__ */ React2.createElement("div", { ref, className: "mcp-crow-track", role: "region", "aria-label": name, tabIndex: 0, style: { "--n": n } }, children));
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-crow" + (kind === "chat" ? " is-chat" : kind === "tiles" ? " is-tiles" : "") + " " + className).trim() }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-head" }, /* @__PURE__ */ React2.createElement(T, { className: "mcp-t-sec mcp-crow-title" }, title), at.over && /* @__PURE__ */ React2.createElement("div", { className: "mcp-crow-nav" }, /* @__PURE__ */ React2.createElement("button", { ref: prev, type: "button", className: "mcp-crow-btn", "aria-label": "Previous, " + name, "aria-disabled": at.start || void 0, style: at.start ? { opacity: 0.3, cursor: "default" } : null, onClick: () => move(-1) }, /* @__PURE__ */ React2.createElement(Icon, { name: "next", style: { transform: "rotate(180deg)" } })), /* @__PURE__ */ React2.createElement("button", { ref: next, type: "button", className: "mcp-crow-btn", "aria-label": "Next, " + name, "aria-disabled": at.end || void 0, style: at.end ? { opacity: 0.3, cursor: "default" } : null, onClick: () => move(1) }, /* @__PURE__ */ React2.createElement(Icon, { name: "next" }))), sub && /* @__PURE__ */ React2.createElement("p", { className: "mcp-crow-sub" }, sub)), /* @__PURE__ */ React2.createElement("div", { ref, className: "mcp-crow-track", role: "region", "aria-label": name, tabIndex: 0, style: { "--n": n } }, children));
   }
   function Disclosure({ title, children, defaultOpen = false }) {
     const [open, setOpen] = React2.useState(defaultOpen);
@@ -825,7 +940,6 @@
       warn("parts are plain strings; a part that isn’t is dropped.");
       return false;
     }).map(String);
-    if (!list.length) warn('"' + label + '" has no parts; line two is empty.');
     return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-move " + className).trim() }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-move-label" }, label), list.length > 0 && /* @__PURE__ */ React2.createElement("span", { className: "mcp-move-parts" }, list.map((p, i) => /* @__PURE__ */ React2.createElement("span", { key: i, className: i === 0 ? "mcp-move-lead" : "mcp-move-rest" }, i > 0 && /* @__PURE__ */ React2.createElement("span", { className: "mcp-move-sep" }, ", "), p))));
   }
   const MON = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -849,6 +963,76 @@
   function NeedsPass({ game, word, words, record, total = 0, onGet, className = "", style }) {
     const c = needsPassCopy({ game, word, words, record, total });
     return /* @__PURE__ */ React2.createElement("section", { className: ("mcp-npass " + className).trim(), style, "aria-label": c.heading }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label", "aria-hidden": c.label ? void 0 : true }, c.label || " "), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-sec" }, c.heading), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, c.foot && /* @__PURE__ */ React2.createElement("p", { className: "mcp-npass-note" }, c.foot))), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-half" }, /* @__PURE__ */ React2.createElement("span", { className: "mcp-npass-label" }, c.rightLabel), c.lines.map((l, i) => /* @__PURE__ */ React2.createElement("p", { key: i, className: "mcp-npass-line" }, l)), /* @__PURE__ */ React2.createElement("div", { className: "mcp-npass-foot" }, /* @__PURE__ */ React2.createElement(Button, { variant: "secondary", onClick: onGet }, c.action))));
+  }
+  const reveal = (el) => {
+    const tile = el.closest("[data-np-tile]") || el, track = tile.parentElement;
+    if (!track || track.scrollWidth <= track.clientWidth + 1) return;
+    const r = tile.getBoundingClientRect(), b = track.getBoundingClientRect();
+    const d = r.left < b.left ? r.left - b.left - 4 : r.right > b.right ? r.right - b.right + 4 : 0;
+    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (d) track.scrollBy({ left: d, behavior: still ? "auto" : "smooth" });
+  };
+  function NotchPicker({ label, options, value, defaultValue = null, onChange, children, closable = false, row, renderTile, tilesClassName = "", tilesStyle, aside, pointer = "top", target = "tile", panelProps, className = "", style }) {
+    const [own, setOwn] = React2.useState(defaultValue);
+    const picked = value === void 0 ? own : value;
+    const at = options.findIndex((o) => o.id === picked);
+    const base = (React2.useId ? React2.useId() : "np").replace(/:/g, "");
+    const panelId = base + "-panel";
+    const root = React2.useRef(null), notch = React2.useRef(null), last = React2.useRef({ id: null, mode: null });
+    const mode = pointer + ":" + target;
+    const press = (id, el) => {
+      if (id === picked && !closable) return;
+      const next = id === picked ? null : id;
+      if (value === void 0) setOwn(next);
+      if (onChange) onChange(next);
+      if (next !== null) reveal(el);
+    };
+    React2.useLayoutEffect(() => {
+      const r = root.current, n = notch.current;
+      if (!r || !n) return void 0;
+      const btn = r.querySelector('[aria-pressed="true"][aria-controls="' + panelId + '"]');
+      if (!btn) return void 0;
+      const tile = btn.closest("[data-np-tile]") || btn, track = tile.parentElement;
+      const place = (glide) => {
+        const pointed = target === "aside" ? r.querySelector("[data-np-aside]") : tile;
+        if (!pointed) return;
+        const pr = n.parentElement.getBoundingClientRect(), tr = pointed.getBoundingClientRect();
+        n.style.transition = glide ? "" : "none";
+        if (pointer === "side") {
+          n.style.left = "";
+          n.style.visibility = "";
+          n.style.top = tr.top + Math.min(tr.height / 2, 40) - pr.top + "px";
+        } else {
+          const x = tr.left + tr.width / 2 - pr.left;
+          n.style.top = "";
+          n.style.visibility = x < 16 || x > pr.width - 16 ? "hidden" : "";
+          n.style.left = x + "px";
+        }
+      };
+      place(last.current.id !== null && last.current.id !== picked && last.current.mode === mode);
+      last.current = { id: picked, mode };
+      const follow = () => place(false);
+      if (track) track.addEventListener("scroll", follow, { passive: true });
+      const ro = window.ResizeObserver ? new ResizeObserver(follow) : null;
+      if (ro) {
+        ro.observe(r);
+        ro.observe(tile);
+      }
+      return () => {
+        if (track) track.removeEventListener("scroll", follow);
+        if (ro) ro.disconnect();
+      };
+    }, [picked, mode, options.length, panelId, pointer, target]);
+    const icons = options.some((o) => o.icon);
+    const scrolls = !!row || options.length > 4;
+    const tiles = options.map((o) => {
+      const on = o.id === picked;
+      const buttonProps = { id: base + "-" + o.id, type: "button", "aria-pressed": on, "aria-controls": panelId, ...closable ? { "aria-expanded": on } : null, onClick: (e) => press(o.id, e.currentTarget) };
+      if (renderTile) return /* @__PURE__ */ React2.createElement(React2.Fragment, { key: o.id }, renderTile(o, { on, buttonProps }));
+      return /* @__PURE__ */ React2.createElement("button", { key: o.id, ...buttonProps, className: "mcp-np-tile", "data-np-tile": "" }, o.icon && /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-icon", "aria-hidden": "true" }, o.icon), /* @__PURE__ */ React2.createElement("span", { className: "mcp-np-name" }, o.label));
+    });
+    const { className: panelClass = "", ...panelRest } = panelProps || {};
+    return /* @__PURE__ */ React2.createElement("div", { ref: root, className: ("mcp-np" + (icons ? " has-icons" : "") + (scrolls ? " is-scroll" : "") + (row ? " has-row" : "") + " " + className).trim(), "data-pointer": pointer, style: { "--np-n": options.length, ...style } }, row ? /* @__PURE__ */ React2.createElement(CardRow, { title: row.title, sub: row.sub, label: row.label || label }, tiles) : /* @__PURE__ */ React2.createElement("div", { className: ("mcp-np-tiles " + tilesClassName).trim(), role: "group", "aria-label": label, style: tilesStyle }, tiles), aside, /* @__PURE__ */ React2.createElement("div", { ...panelRest, className: ("mcp-np-panel " + panelClass).trim(), id: panelId, role: "region", "aria-labelledby": at < 0 ? void 0 : base + "-" + picked, hidden: at < 0 }, /* @__PURE__ */ React2.createElement("i", { ref: notch, className: "mcp-np-notch", "aria-hidden": "true" }), /* @__PURE__ */ React2.createElement("div", { className: "mcp-np-body" }, at < 0 ? null : typeof children === "function" ? children(picked) : children)));
   }
   function PageGrid({ children, split = "main", className = "", style }) {
     return /* @__PURE__ */ React2.createElement("div", { className: "mcp-pgrid-wrap" }, /* @__PURE__ */ React2.createElement("div", { className: ("mcp-pgrid is-" + split + " " + className).trim(), style }, children));
@@ -910,6 +1094,13 @@
     const P = playHref ? "a" : "button";
     return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-card mcp-soon " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-art" }, art), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-body" }, label && /* @__PURE__ */ React2.createElement("span", { className: "mcp-soon-label" }, label), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card" }, title), line && /* @__PURE__ */ React2.createElement("p", { className: "mcp-soon-line" }, line), /* @__PURE__ */ React2.createElement("div", { className: "mcp-soon-tags" }, /* @__PURE__ */ React2.createElement(Tag, { kind: "daily" }, "Coming soon"), play && /* @__PURE__ */ React2.createElement(P, { className: "mcp-soon-play", href: playHref, type: playHref ? void 0 : "button", onClick: onPlay }, /* @__PURE__ */ React2.createElement(Tag, { kind: "open", icon: "play" }, play)))));
   }
+  const keepLastTwo = (t) => typeof t === "string" ? t.replace(/ (\S+)$/, " $1") : t;
+  function StepCard({ art, title, line, className = "", style }) {
+    return /* @__PURE__ */ React2.createElement("li", { className: ("mcp-card mcp-scard " + className).trim(), style }, /* @__PURE__ */ React2.createElement("div", { className: "mcp-scard-art" }, art), /* @__PURE__ */ React2.createElement("h3", { className: "mcp-t-card mcp-scard-name" }, keepLastTwo(title)), /* @__PURE__ */ React2.createElement("p", { className: "mcp-scard-line" }, line));
+  }
+  function StepCards({ label, children, className = "", style }) {
+    return /* @__PURE__ */ React2.createElement("div", { className: ("mcp-scards-wrap " + className).trim(), style }, /* @__PURE__ */ React2.createElement("ol", { className: "mcp-scards", "aria-label": label }, children));
+  }
   const ns = window.MCPGameStoreDesignSystem_ef1abd = window.MCPGameStoreDesignSystem_ef1abd || {};
   ns.__errors = ns.__errors || [];
   ns.Button = Button;
@@ -922,6 +1113,7 @@
   ns.FactRows = FactRows;
   ns.MenuRows = MenuRows;
   ns.NavButtons = NavButtons;
+  ns.Picture = Picture;
   ns.ResultCard = ResultCard;
   ns.RollLine = RollLine;
   ns.StatRow = StatRow;
@@ -929,6 +1121,9 @@
   ns.TileGrid = TileGrid;
   ns.Track = Track;
   ns.WordBoard = WordBoard;
+  ns.DelveDie = DelveDie;
+  ns.DelveUseDie = DelveUseDie;
+  ns.DelveFoeDie = DelveFoeDie;
   ns.Loader = Loader;
   ns.ProgressBar = ProgressBar;
   ns.StatusMessage = StatusMessage;
@@ -937,12 +1132,15 @@
   ns.Checkbox = Checkbox;
   ns.TextField = TextField;
   ns.SearchField = SearchField;
+  ns.ToolCall = ToolCall;
   ns.ChatPicture = ChatPicture;
+  ns.ChatSide = ChatSide;
   ns.Cover = Cover;
   ns.GameArt = GameArt;
   ns.ICON_NAMES = ICON_NAMES;
   ns.Icon = Icon;
   ns.ChatPlayback = ChatPlayback;
+  ns.SpeechBubble = SpeechBubble;
   ns.Card = Card;
   ns.Heading = Heading;
   ns.CardRow = CardRow;
@@ -957,7 +1155,10 @@
   ns.MoveList = MoveList;
   ns.MoveRow = MoveRow;
   ns.NeedsPass = NeedsPass;
+  ns.NotchPicker = NotchPicker;
   ns.PageGrid = PageGrid;
   ns.Popup = Popup;
   ns.SoonCard = SoonCard;
+  ns.StepCard = StepCard;
+  ns.StepCards = StepCards;
 })(React);
