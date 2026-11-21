@@ -4842,6 +4842,7 @@
   const accDraw = (host, ov) => {
     const H = host.getBoundingClientRect();
     let out = "";
+    const over = Math.max(0, Math.min(5, (parseFloat(getComputedStyle(host).columnGap) || 0) / 2 - 1.5));
     host.querySelectorAll("[data-pen]").forEach((el) => {
       const k = el.dataset.pen;
       const r = accSeed(el.textContent + k);
@@ -4852,7 +4853,7 @@
       const T = Math.min(...rs.map((q) => q.top)) - H.top;
       const B = Math.max(...rs.map((q) => q.bottom)) - H.top;
       const C = el.closest(".acc-col").getBoundingClientRect();
-      if (k !== "miss") out += '<path class="' + (k === "right" ? "g" : "a") + '" d="' + accRing(Math.max(L - 7, C.left - H.left - 5), T - 4, Math.min(R + 7, C.right - H.left + 5), B + 3, r) + '"/>';
+      if (k !== "miss") out += '<path class="' + (k === "right" ? "g" : "a") + '" d="' + accRing(Math.max(L - 7, C.left - H.left - over), T - 4, Math.min(R + 7, C.right - H.left + over), B + 3, r) + '"/>';
       else rs.forEach((q) => {
         out += '<path class="g" d="' + accLine(q.left - H.left - 1, q.right - H.left + 1, q.bottom - H.top + 1, r) + '"/>';
       });

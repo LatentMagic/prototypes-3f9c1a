@@ -140,16 +140,17 @@ const accLine = (x1, x2, y, r) => { const p = []; const n = Math.max(2, Math.rou
   for (let i = 0; i <= n; i++) { const t = i / n; p.push([x1 + (x2 - x1) * t, y + 0.8 * (t - 0.5) + (r() - 0.5) * 1.2]); } return accSmooth(p); };
 // Only the word itself is measured, not the hidden words for screen readers that follow it.
 const accRects = (el) => { const g = document.createRange(); g.selectNodeContents(el.firstChild); return [...g.getClientRects()].filter((q) => q.width > 1); };
-// KEEP: the pen marks are redrawn whenever the board changes size, and a ring never reaches more than 5px past its column, so it never
-// crosses into the next column's words.
+// KEEP: the pen marks are redrawn whenever the board changes size, and a ring never reaches more than 5px past its column, and never
+// more than half the column gap less 1.5px for its wobble, so two rings in neighbouring columns never touch (the gap is 8px on a 320px phone).
 const accDraw = (host, ov) => {
   const H = host.getBoundingClientRect(); let out = '';
+  const over = Math.max(0, Math.min(5, (parseFloat(getComputedStyle(host).columnGap) || 0) / 2 - 1.5));
   host.querySelectorAll('[data-pen]').forEach((el) => {
     const k = el.dataset.pen; const r = accSeed(el.textContent + k); const rs = accRects(el); if (!rs.length) return;
     const L = Math.min(...rs.map((q) => q.left)) - H.left; const R = Math.max(...rs.map((q) => q.right)) - H.left;
     const T = Math.min(...rs.map((q) => q.top)) - H.top; const B = Math.max(...rs.map((q) => q.bottom)) - H.top;
     const C = el.closest('.acc-col').getBoundingClientRect();
-    if (k !== 'miss') out += '<path class="' + (k === 'right' ? 'g' : 'a') + '" d="' + accRing(Math.max(L - 7, C.left - H.left - 5), T - 4, Math.min(R + 7, C.right - H.left + 5), B + 3, r) + '"/>';
+    if (k !== 'miss') out += '<path class="' + (k === 'right' ? 'g' : 'a') + '" d="' + accRing(Math.max(L - 7, C.left - H.left - over), T - 4, Math.min(R + 7, C.right - H.left + over), B + 3, r) + '"/>';
     else rs.forEach((q) => { out += '<path class="g" d="' + accLine(q.left - H.left - 1, q.right - H.left + 1, q.bottom - H.top + 1, r) + '"/>'; });
   });
   ov.innerHTML = out;
