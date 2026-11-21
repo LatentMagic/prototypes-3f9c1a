@@ -1479,14 +1479,14 @@
       share: "Solved in 3 of 6",
       lines: gsWordLines("STILL", ["CRANE", "SLATE", ["Hint", "Letter 2 is T."], "STILL"])
     },
-    // Sample plays for the session page (1236). No. 210, the hard play (pushes the guess count to the limit, 6 of 6): solved on the sixth and last guess with the hint; after ROBOT only
+    // Sample plays for the session page (1236). No. 32, the hard play (pushes the guess count to the limit, 6 of 6): solved on the sixth and last guess with the hint; after ROBOT only
     // letter 4 was green, so the hint gave letter 1. No. 30, lost: the SHA_E trap, four letters in place from guess 2 to 6.
     "word-hard": {
       kind: "puzzle",
       gid: "word",
       game: "Guess",
       art: "word",
-      number: 210,
+      number: 32,
       answer: "FLOOR",
       hints: 1,
       result: "Solved in 6 of 6",
