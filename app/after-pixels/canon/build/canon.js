@@ -3931,7 +3931,7 @@
     const fresh = !lbNow(gs, "delve");
     const ach = phAch(gs, "delve", DV_ACH);
     const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: "This week’s run", rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: "Not started", rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
@@ -4967,7 +4967,7 @@
     const done = st === "done";
     const pass = done && gs.view !== "pass";
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
-    if (id === "delve" && done && gs.review.later) return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: "This week’s run", rooms: 5, laterWeek: true });
+    if (id === "delve" && done && gs.review.later) return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: "Not started", rooms: 5, laterWeek: true });
     if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass: pass && "nostop" });
     if (id === "delve") return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { label: f.label, title: f.title, rooms: 5, onPlay: f.play });
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;

@@ -44,7 +44,7 @@ const CprFirst = ({ id }) => {
   if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} first />;
   // A free player who has finished the first run, once a later week is current (Config → Editions → Free first run): this week's
   // run as a Pass holder sees it before play, with no Play and "Play it with the Pass" in the Pass line's place. The run's name is not known before play.
-  if (id === 'delve' && done && gs.review.later) return <DlNowEmpty title="This week’s run" rooms={5} laterWeek />;
+  if (id === 'delve' && done && gs.review.later) return <DlNowEmpty title="Not started" rooms={5} laterWeek />;
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
   if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass && 'nostop'} />;
   // Before the run: the empty route and Play, as the Pass holder's not-started card, in the free label. No Pass button or line.
