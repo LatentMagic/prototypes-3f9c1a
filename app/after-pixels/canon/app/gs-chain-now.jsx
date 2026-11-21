@@ -93,18 +93,31 @@ const CnCount = ({ p }) => (
 // One word large and centred: the latest word found (the first after the start, still hidden, before any); on a failed chain the
 // word that broke; on a solved one the two ends with the words between them collapsed to joints. Under it the guesses' links and
 // the count.
-// The ends row's tile sizing inputs: --cn-n letters in the row, --cn-m letters in the longer end, --cn-x the px that are not tiles
-// (every 4px tile gap, the 12px gaps beside the joints, the joints).
+// KEEP: side by side, a solved chain's two ends shrink to fit the picture but never under 32px a tile (letters 16px); when they would, the ends stack
+// with the joints between at 36px, shrunk to the longer end. Words like STREET and WAGON stay on one row; two 10-letter ends stack.
+const CN_MIN_TILE = 32;
+// --cn-n letters in the row, --cn-m letters in the longer end, --cn-x the px that are not tiles (every 4px tile gap, the 12px gaps beside the joints, the joints).
 const cnEndsSize = (p) => {
   const a = p.w[0].word.length; const b = p.w[p.w.length - 1].word.length; const j = p.mid.length;
-  return { '--cn-n': a + b, '--cn-m': Math.max(a, b), '--cn-x': (a - 1 + b - 1) * 4 + 24 + j * 22 + Math.max(0, j - 1) * 4 + 'px' };
+  const x = (a - 1 + b - 1) * 4 + 24 + j * 22 + Math.max(0, j - 1) * 4;
+  return { n: a + b, m: Math.max(a, b), x };
+};
+const CnEnds = ({ p }) => {
+  const ref = React.useRef(null); const sz = cnEndsSize(p); const [stack, setStack] = React.useState(false);
+  React.useLayoutEffect(() => {
+    const pic = ref.current.closest('.cn-pic');
+    const fit = () => setStack((pic.clientWidth - sz.x) / sz.n < CN_MIN_TILE);
+    fit(); const ro = new ResizeObserver(fit); ro.observe(pic); return () => ro.disconnect();
+  }, [sz.n, sz.x]);
+  return (
+    <div ref={ref} className={'cn-focus is-ends' + (stack ? ' is-stacked' : '')} style={{ '--cn-n': sz.n, '--cn-m': sz.m, '--cn-x': sz.x + 'px' }}><CnWord x={p.w[0]} /><span className="cn-joints" role="img" aria-label={p.mid.length + ' words between'}>{p.mid.map((m) => <CnJoint key={m.i} />)}</span><CnWord x={p.w[p.w.length - 1]} /></div>);
 };
 const CnPic = ({ p }) => {
   const solved = p.r.kind === 'ok'; const k = p.last == null ? 1 : p.last; const x = p.w[k];
   return (
     <div className="cn-pic cn-stack">
       {solved
-        ? <div className="cn-focus is-ends" style={cnEndsSize(p)}><CnWord x={p.w[0]} /><span className="cn-joints" role="img" aria-label={p.mid.length + ' words between'}>{p.mid.map((m) => <CnJoint key={m.i} />)}</span><CnWord x={p.w[p.w.length - 1]} /></div>
+        ? <CnEnds p={p} />
         : <div className="cn-focus" style={{ '--cn-n': x.state === 'hidden' ? x.shown + 1 : x.word.length }}><CnWord x={x} /></div>}
       <div className="cn-under">{p.g.length > 0 && <CnLinks g={p.g} />}<CnCount p={p} /></div>
     </div>);

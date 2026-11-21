@@ -4439,17 +4439,33 @@
     return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cn-links", style: { "--cn-s": CN_SCALE }, role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CN_SAY[t.res]).join(", ") }, cnFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnLinkRow, { key: r, items: row })));
   };
   const CnCount = ({ p }) => /* @__PURE__ */ React$1.createElement("span", { className: "cn-cap", role: "img", "aria-label": p.found + " of " + p.mid.length + " words" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
+  const CN_MIN_TILE = 32;
   const cnEndsSize = (p) => {
     const a = p.w[0].word.length;
     const b = p.w[p.w.length - 1].word.length;
     const j = p.mid.length;
-    return { "--cn-n": a + b, "--cn-m": Math.max(a, b), "--cn-x": (a - 1 + b - 1) * 4 + 24 + j * 22 + Math.max(0, j - 1) * 4 + "px" };
+    const x = (a - 1 + b - 1) * 4 + 24 + j * 22 + Math.max(0, j - 1) * 4;
+    return { n: a + b, m: Math.max(a, b), x };
+  };
+  const CnEnds = ({ p }) => {
+    const ref = React$1.useRef(null);
+    const sz = cnEndsSize(p);
+    const [stack, setStack] = React$1.useState(false);
+    React$1.useLayoutEffect(() => {
+      const pic = ref.current.closest(".cn-pic");
+      const fit = () => setStack((pic.clientWidth - sz.x) / sz.n < CN_MIN_TILE);
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(pic);
+      return () => ro.disconnect();
+    }, [sz.n, sz.x]);
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "cn-focus is-ends" + (stack ? " is-stacked" : ""), style: { "--cn-n": sz.n, "--cn-m": sz.m, "--cn-x": sz.x + "px" } }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] }));
   };
   const CnPic = ({ p }) => {
     const solved = p.r.kind === "ok";
     const k = p.last == null ? 1 : p.last;
     const x = p.w[k];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus is-ends", style: cnEndsSize(p) }, /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[0] }), /* @__PURE__ */ React$1.createElement("span", { className: "cn-joints", role: "img", "aria-label": p.mid.length + " words between" }, p.mid.map((m) => /* @__PURE__ */ React$1.createElement(CnJoint, { key: m.i }))), /* @__PURE__ */ React$1.createElement(CnWord, { x: p.w[p.w.length - 1] })) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": x.state === "hidden" ? x.shown + 1 : x.word.length } }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement(CnEnds, { p }) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": x.state === "hidden" ? x.shown + 1 : x.word.length } }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
   };
   const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
   const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": 5 } }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, /* @__PURE__ */ React$1.createElement(CnCount, { p: CN_FRESH })));
