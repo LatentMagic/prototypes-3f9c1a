@@ -42,6 +42,13 @@ const CprFirst = ({ id }) => {
   const pass = done && gs.view !== 'pass';
   // Escape's first room, once played or started: Escape's own now card (app/gs-escape.jsx), in this card's label.
   if (id === 'escape' && st !== 'none') return <EsNow label={f.label} title={f.title} pass={pass} first />;
+  // A later weekly edition is current and the free first run is done: the game's own line, the done word, no route, no Play and no button, "Keep playing with the Pass." beneath.
+  // Not drawn from the edition's data: the card reads only the weekly title and line, so no second edition is seeded.
+  if (id === 'delve' && done && gs.review && gs.review.newWeek) return (
+    <LbNowCard gid="delve" label={f.label} title={GS_PAGES.delve.week.title} result={{ kind: 'ok', label: 'Free run done' }} noButton pass={pass && 'nostop'}>
+      <p>{GS_PAGES.delve.week.line}</p>
+    </LbNowCard>
+  );
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
   if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass && 'nostop'} />;
   // Before the run: the empty route and Play, as the Pass holder's not-started card, in the free label. No Pass button or line.

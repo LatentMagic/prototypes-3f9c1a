@@ -270,9 +270,9 @@ export const LbShare = ({ lines }) => {
 
 // The now card's action row: the one main button at the left (Play before a play; "Go to session" while one is under way
 // and once it is done) and the slot at the right (the next-time line, or the free player's Pass line). Its card pins it to the card's foot (css: .lb-foot).
-export const LbActions = ({ label = 'Go to session', onClick, slot }) => (
+export const LbActions = ({ label = 'Go to session', onClick, slot, noButton }) => (
   <div className="lb-foot">
-    <DS.Button onClick={onClick}>{label}</DS.Button>
+    {!noButton && <DS.Button onClick={onClick}>{label}</DS.Button>}
     {slot && <div className="lb-slot gs-muted">{slot}</div>}
   </div>
 );
@@ -294,8 +294,8 @@ const LbNowResult = ({ s, tag }) => (s.kind === 'live' || tag
   : <p className={'gs-vd is-' + (s.kind === 'ok' ? 'ok' : 'over')}>{s.label}</p>);
 // gid; label: overrides the schedule's; title; result: { kind, label } or none (not shown); play: the button reads Play, else open
 // and "Go to session"; next: the next-time line; pass: the free player's first part is done, and the Pass line takes the next-time
-// line's place (pass: 'nostop' drops the full stop after the link, as Delve's free card has it); span: the card takes the whole row; className: the game's hook for laying out its picture.
-export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => (
+// line's place (pass: 'nostop' drops the full stop after the link, as Delve's free card has it); span: the card takes the whole row; className: the game's hook for laying out its picture; noButton: no action button (a card with nothing to open or play).
+export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, noButton, children }) => (
   <section className={'lb-card' + (className ? ' ' + className : '')} style={span ? { gridColumn: '1 / -1' } : undefined}>
     <div className="lb-now-in">
       <div className="lb-top">
@@ -304,7 +304,7 @@ export const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pa
       </div>
       {children}
     </div>
-    <LbActions label={play ? 'Play' : undefined} onClick={play || open} slot={pass ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." nostop={pass === 'nostop'} /> : next} />
+    <LbActions label={play ? 'Play' : undefined} onClick={play || open} noButton={noButton} slot={pass ? <CprPassEnd className="gs-pu-wrap" text="Keep playing with the Pass." nostop={pass === 'nostop'} /> : next} />
   </section>
 );
 
