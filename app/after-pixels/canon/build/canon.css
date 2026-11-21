@@ -3590,7 +3590,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .cmn-pts { font: 700 20px/1 var(--font-heading); text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
 .cmn-row.is-found .cmn-pts { color: var(--th); }
 .cmn-sum { display: grid; justify-items: center; gap: 10px; --q: 24px; }
-.cmn-score { display: flex; align-items: baseline; gap: 6px; }
+.cmn-score { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
 .cmn-score b { font: 700 48px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
 .cmn-score span { font: 600 16px/1 var(--font-text); color: var(--muted); }
 /* KEEP: on a phone (card under 640px) the score and guesses go under the board as one centred row, the tiles 30px, the score 40px. */
@@ -3603,6 +3603,10 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .cmn-row { grid-template-columns: var(--pts-w) auto var(--pts-w); }
   .cmn-tiles { grid-column: 2; }
   .cmn-pts { grid-column: 3; }
+}
+/* KEEP: at a 280px screen (card about 214px) the score stays on one row, "8" then "/ 15", by narrowing the gap between it and the guesses to 12px; it wrapped onto two rows when the gap was 28px. */
+@container cmn (max-width: 229.98px) {
+  .cmn-sum { gap: 12px; }
 }
 /* Salvage's session card (app/gs-salvage.jsx). The card is the shared one (gs-sess-card.css, from a 672px card the Sea left and
    the panel ruled off beside it), and this file is imported after it. */
