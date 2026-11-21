@@ -43,9 +43,6 @@ const ChnJoint = () => (
 // link broken in two. A key under it names each kind present, with its count. ----
 // The links stand apart, joined by a short bar, so each one's state and number read on their own (Joe: the overlapping chain
 // was not clear).
-// An unfolded chain's number is drawn at 12 units, or larger where the chain is drawn smaller, so it is never under 11px on screen:
-// the text-size floor (ui-design.md).
-const CHN_NUM = 12; const CHN_NUM_SCREEN = 11;
 const CHN_W = 16; const CHN_H = 30; const CHN_STEP = CHN_H + 8;
 const CHN_P = 2 * (CHN_H - CHN_W) + Math.PI * CHN_W;
 const CHN_GAP = { wrong: 14, near: 6, given: 8 };
@@ -57,17 +54,17 @@ const ChnLoop = ({ res, x, y, across }) => (
   <rect x={x} y={y} width={across ? CHN_H : CHN_W} height={across ? CHN_W : CHN_H} rx={CHN_W / 2} className={'chn-loop is-' + res}
     strokeDasharray={chnDash(res)} strokeDashoffset={chnOffset(res, across)} />);
 const chnLen = (k) => 8 + (k - 1) * CHN_STEP + CHN_H;
-const ChnChain = ({ g, across, nf = CHN_NUM }) => {
+const ChnChain = ({ g, across }) => {
   const len = chnLen(g.length);
   return across
-    ? <svg className="chn-chain is-across" width={len} height="46" viewBox={'0 0 ' + len + ' 46'} style={{ '--cw': len, '--ch': 46, '--chn-nf': nf }} aria-hidden="true">
+    ? <svg className="chn-chain is-across" width={len} height="46" viewBox={'0 0 ' + len + ' 46'} style={{ '--cw': len, '--ch': 46 }} aria-hidden="true">
       {g.slice(1).map((t, i) => <line key={'b' + i} className="chn-bar" x1={4 + i * CHN_STEP + CHN_H} y1={4 + CHN_W / 2} x2={4 + (i + 1) * CHN_STEP} y2={4 + CHN_W / 2} />)}
       {g.map((t, i) => <ChnLoop key={i} res={t.res} across x={4 + i * CHN_STEP} y={4} />)}
       {g.map((t, i) => <text key={'n' + i} x={4 + i * CHN_STEP + CHN_H / 2} y="42" textAnchor="middle">{t.n}</text>)}</svg>
-    : <svg className="chn-chain is-down" width="56" height={len} viewBox={'0 0 56 ' + len} style={{ '--cw': 56, '--ch': len, '--chn-nf': nf }} aria-hidden="true">
+    : <svg className="chn-chain is-down" width="56" height={len} viewBox={'0 0 56 ' + len} style={{ '--cw': 56, '--ch': len }} aria-hidden="true">
       {g.slice(1).map((t, i) => <line key={'b' + i} className="chn-bar" x1={32 + CHN_W / 2} y1={4 + i * CHN_STEP + CHN_H} x2={32 + CHN_W / 2} y2={4 + (i + 1) * CHN_STEP} />)}
       {g.map((t, i) => <ChnLoop key={i} res={t.res} x={32} y={4 + i * CHN_STEP} />)}
-      {g.map((t, i) => <text key={'n' + i} x="20" y={4 + i * CHN_STEP + CHN_H / 2 + nf / 3} textAnchor="end">{t.n}</text>)}</svg>;
+      {g.map((t, i) => <text key={'n' + i} x="20" y={4 + i * CHN_STEP + CHN_H / 2 + 4} textAnchor="end">{t.n}</text>)}</svg>;
 };
 const CHN_KINDS = [['right', 'Right'], ['wrong', 'Wrong'], ['near', 'Near miss'], ['given', 'Given away']];
 // KEEP: a chain with less than 0.7px per drawing unit of room is folded, so a link is never drawn smaller than 0.66px per unit. Folded
@@ -76,9 +73,8 @@ const CHN_KINDS = [['right', 'Right'], ['wrong', 'Wrong'], ['near', 'Near miss']
 // to the next. Both sit between the shrunk size of a long chain and Chain's now card at 1px, so a long play takes fewer rows on a phone.
 // The rows are decided with the 0.7 floor but drawn at 0.66, so a chain that fits one row at 0.66 stays one row at that size, without
 // folding, in a narrow band of widths: 10 links from 317 to 331px, 14 from 418 to 438px, 19 from 543 to 571px. Above a band the chain is
-// unfolded at 0.7 or more. A folded chain's numbers are 13px on screen, drawn at 13 divided by the fold scale in drawing units. An unfolded
-// chain's are 12 units, raised to 11px on screen (the text-size floor) where the measured scale would draw them smaller; a chain
-// drawn above 0.92px per unit keeps its 12 units. A row or column that is not full (the last) is centred on the full ones, rows across, columns
+// unfolded at 0.7 or more. A folded chain's numbers are 13px on screen, the smallest text a card carries, so they are drawn at 13
+// divided by the scale in drawing units. A row or column that is not full (the last) is centred on the full ones, rows across, columns
 // vertically. Measured: the rows by the room the panel gives them (never the guesses' own width, which shrinks as they fold), the
 // columns by the board's height (the platform needs the same measuring).
 const CHN_FLOOR = 0.7;
@@ -89,7 +85,7 @@ const chnFold = (g, per) => { const size = Math.ceil(g.length / Math.ceil(g.leng
   for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
   return out; };
 const ChnGuesses = ({ g }) => {
-  const ref = React.useRef(null); const [fold, setFold] = React.useState({ a: 0, d: 0 }); const [nf, setNf] = React.useState({ a: CHN_NUM, d: CHN_NUM });
+  const ref = React.useRef(null); const [fold, setFold] = React.useState({ a: 0, d: 0 });
   React.useLayoutEffect(() => {
     const me = ref.current; const card = me.closest('.chn-card'); const board = card && card.querySelector('.chn-board'); const panel = me.closest('.gs-sc-panel'); if (!board || !panel) return undefined;
     const need = chnLen(g.length) * CHN_FLOOR;
@@ -98,20 +94,11 @@ const ChnGuesses = ({ g }) => {
       setFold((f) => (f.a === a && f.d === d ? f : { a, d })); };
     fit(); const ro = new ResizeObserver(fit); ro.observe(panel); ro.observe(board); return () => ro.disconnect();
   }, [g.length]);
-  // An unfolded chain is drawn at whatever scale the card gives it, so its numbers are sized from the scale it is drawn at.
-  React.useLayoutEffect(() => {
-    const me = ref.current; const panel = me.closest('.gs-sc-panel'); if (!panel) return undefined;
-    const units = (el) => { if (!el) return CHN_NUM; const w = el.getBoundingClientRect().width; const cw = Number(el.style.getPropertyValue('--cw'));
-      return w > 0 && cw ? Math.max(CHN_NUM, Math.round(CHN_NUM_SCREEN / (w / cw) * 100) / 100) : CHN_NUM; };
-    const size = () => { const a = units(me.querySelector(':scope > .chn-chain.is-across')); const d = units(me.querySelector(':scope > .chn-chain.is-down'));
-      setNf((n) => (n.a === a && n.d === d ? n : { a, d })); };
-    size(); const ro = new ResizeObserver(size); ro.observe(panel); return () => ro.disconnect();
-  }, [g.length, fold.a, fold.d]);
   const kinds = CHN_KINDS.map(([k, label]) => [k, label, g.filter((t) => t.res === k).length]).filter((x) => x[2] > 0);
   return (
     <div ref={ref} className="chn-guesses" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + kinds.map((x) => x[2] + ' ' + x[1].toLowerCase()).join(', ')}>
-      {fold.a ? <div className="chn-rows" style={{ '--chn-fs': CHN_FOLD_SCALE_PHONE }}>{chnFold(g, fold.a).map((row, r) => <ChnChain key={r} g={row} across />)}</div> : <ChnChain g={g} across nf={nf.a} />}
-      {fold.d ? <div className="chn-cols" style={{ '--chn-fs': CHN_FOLD_SCALE }}>{chnFold(g, fold.d).map((col, r) => <ChnChain key={r} g={col} />)}</div> : <ChnChain g={g} nf={nf.d} />}
+      {fold.a ? <div className="chn-rows" style={{ '--chn-fs': CHN_FOLD_SCALE_PHONE }}>{chnFold(g, fold.a).map((row, r) => <ChnChain key={r} g={row} across />)}</div> : <ChnChain g={g} across />}
+      {fold.d ? <div className="chn-cols" style={{ '--chn-fs': CHN_FOLD_SCALE }}>{chnFold(g, fold.d).map((col, r) => <ChnChain key={r} g={col} />)}</div> : <ChnChain g={g} />}
       <ul className="chn-key" aria-hidden="true">{kinds.map(([k, label, n]) => (
         <li key={k}><svg width="12" height="20" viewBox="0 0 20 34"><ChnLoop res={k} x={2} y={2} /></svg>{label} <b>{n}</b></li>))}</ul>
     </div>);

@@ -29,7 +29,7 @@
 @container gs (max-width: 759.98px) { .chn-guesses { grid-template-columns: minmax(0, 1fr); width: 100%; } }
 @container gs (min-width: 760px) { .chn-chain.is-down { width: auto; height: min(calc(var(--ch) * var(--lu)), var(--bh)); } }
 @container gs (min-width: 1100px) { .chn-guesses { grid-auto-flow: column; align-items: center; gap: 24px; } }
-.chn-chain text { font: 600 12px/1 var(--font-text); font-size: calc(var(--chn-nf, 12) * 1px); fill: var(--muted); }
+.chn-chain text { font: 600 12px/1 var(--font-text); fill: var(--muted); }
 /* A folded chain (gs-chain.jsx, CHN_FOLD_SCALE): rows across, or columns beside the board, each link drawn at --chn-fs px per unit (its number at 13px on screen) and never scaled
    up to fill the card; the rows share the card's width as evenly as they can, and a short last row or column is centred on the full ones. */
 .chn-rows { display: grid; justify-items: center; gap: 4px; width: 100%; }
