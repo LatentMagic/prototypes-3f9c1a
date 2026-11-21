@@ -143,9 +143,9 @@ const accRects = (el) => { const g = document.createRange(); g.selectNodeContent
 // KEEP: the pen marks are redrawn whenever the board changes size, and a ring never reaches more than 5px past its column, and never
 // more than half the column gap less 1.5px for its wobble, so two rings in neighbouring columns never touch (the gap is 16px, or 8px once a board has stepped down to fit a long word).
 // KEEP: a board with a word wider than its column steps down only as far as needed: the largest name size that fits (never below 12px
-// until the 8px gap has been tried at 12px), then 11px with the 16px gap, then 11px with 8px gaps, then columns as wide as their longest word. A board whose words fit is left as drawn.
+// until the 8px gap has been tried at 12px), then 11px with the 16px gap, then 11px with 8px gaps, then columns as wide as their longest word, then the three lists one above another. A board whose words fit is left as drawn.
 const accFit = (host) => {
-  const c = host.classList; c.remove('acc-fs', 'acc-g8', 'acc-cols'); host.style.removeProperty('--acc-fs'); c.add('acc-meas');
+  const c = host.classList; c.remove('acc-fs', 'acc-g8', 'acc-cols', 'acc-stack'); host.style.removeProperty('--acc-fs'); c.add('acc-meas');
   // A too-long word stretches its list item past its column, so the item is compared with the column's track, not with itself.
   const over = () => { const tr = getComputedStyle(host).gridTemplateColumns.split(' ').map(parseFloat);
     return [...host.querySelectorAll('li')].some((li) => li.scrollWidth > tr[[...host.children].indexOf(li.closest('.acc-col'))] + 0.5); };
@@ -157,7 +157,12 @@ const accFit = (host) => {
     if (!fit) fit = tryFit(12, true);
     if (!fit) fit = tryFit(11, false);
     if (!fit) fit = tryFit(11, true);
-    if (!fit) c.add('acc-cols');
+    if (!fit) { c.add('acc-cols');
+      const tr = getComputedStyle(host).gridTemplateColumns.split(' ').map(parseFloat); const gap = parseFloat(getComputedStyle(host).columnGap) || 0;
+      // The columns' own width stretches the board, so they are compared with the card's inside width, not the board's.
+      const card = host.closest('.acc-card'); const cs = getComputedStyle(card);
+      const room = card.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      if (tr.reduce((a, b) => a + b, 0) + gap * (tr.length - 1) > room + 0.5) c.add('acc-stack'); }
   }
   c.remove('acc-meas');
 };

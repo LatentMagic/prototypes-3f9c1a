@@ -4841,7 +4841,7 @@
   };
   const accFit = (host) => {
     const c = host.classList;
-    c.remove("acc-fs", "acc-g8", "acc-cols");
+    c.remove("acc-fs", "acc-g8", "acc-cols", "acc-stack");
     host.style.removeProperty("--acc-fs");
     c.add("acc-meas");
     const over = () => {
@@ -4861,7 +4861,15 @@
       if (!fit) fit = tryFit(12, true);
       if (!fit) fit = tryFit(11, false);
       if (!fit) fit = tryFit(11, true);
-      if (!fit) c.add("acc-cols");
+      if (!fit) {
+        c.add("acc-cols");
+        const tr = getComputedStyle(host).gridTemplateColumns.split(" ").map(parseFloat);
+        const gap = parseFloat(getComputedStyle(host).columnGap) || 0;
+        const card = host.closest(".acc-card");
+        const cs = getComputedStyle(card);
+        const room = card.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        if (tr.reduce((a, b) => a + b, 0) + gap * (tr.length - 1) > room + 0.5) c.add("acc-stack");
+      }
     }
     c.remove("acc-meas");
   };

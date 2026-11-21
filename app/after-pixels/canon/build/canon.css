@@ -3796,6 +3796,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acc-bd.acc-g8 { gap: 0 8px; }
 .acc-bd.acc-cols { grid-template-columns: repeat(3, minmax(min-content, 1fr)); }
 .acc-bd.acc-cols li { overflow-wrap: normal; }
+/* KEEP: on a card too narrow for three columns of whole words (a window under about 250px), Suspects, Weapons and Places stack, each
+   a full-width list under its caption, so the board never runs past the card. Words stay whole at 11px. */
+.acc-bd.acc-stack { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 20px 0; }
+.acc-bd.acc-stack .acc-col { grid-row: auto; grid-template-rows: auto auto; }
+.acc-bd.acc-stack ul { grid-row: auto; grid-template-rows: none; }
 .acc-m { font-weight: 600; }
 .acc-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .acc-ov path { fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
