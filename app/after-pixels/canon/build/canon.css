@@ -3205,21 +3205,22 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* The result word at In progress's size and face, so Solved and Failed read as large as In progress (Joe); it never wraps. */
 .wd-now > .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
 .wd-now > .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
-/* The picture: the tiles, then the ring and the hint box as one small row under them.
-   KEEP: the ring and the hint (its box and its words) are one group centred on the card, so the row never leans to one side; the ring
-   moves with the hint's words ("Hint", "Not used yet", "None taken"), the price of a row that is centred whatever it says. */
+/* The picture: the tiles, then the ring and the hint box as one small row under them, either side of the card's centre line, so
+   the ring never shifts as the hint's words change.
+   KEEP: centre by the main element, not the group's box: the ring and the hint split either side of the centre line (the owner,
+   2026-11-21: the pair centred as one box read as left-shifted). */
 .wd-now-pic { --t: 56px; --g: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; align-self: center; gap: 14px; min-width: 0; }
 .wd-ntiles { flex: none; display: grid; grid-template-columns: repeat(5, var(--t)); gap: var(--g); }
 .wd-nans-t { border: 1.5px solid #918B80; color: #ABA79E; background: none; }
-.wd-now-facts { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; }
-.wd-nring { --r: 56px; position: relative; flex: none; width: var(--r); height: var(--r); }
+.wd-now-facts { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 20px; width: 100%; }
+.wd-nring { --r: 56px; position: relative; flex: none; width: var(--r); height: var(--r); justify-self: end; }
 .wd-nring svg { display: block; width: 100%; height: 100%; }
 .wd-nring circle { fill: none; stroke-width: 12; stroke: var(--line); }
 .wd-nring circle.is-used { stroke: #918B80; }
 .wd-nring circle.is-win { stroke: var(--success); }
 .wd-nring circle.is-lost { stroke: var(--warning); }
 .wd-nring-n { position: absolute; inset: 0; display: grid; place-items: center; font: 700 20px/1 var(--font-heading); color: var(--text); }
-.wd-nhint { display: flex; align-items: center; gap: 8px; }
+.wd-nhint { display: flex; align-items: center; gap: 8px; justify-self: start; }
 .wd-nhint-box { box-sizing: border-box; width: 30px; height: 30px; display: grid; place-items: center; background: var(--line); }
 .wd-nhint-box.is-hint { background: var(--wd-dash); color: #ABA79E; font: 700 15px/1 var(--font-heading); }
 .wd-nhint-cap { font: 600 12px/1.2 var(--font-text); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
