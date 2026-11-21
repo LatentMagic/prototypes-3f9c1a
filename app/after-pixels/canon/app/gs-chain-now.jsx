@@ -45,6 +45,10 @@ const CnJoint = () => (
 // ---- The guesses as the session page's chain of links, across, each numbered: right a closed green link, wrong a grey link open
 // on its side, given away an amber link broken in two. ----
 const CN_W = 16; const CN_H = 30; const CN_STEP = CN_H + 8;
+// KEEP: the links are drawn at 0.66px per drawing unit (19.8 by 10.6px), the size of the folded guess chain on a phone on Chain's
+// session page (CHN_FOLD_SCALE_PHONE in gs-chain.jsx), so the chain does not look large beside the letter tiles; the numbers stay
+// 13px on screen (drawn at 13 divided by the scale, in gs-chain-now.css). Change both together.
+const CN_SCALE = 0.66;
 const CN_GAP = { wrong: 14, given: 8 };
 // The dash that opens a rounded link of length len and thickness th: wrong a gap on its side, given away a gap breaking it in two.
 const cnLoop = (res, len, th) => {
@@ -55,10 +59,10 @@ const CN_SAY = { right: 'right', wrong: 'wrong', given: 'given away' };
 const CnLinkRow = ({ items }) => {
   const len = 8 + (items.length - 1) * CN_STEP + CN_H;
   return (
-    <svg width={len} height="48" viewBox={'0 0 ' + len + ' 48'} aria-hidden="true">
+    <svg width={len * CN_SCALE} height={46 * CN_SCALE} viewBox={'0 0 ' + len + ' 46'} aria-hidden="true">
       {items.slice(1).map((t, i) => <line key={'b' + i} className="cn-bar" x1={4 + i * CN_STEP + CN_H} y1={4 + CN_W / 2} x2={4 + (i + 1) * CN_STEP} y2={4 + CN_W / 2} />)}
       {items.map((t, i) => <rect key={i} x={4 + i * CN_STEP} y={4} width={CN_H} height={CN_W} rx={CN_W / 2} className={'cn-loop is-' + t.res} {...cnLoop(t.res, CN_H, CN_W)} />)}
-      {items.map((t, i) => <text key={'n' + i} x={4 + i * CN_STEP + CN_H / 2} y="44" textAnchor="middle">{t.n}</text>)}
+      {items.map((t, i) => <text key={'n' + i} x={4 + i * CN_STEP + CN_H / 2} y="42" textAnchor="middle">{t.n}</text>)}
     </svg>);
 };
 const cnFold = (g, per) => { const rows = Math.ceil(g.length / per); const size = Math.ceil(g.length / rows); const out = [];
@@ -73,11 +77,11 @@ const CnLinks = ({ g }) => {
     const me = ref.current; const pic = me.closest('.cn-pic'); if (!pic) return undefined;
     const fit = () => { let room = pic.clientWidth; const par = me.parentElement;
       if (getComputedStyle(par).flexDirection === 'row') room -= [...par.children].filter((c) => c !== me).reduce((n, c) => n + c.offsetWidth + 24, 0);
-      setPer(Math.max(1, Math.floor((room - 8 - CN_H) / CN_STEP) + 1)); };
+      setPer(Math.max(1, Math.floor((room / CN_SCALE - 8 - CN_H) / CN_STEP) + 1)); };
     fit(); const ro = new ResizeObserver(fit); ro.observe(pic); return () => ro.disconnect();
   }, []);
   return (
-    <span ref={ref} className="cn-links" role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + g.map((t) => CN_SAY[t.res]).join(', ')}>
+    <span ref={ref} className="cn-links" style={{ '--cn-s': CN_SCALE }} role="img" aria-label={g.length + (g.length === 1 ? ' guess: ' : ' guesses: ') + g.map((t) => CN_SAY[t.res]).join(', ')}>
       {cnFold(g, per).map((row, r) => <CnLinkRow key={r} items={row} />)}
     </span>);
 };

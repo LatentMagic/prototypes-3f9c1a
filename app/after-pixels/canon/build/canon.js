@@ -4399,6 +4399,7 @@
   const CN_W = 16;
   const CN_H = 30;
   const CN_STEP = CN_H + 8;
+  const CN_SCALE = 0.66;
   const CN_GAP = { wrong: 14, given: 8 };
   const cnLoop = (res, len, th) => {
     const per = 2 * (len - th) + Math.PI * th;
@@ -4408,7 +4409,7 @@
   const CN_SAY = { right: "right", wrong: "wrong", given: "given away" };
   const CnLinkRow = ({ items }) => {
     const len = 8 + (items.length - 1) * CN_STEP + CN_H;
-    return /* @__PURE__ */ React$1.createElement("svg", { width: len, height: "48", viewBox: "0 0 " + len + " 48", "aria-hidden": "true" }, items.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "cn-bar", x1: 4 + i * CN_STEP + CN_H, y1: 4 + CN_W / 2, x2: 4 + (i + 1) * CN_STEP, y2: 4 + CN_W / 2 })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("rect", { key: i, x: 4 + i * CN_STEP, y: 4, width: CN_H, height: CN_W, rx: CN_W / 2, className: "cn-loop is-" + t.res, ...cnLoop(t.res, CN_H, CN_W) })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CN_STEP + CN_H / 2, y: "44", textAnchor: "middle" }, t.n)));
+    return /* @__PURE__ */ React$1.createElement("svg", { width: len * CN_SCALE, height: 46 * CN_SCALE, viewBox: "0 0 " + len + " 46", "aria-hidden": "true" }, items.slice(1).map((t, i) => /* @__PURE__ */ React$1.createElement("line", { key: "b" + i, className: "cn-bar", x1: 4 + i * CN_STEP + CN_H, y1: 4 + CN_W / 2, x2: 4 + (i + 1) * CN_STEP, y2: 4 + CN_W / 2 })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("rect", { key: i, x: 4 + i * CN_STEP, y: 4, width: CN_H, height: CN_W, rx: CN_W / 2, className: "cn-loop is-" + t.res, ...cnLoop(t.res, CN_H, CN_W) })), items.map((t, i) => /* @__PURE__ */ React$1.createElement("text", { key: "n" + i, x: 4 + i * CN_STEP + CN_H / 2, y: "42", textAnchor: "middle" }, t.n)));
   };
   const cnFold = (g, per) => {
     const rows = Math.ceil(g.length / per);
@@ -4428,14 +4429,14 @@
         let room = pic.clientWidth;
         const par = me.parentElement;
         if (getComputedStyle(par).flexDirection === "row") room -= [...par.children].filter((c) => c !== me).reduce((n, c) => n + c.offsetWidth + 24, 0);
-        setPer(Math.max(1, Math.floor((room - 8 - CN_H) / CN_STEP) + 1));
+        setPer(Math.max(1, Math.floor((room / CN_SCALE - 8 - CN_H) / CN_STEP) + 1));
       };
       fit();
       const ro = new ResizeObserver(fit);
       ro.observe(pic);
       return () => ro.disconnect();
     }, []);
-    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cn-links", role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CN_SAY[t.res]).join(", ") }, cnFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnLinkRow, { key: r, items: row })));
+    return /* @__PURE__ */ React$1.createElement("span", { ref, className: "cn-links", style: { "--cn-s": CN_SCALE }, role: "img", "aria-label": g.length + (g.length === 1 ? " guess: " : " guesses: ") + g.map((t) => CN_SAY[t.res]).join(", ") }, cnFold(g, per).map((row, r) => /* @__PURE__ */ React$1.createElement(CnLinkRow, { key: r, items: row })));
   };
   const CnCount = ({ p }) => /* @__PURE__ */ React$1.createElement("span", { className: "cn-cap", role: "img", "aria-label": p.found + " of " + p.mid.length + " words" }, /* @__PURE__ */ React$1.createElement("b", { "aria-hidden": "true" }, p.found), /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, " of " + p.mid.length + " words"));
   const CnPic = ({ p }) => {

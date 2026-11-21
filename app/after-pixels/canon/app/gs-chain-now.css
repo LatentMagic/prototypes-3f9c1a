@@ -29,7 +29,7 @@
 /* The guesses' chain of links, numbered. */
 .cn-links { display: grid; justify-items: center; gap: 4px; max-width: 100%; }
 .cn-links svg { display: block; overflow: visible; }
-.cn-links text { font: 600 13px/1 var(--font-text); fill: var(--muted); }
+.cn-links text { font: 600 calc(13px / var(--cn-s))/1 var(--font-text); fill: var(--muted); } /* 13px on screen at the links' scale */
 .cn-loop { fill: none; stroke-width: 3.5; }
 .cn-bar { stroke: #918B80; stroke-width: 2; }
 .cn-loop.is-right { stroke: var(--success); }
