@@ -1790,11 +1790,11 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .lb-now-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 /* KEEP: a now card's result chip holds the top right, on the row of the small label above the title, at every width. The title sits on the rows below and takes the card's full width, cut after 3 lines with "…", so a long title is never squeezed into a narrow column beside the chip. A long result takes at most half the row and wraps itself, right-aligned. Cards with no chip are unchanged. */
 /* KEEP: the label and the title under it stay together at the top left, with the 4px between them, at every width. A game's now card holds a 132px least height from 640px, which would otherwise stretch the head's two rows and drop the title to the middle of the card, away from the label. */
-.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(50%); column-gap: 12px; row-gap: 4px; align-items: start; align-content: start; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(60%); column-gap: 12px; row-gap: 4px; align-items: start; align-content: start; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { display: contents; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .gs-label { grid-column: 1; grid-row: 1; }
-/* KEEP: the result chip ("In progress") stays on one line at 280px wide, and the grid gives it the width it needs; wrapped inside fit-content(50%) it dropped to two lines and pushed the heading down. */
-.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; white-space: nowrap; }
+/* KEEP: the result chip may take up to 60% of the heading, so "In progress" stays on one row at 280px wide; a longer chip sentence wraps inside that cap and leaves the label its room. */
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .mcp-t-sec { grid-column: 1 / -1; grid-row: 2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 /* KEEP: A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
