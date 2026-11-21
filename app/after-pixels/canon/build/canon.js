@@ -3692,7 +3692,19 @@
     const [ref, cols] = useDlNowCols(rooms);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, role: "img", "aria-label": "The run has " + rooms + " rooms, " + (reached ? "the first reached, no rolls yet" : "none entered yet") }, dlEmptyStops(rooms).map((st, i) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + (reached ? i === 0 ? " is-on" : " is-far" : "") + (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === rooms - 1 ? " is-row-end" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num)), reached && i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-hidden": "true" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))));
   };
-  const DlNowEmpty = ({ label, title, rooms, next, onPlay }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title, play: onPlay, next }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms })));
+  const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => /* @__PURE__ */ React$1.createElement(
+    LbNowCard,
+    {
+      gid: "delve",
+      className: "dl-now",
+      label,
+      title,
+      play: onPlay,
+      next,
+      ...laterWeek ? { bare: true, pass: "nostop", passText: "Play it with the Pass." } : {}
+    },
+    /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms }))
+  );
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
     const gs = useGs();
     const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
@@ -3919,7 +3931,7 @@
     const fresh = !lbNow(gs, "delve");
     const ach = phAch(gs, "delve", DV_ACH);
     const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: DV_RUN1.title, rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: "Not started", rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
@@ -4955,6 +4967,7 @@
     const done = st === "done";
     const pass = done && gs.view !== "pass";
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
+    if (id === "delve" && done && gs.review.later) return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: "Not started", rooms: 5, laterWeek: true });
     if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass: pass && "nostop" });
     if (id === "delve") return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { label: f.label, title: f.title, rooms: 5, onPlay: f.play });
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
@@ -8507,7 +8520,7 @@
     const [open, setOpen] = React$1.useState(false);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "main", onClick: () => setOpen(true) }, "Share"), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open, onClose: () => setOpen(false), lines }));
   };
-  const LbActions = ({ label = "Go to session", onClick, slot }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick }, label), slot && /* @__PURE__ */ React$1.createElement("div", { className: "lb-slot gs-muted" }, slot));
+  const LbActions = ({ label = "Go to session", onClick, slot, bare }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, !bare && /* @__PURE__ */ React$1.createElement(DS.Button, { onClick }, label), slot && /* @__PURE__ */ React$1.createElement("div", { className: "lb-slot gs-muted" }, slot));
   const CprPassEnd = ({ text, className, nostop }) => {
     const gs = useGs();
     const head = text.slice(0, -"the Pass.".length);
@@ -8518,7 +8531,7 @@
     return r === "daily" ? "TODAY" : r === "weekly" ? "THIS WEEK" : "A " + GS_GAMES[gid].ed[0].toUpperCase();
   };
   const LbNowResult = ({ s, tag }) => s.kind === "live" || tag ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s })) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-vd is-" + (s.kind === "ok" ? "ok" : "over") }, s.label);
-  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass.", nostop: pass === "nostop" }) : next }));
+  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, passText = "Keep playing with the Pass.", bare, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, bare, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: passText, nostop: pass === "nostop" }) : next }));
   const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid, title, play: onPlay, next, span }, /* @__PURE__ */ React$1.createElement("p", null, line));
   const lbWeekDone = (gs) => (gs.review && gs.review.week) !== "live";
   const lbNow = (gs, id) => {
@@ -9696,9 +9709,10 @@
         c.setReview({ ed: "won-by-use" });
         c.go("delve", { page: "record" });
       } },
-      { group: "Library", id: "library-delve-free-done-new-week", label: "Delve in your library, free account, first run finished and a later week’s edition is the current one (the free player still sees the finished first run’s card)", stage: (c) => {
+      { group: "Library", id: "library-delve-free-done-new-week", label: 'Delve in your library, free account, first run finished and a later week is current (this week’s run, no Play, "Play it with the Pass")', stage: (c) => {
         c.setView("free");
         c.setConnected(true);
+        c.setReview({ later: true });
         c.go("delve", { page: "record" });
       } },
       { group: "Library", id: "library-delve-pass-ended-first-in-progress", label: "Delve in your library, Pass ended, first run still in progress", stage: (c) => {
@@ -11173,6 +11187,12 @@
       o([["none", "Not played"], ["live", "In progress"], ["begun", "In progress, nothing played yet"], ["average", "Average"], ["hard", "Hard"], ["failed", "Failed"]]),
       edHint
     ), edNote ? /* @__PURE__ */ React$1.createElement("p", { className: "kit-config-edwarn", role: "status" }, edNote) : null, R(
+      "Delve’s free first run",
+      r.later ? "later" : "own",
+      (v) => set(() => api.setReview({ later: v === "later" })),
+      o([["own", "In its own week"], ["later", "A later week is current"]]),
+      "For a free account that has finished the first run: a later week’s Delve card, with no Play."
+    ), R(
       "Past day",
       r.pastDay || "none",
       (v) => set(() => api.setReview({ pastDay: v })),
@@ -12722,7 +12742,7 @@
     registerEscape();
     registerWord();
     registerDelve();
-    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", begun: false, today: null, pastDay: "none", several: false, escape: "under", ed: null, cur: GS_CUR_SEED };
+    GS_REVIEW_DEFAULT = { providerFail: false, device: "known", passFail: false, sheet: "completes", week: "done", begun: false, today: null, pastDay: "none", several: false, escape: "under", ed: null, later: false, cur: GS_CUR_SEED };
     GS_USER_DEFAULT = { username: "MonaLaser", first: "Mona", last: "Lasker", locked: false, since: null, fresh: false, email: "you@example.com" };
     GS_SUB_DEFAULT = { status: "none", plan: "monthly", hadPass: false, pending: null, renew: null };
     GS_BARE = ["signup", "signin", "verify", "username", "recover", "returning", "checkout", "update-card", "loading", "offline", "directory-claude", "directory-chatgpt", ...GS_MORE_IDS || []];

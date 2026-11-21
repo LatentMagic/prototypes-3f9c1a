@@ -1807,9 +1807,12 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .lb-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); margin-top: auto; padding-top: var(--space-2); }
 .lb-foot > .lb-slot { min-width: 0; text-wrap: pretty; }
 .lb-foot > .lb-slot > p { margin: 0; }
+/* KEEP: a row with no button (bare) keeps its slot at the right edge on desktop; on a phone the slot centres, as with a button. */
+.lb-foot > .lb-slot:only-child { margin-left: auto; }
 @container gs (max-width: 639.98px) {
   .lb-foot { flex-direction: column; align-items: stretch; gap: var(--space-3); }
   .lb-foot > .lb-slot { text-align: center; }
+  .lb-foot > .lb-slot:only-child { margin-left: 0; }
   .lb-pass { flex-direction: column; align-items: stretch; gap: 8px; flex: 1 1 100%; }
   .lbf-bar { flex-wrap: wrap; }
   .lbf-search { flex: 1 1 100%; max-width: none; }

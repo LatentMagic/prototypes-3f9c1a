@@ -105,6 +105,8 @@ export const ConfigExtraBase = () => {
         {R('This edition', edVal, setEd, o([['none', 'Not played'], ['live', 'In progress'], ['begun', 'In progress, nothing played yet'], ['average', 'Average'], ['hard', 'Hard'], ['failed', 'Failed']]),
           edHint)}
         {edNote ? <p className="kit-config-edwarn" role="status">{edNote}</p> : null}
+        {R('Delve’s free first run', r.later ? 'later' : 'own', (v) => set(() => api.setReview({ later: v === 'later' })), o([['own', 'In its own week'], ['later', 'A later week is current']]),
+          'For a free account that has finished the first run: a later week’s Delve card, with no Play.')}
         {R('Past day', r.pastDay || 'none', (v) => set(() => api.setReview({ pastDay: v })), o([['none', 'None'], ['live', 'In progress'], ['late', 'Finished late']]),
           'Adds a Common day (Pass) and a Guess day from before today, each started on its day.')}
       </Group>

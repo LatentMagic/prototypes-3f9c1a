@@ -550,8 +550,10 @@ const DlNowEmptyRoute = ({ rooms, reached }) => { const [ref, cols] = useDlNowCo
       <span className="dvA2-head"><span className="dv2-num">{st.num}</span></span>{reached && i === 0 ? <i className="dv2-pass" aria-hidden="true" /> : <DlEmptyHex />}</div>))}</div>);
 };
 // The Now card of a run not started: the week's title (label: a free first run passes its own), the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
-export const DlNowEmpty = ({ label, title, rooms, next, onPlay }) => (
-  <LbNowCard gid="delve" className="dl-now" label={label} title={title} play={onPlay} next={next}>
+// laterWeek: the free player's card once a later week is current: no Play, and the Pass sentence (passText) in the slot.
+export const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => (
+  <LbNowCard gid="delve" className="dl-now" label={label} title={title} play={onPlay} next={next}
+    {...(laterWeek ? { bare: true, pass: 'nostop', passText: 'Play it with the Pass.' } : {})}>
     <div className="dl-now-route"><DlNowEmptyRoute rooms={rooms} /></div>
   </LbNowCard>);
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
