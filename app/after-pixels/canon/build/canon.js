@@ -1348,12 +1348,12 @@
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
     ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
-    ["Strength", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 8 vs 10, missed"],
-    ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"],
+    ["Strength", "Hit", "d20 13 + 4 = 17 vs 12", "Struck back: d20 8 vs 10, missed"],
+    ["Strength", "Hit", "d20 17 + 5 = 22 vs 12"],
     ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
     ["Room", "Entered Snaggle's den"],
     ["Gear", "Used a healing draught", "Healed 4, HP 22/23", "Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23"],
-    ["Strength", "Hit", "d20s 15 and 18, kept 18 + 3 = 21 vs 12"],
+    ["Strength", "Hit", "d20s 15 and 18, kept 18 + 5 = 23 vs 12"],
     ["Gear", "Took the iron key"],
     ["Room", "Doubled back to the warren", "The ritual +1"],
     ["Lock", "Opened the bone gate with the iron key"],
@@ -1361,7 +1361,7 @@
     ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
     ["Ability", "Used shield bash", "Grizzletooth: health 4 → 3", "Struck back: d20 7 vs 10, missed"],
     ["Weakness", "A flask of lamp oil", "Grizzletooth: health 3 → 1"],
-    ["Strength", "Heavy attack: Cleave", "Hit", "d20s 17 and 9, kept 17 + 1 = 18 vs 12"]
+    ["Strength", "Heavy attack: Cleave", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"]
   ];
   const GS_DV_LIVE = [
     ["Room", "Entered the chime run"],
@@ -1371,12 +1371,12 @@
     ["Gear", "Took a pepper pouch"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
     ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 vs 14, missed"],
-    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
-    ["Dexterity", "Hit", "d20 12 + 3 = 15 vs 12"],
+    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 4 = 18 vs 12", "Struck back: d20 9 vs 14, missed"],
+    ["Dexterity", "Hit", "d20 12 + 5 = 17 vs 12"],
     ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
-    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12"],
+    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 5 = 19 vs 12", "Struck back: d20 9 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 5 = 23 vs 12"],
     ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 12"],
     ["Room", "Doubled back to the warren", "The ritual +1"]
   ];
@@ -3200,7 +3200,7 @@
     let hp = s.hpMax;
     const foeHp = {};
     let run = 0;
-    let esc = 0;
+    const escs = {};
     const passedRooms = /* @__PURE__ */ new Set();
     const foeOf = () => {
       const f = cur && DL_FOES[cur.name.toLowerCase()];
@@ -3215,7 +3215,7 @@
       stops.push(cur);
       if (DL_FOES[(name || "").toLowerCase()] && !DL_HAZARDS.has((name || "").toLowerCase())) {
         run = 0;
-        esc = 0;
+        if (!back) escs[cur.key] = 0;
       }
     };
     (s.lines || []).forEach((l) => {
@@ -3233,7 +3233,7 @@
       const downed = fo && was > 0 && foeHp[fo.k] === 0 ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
       const u = dlUse(l, s.hero);
       if (u) {
-        if (u.foe) esc = Math.min(2, esc + 1);
+        if (u.foe) escs[cur.key] = Math.min(2, (escs[cur.key] || 0) + 1);
         u.t = turns.length + 1;
         u.stop = cur.i;
         u.room = cur.name;
@@ -3253,8 +3253,9 @@
       const r = dlRoll(l);
       if (!r) return;
       r.hero = s.hero;
-      r.measured = r.fight && esc > 0;
-      if (r.foe) esc = Math.min(2, esc + 1);
+      r.esc = r.fight ? escs[cur.key] || 0 : 0;
+      r.measured = r.esc > 0;
+      if (r.foe) escs[cur.key] = Math.min(2, (escs[cur.key] || 0) + 1);
       r.n = rolls.length + 1;
       r.t = turns.length + 1;
       r.stop = cur.i;
@@ -3332,7 +3333,7 @@
   const dlFightParts = (r) => {
     const sheet = DL_HEROES[r.hero] || DL_HEROES["Wren the Rogue"];
     const base = sheet.stats[r.stat] != null ? sheet.stats[r.stat] : r.mod;
-    const diff = r.mod - base;
+    const diff = r.mod - r.esc - base;
     return { bonus: base, rest: [diff > 0 && dlSigned(diff) + " proficiency", diff < 0 && r.action === "Heavy attack" && "-" + Math.abs(diff) + " " + (r.move || "heavy attack"), r.measured && "you have its measure"].filter(Boolean) };
   };
   const DlRollVal = ({ r }) => {
@@ -3750,9 +3751,9 @@
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23"],
-        ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23"],
-        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
-        ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
+        ["Strength", "Miss", "d20 7 + 4 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 5 = 6 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
+        ["Strength", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
       ]
     };
     GS_SESSIONS["delve-story-fall"] = {
@@ -3790,7 +3791,7 @@
     GS_SESSIONS["delve-won-by-use"] = (() => {
       const base = GS_SESSIONS.delve.lines;
       const cut = base.findIndex((l) => l[0] === "Ability");
-      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12", "Struck back: d20 8 vs 10, missed"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
+      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 5 = 22 vs 12", "Struck back: d20 8 vs 10, missed"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
     })();
     GS_SESSIONS["delve-hard"] = {
       ...GS_SESSIONS.delve,
@@ -3822,17 +3823,17 @@
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
-        ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 3 = 18 vs 12", "Struck back: d20 11 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21"],
-        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
-        ["Dexterity", "Hit", "d20 15 + 3 = 18 vs 12"],
+        ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 4 = 19 vs 12", "Struck back: d20 11 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 5 = 9 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21"],
+        ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 15 + 5 = 20 vs 12"],
         ["Room", "Doubled back to the chime run", "The ritual +1"],
         ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Entered Snaggle's den"],
-        ["Dexterity", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 13 vs 14, missed"],
-        ["Dexterity", "Hit", "Natural 20", "d20 20 + 3 = 23 vs 12", "Struck back: d20 8 vs 14, missed"],
-        ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
+        ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 13 vs 14, missed"],
+        ["Dexterity", "Hit", "Natural 20", "d20 20 + 5 = 25 vs 12", "Struck back: d20 8 vs 14, missed"],
+        ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 5 = 17 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Doubled back to Snaggle's den", "The ritual +1"],
         ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 12"],
@@ -3845,11 +3846,11 @@
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Entered the shrine cavern"],
         ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
-        ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
-        ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 9 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 5 and 7, kept 7 + 3 = 10 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
-        ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 12 vs 14, missed"],
-        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
+        ["Dexterity", "Hit", "d20 17 + 4 = 21 vs 12", "Struck back: d20 6 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 18 + 5 = 23 vs 12", "Struck back: d20 9 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 5 and 6, kept 6 + 5 = 11 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
+        ["Dexterity", "Hit", "d20 11 + 5 = 16 vs 12", "Struck back: d20 12 vs 14, missed"],
+        ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
       ]
     };
     GS_SESSIONS["delve-overrun-back"] = (() => {
@@ -3888,8 +3889,8 @@
         ["Charisma", "Flatter the witch", "Partial success", "d20 13 + 0 = 13 vs 12"],
         ["Room", "Entered the great hall"],
         ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 vs 10, missed"],
-        ["Strength", "Hit", "d20 12 + 3 = 15 vs 12", "Struck back: d20 12 vs 10, hit, 1 damage, HP 22/23"],
-        ["Strength", "Hit", "d20 14 + 3 = 17 vs 12"],
+        ["Strength", "Hit", "d20 12 + 4 = 16 vs 12", "Struck back: d20 12 vs 10, hit, 1 damage, HP 22/23"],
+        ["Strength", "Hit", "d20 14 + 5 = 19 vs 12"],
         ["Room", "Entered the thorn stair"],
         ["Strength", "Partial success", "d20 11 + 3 = 14 vs 12"],
         ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 20/23"],
