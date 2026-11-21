@@ -3772,19 +3772,23 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    a phone never shows the board's line and then a second rule. The session-page standard (Joe, 2026-11-06). From a 672px card the
    panel's left rule stays. */
 .acc-card .gs-sc-panel { border-top: 0; }
-/* KEEP: a name never breaks inside a word, on any window from 280px: each column is at least as wide as its longest word and the
-   columns share the rest equally, so with ordinary names they stay three equal columns and one long word (the deployed cases'
-   longest are Conservatory and Clapperboard) widens its column and narrows the others. Where the columns get narrow the board's gaps
-   and type step down: 14px names with 16px gaps on a phone and on a wide card under 752px; the gaps close to 8px under a 271px
-   card (a window up to 336px) so a 320px phone keeps its 14px; and the names drop to 11px (the text-size floor) only under a 253px
-   card (a window up to 318px), where 14px would push the board past the card. A name too long for any column still wraps at its
-   spaces; the pen marks are measured from the words, so they follow it. */
-.acc-bd { grid-template-columns: repeat(3, minmax(min-content, 1fr)); }
-.acc-bd li { overflow-wrap: break-word; }
+/* KEEP: a name never runs past its column, on any window from 280px. Where the columns get narrow the board's gaps and type step
+   down: 14px names with 16px gaps on a phone and on a wide card under 752px (there the columns are about 90px, and the deployed
+   cases' longest words, Conservatory and Clapperboard, are about 88px at 14px against 100px at 16px); 12px with 8px gaps under a
+   251px card (a 280px window). A word still wider than its column breaks inside itself rather than run into the gap; the pen
+   marks are measured from the words, so they follow it.
+   KEEP: a board whose words all fit their columns is drawn exactly as above. Only one holding a word wider than its column (accFit,
+   gs-accuse.jsx) adapts, as far as needed and in this order: smaller names (never under 11px, the text-size floor), then 8px gaps,
+   then columns as wide as their longest word. Words are never broken. */
+.acc-bd li { overflow-wrap: anywhere; }
 @container dv2 (max-width: 460px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding: 10px 0; } }
-@container dv2 (max-width: 270px) { .acc-bd { gap: 0 8px; } }
-@container dv2 (max-width: 252px) { .acc-bd li { font-size: 11px; } }
+@container dv2 (max-width: 250px) { .acc-bd { gap: 0 8px; } .acc-bd li { font-size: 12px; } }
 @container dv2 (min-width: 672px) and (max-width: 751px) { .acc-bd { gap: 0 16px; } .acc-bd li { font-size: 14px; padding-inline: 0; } }
+.acc-bd.acc-meas li { overflow-wrap: normal; }
+.acc-bd.acc-fs li { font-size: var(--acc-fs); }
+.acc-bd.acc-g8 { gap: 0 8px; }
+.acc-bd.acc-cols { grid-template-columns: repeat(3, minmax(min-content, 1fr)); }
+.acc-bd.acc-cols li { overflow-wrap: normal; }
 .acc-m { font-weight: 600; }
 .acc-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .acc-ov path { fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
