@@ -6845,6 +6845,10 @@
       const reset = () => {
         el.style.height = "";
         if (pair) pair.style.alignSelf = "";
+        if (probe.current) {
+          probe.current.style.width = "";
+          probe.current.style.right = "";
+        }
         setFit2(null);
       };
       const measure = () => {

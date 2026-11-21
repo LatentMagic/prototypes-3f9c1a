@@ -257,7 +257,8 @@ const LbRecentList = ({ title, allLabel, empty }) => {
   React.useLayoutEffect(() => {
     const el = card.current; if (!el || !vs.length) return undefined;
     const pair = el.previousElementSibling; const lay = el.parentElement;
-    const reset = () => { el.style.height = ''; if (pair) pair.style.alignSelf = ''; setFit(null); };
+    // KEEP: the probe's pixel width from a wide layout is cleared when the layout turns single-column, so a hidden probe never holds the page wider than a 280 to 360px phone.
+    const reset = () => { el.style.height = ''; if (pair) pair.style.alignSelf = ''; if (probe.current) { probe.current.style.width = ''; probe.current.style.right = ''; } setFit(null); };
     const measure = () => {
       const two = getComputedStyle(lay).gridTemplateColumns.split(' ').length > 1;
       if (!two || !pair) return reset();
