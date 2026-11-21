@@ -1451,7 +1451,7 @@
       endings: GS_DV_ENDINGS,
       reached: "Elsie rescued",
       // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
-      setting: "The Goblin Warren beneath Ashford Mill",
+      setting: "The Goblin Warren",
       end: "won",
       hero: "Bryn the Fighter",
       hpMax: 23,
@@ -1463,7 +1463,7 @@
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
       foeMax: { "snaggle's den": 1, "the shrine cavern": 5 },
-      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩"]
+      shareLines: ["The Goblin Warren", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
@@ -1653,7 +1653,7 @@
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
-    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use" },
+    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use", "lost-no-roll": "delve-lost-no-roll" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
   const gsSessStatus = (s) => ({ kind: s.loss ? "bad" : "ok", label: s.result });
@@ -1745,7 +1745,7 @@
     // Escape has no lost outcome: every room can be finished. par: 'under par' | 'at par' | 'over par'.
     escape: (r) => "Escaped in " + r.min + " min, " + r.par,
     casebook: (r) => r.ok ? "Solved" : "Wrong accusation",
-    // The setting's own ending words (The Goblin Warren beneath Ashford Mill).
+    // The setting's own ending words (The Goblin Warren).
     delve: (r) => ({ won: "Elsie rescued", ritual: "Too late: the ritual was completed", fell: "Fell in the warren" })[r.end],
     // A restarted day (no ending) reads Not finished.
     hunter: (r) => r.restarted ? "Not finished" : "Finished"
@@ -3692,7 +3692,7 @@
     const [ref, cols] = useDlNowCols(rooms);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, role: "img", "aria-label": "The run has " + rooms + " rooms, " + (reached ? "the first reached, no rolls yet" : "none entered yet") }, dlEmptyStops(rooms).map((st, i) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + (reached ? i === 0 ? " is-on" : " is-far" : "") + (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === rooms - 1 ? " is-row-end" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num)), reached && i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-hidden": "true" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))));
   };
-  const DlNowEmpty = ({ title, rooms, next, onPlay }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", title, play: onPlay, next }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms })));
+  const DlNowEmpty = ({ label, title, rooms, next, onPlay }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title, play: onPlay, next }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms })));
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
     const gs = useGs();
     const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
@@ -3700,7 +3700,7 @@
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const open = (turn) => gs.go("session", turn ? { id: sid, turn } : { id: sid });
     const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, m.turns.length ? /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open }) : /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms: s.tracks && s.tracks.rooms || 5, reached: true })));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, m.turns.length || m.lost ? /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open }) : /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms: s.tracks && s.tracks.rooms || 5, reached: true })));
   };
   const registerDelve = () => {
     GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
@@ -3733,6 +3733,21 @@
         ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
         ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
       ]
+    };
+    GS_SESSIONS["delve-lost-no-roll"] = {
+      ...GS_SESSIONS.delve,
+      loss: true,
+      end: "fallen",
+      lostOff: { name: "Collapsing tunnel", harm: 23 },
+      result: "Fell in the warren",
+      reached: "Fell in the warren",
+      share: "Fell in the warren",
+      shareLines: null,
+      figures: ["Threat 0/12", "0 rolls", "HP 0/23"],
+      tracks: { progress: 1, rooms: 5, threat: 0, threatMax: 12 },
+      threat: 0,
+      sheet: { used: {}, insp: true },
+      lines: [["Room", "Entered the warren"]]
     };
     GS_SESSIONS["delve-story-fall"] = {
       ...GS_SESSIONS.delve,
@@ -3912,7 +3927,7 @@
   };
   function initGsDelveLibrary() {
     DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, ritual: { kind: "bad", label: GS_RESULT.delve({ end: "ritual" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
-    DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren beneath Ashford Mill", played: true, end: null };
+    DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren", played: true, end: null };
     DV_ALL = [DV_RUN1];
     DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 9, rooms: 4, ritual: 3 };
     DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
@@ -4940,7 +4955,8 @@
     const done = st === "done";
     const pass = done && gs.view !== "pass";
     if (id === "escape" && st !== "none") return /* @__PURE__ */ React$1.createElement(EsNow, { label: f.label, title: f.title, pass, first: true });
-    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass });
+    if (id === "delve" && st !== "none") return /* @__PURE__ */ React$1.createElement(DlNow, { s: done ? DV_DONE : DV_LIVE, label: f.label, sids: ["delve-first", "delve-first-live"], next: null, pass: pass && "nostop" });
+    if (id === "delve") return /* @__PURE__ */ React$1.createElement(DlNowEmpty, { label: f.label, title: f.title, rooms: 5, onPlay: f.play });
     const bar = st === "live" ? f.liveBar : done ? f.doneBar : null;
     const soon = id === "barrow" && gs.view === "pass" ? "Chapter 3: coming soon" : null;
     if (id === "barrow" && gs.view === "pass" && done) return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "barrow", label: GS_PAGES.barrow.week2.label, title: BW_CH2.title, play: () => gs.playReq({ kind: "edition", e: bwEds(gs)[0] }), next: soon, span: true }, /* @__PURE__ */ React$1.createElement("p", null, BW_CH2.line));
@@ -4988,7 +5004,7 @@
   };
   const cprNowCard = (gs, id, ach) => {
     const f = cprLapsedOf(id);
-    return gsLapsed(gs) && f.used && f.pass ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach }) : /* @__PURE__ */ React$1.createElement(CprFirst, { id });
+    return gsLapsed(gs) && f.used && f.pass && cprFirstState(gs, id) !== "live" ? /* @__PURE__ */ React$1.createElement(LbNeedsPass, { id, had: true, ach }) : /* @__PURE__ */ React$1.createElement(CprFirst, { id });
   };
   const cprKey = (gs) => gs.view + (gs.sub.hadPass ? "u" : "") + (lbWeekDone(gs) ? "d" : "") + (gsFresh(gs) ? "f" : "") + cprStore.get().lapsed;
   const CprCbLibrary = () => {
@@ -5010,7 +5026,7 @@
       const list = dvRun(gs);
       const f = lbFrozen(lbRunOf(list), list, (s) => s.date);
       return /* @__PURE__ */ React$1.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
-    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Earlier " + GS_GAMES.delve.ed[1] + " need the Pass." }));
+    })(), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
   };
   const CprEsLibrary = () => {
     const gs = useGs();
@@ -5146,7 +5162,6 @@
       delve: (gs) => ({
         label: "THE FIRST RUN · FREE",
         title: DV_FIRST.title,
-        none: "The game’s very first run, the same for everyone. Play it free.",
         play: () => gs.play("Delve")
       }),
       escape: (gs) => ({
@@ -7028,7 +7043,7 @@
       return [{ ...f, pid: "word1-broken-0", status: { kind: "bad", label: c.bad }, open: phSess("word-broken-first") }];
     })();
     PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: "bw1" };
-    PH_FIRST_LIVE = { delve: phSess("delve-first-live"), escape: phSess("escape-first-live") };
+    PH_FIRST_LIVE = { delve: phLive("delve-first-live"), escape: phSess("escape-first-live") };
     PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
       let id = null;
       try {
@@ -7055,6 +7070,7 @@
     (() => {
       const dv = GS_SESSIONS.delve;
       GS_SESSIONS["delve-first-live"] = { ...GS_SESSIONS["delve-live"], date: dv.date, __dated: true };
+      GS_SESSIONS["delve-first-begun"] = { ...GS_SESSIONS["delve-begun"], date: dv.date, __dated: true };
       const es = GS_SESSIONS["escape-week"];
       GS_SESSIONS["escape-first-live"] = { ...GS_SESSIONS["escape-live"], date: es.date, lines: es.lines.slice(0, 4), __dated: true };
     })();
@@ -7079,7 +7095,7 @@
   const cprFirstState = (gs, id) => {
     if (gs.view === "pass") return id === "barrow" && cprStore.get().bwDone && !!phFirstPlay(gs, id) ? "done" : "pass";
     if (!phFirstPlay(gs, id)) return "none";
-    if (gsLapsed(gs)) return cprLapsedOf(id).used ? "done" : "none";
+    if (gsLapsed(gs)) return cprLapsedOf(id).used ? id === "delve" && !lbWeekDone(gs) ? "live" : "done" : "none";
     if (gsFresh(gs)) return "none";
     if (id === "barrow") return cprStore.get().bwDone ? "done" : "none";
     if (id === "escape" && phSeedNew(gs, "escape")) return "none";
@@ -8492,17 +8508,17 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DS.Button, { variant: "main", onClick: () => setOpen(true) }, "Share"), /* @__PURE__ */ React$1.createElement(GsSharePopup, { open, onClose: () => setOpen(false), lines }));
   };
   const LbActions = ({ label = "Go to session", onClick, slot }) => /* @__PURE__ */ React$1.createElement("div", { className: "lb-foot" }, /* @__PURE__ */ React$1.createElement(DS.Button, { onClick }, label), slot && /* @__PURE__ */ React$1.createElement("div", { className: "lb-slot gs-muted" }, slot));
-  const CprPassEnd = ({ text, className }) => {
+  const CprPassEnd = ({ text, className, nostop }) => {
     const gs = useGs();
     const head = text.slice(0, -"the Pass.".length);
-    return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), ".");
+    return /* @__PURE__ */ React$1.createElement("p", { className }, head, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "gs-inlink", onClick: () => gs.go("pass") }, "the Pass"), !nostop && ".");
   };
   const lbNowLabel = (gid) => {
     const r = gsRhythm(gid);
     return r === "daily" ? "TODAY" : r === "weekly" ? "THIS WEEK" : "A " + GS_GAMES[gid].ed[0].toUpperCase();
   };
   const LbNowResult = ({ s, tag }) => s.kind === "live" || tag ? /* @__PURE__ */ React$1.createElement("span", { className: "lb-big" }, /* @__PURE__ */ React$1.createElement(LbResult, { s })) : /* @__PURE__ */ React$1.createElement("p", { className: "gs-vd is-" + (s.kind === "ok" ? "ok" : "over") }, s.label);
-  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass." }) : next }));
+  const LbNowCard = ({ gid, label, title, result, tag, play, open, next, pass, span, className, children }) => /* @__PURE__ */ React$1.createElement("section", { className: "lb-card" + (className ? " " + className : ""), style: span ? { gridColumn: "1 / -1" } : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-now-in" }, /* @__PURE__ */ React$1.createElement("div", { className: "lb-top" }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-stack-xs" }, /* @__PURE__ */ React$1.createElement("span", { className: "gs-label" }, label || lbNowLabel(gid)), /* @__PURE__ */ React$1.createElement("h2", { className: "mcp-t-sec" }, title)), result && /* @__PURE__ */ React$1.createElement(LbNowResult, { s: result, tag })), children), /* @__PURE__ */ React$1.createElement(LbActions, { label: play ? "Play" : void 0, onClick: play || open, slot: pass ? /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-pu-wrap", text: "Keep playing with the Pass.", nostop: pass === "nostop" }) : next }));
   const LbFreshNow = ({ gid, title, line, next, onPlay, span }) => /* @__PURE__ */ React$1.createElement(LbNowCard, { gid, title, play: onPlay, next, span }, /* @__PURE__ */ React$1.createElement("p", null, line));
   const lbWeekDone = (gs) => (gs.review && gs.review.week) !== "live";
   const lbNow = (gs, id) => {
@@ -9647,6 +9663,48 @@
       { group: "Library", id: "library-delve-free-in-progress", aliases: ["pur-first-in-progress"], label: "Delve in your library, free account, first run in progress", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
+        c.setReview({ week: "live" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-not-started", label: "Delve in your library, free account, first run not started", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ today: "none" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-nothing-played", label: "Delve in your library, free account, first run in progress, nothing played yet", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ week: "live", begun: true });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-lost-no-roll", label: "Delve in your library, free account, first run lost with no roll or use (the loss cross in its room)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ ed: "lost-no-roll" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-fallen", label: "Delve in your library, free account, first run lost on a roll (fell in the warren)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ ed: "failed" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-won-by-use", label: "Delve in your library, free account, first run won by an ability (the last turn is a use)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setReview({ ed: "won-by-use" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-free-done-new-week", label: "Delve in your library, free account, first run finished and a later week’s edition is the current one (the free player still sees the finished first run’s card)", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-pass-ended-first-in-progress", label: "Delve in your library, Pass ended, first run still in progress", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setSub({ hadPass: true });
         c.setReview({ week: "live" });
         c.go("delve", { page: "record" });
       } },
@@ -10974,6 +11032,12 @@
       )
     );
   };
+  KIT_QA.unshift({
+    key: "delve-free-card",
+    title: "Delve: the free player’s now card (LM-1602, not signed off)",
+    note: "Each at phone and desktop width, in the free account: no Pass button or line before or during the run; finished, “Keep playing with the Pass” with only the Pass linked.",
+    steps: ["library-delve-free-not-started", "library-delve-free-nothing-played", "library-delve-free-in-progress", "pur-first-done", "library-delve-free-lost-no-roll", "library-delve-free-fallen", "library-delve-free-won-by-use", "library-delve-pass-ended-first-in-progress", "library-delve-free-done-new-week"]
+  });
   KIT_QA.unshift({
     key: "delve-1236",
     title: "Delve: session page and now card (1236, not signed off)",

@@ -137,7 +137,7 @@ const GS_ES_WORDS5 = ['TRAIN', 'STEAM', 'TRACK', 'PLATE']; const GS_ES_DIG3 = ['
 // Delve: a name sits mid-sentence in lower case ("Entered the warren"), as the engine writes it.
 const gsDvName = (n) => n.replace(/^The /, 'the ');
 
-// ---- Delve run 1, The Goblin Warren beneath Ashford Mill: two recorded plays of the deployed engine. ----
+// ---- Delve run 1, The Goblin Warren: two recorded plays of the deployed engine. ----
 export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.';
 const GS_DV_WON = [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 17 + 0 = 17 vs 12'],
@@ -256,9 +256,9 @@ export const GS_SESSIONS = {
     lines: GS_DV_WON,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
-    setting: 'The Goblin Warren beneath Ashford Mill', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, lightName: 'the torch', light: 1, lightMax: 6, sheet: { used: { 'Shield bash': 1 }, insp: true },
+    setting: 'The Goblin Warren', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, lightName: 'the torch', light: 1, lightMax: 6, sheet: { used: { 'Shield bash': 1 }, insp: true },
     share: 'Elsie rescued', foeMax: { "snaggle's den": 1, 'the shrine cavern': 5 },
-    shareLines: ['The Goblin Warren beneath Ashford Mill', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩'],
+    shareLines: ['The Goblin Warren', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩'],
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
@@ -342,7 +342,7 @@ export const GS_ED_SIDS = {
   groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
   mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
   escape: { hard: 'escape-hard' },
-  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use' },
+  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use', 'lost-no-roll': 'delve-lost-no-roll' },
   casebook: { average: 'casebook', hard: 'casebook-hard', failed: 'casebook-failed' },
 };
 // How a finished session reads in a row: a loss (`loss`) is bad, anything else is ok.
@@ -391,7 +391,7 @@ export const GS_RESULT = {
   // Escape has no lost outcome: every room can be finished. par: 'under par' | 'at par' | 'over par'.
   escape: (r) => 'Escaped in ' + r.min + ' min, ' + r.par,
   casebook: (r) => (r.ok ? 'Solved' : 'Wrong accusation'),
-  // The setting's own ending words (The Goblin Warren beneath Ashford Mill).
+  // The setting's own ending words (The Goblin Warren).
   delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the ritual was completed', fell: 'Fell in the warren' })[r.end],
   // A restarted day (no ending) reads Not finished.
   hunter: (r) => (r.restarted ? 'Not finished' : 'Finished'),

@@ -185,6 +185,9 @@ export const QaPalette = ({ statesGroups, onGo, onClose }) => {
   );
 };
 
+KIT_QA.unshift({ key: 'delve-free-card', title: 'Delve: the free player’s now card (LM-1602, not signed off)',
+  note: 'Each at phone and desktop width, in the free account: no Pass button or line before or during the run; finished, “Keep playing with the Pass” with only the Pass linked.',
+  steps: ['library-delve-free-not-started', 'library-delve-free-nothing-played', 'library-delve-free-in-progress', 'pur-first-done', 'library-delve-free-lost-no-roll', 'library-delve-free-fallen', 'library-delve-free-won-by-use', 'library-delve-pass-ended-first-in-progress', 'library-delve-free-done-new-week'] });
 KIT_QA.unshift({ key: 'delve-1236', title: 'Delve: session page and now card (1236, not signed off)',
   note: 'Each at desktop and phone width. The sheet in one row on desktop (3B); on a phone folded to the hero and meters, the whole hero row opens it. The run card: the ending word, a hairline, its line; the route; the held roll. Every move collapsed. Now card: the ending word top right, the route at card size; a die opens the session page on that roll.',
   steps: ['library-delve', 'library-delve-in-progress', 'session-delve', 'session-delve-fallen', 'session-delve-hard', 'session-delve-in-progress'] });

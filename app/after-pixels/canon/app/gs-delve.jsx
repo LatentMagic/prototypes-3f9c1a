@@ -543,15 +543,15 @@ const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(t), hov: DL_
   })}</div>);
 };
 // The Now card's route with nothing rolled: the run's rooms drawn empty. `reached` marks room 1 as the session page's empty route does
-// (a tinted room, its number lit, a small square where the dice will go); a run not started marks none.
+// (its number lit, a small square where the dice will go); a run not started marks none.
 const DlNowEmptyRoute = ({ rooms, reached }) => { const [ref, cols] = useDlNowCols(rooms);
   return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} role="img" aria-label={'The run has ' + rooms + ' rooms, ' + (reached ? 'the first reached, no rolls yet' : 'none entered yet')}>{dlEmptyStops(rooms).map((st, i) => (
     <div key={st.i} className={'dl-now-stop' + (reached ? (i === 0 ? ' is-on' : ' is-far') : '') + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
       <span className="dvA2-head"><span className="dv2-num">{st.num}</span></span>{reached && i === 0 ? <i className="dv2-pass" aria-hidden="true" /> : <DlEmptyHex />}</div>))}</div>);
 };
-// The Now card of a run not started: the week's title, the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
-export const DlNowEmpty = ({ title, rooms, next, onPlay }) => (
-  <LbNowCard gid="delve" className="dl-now" title={title} play={onPlay} next={next}>
+// The Now card of a run not started: the week's title (label: a free first run passes its own), the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
+export const DlNowEmpty = ({ label, title, rooms, next, onPlay }) => (
+  <LbNowCard gid="delve" className="dl-now" label={label} title={title} play={onPlay} next={next}>
     <div className="dl-now-route"><DlNowEmptyRoute rooms={rooms} /></div>
   </LbNowCard>);
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
@@ -560,7 +560,7 @@ export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Ne
   const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
     <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
-      <div className="dl-now-route">{m.turns.length ? <DlNowRoute m={m} open={open} /> : <DlNowEmptyRoute rooms={(s.tracks && s.tracks.rooms) || 5} reached />}</div>
+      <div className="dl-now-route">{m.turns.length || m.lost ? <DlNowRoute m={m} open={open} /> : <DlNowEmptyRoute rooms={(s.tracks && s.tracks.rooms) || 5} reached />}</div>
     </LbNowCard>
   );
 };
@@ -588,6 +588,10 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
 // Its sheet marks the ultimate used. Picked by its states only: it is no Config → This edition option.
 // A run of Cold Sleep (edition 2) lost to the medbay's story turn: the crank panel deals 4 damage and the hero has 4 hit points. Its last room, the medbay, ends on the loss cross (`lostOff`).
 // SAMPLE: the room order (cryo deck, armoury, medbay) and every roll; the record keeps no turn for the story harm, so the cross is no turn. HP 21 -> 17 -> 11 -> 4, then 4 damage -> 0.
+// A first run lost on its first room's story turn, with no roll or use anywhere: the route is that one room, ending on the loss cross.
+// SAMPLE: the room and the harm; the record keeps no turn for the story harm.
+GS_SESSIONS['delve-lost-no-roll'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', lostOff: { name: 'Collapsing tunnel', harm: 23 }, result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null,
+  figures: ['Threat 0/12', '0 rolls', 'HP 0/23'], tracks: { progress: 1, rooms: 5, threat: 0, threatMax: 12 }, threat: 0, sheet: { used: {}, insp: true }, lines: [['Room', 'Entered the warren']] };
 GS_SESSIONS['delve-story-fall'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', lostOff: { name: 'Crank panel', harm: 4 }, setting: 'Cold Sleep', hero: 'Wren the Rogue', hpMax: 21, threat: 2, threatMax: 12, lightName: null, light: 0, lightMax: 0, foeMax: {},
   result: 'Fell in the medbay', reached: 'Fell in the medbay', share: 'Fell in the medbay', shareLines: null, figures: ['Threat 2/12', '5 rolls', 'HP 0/21'], tracks: { progress: 3, rooms: 6, threat: 2, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Room', 'Entered the cryo deck'], ['Intelligence', 'Read the wake log', 'Success', 'd20 15 + 0 = 15 vs 12'], ['Dexterity', 'Slip the frozen vent', 'Failure', 'd20 5 + 3 = 8 vs 12', 'HP 17/21'],

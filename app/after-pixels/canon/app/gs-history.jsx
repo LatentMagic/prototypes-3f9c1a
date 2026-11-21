@@ -448,7 +448,7 @@ PH_BROKEN = (() => {
 // the day it was played. It has an in-progress form and an ended form, switched by the same control as this week's play
 // (cprFirstState reads it), or not started. ----
 PH_FIRST = { delve: DV_ALL[DV_ALL.length - 1].id, escape: PZ.escape.all[PZ.escape.all.length - 1].id, barrow: 'bw1' };
-PH_FIRST_LIVE = { delve: phSess('delve-first-live'), escape: phSess('escape-first-live') };
+PH_FIRST_LIVE = { delve: phLive('delve-first-live'), escape: phSess('escape-first-live') };
 // A record shows the time it was played.
 PH_PLAYS.concat(PH_BROKEN).forEach((p) => [p, p.now && { ...p, ...p.now }].filter(Boolean).forEach((q) => {
   let id = null; try { q.open({ go: (n, a) => { if (n === 'session' && a) id = a.id; } }); } catch (e) {}
@@ -462,6 +462,7 @@ Object.values(GS_ED_SIDS).forEach((m) => Object.values(m).forEach((sid) => { con
 (() => {
   const dv = GS_SESSIONS.delve;
   GS_SESSIONS['delve-first-live'] = { ...GS_SESSIONS['delve-live'], date: dv.date, __dated: true };
+  GS_SESSIONS['delve-first-begun'] = { ...GS_SESSIONS['delve-begun'], date: dv.date, __dated: true };
   const es = GS_SESSIONS['escape-week'];
   GS_SESSIONS['escape-first-live'] = { ...GS_SESSIONS['escape-live'], date: es.date, lines: es.lines.slice(0, 4), __dated: true };
 })();
