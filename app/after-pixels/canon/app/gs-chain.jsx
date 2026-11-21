@@ -43,9 +43,9 @@ const ChnJoint = () => (
 // link broken in two. A key under it names each kind present, with its count. ----
 // The links stand apart, joined by a short bar, so each one's state and number read on their own (Joe: the overlapping chain
 // was not clear).
-// A number is drawn at 12 units, or larger where the chain is drawn smaller, so it is 13px on screen: the size a folded chain's numbers
-// already are, and above the 11px text floor.
-const CHN_NUM = 12; const CHN_NUM_SCREEN = 13;
+// An unfolded chain's number is drawn at 12 units, or larger where the chain is drawn smaller, so it is never under 11px on screen:
+// the text-size floor (ui-design.md).
+const CHN_NUM = 12; const CHN_NUM_SCREEN = 11;
 const CHN_W = 16; const CHN_H = 30; const CHN_STEP = CHN_H + 8;
 const CHN_P = 2 * (CHN_H - CHN_W) + Math.PI * CHN_W;
 const CHN_GAP = { wrong: 14, near: 6, given: 8 };
@@ -76,9 +76,9 @@ const CHN_KINDS = [['right', 'Right'], ['wrong', 'Wrong'], ['near', 'Near miss']
 // to the next. Both sit between the shrunk size of a long chain and Chain's now card at 1px, so a long play takes fewer rows on a phone.
 // The rows are decided with the 0.7 floor but drawn at 0.66, so a chain that fits one row at 0.66 stays one row at that size, without
 // folding, in a narrow band of widths: 10 links from 317 to 331px, 14 from 418 to 438px, 19 from 543 to 571px. Above a band the chain is
-// unfolded at 0.7 or more. Every chain's numbers are 13px on screen, the smallest text a card carries: a folded chain's are drawn at 13
-// divided by the fold scale in drawing units, an unfolded chain's at 13 divided by the scale it is measured to be drawn at, never
-// under 12 units (so a chain drawn above 1.08px per unit keeps its larger numbers). A row or column that is not full (the last) is centred on the full ones, rows across, columns
+// unfolded at 0.7 or more. A folded chain's numbers are 13px on screen, drawn at 13 divided by the fold scale in drawing units. An unfolded
+// chain's are 12 units, raised to 11px on screen (the text-size floor) where the measured scale would draw them smaller; a chain
+// drawn above 0.92px per unit keeps its 12 units. A row or column that is not full (the last) is centred on the full ones, rows across, columns
 // vertically. Measured: the rows by the room the panel gives them (never the guesses' own width, which shrinks as they fold), the
 // columns by the board's height (the platform needs the same measuring).
 const CHN_FLOOR = 0.7;

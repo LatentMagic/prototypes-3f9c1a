@@ -12186,7 +12186,7 @@
   )));
   const ChnJoint = () => /* @__PURE__ */ React$1.createElement("div", { className: "chn-joint", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("svg", { width: "16", height: "22", viewBox: "0 0 16 22" }, /* @__PURE__ */ React$1.createElement("rect", { x: "1.5", y: "1.5", width: "8", height: "12", rx: "4" }), /* @__PURE__ */ React$1.createElement("rect", { x: "6.5", y: "8.5", width: "8", height: "12", rx: "4" })));
   const CHN_NUM = 12;
-  const CHN_NUM_SCREEN = 13;
+  const CHN_NUM_SCREEN = 11;
   const CHN_W = 16;
   const CHN_H = 30;
   const CHN_STEP = CHN_H + 8;
