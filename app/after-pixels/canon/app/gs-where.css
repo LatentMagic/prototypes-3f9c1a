@@ -85,7 +85,8 @@
    KEEP: the gaps grow with the card (12 to 40px between the guess and the figures, 8 to 24px between the figures), so a phone's
    spare width goes between them instead of to the card's edges (Joe, 2026-10-31). */
 @container gs (max-width: 639.98px) {
-  .wh-row { column-gap: clamp(12px, 8cqi, 40px); }
+  /* KEEP: at 280px the guess, gap and figures are about 216px, 2px more than the card's 214px inside its padding, so the gap gives up to 12px there (the 8cqi value holds from 320px up) and nothing sits past the padding. */
+  .wh-row { column-gap: clamp(12px, min(8cqi, 100cqi - 202px), 40px); }
   .wh-figs { --fig: 48px; column-gap: clamp(8px, 5cqi, 24px); }
   .wh-figs .wh-say { max-width: 76px; text-wrap: balance; }
   .wh-last b { font-size: 22px; }
