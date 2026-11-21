@@ -141,9 +141,9 @@ const accLine = (x1, x2, y, r) => { const p = []; const n = Math.max(2, Math.rou
 // Only the word itself is measured, not the hidden words for screen readers that follow it.
 const accRects = (el) => { const g = document.createRange(); g.selectNodeContents(el.firstChild); return [...g.getClientRects()].filter((q) => q.width > 1); };
 // KEEP: the pen marks are redrawn whenever the board changes size, and a ring never reaches more than 5px past its column, and never
-// more than half the column gap less 1.5px for its wobble, so two rings in neighbouring columns never touch (the gap is 8px on a 320px phone).
-// KEEP: a board with a word wider than its column steps down only as far as needed: names to 11px at the smallest, then 8px gaps,
-// then columns as wide as their longest word. A board whose words fit is left as drawn.
+// more than half the column gap less 1.5px for its wobble, so two rings in neighbouring columns never touch (the gap is 16px, or 8px once a board has stepped down to fit a long word).
+// KEEP: a board with a word wider than its column steps down only as far as needed: the largest name size that fits (never below 12px
+// until the 8px gap has been tried at 12px), then 11px with the 16px gap, then 11px with 8px gaps, then columns as wide as their longest word. A board whose words fit is left as drawn.
 const accFit = (host) => {
   const c = host.classList; c.remove('acc-fs', 'acc-g8', 'acc-cols'); host.style.removeProperty('--acc-fs'); c.add('acc-meas');
   // A too-long word stretches its list item past its column, so the item is compared with the column's track, not with itself.
@@ -152,8 +152,11 @@ const accFit = (host) => {
   if (over()) {
     const base = Math.round(parseFloat(getComputedStyle(host.querySelector('li')).fontSize)); c.add('acc-fs');
     let fit = false;
-    for (let s = base - 1; s >= 11 && !fit; s--) { host.style.setProperty('--acc-fs', s + 'px'); fit = !over(); }
-    if (!fit) { c.add('acc-g8'); fit = !over(); }
+    const tryFit = (s, g8) => { host.style.setProperty('--acc-fs', s + 'px'); c.toggle('acc-g8', g8); return !over(); };
+    for (let s = base - 1; s >= 12 && !fit; s--) fit = tryFit(s, false);
+    if (!fit) fit = tryFit(12, true);
+    if (!fit) fit = tryFit(11, false);
+    if (!fit) fit = tryFit(11, true);
     if (!fit) c.add('acc-cols');
   }
   c.remove('acc-meas');

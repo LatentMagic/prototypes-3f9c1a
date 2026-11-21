@@ -4852,14 +4852,15 @@
       const base = Math.round(parseFloat(getComputedStyle(host.querySelector("li")).fontSize));
       c.add("acc-fs");
       let fit = false;
-      for (let s = base - 1; s >= 11 && !fit; s--) {
+      const tryFit = (s, g8) => {
         host.style.setProperty("--acc-fs", s + "px");
-        fit = !over();
-      }
-      if (!fit) {
-        c.add("acc-g8");
-        fit = !over();
-      }
+        c.toggle("acc-g8", g8);
+        return !over();
+      };
+      for (let s = base - 1; s >= 12 && !fit; s--) fit = tryFit(s, false);
+      if (!fit) fit = tryFit(12, true);
+      if (!fit) fit = tryFit(11, false);
+      if (!fit) fit = tryFit(11, true);
       if (!fit) c.add("acc-cols");
     }
     c.remove("acc-meas");
