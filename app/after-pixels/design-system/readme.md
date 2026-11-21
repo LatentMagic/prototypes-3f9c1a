@@ -2,6 +2,8 @@
 
 Games you play with your AI assistant. Crack today's puzzle, solve a mystery, go on an adventure. You make the moves; the game holds the rules. Players connect their AI assistant to the After Pixels platform (afterpixels.com) using MCP. They can browse games on the platform, where each game's page has a prompt that starts it in their assistant. Or they can ask their assistant to show all the games and pick one there. New games arrive every day: daily puzzles, a weekly interrogation, murder mysteries, escape rooms, dungeon quests, word puzzles.
 
+This design system follows the monorepo's UI standard, `specs/governance/standards/ui-design.md`. That file holds every rule about how a screen behaves; this one holds the tokens, sizes, components and patterns that are After Pixels' own ([how they meet it](guidelines/ui-standard.md)).
+
 The system is one dark surface: warm near-black pages, off-white type and actions, and square corners. Colour is used to make things stand out against it.
 
 ## Where things are

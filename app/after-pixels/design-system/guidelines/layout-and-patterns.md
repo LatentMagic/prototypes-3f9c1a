@@ -2,13 +2,11 @@
 
 ## Page layout
 
-Principles first. These hold for every screen; the components below are one proven answer, not the only shape a page can take. A new problem can call for a new layout, as long as it passes these.
+This design system follows the monorepo's `specs/governance/standards/ui-design.md`, which holds the rules for how any screen behaves. The principles below hold for every After Pixels screen on top of it; the components are one proven answer, not the only shape a page can take. A new problem can call for a new layout, as long as it passes both.
 
-- **Space is spent, not filled.** Every block earns its room by what it tells the player. Empty space inside a block is waste; space between groups is structure. Size follows importance, within limits: the most important thing gets the most room, never the whole screen.
 - **Group by meaning.** Related information sits together in one clear compartment; unrelated information is visibly apart. Fewer, larger, well-grouped pieces read better than many small ones. Lots of small text with little grouping reads as flicker.
-- **Highest value first, everywhere.** Order content by what the player most needs now. On a phone that order is the scroll, so it matters most there.
 - **Keep the phone short.** Every block added is scrolling on a phone. Show a summary on the page and move the full set one tap away (its own page, a Disclosure, a panel). If a phone page needs a long scroll to reach the second important thing, cut or move content rather than shrinking it.
-- **Use wide screens by arranging.** On desktop, place things side by side rather than stretching one column or leaving it stranded. From 640px nothing runs full width by default; under 640px buttons do (visual-foundations.md, Layout).
+- **Full width.** From 640px nothing runs full width by default; under 640px buttons do (visual-foundations.md, Layout).
 - **States change content, not shape.** A block with several states keeps one layout and about one height, so the page doesn't jump and no state looks emptier than another.
 - **Clickable reads as clickable at rest.** Whole target, visible signal (chevron, underline, button shape), hover only as a bonus.
 
@@ -17,7 +15,7 @@ Principles first. These hold for every screen; the components below are one prov
 Reach for these when they fit; don't bend a problem to fit them.
 
 - `PageGrid`: one column on a phone, two from 900px (`2fr / minmax(320px,1fr)` or `split="even"`). Cards written in phone order; desktop pairs them row by row. Paired cards start at the same top, match height, share padding, and both carry a title or neither does.
-- Text inside one card: usually a heading, body 16px and muted 14px; one bold weight (600 in text, 700 in headings); nothing under 13px.
+- Text inside one card: usually a heading, body 16px and muted 14px; one bold weight (600 in text, 700 in headings).
 - Lists that grow without end: the page shows a summary as `ListRow`s (as many as fit the place) with an "All…" link; "All…" opens its own page with search, order, a filter and numbered pages, not an endless "Show more".
 - `CardRow`: a short set of cards under a section heading that scrolls sideways when it doesn't fit. Previous and Next show only while it overflows, on the line just above the cards: beside the sentence under the heading if there is one, else on the heading's line. They move the cards, so they stay next to them. Its game cards are `GameCard`s, whatever the section is called. A game is shown four ways only: GameCard in a row, GamePick for a pair featured by hand, GameTile in the all-games wall, ListRow in a list of games or plays; a game not out yet has its own card (SoonCard), and a game out for now stays a GameCard in its row with `soon`. In a CardRow, the row shares four lines (picture, name, blurb, tags) and every card's parts sit on them, so they start level and the cards are one height. Pictures never stretch to fill. A shorter part leaves the rest of its line blank. Tags run to one line at 220px.
 - A list of games the player owns or can open: one row per game, the same question on every row (is there something to play now?), answered in the result slot. See ListRow.
@@ -28,22 +26,18 @@ Reach for these when they fit; don't bend a problem to fit them.
 - **Needs the Pass takes the play control's place** when the player cannot play without the Pass: `NeedsPass`, "What stays, what returns". Two halves split by one ruled line; side by side from 640px, stacked under it. One size and one grid place in both variants (had the Pass, never had it). Every line is filled by rule from platform facts, never per game
 - **A row of games ends with "All games".** Every `CardRow` of games is followed by an "All games" `TextLink` to the store, on its own line under the row, and under the Coming soon cards when they follow the row.
 
-## Adaptive patterns (from ui-design.md)
+## Adaptive patterns
 
-- **Only a panel changes shape on a phone.** An overlay that takes focus is one of three kinds. Ask in this order; the first that fits is the kind.
-  - **Dialog** (`Popup`, the default kind): one question or one short edit, nothing behind it usable until answered (delete confirm, disconnect, rename). Centred 380px window at every width. Content never scrolls; if it would outgrow the space above the on-screen keyboard it becomes a page or a panel.
-  - **Menu** (`Menu`): a short list of commands opened from a control. Opens at its control at every width, no dim. A list long enough to scroll is a panel.
-  - **Panel** (`Popup kind="panel"`): anything else the user stays in and works with (a picker, a list that grows). Bottom sheet under 640px, centred 480px window at 640px and up (`breakpoint` per surface). Body scrolls.
-  - Tooltips and status messages take no focus, are none of these and never swap.
-  - Same title, text and buttons in the same order at every width.
+The standard sets the three kinds of overlay and which one swaps on a phone. This system builds them as follows.
+
+- **Overlays.**
+  - **Dialog** (`Popup`, the default kind): a delete confirm, a disconnect, a rename. Centred 380px window at every width.
+  - **Menu** (`Menu`): opens at its control at every width, no dim.
+  - **Panel** (`Popup kind="panel"`): a picker, a list that grows. Bottom sheet under 640px, centred 480px window at 640px and up (`breakpoint` per surface). Body scrolls.
   - A pop-up with one action lets that button fill the row. Don't add Close just to fill the space; Escape and the dim already close it.
-- **Every action that changes state shows it is working.** From the press until the result, the pressed button (usually the submit button) shows a spinner beside its label and can't be pressed again: `Button loading`, or return a promise from `onClick`. The spinner shows at once and holds at least 400ms. A dialog whose main action is working passes `busy` so it can't be dismissed mid-way.
-- Hover becomes tap on touch.
+- **Working state.** From the press until the result, the pressed button (usually the submit button) shows a spinner beside its label and can't be pressed again: `Button loading`, or return a promise from `onClick`. The spinner shows at once and holds at least 400ms. A dialog whose main action is working passes `busy` so it can't be dismissed mid-way.
 - Phone top bar, signed out: the logo and the Menu button only. The menu lists the pages, then a divider, then Sign in (Secondary) and Start free (main) as full-width buttons, stacked in that order. Sign in is never a plain row among the pages. Two outlined buttons side by side in the bar (Sign in beside Menu) do not fit at 390px with the logo, and look equal when they are not.
-- Destructive actions look different before the press: red link for light actions, filled red for heavy ones.
-- Prefer a plain statement to a disabled control.
-- Errors inline, after the first submit, then live; a refused submit moves focus to the first invalid field.
-- Focus returns to the opener when a dialog, panel or menu closes. Escape and the dim (or a press outside a menu) close it.
+- Destructive actions: a red link for light actions, filled red for heavy ones.
+- Escape and the dim (or a press outside a menu) close a dialog, panel or menu.
 - No toasts: the changed state is the acknowledgement (e.g. "Add to Claude" → "Added").
-- Confirm only serious, hard-to-undo actions, naming the consequence.
 - **Scrolling card row.** One row that scrolls sideways whenever its cards don't fit the width, at any viewport. Cards keep a set width (220–280px) and the next one always peeks in. Light snap: `scroll-snap-type: x proximity`, cards `scroll-snap-align: center`. The row sits still only when every card fits; that depends on the number of cards, never on a fixed screen width. The row is focusable (`tabIndex=0`, `role="region"`, `aria-label`) and takes the standard focus outline. Browser default scroll bar.

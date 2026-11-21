@@ -6,5 +6,3 @@ TextField is the labelled 48px input with an inline error; SearchField is the sa
 <SearchField placeholder="Find a game"/>
 ```
 
-- Errors appear in place, never in a banner. Show them only after the first submit.
-- Text is 16px. Don't shrink it.
