@@ -74,6 +74,7 @@ export let CH_FAIL;
 // Today's chain on Config's Hard: every hidden word found and none given away, but only just. 18 guesses, 14 of them wrong (the most a win allows: a word of n letters is given away on its (n-1)th wrong guess).
 // Each wrong guess starts with the letters the game was showing for that word.
 export let CH_HARD;
+export let CH_LONG;
 
 let SV_COLS;
 const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
@@ -354,6 +355,8 @@ CH_OK = [
 ];
 CH_HARD = { w: CH_TODAY.w, p: [['BELL', 1], ['BAKE', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOM', 2],
   ['SALAD', 3], ['SECOND', 3], ['SERVER', 3], ['SERVED', 3], ['SERVING', 3], ['SERVICE', 3], ['STORE', 4], ['STAGE', 4], ['STAMP', 4], ['STATUS', 4], ['STATIC', 4], ['STATION', 4]] };
+// A seven-word chain with BASKETBALL, a ten-letter word (the deployed limit is three to ten); every word found, one wrong guess.
+CH_LONG = { w: ['STREET', 'BASKETBALL', 'COURT', 'ROOM', 'SERVICE', 'STATION', 'WAGON'], p: [['BASEBALL', 1], ['BASKETBALL', 1], ['COURT', 2], ['ROOM', 3], ['SERVICE', 4], ['STATION', 5]] };
 // Config's Failed on today's chain: ROOM is given away on its third wrong guess (ROO shown, four letters), the other words found.
 CH_FAIL = { w: CH_TODAY.w, p: [['BELL', 1], ['BALL', 1], ['RACE', 2], ['ROAD', 2], ['ROOF', 2], ['SUITE', 3], ['SERVICE', 3], ['STORE', 4], ['STATION', 4]] };
 // ---- Salvage. An 8 by 8 sea, columns A to H, rows 1 to 8, with five wrecks of 4, 3, 3, 2 and 2 squares, straight across or down,
@@ -416,13 +419,13 @@ const dpPickCm = (play, recovered, now) => {
 };
 Object.assign(GS_SESSIONS, {
   'where-today-hard': dpPickWh(true), 'where-today-failed': dpPickWh(false),
-  'chain-today-hard': dpPickCh(CH_HARD), 'chain-today-failed': dpPickCh(CH_FAIL),
+  'chain-today-hard': dpPickCh(CH_HARD), 'chain-today-long': dpPickCh(CH_LONG), 'chain-today-failed': dpPickCh(CH_FAIL),
   'salvage-today-hard': { ...svSession('hard'), now: { line: 'You found all five wrecks on your last dive.', bar: [SLV_PLAYS.hard.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.hard.dives, SLV_DIVES] } },
   'salvage-today-failed': { ...svSession('lost'), now: { line: 'You used all ' + SLV_PLAYS.lost.dives + ' dives and found ' + SLV_PLAYS.lost.raised.size + ' of the 5 wrecks.', bar: [SLV_PLAYS.lost.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.lost.dives, SLV_DIVES] } },
   'common-today-hard': dpPickCm(CM_HARD, false, { line: 'You found all three connections and scored 3 of 15.', bar: ['3 of 15', 3, 15] }),
   'common-today-failed': dpPickCm(CM_FAIL_TODAY, true, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
 });
-DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-today-hard', failed: k + '-today-failed' }; });
+DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-today-hard', failed: k + '-today-failed', ...(k === 'chain' ? { long: 'chain-today-long' } : {}) }; });
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
 DP_PZ = {
   where: {
@@ -608,6 +611,8 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
     { group: g, id: 'library-chain-never-played', label: 'Chain in your library, with the Pass, not yet played', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ never: 'chain' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-chain-failed', label: 'Chain in your library, today failed (a word given away)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (18 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-chain-long', label: 'Chain in your library, a seven-word chain with a ten-letter word', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go(k, { page: 'record' }); } },
+    { group: 'Screens', id: 'session-chain-long', label: '7. Session page: Chain, a seven-word chain with a ten-letter word', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go('session', { id: 'chain-today-long' }); } },
   ] : []),
   ...(k === 'salvage' ? [
     { group: g, id: 'library-salvage-failed', label: 'Salvage in your library, today failed (two wrecks not raised)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },

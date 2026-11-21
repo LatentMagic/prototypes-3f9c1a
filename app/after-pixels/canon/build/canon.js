@@ -5548,6 +5548,7 @@
   let CH_OK;
   let CH_FAIL;
   let CH_HARD;
+  let CH_LONG;
   let SV_COLS;
   const svCell = ([x, y]) => SV_COLS[x] + (y + 1);
   const svAt = (ships) => {
@@ -5973,6 +5974,7 @@
       ["STATIC", 4],
       ["STATION", 4]
     ] };
+    CH_LONG = { w: ["STREET", "BASKETBALL", "COURT", "ROOM", "SERVICE", "STATION", "WAGON"], p: [["BASEBALL", 1], ["BASKETBALL", 1], ["COURT", 2], ["ROOM", 3], ["SERVICE", 4], ["STATION", 5]] };
     CH_FAIL = { w: CH_TODAY.w, p: [["BELL", 1], ["BALL", 1], ["RACE", 2], ["ROAD", 2], ["ROOF", 2], ["SUITE", 3], ["SERVICE", 3], ["STORE", 4], ["STATION", 4]] };
     SV_COLS = "ABCDEFGH";
     dpSvDay = /* @__PURE__ */ (() => {
@@ -6128,6 +6130,7 @@
       "where-today-hard": dpPickWh(true),
       "where-today-failed": dpPickWh(false),
       "chain-today-hard": dpPickCh(CH_HARD),
+      "chain-today-long": dpPickCh(CH_LONG),
       "chain-today-failed": dpPickCh(CH_FAIL),
       "salvage-today-hard": { ...svSession("hard"), now: { line: "You found all five wrecks on your last dive.", bar: [SLV_PLAYS.hard.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.hard.dives, SLV_DIVES] } },
       "salvage-today-failed": { ...svSession("lost"), now: { line: "You used all " + SLV_PLAYS.lost.dives + " dives and found " + SLV_PLAYS.lost.raised.size + " of the 5 wrecks.", bar: [SLV_PLAYS.lost.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.lost.dives, SLV_DIVES] } },
@@ -6135,7 +6138,7 @@
       "common-today-failed": dpPickCm(CM_FAIL_TODAY, true, { line: "You found 1 of the 3 connections and scored 1 of 15.", bar: ["1 of 15", 1, 15] })
     });
     DP_IDS.forEach((k) => {
-      GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed" };
+      GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed", ...k === "chain" ? { long: "chain-today-long" } : {} };
     });
     DP_PZ = {
       where: {
@@ -6477,6 +6480,18 @@
             c.setConnected(true);
             c.setReview({ ed: "hard" });
             c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-chain-long", label: "Chain in your library, a seven-word chain with a ten-letter word", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "long" });
+            c.go(k, { page: "record" });
+          } },
+          { group: "Screens", id: "session-chain-long", label: "7. Session page: Chain, a seven-word chain with a ten-letter word", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "long" });
+            c.go("session", { id: "chain-today-long" });
           } }
         ] : [],
         ...k === "salvage" ? [
