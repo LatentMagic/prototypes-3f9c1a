@@ -406,6 +406,13 @@ const dpPickWh = (ok) => {
   return { ...GS_SESSIONS['where-today'], loss: !ok, hints: r.hints, result: res, share: res, figures: [r.guesses + ' of 6 guesses', '1 hint'], shareLines: [dpWhHead(DP_NO, r, ok), r.marks], lines: r.lines,
     now: { line: ok ? 'You found the country on your sixth guess, with the hint.' : 'You used all six guesses and the hint without finding the country.', bar: ['Guess 6 of 6', 6, 6] } };
 };
+// A long country name: the answer and the hint's country are both "Democratic Republic of the Congo" and the guess before it is "Central African Republic".
+const dpLongWh = { a: 'Democratic Republic of the Congo', g: [['Kenya', 390], ['Central African Republic', 0]], hint: 'From Central African Republic, the country lies south' };
+const dpPickWhLong = () => {
+  const r = dpWhere(dpLongWh, true); const res = GS_RESULT.where({ ok: true, guesses: r.guesses });
+  return { ...GS_SESSIONS['where-today'], hints: r.hints, result: res, share: res, figures: [r.guesses + ' of 6 guesses', '1 hint'], shareLines: [dpWhHead(DP_NO, r, true), r.marks], lines: r.lines,
+    now: { line: 'You found the Democratic Republic of the Congo on your third guess, with the hint.', bar: ['Guess ' + r.guesses + ' of 6', r.guesses, 6] } };
+};
 const dpPickCh = (play) => {
   const r = dpChain(play); const res = dpChResult(r);
   return { ...GS_SESSIONS['chain-today'], loss: r.given > 0, play, result: res, share: res, figures: [r.words + ' words', dpWrong(r.wrong).replace(/^./, (c) => c.toUpperCase())], shareLines: [dpChHead(DP_NO, r), r.marks], lines: r.lines };
@@ -415,7 +422,7 @@ const dpPickCm = (play, recovered, now) => {
   return { ...GS_SESSIONS['common-today'], loss: false, recovered, ...own, share: own.result, now };
 };
 Object.assign(GS_SESSIONS, {
-  'where-today-hard': dpPickWh(true), 'where-today-failed': dpPickWh(false),
+  'where-today-hard': dpPickWh(true), 'where-today-failed': dpPickWh(false), 'where-today-long': dpPickWhLong(),
   'chain-today-hard': dpPickCh(CH_HARD), 'chain-today-failed': dpPickCh(CH_FAIL),
   'salvage-today-hard': { ...svSession('hard'), now: { line: 'You found all five wrecks on your last dive.', bar: [SLV_PLAYS.hard.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.hard.dives, SLV_DIVES] } },
   'salvage-today-failed': { ...svSession('lost'), now: { line: 'You used all ' + SLV_PLAYS.lost.dives + ' dives and found ' + SLV_PLAYS.lost.raised.size + ' of the 5 wrecks.', bar: [SLV_PLAYS.lost.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.lost.dives, SLV_DIVES] } },
@@ -423,6 +430,7 @@ Object.assign(GS_SESSIONS, {
   'common-today-failed': dpPickCm(CM_FAIL_TODAY, true, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
 });
 DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-today-hard', failed: k + '-today-failed' }; });
+GS_ED_SIDS.where.long = 'where-today-long';
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
 DP_PZ = {
   where: {
@@ -608,6 +616,10 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
     { group: g, id: 'library-chain-never-played', label: 'Chain in your library, with the Pass, not yet played', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ never: 'chain' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-chain-failed', label: 'Chain in your library, today failed (a word given away)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (18 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
+  ] : []),
+  ...(k === 'where' ? [
+    { group: g, id: 'library-where-long-country', label: 'Where in your library, today found, a long country name', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go(k, { page: 'record' }); } },
+    { group: 'Daily puzzles 1213', id: 'session-where-long-country', label: 'Session page: Where today, a long country name', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go('session', { id: 'where-today-long' }); } },
   ] : []),
   ...(k === 'salvage' ? [
     { group: g, id: 'library-salvage-failed', label: 'Salvage in your library, today failed (two wrecks not raised)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
