@@ -102,13 +102,13 @@ const dlMoments = (T, end) => {
 const dlBand = (f, health, max) => (f[2] ? { members: f[2], standing: dlStanding(f[2], health, max) } : {});
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 const dlBuild = (s) => {
-  const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {}; let run = 0; const passedRooms = new Set();
+  const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {}; let run = 0; let esc = 0; const passedRooms = new Set();
   // A play may name its foe afresh (`foeName`, by room), the health and band of the room's foe kept.
   const foeOf = () => { const f = cur && DL_FOES[cur.name.toLowerCase()]; const nm = f && (s.foeName || {})[cur.key.toLowerCase()]; return f ? { f: nm ? [nm, ...f.slice(1)] : f, k: cur.key } : null; };
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [], turns: [] }; stops.push(cur);
     // KEEP: the streak starts again from 0 when a fight with a foe begins (delve.md: Streak); it also does when that fight ends, below. A hazard is no fight: its successes add to the streak.
-    if (DL_FOES[(name || '').toLowerCase()] && !DL_HAZARDS.has((name || '').toLowerCase())) run = 0; };
+    if (DL_FOES[(name || '').toLowerCase()] && !DL_HAZARDS.has((name || '').toLowerCase())) { run = 0; esc = 0; } };
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
     if (!cur) open(null, false);
@@ -119,13 +119,15 @@ const dlBuild = (s) => {
     const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
     const u = dlUse(l, s.hero);
     // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number and breaks no streak. It is a key moment only as the run's last turn.
-    if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
+    // The escalation die: each exchange the foe has answered in this fight (a strike-back on a roll or a use) adds one to the next attack, up to 2 (scene fights.ts ESCALATION_CAP). The record's modifier does not carry it, so it is counted here.
+    if (u) { if (u.foe) esc = Math.min(2, esc + 1); u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
       if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) }; }
       // KEEP: a weakness strike has no foe roll, so its foe health is carried as `meter`, drawn as a kill's is ("health alone"), at the health after the blow.
       if (fo && l[0] === 'Weakness') u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
       if (downed) u.downed = downed; turns.push(u); cur.turns.push(u); return; }
     const r = dlRoll(l); if (!r) return;
+    r.hero = s.hero; r.measured = r.fight && esc > 0; if (r.foe) esc = Math.min(2, esc + 1);
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
     const hazard = !!fo && DL_HAZARDS.has(cur.name.toLowerCase()); const graded = !r.action && !r.fight;
@@ -201,6 +203,14 @@ const DlFoeMeter = ({ mt }) => (mt.members
 const dlBeat = (r) => (r.downed ? r.downed.name + ' beaten' : r.passed ? r.passed + ' passed' : '');
 // The Cost fact lists each part in one form (gate 19): the hero's lost health, and the threat a failed hazard turn added. A foe's turn shows its harm in the foe roll row instead.
 const dlCost = (r) => [r.harm > 0 && !r.foe && 'Lost ' + r.harm + ' HP', r.threat > 0 && 'Threat +' + r.threat].filter(Boolean).join(' · ');
+// KEEP: the platform's fight roll row is the stat bonus in bold ("Strength +3"), then a muted aside of the other parts joined by " · " ("-2 Cleave · you have its measure"), with no total and no target, because the target would give away the foe's armour class. A check's row is its total with "vs <DC>" as the aside. A part with a number holds together with non-breaking spaces and the aside breaks only between its " · " parts; it wraps anywhere rather than leave the card.
+const dlSigned = (n) => (n < 0 ? '-' : '+') + Math.abs(n);
+const dlNoBreak = (parts) => parts.map((p) => (/\d/.test(p) ? p.replace(/ /g, '\u00a0') : p)).join(' · ');
+// Derived, not in the record: the stat bonus is the hero sheet's; a modifier above it is proficiency and one below it on a heavy attack is that attack's cut. A fight with no sheet keeps the record's modifier whole.
+const dlFightParts = (r) => { const sheet = DL_HEROES[r.hero] || DL_HEROES['Wren the Rogue']; const base = sheet.stats[r.stat] != null ? sheet.stats[r.stat] : r.mod; const diff = r.mod - base;
+  return { bonus: base, rest: [diff > 0 && dlSigned(diff) + ' proficiency', diff < 0 && r.action === 'Heavy attack' && '-' + Math.abs(diff) + ' ' + (r.move || 'heavy attack'), r.measured && 'you have its measure'].filter(Boolean) }; };
+const DlRollVal = ({ r }) => { if (!r.fight) return <>{r.stat} {r.total} <span className="dl-aside">{dlNoBreak(['vs ' + r.dc])}</span></>;
+  const { bonus, rest } = dlFightParts(r); return <>{r.stat} {dlSigned(bonus)}{rest.length > 0 && <> <span className="dl-aside">{dlNoBreak(rest)}</span></>}</>; };
 const DlFact = ({ label, children, tone }) => (<div className="dvS-fact"><dt>{label}</dt><dd className={tone ? 'is-' + tone : undefined}>{children}</dd></div>);
 // Under a key moment's heading: a roll's number, or a use's kind and name ("Ability · Dynamite").
 const dlTurnName = (r) => (r.use ? dlKindSay(r.what) + ' · ' + r.name : 'Roll ' + r.n);
@@ -221,8 +231,8 @@ const DlHeldStacked = ({ r, x, live }) => { const tcls = r.fumble ? 'fumble' : r
         <dl className="dvS-line">
           {grp(<DlFact label="Room">{dlRoomSaid(r)}</DlFact>,
             r.use && <DlFact label="Used">{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</DlFact>,
-            !r.use && r.action && <DlFact label="Action">{r.action}{r.move && <> <span>{r.move}</span></>}</DlFact>)}
-          {grp(!r.use && <DlFact label="Roll">{r.stat} {r.total} <span>vs {r.dc}</span></DlFact>,
+            !r.use && r.action && <DlFact label="Action">{r.action}{r.move && <> <span className="dl-aside">{r.move}</span></>}</DlFact>)}
+          {grp(!r.use && <DlFact label="Roll"><DlRollVal r={r} /></DlFact>,
             !r.use && <DlFact label="Outcome" tone={tcls}>{dlGrade(r)}</DlFact>,
             !r.foe && dlCost(r) && <DlFact label="Cost">{dlCost(r)}</DlFact>)}
         </dl>
@@ -236,8 +246,8 @@ const DlHeld = ({ m, act, live = true, beside }) => { const r = act ? m.turns[ac
     <dl className="dv3-dl">
       <div><dt>Room</dt><dd>{dlRoomSaid(r)}</dd></div>
       {r.use && <div><dt>Used</dt><dd>{r.name}{r.does && <> <span className="is-does">{r.does}</span></>}</dd></div>}
-      {!r.use && r.action && <div><dt>Action</dt><dd>{r.action}{r.move && <> <span>{r.move}</span></>}</dd></div>}
-      {!r.use && <div><dt>Roll</dt><dd>{r.stat} {r.total} <span>vs {r.dc}</span></dd></div>}
+      {!r.use && r.action && <div><dt>Action</dt><dd>{r.action}{r.move && <> <span className="dl-aside">{r.move}</span></>}</dd></div>}
+      {!r.use && <div><dt>Roll</dt><dd><DlRollVal r={r} /></dd></div>}
       {!r.use && <div><dt>Outcome</dt><dd className={'is-' + tcls}>{dlGrade(r)}</dd></div>}
       {foeRow}
       {dlCost(r) && <div><dt>Cost</dt><dd>{dlCost(r)}</dd></div>}

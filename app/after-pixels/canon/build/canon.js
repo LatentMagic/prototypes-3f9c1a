@@ -3200,6 +3200,7 @@
     let hp = s.hpMax;
     const foeHp = {};
     let run = 0;
+    let esc = 0;
     const passedRooms = /* @__PURE__ */ new Set();
     const foeOf = () => {
       const f = cur && DL_FOES[cur.name.toLowerCase()];
@@ -3212,7 +3213,10 @@
       if (!order.includes(key)) order.push(key);
       cur = { i: stops.length, key, name: name || "First room", back, num: order.indexOf(key) + 1, rolls: [], turns: [] };
       stops.push(cur);
-      if (DL_FOES[(name || "").toLowerCase()] && !DL_HAZARDS.has((name || "").toLowerCase())) run = 0;
+      if (DL_FOES[(name || "").toLowerCase()] && !DL_HAZARDS.has((name || "").toLowerCase())) {
+        run = 0;
+        esc = 0;
+      }
     };
     (s.lines || []).forEach((l) => {
       if (l[0] === "Room") {
@@ -3229,6 +3233,7 @@
       const downed = fo && was > 0 && foeHp[fo.k] === 0 ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
       const u = dlUse(l, s.hero);
       if (u) {
+        if (u.foe) esc = Math.min(2, esc + 1);
         u.t = turns.length + 1;
         u.stop = cur.i;
         u.room = cur.name;
@@ -3247,6 +3252,9 @@
       }
       const r = dlRoll(l);
       if (!r) return;
+      r.hero = s.hero;
+      r.measured = r.fight && esc > 0;
+      if (r.foe) esc = Math.min(2, esc + 1);
       r.n = rolls.length + 1;
       r.t = turns.length + 1;
       r.stop = cur.i;
@@ -3319,6 +3327,19 @@
   const DlFoeMeter = ({ mt }) => mt.members ? /* @__PURE__ */ React$1.createElement("div", { className: "dv6-band" }, /* @__PURE__ */ React$1.createElement("b", null, mt.name), " ", /* @__PURE__ */ React$1.createElement("span", null, mt.standing, " of ", mt.members, " standing")) : /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of });
   const dlBeat = (r) => r.downed ? r.downed.name + " beaten" : r.passed ? r.passed + " passed" : "";
   const dlCost = (r) => [r.harm > 0 && !r.foe && "Lost " + r.harm + " HP", r.threat > 0 && "Threat +" + r.threat].filter(Boolean).join(" · ");
+  const dlSigned = (n) => (n < 0 ? "-" : "+") + Math.abs(n);
+  const dlNoBreak = (parts) => parts.map((p) => /\d/.test(p) ? p.replace(/ /g, " ") : p).join(" · ");
+  const dlFightParts = (r) => {
+    const sheet = DL_HEROES[r.hero] || DL_HEROES["Wren the Rogue"];
+    const base = sheet.stats[r.stat] != null ? sheet.stats[r.stat] : r.mod;
+    const diff = r.mod - base;
+    return { bonus: base, rest: [diff > 0 && dlSigned(diff) + " proficiency", diff < 0 && r.action === "Heavy attack" && "-" + Math.abs(diff) + " " + (r.move || "heavy attack"), r.measured && "you have its measure"].filter(Boolean) };
+  };
+  const DlRollVal = ({ r }) => {
+    if (!r.fight) return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dl-aside" }, dlNoBreak(["vs " + r.dc])));
+    const { bonus, rest } = dlFightParts(r);
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, r.stat, " ", dlSigned(bonus), rest.length > 0 && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dl-aside" }, dlNoBreak(rest))));
+  };
   const DlFact = ({ label, children, tone }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvS-fact" }, /* @__PURE__ */ React$1.createElement("dt", null, label), /* @__PURE__ */ React$1.createElement("dd", { className: tone ? "is-" + tone : void 0 }, children));
   const dlTurnName = (r) => r.use ? dlKindSay(r.what) + " · " + r.name : "Roll " + r.n;
   const DlHeldStacked = ({ r, x, live }) => {
@@ -3332,9 +3353,9 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-stacked" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvS-head" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 52, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : r.use ? dlKindSay(r.what) : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, dlTurnName(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r)))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line" }, grp(
       /* @__PURE__ */ React$1.createElement(DlFact, { label: "Room" }, dlRoomSaid(r)),
       r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Used" }, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does))),
-      !r.use && r.action && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Action" }, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))
+      !r.use && r.action && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Action" }, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dl-aside" }, r.move)))
     ), grp(
-      !r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Roll" }, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc)),
+      !r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Roll" }, /* @__PURE__ */ React$1.createElement(DlRollVal, { r })),
       !r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Outcome", tone: tcls }, dlGrade(r)),
       !r.foe && dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r))
     )), foe))));
@@ -3346,7 +3367,7 @@
     const tcls = r.fumble ? "fumble" : r.tier;
     const mt = dlMeterOf(r);
     const foeRow = r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc)));
-    const ledger = /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : r.use ? dlKindSay(r.what) : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, dlTurnName(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r))))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, dlRoomSaid(r))), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", null, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, r.stat, " ", r.total, " ", /* @__PURE__ */ React$1.createElement("span", null, "vs ", r.dc))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, dlCost(r) && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, dlCost(r))), mt && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })))));
+    const ledger = /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : r.use ? dlKindSay(r.what) : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, dlTurnName(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r))))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, dlRoomSaid(r))), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dl-aside" }, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlRollVal, { r }))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, dlCost(r) && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, dlCost(r))), mt && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })))));
     return beside === false ? /* @__PURE__ */ React$1.createElement(DlHeldStacked, { r, x, live }) : ledger;
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));

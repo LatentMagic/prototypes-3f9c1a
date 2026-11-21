@@ -1256,6 +1256,9 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-width: 1.6; stroke-linecap: round; }
 /* The loss cross's box: no hit area and no pointer, as high as a die so the cross centres on the dice in its row. */
 .dv2-lost { display: grid; place-items: center; }
+
+/* KEEP: a roll's muted aside ("vs 12", "-2 Cleave · you have its measure", a heavy attack's name) breaks only between its " · " parts, a numbered part never splits (non-breaking spaces), and it wraps anywhere rather than leave the card. */
+.dvS-fact dd span.dl-aside, .dv3-dl dd span.dl-aside { white-space: normal; overflow-wrap: anywhere; }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
 /* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).
