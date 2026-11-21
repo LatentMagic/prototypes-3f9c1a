@@ -1361,7 +1361,7 @@
     ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
     ["Ability", "Used shield bash", "Grizzletooth: health 4 → 3", "Struck back: d20 7 vs 10, missed"],
     ["Weakness", "A flask of lamp oil", "Grizzletooth: health 3 → 1"],
-    ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"]
+    ["Strength", "Heavy attack: Cleave", "Hit", "d20s 17 and 9, kept 17 + 1 = 18 vs 12"]
   ];
   const GS_DV_LIVE = [
     ["Room", "Entered the chime run"],
