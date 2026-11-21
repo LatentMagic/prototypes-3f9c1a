@@ -89,22 +89,26 @@ const WhSessBody = ({ s }) => { const p = whRead(s); return <>
 </>; };
 
 // ---- The now card: the last guess (the hidden country on a loss), then the globe and the chart, one group that never splits.
-// Not yet played, the same card with nothing in it: no result tag, no last guess, the globe unlit (0 of 6, grey) and the hint unused. ----
+// Before the first guess the same card is drawn empty (where.md): no last guess, the globe unlit (0 of 6, grey) and the hint unused.
+// Not yet played it carries no result tag and plays; begun with no guess made it says In progress and opens the session. ----
 const WH_NOW_RESULT = { ok: { kind: 'ok', label: 'Solved' }, bad: { kind: 'bad', label: 'Failed' }, live: { kind: 'live', label: 'In progress' } };
 const WH_FRESH = { g: [], hint: null, live: true };
+const WhNowEmpty = ({ c, play, open, result }) => (
+  <LbNowCard gid="where" title={'#' + GS_SESSIONS[c.today].number} result={result} play={play} open={open} next={c.next} className="wh-now">
+    <div className="wh-row">
+      <div className="wh-last is-none"><span className="wh-cap">Last guess</span><b>None yet</b></div>
+      <div className="wh-figs"><WhGlobe p={WH_FRESH} /><WhChart p={WH_FRESH} count /></div>
+    </div>
+  </LbNowCard>);
 const WhNow = ({ c, done, none, children }) => {
   const gs = useGs();
-  if (none) return (
-    <LbNowCard gid="where" title={'#' + GS_SESSIONS[c.today].number} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'where')[0] })} next={c.next} className="wh-now">
-      <div className="wh-row">
-        <div className="wh-last is-none"><span className="wh-cap">Last guess</span><b>None yet</b></div>
-        <div className="wh-figs"><WhGlobe p={WH_FRESH} /><WhChart p={WH_FRESH} count /></div>
-      </div>
-    </LbNowCard>);
+  if (none) return <WhNowEmpty c={c} play={() => gs.playReq({ kind: 'edition', e: edList(gs, 'where')[0] })} />;
   const sid = done ? c.today : c.liveSid; const s = GS_SESSIONS[sid]; if (!s) return children;
-  const p = whRead(s); const g = p.g[p.g.length - 1]; if (!g) return children;
+  const p = whRead(s); const g = p.g[p.g.length - 1];
+  const open = () => gs.go('session', { id: sid });
+  if (!g) return <WhNowEmpty c={c} open={open} result={WH_NOW_RESULT.live} />;
   return (
-    <LbNowCard gid="where" title={'#' + s.number} result={WH_NOW_RESULT[p.r.tone]} open={() => gs.go('session', { id: sid })} next={c.next} className="wh-now">
+    <LbNowCard gid="where" title={'#' + s.number} result={WH_NOW_RESULT[p.r.tone]} open={open} next={c.next} className="wh-now">
       <div className="wh-row">
         <div className={'wh-last is-' + (p.lost ? 'lost' : g.band)}>
           <span className="wh-cap">{p.lost ? 'The country' : 'Last guess'}</span>
