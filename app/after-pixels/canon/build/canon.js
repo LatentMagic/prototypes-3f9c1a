@@ -1651,7 +1651,7 @@
   const GS_ED_SIDS = {
     word: { average: "word-today", hard: "word-today-hard", failed: "word-today-failed" },
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
-    mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
+    mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", "long-names": "mystery-today-long", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
     delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
@@ -4725,9 +4725,34 @@
     hints: ["The killer was in the mending workshop.", "Mr Teodor Lukas was not the killer."],
     truth: ["Mr Owen Price", "Vial of arsenic", "Mending workshop"]
   };
+  const ACC_CASE_LONG = {
+    scene: ACC_CASE_13.scene,
+    suspects: [
+      ["Lady Clementine Hartwell", "Sir Basil’s niece, who thinks his money should be hers."],
+      ["Mr Owen Price", "A night watchman with a gambling problem."],
+      ["Dr Marion Pike", "The curator, who chose every piece and would be ruined by a fake."],
+      ["Mr Teodor Lukas", "A dealer who sold Sir Basil many of his finest pieces."]
+    ],
+    weapons: [
+      ["Poisoned toffee apple", "Glazed, and left on a plate."],
+      ["Clapperboard", "A heavy wooden slate."],
+      ["Ceremonial sword", "With a jewelled handle."],
+      ["Marble bust", "The head of a Roman emperor."]
+    ],
+    places: [
+      ["Conservatory", "Palms and a glass roof."],
+      ["Generator truck", "Parked behind the hall."],
+      ["Dinosaur hall", "A great skeleton under the dome."],
+      ["Mending workshop", "Half-mended vases and pots of glue."]
+    ],
+    clues: ACC_CASE_13.clues,
+    hints: ACC_CASE_13.hints,
+    truth: ["Lady Clementine Hartwell", "Poisoned toffee apple", "Generator truck"],
+    prep: "on"
+  };
   const ACC_TRUTH = ACC_CASE.truth;
   const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
-  const accWithWhere = (cs = ACC_CASE) => "with the " + accLow(cs.truth[1]) + ", in the " + accLow(cs.truth[2]) + ".";
+  const accWithWhere = (cs = ACC_CASE) => "with the " + accLow(cs.truth[1]) + ", " + (cs.prep || "in") + " the " + accLow(cs.truth[2]) + ".";
   const accWrong = (part) => ACC_TRUTH.map((t, k) => k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t);
   const accResult = (p) => p.live ? { tone: "live", word: "In progress" } : p.right ? { tone: "ok", word: "Solved" } : { tone: "bad", word: "Failed" };
   const accSession = ({ no, date, hints, pick, cs = ACC_CASE }) => {
@@ -4962,6 +4987,7 @@
       "mystery-today": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ["Rick Dawson", "Snow shovel", "Cable car hut"] }),
       "mystery-today-avg": accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: ACC_TRUTH }),
       "mystery-today-hard": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_CASE_13.truth, cs: ACC_CASE_13 }),
+      "mystery-today-long": accSession({ no: ACC_CASE.no, date: GS.today, hints: 2, pick: ACC_CASE_LONG.truth, cs: ACC_CASE_LONG }),
       "mystery-live": accSession({ no: ACC_CASE.no, date: GS.today, hints: 1, pick: null }),
       "mystery-begun": accSession({ no: ACC_CASE.no, date: GS.today, hints: 0, pick: null }),
       "mystery-1004": accSession({ no: 62, date: "Sunday 4 October", hints: 1, pick: ACC_TRUTH })
@@ -9902,6 +9928,18 @@
         c.setConnected(true);
         c.setReview({ ed: "average" });
         c.go("mystery", { page: "record" });
+      } },
+      { group: "Library", id: "library-mystery-long-names", label: "Accuse in your library, solved, a 24-character culprit, a 55-character sentence, 12-letter board names", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "long-names" });
+        c.go("mystery", { page: "record" });
+      } },
+      { group: "Screens", id: "session-mystery-long-names", label: "7. Session page: Accuse, solved, long names (24-character culprit, 55-character sentence, 12-letter board names)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "long-names" });
+        c.go("session", { id: "mystery-today-long" });
       } },
       { group: "Library", id: "library-mystery-free", label: "Accuse in your library, free account", stage: (c) => {
         c.setView("free");

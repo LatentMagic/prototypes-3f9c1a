@@ -340,7 +340,7 @@ Object.assign(GS_SESSIONS, {
 export const GS_ED_SIDS = {
   word: { average: 'word-today', hard: 'word-today-hard', failed: 'word-today-failed' },
   groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
-  mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
+  mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', 'long-names': 'mystery-today-long', failed: 'mystery-today' },
   escape: { hard: 'escape-hard' },
   delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use' },
   casebook: { average: 'casebook', hard: 'casebook-hard', failed: 'casebook-failed' },
