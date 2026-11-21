@@ -17,6 +17,7 @@ This file names, for each rule the standard leaves to the project, the component
 | Descriptive action labels | The shop's copy rules are in the monorepo's `specs/projects/mcp-games/ui.md` (see `guidelines/voice.md`) |
 | Destructive actions signal themselves | `Button variant="danger"` (heavy), `TextLink danger` and `Menu` item `danger` (light) |
 | Prefer a statement to a disabled control | `Button disabled` exists |
+| Text-size floor | Sizes are in `guidelines/visual-foundations.md` and `guidelines/page-patterns.md`; the smallest is the 12px figure caption, plus fine print in legal text |
 | Touch-target floor | 48px controls and menu rows, 44px minimum |
 | Pointer cursor | All interactive components |
 | Consistent affordances | `Card href/onClick` and `ListRow href/onClick`: chevron at rest, lift on hover (mouse only), deeper fill on press, focus ring. The whole card or row is one target; nothing clickable inside |

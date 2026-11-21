@@ -6,7 +6,7 @@ This design system follows the monorepo's `specs/governance/standards/ui-design.
 
 - **Group by meaning.** Related information sits together in one clear compartment; unrelated information is visibly apart. Fewer, larger, well-grouped pieces read better than many small ones. Lots of small text with little grouping reads as flicker.
 - **Keep the phone short.** Every block added is scrolling on a phone. Show a summary on the page and move the full set one tap away (its own page, a Disclosure, a panel). If a phone page needs a long scroll to reach the second important thing, cut or move content rather than shrinking it.
-- **Full width.** From 640px nothing runs full width by default; under 640px buttons do (visual-foundations.md, Layout).
+- **Full width by exception.** From 640px nothing runs full width by default; under 640px buttons do (visual-foundations.md, Layout).
 - **States change content, not shape.** A block with several states keeps one layout and about one height, so the page doesn't jump and no state looks emptier than another.
 - **Clickable reads as clickable at rest.** Whole target, visible signal (chevron, underline, button shape), hover only as a bonus.
 

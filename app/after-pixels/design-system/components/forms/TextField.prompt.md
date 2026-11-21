@@ -5,4 +5,3 @@ TextField is the labelled 48px input with an inline error; SearchField is the sa
 <TextField label="Email" value={v} error="Enter an email with an @ in it."/>
 <SearchField placeholder="Find a game"/>
 ```
-
