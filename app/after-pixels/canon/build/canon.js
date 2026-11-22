@@ -1352,7 +1352,7 @@
     ["Strength", "Hit", "d20 17 + 5 = 22 vs 12"],
     ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Gear", "Used a healing draught", "Healed 4, HP 23/24", "Struck back: d20 17 vs 16, hit, 1 damage, HP 23/24"],
+    ["Gear", "Used a healing draught", "Healed 4, HP 24/24", "Struck back: d20 17 vs 16, hit, 1 damage, HP 23/24"],
     ["Strength", "Hit", "d20s 15 and 18, kept 18 + 5 = 23 vs 12"],
     ["Gear", "Took the iron key"],
     ["Room", "Doubled back to the warren", "The chant +1"],
@@ -2150,12 +2150,12 @@
             "Delve",
             ["**Delve #40: The Orc Caves under Raven Hill**", "Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.", "Which hero will you take?"],
             null,
-            [{ type: "entities", title: "Heroes", items: [{ name: "Garrick, the Knight", line: "Best at Strength, Toughness · 23 HP · Defence 10" }, { name: "Tamsin, the Ranger", line: "Best at Agility, Charm · 21 HP · Defence 14" }, { name: "Selwyn, the Wizard", line: "Best at Wits, Wisdom · 17 HP · Defence 12" }] }]
+            [{ type: "entities", title: "Heroes", items: [{ name: "Garrick, the Knight", line: "Best at Strength, Toughness · 24 HP · Armour class 16" }, { name: "Tamsin, the Ranger", line: "Best at Agility, Charm · 22 HP · Armour class 14" }, { name: "Selwyn, the Wizard", line: "Best at Wits, Wisdom · 20 HP · Armour class 12" }] }]
           )
         ] },
         { cap: "A slip costs you health. Then try it another way.", turns: [
           gscU("I cross slowly and test every plank"),
-          gscAi("Delve", "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", null, [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 19, max: 23, tone: "health" }] }]),
+          gscAi("Delve", "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", null, [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 20, max: 24, tone: "health" }] }]),
           gscU("I haul myself along the ropes"),
           gscAi("Delve", "You grip the ropes and haul yourself across, hand over hand, to the far side.", null, [{ type: "roll", label: "Strength", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success" }])
         ] },
@@ -3165,7 +3165,7 @@
     const sheet = DL_HEROES[hero] || DL_HEROES["Wren the Rogue"];
     const name = dlCap(m[1]);
     const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name);
-    const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(" · "));
+    const hp = [...parts.join(" · ").matchAll(/HP\s+(\d+)\/(\d+)/g)].pop();
     return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : "", tier: "use", foe: dlStruck(parts), hp: hp ? +hp[1] : null };
   };
   const DL_END = { won: "Winning blow", fallen: "Last blow", overrun: "Last roll", live: "Latest roll" };

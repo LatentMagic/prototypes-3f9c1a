@@ -152,7 +152,7 @@ const GS_DV_WON = [
   ['Strength', 'Hit', 'd20 17 + 5 = 22 vs 12'],
   ['Dexterity', 'Rifle the stolen sacks', 'Success', 'Natural 20', 'd20 20 + 1 = 21 vs 12'],
   ['Room', 'Entered Snaggle\'s den'],
-  ['Gear', 'Used a healing draught', 'Healed 4, HP 23/24', 'Struck back: d20 17 vs 16, hit, 1 damage, HP 23/24'],
+  ['Gear', 'Used a healing draught', 'Healed 4, HP 24/24', 'Struck back: d20 17 vs 16, hit, 1 damage, HP 23/24'],
   ['Strength', 'Hit', 'd20s 15 and 18, kept 18 + 5 = 23 vs 12'],
   ['Gear', 'Took the iron key'],
   ['Room', 'Doubled back to the warren', 'The chant +1'],

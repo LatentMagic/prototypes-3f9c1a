@@ -82,7 +82,7 @@ const DL_WEAK_DOES = 'no blow back';
 const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1])); return w ? { use: true, what: 'Weakness', name: dlCap(w[1]), does: DL_WEAK_DOES, tier: 'use', foe: null, hp: null } : null; }
   const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
   const parts = l.slice(1).map(String); const sheet = DL_HEROES[hero] || DL_HEROES['Wren the Rogue']; const name = dlCap(m[1]);
-  const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(' · '));
+  const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = [...parts.join(' · ').matchAll(/HP\s+(\d+)\/(\d+)/g)].pop(); // the last HP: the hero's after the whole turn, a strike-back included
   return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : '', tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
 // KEEP: a run that did not win and ends on a use has no settled kicker yet: these words are a roll's, and no state reaches that case.
 const DL_END = { won: 'Winning blow', fallen: 'Last blow', overrun: 'Last roll', live: 'Latest roll' };
