@@ -892,6 +892,10 @@ button.mcp-cb-ent{cursor:pointer}
 .dv3-held { position: relative; }
 /* KEEP: a key moment's heading ends 22px short of the box's right edge, so it never runs under the diamond (the diamond's left corner is 14px in from that edge): "Winning blow" ran 8px under it at a 320px window. */
 .dv3-held.is-mo .dv3-hk { padding-right: 22px; }
+/* KEEP: in a held box 190px wide or less (a 280px window) the 22px would leave the heading's column narrower than its longest word, so the heading starts 16px lower, below the diamond, with no right padding. */
+@container dvlh (max-width: 190px) {
+  .dv3-held.is-mo .dv3-hk { padding-right: 0; padding-top: 16px; }
+}
 .dv3-mk { position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; background: var(--off-white); transform: rotate(45deg); }
 /* ---- The held roll above the route (stacked): one layout at every width, no window or container query. Tokens and existing parts only. ---- */
 /* KEEP: the stacked box is padded 16px all round (the key-moment diamond 16px from its top and right), the roomier of the two paddings above; the extra class beats `.dvE-main:not(.is-beside) .dv3-held` (12px) whatever the order. */
@@ -1121,7 +1125,7 @@ button.mcp-cb-ent{cursor:pointer}
   .dv8.is-3b .esx-card.dl-tab { flex-direction: row; justify-content: flex-start; gap: 12px; height: 40px; padding: 0 12px; }
   .dv8.is-3b .dl-tab-w { font-size: var(--size-2xs); letter-spacing: .07em; }
 }
-/* KEEP: as a list (a sheet 390px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 341px the tabs are squares across and the column is 56px. */
+/* KEEP: as a list (a sheet 390px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 391px the tabs are squares across and the column is 56px. */
 @container dv4 (max-width: calc(390px + 32px)) {
   .dvp-rows { --dvp-fig: 50px; }
 }
