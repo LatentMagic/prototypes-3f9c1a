@@ -1198,6 +1198,15 @@ button.dvL-head[aria-expanded="true"] svg { transform: rotate(270deg); color: va
 .dvL-dots { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .dvL-dots .dl-now-mark.is-use { background: var(--control-edge); }
 .dvL-pass { margin: 0 0 0 auto; flex: none; }
+/* KEEP: a room that has had rolls (every row of the way you went) is always two rows, whatever its name or tally: the name on top, its tally (dice, then dots) on a row under it, their left edges level and 2px apart. The name wraps by words; the tally wraps onto a further row, left-aligned. No breakpoint and no script, so the row never changes shape with its content (the tally used to drop under the name only when the line ran out, right-aligned and away from both name and chevron). Every row is 55px (3px, the 21px name, 2px, the 26px dice, 3px), a room with no tally keeping its height, and its small grey pass mark on the second row, left-aligned like a tally (a mark left at the right end hung off the edge), so the rail's number boxes sit at one spacing; the number box and chevron are centred on that height. */
+.dvL-row.is-two.is-first::before { top: 27px; }
+.dvL-row.is-two.is-last::before { height: 27px; }
+.dvL-row.is-two .dv2-num.dvL-num { margin-top: 13px; }
+.dvL-row.is-two .dvL-line { flex-direction: column; align-items: flex-start; justify-content: center; flex-wrap: nowrap; row-gap: 2px; min-height: 55px; padding: 3px 0; }
+.dvL-row.is-two .dvL-head { min-height: 0; }
+.dvL-row.is-two button.dvL-head svg { top: 17px; }
+.dvL-row.is-two .dvL-tally { justify-content: flex-start; margin-left: 0; min-height: 26px; }
+.dvL-row.is-two .dvL-pass { margin: 0; }
 /* KEEP: a room opens and shuts as the system's dropdown does (height and fade, 220ms), its dice and held roll set in under its name; shut, they are hidden once the motion is over, so a keyboard never lands on one. */
 .dvL-fold > .esx-fold { visibility: hidden; transition: grid-template-rows var(--time-dropdown) var(--ease), opacity var(--time-dropdown) var(--ease), visibility 0s linear var(--time-dropdown); }
 .dvL-fold > .esx-fold.is-open { visibility: visible; transition-delay: 0s; }
