@@ -1119,11 +1119,12 @@ button.mcp-cb-ent{cursor:pointer}
   .dv8.is-3b .dv7-hero b { white-space: normal; text-wrap: balance; overflow-wrap: break-word; }
   .dv8.is-3b .dv8-meters { padding: 0; border-left: 0; }
 }
-/* KEEP: at a sheet 390px wide or less (a window of 456px or less) five squares no longer fit a row at the 11px floor ("Advantage" is 62px wide), so the tabs are a list, two to a row, each with its icon beside its word and the rows filling left to right (Stats, Advantage / Pack, Ability / Fight), the odd last one left in the first column. Two columns hold "Advantage" down to a window of 280px: a tab is then 104px wide, its 4px padding, 24px icon, 6px gap and 62px word taking 102px. */
+/* KEEP: at a sheet 390px wide or less (a window of 456px or less) five squares no longer fit a row at the 11px floor ("Advantage" is 62px wide), so the tabs are a list, two to a row, each with its icon beside its word and Stats across both columns on the first row, then Advantage and Pack, then Ability and Fight (rows of 1, 2, 2), so no tab is left alone on the last row. Two columns hold "Advantage" down to a window of 280px: a tab is then 104px wide, its 4px padding, 24px icon, 6px gap and 62px word taking 102px. */
 @container dv4 (max-width: calc(390px + 32px)) {
   .dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
   .dv8.is-3b .esx-card.dl-tab { flex-direction: row; justify-content: flex-start; gap: 6px; height: 40px; padding: 0 4px; }
   .dv8.is-3b .dl-tab-w { font-size: var(--size-2xs); letter-spacing: 0; }
+  .dv8.is-3b .esx-card.dl-tab:first-child { grid-column: 1 / -1; }
 }
 /* KEEP: from a sheet 254px wide (a window of 320px) a tab is at least 124px wide, so it takes 12px of padding and a 10px gap (122px for "Advantage"). */
 @container dv4 (min-width: calc(254px + 32px)) and (max-width: calc(390px + 32px)) {
@@ -1165,6 +1166,10 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
+/* KEEP: the six stat hexes sit in one row (36px each, 24px apart: 336px) or, where that row does not fit the panel, three and three, centred, never five and one or four and two. */
+@container dv4 (max-width: calc(335.98px + 32px)) {
+  .dv8.is-3b .dv8-stats .dv7-cells { display: grid; grid-auto-flow: row; grid-template-columns: repeat(3, auto); justify-content: center; gap: 16px 24px; }
+}
 /* ---- The route as a list of closed rooms (a run card under 610px: gs-delve.jsx, DL_LIST_BELOW). ---- */
 /* KEEP: as a list the run card has no side padding of its own: the result and each room carry the 16px gutter, as the hero sheet's parts do, so a room's hover band runs edge to edge of the card like the sheet header's, and the rooms' chevrons sit 28px from the edge. */
 .dv2.is-list { padding: 16px 0; }
