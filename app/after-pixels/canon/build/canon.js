@@ -1342,24 +1342,24 @@
   const GS_DV_WON = [
     ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 17 + 0 = 17 vs 12"],
     ["Room", "Entered the chime run"],
-    ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 12", "HP 21/23"],
+    ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 12", "HP 21/24"],
     ["Strength", "Success", "d20 16 + 3 = 19 vs 12"],
     ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 11 + 1 = 12 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
-    ["Strength", "Hit", "d20 13 + 4 = 17 vs 12", "Struck back: d20 8 vs 10, missed"],
+    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 17 vs 16, hit, 2 damage, HP 19/24"],
+    ["Strength", "Hit", "d20 13 + 4 = 17 vs 12", "Struck back: d20 8 vs 16, missed"],
     ["Strength", "Hit", "d20 17 + 5 = 22 vs 12"],
     ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Gear", "Used a healing draught", "Healed 4, HP 22/23", "Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23"],
+    ["Gear", "Used a healing draught", "Healed 4, HP 22/24", "Struck back: d20 17 vs 16, hit, 1 damage, HP 22/24"],
     ["Strength", "Hit", "d20s 15 and 18, kept 18 + 5 = 23 vs 12"],
     ["Gear", "Took the iron key"],
-    ["Room", "Doubled back to the warren", "The ritual +1"],
+    ["Room", "Doubled back to the warren", "The chant +1"],
     ["Lock", "Opened the bone gate with the iron key"],
     ["Room", "Entered the shrine cavern"],
-    ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
-    ["Ability", "Used shield bash", "Grizzletooth: health 4 → 3", "Struck back: d20 7 vs 10, missed"],
+    ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 16, missed"],
+    ["Ability", "Used shield bash", "Grizzletooth: health 4 → 3", "Struck back: d20 7 vs 16, missed"],
     ["Weakness", "A flask of lamp oil", "Grizzletooth: health 3 → 1"],
     ["Strength", "Heavy attack: Cleave", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"]
   ];
@@ -1378,9 +1378,9 @@
     ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 5 = 19 vs 12", "Struck back: d20 9 vs 14, missed"],
     ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 5 = 23 vs 12"],
     ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 12"],
-    ["Room", "Doubled back to the warren", "The ritual +1"]
+    ["Room", "Doubled back to the warren", "The chant +1"]
   ];
-  const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the ritual was completed", "Fell in the warren"];
+  const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the chant was completed", "Fell in the warren"];
   const GS_ES1 = {
     bench: "A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth. The crank turns the 20-tooth gear, which turns the 9, which turns the 3, which turns the 11. The tray reads “One tooth, one letter.” Below it, a drawer with a four-letter lock.",
     clock: "A tall case clock, stopped, its hands stiff. There is a winding hole in its face.",
@@ -1445,16 +1445,16 @@
       art: "delve",
       result: "Elsie rescued",
       date: "Monday 5 October",
-      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 22/23"],
+      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 22/24"],
       tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
       lines: GS_DV_WON,
       endings: GS_DV_ENDINGS,
       reached: "Elsie rescued",
       // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
-      setting: "The Goblin Warren beneath Ashford Mill",
+      setting: "The Goblin Warren",
       end: "won",
       hero: "Bryn the Fighter",
-      hpMax: 23,
+      hpMax: 24,
       threat: 5,
       threatMax: 12,
       lightName: "the torch",
@@ -1463,7 +1463,7 @@
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
       foeMax: { "snaggle's den": 1, "the shrine cavern": 5 },
-      shareLines: ["The Goblin Warren beneath Ashford Mill", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩"]
+      shareLines: ["The Goblin Warren", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
@@ -1704,14 +1704,14 @@
       ...GS_SESSIONS.delve,
       live: true,
       result: "In progress",
-      figures: ["Threat 3/12", "9 rolls", "1 natural 20", "HP 21/21"],
+      figures: ["Threat 3/12", "9 rolls", "1 natural 20", "HP 22/22"],
       tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 },
       lines: GS_DV_LIVE,
       reached: null,
       share: null,
       shareLines: null,
       hero: "Wren the Rogue",
-      hpMax: 21,
+      hpMax: 22,
       threat: 3,
       light: 2,
       foeMax: { "snaggle's den": 2 },
@@ -1728,7 +1728,7 @@
     "word-begun": { ...GS_SESSIONS["word-live"], lines: [] },
     "groups-begun": { ...GS_SESSIONS["groups-live"], figures: ["0 of 4 groups", "No mistakes"], lines: [] },
     "escape-begun": { ...GS_SESSIONS["escape-live"], lines: [] },
-    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 21/21"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } }
+    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 22/22"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } }
   });
   GS_SESSIONS["escape-0928"] = GS_SESSIONS["escape-week"];
   const gsLapsed = (gs) => gs.view !== "pass" && !!gs.sub.hadPass;
@@ -1745,8 +1745,8 @@
     // Escape has no lost outcome: every room can be finished. par: 'under par' | 'at par' | 'over par'.
     escape: (r) => "Escaped in " + r.min + " min, " + r.par,
     casebook: (r) => r.ok ? "Solved" : "Wrong accusation",
-    // The setting's own ending words (The Goblin Warren beneath Ashford Mill).
-    delve: (r) => ({ won: "Elsie rescued", ritual: "Too late: the ritual was completed", fell: "Fell in the warren" })[r.end],
+    // The setting's own ending words (The Goblin Warren).
+    delve: (r) => ({ won: "Elsie rescued", chant: "Too late: the chant was completed", fell: "Fell in the warren" })[r.end],
     // A restarted day (no ending) reads Not finished.
     hunter: (r) => r.restarted ? "Not finished" : "Finished"
   };
@@ -3092,32 +3092,32 @@
   const dlStanding = (members, health, max) => health <= 0 ? 0 : Math.ceil(health * members / max);
   const DL_CARRY = 3;
   const DL_HEROES = {
-    // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
-    // the starting gear a healing draught and a crowbar (a key), 23 health, stats as the archetype sets them.
+    // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the protection an ox shield,
+    // the starting gear a healing draught and a crowbar (a key), 24 health, armour class 16, stats as the archetype sets them.
     "Bryn the Fighter": {
       name: "Bryn",
       cls: "Fighter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       abilities: [{ name: "Shield bash", of: 1, ult: true, does: "Strikes at once, no roll" }],
-      fight: { defence: 10, armour: 2, armourName: "ox shield", heavy: { name: "Cleave", needs: 14, dmg: 7 } },
+      fight: { ac: 16, protection: "ox shield", heavy: { name: "Cleave", dmg: 7 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
     },
-    // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak (armour value as Bryn's, sample), a honey cake (heals 6) and an axe (a key).
+    // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, armour class and 24 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak, a honey cake (heals 6) and an axe (a key).
     "Hal the Woodcutter": {
       name: "Hal",
       cls: "Woodcutter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       abilities: [{ name: "Tree-felling", of: 1, ult: true, does: "Strikes at once, no roll" }],
-      fight: { defence: 10, armour: 2, armourName: "elder-bark cloak", heavy: { name: "Timberfall", needs: 14, dmg: 7 } },
+      fight: { ac: 16, protection: "elder-bark cloak", heavy: { name: "Timberfall", dmg: 7 } },
       gear: [{ name: "Honey cake", kind: "once", does: "Heals 6" }, { name: "Axe", kind: "key", does: "" }]
     },
-    // Wren, from the same source (rogue): defence 14, protection 1 (a leather jerkin), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
+    // Wren, from the same source (rogue): armour class 14, protection a leather jerkin, heavy attack Flurry for 9, ultimate Sneak attack, 22 health, gear a healing draught and a rope (a key).
     "Wren the Rogue": {
       name: "Wren",
       cls: "Rogue",
       stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
       abilities: [{ name: "Sneak attack", of: 1, ult: true, does: "Strikes at once, no roll" }],
-      fight: { defence: 14, armour: 1, armourName: "leather jerkin", heavy: { name: "Flurry", needs: 13, dmg: 6 } },
+      fight: { ac: 14, protection: "leather jerkin", heavy: { name: "Flurry", dmg: 9 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Coil of rope", kind: "key", does: "" }]
     }
   };
@@ -3200,6 +3200,7 @@
     let hp = s.hpMax;
     const foeHp = {};
     let run = 0;
+    let best = 0;
     const escs = {};
     const passedRooms = /* @__PURE__ */ new Set();
     const foeOf = () => {
@@ -3290,6 +3291,7 @@
         }
       }
       run = r.tier === "strong" ? run + 1 : 0;
+      best = Math.max(best, run);
       if (fo && !hazard && foeHp[fo.k] === 0) run = 0;
       rolls.push(r);
       turns.push(r);
@@ -3305,8 +3307,9 @@
     const moments = dlMoments(lost ? [...turns, lost] : turns, end);
     const closer = turns[turns.length - 1];
     if (closer && closer.use && end === "won") closer.won = true;
-    return { stops, rolls, turns, hp, run, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
+    return { stops, rolls, turns, hp, run, best, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
   };
+  const dlBest = (s) => dlBuild(s).best;
   const dlKindSay = (k) => k === "Weakness" ? "Weak spot" : k;
   const dlSay = (r, foe = true) => r.lost && r.over ? "The threat filled in " + r.room + ": " + r.name : r.lost ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
@@ -3350,7 +3353,7 @@
       return k.length ? /* @__PURE__ */ React$1.createElement("div", { className: "dvS-grp" }, k.map((n, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, n))) : null;
     };
     const mt = dlMeterOf(r);
-    const foe = mt && /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line is-foe" }, r.foe && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvS-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc))), r.foe && dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r)), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-meter" + (mt.members ? " is-band" : "") }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })));
+    const foe = mt && /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line is-foe" }, r.foe && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Foe roll" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvS-foe" }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs your AC ", r.foe.dc))), r.foe && dlCost(r) && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Cost" }, dlCost(r)), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-meter" + (mt.members ? " is-band" : "") }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })));
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-stacked" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-body" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvS-head" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 52, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : r.use ? dlKindSay(r.what) : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, dlTurnName(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r)))), /* @__PURE__ */ React$1.createElement("div", { className: "dvS-lines" }, /* @__PURE__ */ React$1.createElement("dl", { className: "dvS-line" }, grp(
       /* @__PURE__ */ React$1.createElement(DlFact, { label: "Room" }, dlRoomSaid(r)),
       r.use && /* @__PURE__ */ React$1.createElement(DlFact, { label: "Used" }, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does))),
@@ -3367,7 +3370,7 @@
     const x = m.mom[r.t];
     const tcls = r.fumble ? "fumble" : r.tier;
     const mt = dlMeterOf(r);
-    const foeRow = r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs defence ", r.foe.dc)));
+    const foeRow = r.foe && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-foe" }, /* @__PURE__ */ React$1.createElement("dt", null, "Foe roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe }), /* @__PURE__ */ React$1.createElement("b", { className: r.foe.hit ? "is-err" : "" }, r.foe.hit ? "Hit you for " + r.foe.dmg : "Missed you"), " ", /* @__PURE__ */ React$1.createElement("span", null, "vs your AC ", r.foe.dc)));
     const ledger = /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-held is-ledger" + (x ? " is-mo" : "") }, x && /* @__PURE__ */ React$1.createElement("i", { className: "dv3-mk", role: "img", "aria-label": "Key moment" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lh" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 72, surface: "popup" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv3-lht" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv3-hk" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv3-k" }, x ? x.kicker : r.use ? dlKindSay(r.what) : "Roll " + r.n), x && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-n" }, dlTurnName(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dv3-beat" }, dlBeat(r))))), /* @__PURE__ */ React$1.createElement("dl", { className: "dv3-dl" }, /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Room"), /* @__PURE__ */ React$1.createElement("dd", null, dlRoomSaid(r))), r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Used"), /* @__PURE__ */ React$1.createElement("dd", null, r.name, r.does && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, r.does)))), !r.use && r.action && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Action"), /* @__PURE__ */ React$1.createElement("dd", null, r.action, r.move && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dl-aside" }, r.move)))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Roll"), /* @__PURE__ */ React$1.createElement("dd", null, /* @__PURE__ */ React$1.createElement(DlRollVal, { r }))), !r.use && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Outcome"), /* @__PURE__ */ React$1.createElement("dd", { className: "is-" + tcls }, dlGrade(r))), foeRow, dlCost(r) && /* @__PURE__ */ React$1.createElement("div", null, /* @__PURE__ */ React$1.createElement("dt", null, "Cost"), /* @__PURE__ */ React$1.createElement("dd", null, dlCost(r))), mt && /* @__PURE__ */ React$1.createElement("div", { className: "dv3-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })))));
     return beside === false ? /* @__PURE__ */ React$1.createElement(DlHeldStacked, { r, x, live }) : ledger;
   };
@@ -3589,9 +3592,8 @@
     const f = c.fight;
     if (!f) return [];
     return [
-      { key: "def", label: "Defence", num: f.defence, text: "A foe’s d20 must reach " + f.defence + " to hit you." },
-      { key: "arm", label: "Armour", num: f.armour, tip: f.armourName, text: "The " + f.armourName + ": takes " + f.armour + " damage off blows each fight, full again at the next." },
-      { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.needs, text: "Needs " + f.heavy.needs + " to hit, " + f.heavy.dmg + " damage." }
+      { key: "ac", label: "Armour class", num: f.ac, tip: f.protection, text: "A foe’s attack must reach " + f.ac + " to hit you." },
+      { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.dmg, text: f.heavy.dmg + " damage. Harder to land than a plain attack, and a miss leaves you open." }
     ];
   };
   const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== "used").length) }, (_, i) => c.gear[i] || null);
@@ -3624,7 +3626,7 @@
         key: "fight",
         head: "Fight",
         icon: "fight",
-        say: "defence " + c.fight.defence,
+        say: "armour class " + c.fight.ac,
         rows: dlFight(c).map((f) => ({ key: f.key, fig: /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, f.num), name: f.label, tag: f.kind || f.tip, text: f.text }))
       }] : []
     ];
@@ -3739,21 +3741,21 @@
       shareLines: null,
       threat: 6,
       light: 4,
-      figures: ["Threat 6/12", "8 rolls", "HP 0/23"],
+      figures: ["Threat 6/12", "8 rolls", "HP 0/24"],
       tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12", "HP 21/23"],
+        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12", "HP 21/24"],
         ["Room", "Entered the chime run"],
-        ["Strength", "Failure", "d20 3 + 3 = 6 vs 12", "HP 19/23"],
+        ["Strength", "Failure", "d20 3 + 3 = 6 vs 12", "HP 19/24"],
         ["Strength", "Success", "d20 17 + 3 = 20 vs 12"],
-        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 12", "HP 17/23"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 12", "HP 17/24"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23"],
-        ["Strength", "Miss", "d20 7 + 4 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23"],
-        ["Strength", "Miss", "Natural 1", "d20 1 + 5 = 6 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
-        ["Strength", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
+        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 16, hit, 4 damage, HP 13/24"],
+        ["Strength", "Miss", "d20 7 + 4 = 11 vs 12", "Struck back: d20 17 vs 16, hit, 6 damage, HP 7/24"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 5 = 6 vs 12", "Struck back: d20 16 vs 16, hit, 6 damage, HP 1/24"],
+        ["Strength", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 16 vs 16, hit, 6 damage, HP 0/24"]
       ]
     };
     GS_SESSIONS["delve-story-fall"] = {
@@ -3763,7 +3765,7 @@
       lostOff: { name: "Crank panel", harm: 4 },
       setting: "Cold Sleep",
       hero: "Wren the Rogue",
-      hpMax: 21,
+      hpMax: 22,
       threat: 2,
       threatMax: 12,
       lightName: null,
@@ -3774,35 +3776,35 @@
       reached: "Fell in the medbay",
       share: "Fell in the medbay",
       shareLines: null,
-      figures: ["Threat 2/12", "5 rolls", "HP 0/21"],
+      figures: ["Threat 2/12", "5 rolls", "HP 0/22"],
       tracks: { progress: 3, rooms: 6, threat: 2, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
         ["Room", "Entered the cryo deck"],
         ["Intelligence", "Read the wake log", "Success", "d20 15 + 0 = 15 vs 12"],
-        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 12", "HP 17/21"],
+        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 12", "HP 17/22"],
         ["Room", "Entered the armoury"],
-        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 12", "HP 11/21"],
+        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 12", "HP 11/22"],
         ["Wisdom", "Listen for the hunt", "Partial success", "d20 11 + 1 = 12 vs 12"],
-        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 12", "HP 4/21"],
+        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 12", "HP 4/22"],
         ["Room", "Entered the medbay"]
       ]
     };
     GS_SESSIONS["delve-won-by-use"] = (() => {
       const base = GS_SESSIONS.delve.lines;
       const cut = base.findIndex((l) => l[0] === "Ability");
-      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 5 = 22 vs 12", "Struck back: d20 8 vs 10, missed"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
+      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 5 = 22 vs 12", "Struck back: d20 8 vs 16, missed"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
     })();
     GS_SESSIONS["delve-hard"] = {
       ...GS_SESSIONS.delve,
       loss: true,
       end: "overrun",
-      result: "Too late: the ritual was completed",
-      reached: "Too late: the ritual was completed",
-      share: "Too late: the ritual was completed",
+      result: "Too late: the chant was completed",
+      reached: "Too late: the chant was completed",
+      share: "Too late: the chant was completed",
       shareLines: null,
       hero: "Wren the Rogue",
-      hpMax: 21,
+      hpMax: 22,
       threat: 12,
       foeMax: { "the shrine cavern": 5 },
       // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
@@ -3811,52 +3813,52 @@
       lightName: "the watchman's round",
       light: 0,
       lightMax: 9,
-      figures: ["Threat 12/12", "24 rolls", "1 natural 20", "HP 12/21"],
+      figures: ["Threat 12/12", "24 rolls", "1 natural 20", "HP 12/22"],
       tracks: { progress: 5, rooms: 5, threat: 12, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 19/21"],
+        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 19/22"],
         ["Room", "Entered the chime run"],
-        ["Dexterity", "Failure", "d20 8 + 3 = 11 vs 12", "HP 17/21"],
+        ["Dexterity", "Failure", "d20 8 + 3 = 11 vs 12", "HP 17/22"],
         ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
         ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 12"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
         ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 4 = 19 vs 12", "Struck back: d20 11 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 5 = 9 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21"],
+        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 5 = 9 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/22"],
         ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
         ["Dexterity", "Hit", "d20 15 + 5 = 20 vs 12"],
-        ["Room", "Doubled back to the chime run", "The ritual +1"],
+        ["Room", "Doubled back to the chime run", "The chant +1"],
         ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
         ["Room", "Entered Snaggle's den"],
         ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 13 vs 14, missed"],
         ["Dexterity", "Hit", "Natural 20", "d20 20 + 5 = 25 vs 12", "Struck back: d20 8 vs 14, missed"],
         ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 5 = 17 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
-        ["Room", "Doubled back to Snaggle's den", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
+        ["Room", "Doubled back to Snaggle's den", "The chant +1"],
         ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
         ["Strength", "Force the bone gate", "Failure", "d20 6 + 0 = 6 vs 12"],
         ["Strength", "Force the bone gate", "Failure", "d20 11 + 0 = 11 vs 12"],
         ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 12"],
-        ["Room", "Doubled back to the chime run", "The ritual +1"],
+        ["Room", "Doubled back to the chime run", "The chant +1"],
         ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
         ["Room", "Entered the shrine cavern"],
-        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
+        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/22"],
         ["Dexterity", "Hit", "d20 17 + 4 = 21 vs 12", "Struck back: d20 6 vs 14, missed"],
         ["Dexterity", "Hit", "d20 18 + 5 = 23 vs 12", "Struck back: d20 9 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 5 and 6, kept 6 + 5 = 11 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
+        ["Dexterity", "Miss", "d20s 5 and 6, kept 6 + 5 = 11 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/22"],
         ["Dexterity", "Hit", "d20 11 + 5 = 16 vs 12", "Struck back: d20 12 vs 14, missed"],
-        ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
+        ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/22"]
       ]
     };
     GS_SESSIONS["delve-overrun-back"] = (() => {
       const L = GS_SESSIONS["delve-hard"].lines;
       const at = L.findIndex((l) => l[1] === "Entered the shrine cavern");
-      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...L.slice(0, at - 1), ...L.slice(at), ["Room", "Doubled back to the warren", "The ritual +1"]] };
+      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...L.slice(0, at - 1), ...L.slice(at), ["Room", "Doubled back to the warren", "The chant +1"]] };
     })();
     GS_SESSIONS["delve-hazard"] = {
       ...GS_SESSIONS.delve,
@@ -3871,14 +3873,14 @@
       shareLines: null,
       setting: "The Briar Keep",
       hero: "Hal the Woodcutter",
-      hpMax: 23,
+      hpMax: 24,
       threat: 2,
       threatMax: 14,
       lightName: null,
       light: 0,
       lightMax: 0,
       foeMax: {},
-      figures: ["Threat 2/14", "10 rolls", "HP 20/23"],
+      figures: ["Threat 2/14", "10 rolls", "HP 20/24"],
       tracks: { progress: 4, rooms: 6, threat: 2, threatMax: 14 },
       sheet: { used: {}, insp: true },
       lines: [
@@ -3888,12 +3890,12 @@
         ["Room", "Entered the well court"],
         ["Charisma", "Flatter the witch", "Partial success", "d20 13 + 0 = 13 vs 12"],
         ["Room", "Entered the great hall"],
-        ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 vs 10, missed"],
-        ["Strength", "Hit", "d20 12 + 4 = 16 vs 12", "Struck back: d20 12 vs 10, hit, 1 damage, HP 22/23"],
+        ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 vs 16, missed"],
+        ["Strength", "Hit", "d20 12 + 4 = 16 vs 12", "Struck back: d20 16 vs 16, hit, 2 damage, HP 22/24"],
         ["Strength", "Hit", "d20 14 + 5 = 19 vs 12"],
         ["Room", "Entered the thorn stair"],
         ["Strength", "Partial success", "d20 11 + 3 = 14 vs 12"],
-        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 20/23"],
+        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 20/24"],
         ["Strength", "Success", "d20 15 + 3 = 18 vs 12"],
         ["Strength", "Success", "d20 16 + 3 = 19 vs 12"]
       ]
@@ -3901,6 +3903,7 @@
   }
   let DV_END;
   let DV_RUN1;
+  const DV_WEEK_TITLE = "This week’s run";
   let DV_ALL;
   let DV_LIVE;
   let DV_DONE;
@@ -3912,6 +3915,12 @@
   const dvStatus = (s) => !s.played ? { kind: "none", label: "Not played" } : !s.end ? { kind: "live", label: "In progress" } : DV_END[s.end];
   let DV_FIRST;
   const dvSid = (s) => s === DV_FIRST || s && s.id === DV_FIRST.id ? "delve-first" : "delve-" + s.id;
+  const dvCounted = (list) => list.map((x) => ({ ...x, done: x.played }));
+  const dvStreak = (list) => lbStreak(dvCounted(list));
+  const dvSrcOf = (sid) => {
+    const s = GS_SESSIONS[sid];
+    return { ...DV_DONE, end: s.loss ? "lost" : "won", streak: dlBest(s), lines: s.lines };
+  };
   const dvRun = (gs) => {
     const by = {};
     phVisible(gs).forEach((p) => {
@@ -3926,18 +3935,18 @@
     const fresh = !lbNow(gs, "delve");
     const ach = phAch(gs, "delve", DV_ACH);
     const list = dvRun(gs);
-    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: DV_RUN1.title, rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
+    return /* @__PURE__ */ React$1.createElement("main", { key: k, className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, fresh ? /* @__PURE__ */ React$1.createElement(DlNowEmpty, { title: DV_WEEK_TITLE, rooms: DV_ROOMS, next: "Next run: " + DV_NEXT, onPlay: () => gs.play("Delve") }) : /* @__PURE__ */ React$1.createElement(DlNow, { s: lbWeekDone(gs) ? DV_DONE : DV_LIVE }), /* @__PURE__ */ React$1.createElement(LbRun, { n: dvStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })));
   };
   const registerDelveLibrary = () => {
     GS_LIBRARY.delve = DvLibrary;
     GS_EDITIONS.delve = (gs) => edRuns(gs, "delve", { all: DV_ALL, done: DV_DONE, doneStatus: (g) => gsSessStatus(GS_SESSIONS[gsEdPick("delve", g) || "delve"]), status: dvStatus, openCur: (g) => g.go("session", { id: "delve" }), open: (g, x) => g.go("session", { id: dvSid(x) }) });
   };
   function initGsDelveLibrary() {
-    DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, ritual: { kind: "bad", label: GS_RESULT.delve({ end: "ritual" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
-    DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren beneath Ashford Mill", played: true, end: null };
+    DV_END = { won: { kind: "ok", label: GS_RESULT.delve({ end: "won" }) }, chant: { kind: "bad", label: GS_RESULT.delve({ end: "chant" }) }, fell: { kind: "bad", label: GS_RESULT.delve({ end: "fell" }) } };
+    DV_RUN1 = { id: "dv0", d: new Date(2026, 9, 5), date: "5 October", month: "October", title: "The Goblin Warren", played: true, end: null };
     DV_ALL = [DV_RUN1];
-    DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 9, rooms: 4, ritual: 3 };
-    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
+    DV_LIVE = { ...DV_RUN1, hero: "Wren", heroFull: "Wren the Rogue", rolls: 9, rooms: 4, chant: 3 };
+    DV_DONE = { ...DV_RUN1, hero: "Bryn", heroFull: "Bryn the Fighter", end: "won", rolls: 11, rooms: 5, chant: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
     DV_ROOMS = 5;
     DV_NEXT = "Monday 12 October";
     DV_ACH = [
@@ -5115,7 +5124,7 @@
     const ach = phAch(gs, "delve", DV_ACH);
     return /* @__PURE__ */ React$1.createElement("main", { key: cprKey(gs), className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, cprNowCard(gs, "delve", ach), !lapsed && /* @__PURE__ */ React$1.createElement(LbRunPass, { unit: "weeks", weeks: lbRunOf(DV_ALL) }), lapsed && (() => {
       const list = dvRun(gs);
-      const f = lbFrozen(lbRunOf(list), list, (s) => s.date);
+      const f = lbFrozen(lbRunOf(list), dvCounted(list), (s) => s.date);
       return /* @__PURE__ */ React$1.createElement(LbRun, { n: f.n, unit: "weeks", weeks: f.weeks });
     })(), /* @__PURE__ */ React$1.createElement(LbAch, { items: ach, badges: DV_BADGES, access, ed: GS_GAMES.delve.ed }), /* @__PURE__ */ React$1.createElement(LbRecent, { title: "Your runs", allLabel: "See in History", empty: "Your runs appear here once you have played one." })), /* @__PURE__ */ React$1.createElement(CprPassEnd, { className: "gs-muted gs-pu-wrap", text: "Earlier " + GS_GAMES.delve.ed[1] + " need the Pass." }));
   };
@@ -6864,7 +6873,7 @@
     if (!p.cur) return p;
     const sid = p.cur && PZ[p.gid] ? PZ[p.gid].today : gsEdPick(p.gid, gs);
     if (!sid || sid === p.sid) return p;
-    return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid) };
+    return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid), ...p.srcOf ? { src: p.srcOf(sid) } : {} };
   };
   const phSeedNew = (gs, gid) => gs.view === "free" && (gid === "word" || gid === "escape") && cprStore.get().freeNew && !(gs.review && gs.review.today === "played");
   const phThisEd = (p, gs) => {
@@ -7129,7 +7138,7 @@
       edKey: "dv-r0",
       __dated: true,
       date: pzLong(PH_MORE.delve.at) + ", " + phTime(PH_MORE.delve.at),
-      figures: ["Threat 0/12", "1 roll", "HP 21/21"],
+      figures: ["Threat 0/12", "1 roll", "HP 22/22"],
       threat: 0,
       foeMax: {},
       lightName: void 0,
@@ -7169,7 +7178,7 @@
       if (!s.played) return;
       const ed = phParse(s.date);
       const cur = i === 0;
-      const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: "delve", open: phSess("delve"), now: { status: PH_LIVE, open: phLive("delve-live") } } : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
+      const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, srcOf: dvSrcOf, sid: "delve", open: phSess("delve"), now: { status: PH_LIVE, open: phLive("delve-live") } } : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
       phEd("delve", s.id, s.title, ed, [first], cur);
     });
     HG_DAYS.forEach((x, i) => {
@@ -8191,7 +8200,7 @@
           "Fight whatever stands in your way, and every miss brings the danger a step closer. Say what you try; the die decides. Once a room is clear, the choice is yours: a search might turn up healing or a clue to the villain’s weak spot, but it can cost you. Search a little longer, or push on while you still can."
         ] },
         who: { ai: "Tells the story as your Game Master, voices everyone you meet, and asks what you do next.", server: "Rolls every die, yours and your enemies’, and keeps each room hidden until you walk in." },
-        week: { title: "This week’s run", line: "Get Elsie out of the warren beneath Ashford Mill before the ritual is complete.", session: "delve" }
+        week: { title: "This week’s run", line: "Get Elsie out of the warren beneath Ashford Mill before the chant is complete.", session: "delve" }
       },
       barrow: {
         box: {

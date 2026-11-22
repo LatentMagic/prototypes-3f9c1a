@@ -14,7 +14,7 @@ import { lbDate, lbShort, lbNow, lbOld, lbMonth, lbWeekDone, LbBack, LbTools, Lb
 import { DP_IDS, cmPartway } from './gs-where-chain-salvage.jsx';
 import { CB_ALL, CB_DONE, CB_LIVE, cbDone } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
-import { DV_ALL, DV_DONE, dvSid, DV_END } from './gs-delve-library.jsx';
+import { DV_ALL, DV_DONE, dvSid, DV_END, dvSrcOf } from './gs-delve-library.jsx';
 import { PZ, pzStatus, pzLong, pzSession } from './gs-puzzles-library.jsx';
 import { HG_DAYS, hgStatus, hgSid } from './gs-hunter-library.jsx';
 import { BW_T1, BW_REC1 } from './gs-barrow-library.jsx';
@@ -132,7 +132,7 @@ const phCur = (p, gs) => {
   if (!p.cur) return p;
   const sid = p.cur && PZ[p.gid] ? PZ[p.gid].today : gsEdPick(p.gid, gs);
   if (!sid || sid === p.sid) return p;
-  return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid) };
+  return { ...p, sid, status: gsSessStatus(GS_SESSIONS[sid]), open: phSess(sid), ...(p.srcOf ? { src: p.srcOf(sid) } : {}) };
 };
 // The free seed: a free player has not played today's Guess or Escape's first room (cprStore freeNew) until Config → This edition picks something.
 export const phSeedNew = (gs, gid) => gs.view === 'free' && (gid === 'word' || gid === 'escape') && cprStore.get().freeNew && !(gs.review && gs.review.today === 'played');
@@ -397,7 +397,7 @@ PH_MORE = {
 GS_SESSIONS['escape-r0-live'] = { ...GS_SESSIONS['escape-live'], edKey: 'escape-r0', __dated: true, date: pzLong(PH_MORE.escape.at) + ', ' + phTime(PH_MORE.escape.at),
   lines: [['Move 1', 'Examined the logbook on the desk', 'The last entry stops mid-sentence, three nights before the storm.'], ['Move 2', 'Examined the lamp room hatch', 'The hatch is bolted from above.']] };
 GS_SESSIONS['delve-r0-live'] = { ...GS_SESSIONS['delve-live'], edKey: 'dv-r0', __dated: true, date: pzLong(PH_MORE.delve.at) + ', ' + phTime(PH_MORE.delve.at),
-  figures: ['Threat 0/12', '1 roll', 'HP 21/21'], threat: 0, foeMax: {}, lightName: undefined, light: undefined, lightMax: undefined, sheet: { used: {}, insp: true }, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 0, threatMax: 12 }, endings: null, reached: null, shareLines: null,
+  figures: ['Threat 0/12', '1 roll', 'HP 22/22'], threat: 0, foeMax: {}, lightName: undefined, light: undefined, lightMax: undefined, sheet: { used: {}, insp: true }, setting: 'The Drowned Chapel under Fenwick Marsh', tracks: { progress: 2, rooms: 5, threat: 0, threatMax: 12 }, endings: null, reached: null, shareLines: null,
   lines: [['Room', 'Entered the flooded nave'], ['Dexterity', 'Cross the sunken pews', 'Success', 'd20 14 + 3 = 17 vs 12'], ['Room', 'Entered the bell loft']] };
 PH_MORE_PLAYS = Object.values(PH_MORE).map((m) => ({ gid: m.gid, ed: m.id, edTitle: m.title, edDate: m.d, n: 0, cur: false, pid: m.id + '-0', at: m.at, status: PH_LIVE, sid: m.sid, src: {}, open: phSess(m.sid) }));
 Object.entries(PZ).forEach(([id, c]) => c.all.forEach((x) => {
@@ -420,7 +420,7 @@ CB_ALL.forEach((cb, k) => {
 DV_ALL.forEach((s, i) => {
   if (!s.played) return;
   const ed = phParse(s.date); const cur = i === 0;
-  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phLive('delve-live') } }
+  const first = cur ? { at: phAt(ed, 18, 30), status: DV_END.won, src: DV_DONE, srcOf: dvSrcOf, sid: 'delve', open: phSess('delve'), now: { status: PH_LIVE, open: phLive('delve-live') } }
     : { at: phAt(ed, 18, 30, i % 3), status: DV_END[s.end], src: s, sid: dvSid(s), open: phSess(dvSid(s)) };
   phEd('delve', s.id, s.title, ed, [first], cur);
 });
