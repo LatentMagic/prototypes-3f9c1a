@@ -7712,7 +7712,7 @@
   const HB_U = (text) => ({ from: "user", text });
   const HB_A = (tool, text, blocks, after) => ({ from: "ai", tool, text, blocks, after });
   const HB_PICTURE = { type: "picture", src: "assets/home-block-delve.svg", alt: "A hero in armour on a ridge at dawn, a burning tower behind" };
-  const HB_TRACK = (advance) => ({ type: "track", items: [{ label: "Garrick’s health", value: 23, max: 23, tone: "health" }, { label: "The drums", value: advance, max: 12, tone: "threat" }] });
+  const HB_TRACK = (advance) => ({ type: "track", items: [{ label: "Garrick’s health", value: 24, max: 24, tone: "health" }, { label: "The drums", value: advance, max: 12, tone: "threat" }] });
   const HB_ROWS = [{ letters: "COILS", marks: "hhxhx" }, { letters: "CLOUD", marks: "hnnnh" }];
   const HB_BOARD = { type: "tilegrid", length: 5, count: 6, rows: HB_ROWS };
   const HB_PLAYED = (n) => ({ type: "tilegrid", length: 5, count: n, rows: HB_ROWS.slice(0, n) });
@@ -8002,7 +8002,7 @@
       { from: "user", text: "Garrick" },
       { from: "ai", text: "You are Garrick, a knight, strong and tough and slow to fall." },
       { from: "user", text: "I cross slowly and test every plank" },
-      { from: "ai", text: "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", after: [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 19, max: 23, tone: "health" }] }] },
+      { from: "ai", text: "The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.", after: [{ type: "roll", label: "Agility", roll: 6, mod: 1, target: 12, result: "miss", outcome: "Failure · 4 damage" }, { type: "track", items: [{ label: "Garrick’s health", value: 20, max: 24, tone: "health" }] }] },
       { from: "user", text: "I haul myself along the ropes" },
       { from: "ai", text: "You grip the ropes and haul yourself across, hand over hand, to the far side.", after: [{ type: "roll", label: "Strength", roll: 15, mod: 3, target: 12, result: "hit", outcome: "Success" }] }
     ]

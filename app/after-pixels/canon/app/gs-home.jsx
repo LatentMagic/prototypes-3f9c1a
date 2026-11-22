@@ -29,7 +29,7 @@ const HB_A = (tool, text, blocks, after) => ({ from: 'ai', tool, text, blocks, a
 // The scene the AI shows in Delve's chat: a picture turn of the chat on a phone, the side panel beside it.
 const HB_PICTURE = { type: 'picture', src: 'assets/home-block-delve.svg', alt: 'A hero in armour on a ridge at dawn, a burning tower behind' };
 // KEEP: the threat track's tone is the design system's `threat`; the platform's ChatBlock names that tone `danger`, so the platform record uses `danger`.
-const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Garrick’s health', value: 23, max: 23, tone: 'health' }, { label: 'The drums', value: advance, max: 12, tone: 'threat' }] });
+const HB_TRACK = (advance) => ({ type: 'track', items: [{ label: 'Garrick’s health', value: 24, max: 24, tone: 'health' }, { label: 'The drums', value: advance, max: 12, tone: 'threat' }] });
 const HB_ROWS = [{ letters: 'COILS', marks: 'hhxhx' }, { letters: 'CLOUD', marks: 'hnnnh' }];
 const HB_BOARD = { type: 'tilegrid', length: 5, count: 6, rows: HB_ROWS };
 // In the chat the board grows with the guesses, as on Guess's product page.
