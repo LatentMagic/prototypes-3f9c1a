@@ -314,14 +314,20 @@
   .dv8.is-3b .dv7-hero b { white-space: normal; text-wrap: balance; overflow-wrap: break-word; }
   .dv8.is-3b .dv8-meters { padding: 0; border-left: 0; }
 }
-/* KEEP: at a sheet 390px wide or less (a window of 456px or less) five squares no longer fit a row at the 11px floor ("Advantage" is 62px wide), so the tabs are a list, each with its icon beside its word. */
-@container dv4 (max-width: calc(390px + 32px)) {
+/* KEEP: from a sheet 341px to 390px wide (a window of 407px to 456px) the five squares hold at the 11px floor by taking spacing first: the tab row runs 8px in from the card's edge instead of 16px, with 2px between squares and none inside them, so "Advantage" (62px wide) keeps about 4px either side at 407px; at the old spacing a square is 62px and the word touches its border. */
+@container dv4 (min-width: calc(340.02px + 32px)) and (max-width: calc(390px + 32px)) {
+  .dv8.is-3b .dl-tabgrp { margin: 0 8px; }
+  .dv8.is-3b .esx-cards.dl-tabs { gap: 2px; }
+  .dv8.is-3b .esx-card.dl-tab { padding: 8px 0; }
+}
+/* KEEP: at a sheet 340px wide or less (a window of 406px or less) five squares no longer fit a row, so the tabs are a list, each with its icon beside its word. */
+@container dv4 (max-width: calc(340px + 32px)) {
   .dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .dv8.is-3b .esx-card.dl-tab { flex-direction: row; justify-content: flex-start; gap: 12px; height: 40px; padding: 0 12px; }
   .dv8.is-3b .dl-tab-w { font-size: var(--size-2xs); letter-spacing: .07em; }
 }
-/* KEEP: as a list (a sheet 390px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 341px the tabs are squares across and the column is 56px. */
-@container dv4 (max-width: calc(390px + 32px)) {
+/* KEEP: as a list (a sheet 340px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 341px the tabs are squares across and the column is 56px. */
+@container dv4 (max-width: calc(340px + 32px)) {
   .dvp-rows { --dvp-fig: 50px; }
 }
 /* A card's rows: the figure on the left, the name and its line on the right. */
