@@ -10004,6 +10004,12 @@
         c.setReview({ ed: "long-names" });
         c.go("session", { id: "mystery-today-long" });
       } },
+      { group: "Library", id: "library-mystery-hard", label: "Accuse in your library, the hard play (two hints, solved)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
+        c.go("mystery", { page: "record" });
+      } },
       { group: "Library", id: "library-mystery-free", label: "Accuse in your library, free account", stage: (c) => {
         c.setView("free");
         c.setConnected(true);

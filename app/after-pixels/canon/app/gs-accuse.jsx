@@ -222,6 +222,7 @@ export const AccCulprit = ({ p }) => (p.live
 
 
 // Hints taken, as Salvage's count (Big) in a card of its own, with the case card's edge and corner. Open while the case is.
+// KEEP: the game gives two hints a day (deployed ACCUSE_HINTS = 2); this and the Now card's picture label in gs-accuse-now.jsx state it.
 export const AccHintsCard = ({ p }) => <div className={'acc-hc' + (p.live ? ' is-open' : '')}><Big n={p.hints} of={2} /></div>;
 
 const AccPage = ({ s }) => { const p = s.acc;
