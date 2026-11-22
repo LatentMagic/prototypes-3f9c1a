@@ -318,13 +318,19 @@
   .dv8.is-3b .dv7-hero b { white-space: normal; text-wrap: balance; overflow-wrap: break-word; }
   .dv8.is-3b .dv8-meters { padding: 0; border-left: 0; }
 }
-/* KEEP: at a sheet 390px wide or less (a window of 456px or less) five squares no longer fit a row at the 11px floor ("Advantage" is 62px wide), so the tabs wrap as the same squares: three to a row (a sheet 242px wide or more, a window of 308px or more), two to a row below that. A short last row is centred under the full one, as the held-roll marks are (flex, not grid, so a partial row centres). */
+/* KEEP: at a sheet 390px wide or less (a window of 456px or less) five squares no longer fit a row at the 11px floor ("Advantage" is 62px wide), so the tabs are a list, two to a row, each with its icon beside its word and the rows filling left to right (Stats, Advantage / Pack, Ability / Fight), the odd last one left in the first column. Two columns hold "Advantage" down to a window of 280px: a tab is then 104px wide, its 4px padding, 24px icon, 6px gap and 62px word taking 102px. */
 @container dv4 (max-width: calc(390px + 32px)) {
-  .dv8.is-3b .esx-cards.dl-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
-  .dv8.is-3b .esx-card.dl-tab { flex: 0 0 calc((100% - 6px) / 2); min-width: 0; }
+  .dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .dv8.is-3b .esx-card.dl-tab { flex-direction: row; justify-content: flex-start; gap: 6px; height: 40px; padding: 0 4px; }
+  .dv8.is-3b .dl-tab-w { font-size: var(--size-2xs); letter-spacing: 0; }
 }
-@container dv4 (min-width: calc(242px + 32px)) and (max-width: calc(390px + 32px)) {
-  .dv8.is-3b .esx-card.dl-tab { flex-basis: calc((100% - 12px) / 3); }
+/* KEEP: from a sheet 254px wide (a window of 320px) a tab is at least 124px wide, so it takes 12px of padding and a 10px gap (122px for "Advantage"). */
+@container dv4 (min-width: calc(254px + 32px)) and (max-width: calc(390px + 32px)) {
+  .dv8.is-3b .esx-card.dl-tab { gap: 10px; padding: 0 12px; }
+}
+/* KEEP: in that range the tabs' icons sit 25px in from the tab group's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it. Below it the padding is 4px and the column stays 56px. */
+@container dv4 (min-width: calc(254px + 32px)) and (max-width: calc(390px + 32px)) {
+  .dvp-rows { --dvp-fig: 50px; }
 }
 /* A card's rows: the figure on the left, the name and its line on the right. */
 .dvp-rows { display: grid; margin-top: 8px; }
