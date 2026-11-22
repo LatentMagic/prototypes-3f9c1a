@@ -51,6 +51,7 @@ export const WdBoard = ({ s, guessesOnly }) => {
   const rows = p.events.filter((e) => !guessesOnly || e.kind === 'guess').map((e, i) => [e.kind === 'guess' ? e.n : null, e.kind === 'guess' ? <WdRow g={e} /> : <WdHint h={e} />, i]);
   return (
     <div className="wd-board">
+      {guessesOnly && rows.length === 0 && <div className="wd-nrow"><span className="wd-n" aria-hidden="true">1</span><div className="wd-row" role="img" aria-label="Guess 1, not made yet">{[0, 1, 2, 3, 4].map((i) => <span key={i} className="wd-t is-empty" aria-hidden="true" />)}</div><span aria-hidden="true" /></div>}
       {rows.map(([num, el, key]) => <div key={key} className="wd-nrow"><span className="wd-n" aria-hidden="true">{num}</span>{el}<span aria-hidden="true" /></div>)}
     </div>);
 };
