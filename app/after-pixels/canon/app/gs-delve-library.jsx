@@ -16,7 +16,7 @@ let DV_ROOMS;
 let DV_CHANT;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play
-// (Bryn: a longest streak of three, HP 22 of 23) meets Hot Streak, and Know Thy Enemy by the weakness strike on its climax foe. Regular and Ten Runs count finished runs, won or not: a play whose status is not live
+// (Bryn: a longest streak of three, HP 23 of 24) meets Hot Streak, and Know Thy Enemy by the weakness strike on its climax foe. Regular and Ten Runs count finished runs, won or not: a play whose status is not live
 // (Config → This edition: Failed or Hard still counts).
 const dvEnded = (ps) => ps.filter((p) => p.status.kind !== 'live');
 export let DV_ACH;

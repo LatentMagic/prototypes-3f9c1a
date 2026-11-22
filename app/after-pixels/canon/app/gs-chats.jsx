@@ -105,7 +105,7 @@ GS_CHATS = {
   // Delve: the product page's four chats, copied from the deployed Delve page (delve.page.ts on the monorepo's main), Delve #40, The Orc Caves under Raven Hill.
   // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
   delve: [
-    { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('Play Delve on After Pixels'),
+    { cap: 'See each hero’s strengths, hit points and armour class side by side before you pick.', turns: [gscU('Play Delve on After Pixels'),
       gscAi('Delve', ['**Delve #40: The Orc Caves under Raven Hill**', 'Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.', 'Which hero will you take?'],
         null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Garrick, the Knight', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Tamsin, the Ranger', line: 'Best at Agility, Charm · 21 HP · Defence 14' }, { name: 'Selwyn, the Wizard', line: 'Best at Wits, Wisdom · 17 HP · Defence 12' }]}])] },
     { cap: 'A slip costs you health. Then try it another way.', turns: [gscU('I cross slowly and test every plank'),

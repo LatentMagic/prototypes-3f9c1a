@@ -1342,17 +1342,17 @@
   const GS_DV_WON = [
     ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 17 + 0 = 17 vs 12"],
     ["Room", "Entered the chime run"],
-    ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 12", "HP 21/24"],
+    ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 12", "HP 22/24"],
     ["Strength", "Success", "d20 16 + 3 = 19 vs 12"],
     ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 11 + 1 = 12 vs 12"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 17 vs 16, hit, 2 damage, HP 19/24"],
+    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 17 vs 16, hit, 2 damage, HP 20/24"],
     ["Strength", "Hit", "d20 13 + 4 = 17 vs 12", "Struck back: d20 8 vs 16, missed"],
     ["Strength", "Hit", "d20 17 + 5 = 22 vs 12"],
     ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
     ["Room", "Entered Snaggle's den"],
-    ["Gear", "Used a healing draught", "Healed 4, HP 22/24", "Struck back: d20 17 vs 16, hit, 1 damage, HP 22/24"],
+    ["Gear", "Used a healing draught", "Healed 4, HP 23/24", "Struck back: d20 17 vs 16, hit, 1 damage, HP 23/24"],
     ["Strength", "Hit", "d20s 15 and 18, kept 18 + 5 = 23 vs 12"],
     ["Gear", "Took the iron key"],
     ["Room", "Doubled back to the warren", "The chant +1"],
@@ -1445,7 +1445,7 @@
       art: "delve",
       result: "Elsie rescued",
       date: "Monday 5 October",
-      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 22/24"],
+      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 23/24"],
       tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
       lines: GS_DV_WON,
       endings: GS_DV_ENDINGS,
@@ -2144,7 +2144,7 @@
       // Delve: the product page's four chats, copied from the deployed Delve page (delve.page.ts on the monorepo's main), Delve #40, The Orc Caves under Raven Hill.
       // Each block is the design system's part for what the game's script has the AI draw: entities, roll, track (health and threat).
       delve: [
-        { cap: "See each hero’s strengths, health and defence side by side before you pick.", turns: [
+        { cap: "See each hero’s strengths, hit points and armour class side by side before you pick.", turns: [
           gscU("Play Delve on After Pixels"),
           gscAi(
             "Delve",
@@ -3745,16 +3745,16 @@
       tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12", "HP 21/24"],
+        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12", "HP 22/24"],
         ["Room", "Entered the chime run"],
-        ["Strength", "Failure", "d20 3 + 3 = 6 vs 12", "HP 19/24"],
+        ["Strength", "Failure", "d20 3 + 3 = 6 vs 12", "HP 20/24"],
         ["Strength", "Success", "d20 17 + 3 = 20 vs 12"],
-        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 12", "HP 17/24"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 12", "HP 18/24"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 16, hit, 4 damage, HP 13/24"],
-        ["Strength", "Miss", "d20 7 + 4 = 11 vs 12", "Struck back: d20 17 vs 16, hit, 6 damage, HP 7/24"],
-        ["Strength", "Miss", "Natural 1", "d20 1 + 5 = 6 vs 12", "Struck back: d20 16 vs 16, hit, 6 damage, HP 1/24"],
+        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 16, hit, 4 damage, HP 14/24"],
+        ["Strength", "Miss", "d20 7 + 4 = 11 vs 12", "Struck back: d20 17 vs 16, hit, 6 damage, HP 8/24"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 5 = 6 vs 12", "Struck back: d20 16 vs 16, hit, 6 damage, HP 2/24"],
         ["Strength", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 16 vs 16, hit, 6 damage, HP 0/24"]
       ]
     };
@@ -3762,7 +3762,7 @@
       ...GS_SESSIONS.delve,
       loss: true,
       end: "fallen",
-      lostOff: { name: "Crank panel", harm: 4 },
+      lostOff: { name: "Crank panel", harm: 5 },
       setting: "Cold Sleep",
       hero: "Wren the Rogue",
       hpMax: 22,
@@ -3782,11 +3782,11 @@
       lines: [
         ["Room", "Entered the cryo deck"],
         ["Intelligence", "Read the wake log", "Success", "d20 15 + 0 = 15 vs 12"],
-        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 12", "HP 17/22"],
+        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 12", "HP 18/22"],
         ["Room", "Entered the armoury"],
-        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 12", "HP 11/22"],
+        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 12", "HP 12/22"],
         ["Wisdom", "Listen for the hunt", "Partial success", "d20 11 + 1 = 12 vs 12"],
-        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 12", "HP 4/22"],
+        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 12", "HP 5/22"],
         ["Room", "Entered the medbay"]
       ]
     };
@@ -3813,20 +3813,20 @@
       lightName: "the watchman's round",
       light: 0,
       lightMax: 9,
-      figures: ["Threat 12/12", "24 rolls", "1 natural 20", "HP 12/22"],
+      figures: ["Threat 12/12", "24 rolls", "1 natural 20", "HP 13/22"],
       tracks: { progress: 5, rooms: 5, threat: 12, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 19/22"],
+        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 20/22"],
         ["Room", "Entered the chime run"],
-        ["Dexterity", "Failure", "d20 8 + 3 = 11 vs 12", "HP 17/22"],
+        ["Dexterity", "Failure", "d20 8 + 3 = 11 vs 12", "HP 18/22"],
         ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
         ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 12"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
         ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
         ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 4 = 19 vs 12", "Struck back: d20 11 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 5 = 9 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/22"],
+        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 5 = 9 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 17/22"],
         ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
         ["Dexterity", "Hit", "d20 15 + 5 = 20 vs 12"],
         ["Room", "Doubled back to the chime run", "The chant +1"],
@@ -3847,12 +3847,12 @@
         ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
         ["Room", "Doubled back to the warren", "The chant +1"],
         ["Room", "Entered the shrine cavern"],
-        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/22"],
+        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 15/22"],
         ["Dexterity", "Hit", "d20 17 + 4 = 21 vs 12", "Struck back: d20 6 vs 14, missed"],
         ["Dexterity", "Hit", "d20 18 + 5 = 23 vs 12", "Struck back: d20 9 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 5 and 6, kept 6 + 5 = 11 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/22"],
+        ["Dexterity", "Miss", "d20s 5 and 6, kept 6 + 5 = 11 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 14/22"],
         ["Dexterity", "Hit", "d20 11 + 5 = 16 vs 12", "Struck back: d20 12 vs 14, missed"],
-        ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/22"]
+        ["Dexterity", "Miss", "d20 6 + 5 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 13/22"]
       ]
     };
     GS_SESSIONS["delve-overrun-back"] = (() => {
@@ -3880,7 +3880,7 @@
       light: 0,
       lightMax: 0,
       foeMax: {},
-      figures: ["Threat 2/14", "10 rolls", "HP 20/24"],
+      figures: ["Threat 2/14", "10 rolls", "HP 21/24"],
       tracks: { progress: 4, rooms: 6, threat: 2, threatMax: 14 },
       sheet: { used: {}, insp: true },
       lines: [
@@ -3891,11 +3891,11 @@
         ["Charisma", "Flatter the witch", "Partial success", "d20 13 + 0 = 13 vs 12"],
         ["Room", "Entered the great hall"],
         ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 vs 16, missed"],
-        ["Strength", "Hit", "d20 12 + 4 = 16 vs 12", "Struck back: d20 16 vs 16, hit, 2 damage, HP 22/24"],
+        ["Strength", "Hit", "d20 12 + 4 = 16 vs 12", "Struck back: d20 16 vs 16, hit, 1 damage, HP 23/24"],
         ["Strength", "Hit", "d20 14 + 5 = 19 vs 12"],
         ["Room", "Entered the thorn stair"],
         ["Strength", "Partial success", "d20 11 + 3 = 14 vs 12"],
-        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 20/24"],
+        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 21/24"],
         ["Strength", "Success", "d20 15 + 3 = 18 vs 12"],
         ["Strength", "Success", "d20 16 + 3 = 19 vs 12"]
       ]
