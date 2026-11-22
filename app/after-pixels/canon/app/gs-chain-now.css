@@ -48,10 +48,18 @@
 .cn-joints { display: inline-flex; gap: 4px; }
 .cn-under { display: flex; align-items: center; justify-content: center; gap: 24px; max-width: 100%; }
 
-/* KEEP: on a phone (card under 640px) a solved chain's two ends stack with the joints between them, each tile 36px, and the count
-   sits 16px under the links instead of beside them. Tiles stay 48px: a container query cannot restyle its own container. */
-@container cn (max-width: 639.98px) {
+/* KEEP: on a phone (card under 640px wide) a solved chain's two ends stack with the joints between them, each tile 36px, and the count
+   sits 16px under the links instead of beside them. Tiles stay 48px: a container query cannot restyle its own container. A container query reads the
+   content box, so the card's 640px is its content under 590px from a 720px page (24px padding, 1px borders) and under 606px below it (16px padding): the
+   platform's two values (chain-now-part.component.css). Keep the two blocks' declarations the same: CSS cannot OR two container queries. */
+@container cn (max-width: 589.98px) {
   .cn .is-ends { flex-direction: column; gap: 8px; --t: min(36px, (100cqi - (var(--cn-m, 1) - 1) * 4px) / var(--cn-m, 1)); }
   .cn-under { flex-direction: column; gap: 16px; }
+}
+@container gs (max-width: 719.98px) {
+  @container cn (max-width: 605.98px) {
+    .cn .is-ends { flex-direction: column; gap: 8px; --t: min(36px, (100cqi - (var(--cn-m, 1) - 1) * 4px) / var(--cn-m, 1)); }
+    .cn-under { flex-direction: column; gap: 16px; }
+  }
 }
 .cn .is-ends.is-stacked { flex-direction: column; gap: 8px; --t: min(36px, (100cqi - (var(--cn-m, 1) - 1) * 4px) / var(--cn-m, 1)); }
