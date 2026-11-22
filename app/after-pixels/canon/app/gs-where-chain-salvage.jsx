@@ -624,6 +624,8 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
     { group: 'Screens', id: 'session-chain-long', label: '7. Session page: Chain, a seven-word chain with a ten-letter word', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go('session', { id: 'chain-today-long' }); } },
   ] : []),
   ...(k === 'where' ? [
+    { group: g, id: 'library-where-failed', label: 'Where in your library, today failed (not found)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-where-hard', label: 'Where in your library, a hard day (hint taken, most guesses used)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-where-long-country', label: 'Where in your library, today found, a long country name', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go(k, { page: 'record' }); } },
     { group: 'Daily puzzles 1213', id: 'session-where-long-country', label: 'Session page: Where today, a long country name', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go('session', { id: 'where-today-long' }); } },
   ] : []),

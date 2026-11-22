@@ -29,7 +29,8 @@ export const whRead = (s) => {
     else if (l[0] === 'Answer') answer = l[1];
   });
   const live = !!s.live; const lost = !live && answer !== null;
-  const r = live ? { tone: 'live', word: 'In progress' } : lost ? { tone: 'bad', word: 'Failed' } : { tone: 'ok', word: 'Solved' };
+  // KEEP: the session page says Found and Not found (where-session-part.component.ts), the Now card Solved and Failed (WHERE_RESULT, where-end.ts); the deployed product words the two pages differently.
+  const r = live ? { tone: 'live', word: 'In progress' } : lost ? { tone: 'bad', word: 'Not found' } : { tone: 'ok', word: 'Found' };
   return { g, hint, answer: lost ? answer : g.length ? g[g.length - 1].c : null, live, lost, r };
 };
 const whSay = (p) => (p.hint ? p.hint.dir[0].toUpperCase() + p.hint.dir.slice(1) + ' of ' + p.hint.from : p.live ? 'Not used yet' : 'No hint');
@@ -42,7 +43,7 @@ const WhLog = ({ p }) => (
   </div>);
 
 // The globe: six gores between meridians at -90, -60 … 90 degrees, each drawn as two half-ellipses from pole to pole. Each gore
-// is its guess, shaded by how close it came, green for the find; a loss stays grey, as the result says Failed (Joe, 2026-10-30).
+// is its guess, shaded by how close it came, green for the find; a loss stays grey, as the result says Not found on the session page (Joe, 2026-10-30).
 // KEEP: with no guess made the globe takes is-none, so its "0 of 6" caption reads grey, not the text colour.
 const WhGlobe = ({ p }) => {
   const c = 60; const R = 52; const lon = [-90, -60, -30, 0, 30, 60, 90].map((d) => d * Math.PI / 180);
