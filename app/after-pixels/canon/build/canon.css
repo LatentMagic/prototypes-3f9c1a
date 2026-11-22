@@ -3300,6 +3300,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .wh-line:not(.is-head)::before { content: ''; grid-column: 1; grid-row: 1 / -1; align-self: stretch; margin-top: 8px; border-right: 1px solid var(--control-edge); }
 .wh-line.is-head > span:first-child { align-self: stretch; display: grid; place-items: end center; margin-top: 8px; border-right: 1px solid var(--control-edge); }
 .wh-line b { font: 700 18px/1 var(--font-heading); color: var(--text); min-width: 0; overflow-wrap: anywhere; }
+/* KEEP: the empty row's name cell is empty, so it takes the played name's one line (18px at line-height 1) and the number sits where a played row's number sits. */
+.wh-line.is-empty > b { min-height: 1lh; }
 .wh-line.is-found b, .wh-line.is-found .wh-km { color: var(--success); }
 .wh-line.is-head { height: 32px; min-height: 0; font: 600 11px/1 var(--font-text); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .wh-line.is-head > span:last-child { text-align: right; }
