@@ -6583,6 +6583,18 @@
           } }
         ] : [],
         ...k === "where" ? [
+          { group: g, id: "library-where-failed", label: "Where in your library, today failed (not found)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "failed" });
+            c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-where-hard", label: "Where in your library, a hard day (hint taken, most guesses used)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "hard" });
+            c.go(k, { page: "record" });
+          } },
           { group: g, id: "library-where-long-country", label: "Where in your library, today found, a long country name", stage: (c) => {
             c.setView("pass");
             c.setConnected(true);
@@ -9830,7 +9842,7 @@
         c.setReview({ week: "live" });
         c.go("groups", { page: "record" });
       } },
-      // Every game's Now card, not started: Config → This edition: Not played, in the Pass view (the one view that reaches the Pass-only games). Where is not here.
+      // Every game's Now card, not started: Config → This edition: Not played, in the Pass view (the one view that reaches the Pass-only games).
       ...[
         ["word", "Guess"],
         ["mystery", "Accuse"],
@@ -9838,6 +9850,7 @@
         ["escape", "Escape"],
         ["casebook", "Casebook"],
         ["delve", "Delve"],
+        ["where", "Where"],
         ["barrow", "The Barrow of Hollowmere"],
         ["hunter", "36,000 Summers Ago"],
         ["chain", "Chain"],
@@ -12265,7 +12278,7 @@
     });
     const live = !!s.live;
     const lost = !live && answer !== null;
-    const r = live ? { tone: "live", word: "In progress" } : lost ? { tone: "bad", word: "Failed" } : { tone: "ok", word: "Solved" };
+    const r = live ? { tone: "live", word: "In progress" } : lost ? { tone: "bad", word: "Not found" } : { tone: "ok", word: "Found" };
     return { g, hint, answer: lost ? answer : g.length ? g[g.length - 1].c : null, live, lost, r };
   };
   const whSay = (p) => p.hint ? p.hint.dir[0].toUpperCase() + p.hint.dir.slice(1) + " of " + p.hint.from : p.live ? "Not used yet" : "No hint";
