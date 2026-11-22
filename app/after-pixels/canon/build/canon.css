@@ -3871,6 +3871,12 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acn .acc-blank { width: min(160px, 80%); }
 .acn .acc-blank.is-s { width: min(190px, 92%); }
 
+/* KEEP: below a content box of 190px the culprit card (108px at least, 121px with a long name) no longer fits beside the Hints card and
+   runs past the card's edge, so the two cards stack, Hints above The culprit, each as wide as the card. */
+@container acn (max-width: 190px) {
+  .acn-pair { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
+}
+
 /* KEEP: on a card whose content box is 675px wide or more (the card's padding is 24px on pages from 720px and 16px below, so a card of
    about 725px across at a 1160px page) the pair is one group centred on the whole card, head and action row included, with the body at
    the standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's
