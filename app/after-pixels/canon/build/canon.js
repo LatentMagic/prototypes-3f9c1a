@@ -4489,8 +4489,7 @@
     const x = p.w[k];
     return /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, solved ? /* @__PURE__ */ React$1.createElement(CnEnds, { p }) : /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": x.state === "hidden" ? x.shown + 1 : x.word.length } }, /* @__PURE__ */ React$1.createElement(CnWord, { x })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, p.g.length > 0 && /* @__PURE__ */ React$1.createElement(CnLinks, { g: p.g }), /* @__PURE__ */ React$1.createElement(CnCount, { p })));
   };
-  const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
-  const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": 5 } }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })), /* @__PURE__ */ React$1.createElement("div", { className: "cn-under" }, /* @__PURE__ */ React$1.createElement(CnCount, { p: CN_FRESH })));
+  const CnFresh = () => /* @__PURE__ */ React$1.createElement("div", { className: "cn-pic cn-stack" }, /* @__PURE__ */ React$1.createElement("div", { className: "cn-focus", style: { "--cn-n": 5 } }, /* @__PURE__ */ React$1.createElement(CnWord, { n: 5 })));
   const ChNow = ({ c, done, none }) => {
     const gs = useGs();
     const title = "#" + GS_SESSIONS[c.today].number;
@@ -5587,13 +5586,12 @@
   let WH_TODAY;
   let WH_OK;
   let WH_FAIL;
-  let DP_NUM;
   const dpChain = (t) => {
     const last = t.w.length - 1;
     const pre = t.w.map(() => 1);
     const res = t.w.map(() => null);
     const miss = t.w.map(() => 0);
-    const lines = [["Ends", t.w[0] + " to " + t.w[last], DP_NUM[t.w.length] + " words in all"]];
+    const lines = [["Ends", t.w[0] + " … " + t.w[last]]];
     t.p.forEach(([guess, k], j) => {
       let note;
       if (guess === t.w[k]) {
@@ -5602,9 +5600,9 @@
       } else {
         miss[k] += 1;
         pre[k] += 1;
-        note = pre[k] >= t.w[k].length ? (res[k] = "given", ["Wrong, so it was given away", "The word was " + t.w[k]]) : ["Wrong", "Now shows " + t.w[k].slice(0, pre[k])];
+        note = pre[k] >= t.w[k].length ? (res[k] = "given", ["Wrong. Given away: " + t.w[k]]) : ["Wrong. It starts " + t.w[k].slice(0, pre[k])];
       }
-      lines.push(["Guess " + (j + 1), guess, "Word " + (k + 1), ...note]);
+      lines.push(["Guess " + (j + 1), guess, ...note]);
     });
     const hidden = t.w.length - 2;
     const given = res.filter((r) => r === "given").length;
@@ -6014,7 +6012,6 @@
       { a: "Ireland", g: [["France", 410], ["United Kingdom", 0]], hint: "From the United Kingdom, the country lies west" }
     ];
     WH_FAIL = { a: "Slovenia", g: [["Greece", 720], ["Serbia", 200], ["Hungary", 0], ["Austria", 0], ["Croatia", 0], ["Italy", 0]], hint: "From Croatia, the country lies north" };
-    DP_NUM = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"];
     CH_TODAY = { w: ["SNOW", "BALL", "ROOM", "SERVICE", "STATION", "WAGON"], p: [["BALL", 1], ["RACE", 2], ["ROOM", 2], ["STATION", 4], ["SUITE", 3], ["SERVICE", 3]] };
     CH_OK = [
       { w: ["RAIN", "BOW", "TIE", "BREAK", "FAST", "FOOD"], p: [["BOW", 1], ["TIE", 2], ["FROZEN", 4], ["FAST", 4], ["BREAK", 3]] },

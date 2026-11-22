@@ -124,9 +124,8 @@ const CnPic = ({ p }) => {
 };
 
 // Not yet played: the picture empty, so nothing of today's words shows before Play.
-const CN_FRESH = { found: 0, mid: [0, 1, 2, 3] };
 const CnFresh = () => (
-  <div className="cn-pic cn-stack"><div className="cn-focus" style={{ '--cn-n': 5 }}><CnWord n={5} /></div><div className="cn-under"><CnCount p={CN_FRESH} /></div></div>);
+  <div className="cn-pic cn-stack"><div className="cn-focus" style={{ '--cn-n': 5 }}><CnWord n={5} /></div></div>);
 
 export const ChNow = ({ c, done, none }) => {
   const gs = useGs();
