@@ -3349,6 +3349,8 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .wh-figs { column-gap: 48px; }
   /* KEEP: the row is centred on the whole card, not on the space under the head, so it sits where Guess's tiles do (Joe, 2026-10-31). */
   .wh-row { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  /* KEEP: the row shrinks to half the card, so the empty card's "Last guess" and "None yet" wrapped between 640 and 1024px; they stay on one line. */
+  .wh-last.is-none { white-space: nowrap; }
 }
 /* Fit (see fit.jsx): the page in an iframe 1280px wide, scaled to the window; only the frame scrolls. Imported by canon.css. */
 .gs-root.fitted { height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
