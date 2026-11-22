@@ -49,16 +49,15 @@ let WH_TODAY;
 let WH_OK;
 let WH_FAIL;
 
-let DP_NUM;
 const dpChain = (t) => {
   const last = t.w.length - 1; const pre = t.w.map(() => 1); const res = t.w.map(() => null); const miss = t.w.map(() => 0);
-  // Ends, then a line per guess: the word it was for, what it was, and what the game showed back. Only the guess's own result is said.
-  const lines = [['Ends', t.w[0] + ' to ' + t.w[last], DP_NUM[t.w.length] + ' words in all']];
+  // Ends, then a line per guess: the guess and one note on what it earned, as deployed `records.ts` words them.
+  const lines = [['Ends', t.w[0] + ' … ' + t.w[last]]];
   t.p.forEach(([guess, k], j) => {
     let note;
     if (guess === t.w[k]) { res[k] = 'found'; note = ['Right']; }
-    else { miss[k] += 1; pre[k] += 1; note = pre[k] >= t.w[k].length ? (res[k] = 'given', ['Wrong, so it was given away', 'The word was ' + t.w[k]]) : ['Wrong', 'Now shows ' + t.w[k].slice(0, pre[k])]; }
-    lines.push(['Guess ' + (j + 1), guess, 'Word ' + (k + 1), ...note]);
+    else { miss[k] += 1; pre[k] += 1; note = pre[k] >= t.w[k].length ? (res[k] = 'given', ['Wrong. Given away: ' + t.w[k]]) : ['Wrong. It starts ' + t.w[k].slice(0, pre[k])]; }
+    lines.push(['Guess ' + (j + 1), guess, ...note]);
   });
   const hidden = t.w.length - 2; const given = res.filter((r) => r === 'given').length; const found = res.filter((r) => r === 'found').length;
   // Share marks, one per word, ends included: found first time ●, found after a wrong guess ◐, given away ○.
@@ -343,7 +342,6 @@ WH_FAIL = { a: 'Slovenia', g: [['Greece', 720], ['Serbia', 200], ['Hungary', 0],
 // ---- Chain. A play from a template: { w: the line, p: [[guess, index of the word it was for]] }. The line is 5 to 7 words; each
 // neighbouring pair makes a compound word or a common two-word phrase. Only the intended word counts; a wrong guess shows that word's
 // next letter, and a word that runs out of letters is given away. Lengths stay hidden. No hint and no overall limit. ----
-DP_NUM = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'];
 CH_TODAY = { w: ['SNOW', 'BALL', 'ROOM', 'SERVICE', 'STATION', 'WAGON'], p: [['BALL', 1], ['RACE', 2], ['ROOM', 2], ['STATION', 4], ['SUITE', 3], ['SERVICE', 3]] };
 CH_OK = [
   { w: ['RAIN', 'BOW', 'TIE', 'BREAK', 'FAST', 'FOOD'], p: [['BOW', 1], ['TIE', 2], ['FROZEN', 4], ['FAST', 4], ['BREAK', 3]] },
