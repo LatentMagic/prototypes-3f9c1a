@@ -276,7 +276,7 @@ export const GS_SESSIONS = {
   'word-failed': {
     kind: 'puzzle', gid: 'word', game: 'Guess', art: 'word', number: 30, answer: 'STEAL', loss: true, hints: 1, result: 'Failed', date: 'Friday 2 October',
     share: 'Failed',
-    lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 4 is A.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
+    lines: gsWordLines('STEAL', ['CRANE', ['Hint', 'Letter 1 is S.'], 'METAL', 'PETAL', 'DECAL', 'SEPAL', 'SHOAL']),
   },
   // This week's room, No. 1 The Clockmaker’s Study, played on Tuesday: escaped in 28 min, under par, 1 hint, 2 wrong tries.
   'escape-week': {
