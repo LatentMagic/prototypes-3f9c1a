@@ -39,7 +39,7 @@ const whSay = (p) => (p.hint ? p.hint.dir[0].toUpperCase() + p.hint.dir.slice(1)
 const WhLog = ({ p }) => (
   <div className="wh-log">
     <div className="wh-line is-head"><span>Guess</span><span>Country</span><span>Distance</span></div>
-    {p.g.length === 0 && <div className="wh-line is-empty"><span className="wh-n">1</span><b /><span className="wh-km" /></div>}
+    {p.g.length === 0 && <div className="wh-line is-empty" role="img" aria-label="Guess 1, not made yet"><span className="wh-n" aria-hidden="true">1</span><b aria-hidden="true" /><span className="wh-km" aria-hidden="true" /></div>}
     {p.g.map((g) => <div key={g.n} className={'wh-line is-' + g.band}><span className="wh-n">{g.n}</span><b>{g.c}</b><span className="wh-km">{whDist(g.km)}</span></div>)}
   </div>);
 
