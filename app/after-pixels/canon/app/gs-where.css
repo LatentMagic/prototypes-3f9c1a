@@ -101,4 +101,6 @@
   .wh-now > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   /* KEEP: the row is centred on the whole card, not on the space under the head, so it sits where Guess's tiles do (Joe, 2026-10-31). */
   .wh-row { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  /* KEEP: the row shrinks to half the card, so the empty card's "Last guess" and "None yet" wrapped between 640 and 1024px; they stay on one line. */
+  .wh-last.is-none { white-space: nowrap; }
 }
