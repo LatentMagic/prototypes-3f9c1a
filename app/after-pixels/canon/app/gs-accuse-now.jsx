@@ -12,6 +12,7 @@ import { AccHintsCard, AccCulprit, accWithWhere, accResult } from './gs-accuse.j
 
 const AcnPic = ({ no, p }) => (
   <div className="acn-pic" role="img"
+    // KEEP: two hints a day, as AccHintsCard in gs-accuse.jsx.
     aria-label={'Case ' + no + ', ' + accResult(p).word.toLowerCase() + ', ' + p.hints + ' of 2 hints.' + (p.live ? '' : ' The culprit: ' + p.cs.truth[0] + ', ' + accWithWhere(p.cs))}>
     <div className="acn-pair" aria-hidden="true">
       <div className="acn-col"><span className="gs-sc-cap">Hints</span><AccHintsCard p={p} /></div>

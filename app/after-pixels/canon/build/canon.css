@@ -3783,7 +3783,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acc-bd li { display: flex; align-items: center; padding: 12px 2px; border-bottom: 1px solid var(--line); font: 400 16px/1.3 var(--font-text); color: var(--text); }
 .acc-bd li:first-child { border-top: 1px solid var(--line); }
 /* KEEP: the board's ruled rows already end in a line, so on a phone the panel drops the shared card's rule above it (gs-sess-card.css):
-   a phone never shows the board's line and then a second rule. The session-page standard (Joe, 2026-11-06). From a 672px card the
+   a phone never shows the board's line and then a second rule. The session-page standard. From a 672px card the
    panel's left rule stays. */
 .acc-card .gs-sc-panel { border-top: 0; }
 /* KEEP: a name never runs past its column, on any window from 280px. Where the columns get narrow the board's gaps and type step
@@ -3875,16 +3875,16 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    about 725px across at a 1160px page) the pair is one group centred on the whole card, head and action row included, with the body at
    the standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's
    and action row's height, so it needs a card wide enough for its 360px to clear the head's "#64" on the left and the action row's
-   button and "Next case" line on the right. Below that it stays the phone row between them. A single-column page from about 757px
-   therefore gets the centred group. */
+   button and "Next case" line on the right. Below that it stays the phone row between them. A card 725px across (a window of
+   773px on a single-column page) therefore gets the centred group. */
 @container acn (min-width: 675px) {
   .acn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .acn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max-content; pointer-events: none; }
   .acn-pair { grid-template-columns: auto 240px; column-gap: 16px; }
 }
 
-/* KEEP (Joe, 2026-11-05: the card was too tall): the session page's two cards drawn smaller on the now card, captions kept (shallower
-   canvas option 1, accuse-hifi-canvas/now4.html): a 36px count, a tighter case card, a 17px name and shorter blank lines. */
+/* KEEP: the session page's two cards drawn smaller on the now card, captions kept, so the card stays shallow: a 36px count, a tighter
+   case card, a 17px name and shorter blank lines. */
 .acn .acn-col { row-gap: 6px; }
 .acn .acc-hc { min-width: 0; padding: 10px 14px; }
 .acn .acc-hc .slv-big b { font-size: 36px; }
