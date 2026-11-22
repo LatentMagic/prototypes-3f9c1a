@@ -98,7 +98,6 @@
 @container gs (min-width: 640px) {
   .wh-row { --fig: 72px; column-gap: 48px; }
   .wh-figs { column-gap: 48px; }
-  .wh-now > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   /* KEEP: the row is centred on the whole card, not on the space under the head, so it sits where Guess's tiles do (Joe, 2026-10-31). */
   .wh-row { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }

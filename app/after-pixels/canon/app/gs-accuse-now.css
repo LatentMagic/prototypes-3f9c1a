@@ -2,8 +2,6 @@
    culprit's case card (.acc-hc, .acc-case, gs-accuse.css). */
 .acn { container: acn / inline-size; position: relative; }
 .acn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-.acn .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
-.acn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 
 /* KEEP: on a phone the two cards sit side by side, as on the session page's panel: captions centred over each, both cards one height,
    the Hints card as narrow as its count and the case card up to 240px. */
