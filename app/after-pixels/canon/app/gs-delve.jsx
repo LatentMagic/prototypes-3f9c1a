@@ -323,7 +323,7 @@ const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
   const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name; const fold = 'dvL-room-' + st.i;
   const openRef = React.useRef(null); React.useLayoutEffect(() => { if (isOpen) dlEvenOpen(openRef.current); }, [isOpen, act]);
   return (
-    <div className={'dvL-row' + (isOpen ? ' is-open' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
+    <div className={'dvL-row is-two' + (isOpen ? ' is-open' : '') + (first ? ' is-first' : '') + (last ? ' is-last' : '')}>
       <div className={'dvL-top' + (has ? ' is-tap' : '')}>
         <span className={'dv2-num dvL-num' + (st.back ? ' is-back' : '')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span>
         <div className="dvL-line">
