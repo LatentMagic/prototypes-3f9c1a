@@ -130,7 +130,7 @@ const WdNowHint = ({ s, p }) => (
   </div>);
 const WdNowTiles = ({ s, p }) => (s.loss && s.answer
   ? <div className="wd-ntiles" role="img" aria-label={'The word was ' + s.answer}>{s.answer.split('').map((ch, j) => <span key={j} className="wd-t wd-nans-t" aria-hidden="true">{ch}</span>)}</div>
-  : <div className="wd-ntiles" role="img" aria-label={wdSay(p.last)}>{p.last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + p.last.marks[j]} aria-hidden="true">{ch}</span>)}</div>);
+  : <div className="wd-ntiles" role="img" aria-label={p.n === 0 ? 'No guess yet' : wdSay(p.last)}>{p.last.word.split('').map((ch, j) => <span key={j} className={'wd-t is-' + p.last.marks[j]} aria-hidden="true">{ch}</span>)}</div>);
 const WD_NONE = { n: 0, hint: null, won: false, last: { word: '     ', marks: ['empty', 'empty', 'empty', 'empty', 'empty'] } };
 export const WdNow = ({ c, done, none }) => {
   const gs = useGs(); const sid = none || done ? c.today : c.liveSid; const s0 = GS_SESSIONS[sid];

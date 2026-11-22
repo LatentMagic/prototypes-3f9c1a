@@ -1506,7 +1506,7 @@
       result: "Failed",
       date: "Friday 2 October",
       share: "Failed",
-      lines: gsWordLines("STEAL", ["CRANE", ["Hint", "Letter 4 is A."], "METAL", "PETAL", "DECAL", "SEPAL", "SHOAL"])
+      lines: gsWordLines("STEAL", ["CRANE", ["Hint", "Letter 1 is S."], "METAL", "PETAL", "DECAL", "SEPAL", "SHOAL"])
     },
     // This week's room, No. 1 The Clockmaker’s Study, played on Tuesday: escaped in 28 min, under par, 1 hint, 2 wrong tries.
     "escape-week": {
@@ -4354,7 +4354,7 @@
     ))), /* @__PURE__ */ React$1.createElement("span", { className: "wd-nring-n", "aria-hidden": "true" }, p.n));
   };
   const WdNowHint = ({ s, p }) => /* @__PURE__ */ React$1.createElement("div", { className: "wd-nhint", role: "img", "aria-label": p.hint ? "Hint: " + p.hint.text : s.live ? "Hint not used yet" : "No hint" }, /* @__PURE__ */ React$1.createElement("span", { className: "wd-nhint-box" + (p.hint ? " is-hint" : ""), "aria-hidden": "true" }, p.hint ? p.hint.letter : ""), p.hint ? /* @__PURE__ */ React$1.createElement("span", { className: "wd-nhint-cap", "aria-hidden": "true" }, "Hint") : /* @__PURE__ */ React$1.createElement("span", { className: "wd-nhint-note", "aria-hidden": "true" }, s.live ? "Not used yet" : "None taken"));
-  const WdNowTiles = ({ s, p }) => s.loss && s.answer ? /* @__PURE__ */ React$1.createElement("div", { className: "wd-ntiles", role: "img", "aria-label": "The word was " + s.answer }, s.answer.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t wd-nans-t", "aria-hidden": "true" }, ch))) : /* @__PURE__ */ React$1.createElement("div", { className: "wd-ntiles", role: "img", "aria-label": wdSay(p.last) }, p.last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + p.last.marks[j], "aria-hidden": "true" }, ch)));
+  const WdNowTiles = ({ s, p }) => s.loss && s.answer ? /* @__PURE__ */ React$1.createElement("div", { className: "wd-ntiles", role: "img", "aria-label": "The word was " + s.answer }, s.answer.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t wd-nans-t", "aria-hidden": "true" }, ch))) : /* @__PURE__ */ React$1.createElement("div", { className: "wd-ntiles", role: "img", "aria-label": p.n === 0 ? "No guess yet" : wdSay(p.last) }, p.last.word.split("").map((ch, j) => /* @__PURE__ */ React$1.createElement("span", { key: j, className: "wd-t is-" + p.last.marks[j], "aria-hidden": "true" }, ch)));
   const WD_NONE = { n: 0, hint: null, won: false, last: { word: "     ", marks: ["empty", "empty", "empty", "empty", "empty"] } };
   const WdNow = ({ c, done, none }) => {
     const gs = useGs();
@@ -9788,6 +9788,18 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ week: "live" });
+        c.go("word", { page: "record" });
+      } },
+      { group: "Library", id: "library-word-failed", label: "Guess in your library, today failed", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "failed" });
+        c.go("word", { page: "record" });
+      } },
+      { group: "Library", id: "library-word-hard", label: "Guess in your library, the hard play", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "hard" });
         c.go("word", { page: "record" });
       } },
       { group: "Library", id: "library-word-streak-broken", label: "Guess in your library, streak broken (yesterday failed)", stage: (c) => {
