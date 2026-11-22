@@ -24,6 +24,7 @@ const cmPoolLabel = (p) => p.pool.length + ' of 5 guesses used' + (p.pool.length
 
 // ---- The guesses: five squares in the order spent. A right guess fills with the colour of the thread it named, with a tick; a wrong one
 // is grey with a cross; one not spent is an outline. ----
+// KEEP: five guess squares and a score out of 15 are the game's fixed size (deployed reads them from COMMON_POINTS and a five-square pool), so a layout counts on exactly five squares and a one- or two-digit score.
 const CmPool = ({ p }) => (
   <div className="cm-pool" role="img" aria-label={cmPoolLabel(p)}>
     {[0, 1, 2, 3, 4].map((j) => { const g = p.pool[j];

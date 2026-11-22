@@ -5889,6 +5889,7 @@
     [1, "Things in an office.", false]
   ] };
   const CM_HARD = { c: CM_C7, m: [0, 1, 2].flatMap((k) => [[k, "more"], [k, "more"], [k, "more"], [k, CM_C7[k].link + ".", true]]) };
+  const CM_HIGH = CM_OK[3];
   const dpSession = (id, c, x, base) => {
     const n = (id === "common" ? CM_NO : DP_NO) - x.i;
     const i = x.i;
@@ -6221,11 +6222,13 @@
       "salvage-today-hard": { ...svSession("hard"), now: { line: "You found all five wrecks on your last dive.", bar: [SLV_PLAYS.hard.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.hard.dives, SLV_DIVES] } },
       "salvage-today-failed": { ...svSession("lost"), now: { line: "You used all " + SLV_PLAYS.lost.dives + " dives and found " + SLV_PLAYS.lost.raised.size + " of the 5 wrecks.", bar: [SLV_PLAYS.lost.dives + " of " + SLV_DIVES + " dives", SLV_PLAYS.lost.dives, SLV_DIVES] } },
       "common-today-hard": dpPickCm(CM_HARD, false, { line: "You found all three connections and scored 3 of 15.", bar: ["3 of 15", 3, 15] }),
-      "common-today-failed": dpPickCm(CM_FAIL_TODAY, true, { line: "You found 1 of the 3 connections and scored 1 of 15.", bar: ["1 of 15", 1, 15] })
+      "common-today-failed": dpPickCm(CM_FAIL_TODAY, true, { line: "You found 1 of the 3 connections and scored 1 of 15.", bar: ["1 of 15", 1, 15] }),
+      "common-today-high": dpPickCm(CM_HIGH, false, { line: "You found all three connections and scored 13 of 15.", bar: ["13 of 15", 13, 15] })
     });
     DP_IDS.forEach((k) => {
       GS_ED_SIDS[k] = { average: k + "-today", hard: k + "-today-hard", failed: k + "-today-failed" };
     });
+    GS_ED_SIDS.common.high = "common-today-high";
     GS_ED_SIDS.where.long = "where-today-long";
     GS_ED_SIDS.chain.long = "chain-today-long";
     DP_PZ = {
@@ -6580,6 +6583,38 @@
             c.setConnected(true);
             c.setReview({ ed: "long" });
             c.go("session", { id: "chain-today-long" });
+          } }
+        ] : [],
+        ...k === "common" ? [
+          { group: g, id: "library-common-hard", label: "Common in your library, a hard day (every connection found on the fourth item, 3 of 15)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "hard" });
+            c.go(k, { page: "record" });
+          } },
+          { group: g, id: "library-common-failed", label: "Common in your library, today run out of guesses (1 of 3 found)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "failed" });
+            c.go(k, { page: "record" });
+          } },
+          { group: g, id: "session-common-hard", label: "Session page: Common today, a hard day (3 of 15)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "hard" });
+            c.go("session", { id: "common-today-hard" });
+          } },
+          { group: g, id: "session-common-failed", label: "Session page: Common today, run out of guesses (1 of 15)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "failed" });
+            c.go("session", { id: "common-today-failed" });
+          } },
+          { group: g, id: "session-common-high", label: "Session page: Common today, a high day (13 of 15, a two-digit score)", stage: (c) => {
+            c.setView("pass");
+            c.setConnected(true);
+            c.setReview({ ed: "high" });
+            c.go("session", { id: "common-today-high" });
           } }
         ] : [],
         ...k === "where" ? [
