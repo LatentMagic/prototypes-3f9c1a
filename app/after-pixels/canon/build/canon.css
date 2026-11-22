@@ -3200,7 +3200,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* The word on a loss: tiles at half the board's, outlined in the ring's grey, the letters in the grey of a letter not in the word. */
 .wd-ans { display: grid; justify-items: center; gap: 8px; width: 100%; }
 .wd-ans-row { display: flex; gap: 4px; }
-.wd-ans-t { width: calc(var(--t) * .5); height: calc(var(--t) * .5); font-size: calc(var(--t) * .26); border: 1.5px solid #918B80; color: #ABA79E; }
+.wd-ans-t { width: calc(var(--t) * .5); height: calc(var(--t) * .5); font-size: max(11px, calc(var(--t) * .26)); border: 1.5px solid #918B80; color: #ABA79E; }
 
 /* ---- Guess's now card (app/gs-word.jsx WdNow; Joe's pick, D2), on the shared frame (LbNowCard). ---- */
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
