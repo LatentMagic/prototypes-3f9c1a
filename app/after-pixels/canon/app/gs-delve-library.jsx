@@ -2,19 +2,21 @@ import React from 'react';
 import { GS_RESULT, GS_SESSIONS, useGs, GS_GAMES, gsEdPick, gsSessStatus } from './gs-data.jsx';
 import { lbAutoBadges, lbAccess, lbWeekDone, lbNow, LbHead, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phVisible, phAch, LbRecent, edRuns } from './gs-history.jsx';
-import { DlNow, DlNowEmpty } from './gs-delve.jsx';
+import { DlNow, DlNowEmpty, dlBest } from './gs-delve.jsx';
 import { GS_LIBRARY, GS_EDITIONS } from './registry.js';
 
 export let DV_END;
 let DV_RUN1;
+// Before a play the platform's card names no setting: its title is the product page's own line (delve.page.ts now.title).
+export const DV_WEEK_TITLE = 'This week’s run';
 export let DV_ALL;
 export let DV_LIVE;
 export let DV_DONE;
 let DV_ROOMS;
-let DV_RITUAL;
+let DV_CHANT;
 export let DV_NEXT;
 // The game's five achievements (verbatim), each earned by the first play in the record that meets it. Run 1's finished play
-// (Bryn: a longest streak of three, HP 22 of 23) meets Hot Streak, and Know Thy Enemy by the weakness strike on its climax foe. Regular and Ten Runs count finished runs, won or not: a play whose status is not live
+// (Bryn: a longest streak of three, HP 23 of 24) meets Hot Streak, and Know Thy Enemy by the weakness strike on its climax foe. Regular and Ten Runs count finished runs, won or not: a play whose status is not live
 // (Config → This edition: Failed or Hard still counts).
 const dvEnded = (ps) => ps.filter((p) => p.status.kind !== 'live');
 export let DV_ACH;
@@ -27,9 +29,14 @@ export const dvSid = (s) => (s === DV_FIRST || (s && s.id === DV_FIRST.id) ? 'de
 // The bar: rooms reached of the run's rooms. The recap: the deployed lines.
 export const dvBar = (s) => [s.rooms + ' of ' + DV_ROOMS + ' rooms reached', s.rooms, DV_ROOMS];
 export const dvRecap = (s) => (s.end
-  ? 'You played ' + s.hero + ' and won in ' + s.rolls + ' rolls, with the ritual ' + s.ritual + ' of ' + DV_RITUAL + ' along.'
-  : 'You’re playing ' + s.hero + ', ' + s.rooms + ' of ' + DV_ROOMS + ' rooms in, with the ritual ' + s.ritual + ' of ' + DV_RITUAL + '.');
+  ? 'You played ' + s.hero + ' and won in ' + s.rolls + ' rolls, with the chant ' + s.chant + ' of ' + DV_CHANT + ' along.'
+  : 'You’re playing ' + s.hero + ', ' + s.rooms + ' of ' + DV_ROOMS + ' rooms in, with the chant ' + s.chant + ' of ' + DV_CHANT + '.');
 // A week's run counts as completed when it was won, as the record holds it (this week's follows Config → This edition); a run lost is played, not completed.
+// The streak counts weeks played in a row, won or not (delve.md, the play streak): a Fallen or Overwhelmed week is a played week, as its mark still reads Failed.
+export const dvCounted = (list) => list.map((x) => ({ ...x, done: x.played }));
+export const dvStreak = (list) => lbStreak(dvCounted(list));
+// The record a session other than the seeded win leaves for the achievements: its own end and its own longest streak, never the win's.
+export const dvSrcOf = (sid) => { const s = GS_SESSIONS[sid]; return { ...DV_DONE, end: s.loss ? 'lost' : 'won', streak: dlBest(s), lines: s.lines }; };
 export const dvRun = (gs) => { const by = {}; phVisible(gs).forEach((p) => { if (p.gid === 'delve' && p.status.kind !== 'live') by[p.ed] = p.status.kind; });
   return DV_ALL.map((s) => ({ ...s, played: !!by[s.id], done: by[s.id] === 'ok', failed: by[s.id] === 'bad' })); };
 
@@ -42,8 +49,8 @@ const DvLibrary = () => {
     <main key={k} className="gs-wrap gs-main">
       <LbHead id="delve" />
       <div className="lb-lay">
-        {fresh ? <DlNowEmpty title={DV_RUN1.title} rooms={DV_ROOMS} next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DlNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
-        <LbRun n={lbStreak(list)} unit="weeks" weeks={lbRunOf(list)} />
+        {fresh ? <DlNowEmpty title={DV_WEEK_TITLE} rooms={DV_ROOMS} next={'Next run: ' + DV_NEXT} onPlay={() => gs.play('Delve')} /> : <DlNow s={lbWeekDone(gs) ? DV_DONE : DV_LIVE} />}
+        <LbRun n={dvStreak(list)} unit="weeks" weeks={lbRunOf(list)} />
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
       </div>
@@ -60,20 +67,20 @@ export function initGsDelveLibrary() {
 // ============================================================================
 // After Pixels — Delve's library page.
 // This week's run: the ending beside the title, rooms reached as the bar. Weeks in a row. The game's five achievements.
-// Your runs. One run so far: No. 1, The Goblin Warren beneath Ashford Mill, both the free
+// Your runs. One run so far: No. 1, The Goblin Warren, both the free
 // first run and this week's. Its finished form is session 'delve' (Bryn, won), its in-progress form 'delve-live' (Wren).
 // Without the Pass the page is replaced by gs-pass-library.jsx (CprDvLibrary); a Pass holder gets this one.
 // ============================================================================
-DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, ritual: { kind: 'bad', label: GS_RESULT.delve({ end: 'ritual' }) }, fell: { kind: 'bad', label: GS_RESULT.delve({ end: 'fell' }) } };
-DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'October', title: 'The Goblin Warren beneath Ashford Mill', played: true, end: null };
+DV_END = { won: { kind: 'ok', label: GS_RESULT.delve({ end: 'won' }) }, chant: { kind: 'bad', label: GS_RESULT.delve({ end: 'chant' }) }, fell: { kind: 'bad', label: GS_RESULT.delve({ end: 'fell' }) } };
+DV_RUN1 = { id: 'dv0', d: new Date(2026, 9, 5), date: '5 October', month: 'October', title: 'The Goblin Warren', played: true, end: null };
 // Every run, newest first.
 DV_ALL = [DV_RUN1];
-DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 9, rooms: 4, ritual: 3 };
+DV_LIVE = { ...DV_RUN1, hero: 'Wren', heroFull: 'Wren the Rogue', rolls: 9, rooms: 4, chant: 3 };
 // streak: the run's longest run of hits or successes (its share card: longest streak 3).
-DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, ritual: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
+DV_DONE = { ...DV_RUN1, hero: 'Bryn', heroFull: 'Bryn the Fighter', end: 'won', rolls: 11, rooms: 5, chant: 5, streak: 3, lines: GS_SESSIONS.delve.lines };
 // KEEP: the room count, the threat's name and maximum, and the carry limit come from the run's edition (5 or 6 rooms, threat 12 to 24 deployed), never fixed at 5 and 12.
 DV_ROOMS = 5;
-DV_RITUAL = 12;
+DV_CHANT = 12;
 DV_NEXT = 'Monday 12 October';
 DV_ACH = [
   { k: 'untouched', n: 'Untouched', how: 'Win a run without losing a hit point.', first: true, by: (p) => p.src.end === 'won' && !!p.src.unhurt },

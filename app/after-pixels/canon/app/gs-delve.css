@@ -61,17 +61,17 @@
 .dv3-dl dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
 .dv3-dl dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dv3-dl dd span { font-weight: 400; color: var(--muted); }
-/* KEEP: a "vs 12" or "vs defence 13" never splits, so a number never ends up alone on a line; the whole unit drops to the next line instead (280px: "Dexterity 6" then "vs 12"). */
+/* KEEP: a "vs 12" or "vs your AC 13" never splits, so a number never ends up alone on a line; the whole unit drops to the next line instead (280px: "Dexterity 6" then "vs 12"). */
 .dv3-dl dd span { white-space: nowrap; }
 /* KEEP: what a used ability or gear does is a muted second line under its name that wraps inside the held roll, so a long line never runs past the box at 280px. */
 .dv3-dl dd span.is-does { display: block; white-space: normal; }
 .dv3-dl dd[class*="is-"] { color: var(--tc); }
-/* The foe's roll in the held roll: its diamond (DelveFoeDie), what it did, the defence; then the foe's health as a meter. */
+/* The foe's roll in the held roll: its diamond (DelveFoeDie), what it did, your armour class; then the foe's health as a meter. */
 .dv3-foe dd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .dv3-foe dd b { color: var(--text); }
 .dv3-foe dd b.is-err { color: var(--error); }
 .dv3-dl > .dv3-fm { grid-template-columns: minmax(0, 1fr); align-items: center; }
-/* KEEP: at the narrowest width (a 280px window) every label in the held roll sits above its value instead of beside it: the 76px label column leaves about 50px, so "Dexterity" spills, and the foe roll's diamond and "Hit you for 2" share a line with "vs defence 13" second. */
+/* KEEP: at the narrowest width (a 280px window) every label in the held roll sits above its value instead of beside it: the 76px label column leaves about 50px, so "Dexterity" spills, and the foe roll's diamond and "Hit you for 2" share a line with "vs your AC 13" second. */
 @container dv2 (max-width: 240px) {
   .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
@@ -115,7 +115,7 @@
 /* KEEP: what a used ability or gear does always sits on its own muted row under its name, in every card shape and at every width, so the layout never depends on how long the words are. */
 .dvS-fact dd span.is-does { display: block; white-space: normal; }
 .dvS-fact dd[class*="is-"] { color: var(--tc); }
-/* KEEP: line 2 is the foe's answer, under a 1px rule: its roll (a diamond, what it did, the defence), then the foe's health as a fact named for the foe, its bar and count beside it (8px apart). The bar grows to 240px and no further (96px at least), so it never runs to the box's right edge; a foe beaten with no strike-back shows the health fact alone, at 0. No foe, no rule and no line 2. */
+/* KEEP: line 2 is the foe's answer, under a 1px rule: its roll (a diamond, what it did, your armour class), then the foe's health as a fact named for the foe, its bar and count beside it (8px apart). The bar grows to 240px and no further (96px at least), so it never runs to the box's right edge; a foe beaten with no strike-back shows the health fact alone, at 0. No foe, no rule and no line 2. */
 .dvS-line.is-foe { flex-wrap: nowrap; align-items: stretch; padding: 12px 0 0; border-top: 1px solid var(--line); gap: 12px 24px; }
 .dvS-line.is-foe > .dvS-fact { flex: 0 0 auto; }
 .dvS-foe { display: flex; align-items: center; column-gap: 6px; row-gap: 0; flex-wrap: wrap; font-weight: 400; color: inherit; white-space: normal; }

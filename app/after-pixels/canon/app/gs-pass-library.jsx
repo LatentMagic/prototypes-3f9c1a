@@ -14,7 +14,7 @@ import { LbNowCard, lbAchEarned, lbAchView, lbAccess, lbWeekDone, LbHead, LbAch,
 import { DP_IDS } from './gs-where-chain-salvage.jsx';
 import { CB_ACH, CB_BADGES, cbRecap } from './gs-casebook-data.jsx';
 import { cbStatus, cbGo } from './gs-casebook.jsx';
-import { DV_FIRST, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, DV_BADGES } from './gs-delve-library.jsx';
+import { DV_FIRST, DV_LIVE, DV_DONE, DV_ACH, DV_ALL, dvRun, dvCounted, DV_BADGES } from './gs-delve-library.jsx';
 import { PZ, pzRun } from './gs-puzzles-library.jsx';
 import { BW_CH1, bwEds, BW_CH2, BW_ACH, BW_BADGES } from './gs-barrow-library.jsx';
 import { GS_LIB_READY, gsFind, gsKinds, gsKind } from './gs-discover.jsx';
@@ -117,7 +117,7 @@ const CprDvLibrary = () => {
       <div className="lb-lay">
         {cprNowCard(gs, 'delve', ach)}
         {!lapsed && <LbRunPass unit="weeks" weeks={lbRunOf(DV_ALL)} />}
-        {lapsed && (() => { const list = dvRun(gs); const f = lbFrozen(lbRunOf(list), list, (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
+        {lapsed && (() => { const list = dvRun(gs); const f = lbFrozen(lbRunOf(list), dvCounted(list), (s) => s.date); return <LbRun n={f.n} unit="weeks" weeks={f.weeks} />; })()}
         <LbAch items={ach} badges={DV_BADGES} access={access} ed={GS_GAMES.delve.ed} />
         <LbRecent title="Your runs" allLabel="See in History" empty="Your runs appear here once you have played one." />
       </div>
