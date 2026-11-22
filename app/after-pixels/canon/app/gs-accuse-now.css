@@ -15,9 +15,9 @@
 .acn .acc-blank { width: min(160px, 80%); }
 .acn .acc-blank.is-s { width: min(190px, 92%); }
 
-/* KEEP: below a content box of 190px the culprit card (108px at least, 121px with a long name) no longer fits beside the Hints card and
+/* KEEP: below a content box of 201px the culprit card (108px at least, 121px with a long name) no longer fits beside the Hints card and
    runs past the card's edge, so the two cards stack, Hints above The culprit, each as wide as the card. */
-@container acn (max-width: 190px) {
+@container acn (max-width: 200px) {
   .acn-pair { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
 }
 
