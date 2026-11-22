@@ -1234,10 +1234,6 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 /* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
 .dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .gh { display: none; }
 .dl-now-route .dv2-dbtn:focus-visible { outline: 0; }
-/* KEEP: on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
-@container gs (max-width: 300px) {
-  .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }
-}
 /* KEEP: Delve's now card label balances its lines, so the free first run's "THE FIRST RUN · FREE" at 320px breaks as "THE FIRST" over "RUN · FREE" and never leaves "FREE" alone on a line. */
 .dl-now .gs-label { text-wrap: balance; }
 
@@ -1797,7 +1793,11 @@ html, body { background: var(--page); color: var(--text); font-family: var(--fon
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { display: contents; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .gs-label { grid-column: 1; grid-row: 1; }
 /* KEEP: the result chip ("In progress") stays on one line at 280px wide, and the grid gives it the width it needs; wrapped inside fit-content(50%) it dropped to two lines and pushed the heading down. */
-.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; white-space: nowrap; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; white-space: nowrap; font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
+/* KEEP: one result word for every game, as deployed (now-card.component.css .result): 20px, stepping to the 16px body size at a window of 340px or less so its longest word, such as "Overwhelmed", leaves the label room. */
+@media (max-width: 340px) { .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { font-size: 16px; } }
+/* KEEP: from a page of 640px Guess's, Where's and Salvage's now cards hold the same 132px body, their picture centred on the whole card (each game's file places it); the extra class lifts it over each file's own rows. */
+@container gs (min-width: 640px) { .lb-card:is(.wd-now, .wh-now, .svn) > .lb-now-in { grid-template-rows: auto; min-height: 132px; } }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .mcp-t-sec { grid-column: 1 / -1; grid-row: 2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 /* KEEP: A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
@@ -3206,9 +3206,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
 .wd-now { container: wdnow / inline-size; position: relative; }
 .wd-now > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-/* The result word at In progress's size and face, so Solved and Failed read as large as In progress (Joe); it never wraps. */
-.wd-now > .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
-.wd-now > .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 /* The picture: the tiles, then the ring and the hint box as one small row under them, either side of the card's centre line, so
    the ring never shifts as the hint's words change.
    KEEP: centre by the main element, not the group's box: the ring and the hint split either side of the centre line (the owner,
@@ -3232,7 +3229,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 /* KEEP (Joe): on a page from 640px the tiles and the ring row are one block centred on the whole card's height and width, the same gap
    above as below; never pinned to the top. The title and result stay in the top corners, the action row at the bottom. */
 @container gs (min-width: 640px) {
-  .wd-now > .lb-now-in { grid-template-rows: auto; min-height: 132px; }
   .wd-now-pic { --t: 52px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
 /* Phone (card under 440px inside its padding): the tiles fit the card (44px at most); the ring and the hint box sit in a centred row
@@ -3346,12 +3342,11 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
   .wh-last .wh-km { font-size: 13px; }
 }
 /* On a page from 640px: the row at the centre of the whole card, head and action row included, as Guess's now card (D2); the body
-   keeps Guess's 132px so the card holds it. KEEP: the switch reads the page's width, not the card's, so the card keeps this layout
+   keeps the shared 132px (gs-library-page.css) so the card holds it. KEEP: the switch reads the page's width, not the card's, so the card keeps this layout
    when the page goes two-column at 900px and the card narrows to about 508px; the row fits in 460px. */
 @container gs (min-width: 640px) {
   .wh-row { --fig: 72px; column-gap: 48px; }
   .wh-figs { column-gap: 48px; }
-  .wh-now > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   /* KEEP: the row is centred on the whole card, not on the space under the head, so it sits where Guess's tiles do (Joe, 2026-10-31). */
   .wh-row { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
@@ -3458,7 +3453,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    band under the head; nothing stretches the card. */
 .cn { container: cn / inline-size; }
 .cn .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-.cn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 .cn-pic { align-self: center; justify-self: stretch; min-width: 0; container: cnpic / inline-size; }
 .cn-stack { display: grid; justify-items: center; gap: 16px; }
 
@@ -3695,7 +3689,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .svn { container: svn / inline-size; position: relative; }
 .svn .t-sonar { --tc: var(--tool-sonar); } .svn .t-detector { --tc: var(--tool-detector); } .svn .t-net { --tc: var(--tool-dragnet); }
 .svn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-.svn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 
 /* KEEP: the hull square (--c) follows the card's width, 24px at most, so the five hulls (about 15.5 squares with their gaps) fit a phone in
    one row and the second row's tools and number scale with it instead of shrinking to nothing. */
@@ -3717,10 +3710,9 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .svn-tools .slv-bx { width: calc(var(--c) * 1.5); height: calc(var(--c) * 1.5); }
 .svn-tools .slv-bx svg { width: 62%; height: 62%; }
 
-/* On a page from 640px: the picture sits at the centre of the whole card, head and action row included, as Guess's, Where's and
-   Guess's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
+/* On a page from 640px: the picture sits at the centre of the whole card, head and action row included, as Guess's and
+   Where's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
 @container gs (min-width: 640px) {
-  .svn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .svn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
 /* Accuse's session page (app/gs-accuse.jsx). The notebook is Escape's sheet (.dv4 .esx-sheet, gs-escape-sheet.css) and the card is
@@ -3858,8 +3850,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
    culprit's case card (.acc-hc, .acc-case, gs-accuse.css). */
 .acn { container: acn / inline-size; position: relative; }
 .acn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-.acn .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
-.acn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 
 /* KEEP: on a phone the two cards sit side by side, as on the session page's panel: captions centred over each, both cards one height,
    the Hints card as narrow as its count and the case card up to 240px. */
@@ -3873,7 +3863,7 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 
 /* KEEP: on a card whose content box is 675px wide or more (the card's padding is 24px on pages from 720px and 16px below, so a card of
    about 725px across at a 1160px page) the pair is one group centred on the whole card, head and action row included, with the body at
-   the standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's
+   the standard 132px (the shared rule in gs-library-page.css); the group may run taller than the body, into the head's
    and action row's height, so it needs a card wide enough for its 360px to clear the head's "#64" on the left and the action row's
    button and "Next case" line on the right. Below that it stays the phone row between them. A single-column page from about 757px
    therefore gets the centred group. */

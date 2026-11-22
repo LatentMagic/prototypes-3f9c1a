@@ -433,10 +433,6 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 /* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
 .dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .gh { display: none; }
 .dl-now-route .dv2-dbtn:focus-visible { outline: 0; }
-/* KEEP: on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
-@container gs (max-width: 300px) {
-  .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }
-}
 /* KEEP: Delve's now card label balances its lines, so the free first run's "THE FIRST RUN · FREE" at 320px breaks as "THE FIRST" over "RUN · FREE" and never leaves "FREE" alone on a line. */
 .dl-now .gs-label { text-wrap: balance; }
 

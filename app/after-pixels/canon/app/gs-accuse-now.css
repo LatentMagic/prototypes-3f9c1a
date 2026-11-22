@@ -2,8 +2,6 @@
    culprit's case card (.acc-hc, .acc-case, gs-accuse.css). */
 .acn { container: acn / inline-size; position: relative; }
 .acn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-.acn .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
-.acn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 
 /* KEEP: on a phone the two cards sit side by side, as on the session page's panel: captions centred over each, both cards one height,
    the Hints card as narrow as its count and the case card up to 240px. */
@@ -17,7 +15,7 @@
 
 /* KEEP: on a card whose content box is 675px wide or more (the card's padding is 24px on pages from 720px and 16px below, so a card of
    about 725px across at a 1160px page) the pair is one group centred on the whole card, head and action row included, with the body at
-   the standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's
+   the standard 132px (the shared rule in gs-library-page.css); the group may run taller than the body, into the head's
    and action row's height, so it needs a card wide enough for its 360px to clear the head's "#64" on the left and the action row's
    button and "Next case" line on the right. Below that it stays the phone row between them. A single-column page from about 757px
    therefore gets the centred group. */

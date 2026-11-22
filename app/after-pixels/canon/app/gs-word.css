@@ -96,9 +96,6 @@
 /* KEEP: the card is its own container, so it lays out by the card's width, not the window's. */
 .wd-now { container: wdnow / inline-size; position: relative; }
 .wd-now > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-/* The result word at In progress's size and face, so Solved and Failed read as large as In progress (Joe); it never wraps. */
-.wd-now > .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
-.wd-now > .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 /* The picture: the tiles, then the ring and the hint box as one small row under them, either side of the card's centre line, so
    the ring never shifts as the hint's words change.
    KEEP: centre by the main element, not the group's box: the ring and the hint split either side of the centre line (the owner,
@@ -122,7 +119,6 @@
 /* KEEP (Joe): on a page from 640px the tiles and the ring row are one block centred on the whole card's height and width, the same gap
    above as below; never pinned to the top. The title and result stay in the top corners, the action row at the bottom. */
 @container gs (min-width: 640px) {
-  .wd-now > .lb-now-in { grid-template-rows: auto; min-height: 132px; }
   .wd-now-pic { --t: 52px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }
 /* Phone (card under 440px inside its padding): the tiles fit the card (44px at most); the ring and the hint box sit in a centred row

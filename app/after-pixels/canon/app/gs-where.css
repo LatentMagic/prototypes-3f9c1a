@@ -93,12 +93,11 @@
   .wh-last .wh-km { font-size: 13px; }
 }
 /* On a page from 640px: the row at the centre of the whole card, head and action row included, as Guess's now card (D2); the body
-   keeps Guess's 132px so the card holds it. KEEP: the switch reads the page's width, not the card's, so the card keeps this layout
+   keeps the shared 132px (gs-library-page.css) so the card holds it. KEEP: the switch reads the page's width, not the card's, so the card keeps this layout
    when the page goes two-column at 900px and the card narrows to about 508px; the row fits in 460px. */
 @container gs (min-width: 640px) {
   .wh-row { --fig: 72px; column-gap: 48px; }
   .wh-figs { column-gap: 48px; }
-  .wh-now > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   /* KEEP: the row is centred on the whole card, not on the space under the head, so it sits where Guess's tiles do (Joe, 2026-10-31). */
   .wh-row { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }

@@ -3,7 +3,6 @@
 .svn { container: svn / inline-size; position: relative; }
 .svn .t-sonar { --tc: var(--tool-sonar); } .svn .t-detector { --tc: var(--tool-detector); } .svn .t-net { --tc: var(--tool-dragnet); }
 .svn > .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-.svn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 
 /* KEEP: the hull square (--c) follows the card's width, 24px at most, so the five hulls (about 15.5 squares with their gaps) fit a phone in
    one row and the second row's tools and number scale with it instead of shrinking to nothing. */
@@ -25,9 +24,8 @@
 .svn-tools .slv-bx { width: calc(var(--c) * 1.5); height: calc(var(--c) * 1.5); }
 .svn-tools .slv-bx svg { width: 62%; height: 62%; }
 
-/* On a page from 640px: the picture sits at the centre of the whole card, head and action row included, as Guess's, Where's and
-   Guess's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
+/* On a page from 640px: the picture sits at the centre of the whole card, head and action row included, as Guess's and
+   Where's do; the body keeps their 132px so the card holds it. KEEP: the switch reads the page's width, not the card's. */
 @container gs (min-width: 640px) {
-  .svn > .lb-now-in { min-height: 132px; grid-template-rows: auto; }
   .svn-pic { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 }

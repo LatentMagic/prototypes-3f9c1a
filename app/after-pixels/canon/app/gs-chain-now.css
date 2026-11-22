@@ -5,7 +5,6 @@
    band under the head; nothing stretches the card. */
 .cn { container: cn / inline-size; }
 .cn .lb-now-in { flex: 1 1 auto; grid-template-rows: auto 1fr; }
-.cn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 .cn-pic { align-self: center; justify-self: stretch; min-width: 0; container: cnpic / inline-size; }
 .cn-stack { display: grid; justify-items: center; gap: 16px; }
 

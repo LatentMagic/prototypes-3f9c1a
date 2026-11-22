@@ -18,7 +18,11 @@
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { display: contents; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .gs-label { grid-column: 1; grid-row: 1; }
 /* KEEP: the result chip ("In progress") stays on one line at 280px wide, and the grid gives it the width it needs; wrapped inside fit-content(50%) it dropped to two lines and pushed the heading down. */
-.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; white-space: nowrap; }
+.lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; white-space: nowrap; font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
+/* KEEP: one result word for every game, as deployed (now-card.component.css .result): 20px, stepping to the 16px body size at a window of 340px or less so its longest word, such as "Overwhelmed", leaves the label room. */
+@media (max-width: 340px) { .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { font-size: 16px; } }
+/* KEEP: from a page of 640px Guess's, Where's and Salvage's now cards hold the same 132px body, their picture centred on the whole card (each game's file places it); the extra class lifts it over each file's own rows. */
+@container gs (min-width: 640px) { .lb-card:is(.wd-now, .wh-now, .svn) > .lb-now-in { grid-template-rows: auto; min-height: 132px; } }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .mcp-t-sec { grid-column: 1 / -1; grid-row: 2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
 /* KEEP: A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
