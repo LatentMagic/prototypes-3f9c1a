@@ -87,6 +87,13 @@
 @container dv2 (min-width: calc(5 * clamp(56px, (100vh - 560px) / 5, 72px) + 104px + 129px + 196px)) {
   .wd-places-row { display: flex; } .wd-place-one { display: none; }
 }
+/* KEEP: with no guess played the board is empty, so from a 672px card the panel stands alone, centred on the card under the
+   result, with no rule and no blank half beside it (the played board is unchanged). */
+@container dv2 (min-width: 672px) {
+  .wd-card .gs-sc-duo:not(:has(.wd-nrow)) { grid-template-columns: auto; }
+  .wd-card .gs-sc-duo:not(:has(.wd-nrow)) .gs-sc-board { display: none; }
+  .wd-card .gs-sc-duo:not(:has(.wd-nrow)) .gs-sc-panel { margin-top: 0; padding: 0; border-left: 0; align-self: center; }
+}
 /* The word on a loss: tiles at half the board's, outlined in the ring's grey, the letters in the grey of a letter not in the word. */
 .wd-ans { display: grid; justify-items: center; gap: 8px; width: 100%; }
 .wd-ans-row { display: flex; gap: 4px; }
