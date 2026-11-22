@@ -166,6 +166,7 @@ let dpChL;
 // A play is a day's content (per thread its four items, the connection and how each item fits) and its moves, in order: [thread index, 'more'],
 // [thread index, 'pass'] or [thread index, guess, right]. cmPlay replays it into the threads, the guesses and the record's lines; the session
 // page (gs-common.jsx) draws from the same replay. ----
+// KEEP: a day is out of 15 (three threads of five), has five guesses, and a right guess scores 5, 3, 2 or 1 with 1 to 4 items showing; deployed reads these from COMMON_POINTS and a five-square pool and takes each thread's points from the record, so none is a fixed number there.
 const CM_PTS = [5, 3, 2, 1];
 const cmCount = (n) => n + (n === 1 ? ' point' : ' points');
 const CM_HOW = { found: 'Found', passed: 'Passed', lost: 'Out of guesses' };
@@ -244,6 +245,9 @@ const CM_FAIL_TODAY = { c: CM_C7, m: [[0, 'Things that are slow.', false], [0, '
   [1, 'Things in an office.', false]] };
 // Today's threads on the hard play: every connection found only with all four items showing.
 const CM_HARD = { c: CM_C7, m: [0, 1, 2].flatMap((k) => [[k, 'more'], [k, 'more'], [k, 'more'], [k, CM_C7[k].link + '.', true]]) };
+
+// A day scored 13 of 15 (a two-digit score; Hard is 3 of 15, so it cannot show one): No. 4's play, two connections on the first item and the third on its second.
+const CM_HIGH = CM_OK[3];
 
 // ---- An earlier edition's session (gs-puzzles-library.jsx pzSession). base: kind, gid, game, art, date, result, loss. ----
 export const dpSession = (id, c, x, base) => {
@@ -429,8 +433,10 @@ Object.assign(GS_SESSIONS, {
   'salvage-today-failed': { ...svSession('lost'), now: { line: 'You used all ' + SLV_PLAYS.lost.dives + ' dives and found ' + SLV_PLAYS.lost.raised.size + ' of the 5 wrecks.', bar: [SLV_PLAYS.lost.dives + ' of ' + SLV_DIVES + ' dives', SLV_PLAYS.lost.dives, SLV_DIVES] } },
   'common-today-hard': dpPickCm(CM_HARD, false, { line: 'You found all three connections and scored 3 of 15.', bar: ['3 of 15', 3, 15] }),
   'common-today-failed': dpPickCm(CM_FAIL_TODAY, true, { line: 'You found 1 of the 3 connections and scored 1 of 15.', bar: ['1 of 15', 1, 15] }),
+  'common-today-high': dpPickCm(CM_HIGH, false, { line: 'You found all three connections and scored 13 of 15.', bar: ['13 of 15', 13, 15] }),
 });
 DP_IDS.forEach((k) => { GS_ED_SIDS[k] = { average: k + '-today', hard: k + '-today-hard', failed: k + '-today-failed' }; });
+GS_ED_SIDS.common.high = 'common-today-high';
 GS_ED_SIDS.where.long = 'where-today-long';
 GS_ED_SIDS.chain.long = 'chain-today-long';
 // ---- The library game page's seed (PZ in gs-puzzles-library.jsx), one entry per game. ----
@@ -620,6 +626,13 @@ DP_PZ_STATES = DP_IDS.flatMap((k) => { const n = GS_NAME[k]; const g = 'Daily pu
     { group: g, id: 'library-chain-hard', label: 'Chain in your library, a hard day (18 guesses)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
     { group: g, id: 'library-chain-long', label: 'Chain in your library, a seven-word chain with a ten-letter word', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go(k, { page: 'record' }); } },
     { group: 'Screens', id: 'session-chain-long', label: '7. Session page: Chain, a seven-word chain with a ten-letter word', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'long' }); c.go('session', { id: 'chain-today-long' }); } },
+  ] : []),
+  ...(k === 'common' ? [
+    { group: g, id: 'library-common-hard', label: 'Common in your library, a hard day (every connection found on the fourth item, 3 of 15)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'library-common-failed', label: 'Common in your library, today run out of guesses (1 of 3 found)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
+    { group: g, id: 'session-common-hard', label: 'Session page: Common today, a hard day (3 of 15)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'hard' }); c.go('session', { id: 'common-today-hard' }); } },
+    { group: g, id: 'session-common-failed', label: 'Session page: Common today, run out of guesses (1 of 15)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go('session', { id: 'common-today-failed' }); } },
+    { group: g, id: 'session-common-high', label: 'Session page: Common today, a high day (13 of 15, a two-digit score)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'high' }); c.go('session', { id: 'common-today-high' }); } },
   ] : []),
   ...(k === 'where' ? [
     { group: g, id: 'library-where-failed', label: 'Where in your library, today failed (not found)', stage: (c) => { c.setView('pass'); c.setConnected(true); c.setReview({ ed: 'failed' }); c.go(k, { page: 'record' }); } },
