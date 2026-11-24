@@ -1178,19 +1178,22 @@ button.dvL-head[aria-expanded="true"] svg { transform: rotate(270deg); color: va
 .dvL-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
 moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
-.dl-now-route { min-width: 0; }
-/* KEEP: a room's column is at least 44px wide, so a 34px die and four marks fit it; rooms that do not fit in one row go on the next, never over each other. No line joins the rooms: a wrapped row would end in a stub. */
-.dl-now-stops { display: grid; grid-template-columns: repeat(var(--dl-cols, 1), minmax(0, 1fr)); gap: 8px 0; min-width: 0; }
-.dl-now-stop { display: grid; justify-items: center; align-content: start; gap: 8px; padding: 8px 0 9px; min-width: 0; }
-.dl-now-stop .dvA2-head { justify-self: stretch; }
-.dl-now-stop .dvA2-head::before { top: 10px; }
-.dl-now-stop.is-row-start .dvA2-head::before { left: 50%; }
-.dl-now-stop.is-row-end .dvA2-head::before { right: 50%; }
-/* The rule between room columns, as the session page's route draws it (is-cols-between); none before a row's first room. */
-.dl-now-stop + .dl-now-stop:not(.is-row-start) { box-shadow: inset 1px 0 0 var(--line); }
-.dl-now-stop .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
-/* KEEP: a room's key moments wrap inside its column, 8px apart so a natural 20's rim and a two-dice die's second hex never touch the next die. */
-.dl-now-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-width: 0; }
+.dl-now-route { min-width: 0; container: dlnow / inline-size; }
+.dl-now-pic { display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; gap: 14px; min-height: 92px; min-width: 0; }
+.dl-now-strip { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dl-now-boxes { position: relative; flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; align-items: center; height: 24px; }
+.dl-now-boxes::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
+.dl-now-boxes .dv2-num { min-width: 20px; height: 20px; padding: 0 2px; font-size: 11px; }
+.dl-now-boxes .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
+.dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
+.dl-now-tick.is-back { background: var(--card); box-shadow: inset 0 0 0 1.5px var(--muted); }
+.dl-now-tick.is-on { background: var(--off-white); }
+.dl-now-count { flex: none; min-width: 30px; text-align: right; font: 600 13px/1 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; }
+/* KEEP: the key dice are one group on the card's centre line, a fixed gap apart whatever their number: 34px dice 10px apart under 300px, 38px 14px apart to 400px, 46px 24px apart above; the group wraps only if five dice cannot fit. */
+.dl-now-keys { --k: 34px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; min-width: 0; }
+.dl-now-keys .mcp-dl-die { width: var(--k); height: auto; }
+@container dlnow (min-width: 300px) { .dl-now-keys { --k: 38px; gap: 8px 14px; } }
+@container dlnow (min-width: 400px) { .dl-now-keys { --k: 46px; gap: 8px 24px; } }
 /* KEEP: the other rolls are 8px marks with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring; a use is a 10px grey sparkle with a -1px margin, so it takes the same 8px slot. */
 /* KEEP: a short last row of marks is centred under the row above (flex, not grid, so a partial row centres). */
 .dl-now-marks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: calc(var(--dl-marks, 3) * 12px - 4px); max-width: 100%; cursor: default; }

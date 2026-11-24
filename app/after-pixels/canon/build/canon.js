@@ -3762,46 +3762,38 @@
   };
   const DL_NO_HOVER = () => {
   };
-  const DL_NOW_COL = 44;
-  const useDlNowCols = (n) => {
-    const ref = React$1.useRef(null);
-    const [cols, setCols] = React$1.useState(n);
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return;
-      const read = () => {
-        const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL));
-        setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit)));
-      };
-      read();
-      const ro = new ResizeObserver(read);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, [n]);
-    return [ref, cols];
-  };
-  const dlMarkCols = (n) => n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3));
-  const DlNowUseMark = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dl-now-mark is-use", viewBox: "0 0 10 10", "aria-hidden": "true" }, /* @__PURE__ */ React$1.createElement("path", { d: "M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z" }));
   const dlNowMarksSay = (rest) => {
     const rolls = rest.filter((r) => !r.use);
     const uses = rest.length - rolls.length;
     const said = rolls.length ? rolls.length + (rolls.length === 1 ? " other roll: " : " other rolls: ") + rolls.map((r) => dlGrade(r).toLowerCase()).join(", ") : "";
     return [said, uses ? uses === 1 ? "a use" : uses + " uses" : ""].filter(Boolean).join(", and ");
   };
+  const DL_NOW_NUM_MIN = 20;
+  const useDlNowWide = (n) => {
+    const ref = React$1.useRef(null);
+    const [numbered, setNumbered] = React$1.useState(true);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => setNumbered(el.clientWidth / n >= DL_NOW_NUM_MIN);
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [n]);
+    return [ref, numbered];
+  };
+  const DlNowStrip = ({ stops, count, on }) => {
+    const [ref, numbered] = useDlNowWide(stops.length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-strip" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-boxes" }, stops.map((st, i) => numbered ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dv2-num" + (st.back ? " is-back" : "") + (on === i ? " is-on" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num) : /* @__PURE__ */ React$1.createElement("i", { key: i, className: "dl-now-tick" + (st.back ? " is-back" : "") + (on === i ? " is-on" : "") }))), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-count" }, count > 0 ? "+" + count : ""));
+  };
   const DlNowRoute = ({ m, open }) => {
     const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
-    const [ref, cols] = useDlNowCols(m.stops.length);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, "aria-label": "The way you went" }, m.stops.map((st, i) => {
-      const keys = st.turns.filter((r) => m.mom[r.t]);
-      const rest = st.turns.filter((r) => !m.mom[r.t]);
-      const edge = (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === m.stops.length - 1 ? " is-row-end" : "");
-      return /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + edge }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st }), !st.turns.length && /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act: null, on, size: 34, foe: true }))), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-marks", style: { "--dl-marks": dlMarkCols(rest.length) }, role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => r.use ? /* @__PURE__ */ React$1.createElement(DlNowUseMark, { key: r.t }) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + r.tier }))));
-    }));
+    const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost);
+    const others = m.rolls.filter((r) => !m.mom[r.t]).length;
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-pic", role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { role: "img", "aria-label": m.stops.length + " stops, " + others + " other rolls" }, /* @__PURE__ */ React$1.createElement(DlNowStrip, { stops: m.stops, count: others })), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act: null, on, size: 34, foe: true }))));
   };
-  const DlNowEmptyRoute = ({ rooms, reached }) => {
-    const [ref, cols] = useDlNowCols(rooms);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops", ref, style: { "--dl-cols": cols }, role: "img", "aria-label": "The run has " + rooms + " rooms, " + (reached ? "the first reached, no rolls yet" : "none entered yet") }, dlEmptyStops(rooms).map((st, i) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dl-now-stop" + (reached ? i === 0 ? " is-on" : " is-far" : "") + (i % cols === 0 ? " is-row-start" : "") + (i % cols === cols - 1 || i === rooms - 1 ? " is-row-end" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num)), reached && i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-hidden": "true" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))));
-  };
+  const DlNowEmptyRoute = ({ rooms, reached }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-pic", role: "img", "aria-label": "The run has " + rooms + " rooms, " + (reached ? "the first reached, no rolls yet" : "none entered yet") }, /* @__PURE__ */ React$1.createElement(DlNowStrip, { stops: dlEmptyStops(rooms), count: 0, on: reached ? 0 : null }));
   const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => /* @__PURE__ */ React$1.createElement(
     LbNowCard,
     {

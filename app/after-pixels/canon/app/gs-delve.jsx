@@ -528,44 +528,31 @@ const DlBody = ({ s }) => {
 // Rooms wrap onto further rows when the card is too narrow for them in one (balanced, below), and the dice of a room wrap inside its column, so nothing overlaps.
 // A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and pass.
 const DL_NO_HOVER = () => {};
-// KEEP: rows are balanced, never one room left alone: n rooms in r rows take ceil(n / r) columns, r as few as fit 44px columns
-// (8 rooms where 7 fit go 4 and 4; 5 where 4 fit go 3 and 2) (owner, 2026-10-30). The line joining the rooms runs along each row and
-// stops at its ends, so a wrapped row never leaves a stub.
-const DL_NOW_COL = 44;
-const useDlNowCols = (n) => { const ref = React.useRef(null); const [cols, setCols] = React.useState(n);
-  React.useLayoutEffect(() => { const el = ref.current; if (!el) return;
-    const read = () => { const fit = Math.max(1, Math.floor(el.clientWidth / DL_NOW_COL)); setCols(n <= fit ? n : Math.ceil(n / Math.ceil(n / fit))); };
-    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
-  return [ref, cols]; };
-// KEEP: a room's marks fold in rows of at most three, balanced, never one left alone below a full row (4 go 2 and 2, 5 go 3 and 2)
-// (owner, 2026-10-30).
-const dlMarkCols = (n) => (n <= 3 ? n : Math.ceil(n / Math.ceil(n / 3)));
-// KEEP: a use (ability, ultimate, gear) is no roll, so it marks the Now card as a small grey sparkle among the room's dots, not a dot,
-// as the share line counts it with a sparkle (owner, 2026-11-10).
-const DlNowUseMark = () => (<svg className="dl-now-mark is-use" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z" /></svg>);
 const dlNowMarksSay = (rest) => { const rolls = rest.filter((r) => !r.use); const uses = rest.length - rolls.length;
   const said = rolls.length ? rolls.length + (rolls.length === 1 ? ' other roll: ' : ' other rolls: ') + rolls.map((r) => dlGrade(r).toLowerCase()).join(', ') : '';
   return [said, uses ? (uses === 1 ? 'a use' : uses + ' uses') : ''].filter(Boolean).join(', and '); };
-const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(t), hov: DL_NO_HOVER }; const [ref, cols] = useDlNowCols(m.stops.length);
-  return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} aria-label="The way you went">{m.stops.map((st, i) => {
-    const keys = st.turns.filter((r) => m.mom[r.t]); const rest = st.turns.filter((r) => !m.mom[r.t]);
-    const edge = (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === m.stops.length - 1 ? ' is-row-end' : '');
-    return (<div key={st.i} className={'dl-now-stop' + edge}>
-      <DlStopHead st={st} />
-      {!st.turns.length && <i className="dv2-pass" aria-label="No rolls" />}
-      {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.t} r={r} act={null} on={on} size={34} foe />)}</div>}
-      {rest.length > 0 && <span className="dl-now-marks" style={{ '--dl-marks': dlMarkCols(rest.length) }} role="img" aria-label={dlNowMarksSay(rest)}>
-        {rest.map((r) => (r.use ? <DlNowUseMark key={r.t} /> : <i key={r.t} className={'dl-now-mark is-' + r.tier} />))}</span>}
-    </div>);
-  })}</div>);
-};
-// The Now card's route with nothing rolled: the run's rooms drawn empty. `reached` marks room 1 as the session page's empty route does
-// (its number lit, a small square where the dice will go); a run not started marks none.
-const DlNowEmptyRoute = ({ rooms, reached }) => { const [ref, cols] = useDlNowCols(rooms);
-  return (<div className="dl-now-stops" ref={ref} style={{ '--dl-cols': cols }} role="img" aria-label={'The run has ' + rooms + ' rooms, ' + (reached ? 'the first reached, no rolls yet' : 'none entered yet')}>{dlEmptyStops(rooms).map((st, i) => (
-    <div key={st.i} className={'dl-now-stop' + (reached ? (i === 0 ? ' is-on' : ' is-far') : '') + (i % cols === 0 ? ' is-row-start' : '') + (i % cols === cols - 1 || i === rooms - 1 ? ' is-row-end' : '')}>
-      <span className="dvA2-head"><span className="dv2-num">{st.num}</span></span>{reached && i === 0 ? <i className="dv2-pass" aria-hidden="true" /> : <DlEmptyHex />}</div>))}</div>);
-};
+// KEEP: the Now card's picture is one fixed shape however long the run: a strip of one box per stop on one row, the other rolls counted as "+N" at its right, and the key dice beneath as one centred group with no labels. A strip too narrow for numbers (under 20px a stop) draws each stop as a small tick, a return hollow; 25 stops still fit one row.
+// KEEP: with no key moment yet the strip alone sits centred in the picture's height (the Now card standard centres the picture), so the card keeps its size and no empty band stands under the strip.
+const DL_NOW_NUM_MIN = 20;
+const useDlNowWide = (n) => { const ref = React.useRef(null); const [numbered, setNumbered] = React.useState(true);
+  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
+    const read = () => setNumbered(el.clientWidth / n >= DL_NOW_NUM_MIN); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
+  return [ref, numbered]; };
+const DlNowStrip = ({ stops, count, on }) => { const [ref, numbered] = useDlNowWide(stops.length);
+  return (<div className="dl-now-strip">
+    <div ref={ref} className="dl-now-boxes">{stops.map((st, i) => (numbered
+      ? <span key={i} className={'dv2-num' + (st.back ? ' is-back' : '') + (on === i ? ' is-on' : '')}>{st.back && <DlBackArrow />}{st.num}</span>
+      : <i key={i} className={'dl-now-tick' + (st.back ? ' is-back' : '') + (on === i ? ' is-on' : '')} />))}</div>
+    <span className="dl-now-count">{count > 0 ? '+' + count : ''}</span></div>); };
+const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
+  const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost); const others = m.rolls.filter((r) => !m.mom[r.t]).length;
+  return (<div className="dl-now-pic" role="group" aria-label="The way you went">
+    <div role="img" aria-label={m.stops.length + ' stops, ' + others + ' other rolls'}><DlNowStrip stops={m.stops} count={others} /></div>
+    {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.t} r={r} act={null} on={on} size={34} foe />)}</div>}
+  </div>); };
+// The Now card's route with nothing rolled: the run's rooms as the strip. `reached` lights room 1, as the session page's empty route does; a run not started lights none.
+const DlNowEmptyRoute = ({ rooms, reached }) => (<div className="dl-now-pic" role="img" aria-label={'The run has ' + rooms + ' rooms, ' + (reached ? 'the first reached, no rolls yet' : 'none entered yet')}>
+  <DlNowStrip stops={dlEmptyStops(rooms)} count={0} on={reached ? 0 : null} /></div>);
 // The Now card of a run not started: the week's title (label: a free first run passes its own), the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
 // laterWeek: the free player's card once a later week is current: no Play, and the Pass sentence (passText) in the slot.
 export const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => (
