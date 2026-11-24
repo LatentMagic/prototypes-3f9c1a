@@ -755,6 +755,8 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-dl-die .nm{font:700 15px var(--font-heading);fill:var(--muted);text-anchor:middle;dominant-baseline:central;font-variant-numeric:tabular-nums}
 .mcp-dl-die.is-strong .nm{fill:var(--success-on)}.mcp-dl-die.is-weak .nm{fill:var(--warning-on)}
 .mcp-dl-die .rim{fill:none;stroke:var(--success);stroke-width:1.75;vector-effect:non-scaling-stroke}
+/* Biggest hit: a dark ring in the surface's fill inside the die's edge; its width is set on the element, from the die's size. */
+.mcp-dl-die .cut{fill:none;stroke:var(--dl-fill);vector-effect:non-scaling-stroke}
 /* KEEP: a natural 1 is a miss with a red edge, heavier than a miss's grey one; no rim, so only the natural 20 has one. */
 .mcp-dl-die.is-fumble .hx{stroke:var(--error);stroke-width:2.25}.mcp-dl-die.is-fumble .nm{fill:var(--error)}
 /* KEEP: a use has no hero roll, so no grade colour: the empty hex with a muted sparkle where the numbers are. */

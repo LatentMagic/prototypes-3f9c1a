@@ -7,6 +7,8 @@ export interface DelveDieProps{
   other?:number;
   /** Natural 20: rimmed in green. */
   crit?:boolean;
+  /** Biggest hit, the run's most damage: a hit with a dark ring just inside its edge. Only for kind 'strong'. */
+  biggest?:boolean;
   /** Natural 1: a red edge, heavier than a miss's grey one. */
   fumble?:boolean;
   /** The foe struck back: a red hex behind the die, outside the advantage hex. Cleared when selected and from 64px. */

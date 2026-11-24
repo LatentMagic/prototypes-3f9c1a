@@ -237,13 +237,52 @@
     const HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
     const RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
     const SPARKLE = "M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z";
+    const HP = HEX.split(" ").map((p) => p.split(",").map(Number));
+    const CEN = [18, 20];
+    const RIM_W = 1.75;
+    const RING_W = 1.5;
+    const sideNormals = (d) => HP.map((a, i) => {
+      const b = HP[(i + 1) % 6];
+      const dx = b[0] - a[0];
+      const dy = b[1] - a[1];
+      const n = Math.hypot(dx, dy);
+      let nx = dy / n;
+      let ny = -dx / n;
+      if (nx * (a[0] - CEN[0]) + ny * (a[1] - CEN[1]) < 0) {
+        nx = -nx;
+        ny = -ny;
+      }
+      return [nx, ny, nx * a[0] + ny * a[1] + d];
+    });
+    const offHex = (d) => {
+      const L = sideNormals(d);
+      return HP.map((_, i) => {
+        const p = L[(i + 5) % 6];
+        const q = L[i];
+        const det = p[0] * q[1] - p[1] * q[0];
+        return [(p[2] * q[1] - p[1] * q[2]) / det, (p[0] * q[2] - p[2] * q[0]) / det];
+      });
+    };
+    const sideDist = (P) => {
+      const L = sideNormals(0);
+      const m = HP.map((_, i) => [P[i], P[(i + 1) % 6]].map((q) => q[0] * L[i][0] + q[1] * L[i][1]).reduce((x, y) => x + y) / 2 - L[i][2]);
+      return (Math.min(...m) + Math.max(...m)) / 2;
+    };
+    const RIM_PTS = RIM.split(" ").map((p) => p.split(",").map(Number));
+    const biggestRing = (size) => {
+      const k = size / 46;
+      const gap = sideDist(RIM_PTS) * k - RIM_W / 2;
+      const band = -sideDist(HP.map(([x, y]) => [CEN[0] + (x - CEN[0]) * 0.8, CEN[1] + (y - CEN[1]) * 0.8])) * k - RING_W / 2;
+      return { points: offHex(-(band + gap / 2) / k).map((p) => p[0].toFixed(3) + "," + p[1].toFixed(3)).join(" "), width: gap };
+    };
     const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-5, -4.5] : adv ? [-7, -6] : [-3.5, -3];
-    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
+    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, biggest = false, won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
       const big = size >= 64;
+      const ring = biggest ? biggestRing(size) : null;
       const adv = other != null && !big && !selected;
       const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
-      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
-      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
+      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", biggest && "is-biggest", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), biggest && kind === "strong" && /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
     }
     function DelveUseDie({ won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
       return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", won, foe, selected, surface, size, className });
