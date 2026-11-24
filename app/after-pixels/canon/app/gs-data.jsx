@@ -344,7 +344,7 @@ export const GS_ED_SIDS = {
   groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
   mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
   escape: { hard: 'escape-hard' },
-  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use', 'lost-no-roll': 'delve-lost-no-roll' },
+  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use', 'lost-no-roll': 'delve-lost-no-roll', 'long-run': 'delve-route-25' },
   casebook: { average: 'casebook', hard: 'casebook-hard', failed: 'casebook-failed' },
 };
 // How a finished session reads in a row: a loss (`loss`) is bad, anything else is ok.
