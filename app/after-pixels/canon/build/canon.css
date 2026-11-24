@@ -1228,6 +1228,21 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-width: 1.6; stroke-linecap: round; }
 /* The loss cross's box: no hit area and no pointer, as high as a die so the cross centres on the dice in its row. */
 .dv2-lost { display: grid; place-items: center; }
+
+/* ---- The sheet's trained skills, two advantage marks ---- */
+/* KEEP: a trained skill is drawn in the stat cells' rhythm under a hairline: its total where a hex sits, its name under it, on one row from a 400px panel and otherwise four to a row (7 go 4 then 3), the short last row centred on the full ones. */
+.dv9-rule { border-top: 1px solid var(--line); margin: 16px 0; }
+.dv9-skills { display: flex; flex-wrap: wrap; justify-content: center; row-gap: 16px; --per: min(var(--n), 4); }
+@container dv4 (min-width: 400px) { .dv9-skills { --per: var(--n); } }
+@container dv4 (max-width: 240px) { .dv9-skills { --per: min(var(--n), 3); } }
+.dv9-sk { flex: 0 0 calc(100% / var(--per)); min-width: 0; box-sizing: border-box; display: grid; justify-items: center; align-content: start; gap: 2px; text-align: center; }
+.dv9-tot { font: 700 16px/1.2 var(--font-heading); color: var(--text); }
+.dv9-nm { font: 600 12px/1.2 var(--font-text); color: var(--muted); text-wrap: balance; }
+@container dv4 (max-width: 270px) { .dv9-nm { font-size: 11px; font-weight: 500; letter-spacing: -.01em; } }
+.dv9-pips { display: inline-flex; gap: 4px; }
+.dv9-pips i { display: block; width: 12px; height: 12px; box-sizing: border-box; border: 1.5px solid var(--control-edge); }
+.dv9-pips i.is-on { background: var(--muted); border-color: var(--muted); }
+.dv9-pips.is-lit i.is-on { background: var(--off-white); border-color: var(--off-white); }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
 /* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).

@@ -3174,6 +3174,7 @@
       name: "Bryn",
       cls: "Fighter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
+      skills: [["Athletics", "Strength"], ["Intimidation", "Charisma"], ["Perception", "Wisdom"], ["Survival", "Wisdom"]],
       abilities: [{ name: "Shield bash", of: 1, ult: true, does: "Strikes at once, no roll" }],
       fight: { defence: 10, armour: 2, armourName: "ox shield", heavy: { name: "Cleave", needs: 14, dmg: 7 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
@@ -3183,6 +3184,7 @@
       name: "Hal",
       cls: "Woodcutter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
+      skills: [["Athletics", "Strength"], ["Intimidation", "Charisma"], ["Perception", "Wisdom"], ["Survival", "Wisdom"]],
       abilities: [{ name: "Tree-felling", of: 1, ult: true, does: "Strikes at once, no roll" }],
       fight: { defence: 10, armour: 2, armourName: "elder-bark cloak", heavy: { name: "Timberfall", needs: 14, dmg: 7 } },
       gear: [{ name: "Honey cake", kind: "once", does: "Heals 6" }, { name: "Axe", kind: "key", does: "" }]
@@ -3192,6 +3194,7 @@
       name: "Wren",
       cls: "Rogue",
       stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
+      skills: [["Stealth", "Dexterity"], ["Acrobatics", "Dexterity"], ["Sleight of Hand", "Dexterity"], ["Deception", "Charisma"], ["Perception", "Wisdom"], ["Investigation", "Intelligence"], ["Persuasion", "Charisma"]],
       abilities: [{ name: "Sneak attack", of: 1, ult: true, does: "Strikes at once, no roll" }],
       fight: { defence: 14, armour: 1, armourName: "leather jerkin", heavy: { name: "Flurry", needs: 13, dmg: 6 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Coil of rope", kind: "key", does: "" }]
@@ -3593,6 +3596,7 @@
     return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlRoomList, { m, act, on: { sel: setSel, hov: DL_NO_HOVER } }) : /* @__PURE__ */ React$1.createElement(DlRoute, { m, act, on, beside, lit: stacked ? hov : null }));
   };
   const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
+  const STAT_ORDER = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"];
   const dlSheet = (s, m) => {
     const h = DL_HEROES[s.hero] || DL_HEROES["Wren the Rogue"];
     const sh = s.sheet || {};
@@ -3640,6 +3644,9 @@
       abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })),
       insp: !!sh.insp,
       fight: h.fight || null,
+      adv: { streak: m.run, hits: m.fh, fight: m.fightLive },
+      // KEEP: a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
+      skills: STAT_ORDER.flatMap((st) => (h.skills || []).filter((k) => k[1] === st).map((k) => ({ name: k[0], say: dlSigned(h.stats[st] + 2) + Math.abs(h.stats[st] + 2) }))),
       stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? "−" : "+") + Math.abs(n) }))
     };
   };
@@ -3670,27 +3677,28 @@
     return one;
   };
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
-  const DlAdvCells = ({ c, streak }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Hits or successes in a row. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, streak)));
+  const DlPips = ({ n, lit, name }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv9-pips" + (lit ? " is-lit" : ""), role: "img", "aria-label": name + ", " + Math.min(n, 2) + " of 2" }, [0, 1].map((i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < n ? "is-on" : "" })));
+  const DlAdvCells = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", used: c.adv.fight, title: "Successes in a row on checks. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.streak, lit: !c.adv.fight, name: "Streak" })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Fight hits", used: !c.adv.fight, title: "Hits in a row in this fight. From two on, it gives advantage on the next attack." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.hits, lit: c.adv.fight, name: "Fight hits" })));
+  const DlSkills = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv9-rule" }), /* @__PURE__ */ React$1.createElement("div", { className: "dv9-skills", style: { "--n": c.skills.length } }, c.skills.map((k) => /* @__PURE__ */ React$1.createElement("div", { key: k.name, className: "dv9-sk" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv9-tot" }, k.say), /* @__PURE__ */ React$1.createElement("span", { className: "dv9-nm" }, k.name)))));
   const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-mgrid" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }), c.lightName && /* @__PURE__ */ React$1.createElement(DlMeter, { label: dlLightLabel(c.lightName), n: c.light, of: c.lightMax })));
   const dlFight = (c) => {
     const f = c.fight;
     if (!f) return [];
     return [
-      { key: "def", label: "Defence", num: f.defence, text: "A foe’s d20 must reach " + f.defence + " to hit you." },
-      { key: "arm", label: "Armour", num: f.armour, tip: f.armourName, text: "The " + f.armourName + ": takes " + f.armour + " damage off blows each fight, full again at the next." },
+      { key: "ac", label: "Armour class", num: f.defence },
       { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.needs, text: "Needs " + f.heavy.needs + " to hit, " + f.heavy.dmg + " damage." }
     ];
   };
   const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== "used").length) }, (_, i) => c.gear[i] || null);
-  const dlTabGroups = (c, slots, streak) => {
+  const dlTabGroups = (c, slots) => {
     const carried = c.gear.filter((g) => g.state !== "used").length;
     const free = slots.length - carried;
     const left = c.abilities.reduce((n, a) => n + a.left, 0);
     const of = c.abilities.reduce((n, a) => n + a.of, 0);
     return [
-      { key: "stats", head: "Stats", icon: "stats", cells: /* @__PURE__ */ React$1.createElement(DlStatCells, { c }), cls: "dv8-stats" },
-      { key: "advantage", head: "Advantage", icon: "advantage", cells: /* @__PURE__ */ React$1.createElement(DlAdvCells, { c, streak }), cls: "dv8-adv" },
+      { key: "stats", head: "Stats", icon: "stats", cells: /* @__PURE__ */ React$1.createElement(DlStatCells, { c }), after: /* @__PURE__ */ React$1.createElement(DlSkills, { c }), cls: "dv8-stats" },
+      { key: "advantage", head: "Advantage", icon: "advantage", cells: /* @__PURE__ */ React$1.createElement(DlAdvCells, { c }), cls: "dv8-adv" },
       {
         key: "pack",
         head: "Pack",
@@ -3712,7 +3720,7 @@
         key: "fight",
         head: "Fight",
         icon: "fight",
-        say: "defence " + c.fight.defence,
+        say: "armour class " + c.fight.defence,
         rows: dlFight(c).map((f) => ({ key: f.key, fig: /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, f.num), name: f.label, tag: f.kind || f.tip, text: f.text }))
       }] : []
     ];
@@ -3721,17 +3729,17 @@
   const DlTabs = ({ groups, card, setCard }) => /* @__PURE__ */ React$1.createElement("div", { className: "esx-cards dl-tabs", style: { "--dl-tabs": groups.length } }, groups.map((g) => /* @__PURE__ */ React$1.createElement("button", { key: g.key, type: "button", className: "esx-card dl-tab" + (card === g.key ? " is-open" : ""), "aria-expanded": card === g.key, "aria-label": g.say ? g.head + ", " + g.say : g.head, onClick: () => setCard(card === g.key ? null : g.key) }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: g.icon, size: 24 }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-tab-w" }, g.head))));
   const DlPanel = ({ groups, card }) => {
     const grp = groups.find((g) => g.key === card);
-    return /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && (grp.rows ? /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dvp-rows dl-panel esx-in", role: "group", "aria-label": grp.head }, grp.rows.map((r) => /* @__PURE__ */ React$1.createElement(DlTapRow, { key: r.key, ...r }))) : /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dl-panel dl-cellpanel esx-in " + grp.cls, role: "group", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, grp.cells))));
+    return /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && (grp.rows ? /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dvp-rows dl-panel esx-in", role: "group", "aria-label": grp.head }, grp.rows.map((r) => /* @__PURE__ */ React$1.createElement(DlTapRow, { key: r.key, ...r }))) : /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dl-panel dl-cellpanel esx-in " + grp.cls, role: "group", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, grp.cells), grp.after)));
   };
   const DlHead = ({ c, folded, fold }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-head is-fold" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dl-fold", "aria-expanded": !folded, "aria-controls": "dl-sheet-tabs", "aria-label": "Character sheet details", onClick: fold }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })));
-  const DlSheet = ({ c, streak }) => {
+  const DlSheet = ({ c }) => {
     const ref = React$1.useRef(null);
     const one = useDlOneRow(ref);
     const [card, setCard] = React$1.useState(null);
     const [folded, setFolded] = React$1.useState(true);
     const [seen, setSeen] = React$1.useState(one);
     const [tap, setTap] = React$1.useState(null);
-    const groups = dlTabGroups(c, dlSlots(c), streak);
+    const groups = dlTabGroups(c, dlSlots(c));
     if (seen !== one) {
       setSeen(one);
       setCard(null);
@@ -3758,7 +3766,7 @@
     const gs = useGs();
     const m = React$1.useMemo(() => dlBuild(s), [s]);
     const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c, streak: m.run }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const DL_NO_HOVER = () => {
   };

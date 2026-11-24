@@ -32,16 +32,19 @@ const DL_HEROES = {
   // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
   // the starting gear a healing draught and a crowbar (a key), 23 health, stats as the archetype sets them.
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
+    skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
     abilities: [{ name: 'Shield bash', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 10, armour: 2, armourName: 'ox shield', heavy: { name: 'Cleave', needs: 14, dmg: 7 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Crowbar', kind: 'key', does: '' }] },
   // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak (armour value as Bryn's, sample), a honey cake (heals 6) and an axe (a key).
   'Hal the Woodcutter': { name: 'Hal', cls: 'Woodcutter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
+    skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
     abilities: [{ name: 'Tree-felling', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 10, armour: 2, armourName: 'elder-bark cloak', heavy: { name: 'Timberfall', needs: 14, dmg: 7 } },
     gear: [{ name: 'Honey cake', kind: 'once', does: 'Heals 6' }, { name: 'Axe', kind: 'key', does: '' }] },
   // Wren, from the same source (rogue): defence 14, protection 1 (a leather jerkin), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
+    skills: [['Stealth', 'Dexterity'], ['Acrobatics', 'Dexterity'], ['Sleight of Hand', 'Dexterity'], ['Deception', 'Charisma'], ['Perception', 'Wisdom'], ['Investigation', 'Intelligence'], ['Persuasion', 'Charisma']],
     abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 14, armour: 1, armourName: 'leather jerkin', heavy: { name: 'Flurry', needs: 13, dmg: 6 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Coil of rope', kind: 'key', does: '' }] },
@@ -401,6 +404,7 @@ const DlCard = ({ s, m, roll, turn }) => {
 
 // ---- The character sheet, read from the hero's sheet and the record's lines: gear taken, used, or a key that opened its lock. ----
 const DL_STATE = { worn: 'Worn', held: 'Held', used: 'Used' };
+const STAT_ORDER = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma'];
 const dlSheet = (s, m) => {
   const h = DL_HEROES[s.hero] || DL_HEROES['Wren the Rogue']; const sh = s.sheet || {}; const used = sh.used || {};
   const gear = h.gear.map((g) => ({ ...g, state: g.kind === 'armour' ? 'worn' : 'held' }));
@@ -416,7 +420,9 @@ const dlSheet = (s, m) => {
   gear.forEach((g) => { g.label = g.note || DL_STATE[g.state]; });
   return { name: h.name, cls: h.cls, hp: m.hp, hpMax: s.hpMax, threat: s.threat, threatMax: s.threatMax, lightName: s.lightName, light: s.light, lightMax: s.lightMax, carry: DL_CARRY, gear,
     abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })), insp: !!sh.insp,
-    fight: h.fight || null, stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? '−' : '+') + Math.abs(n) })) };
+    fight: h.fight || null, adv: { streak: m.run, hits: m.fh, fight: m.fightLive },
+    // KEEP: a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
+    skills: STAT_ORDER.flatMap((st) => (h.skills || []).filter((k) => k[1] === st).map((k) => ({ name: k[0], say: dlSigned(h.stats[st] + 2) + Math.abs(h.stats[st] + 2) }))), stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? '−' : '+') + Math.abs(n) })) };
 };
 // Glyphs, line-drawn as the shop's icons (1.75 stroke, square caps, mitred joins). Armour has its own: a shield.
 const DL_G = { armour: 'M5 4h14v8l-7 8-7-8z', once: 'M9 3h6M10 3v6l-5 11h14l-5-11V3', key: 'M3 9h7v6H3zM10 12h11M17 12v4M20 12v3' };
@@ -445,32 +451,36 @@ const useDlOneRow = (ref) => { const [one, setOne] = React.useState(false);
     read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
   return one; };
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
-const DlAdvCells = ({ c, streak }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
-  <DlCell label="Streak" title="Hits or successes in a row. From two on, it gives advantage."><span className="dv8-num">{streak}</span></DlCell></>);
+// Two marks, each a pair of pips: the scene streak (successes in a row on checks) and the fight hits (hits in a row in this fight); two of either gives advantage. Only the live one is lit: the fight's while a fight is on, else the streak's. After a fight or the run they keep their state, with no longest streak.
+const DlPips = ({ n, lit, name }) => (<span className={'dv9-pips' + (lit ? ' is-lit' : '')} role="img" aria-label={name + ', ' + Math.min(n, 2) + ' of 2'}>{[0, 1].map((i) => <i key={i} className={i < n ? 'is-on' : ''} />)}</span>);
+const DlAdvCells = ({ c }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
+  <DlCell label="Streak" used={c.adv.fight} title="Successes in a row on checks. From two on, it gives advantage."><DlPips n={c.adv.streak} lit={!c.adv.fight} name="Streak" /></DlCell>
+  <DlCell label="Fight hits" used={!c.adv.fight} title="Hits in a row in this fight. From two on, it gives advantage on the next attack."><DlPips n={c.adv.hits} lit={c.adv.fight} name="Fight hits" /></DlCell></>);
+// The trained skills under the stats, each in the stats' own rhythm: its total where a stat's hex sits, its name under it.
+const DlSkills = ({ c }) => (<><div className="dv9-rule" /><div className="dv9-skills" style={{ '--n': c.skills.length }}>{c.skills.map((k) => <div key={k.name} className="dv9-sk"><span className="dv9-tot">{k.say}</span><span className="dv9-nm">{k.name}</span></div>)}</div></>);
 // The light's label is its module's own name as written with the first letter capitalised, "the torch" → "The torch". Only a run whose edition has the light module carries `lightName`. How the labels lay out is the KEEP in gs-delve.css: they sit above their bars at every width, one line, never wrapping. The editions' name cap (≈20 characters) is a ticket item.
 const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><div className="dv8-mgrid"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} />
   {c.lightName && <DlMeter label={dlLightLabel(c.lightName)} n={c.light} of={c.lightMax} />}</div></div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
-  return [{ key: 'def', label: 'Defence', num: f.defence, text: 'A foe’s d20 must reach ' + f.defence + ' to hit you.' },
-    { key: 'arm', label: 'Armour', num: f.armour, tip: f.armourName, text: 'The ' + f.armourName + ': takes ' + f.armour + ' damage off blows each fight, full again at the next.' },
+  return [{ key: 'ac', label: 'Armour class', num: f.defence },
     { key: 'heavy', label: f.heavy.name, kind: 'Heavy attack', num: f.heavy.needs, text: 'Needs ' + f.heavy.needs + ' to hit, ' + f.heavy.dmg + ' damage.' }]; };
 const DlLabel = ({ name, kind }) => (kind ? <>{name}<small className="dv8-sub">{kind}</small></> : name);
 const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== 'used').length) }, (_, i) => c.gear[i] || null);
 
 // The tabs and what each opens: Stats and Advantage open the sheet's own cells, Pack, Ability and Fight open rows.
-const dlTabGroups = (c, slots, streak) => {
+const dlTabGroups = (c, slots) => {
   const carried = c.gear.filter((g) => g.state !== 'used').length; const free = slots.length - carried; const left = c.abilities.reduce((n, a) => n + a.left, 0); const of = c.abilities.reduce((n, a) => n + a.of, 0);
   return [
-    { key: 'stats', head: 'Stats', icon: 'stats', cells: <DlStatCells c={c} />, cls: 'dv8-stats' },
-    { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} streak={streak} />, cls: 'dv8-adv' },
+    { key: 'stats', head: 'Stats', icon: 'stats', cells: <DlStatCells c={c} />, after: <DlSkills c={c} />, cls: 'dv8-stats' },
+    { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} />, cls: 'dv8-adv' },
     { key: 'pack', head: 'Pack', icon: 'pack', say: carried + ' of ' + slots.length + ' carried',
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
         ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
     { key: 'abilities', head: 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
       rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: (a.ult ? 'Ultimate · ' : '') + a.left + ' of ' + a.of + ' left', text: a.does })) },
-    ...(c.fight ? [{ key: 'fight', head: 'Fight', icon: 'fight', say: 'defence ' + c.fight.defence,
+    ...(c.fight ? [{ key: 'fight', head: 'Fight', icon: 'fight', say: 'armour class ' + c.fight.defence,
       rows: dlFight(c).map((f) => ({ key: f.key, fig: <span className="dv8-num">{f.num}</span>, name: f.label, tag: f.kind || f.tip, text: f.text })) }] : []),
   ];
 };
@@ -485,16 +495,16 @@ const DlTabs = ({ groups, card, setCard }) => (<div className="esx-cards dl-tabs
 const DlPanel = ({ groups, card }) => { const grp = groups.find((g) => g.key === card);
   return (<EsxFold open={!!grp}>{grp && (grp.rows
     ? <div key={grp.key} className="dvp-rows dl-panel esx-in" role="group" aria-label={grp.head}>{grp.rows.map((r) => <DlTapRow key={r.key} {...r} />)}</div>
-    : <div key={grp.key} className={'dl-panel dl-cellpanel esx-in ' + grp.cls} role="group" aria-label={grp.head}><div className="dv7-cells">{grp.cells}</div></div>)}</EsxFold>); };
+    : <div key={grp.key} className={'dl-panel dl-cellpanel esx-in ' + grp.cls} role="group" aria-label={grp.head}><div className="dv7-cells">{grp.cells}</div>{grp.after}</div>)}</EsxFold>); };
 // The header: the name, then the bars. Below one row it is the fold: the chevron's button is stretched over the whole header, so a tap anywhere on it folds the tabs, while the bars stay readable to a screen reader. One row hides the button in CSS, so the header never waits on a render to change layout.
 const DlHead = ({ c, folded, fold }) => (<div className="dl-head is-fold">
   <div className="dv7-grp is-hero"><p className="dv7-hero"><b>{c.name}</b><span>{c.cls}</span></p></div>
   <DlMeters c={c} />
   <button type="button" className="dl-fold" aria-expanded={!folded} aria-controls="dl-sheet-tabs" aria-label="Character sheet details" onClick={fold}><DS.Icon name="next" size={20} /></button>
 </div>);
-const DlSheet = ({ c, streak }) => { const ref = React.useRef(null); const one = useDlOneRow(ref); const [card, setCard] = React.useState(null); const [folded, setFolded] = React.useState(true);
+const DlSheet = ({ c }) => { const ref = React.useRef(null); const one = useDlOneRow(ref); const [card, setCard] = React.useState(null); const [folded, setFolded] = React.useState(true);
   const [seen, setSeen] = React.useState(one); const [tap, setTap] = React.useState(null);
-  const groups = dlTabGroups(c, dlSlots(c), streak);
+  const groups = dlTabGroups(c, dlSlots(c));
   // KEEP: a new layout opens as a first one does: the tab shut and, in two rows, the sheet folded. Changing between one row and two is the new layout.
   if (seen !== one) { setSeen(one); setCard(null); setFolded(true); setTap(null); }
   // KEEP: the fold and the tabs animate only for a tap: `is-tap` is on the sheet from the tap until the motion is over, and CSS gives every fold a transition only then, so a window resize across a breakpoint changes the layout without any motion.
@@ -516,7 +526,7 @@ const DlBody = ({ s }) => {
   const gs = useGs();
   const m = React.useMemo(() => dlBuild(s), [s]); const c = React.useMemo(() => dlSheet(s, m), [s, m]);
   return <>
-    <div className="dv4-lay"><DlSheet c={c} streak={m.run} /><DlCard s={s} m={m} roll={gs.route && gs.route.roll} turn={gs.route && gs.route.turn} /></div>
+    <div className="dv4-lay"><DlSheet c={c} /><DlCard s={s} m={m} roll={gs.route && gs.route.roll} turn={gs.route && gs.route.turn} /></div>
     <GsMoves s={s} />
   </>;
 };
