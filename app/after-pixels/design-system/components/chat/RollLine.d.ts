@@ -1,6 +1,6 @@
 /** One roll on one line: label, die, the roll in a die face, the bonus, the total, the number needed, and the outcome as a StatusTag (hit won, weak warn, miss lost). Wraps on a phone. */
 export interface RollLineProps{
-  /** What was tried, e.g. "Stealth". */
+  /** What was tried, e.g. "Dexterity (Stealth)". */
   label?:string;
   /** Default "d20". */
   die?:string;
