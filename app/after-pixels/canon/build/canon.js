@@ -278,11 +278,12 @@
     const foeAt = (crit, adv) => crit ? adv ? [-10, -9.5] : [-5, -4.5] : adv ? [-7, -6] : [-3.5, -3];
     function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, biggest = false, won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
       const big = size >= 64;
-      const ring = biggest ? biggestRing(size) : null;
+      const ringed = biggest && kind === "strong";
+      const ring = ringed ? biggestRing(size) : null;
       const adv = other != null && !big && !selected;
       const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
-      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", biggest && "is-biggest", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
-      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), biggest && kind === "strong" && /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
+      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", ringed && "is-biggest", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, layer && /* @__PURE__ */ React2.createElement("polygon", { className: "fo", points: HEX, transform: "translate(" + layer[0] + " " + layer[1] + ")" }), adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: HEX, transform: crit ? "translate(-7 -6.5)" : "translate(-3.5 -3)" }), /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), ringed && /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
     }
     function DelveUseDie({ won = false, foe = false, selected = false, surface = "card", size = 36, className = "" }) {
       return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", won, foe, selected, surface, size, className });
@@ -3204,12 +3205,12 @@
   const dlGrade = (r) => (r.fight ? { strong: "Hit", miss: "Miss" } : { strong: "Success", weak: "Partial success", miss: "Failure" })[r.tier];
   const DL_GRADE = /^(Hit|Miss)$/;
   const DL_GRADED = /^(Success|Partial success|Failure)$/;
-  const dlStruck = (parts) => {
+  const dlStruck = (parts, type) => {
     const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+))(?: \+ (\d+))? vs (\d+), (hit|missed)(?:, (?:d(\d+) (\d+) \+ (\d+) = )?(\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
     if (!sb) return null;
     const two = sb[1] != null;
     const roll = +(sb[3] || sb[4]);
-    return { roll, other: two ? +sb[1] === roll ? +sb[2] : +sb[1] : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === "hit", dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: "d" + sb[8], v: +sb[9], b: +sb[10] } : null };
+    return { roll, other: two ? +sb[1] === roll ? +sb[2] : +sb[1] : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === "hit", dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: "d" + sb[8], v: +sb[9], b: +sb[10] } : null, type };
   };
   const dlSigned = (n) => n < 0 ? "−" : "+";
   const dlParts = (mod, stat, d) => d && d.parts ? d.parts : mod ? [[dlSigned(mod), Math.abs(mod), stat.slice(0, 3).toUpperCase()]] : [];
@@ -3230,7 +3231,7 @@
     const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
     const bonus = dlParts(mod, l[0], d);
     const dmg = d && d.dmg ? { ...d.dmg, total: dlSumOf(d.dmg.v, d.dmg.parts) } : null;
-    return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
+    return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts, d && d.foeType), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
   };
   const dlUseDoes = (d) => {
     const s = d.replace(/,? *no roll$/i, "");
@@ -3427,12 +3428,12 @@
   const dlTurnName = (r) => r.use ? dlKindSay(r.what) + " · " + r.name : "Roll " + r.n;
   const dlOutTone = (r) => r.fumble ? "err" : { strong: "ok", weak: "part" }[r.tier] || "";
   const dlAtkSum = (r) => ({ d: [r.kept, "d20"], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: "vs " + (r.fight ? "AC " : "DC ") + r.dc, out: [dlGrade(r), dlOutTone(r)] });
-  const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type });
+  const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
   const dlFoeAtkSum = (f) => ({ d: [f.roll, "d20"], adv: f.other != null, drop: f.other, m: f.bonus ? [["+", f.bonus, "Bonus"]] : [], t: f.roll + f.bonus, vs: "vs AC " + f.dc, out: f.hit ? ["Hit", "err"] : ["Miss", ""] });
-  const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], t: f.dmg, typ: "Damage" });
-  const DlEq = ({ s }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-eq" }, s.d && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-die" + (s.adv ? " is-adv" : "") }, s.d[0]), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-ru" }, p[0], " ", p[1])), (s.m.length > 0 || !s.d) && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ru" }, s.d && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-eqs" }, "="), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-tot" }, s.t)), s.vs && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ru dvH-vs" }, s.vs), s.out && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ru dvH-out " + s.out[1] }, s.out[0]), s.typ && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ru dvH-typ" }, s.typ));
+  const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], t: f.dmg, typ: f.type });
+  const DlEq = ({ s }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-eq" }, s.d && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-die" + (s.adv ? " is-adv" : "") }, s.d[0]), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-ru" }, p[0], " ", p[1])), (s.m.length > 0 || !s.d) && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ru" }, s.d && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-eqs" }, "="), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-tot" }, s.t), s.typ && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-typ" }, s.typ)), (s.vs || s.out) && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ru dvH-tail" }, s.vs && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-vs" }, s.vs), s.out && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-out " + s.out[1] }, s.out[0])));
   const DlNamed = ({ s }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, s.d[0]), s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop)), " ", s.d[1], s.adv ? " advantage" : ""), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-c" }, p[0], " ", /* @__PURE__ */ React$1.createElement("b", null, p[1]), " ", p[2])));
-  const DlSum = ({ s, id, open, toggle }) => s.d ? /* @__PURE__ */ React$1.createElement("div", { className: "dvH-sm" }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dvH-tap" + (open ? " is-open" : ""), "aria-expanded": open, "aria-controls": id, onClick: toggle }, /* @__PURE__ */ React$1.createElement(DlEq, { s })), /* @__PURE__ */ React$1.createElement("div", { id }, /* @__PURE__ */ React$1.createElement(EsxFold, { open }, open && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-pnl" }, /* @__PURE__ */ React$1.createElement(DlNamed, { s }))))) : /* @__PURE__ */ React$1.createElement("div", { className: "dvH-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tap is-still" }, /* @__PURE__ */ React$1.createElement(DlEq, { s })));
+  const DlSum = ({ s, id, open, toggle }) => s.d ? /* @__PURE__ */ React$1.createElement("div", { className: "dvH-sm" }, /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "esx-card dvH-tap" + (open ? " is-open" : ""), "aria-expanded": open, "aria-controls": id, onClick: toggle }, /* @__PURE__ */ React$1.createElement(DlEq, { s })), /* @__PURE__ */ React$1.createElement("div", { id }, /* @__PURE__ */ React$1.createElement(EsxFold, { open }, open && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-pnl" }, /* @__PURE__ */ React$1.createElement(DlNamed, { s }))))) : /* @__PURE__ */ React$1.createElement("div", { className: "dvH-sm" }, /* @__PURE__ */ React$1.createElement("div", { className: "esx-card dvH-tap is-still" }, /* @__PURE__ */ React$1.createElement(DlEq, { s })));
   const DlHeldHead = ({ r, x }) => {
     const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : "Roll " + r.n];
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-hd" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tt" }, names.map((n) => /* @__PURE__ */ React$1.createElement("p", { key: n, className: "dvH-k" }, n))), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-dd" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44, surface: "popup", foe: false }), r.foe && /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe, size: 36 }))), /* @__PURE__ */ React$1.createElement("p", { className: "dvH-rm" }, (x ? dlTurnName(r) + " · " : "") + dlRoomSaid(r)), dlBeat(r) && /* @__PURE__ */ React$1.createElement("p", { className: "dvH-beat" }, dlBeat(r)));
@@ -3466,38 +3467,31 @@
     }
     return out;
   };
+  const useDlWidth = (ref, measure, initial) => {
+    const [value, setValue] = React$1.useState(initial);
+    React$1.useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el) return void 0;
+      const read = () => setValue(measure(el));
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [ref, measure]);
+    return value;
+  };
+  const dlPerOf = (el) => Math.max(1, Math.floor(el.clientWidth / DL_COL_MIN));
   const useDlPer = () => {
     const ref = React$1.useRef(null);
-    const [per, setPer] = React$1.useState(100);
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return void 0;
-      const read = () => setPer(Math.max(1, Math.floor(el.clientWidth / DL_COL_MIN)));
-      read();
-      const ro = new ResizeObserver(read);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, []);
-    return [ref, per];
+    return [ref, useDlWidth(ref, dlPerOf, 100)];
   };
   const DL_BESIDE_MIN = 800;
-  const useDlBeside = (ref) => {
-    const [beside, setBeside] = React$1.useState(false);
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return void 0;
-      const read = () => {
-        const cs = getComputedStyle(el);
-        const pad = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
-        setBeside(el.getBoundingClientRect().width - pad >= DL_BESIDE_MIN);
-      };
-      read();
-      const ro = new ResizeObserver(read);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, [ref]);
-    return beside;
+  const dlBesideOf = (el) => {
+    const cs = getComputedStyle(el);
+    const pad = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
+    return el.getBoundingClientRect().width - pad >= DL_BESIDE_MIN;
   };
+  const useDlBeside = (ref) => useDlWidth(ref, dlBesideOf, false);
   const dlMainClass = (beside) => "dvE-main" + (beside ? " is-beside" : "");
   const DlRoute = ({ m, act, on, beside, lit }) => {
     const sel = act ? m.turns[act - 1].stop : null;
@@ -3507,24 +3501,13 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(beside) }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvA2-rows", style: { "--dv-first": first }, "aria-label": "The way you went" }, rows.map(([a, b]) => /* @__PURE__ */ React$1.createElement("div", { key: a, className: "dvA2-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": b - a } }, m.stops.slice(a, b).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named: true }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => m.mom[r.t] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, lit, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" })))))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
   };
   const DL_LIST_BELOW = 610;
-  const useDlList = (ref) => {
-    const [list, setList] = React$1.useState(false);
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return void 0;
-      const read = () => {
-        const cs = getComputedStyle(el);
-        const sides = el.classList.contains("is-list") ? ["borderLeftWidth", "borderRightWidth"] : ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"];
-        const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains("is-list") ? 2 * DL_GUTTER : 0);
-        setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW);
-      };
-      read();
-      const ro = new ResizeObserver(read);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, [ref]);
-    return list;
+  const dlListOf = (el) => {
+    const cs = getComputedStyle(el);
+    const sides = el.classList.contains("is-list") ? ["borderLeftWidth", "borderRightWidth"] : ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"];
+    const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains("is-list") ? 2 * DL_GUTTER : 0);
+    return el.getBoundingClientRect().width - pad < DL_LIST_BELOW;
   };
+  const useDlList = (ref) => useDlWidth(ref, dlListOf, false);
   const DL_OPEN_GAP = 12;
   const dlEvenOpen = (el) => {
     const dice = el && el.querySelector(".dvL-dice");
@@ -3659,23 +3642,12 @@
   const DlMeter = ({ label, n, of }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv6-bar" }, /* @__PURE__ */ React$1.createElement("span", null, label), /* @__PURE__ */ React$1.createElement(DS.ProgressBar, { label, value: n, max: of, showValue: false }), /* @__PURE__ */ React$1.createElement("small", null, n + "/" + of));
   const DL_GUTTER = 16;
   const DL_ONE_ROW = 796;
-  const useDlOneRow = (ref) => {
-    const [one, setOne] = React$1.useState(false);
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return void 0;
-      const read = () => {
-        const cs = getComputedStyle(el);
-        const edge = ["borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
-        setOne(el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW);
-      };
-      read();
-      const ro = new ResizeObserver(read);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, [ref]);
-    return one;
+  const dlOneRowOf = (el) => {
+    const cs = getComputedStyle(el);
+    const edge = ["borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
+    return el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW;
   };
+  const useDlOneRow = (ref) => useDlWidth(ref, dlOneRowOf, false);
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
   const DlPips = ({ n, lit, name }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv9-pips" + (lit ? " is-lit" : ""), role: "img", "aria-label": name + ", " + Math.min(n, 2) + " of 2" }, [0, 1].map((i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < n ? "is-on" : "" })));
   const DlAdvCells = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", used: c.adv.fight, title: "Successes in a row on checks. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.streak, lit: !c.adv.fight, name: "Streak" })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Fight hits", used: !c.adv.fight, title: "Hits in a row in this fight. From two on, it gives advantage on the next attack." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.hits, lit: c.adv.fight, name: "Fight hits" })));
@@ -3779,17 +3751,8 @@
   const DL_NOW_NUM_MIN = 20;
   const useDlNowWide = (n) => {
     const ref = React$1.useRef(null);
-    const [numbered, setNumbered] = React$1.useState(true);
-    React$1.useLayoutEffect(() => {
-      const el = ref.current;
-      if (!el) return void 0;
-      const read = () => setNumbered(el.clientWidth / n >= DL_NOW_NUM_MIN);
-      read();
-      const ro = new ResizeObserver(read);
-      ro.observe(el);
-      return () => ro.disconnect();
-    }, [n]);
-    return [ref, numbered];
+    const measure = React$1.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]);
+    return [ref, useDlWidth(ref, measure, true)];
   };
   const DlNowStrip = ({ stops, count, on }) => {
     const [ref, numbered] = useDlNowWide(stops.length);
@@ -9649,7 +9612,7 @@
         c.setConnected(true);
         c.go("session", { id: "delve-hazard" });
       } },
-      { group: "Screens", id: "session-delve-route-20", label: "7. Session page: Delve, a 20-stop route (14 rooms, going back 11 times, the longest room names)", stage: (c) => {
+      { group: "Screens", id: "session-delve-route-20", label: "7. Session page: Delve, a 20-stop route (12 rooms, going back 8 times, the longest room names)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "delve-route-20" });
@@ -9664,7 +9627,7 @@
         c.setConnected(true);
         c.go("session", { id: "delve-fight-live" });
       } },
-      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that ended mid-fight (the Advantage marks keep their state)", stage: (c) => {
+      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that fell mid-fight in Snaggle’s den (the Advantage marks keep their state)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "delve-fight-fallen" });
@@ -12241,24 +12204,30 @@
     }, [load]);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React$1.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React$1.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React$1.createElement(CprDiscoverBody, { f, setF })));
   };
+  const FOE_TYPE = { "snaggle's den": "piercing", "the great hall": "bludgeoning", "the shrine cavern": "slashing" };
   const sumP = (mods) => mods.reduce((n, p) => n + (p[0] === "−" ? -p[1] : p[1]), 0);
   const nat = (die) => die === 20 ? "Natural 20" : die === 1 ? "Natural 1" : null;
   const sumText = (die, other, mods, vs) => {
     const net = sumP(mods);
     return (other != null ? "d20s " + other + " and " + die + ", kept " + die : "d20 " + die) + (net < 0 ? " - " : " + ") + Math.abs(net) + " = " + (die + net) + " vs " + vs;
   };
-  function dlRecord(steps, hpMax, heroAc) {
+  function dlRecord(steps, hpMax, heroAc, foeTypes = {}, threatMax = 12) {
+    let room = null;
     let hp = hpMax;
     let n = 0;
+    let threat = 0;
     const lines = [];
     const detail = {};
     const hpOf = (h) => "HP " + h + "/" + hpMax;
     steps.forEach(([k, ...a]) => {
+      if (hp <= 0 || threat >= threatMax) throw new Error("dlRecord: a step after the run has ended (" + k + " " + a[0] + ")");
+      if (k === "room" || k === "back") room = a[0];
       if (k === "room") {
         lines.push(["Room", "Entered " + a[0]]);
         return;
       }
       if (k === "back") {
+        threat += 1;
         lines.push(["Room", "Doubled back to " + a[0], "The ritual +1"]);
         return;
       }
@@ -12271,6 +12240,7 @@
         const [stat2, action, skill, die2, mods2, dc, o2 = {}] = a;
         const total2 = die2 + sumP(mods2);
         const grade = die2 === 1 ? "Failure" : die2 === 20 || total2 >= dc ? "Success" : total2 >= dc - 5 ? "Partial success" : "Failure";
+        if (grade === "Failure") threat += die2 === 1 ? 2 : 1;
         const harm = grade === "Success" ? 0 : Math.min(o2.harm || 0, Math.max(0, hp - 2));
         hp -= harm;
         lines.push([stat2, action, grade, ...nat(die2) ? [nat(die2)] : [], sumText(die2, o2.other, mods2, dc), ...harm ? [hpOf(hp)] : []]);
@@ -12281,6 +12251,7 @@
       const total = die + sumP(mods);
       const hit = die !== 1 && (die === 20 || total >= ac);
       const f = o.foe;
+      if (!hit) threat += die === 1 ? 2 : 1;
       const dmg = hit && o.dmg ? { die: o.dmg[0], v: o.dmg[1], parts: o.dmg[2], type: o.dmg[3] } : null;
       let back = [];
       if (f) {
@@ -12291,9 +12262,9 @@
         back = ["Struck back: " + (f.other != null ? "d20s " + f.other + " and " + f.roll + ", kept " + f.roll : "d20 " + f.roll) + (f.bonus ? " + " + f.bonus : "") + " vs " + heroAc + ", " + (fhit ? "hit, " + (f.dd ? "d" + f.dd[0] + " " + f.dd[1] + " + " + f.dd[2] + " = " : "") + dmgDone + " damage, " + hpOf(hp) : "missed")];
       }
       lines.push([stat, ...heavy ? ["Heavy attack: " + heavy] : [], hit ? "Hit" : "Miss", ...nat(die) ? [nat(die)] : [], sumText(die, o.other, mods, ac), ...back]);
-      detail[n] = { parts: mods, ...dmg ? { dmg } : {} };
+      detail[n] = { parts: mods, ...dmg ? { dmg } : {}, ...f && foeTypes[room] ? { foeType: foeTypes[room] } : {} };
     });
-    return { lines, detail, hp };
+    return { lines, detail, hp, threat, rolls: n };
   }
   const seeded = (seed) => () => {
     seed = (seed * 1664525 + 1013904223) % 4294967296;
@@ -12326,8 +12297,9 @@
     ["the chapel", 1],
     ["the great hall", 1]
   ];
-  const ROLLS = [1, 3, 0, 3, 1, 0, 4, 2, 1, 2, 3, 0, 1, 2, 0, 3, 1, 1, 0, 2, 4, 1, 2, 0, 3];
+  const ROLLS = [1, 3, 0, 3, 1, 0, 4, 2, 1, 2, 3, 0, 1, 2, 0, 3, 1, 1, 0, 1, 4, 1, 2, 0, 0];
   const CHECKS = [["Strength", "Force the door", "Athletics", 3, "STR"], ["Wisdom", "Listen at the wall", "Perception", 0, "WIS"], ["Dexterity", "Slip the trap", null, 1, "DEX"], ["Constitution", "Hold your breath", null, 2, "CON"]];
+  const MISS = (n, i, k) => n === 20 && (i === 3 && k === 0 || i === 9 && k === 0 || i === 19 && k === 0);
   function longRoute(n, hpMax) {
     const rnd = seeded(7);
     const steps = [];
@@ -12335,11 +12307,13 @@
       steps.push([back ? "back" : "room", name]);
       const fight = name === "snaggle's den" || name === "the great hall";
       for (let k = 0; k < ROLLS[i]; k += 1) {
-        const die = i === 6 && k === 1 ? 20 : i === 3 && k === 0 ? 1 : 2 + Math.floor(rnd() * 18);
+        const lose = MISS(n, i, k);
+        const nat1 = lose && i === 3;
+        const die = nat1 ? 1 : lose ? 3 : i === 6 && k === 1 ? 20 : 10 + Math.floor(rnd() * 10);
         if (fight) {
           const heavy = k === 0 ? "Cleave" : null;
           const mods = [["+", 3, "STR"], ["+", 2, "Martial"], ...heavy ? [["−", 2, "Heavy"]] : []];
-          steps.push(["atk", "Strength", heavy, die, mods, 12, { dmg: ["d10", 3 + Math.floor(rnd() * 7), [["+", 3, "STR"], ...heavy ? [["+", 2, "Heavy"]] : []], "Slashing"], foe: { roll: 3 + Math.floor(rnd() * 17), bonus: 4, dd: [3, 1 + Math.floor(rnd() * 3), 1] } }]);
+          steps.push(["atk", "Strength", heavy, die, mods, 12, { dmg: ["d10", 3 + Math.floor(rnd() * 7), [["+", 3, "STR"], ...heavy ? [["+", 2, "Heavy"]] : []], "Slashing"], foe: { roll: 3 + Math.floor(rnd() * 17), bonus: 4, dd: [3, 1, 1] } }]);
         } else {
           const c = CHECKS[(i + k) % 4];
           const mods = [...c[3] > 0 ? [["+", c[3], c[4]]] : [], ...c[2] ? [["+", 2, c[2]]] : []];
@@ -12347,28 +12321,30 @@
         }
       }
     });
-    return dlRecord(steps, hpMax, 10);
+    return dlRecord(steps, hpMax, 10, FOE_TYPE);
   }
   function initGsDelveRuns() {
     const base = GS_SESSIONS["delve-hard"];
     const long = (n) => {
-      const { lines, detail, hp } = longRoute(n, 23);
-      const rolls = Object.keys(detail).length;
+      const { lines, detail, hp, threat, rolls } = longRoute(n, 23);
+      const stops = ROUTE.slice(0, n);
+      const rooms = new Set(stops.map((r) => r[0])).size;
       return {
         ...base,
         hero: "Bryn the Fighter",
         hpMax: 23,
-        threat: 12,
-        foeMax: { "snaggle's den": 40, "the great hall": 36 },
+        threat,
+        foeMax: { "snaggle's den": 40, "the great hall": 60 },
         foeName: {},
         lightName: "the torch",
         light: 0,
         lightMax: 6,
+        ...n === 25 ? { lostOff: { over: true, name: "Going back" } } : {},
         result: "Too late: the ritual was completed",
         reached: "Too late: the ritual was completed",
         share: "Too late: the ritual was completed",
-        figures: ["Threat 12/12", rolls + " rolls", "HP " + hp + "/23"],
-        tracks: { progress: 14, rooms: 14, threat: 12, threatMax: 12 },
+        figures: ["Threat " + threat + "/12", rolls + " rolls", "HP " + hp + "/23"],
+        tracks: { progress: n, rooms, threat, threatMax: 12 },
         lines,
         detail
       };
@@ -12394,8 +12370,8 @@
       ["room", "the shrine cavern"],
       ["atk", "Strength", null, 12, [STR, MART], 12, { dmg: ["d8", 6, [STR], "Slashing"], foe: { roll: 4, bonus: 4, dd: [3, 2, 1] } }],
       ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d8", 7, [STR], "Slashing"] }]
-    ], 23, 10);
-    GS_SESSIONS["delve-key-moments"] = { ...GS_SESSIONS.delve, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 40, "the shrine cavern": 20 }, figures: ["Threat 2/12", "12 rolls", "1 natural 20", "HP 15/23"], threat: 2, sheet: { used: {}, insp: true } };
+    ], 23, 10, FOE_TYPE);
+    GS_SESSIONS["delve-key-moments"] = { ...GS_SESSIONS.delve, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 40, "the shrine cavern": 19 }, figures: ["Threat " + km.threat + "/12", km.rolls + " rolls", "1 natural 20", "HP " + km.hp + "/23"], threat: km.threat, sheet: { used: {}, insp: true } };
     const DEX = ["+", 3, "DEX"];
     const SIMP = ["+", 2, "Simple"];
     const fl = dlRecord([
@@ -12403,16 +12379,16 @@
       ["room", "the shrine cavern"],
       ["atk", "Dexterity", "Flurry", 6, [DEX, SIMP, HEAVY], 12, { dmg: null, foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }],
       ["atk", "Dexterity", null, 15, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 4, [DEX], "Piercing"], foe: { roll: 7, bonus: 4 } }]
-    ], 21, 14);
-    GS_SESSIONS["delve-fight-live"] = { ...GS_SESSIONS["delve-live"], lines: fl.lines, detail: fl.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat 3/12", "3 rolls", "HP 17/21"], tracks: { progress: 2, rooms: 5, threat: 3, threatMax: 12 }, threat: 3, sheet: { used: {}, insp: true } };
+    ], 21, 14, FOE_TYPE);
+    GS_SESSIONS["delve-fight-live"] = { ...GS_SESSIONS["delve-live"], lines: fl.lines, detail: fl.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + fl.threat + "/12", fl.rolls + " rolls", "HP " + fl.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: fl.threat, threatMax: 12 }, threat: fl.threat, sheet: { used: {}, insp: true } };
     const ff = dlRecord([
       ["chk", "Dexterity", "Cross the trapped bridge", null, 3, [["+", 1, "DEX"]], 12, { harm: 14 }],
       ["room", "snaggle's den"],
       ["atk", "Strength", "Cleave", 15, [STR, MART, HEAVY], 12, { dmg: ["d10", 6, [STR, ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 18, bonus: 4, dd: [3, 3, 1] } }],
       ["atk", "Strength", null, 8, [STR, MART], 12, { foe: { roll: 17, bonus: 4, dd: [3, 3, 1] } }],
       ["atk", "Strength", null, 14, [STR, MART], 12, { dmg: ["d8", 6, [STR], "Slashing"], foe: { roll: 16, bonus: 4, dd: [3, 3, 1] } }]
-    ], 23, 10);
-    GS_SESSIONS["delve-fight-fallen"] = { ...GS_SESSIONS["delve-fallen"], lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 40 }, result: "Fell in the warren", figures: ["Threat 4/12", "4 rolls", "HP " + ff.hp + "/23"], tracks: { progress: 1, rooms: 5, threat: 4, threatMax: 12 }, threat: 4, sheet: { used: {}, insp: false } };
+    ], 23, 10, FOE_TYPE);
+    GS_SESSIONS["delve-fight-fallen"] = { ...GS_SESSIONS["delve-fallen"], lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 40 }, result: "Fell in Snaggle's den", reached: "Fell in Snaggle's den", share: "Fell in Snaggle's den", figures: ["Threat " + ff.threat + "/12", ff.rolls + " rolls", "HP " + ff.hp + "/23"], tracks: { progress: 2, rooms: 2, threat: ff.threat, threatMax: 12 }, threat: ff.threat, sheet: { used: {}, insp: false } };
   }
   const PG = {};
   const PG_DESK = 1280;

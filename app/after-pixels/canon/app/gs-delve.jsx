@@ -60,9 +60,9 @@ const dlGrade = (r) => (r.fight ? { strong: 'Hit', miss: 'Miss' } : { strong: 'S
 const DL_GRADE = /^(Hit|Miss)$/;
 // An attempt on the room's own obstacle or hazard is graded and names no action: ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 19/23"].
 const DL_GRADED = /^(Success|Partial success|Failure)$/;
-const dlStruck = (parts) => { const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+))(?: \+ (\d+))? vs (\d+), (hit|missed)(?:, (?:d(\d+) (\d+) \+ (\d+) = )?(\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
+const dlStruck = (parts, type) => { const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+))(?: \+ (\d+))? vs (\d+), (hit|missed)(?:, (?:d(\d+) (\d+) \+ (\d+) = )?(\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
   if (!sb) return null; const two = sb[1] != null; const roll = +(sb[3] || sb[4]);
-  return { roll, other: two ? (+sb[1] === roll ? +sb[2] : +sb[1]) : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === 'hit', dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: 'd' + sb[8], v: +sb[9], b: +sb[10] } : null }; };
+  return { roll, other: two ? (+sb[1] === roll ? +sb[2] : +sb[1]) : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === 'hit', dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: 'd' + sb[8], v: +sb[9], b: +sb[10] } : null, type }; };
 // The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 10, hit, 1 damage, HP 21/23" or "..., missed"; with advantage, "d20s 14 and 6, kept 14 vs 10". Its target is the hero's defence.
 const dlSigned = (n) => (n < 0 ? '−' : '+');
 // The parts of a roll's bonus, as the record names them: `detail` (the run's `detail[roll number]`) lists them; a record that lists none has the stat alone, as the platform names it first.
@@ -77,7 +77,7 @@ const dlRoll = (l, d) => {
   const tier = fumble ? 'miss' : /Partial success/.test(t) ? 'weak' : /\bMiss\b|Failure/.test(t) ? 'miss' : (/\bHit\b|\bSuccess\b/.test(t) || crit) ? 'strong' : 'miss';
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
   const bonus = dlParts(mod, l[0], d); const dmg = d && d.dmg ? { ...d.dmg, total: dlSumOf(d.dmg.v, d.dmg.parts) } : null;
-  return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
+  return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts, d && d.foeType), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
 // KEEP: under a held use's name, the grey words say only what it does ("strikes at once", "heals 10"): the heading already names the kind
 // and the sparkle already says no roll, so both drop there; the hero sheet keeps the full text (owner, 2026-11-10).
@@ -220,16 +220,14 @@ const dlTurnName = (r) => (r.use ? dlKindSay(r.what) + ' · ' + r.name : 'Roll '
 const dlOutTone = (r) => (r.fumble ? 'err' : { strong: 'ok', weak: 'part' }[r.tier] || '');
 // A sum: { d: [die, 'd20'], adv, drop, m: [[sign, n, source]], t: total, vs, out: [word, tone], typ }.
 const dlAtkSum = (r) => ({ d: [r.kept, 'd20'], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: 'vs ' + (r.fight ? 'AC ' : 'DC ') + r.dc, out: [dlGrade(r), dlOutTone(r)] });
-const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type });
+const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
 const dlFoeAtkSum = (f) => ({ d: [f.roll, 'd20'], adv: f.other != null, drop: f.other, m: f.bonus ? [['+', f.bonus, 'Bonus']] : [], t: f.roll + f.bonus, vs: 'vs AC ' + f.dc, out: f.hit ? ['Hit', 'err'] : ['Miss', ''] });
-const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg, typ: 'Damage' });
+const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg, typ: f.type });
 const DlEq = ({ s }) => (<span className="dvH-eq">
   {s.d && <span className={'dvH-die' + (s.adv ? ' is-adv' : '')}>{s.d[0]}</span>}
   {s.m.map((p, i) => <span key={i} className="dvH-ru">{p[0]}{' '}{p[1]}</span>)}
-  {(s.m.length > 0 || !s.d) && <span className="dvH-ru">{s.d && <span className="dvH-eqs">=</span>}<span className="dvH-tot">{s.t}</span></span>}
-  {s.vs && <span className="dvH-ru dvH-vs">{s.vs}</span>}
-  {s.out && <span className={'dvH-ru dvH-out ' + s.out[1]}>{s.out[0]}</span>}
-  {s.typ && <span className="dvH-ru dvH-typ">{s.typ}</span>}
+  {(s.m.length > 0 || !s.d) && <span className="dvH-ru">{s.d && <span className="dvH-eqs">=</span>}<span className="dvH-tot">{s.t}</span>{s.typ && <span className="dvH-typ">{s.typ}</span>}</span>}
+  {(s.vs || s.out) && <span className="dvH-ru dvH-tail">{s.vs && <span className="dvH-vs">{s.vs}</span>}{s.out && <span className={'dvH-out ' + s.out[1]}>{s.out[0]}</span>}</span>}
 </span>);
 // The named form: each number with its source; a dropped advantage die follows the kept one, its number struck diagonally.
 const DlNamed = ({ s }) => (<span className="dvH-pn">
@@ -238,10 +236,10 @@ const DlNamed = ({ s }) => (<span className="dvH-pn">
 </span>);
 const DlSum = ({ s, id, open, toggle }) => (s.d
   ? <div className="dvH-sm">
-    <button type="button" className={'dvH-tap' + (open ? ' is-open' : '')} aria-expanded={open} aria-controls={id} onClick={toggle}><DlEq s={s} /></button>
+    <button type="button" className={'esx-card dvH-tap' + (open ? ' is-open' : '')} aria-expanded={open} aria-controls={id} onClick={toggle}><DlEq s={s} /></button>
     <div id={id}><EsxFold open={open}>{open && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>
   </div>
-  : <div className="dvH-sm"><div className="dvH-tap is-still"><DlEq s={s} /></div></div>);
+  : <div className="dvH-sm"><div className="esx-card dvH-tap is-still"><DlEq s={s} /></div></div>);
 const DlHeldHead = ({ r, x }) => { const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<>
     <div className="dvH-hd"><div className="dvH-tt">{names.map((n) => <p key={n} className="dvH-k">{n}</p>)}</div>
@@ -276,17 +274,17 @@ const DlStopHead = ({ st, named }) => (
 // KEEP: every room keeps its name, so a column is never narrower than 64px: a run with more rooms than fit one row wraps onto further rows (balanced, 20 stops in 3 rows of 7, 7 and 6 at 512px), and every row keeps the first row's column width so the columns line up down the route; a shorter last row ends early on the right and is never stretched.
 const DL_COL_MIN = 64;
 const dlRows = (n, per) => { const rows = Math.ceil(n / per); const out = []; let i = 0; for (let k = 0; k < rows; k++) { const c = Math.ceil((n - i) / (rows - k)); out.push([i, i + c]); i += c; } return out; };
-const useDlPer = () => { const ref = React.useRef(null); const [per, setPer] = React.useState(100);
+// What a width-reading hook reads is the element's own size, taken before paint and on every resize: `measure(el)` returns the value, and must keep its identity between renders.
+const useDlWidth = (ref, measure, initial) => { const [value, setValue] = React.useState(initial);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => setPer(Math.max(1, Math.floor(el.clientWidth / DL_COL_MIN))); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, []);
-  return [ref, per]; };
+    const read = () => setValue(measure(el)); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref, measure]);
+  return value; };
+const dlPerOf = (el) => Math.max(1, Math.floor(el.clientWidth / DL_COL_MIN));
+const useDlPer = () => { const ref = React.useRef(null); return [ref, useDlWidth(ref, dlPerOf, 100)]; };
 // KEEP: the held roll sits beside the route from a run card (its content width) of 800px, however many rooms there are: a long route wraps instead of narrowing; below that it sits above the route.
 const DL_BESIDE_MIN = 800;
-const useDlBeside = (ref) => { const [beside, setBeside] = React.useState(false);
-  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setBeside(el.getBoundingClientRect().width - pad >= DL_BESIDE_MIN); };
-    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
-  return beside; };
+const dlBesideOf = (el) => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); return el.getBoundingClientRect().width - pad >= DL_BESIDE_MIN; };
+const useDlBeside = (ref) => useDlWidth(ref, dlBesideOf, false);
 const dlMainClass = (beside) => 'dvE-main' + (beside ? ' is-beside' : '');
 const DlRoute = ({ m, act, on, beside, lit }) => { const sel = act ? m.turns[act - 1].stop : null; const [ref, per] = useDlPer(); const rows = dlRows(m.stops.length, per); const first = rows[0][1] - rows[0][0];
   return (<div className={dlMainClass(beside)}>
@@ -306,13 +304,10 @@ const DlRoute = ({ m, act, on, beside, lit }) => { const sel = act ? m.turns[act
 // (the tally drops under the name only when the line is too narrow for both); a tap anywhere on the line opens that room (one at a time) with all its dice, and a pressed die's held roll
 // opens right under them, so the roll is never off screen from the die. From 610px the route is the horizontal one. The switch width is the user's to ratify on the built page.
 const DL_LIST_BELOW = 610;
-const useDlList = (ref) => { const [list, setList] = React.useState(false);
-  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    // KEEP: the list drops the card's side padding for its own 16px gutters, so the switch reads the list's width less those gutters, the width the route would have; reading the bare card would flip list and route back and forth between windows of about 644 and 676px.
-    const read = () => { const cs = getComputedStyle(el); const sides = el.classList.contains('is-list') ? ['borderLeftWidth', 'borderRightWidth'] : ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'];
-      const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains('is-list') ? 2 * DL_GUTTER : 0); setList(el.getBoundingClientRect().width - pad < DL_LIST_BELOW); };
-    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
-  return list; };
+// KEEP: the list drops the card's side padding for its own 16px gutters, so the switch reads the list's width less those gutters, the width the route would have; reading the bare card would flip list and route back and forth between windows of about 644 and 676px.
+const dlListOf = (el) => { const cs = getComputedStyle(el); const sides = el.classList.contains('is-list') ? ['borderLeftWidth', 'borderRightWidth'] : ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'];
+  const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains('is-list') ? 2 * DL_GUTTER : 0); return el.getBoundingClientRect().width - pad < DL_LIST_BELOW; };
+const useDlList = (ref) => useDlWidth(ref, dlListOf, false);
 // KEEP: an open room's dice sit 12px below its line's bottom edge (where the hover band ends), and the next room's line starts 12px below the
 // dice, or below the held roll when one is open; the dice to the held roll is 12px too. The 12px is read from what is drawn (the hexes behind a die
 // and a pressed die's ring), not from the dice boxes, which leave uneven room above and below their drawing; a mouse-over ring is left out, so a hover never moves the room.
@@ -445,11 +440,8 @@ const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</s
 const DL_GUTTER = 16;
 const DL_ONE_ROW = 796;
 // Whether the sheet is wide enough for one row, read as the CSS container reads it, before paint and on every resize.
-const useDlOneRow = (ref) => { const [one, setOne] = React.useState(false);
-  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => { const cs = getComputedStyle(el); const edge = ['borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); setOne(el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW); };
-    read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref]);
-  return one; };
+const dlOneRowOf = (el) => { const cs = getComputedStyle(el); const edge = ['borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); return el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW; };
+const useDlOneRow = (ref) => useDlWidth(ref, dlOneRowOf, false);
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
 // Two marks, each a pair of pips: the scene streak (successes in a row on checks) and the fight hits (hits in a row in this fight); two of either gives advantage. Only the live one is lit: the fight's while a fight is on, else the streak's. After a fight or the run they keep their state, with no longest streak.
 const DlPips = ({ n, lit, name }) => (<span className={'dv9-pips' + (lit ? ' is-lit' : '')} role="img" aria-label={name + ', ' + Math.min(n, 2) + ' of 2'}>{[0, 1].map((i) => <i key={i} className={i < n ? 'is-on' : ''} />)}</span>);
@@ -544,10 +536,7 @@ const dlNowMarksSay = (rest) => { const rolls = rest.filter((r) => !r.use); cons
 // KEEP: the Now card's picture is one fixed shape however long the run: a strip of one box per stop on one row, the other rolls counted as "+N" at its right, and the key dice beneath as one centred group with no labels. A strip too narrow for numbers (under 20px a stop) draws each stop as a small tick, a return hollow; 25 stops still fit one row.
 // KEEP: with no key moment yet the strip alone sits centred in the picture's height (the Now card standard centres the picture), so the card keeps its size and no empty band stands under the strip.
 const DL_NOW_NUM_MIN = 20;
-const useDlNowWide = (n) => { const ref = React.useRef(null); const [numbered, setNumbered] = React.useState(true);
-  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
-    const read = () => setNumbered(el.clientWidth / n >= DL_NOW_NUM_MIN); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [n]);
-  return [ref, numbered]; };
+const useDlNowWide = (n) => { const ref = React.useRef(null); const measure = React.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]); return [ref, useDlWidth(ref, measure, true)]; };
 const DlNowStrip = ({ stops, count, on }) => { const [ref, numbered] = useDlNowWide(stops.length);
   return (<div className="dl-now-strip">
     <div ref={ref} className="dl-now-boxes">{stops.map((st, i) => (numbered
