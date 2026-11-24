@@ -107,9 +107,9 @@ GS_CHATS = {
   delve: [
     { cap: 'See each hero’s strengths, health and defence side by side before you pick.', turns: [gscU('Play Delve on After Pixels'),
       gscAi('Delve', ['**Delve #40: The Orc Caves under Raven Hill**', 'Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.', 'Which hero will you take?'],
-        null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Garrick, the Knight', line: 'Best at Strength, Toughness · 23 HP · Defence 10' }, { name: 'Tamsin, the Ranger', line: 'Best at Agility, Charm · 21 HP · Defence 14' }, { name: 'Selwyn, the Wizard', line: 'Best at Wits, Wisdom · 17 HP · Defence 12' }]}])] },
+        null, [{ type: 'entities', title: 'Heroes', items: [{ name: 'Garrick, the Knight', line: 'Best at Strength, Constitution · 23 HP · Defence 10' }, { name: 'Tamsin, the Ranger', line: 'Best at Dexterity, Charisma · 21 HP · Defence 14' }, { name: 'Selwyn, the Wizard', line: 'Best at Intelligence, Wisdom · 17 HP · Defence 12' }]}])] },
     { cap: 'A slip costs you health. Then try it another way.', turns: [gscU('I cross slowly and test every plank'),
-      gscAi('Delve', 'The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.', null, [{ type: 'roll', label: 'Agility', roll: 6, mod: 1, target: 12, result: 'miss', outcome: 'Failure · 4 damage' }, { type: 'track', items: [{ label: 'Garrick’s health', value: 19, max: 23, tone: 'health' }] }]),
+      gscAi('Delve', 'The fourth plank snaps under your boot. You swing down hard against the rock and haul yourself back. Deep in the hill, the drums beat faster.', null, [{ type: 'roll', label: 'Dexterity', roll: 6, mod: 1, target: 12, result: 'miss', outcome: 'Failure · 4 damage' }, { type: 'track', items: [{ label: 'Garrick’s health', value: 19, max: 23, tone: 'health' }] }]),
       gscU('I haul myself along the ropes'),
       gscAi('Delve', 'You grip the ropes and haul yourself across, hand over hand, to the far side.', null, [{ type: 'roll', label: 'Strength', roll: 15, mod: 3, target: 12, result: 'hit', outcome: 'Success' }])] },
     { cap: 'Every hero has a heavy swing of their own, and it hits harder.', turns: [gscU('I use Sunder on the troll'),
