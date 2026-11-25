@@ -27,6 +27,7 @@
 .dvG { display: grid; gap: 16px; min-width: 0; }
 /* KEEP: the map's first and last boxes sit on the card's content edges: a box is 28px in its 44px column, so the map reaches 8px past each edge. */
 .dvG-mapw { container: dvg / inline-size; margin: 0 -8px; min-width: 0; }
+.dvG-map.is-few { justify-content: center; }
 .dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 16px; align-items: start; }
 .dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; padding: 8px 0 4px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
 button.dvG-stop { cursor: pointer; }

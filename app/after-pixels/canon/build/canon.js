@@ -3464,13 +3464,15 @@
   const DL_MAP_COL = 44;
   const DL_MAP_GAP = 6;
   const DL_MAP_GAP_MAX = 76;
+  const DL_MAP_FEW = 4;
+  const DL_MAP_GAP_FEW = 32;
   const dlMapOf = (n) => (el) => {
     const w = el.clientWidth;
     const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
     const rows = Math.ceil(n / per);
     const cols = Math.ceil(n / rows);
     const room = (w - cols * DL_MAP_COL) / Math.max(1, cols - 1);
-    const gap = cols < 2 ? DL_MAP_GAP : rows === 1 ? Math.max(DL_MAP_GAP, room) : Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, room));
+    const gap = cols < 2 ? DL_MAP_GAP : n <= DL_MAP_FEW ? Math.max(DL_MAP_GAP, Math.min(DL_MAP_GAP_FEW, room)) : rows === 1 ? Math.max(DL_MAP_GAP, room) : Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, room));
     return cols + ":" + gap.toFixed(1);
   };
   const useDlMap = (n) => {
@@ -3483,7 +3485,7 @@
   const DlMapMarks = ({ m, st }) => st.turns.length ? /* @__PURE__ */ React$1.createElement("span", { className: "dvG-marks" }, st.turns.map((r) => r.lost ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20, foe: false }) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.use ? "use" : r.tier || "miss") }))) : null;
   const DlMap = ({ m, stops, open, onOpen, far }) => {
     const [ref, cols, gap] = useDlMap(stops.length);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvG-mapw" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map", style: { "--cols": cols, "--gap": gap + "px" }, "aria-label": "The way you went" }, stops.map((st, i) => {
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvG-mapw" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map" + (stops.length <= DL_MAP_FEW ? " is-few" : ""), style: { "--cols": cols, "--gap": gap + "px" }, "aria-label": "The way you went" }, stops.map((st, i) => {
       const has = st.turns && st.turns.some((r) => !r.lost);
       const label = (st.back ? "Back to " : "Room " + st.num + ", ") + st.name;
       const box = /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st) }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num);
