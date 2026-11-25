@@ -232,11 +232,11 @@ const dlTitle = (names) => names.join(' · ');
 // KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something or cost the hero something, those words ("Cost Threat +1"), and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words and the Cost each take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
 // The empty margin round a die's drawn shape in its picture box, in die units (right, top; the same on the opposite side): the picture is 46 by 50, a hexagon leaves 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7.
 const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
-// KEEP: every die in the open room and the held roll is one size (32px, a hexagon 25px wide), a key moment's included: the dice are not compared, so no die is bigger than another and pressing one never resizes or shifts any (a key moment keeps its rim, ring and colour; the selected die only rings), and the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
+// KEEP: the held roll's dice are one drawn size on every roll it holds (a hexagon 25px wide), a key moment's included, so moving between rolls never changes their size: a die whose rim reaches further into its picture (a natural 20, a biggest hit) is drawn smaller to match (the user, 2026-11-25: "BETWEEN CARDS these are changing sizes"); the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
 const DL_HELD_DIE = 32;
 // A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
 const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
-const DlHeldHead = ({ r, x, cost }) => { const size = DL_HELD_DIE; const foeSize = Math.round(size * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
+const DlHeldHead = ({ r, x, cost }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p>
       <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}{cost && <> <span className="dvH-sep">· </span><span className="dvH-cost">Cost <b>{cost}</b></span></>}</p></div>
     <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" foe={false} /></DlInkFrame>
@@ -301,7 +301,8 @@ const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = us
 const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
     <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.back ? 'Back to ' + st.name : st.name}</span></p>
-    <div className="dvG-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={DL_HELD_DIE} />)}</div>
+    {/* KEEP: in the open room a key moment's die is drawn bigger (44px) than any other roll's (30px), as everywhere a key moment stands among other rolls (the user, 2026-11-25: "all big moments are big throughout relationally"); pressing a die only rings it, never resizes it. */}
+    <div className="dvG-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
   </div>
   {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
 </div>);
