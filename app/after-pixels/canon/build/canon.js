@@ -3487,10 +3487,13 @@
       return has ? /* @__PURE__ */ React$1.createElement("button", { key: st.i, type: "button", className: cls, title: st.name, "aria-label": label, "aria-pressed": open === st.i, onClick: () => onOpen(st) }, box, /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st })) : /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: cls, title: st.name, role: "img", "aria-label": label + (st.turns && st.turns.length ? "" : ", no rolls") }, box, m && /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st }));
     })));
   };
-  const DlOpenRoom = ({ m, st, act, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num is-on" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.back ? "Back to " + st.name : st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
+  const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num is-on" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.back ? "Back to " + st.name : st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
   const DlGlance = ({ m, act, setSel }) => {
     const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : m.stops.length - 1);
-    const on = React$1.useMemo(() => ({ sel: setSel, hov: DL_NO_HOVER }), [setSel]);
+    const [lit, setLit] = React$1.useState(null);
+    const on = React$1.useMemo(() => ({ sel: setSel, hov: (t) => {
+      if (t == null || window.matchMedia("(hover: hover)").matches) setLit(t);
+    } }), [setSel]);
     const onOpen = (st2) => {
       setOpen(st2.i);
       const ok = st2.turns.filter((r) => !r.lost);
@@ -3498,7 +3501,7 @@
       if (k) setSel(k.t);
     };
     const st = m.stops.find((x) => x.i === open) || m.stops[m.stops.length - 1];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvG" }, /* @__PURE__ */ React$1.createElement(DlMap, { m, stops: m.stops, open: st.i, onOpen }), /* @__PURE__ */ React$1.createElement(DlOpenRoom, { m, st, act, on }));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvG" }, /* @__PURE__ */ React$1.createElement(DlMap, { m, stops: m.stops, open: st.i, onOpen }), /* @__PURE__ */ React$1.createElement(DlOpenRoom, { m, st, act, lit, on }));
   };
   const useDlWidth = (ref, measure, initial) => {
     const [value, setValue] = React$1.useState(initial);
