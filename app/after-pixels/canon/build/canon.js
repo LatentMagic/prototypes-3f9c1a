@@ -3454,18 +3454,47 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-box" }, /* @__PURE__ */ React$1.createElement(DlHeldRoll, { key: r.t, r, x: m.mom[r.t] })));
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
-  const DlStopHead = ({ st, named }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": (st.back ? "Back to " : "Room " + st.num + ", ") + st.name }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), named && /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.name));
-  const DL_COL_MIN = 64;
-  const dlRows = (n, per) => {
+  const DL_MAP_COL = 44;
+  const DL_MAP_GAP = 6;
+  const DL_MAP_GAP_MAX = 76;
+  const dlMapOf = (n) => (el) => {
+    const w = el.clientWidth;
+    const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
     const rows = Math.ceil(n / per);
-    const out = [];
-    let i = 0;
-    for (let k = 0; k < rows; k++) {
-      const c = Math.ceil((n - i) / (rows - k));
-      out.push([i, i + c]);
-      i += c;
-    }
-    return out;
+    const cols = Math.ceil(n / rows);
+    const gap = cols > 1 ? Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, (w - cols * DL_MAP_COL) / (cols - 1))) : DL_MAP_GAP;
+    return cols + ":" + gap.toFixed(1);
+  };
+  const useDlMap = (n) => {
+    const ref = React$1.useRef(null);
+    const measure = React$1.useMemo(() => dlMapOf(n), [n]);
+    const v = useDlWidth(ref, measure, n + ":6");
+    const [cols, gap] = v.split(":").map(Number);
+    return [ref, cols, gap];
+  };
+  const DlMapMarks = ({ m, st }) => st.turns.length ? /* @__PURE__ */ React$1.createElement("span", { className: "dvG-marks" }, st.turns.map((r) => r.lost ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20, foe: false }) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.use ? "use" : r.tier || "miss") }))) : null;
+  const DlMap = ({ m, stops, open, onOpen, far }) => {
+    const [ref, cols, gap] = useDlMap(stops.length);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvG-mapw" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map", style: { "--cols": cols, "--gap": gap + "px" }, "aria-label": "The way you went" }, stops.map((st, i) => {
+      const has = st.turns && st.turns.some((r) => !r.lost);
+      const label = (st.back ? "Back to " : "Room " + st.num + ", ") + st.name;
+      const box = /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num);
+      const cls = "dvG-stop" + (i % cols === 0 ? " is-rs" : "") + (open === st.i ? " is-on" : "") + (far && far(st) ? " is-far" : "");
+      return has ? /* @__PURE__ */ React$1.createElement("button", { key: st.i, type: "button", className: cls, title: st.name, "aria-label": label, "aria-pressed": open === st.i, onClick: () => onOpen(st) }, box, /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st })) : /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: cls, title: st.name, role: "img", "aria-label": label + (st.turns && st.turns.length ? "" : ", no rolls") }, box, m && /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st }));
+    })));
+  };
+  const DlOpenRoom = ({ m, st, act, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num is-on" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.back ? "Back to " + st.name : st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
+  const DlGlance = ({ m, act, setSel }) => {
+    const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : m.stops.length - 1);
+    const on = React$1.useMemo(() => ({ sel: setSel, hov: DL_NO_HOVER }), [setSel]);
+    const onOpen = (st2) => {
+      setOpen(st2.i);
+      const ok = st2.turns.filter((r) => !r.lost);
+      const k = ok.find((r) => m.mom[r.t]) || ok[ok.length - 1];
+      if (k) setSel(k.t);
+    };
+    const st = m.stops.find((x) => x.i === open) || m.stops[m.stops.length - 1];
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvG" }, /* @__PURE__ */ React$1.createElement(DlMap, { m, stops: m.stops, open: st.i, onOpen }), /* @__PURE__ */ React$1.createElement(DlOpenRoom, { m, st, act, on }));
   };
   const useDlWidth = (ref, measure, initial) => {
     const [value, setValue] = React$1.useState(initial);
@@ -3479,26 +3508,6 @@
       return () => ro.disconnect();
     }, [ref, measure]);
     return value;
-  };
-  const dlPerOf = (el) => Math.max(1, Math.floor(el.clientWidth / DL_COL_MIN));
-  const useDlPer = () => {
-    const ref = React$1.useRef(null);
-    return [ref, useDlWidth(ref, dlPerOf, 100)];
-  };
-  const DL_BESIDE_MIN = 800;
-  const dlBesideOf = (el) => {
-    const cs = getComputedStyle(el);
-    const pad = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"].reduce((n, k) => n + parseFloat(cs[k]), 0);
-    return el.getBoundingClientRect().width - pad >= DL_BESIDE_MIN;
-  };
-  const useDlBeside = (ref) => useDlWidth(ref, dlBesideOf, false);
-  const dlMainClass = (beside) => "dvE-main" + (beside ? " is-beside" : "");
-  const DlRoute = ({ m, act, on, beside, lit }) => {
-    const sel = act ? m.turns[act - 1].stop : null;
-    const [ref, per] = useDlPer();
-    const rows = dlRows(m.stops.length, per);
-    const first = rows[0][1] - rows[0][0];
-    return /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(beside) }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvA2-rows", style: { "--dv-first": first }, "aria-label": "The way you went" }, rows.map(([a, b]) => /* @__PURE__ */ React$1.createElement("div", { key: a, className: "dvA2-row" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": b - a } }, m.stops.slice(a, b).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (sel === st.i ? " is-on" : "") }, /* @__PURE__ */ React$1.createElement(DlStopHead, { st, named: true }), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.turns.length ? st.turns.map((r) => m.mom[r.t] ? /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dvE-mom" }, /* @__PURE__ */ React$1.createElement(DlDieBtn, { r, act, lit, on, size: 52 })) : /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: 30 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" })))))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvE-side" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })));
   };
   const DL_LIST_BELOW = 610;
   const dlListOf = (el) => {
@@ -3561,22 +3570,18 @@
   };
   const DlEmptyHex = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dl-empty-hex", viewBox: "-5 -5 46 50", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }));
   const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: "Room " + (i + 1) }));
-  const DlEmptyRoute = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: dlMainClass(false) }, /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-route is-e is-cols-between", style: { "--dv-stops": rooms }, "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvA2-stop" + (st.i === 0 ? " is-on" : " is-far") }, /* @__PURE__ */ React$1.createElement("span", { className: "dvA2-head", "aria-label": "Room " + st.num + (st.i === 0 ? ", First room" : ", not reached") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" }, st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dv2-sname" }, st.i === 0 ? "First room" : " ")), /* @__PURE__ */ React$1.createElement("div", { className: "dvA2-dice" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass", "aria-label": "No rolls" }) : /* @__PURE__ */ React$1.createElement(DlEmptyHex, null))))));
+  const DlEmptyMap = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG" }, /* @__PURE__ */ React$1.createElement(DlMap, { stops: dlEmptyStops(rooms).map((st) => ({ ...st, name: st.i === 0 ? "First room" : "Not reached", turns: [] })), open: 0, far: (st) => st.i > 0 }));
   const DlEmptyList = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvL-list", "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvL-row" + (st.i === 0 ? " is-open is-first" : " is-far") + (st.i === rooms - 1 ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num", "aria-hidden": "true" }, st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "First room"), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, "Room 1, First room, no rolls")) : /* @__PURE__ */ React$1.createElement("div", { className: "dvL-head", role: "img", "aria-label": "Room " + st.num + ", not reached" }, /* @__PURE__ */ React$1.createElement(DlEmptyHex, null)))))));
   const DlCard = ({ s, m, roll, turn }) => {
     const ref = React$1.useRef(null);
     const list = useDlList(ref);
     const rooms = m.turns.length ? m.stops.length : s.tracks && s.tracks.rooms || 5;
-    const beside = useDlBeside(ref);
     const [sel, setSel] = React$1.useState(() => turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null);
-    const [hov, setHov] = React$1.useState(null);
-    const on = React$1.useMemo(() => ({ sel: setSel, hov: setHov }), []);
-    const stacked = list || !beside;
-    const act = stacked ? sel : hov || sel;
+    const act = sel;
     if (!m.turns.length) {
-      return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlEmptyList, { rooms }) : /* @__PURE__ */ React$1.createElement(DlEmptyRoute, { rooms }));
+      return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlEmptyList, { rooms }) : /* @__PURE__ */ React$1.createElement(DlEmptyMap, { rooms }));
     }
-    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlRoomList, { m, act, on: { sel: setSel, hov: DL_NO_HOVER } }) : /* @__PURE__ */ React$1.createElement(DlRoute, { m, act, on, beside, lit: stacked ? hov : null }));
+    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlRoomList, { m, act, on: { sel: setSel, hov: DL_NO_HOVER } }) : /* @__PURE__ */ React$1.createElement(DlGlance, { m, act, setSel }));
   };
   const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
   const STAT_ORDER = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"];
@@ -9631,6 +9636,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "delve-fight-fallen" });
+      } },
+      { group: "Screens", id: "session-delve-begun", label: "7. Session page: Delve begun, nothing rolled yet (5 rooms)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ week: "live", begun: true });
+        c.go("session", { id: "delve-begun" });
       } },
       { group: "Screens", id: "session-delve-in-progress", label: "7. Session page: Delve in progress (Wren)", stage: (c) => {
         c.setView("pass");

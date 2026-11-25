@@ -264,40 +264,47 @@ const DlHeldRoll = ({ r, x }) => { const [open, setOpen] = React.useState({}); c
 const DlHeld = ({ m, act, live = true }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className="dvH-box"><DlHeldRoll key={r.t} r={r} x={m.mom[r.t]} /></div></div>); };
 
-// ---- The route: a column per room stood in, a rule between rooms; a key moment's die is drawn large. The held roll beside it. ----
+// ---- The board, Glance: the run as a map (the Now card's number strip grown to the board, every stop a box, its rolls small beneath), and under it the open room: its name and dice at full size, the held roll on the right. ----
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
 const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
   <path d="M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
-const DlStopHead = ({ st, named }) => (
-  <span className="dvA2-head" aria-label={(st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name}>
-    <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>{named && <span className="dv2-sname">{st.name}</span>}</span>);
-// KEEP: every room keeps its name, so a column is never narrower than 64px: a run with more rooms than fit one row wraps onto further rows (balanced, 20 stops in 3 rows of 7, 7 and 6 at 512px), and every row keeps the first row's column width so the columns line up down the route; a shorter last row ends early on the right and is never stretched.
-const DL_COL_MIN = 64;
-const dlRows = (n, per) => { const rows = Math.ceil(n / per); const out = []; let i = 0; for (let k = 0; k < rows; k++) { const c = Math.ceil((n - i) / (rows - k)); out.push([i, i + c]); i += c; } return out; };
+// KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column, the gaps between columns stretching from 6px up to 76px so the first and last boxes sit on the card's content edges; a row never ends with one stop alone, and a short last row ends early on the right.
+const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8;
+const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
+  const rows = Math.ceil(n / per); const cols = Math.ceil(n / rows);
+  const gap = cols > 1 ? Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, (w - cols * DL_MAP_COL) / (cols - 1))) : DL_MAP_GAP;
+  return cols + ':' + gap.toFixed(1); };
+const useDlMap = (n) => { const ref = React.useRef(null); const measure = React.useMemo(() => dlMapOf(n), [n]); const v = useDlWidth(ref, measure, n + ':6'); const [cols, gap] = v.split(':').map(Number); return [ref, cols, gap]; };
+// What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey dot, the loss cross as itself.
+const DlMapMarks = ({ m, st }) => (st.turns.length ? <span className="dvG-marks">{st.turns.map((r) => (r.lost ? <DlDie key={r.t} r={r} size={20} />
+  : m.mom[r.t] ? <DlDie key={r.t} r={r} size={20} foe={false} /> : <i key={r.t} className={'dl-now-mark is-' + (r.use ? 'use' : r.tier || 'miss')} />))}</span> : null);
+const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length);
+  return (<div className="dvG-mapw"><div ref={ref} className="dvG-map" style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
+    const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
+    const box = <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>;
+    const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
+    return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} /></button>
+      : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} />}</span>; })}</div></div>); };
+// KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
+const DlOpenRoom = ({ m, st, act, on }) => (<div className="dvG-open">
+  <div className="dvG-room">
+    <p className="dvG-th"><span className={'dv2-num is-on' + (st.back ? ' is-back' : '')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.back ? 'Back to ' + st.name : st.name}</span></p>
+    <div className="dvG-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
+  </div>
+  {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
+</div>);
+const DlGlance = ({ m, act, setSel }) => {
+  const [open, setOpen] = React.useState(() => (act ? m.turns[act - 1].stop : m.stops.length - 1));
+  const on = React.useMemo(() => ({ sel: setSel, hov: DL_NO_HOVER }), [setSel]);
+  // A room tapped on the map opens, and holds its first key moment, else its last roll.
+  const onOpen = (st) => { setOpen(st.i); const ok = st.turns.filter((r) => !r.lost); const k = ok.find((r) => m.mom[r.t]) || ok[ok.length - 1]; if (k) setSel(k.t); };
+  const st = m.stops.find((x) => x.i === open) || m.stops[m.stops.length - 1];
+  return (<div className="dvG"><DlMap m={m} stops={m.stops} open={st.i} onOpen={onOpen} /><DlOpenRoom m={m} st={st} act={act} on={on} /></div>); };
 // What a width-reading hook reads is the element's own size, taken before paint and on every resize: `measure(el)` returns the value, and must keep its identity between renders.
 const useDlWidth = (ref, measure, initial) => { const [value, setValue] = React.useState(initial);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
     const read = () => setValue(measure(el)); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref, measure]);
   return value; };
-const dlPerOf = (el) => Math.max(1, Math.floor(el.clientWidth / DL_COL_MIN));
-const useDlPer = () => { const ref = React.useRef(null); return [ref, useDlWidth(ref, dlPerOf, 100)]; };
-// KEEP: the held roll sits beside the route from a run card (its content width) of 800px, however many rooms there are: a long route wraps instead of narrowing; below that it sits above the route.
-const DL_BESIDE_MIN = 800;
-const dlBesideOf = (el) => { const cs = getComputedStyle(el); const pad = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); return el.getBoundingClientRect().width - pad >= DL_BESIDE_MIN; };
-const useDlBeside = (ref) => useDlWidth(ref, dlBesideOf, false);
-const dlMainClass = (beside) => 'dvE-main' + (beside ? ' is-beside' : '');
-const DlRoute = ({ m, act, on, beside, lit }) => { const sel = act ? m.turns[act - 1].stop : null; const [ref, per] = useDlPer(); const rows = dlRows(m.stops.length, per); const first = rows[0][1] - rows[0][0];
-  return (<div className={dlMainClass(beside)}>
-    <div ref={ref} className="dvA2-rows" style={{ '--dv-first': first }} aria-label="The way you went">{rows.map(([a, b]) => (
-      <div key={a} className="dvA2-row"><div className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': b - a }}>{m.stops.slice(a, b).map((st) => (
-        <div key={st.i} className={'dvA2-stop' + (sel === st.i ? ' is-on' : '')}>
-          <DlStopHead st={st} named />
-          <div className="dvA2-dice">{st.turns.length ? st.turns.map((r) => (m.mom[r.t]
-            ? <span key={r.t} className="dvE-mom"><DlDieBtn r={r} act={act} lit={lit} on={on} size={52} /></span>
-            : <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={30} />)) : <i className="dv2-pass" aria-label="No rolls" />}</div>
-        </div>))}</div></div>))}</div>
-    <div className="dvE-side"><DlHeld m={m} act={act} /></div>
-  </div>); };
 // KEEP: below a run card 610px wide (its content; the step the hero sheet takes its phone header at, so the page changes once, and the
 // narrowest the 12-room hard run fits at) the route is a list of closed rooms: one 48px line per room on a rule
 // running down the left: its number, its name, then at the line's right end its key moments as 24px dice and other rolls as dots, and a chevron
@@ -365,15 +372,8 @@ const DlRoomList = ({ m, act, on }) => {
 // ---- Before the first roll: the run's rooms drawn empty. A room is its number over an empty hex where its dice will go. ----
 const DlEmptyHex = () => (<svg className="dl-empty-hex" viewBox="-5 -5 46 50" aria-hidden="true" focusable="false"><polygon points={DL_HEX} /></svg>);
 const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: 'Room ' + (i + 1) }));
-// The session page before the first roll (layout C): the run's rooms drawn empty, the first reached, and nothing else (the user, 2026-11-10):
-// no held roll and no "No rolls yet" until there is a roll, so the route fills the card at every width.
-const DlEmptyRoute = ({ rooms }) => (<div className={dlMainClass(false)}>
-  <div className="dvA2-route is-e is-cols-between" style={{ '--dv-stops': rooms }} aria-label="The way you went">{dlEmptyStops(rooms).map((st) => (
-    <div key={st.i} className={'dvA2-stop' + (st.i === 0 ? ' is-on' : ' is-far')}>
-      <span className="dvA2-head" aria-label={'Room ' + st.num + (st.i === 0 ? ', First room' : ', not reached')}><span className="dv2-num">{st.num}</span><span className="dv2-sname">{st.i === 0 ? 'First room' : '\u00a0'}</span></span>
-      <div className="dvA2-dice">{st.i === 0 ? <i className="dv2-pass" aria-label="No rolls" /> : <DlEmptyHex />}</div>
-    </div>))}</div>
-</div>);
+// The session page before the first roll: the run's rooms drawn empty on the map, the first reached, and nothing else: no open room and no held roll until there is a roll.
+const DlEmptyMap = ({ rooms }) => (<div className="dvG"><DlMap stops={dlEmptyStops(rooms).map((st) => ({ ...st, name: st.i === 0 ? 'First room' : 'Not reached', turns: [] }))} open={0} far={(st) => st.i > 0} /></div>);
 const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The way you went">{dlEmptyStops(rooms).map((st) => (
   <div key={st.i} className={'dvL-row' + (st.i === 0 ? ' is-open is-first' : ' is-far') + (st.i === rooms - 1 ? ' is-last' : '')}>
     <div className="dvL-top">
@@ -387,14 +387,12 @@ const DlEmptyList = ({ rooms }) => (<div className="dvL-list" aria-label="The wa
 // last roll. Beside the route a hover also fills the held roll. Above the route and in the list a hover only rings the die: a held roll
 // that follows the pointer changes the box's height, moves the route and the die from under the pointer, and the route flickers.
 const DlCard = ({ s, m, roll, turn }) => {
-  const ref = React.useRef(null); const list = useDlList(ref); const rooms = m.turns.length ? m.stops.length : (s.tracks && s.tracks.rooms) || 5; const beside = useDlBeside(ref);
-  const [sel, setSel] = React.useState(() => (turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null)); const [hov, setHov] = React.useState(null);
-  const on = React.useMemo(() => ({ sel: setSel, hov: setHov }), []);
-  const stacked = list || !beside; const act = stacked ? sel : hov || sel;
+  const ref = React.useRef(null); const list = useDlList(ref); const rooms = m.turns.length ? m.stops.length : (s.tracks && s.tracks.rooms) || 5;
+  const [sel, setSel] = React.useState(() => (turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null)); const act = sel;
   if (!m.turns.length) {
-    return (<section ref={ref} className={'dv2 dv7r is-3' + (list ? ' is-list' : '')} aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyRoute rooms={rooms} />}</section>); }
+    return (<section ref={ref} className={'dv2 dv7r is-3' + (list ? ' is-list' : '')} aria-label="How the run went"><DlResult s={s} m={m} />{list ? <DlEmptyList rooms={rooms} /> : <DlEmptyMap rooms={rooms} />}</section>); }
   return (<section ref={ref} className={'dv2 dv7r is-3' + (list ? ' is-list' : '')} aria-label="How the run went"><DlResult s={s} m={m} />
-    {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlRoute m={m} act={act} on={on} beside={beside} lit={stacked ? hov : null} />}</section>);
+    {list ? <DlRoomList m={m} act={act} on={{ sel: setSel, hov: DL_NO_HOVER }} /> : <DlGlance m={m} act={act} setSel={setSel} />}</section>);
 };
 
 // ---- The character sheet, read from the hero's sheet and the record's lines: gear taken, used, or a key that opened its lock. ----
