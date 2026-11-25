@@ -3452,10 +3452,10 @@
     const mine = r.use ? [] : [["a", dlAtkSum(r)], ...r.dmg ? [["d", dlDmgSum(r)]] : []];
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlHeldHead, { r, x }), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-turns" }, /* @__PURE__ */ React$1.createElement(DlSide, { id: "dvH-" + r.t, label: act, sums: mine }), f && /* @__PURE__ */ React$1.createElement(DlSide, { id: "dvH-" + r.t + "f", label: /* @__PURE__ */ React$1.createElement("p", { className: "dvH-kick" }, "Struck back"), sums: [["a", dlFoeAtkSum(f)], ...f.hit && f.dmg > 0 ? [["d", dlFoeDmgSum(f)]] : []] })), (mt || cost) && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-after" }, mt && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })), cost && /* @__PURE__ */ React$1.createElement("p", { className: "dvH-cost" }, "Cost ", /* @__PURE__ */ React$1.createElement("b", null, cost))));
   };
-  const DlHeld = ({ m, act, live = true }) => {
+  const DlHeld = ({ m, act }) => {
     const r = act ? m.turns[act - 1] : null;
     if (!r) return null;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": live ? "polite" : void 0 }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-box" }, /* @__PURE__ */ React$1.createElement(DlHeldRoll, { key: r.t, r, x: m.mom[r.t] })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-box" }, /* @__PURE__ */ React$1.createElement(DlHeldRoll, { key: r.t, r, x: m.mom[r.t] })));
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
   const DL_MAP_COL = 44;
@@ -3517,79 +3517,16 @@
     }, [ref, measure]);
     return value;
   };
-  const DL_LIST_BELOW = 610;
-  const dlListOf = (el) => {
-    const cs = getComputedStyle(el);
-    const sides = el.classList.contains("is-list") ? ["borderLeftWidth", "borderRightWidth"] : ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"];
-    const pad = sides.reduce((n, k) => n + parseFloat(cs[k]), 0) + (el.classList.contains("is-list") ? 2 * DL_GUTTER : 0);
-    return el.getBoundingClientRect().width - pad < DL_LIST_BELOW;
-  };
-  const useDlList = (ref) => useDlWidth(ref, dlListOf, false);
-  const DL_OPEN_GAP = 12;
-  const dlEvenOpen = (el) => {
-    const dice = el && el.querySelector(".dvL-dice");
-    if (!dice) return;
-    const box = dice.getBoundingClientRect();
-    const drawn = [...dice.querySelectorAll("svg *")].filter((e) => /^(polygon|path|circle|rect)$/.test(e.tagName) && (!e.classList.contains("sl") || e.closest('[aria-pressed="true"]')) && getComputedStyle(e).display !== "none").map((e) => e.getBoundingClientRect()).filter((r) => r.height > 0);
-    if (!drawn.length) return;
-    el.style.setProperty("--dvL-up", Math.max(0, DL_OPEN_GAP - (Math.min(...drawn.map((r) => r.top)) - box.top)) + "px");
-    const bottom = box.bottom - parseFloat(getComputedStyle(dice).paddingBottom);
-    el.style.setProperty("--dvL-down", Math.max(0, DL_OPEN_GAP - (bottom - Math.max(...drawn.map((r) => r.bottom)))) + "px");
-  };
-  const DlRoomRow = ({ m, st, act, lit, on, open, setOpen, first, last }) => {
-    const isOpen = open === st.i;
-    const sel = act ? m.turns[act - 1].stop : null;
-    const has = st.turns.some((r) => !r.lost);
-    const cross = st.turns.find((r) => r.lost);
-    const keys = st.turns.filter((r) => m.mom[r.t]);
-    const rest = st.turns.filter((r) => !m.mom[r.t]);
-    const onRoom = React$1.useMemo(() => ({ ...on, sel: (t) => {
-      if (on.focus) on.focus(t);
-      setOpen(st.i);
-      on.sel(t);
-    } }), [on, st.i, setOpen]);
-    const label = (st.back ? "Back to " : "Room " + st.num + ", ") + st.name;
-    const fold = "dvL-room-" + st.i;
-    const openRef = React$1.useRef(null);
-    React$1.useLayoutEffect(() => {
-      if (isOpen) dlEvenOpen(openRef.current);
-    }, [isOpen, act]);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvL-row" + (isOpen ? " is-open" : "") + (first ? " is-first" : "") + (last ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" + (has ? " is-tap" : "") }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, has ? /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dvL-head", "aria-expanded": isOpen, "aria-controls": fold, "aria-label": label, onClick: () => setOpen(isOpen ? null : st.i) }, /* @__PURE__ */ React$1.createElement("span", { className: "dvL-name", "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })) : /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name is-pass" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, st.name), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, cross ? label : label + ", no rolls")), has ? /* @__PURE__ */ React$1.createElement("div", { className: "dvL-tally", "aria-hidden": isOpen || void 0 }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on: onRoom, size: 24 })), rest.length > 0 && /* @__PURE__ */ React$1.createElement("span", { className: "dvL-dots", role: "img", "aria-label": dlNowMarksSay(rest) }, rest.map((r) => /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.tier || "use") })))) : cross ? /* @__PURE__ */ React$1.createElement("span", { className: "dvL-tally", role: "img", "aria-label": dlSay(cross) }, /* @__PURE__ */ React$1.createElement(DlDie, { r: cross, size: 24 })) : /* @__PURE__ */ React$1.createElement("i", { className: "dv2-pass dvL-pass", "aria-hidden": "true" }))), has && /* @__PURE__ */ React$1.createElement("div", { id: fold, className: "dvL-fold" }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: isOpen }, isOpen && /* @__PURE__ */ React$1.createElement("div", { ref: openRef, className: "dvL-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 }))), sel === st.i && /* @__PURE__ */ React$1.createElement("div", { className: "dvL-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act, live: false }))))));
-  };
-  const DlRoomList = ({ m, act, on }) => {
-    const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : null);
-    const ref = React$1.useRef(null);
-    const pending = React$1.useRef(null);
-    const [lit, setLit] = React$1.useState(null);
-    const onList = React$1.useMemo(() => ({ ...on, hov: (t) => {
-      if (t == null || window.matchMedia("(hover: hover)").matches) setLit(t);
-    }, focus: (t) => {
-      pending.current = t;
-    } }), [on]);
-    React$1.useLayoutEffect(() => {
-      const t = pending.current;
-      if (t == null) return;
-      pending.current = null;
-      const b = ref.current && ref.current.querySelector('.dvL-dice [data-t="' + t + '"]');
-      if (b) b.focus();
-    });
-    const r = act ? m.turns[act - 1] : null;
-    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvL-list", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvL-vh", "aria-live": "polite" }, r ? dlSay(r) : ""), m.stops.map((st, i) => /* @__PURE__ */ React$1.createElement(DlRoomRow, { key: st.i, m, st, act, on: onList, lit, open, setOpen, first: i === 0, last: i === m.stops.length - 1 })));
-  };
-  const DlEmptyHex = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dl-empty-hex", viewBox: "-5 -5 46 50", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }));
   const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: "Room " + (i + 1) }));
   const DlEmptyMap = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG" }, /* @__PURE__ */ React$1.createElement(DlMap, { stops: dlEmptyStops(rooms).map((st) => ({ ...st, name: st.i === 0 ? "First room" : "Not reached", turns: [] })), open: 0, far: (st) => st.i > 0 }));
-  const DlEmptyList = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvL-list", "aria-label": "The way you went" }, dlEmptyStops(rooms).map((st) => /* @__PURE__ */ React$1.createElement("div", { key: st.i, className: "dvL-row" + (st.i === 0 ? " is-open is-first" : " is-far") + (st.i === rooms - 1 ? " is-last" : "") }, /* @__PURE__ */ React$1.createElement("div", { className: "dvL-top" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num dvL-num", "aria-hidden": "true" }, st.num), /* @__PURE__ */ React$1.createElement("div", { className: "dvL-line" }, st.i === 0 ? /* @__PURE__ */ React$1.createElement("p", { className: "dvL-head dvL-name" }, /* @__PURE__ */ React$1.createElement("span", { "aria-hidden": "true" }, "First room"), /* @__PURE__ */ React$1.createElement("span", { className: "dvL-vh" }, "Room 1, First room, no rolls")) : /* @__PURE__ */ React$1.createElement("div", { className: "dvL-head", role: "img", "aria-label": "Room " + st.num + ", not reached" }, /* @__PURE__ */ React$1.createElement(DlEmptyHex, null)))))));
   const DlCard = ({ s, m, roll, turn }) => {
-    const ref = React$1.useRef(null);
-    const list = useDlList(ref);
     const rooms = m.turns.length ? m.stops.length : s.tracks && s.tracks.rooms || 5;
     const [sel, setSel] = React$1.useState(() => turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null);
     const act = sel;
     if (!m.turns.length) {
-      return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlEmptyList, { rooms }) : /* @__PURE__ */ React$1.createElement(DlEmptyMap, { rooms }));
+      return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlEmptyMap, { rooms }));
     }
-    return /* @__PURE__ */ React$1.createElement("section", { ref, className: "dv2 dv7r is-3" + (list ? " is-list" : ""), "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), list ? /* @__PURE__ */ React$1.createElement(DlRoomList, { m, act, on: { sel: setSel, hov: DL_NO_HOVER } }) : /* @__PURE__ */ React$1.createElement(DlGlance, { m, act, setSel }));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlGlance, { m, act, setSel }));
   };
   const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
   const STAT_ORDER = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"];
@@ -3754,12 +3691,6 @@
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
   const DL_NO_HOVER = () => {
-  };
-  const dlNowMarksSay = (rest) => {
-    const rolls = rest.filter((r) => !r.use);
-    const uses = rest.length - rolls.length;
-    const said = rolls.length ? rolls.length + (rolls.length === 1 ? " other roll: " : " other rolls: ") + rolls.map((r) => dlGrade(r).toLowerCase()).join(", ") : "";
-    return [said, uses ? uses === 1 ? "a use" : uses + " uses" : ""].filter(Boolean).join(", and ");
   };
   const DL_NOW_NUM_MIN = 20;
   const useDlNowWide = (n) => {
