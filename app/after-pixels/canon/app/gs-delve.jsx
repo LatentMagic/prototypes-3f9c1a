@@ -96,7 +96,7 @@ const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? 
 const DL_END = { won: 'Winning blow', fallen: 'Last blow', overrun: 'Last roll', live: 'Latest roll' };
 // The key moments, keyed by turn: Best roll (a natural 20 on any roll, else the check with the widest margin), Closest call (the first roll whose total equals its target, an attack against the foe's AC included),
 // Worst roll (a natural 1, else the miss furthest below its target, attacks included), Biggest hit (the attack that dealt the most damage, the first on a tie), and the turn the run ended on (a roll or a use).
-// KEEP: a roll earns every moment it deserves, so one roll can be two or more (a natural 20 whose damage is the run's biggest is Best roll and Biggest hit); its held roll's title names each in one row ("Best roll and biggest hit"), and the die carries the marks of each.
+// KEEP: a roll earns every moment it deserves, so one roll can be two or more (a natural 20 whose damage is the run's biggest is Best roll and Biggest hit); its held roll's title names each, capitalised and joined by a middle dot, in one row ("Best roll · Biggest hit"), and the die carries the marks of each.
 const DL_MOMENT_ORDER = ['Best roll', 'Closest call', 'Worst roll', 'Biggest hit'];
 const dlMoments = (T, end) => {
   if (!T.length) return [];
@@ -222,53 +222,53 @@ const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.tot
 const dlFoeAtkSum = (f) => ({ d: [f.roll, 'd20'], adv: f.other != null, drop: f.other, m: f.bonus ? [['+', f.bonus, 'Bonus']] : [], t: f.roll + f.bonus, vs: 'vs AC ' + f.dc, out: f.hit ? ['Hit', 'err'] : ['Miss', ''] });
 const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg, typ: f.type || 'damage' });
 // The named form: each number with its source; a dropped advantage die follows the kept one, its number struck through.
-const DlNamed = ({ s }) => (<span className="dvH-pn">
+const DlNamed = ({ s, total }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}{s.adv ? ' advantage' : ''}</span>
   {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
 </span>);
-// A roll that earned more than one moment is titled with all of them in one sentence-case row: "Best roll and biggest hit", "Best roll, closest call and biggest hit".
-const dlTitle = (names) => names.map((n, i) => (i ? n.charAt(0).toLowerCase() + n.slice(1) : n)).reduce((t, n, i, all) => t + (i === 0 ? '' : i === all.length - 1 ? ' and ' : ', ') + n, '');
-// KEEP: the held roll's die is drawn at the size it has in its room (44px for a key moment, else 30px), so pressing a die never resizes it, and the foe's diamond is as tall as the die's hexagon beside it. The die's picture has an empty margin round its hexagon, so the head's right end sits that margin (the rightmost drawing's) past the content edge and the drawing lines up with the tiles' right edge.
-const dlHeadInk = (r, size, foeSize) => (r.foe ? foeSize * 2 / 40 : size * (r.crit ? 2 : 5) / 46);
-const DlHeldHead = ({ r, x }) => { const size = x ? 44 : 30; const foeSize = Math.round(size * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
-  return (<>
-    <div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p><p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}</p></div>
-      <div className="dvH-dd" style={{ '--ink': dlHeadInk(r, size, foeSize) + 'px' }}><DlDie r={r} size={size} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={foeSize} />}</div></div>
-  </>); };
-// ---- The held roll's sums as tiles, totals first (the user, 2026-11-25, held-roll canvas 2): each tile leads with its total, then its target and result (or the damage type), then the sum's working at its right end. A tap opens the named form across the side, under its tiles. ----
-// KEEP: a side's tiles sit two to a row, a lone tile keeping its half, and a tile is one row from 190px wide: total, target and result, working; narrower, the working drops under. The sides stack, the hero's turn over the foe's, so a foe's turn is two short rows, never four boxes; from a 580px box a side's label sits beside its tiles instead of over them (gs-delve.css).
-const DlFx = ({ s }) => (<span className="dvT-fx">{s.d && <>{s.d[0]}{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>}</>}{s.m.map((p, i) => <React.Fragment key={i}>{(s.d || i) ? ' ' + p[0] + ' ' : p[0] === '+' ? '' : p[0]}{p[1]}</React.Fragment>)}</span>);
-const DlTileIn = ({ s }) => (<span className="dvT-in"><span className="dvT-tot">{s.t}</span>
-  <span className="dvT-vs">{s.vs && <span>{s.vs}</span>}{s.typ && <span>{s.typ}</span>}{s.out && <span className={'dvH-out ' + s.out[1]}>{s.out[0]}</span>}</span>
-  {s.m.length > 0 && <DlFx s={s} />}</span>);
-// KEEP: an attack made with advantage says so in its side's label (a check has no label, so its advantage shows in its working only) ("Attack, with advantage"), and its working shows the kept die then the dropped one struck through, so two d20s read as two, not as a glitch.
+// A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit".
+const dlTitle = (names) => names.join(' · ');
+// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something or cost the hero something, those words ("Cost Threat +1"), and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words and the Cost each take their own row, without the dot that joins them on a wider box. Every die in the held roll is one size (32px), a key moment's included, so pressing between dice never resizes it (a key moment keeps its look, its rim or ring, and is no bigger), and the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall. The die's picture has an empty margin round its hexagon, so the strip's right end sits that margin (the rightmost drawing's) past the content edge and the strip's top sits the top margin above it: the die's drawn shape, not its picture, is 12px from the box's top and right edges, as the text is from its left.
+// The empty margin round a die's drawn shape in its picture box, in die units out of 46 (right, top): a hexagon 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7; the foe's diamond is 2 units of 40 on every side.
+const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
+const dlHeadInk = (r, size, foeSize) => (r.foe ? foeSize * 2 / 40 : size * dlInk(r)[0] / 46);
+const dlHeadInkTop = (r, size, foeSize) => { const hero = size * dlInk(r)[1] / 46; return r.foe ? Math.min(hero, (size * 50 / 46 - Math.round(foeSize * 44 / 40)) / 2 + foeSize * 2 / 40) : hero; };
+const DL_HELD_DIE = 32;
+const DlHeldHead = ({ r, x, cost }) => { const size = DL_HELD_DIE; const foeSize = Math.round(size * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
+  return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p>
+      <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}{cost && <> <span className="dvH-sep">· </span><span className="dvH-cost">Cost <b>{cost}</b></span></>}</p></div>
+    <div className="dvH-dd" style={{ '--ink': dlHeadInk(r, size, foeSize) + 'px', '--inky': dlHeadInkTop(r, size, foeSize) + 'px' }}><DlDie r={r} size={size} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={foeSize} />}</div></div>); };
+// ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
+// KEEP: a side is one tap chip, at least 44px tall, in Escape's tap card (esx-card) at its own size; the two sides share one row from 280px and a lone side (a check, an option, a hero's attack the foe did not answer) takes the row under 400px and its half above it. The chip's own width sets its shape: from 200px it is one row (hit, hairline, damage); narrower, the hit's total stands beside its target and result and the damage drops to a second row under a hairline. The d20 sum ("8 + 3") is not on the chip: at 320px a chip is about 120px wide, where the hit and the damage already fill two rows, so the sum lives in the breakdown only, at every width.
+// KEEP: a chip's breakdown opens under the chip at the chip's own width through the 220ms fold, one per side at a time: the d20's named form with its total (`14 d20 + 3 Strength + 2 Martial = 19`, a dropped advantage die struck through) and, for a hit that dealt damage, a second named form under a small "Damage" caption naming the type ("Damage · slashing") with the damage dice, then each bonus with its source and the total. A miss opens the d20's form alone, with no caption. The parts break only between one another.
+// An attack made with advantage says so in its side's label ("You, with advantage"); a check has no label text beyond "You", so its advantage shows in the breakdown only.
 const DlAdv = () => <span className="dvH-adv">, with advantage</span>;
-const DlSide = ({ id, label, sums, foe }) => { const [open, setOpen] = React.useState(null);
-  return (<div className={'dvT-side' + (foe ? ' is-foe' : '') + (!label || !sums.length ? ' is-bare' : '')}>{label}
-    <div className="dvT-tiles">
-      {sums.map(([k, s], i) => (s.d
-        ? <button key={k} type="button" style={{ '--i': i }} className={'esx-card dvT-tap' + (open === k ? ' is-open' : '')} aria-expanded={open === k} aria-controls={id + k} onClick={() => setOpen(open === k ? null : k)}><DlTileIn s={s} /></button>
-        : <div key={k} style={{ '--i': i }} className="esx-card dvT-tap is-still"><DlTileIn s={s} /></div>))}
-      {sums.map(([k, s], i) => s.d && <div key={'f' + k} id={id + k} style={{ '--i': i }} className="dvT-fold"><EsxFold open={open === k}>{open === k && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>)}
-    </div>
+const DlChipBreak = ({ atk, dmg }) => (<div className="dvH-pnl">
+  <div className="dvC-pr">{dmg && <span className="dvC-pk">Attack</span>}<DlNamed s={atk} total={atk.t} /></div>
+  {dmg && <div className="dvC-pr"><span className="dvC-pk">Damage{dmg.typ && dmg.typ !== 'damage' ? ' · ' + dmg.typ : ''}</span>{dmg.d ? <DlNamed s={dmg} total={dmg.t} /> : <span className="dvH-pn"><span className="dvH-c"><b>{dmg.t}</b></span></span>}</div>}
+</div>);
+const DlChip = ({ id, label, atk, dmg, foe, lone, still, body }) => { const [open, setOpen] = React.useState(false);
+  const inner = body || (<span className="dvC-in"><span className="dvC-hit"><span className="dvT-tot">{atk.t}</span><span className="dvC-vs"><span>{atk.vs}</span><span className={'dvH-out ' + atk.out[1]}>{atk.out[0]}</span></span></span>
+    {dmg && <span className="dvC-dm"><b>{dmg.t}</b> damage</span>}</span>);
+  return (<div className={'dvC-side' + (foe ? ' is-foe' : '') + (lone ? ' is-lone' : '')}>{label && <p className="dvC-lab">{label}</p>}
+    {still ? <div className="esx-card dvC-chip is-still">{inner}</div>
+      : <button type="button" className={'esx-card dvC-chip' + (open ? ' is-open' : '')} aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>{inner}</button>}
+    {!still && <div id={id} className="dvC-fold"><EsxFold open={open}>{open && <DlChipBreak atk={atk} dmg={dmg} />}</EsxFold></div>}
   </div>); };
-// KEEP: under the sides one row holds the after-effects: the foe's health (a thin bar, on one row from a 420px box) and the turn's Cost beside it, each at its own width; the Cost wraps under the health only when they do not fit.
+// KEEP: under the chips the foe's health is one thin row (name, a 4px bar, the count) at the box's full width.
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
-  const act = r.use
-    ? <p className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</p>
-    : r.action || r.fight ? <p className="dvH-act"><b>{r.action || 'Attack'}</b>{(r.move || r.skill) && <span> {r.move || r.skill}</span>}{r.two && <DlAdv />}</p> : null;
-  const mine = r.use ? [] : [['a', dlAtkSum(r)], ...(r.dmg ? [['d', dlDmgSum(r)]] : [])];
+  const act = r.use ? null : r.action || r.fight || r.skill ? <><b>You</b>{(r.action || r.skill || r.move) && <span> {[r.action, r.move || r.skill].filter(Boolean).join(' ')}</span>}{r.two && <DlAdv />}</> : r.two || f ? <><b>You</b>{r.two && <DlAdv />}</> : null;
+  const used = r.use ? (<span className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</span>) : null;
   return (<>
-    <DlHeldHead r={r} x={x} />
-    <div className="dvH-turns">
-      <DlSide id={'dvH-' + r.t} label={act} sums={mine} />
-      {f && <DlSide foe id={'dvH-' + r.t + 'f'} label={<p className="dvH-kick">Struck back{f.other != null && <DlAdv />}</p>} sums={[['a', dlFoeAtkSum(f)], ...(f.hit && f.dmg > 0 ? [['d', dlFoeDmgSum(f)]] : [])]} />}
+    <DlHeldHead r={r} x={x} cost={cost} />
+    <div className={'dvC-row' + (f ? '' : ' is-lone')}>
+      <DlChip id={'dvH-' + r.t} label={r.use ? (f ? <b>You</b> : null) : act} atk={r.use ? null : dlAtkSum(r)} dmg={r.use || !r.dmg ? null : dlDmgSum(r)} lone={!f} still={r.use} body={used} />
+      {f && <DlChip foe id={'dvH-' + r.t + 'f'} label={<><b>Foe</b>{f.other != null && <DlAdv />}</>} atk={dlFoeAtkSum(f)} dmg={f.hit && f.dmg > 0 ? dlFoeDmgSum(f) : null} />}
     </div>
-    {(mt || cost) && <div className="dvH-after">{mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}{cost && <p className="dvH-cost">Cost <b>{cost}</b></p>}</div>}
+    {mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}
   </>); };
 const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
   return (<div className="dv3-live" aria-live="polite"><div className="dvH-box"><DlHeldRoll key={r.t} r={r} x={m.mom[r.t]} /></div></div>); };
-
 // ---- The board, Glance: the run as a map (the Now card's number strip grown to the board, every stop a box, its rolls small beneath), and under it the open room: its name and dice at full size, the held roll on the right. ----
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
 const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
@@ -567,6 +567,10 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
   ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
+// The hard play's natural 20 in Snaggle's den (its first roll, a Dexterity attack) is also its biggest hit, so one roll earns Best roll and Biggest hit and the held roll reads "Best roll · Biggest hit". SAMPLE: its damage (a d8 rolling 8 and the +3 Dexterity, 11, piercing) and Snaggle's 12 health, so the next hit of 1 beats it; every other hit keeps no damage roll.
+{ const hard = GS_SESSIONS['delve-hard']; const rollAt = (l) => /(d20 |d20s \d+ and \d+, kept )\d+ [+-] \d+ = /.test(l.slice(1).join(' · '));
+  const n = hard.lines.filter(rollAt).indexOf(hard.lines.find((l) => rollAt(l) && l.includes('Natural 20') && l[1] === 'Hit')) + 1;
+  GS_SESSIONS['delve-hard'] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 12 }, detail: { [n]: { parts: [['+', 3, 'DEX']], dmg: { die: 'd8', v: 8, parts: [['+', 3, 'DEX']], type: 'Piercing' } } } }; }
 // The hard play with a last going-back to the warren (The ritual +1) that filled the threat: no roll or use in that room, so the run ends on the loss cross. SAMPLE: the going-back is added to the hard play.
 // Its last roll leaves the threat at 11/12 (the hard play without the going-back to the warren before the shrine cavern), so the going-back (+1) is what fills it to 12/12.
 GS_SESSIONS['delve-overrun-back'] = (() => { const L = GS_SESSIONS['delve-hard'].lines; const at = L.findIndex((l) => l[1] === 'Entered the shrine cavern');
