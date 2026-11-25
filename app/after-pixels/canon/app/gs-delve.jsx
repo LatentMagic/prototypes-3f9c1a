@@ -294,11 +294,12 @@ const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = us
     const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (i % cols === cols - 1 || i === stops.length - 1 ? ' is-re' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
     return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} /></button>
       : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} />}</span>; })}</div></div>); };
+// KEEP: every die in the open room is one size (32px, the held roll's), a key moment's included: the dice are not compared, so no die is bigger than another and pressing one never resizes or shifts any (a key moment keeps its rim, ring and colour; the selected die only rings).
 // KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
 const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
     <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.back ? 'Back to ' + st.name : st.name}</span></p>
-    <div className="dvG-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
+    <div className="dvG-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={DL_HELD_DIE} />)}</div>
   </div>
   {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
 </div>);
