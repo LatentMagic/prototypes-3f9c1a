@@ -229,16 +229,16 @@ const DlNamed = ({ s, total }) => (<span className="dvH-pn">
 </span>);
 // A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit".
 const dlTitle = (names) => names.join(' · ');
-// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something or cost the hero something, those words ("Cost Threat +1"), and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words and the Cost each take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
+// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something, those words, and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
 // The empty margin round a die's drawn shape in its picture box, in die units (right, top; the same on the opposite side): the picture is 46 by 50, a hexagon leaves 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7.
 const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
 // KEEP: the held roll's dice are one drawn size on every roll it holds (a hexagon 25px wide), a key moment's included, so moving between rolls never changes their size: a die whose rim reaches further into its picture (a natural 20, a biggest hit) is drawn smaller to match (the user, 2026-11-25: "BETWEEN CARDS these are changing sizes"); the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
 const DL_HELD_DIE = 32;
 // A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
 const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
-const DlHeldHead = ({ r, x, cost }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
+const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p>
-      <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}{cost && <> <span className="dvH-sep">· </span><span className="dvH-cost">Cost <b>{cost}</b></span></>}</p></div>
+      <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}</p></div>
     <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" foe={false} /></DlInkFrame>
       {r.foe && <DlInkFrame w={foeSize * 36 / 40} h={Math.round(foeSize * 44 / 40) * 40 / 44}><DlFoeDie f={r.foe} size={foeSize} /></DlInkFrame>}</div></div>); };
 // ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
@@ -260,12 +260,15 @@ const DlChip = ({ id, label, atk, dmg, foe, lone, still, body }) => { const [ope
   </div>); };
 // KEEP: under the chips the foe's health is one thin row (name, a 4px bar, the count) at the box's full width.
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
-  const act = r.use ? null : r.action || r.fight || r.skill ? <><b>You</b>{(r.action || r.skill || r.move) && <span> {[r.action, r.move || r.skill].filter(Boolean).join(' ')}</span>}{r.two && <DlAdv />}</> : r.two || f ? <><b>You</b>{r.two && <DlAdv />}</> : null;
+  // KEEP: the You label carries what the hero did and what the turn cost them, each after a middle dot: "You · Slip the trap · Cost Threat +1" (the user, 2026-11-25: the cost sits "next to the You", with "a . there"); a turn with nothing to say over its chip and no cost has no label.
+  const costSaid = cost ? <span className="dvH-cost"> · Cost <b>{cost}</b></span> : null;
+  const said = [r.action, r.move || r.skill].filter(Boolean).join(' ');
+  const act = r.use ? (f || cost ? <><b>You</b>{costSaid}</> : null) : r.action || r.fight || r.skill || r.two || f || cost ? <><b>You</b>{!r.use && (r.action || r.skill || r.move) && said && <span> · {said}</span>}{r.two && <DlAdv />}{costSaid}</> : null;
   const used = r.use ? (<span className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</span>) : null;
   return (<>
-    <DlHeldHead r={r} x={x} cost={cost} />
+    <DlHeldHead r={r} x={x} />
     <div className={'dvC-row' + (f ? '' : ' is-lone')}>
-      <DlChip id={'dvH-' + r.t} label={r.use ? (f ? <b>You</b> : null) : act} atk={r.use ? null : dlAtkSum(r)} dmg={r.use || !r.dmg ? null : dlDmgSum(r)} lone={!f} still={r.use} body={used} />
+      <DlChip id={'dvH-' + r.t} label={act} atk={r.use ? null : dlAtkSum(r)} dmg={r.use || !r.dmg ? null : dlDmgSum(r)} lone={!f} still={r.use} body={used} />
       {f && <DlChip foe id={'dvH-' + r.t + 'f'} label={<><b>Foe</b>{f.other != null && <DlAdv />}</>} atk={dlFoeAtkSum(f)} dmg={f.hit && f.dmg > 0 ? dlFoeDmgSum(f) : null} />}
     </div>
     {mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}

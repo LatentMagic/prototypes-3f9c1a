@@ -70,7 +70,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-rm { margin: 2px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dvH-beat { color: var(--success); }
 /* KEEP: under a 480px box the beaten or passed words and the Cost each take their own line, without the dot that joins them to the room line on a wider box, so a wrapped line never starts with a dot. */
-@container dvh (max-width: 479px) { .dvH-sep { display: none; } .dvH-beat, .dvH-cost { display: block; } }
+@container dvh (max-width: 479px) { .dvH-sep { display: none; } .dvH-beat { display: block; } }
 .dvH-act { margin: 0; font: 600 14px/1.3 var(--font-text); }
 .dvH-act span { font-weight: 400; color: var(--muted); }
 /* KEEP: the held roll's short text (its action, "beaten" line and the foe's name) balances its lines, so none ends on a lone word: "Climb to the skeleton / on the high ledge", "Mortlake, the / drowned captain". */
