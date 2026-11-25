@@ -858,42 +858,23 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
   .dvG-open { grid-template-columns: minmax(0, 1fr) minmax(0, 66%); column-gap: 24px; align-items: start; }
 }
 /* ---- The held roll (a pressed die): the head, then the turn as sums. ---- */
-.dvH-box { --dvH-lift: color-mix(in srgb, var(--text) 6%, var(--popup)); container: dvh / inline-size; box-sizing: border-box; min-width: 0; display: grid; gap: 10px; align-content: start; padding: 12px; background: var(--popup); border: 1px solid var(--control-edge); color: var(--text); font-variant-numeric: tabular-nums; }
+.dvH-box { --dvH-lift: color-mix(in srgb, var(--text) 6%, var(--popup)); container: dvh / inline-size; box-sizing: border-box; min-width: 0; display: grid; gap: 8px; align-content: start; padding: 12px; background: var(--popup); border: 1px solid var(--control-edge); color: var(--text); font-variant-numeric: tabular-nums; }
 .dvH-hd { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
 .dvH-tt { display: grid; min-width: 0; }
 .dvH-k { margin: 0; font: 700 18px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
 .dvH-dd { display: flex; align-items: center; gap: 6px; flex: none; }
+/* KEEP: the held roll's room line and, on the same line, what the turn beat or passed ("Roll 10 · The shrine cavern · Grizzletooth beaten", the last in green) balance their lines, so none ends on a lone word; the beaten or passed words wrap whole. */
 .dvH-rm { margin: 2px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
-.dvH-beat { margin: 0; font: 600 14px/1.3 var(--font-text); color: var(--success); text-wrap: balance; }
-.dvH-turns { display: grid; gap: 10px; min-width: 0; }
-.dvH-side { display: grid; gap: 10px; align-content: start; min-width: 0; max-width: 420px; }
-/* KEEP: the hero's turn and the foe's turn sit side by side once the box is 560px wide, each column 420px at most, so a long box is arranged, never stretched. */
+.dvH-beat { color: var(--success); white-space: nowrap; }
+/* KEEP: under a 480px box the beaten or passed words take their own line, without the dot that joins them to the room line on a wider box, so a wrapped line never starts with a dot. */
+@container dvh (max-width: 479px) { .dvH-sep { display: none; } .dvH-beat { display: block; } }
+.dvH-turns { display: grid; gap: 8px; min-width: 0; }
 .dvH-act, .dvH-kick { margin: 0; font: 600 14px/1.3 var(--font-text); }
 .dvH-act span { font-weight: 400; color: var(--muted); }
-/* KEEP: the held roll's short text (its room line, action, "beaten" line and the foe's name) balances its lines, so none ends on a lone word: "Climb to the skeleton / on the high ledge", "Mortlake, the / drowned captain". */
+/* KEEP: the held roll's short text (its action, "beaten" line and the foe's name) balances its lines, so none ends on a lone word: "Climb to the skeleton / on the high ledge", "Mortlake, the / drowned captain". */
 .dvH-act, .dvH-fm .dv6-bar > span { text-wrap: balance; }
 .dvH-act span.is-does { display: block; }
 .dvH-kick { font-size: 13px; color: var(--muted); }
-.dvH-sm { display: grid; min-width: 0; }
-/* KEEP: the sum is Escape's tap card (esx-card) at its own size: at least 44px tall and as wide as its box, whatever the width. */
-/* KEEP: at rest the sum takes the panel's own surface; the darker card fill shows only on hover (a mouse) and while open. */
-.dvH-tap.esx-card { display: block; width: 100%; height: auto; min-height: 44px; padding: 10px; background: transparent; }
-@media (hover: hover) { .dvH-tap.esx-card:not(.is-still):hover { background: var(--card); } }
-.dvH-tap.esx-card.is-open { background: var(--card); }
-.dvH-tap:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
-.dvH-tap.is-still, .dvH-tap.is-still:hover { cursor: default; }
-.dvH-tap.is-still:active { transform: none; }
-.dvH-eq { display: flex; flex-wrap: wrap; align-items: center; align-content: center; column-gap: 5px; row-gap: 3px; min-height: 24px; font: 400 15px/24px var(--font-text); color: var(--muted); }
-.dvH-die { box-sizing: border-box; min-width: 26px; height: 24px; padding: 0 4px; border: 1.5px solid var(--text); color: var(--text); font: 600 15px/21px var(--font-text); text-align: center; }
-/* An advantage roll: a second outline offset up and left behind the kept die's box. */
-.dvH-die.is-adv { margin-left: 4px; box-shadow: -4px -4px 0 -1.5px var(--popup), -4px -4px 0 0 var(--muted); }
-.dvH-ru { white-space: nowrap; }
-.dvH-eqs { margin-right: 4px; }
-.dvH-tot { font: 700 17px/24px var(--font-heading); color: var(--text); }
-.dvH-vs, .dvH-typ { font-size: 13px; }
-/* KEEP: the target and the result word wrap together ("vs AC 12 Hit"), so the result never stands alone on a last line; a damage total keeps its type beside it ("= 12 slashing"). */
-.dvH-tail { display: inline-flex; column-gap: 5px; }
-.dvH-typ { margin-left: 5px; }
 .dvH-out { font-weight: 700; font-size: 13px; }
 .dvH-out.ok { color: var(--success); } .dvH-out.err { color: var(--error); } .dvH-out.part { color: var(--warning); }
 /* KEEP: the named form opens in a panel under the sum, in the sum's open colour, through the 220ms fold; its parts break only between one another, and a dropped advantage die's number is struck through. */
@@ -906,10 +887,15 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-fm { min-width: 0; }
 .dvH-cost { margin: 0; font: 600 13px/1.4 var(--font-text); color: var(--muted); }
 .dvH-cost b { color: var(--text); }
-/* KEEP: in a held roll the foe's name is on its own line and wraps in full, never cut with an ellipsis; the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
+/* KEEP: the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
 .dvH-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
 .dvH-fm .dv6-bar > span { grid-column: 1 / -1; align-self: start; font: 600 13px/1.4 var(--font-text); color: var(--text); white-space: normal; overflow-wrap: break-word; }
 .dvH-fm .dv6-bar small { font: 600 14px/1.4 var(--font-text); color: var(--text); }
+.dvH-fm .mcp-track { height: 4px; }
+@container dvh (min-width: 420px) {
+  .dvH-fm .dv6-bar { grid-template-columns: minmax(0, auto) minmax(48px, 1fr) auto; grid-template-rows: none; column-gap: 10px; }
+  .dvH-fm .dv6-bar > span { grid-column: auto; align-self: center; }
+}
 /* ---- from delve-v4.html ---- */
 /* ---- The sheet card: the session card's surface. ---- */
 .dv4-lay { display: grid; gap: var(--gs-sec-gap); min-width: 0; }
@@ -1198,10 +1184,10 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dv9-pips i { display: block; width: 12px; height: 12px; box-sizing: border-box; border: 1.5px solid var(--control-edge); }
 .dv9-pips i.is-on { background: var(--muted); border-color: var(--muted); }
 .dv9-pips.is-lit i.is-on { background: var(--off-white); border-color: var(--off-white); }
-/* ---- The held roll's tiles, totals first: no hairlines; sides stack; tiles two to a row; the after row holds the foe's health at half width and the Cost. ---- */
-.dvH-turns { gap: 12px; }
+/* ---- The held roll's tiles, totals first: no hairlines; the sides stack, the hero's over the foe's; a side is its label and its tiles, two to a row; the after row holds the foe's health and the Cost. ---- */
 .dvT-side { display: grid; gap: 6px; align-content: start; min-width: 0; }
 .dvT-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+/* KEEP: the sum is Escape's tap card (esx-card) at its own size: at least 44px tall and as wide as its side's tiles, a tile on the box's own surface until hovered or opened. */
 .dvT-tap.esx-card { display: block; width: 100%; height: auto; min-height: 44px; padding: 8px 10px; background: transparent; text-align: left; container-type: inline-size; }
 /* KEEP: a pressable surface is lifted a step lighter than the surface it sits on while a mouse is over it and while it is open, and an open one has the off-white edge (Escape's card: 6% of the text colour mixed into its surface). On the held roll's box (--popup) that surface is the popup, not the card: the card fill is darker than the box, so a hover or open tile sank into it, the reverse of Escape's cards. Pressing scales it to the press scale. */
 @media (hover: hover) { .dvT-tap.esx-card:not(.is-still):hover { background: var(--dvH-lift); } }
@@ -1210,13 +1196,20 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dvT-tap.is-still { cursor: default; } .dvT-tap.is-still:active { transform: none; }
 .dvT-in { display: grid; justify-items: start; row-gap: 2px; width: 100%; min-width: 0; }
 .dvT-tot { font: 700 20px/1.1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
+.dvT-side.is-foe .dvT-tot { font-size: 16px; }
 .dvT-vs { display: inline-flex; flex-wrap: wrap; column-gap: 5px; font: 400 13px/1.3 var(--font-text); color: var(--muted); }
 .dvT-fx { font: 400 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 @container (min-width: 130px) and (max-width: 189px) { .dvT-in { grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; } .dvT-tot { grid-row: 1 / 3; } }
 @container (min-width: 190px) { .dvT-in { grid-template-columns: auto 1fr auto; align-items: baseline; column-gap: 12px; } .dvT-fx { justify-self: end; } }
-.dvH-after { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; align-items: end; min-width: 0; }
-.dvH-after > .dvH-cost { align-self: end; }
-@container dvh (max-width: 359px) { .dvH-after { grid-template-columns: minmax(0, 1fr); } }
+/* KEEP: from a 580px box a side is one row: its label (the action, or "Struck back") in a 140px column beside its tiles, so the box is two tile rows tall, not four rows of boxes and labels; an open tile's named form runs under the whole row. A side with no tiles or no label is the label or the tiles alone, across the row. */
+@container dvh (min-width: 580px) {
+  .dvT-side:not(.is-bare) { grid-template-columns: 140px minmax(0, 1fr); column-gap: 12px; align-items: center; }
+  .dvT-side > .dvT-fold { grid-column: 1 / -1; }
+}
+/* KEEP: the after row holds the foe's health and the Cost side by side, each at its own width, and wraps the Cost under the health only when they do not fit. */
+.dvH-after { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 20px; min-width: 0; }
+.dvH-after > .dvH-fm { flex: 1 1 240px; }
+.dvH-after > .dvH-cost { flex: 0 1 auto; }
 /* KEEP: in a held roll under 400px wide the tiles go one to a row, each one row tall, rather than two narrow tiles three rows tall. */
 @container dvh (max-width: 399px) { .dvT-tiles { grid-template-columns: minmax(0, 1fr); } }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band

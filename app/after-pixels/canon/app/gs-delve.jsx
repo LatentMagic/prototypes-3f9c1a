@@ -230,26 +230,25 @@ const DlNamed = ({ s }) => (<span className="dvH-pn">
 const dlTitle = (names) => names.map((n, i) => (i ? n.charAt(0).toLowerCase() + n.slice(1) : n)).reduce((t, n, i, all) => t + (i === 0 ? '' : i === all.length - 1 ? ' and ' : ', ') + n, '');
 const DlHeldHead = ({ r, x }) => { const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<>
-    <div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p><p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}</p></div>
-      <div className="dvH-dd"><DlDie r={r} size={44} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={36} />}</div></div>
-    {dlBeat(r) && <p className="dvH-beat">{dlBeat(r)}</p>}
+    <div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p><p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}</p></div>
+      <div className="dvH-dd"><DlDie r={r} size={44} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={30} />}</div></div>
   </>); };
 // ---- The held roll's sums as tiles, totals first (the user, 2026-11-25, held-roll canvas 2): each tile leads with its total, then its target and result (or the damage type), then the sum's working at its right end. A tap opens the named form across the side, under its tiles. ----
-// KEEP: a side's tiles sit two to a row, a lone tile keeping its half, and a tile is one row from 190px wide: total, target and result, working; narrower, the working drops under. The sides stack, the hero's turn over the foe's, so a foe's turn is two short rows, never four boxes.
+// KEEP: a side's tiles sit two to a row, a lone tile keeping its half, and a tile is one row from 190px wide: total, target and result, working; narrower, the working drops under. The sides stack, the hero's turn over the foe's, so a foe's turn is two short rows, never four boxes; from a 580px box a side's label sits beside its tiles instead of over them (gs-delve.css).
 const DlFx = ({ s }) => (<span className="dvT-fx">{s.d && <>{s.d[0]}{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>}</>}{s.m.map((p, i) => <React.Fragment key={i}>{(s.d || i) ? ' ' + p[0] + ' ' : p[0] === '+' ? '' : p[0]}{p[1]}</React.Fragment>)}</span>);
 const DlTileIn = ({ s }) => (<span className="dvT-in"><span className="dvT-tot">{s.t}</span>
   <span className="dvT-vs">{s.vs && <span>{s.vs}</span>}{s.typ && <span>{s.typ}</span>}{s.out && <span className={'dvH-out ' + s.out[1]}>{s.out[0]}</span>}</span>
   {s.m.length > 0 && <DlFx s={s} />}</span>);
 // KEEP: a roll made with advantage says so in its side's label ("Attack, with advantage"), and its working shows the kept die then the dropped one struck through, so two d20s read as two, not as a glitch.
 const DlAdv = () => <span className="dvH-adv">, with advantage</span>;
-const DlSide = ({ id, label, sums }) => { const [open, setOpen] = React.useState(null);
-  return (<div className="dvT-side">{label}
+const DlSide = ({ id, label, sums, foe }) => { const [open, setOpen] = React.useState(null);
+  return (<div className={'dvT-side' + (foe ? ' is-foe' : '') + (!label || !sums.length ? ' is-bare' : '')}>{label}
     <div className="dvT-tiles">{sums.map(([k, s]) => (s.d
       ? <button key={k} type="button" className={'esx-card dvT-tap' + (open === k ? ' is-open' : '')} aria-expanded={open === k} aria-controls={id + k} onClick={() => setOpen(open === k ? null : k)}><DlTileIn s={s} /></button>
       : <div key={k} className="esx-card dvT-tap is-still"><DlTileIn s={s} /></div>))}</div>
-    {sums.filter(([, s]) => s.d).map(([k, s]) => <div key={k} id={id + k}><EsxFold open={open === k}>{open === k && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>)}
+    {sums.filter(([, s]) => s.d).map(([k, s]) => <div key={k} id={id + k} className="dvT-fold"><EsxFold open={open === k}>{open === k && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>)}
   </div>); };
-// KEEP: under the sides one row holds the after-effects: the foe's health at half the box's width, and the turn's Cost beside it; with only one of them it keeps its half.
+// KEEP: under the sides one row holds the after-effects: the foe's health (a thin bar, on one row from a 420px box) and the turn's Cost beside it, each at its own width; the Cost wraps under the health only when they do not fit.
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
   const act = r.use
     ? <p className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</p>
@@ -259,7 +258,7 @@ const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(
     <DlHeldHead r={r} x={x} />
     <div className="dvH-turns">
       <DlSide id={'dvH-' + r.t} label={act} sums={mine} />
-      {f && <DlSide id={'dvH-' + r.t + 'f'} label={<p className="dvH-kick">Struck back{f.other != null && <DlAdv />}</p>} sums={[['a', dlFoeAtkSum(f)], ...(f.hit && f.dmg > 0 ? [['d', dlFoeDmgSum(f)]] : [])]} />}
+      {f && <DlSide foe id={'dvH-' + r.t + 'f'} label={<p className="dvH-kick">Struck back{f.other != null && <DlAdv />}</p>} sums={[['a', dlFoeAtkSum(f)], ...(f.hit && f.dmg > 0 ? [['d', dlFoeDmgSum(f)]] : [])]} />}
     </div>
     {(mt || cost) && <div className="dvH-after">{mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}{cost && <p className="dvH-cost">Cost <b>{cost}</b></p>}</div>}
   </>); };
