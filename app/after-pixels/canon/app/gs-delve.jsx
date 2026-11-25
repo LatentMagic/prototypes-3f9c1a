@@ -239,7 +239,7 @@ const DlFx = ({ s }) => (<span className="dvT-fx">{s.d && <>{s.d[0]}{s.drop != n
 const DlTileIn = ({ s }) => (<span className="dvT-in"><span className="dvT-tot">{s.t}</span>
   <span className="dvT-vs">{s.vs && <span>{s.vs}</span>}{s.typ && <span>{s.typ}</span>}{s.out && <span className={'dvH-out ' + s.out[1]}>{s.out[0]}</span>}</span>
   {s.m.length > 0 && <DlFx s={s} />}</span>);
-// KEEP: a roll made with advantage says so in its side's label ("Attack, with advantage"), and its working shows the kept die then the dropped one struck through, so two d20s read as two, not as a glitch.
+// KEEP: an attack made with advantage says so in its side's label (a check has no label, so its advantage shows in its working only) ("Attack, with advantage"), and its working shows the kept die then the dropped one struck through, so two d20s read as two, not as a glitch.
 const DlAdv = () => <span className="dvH-adv">, with advantage</span>;
 const DlSide = ({ id, label, sums, foe }) => { const [open, setOpen] = React.useState(null);
   return (<div className={'dvT-side' + (foe ? ' is-foe' : '') + (!label || !sums.length ? ' is-bare' : '')}>{label}
@@ -272,7 +272,7 @@ const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hi
 // KEEP: a stop's number is grey (muted text, the control edge) when nothing was rolled or used in it and white when anything was, a return or not; the back-arrow alone marks a return. A room not yet reached keeps its own fainter outline.
 const dlNone = (st) => !(st.turns && st.turns.some((r) => !r.lost));
 const dlNum = (st, extra = '') => 'dv2-num' + (st.back ? ' is-back' : '') + (dlNone(st) ? ' is-none' : '') + extra;
-// KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. A map that fits one row spreads edge to edge, its first and last boxes on the card's content edges, however few its stops (the user, 2026-11-25: Spread); a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
+// KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. From 5 stops a map that fits one row spreads edge to edge, its first and last boxes on the card's content edges (the user, 2026-11-25: Spread); 1-4 stops sit centred, below; a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
 const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8; const DL_MAP_FEW = 4; const DL_MAP_GAP_FEW = 32;
 // KEEP: a map of 1-4 stops sits centred at a 32px gap (less where a phone is too narrow), so a short run never stretches its boxes across the card; from 5 stops one row spreads edge to edge (the user, 2026-11-25).
 const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));

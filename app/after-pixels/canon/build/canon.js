@@ -12345,6 +12345,7 @@
       ["chk", "Dexterity", "Slip the shrine gate", null, 16, [DEX], 12, { other: 5 }],
       ["room", "the shrine cavern"],
       ["atk", "Dexterity", "Flurry", 9, [DEX, SIMP, HEAVY], 12, { dmg: ["d6", 4, [DEX, ["+", 2, "Heavy"]], "Piercing"], foe: { roll: 6, bonus: 4, dd: [3, 2, 1] } }],
+      ["atk", "Dexterity", null, 14, [DEX, SIMP], 12, { dmg: ["d6", 3, [DEX], "Piercing"], foe: { roll: 5, bonus: 4 } }],
       ["atk", "Dexterity", null, 17, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 5, [DEX], "Piercing"], foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }]
     ], 21, 14, FOE_TYPE);
     GS_SESSIONS["delve-advantage"] = { ...GS_SESSIONS["delve-live"], lines: adv.lines, detail: adv.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + adv.threat + "/12", adv.rolls + " rolls", "HP " + adv.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };

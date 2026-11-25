@@ -122,11 +122,12 @@ export function initGsDelveRuns() {
   ], 21, 14, FOE_TYPE);
   GS_SESSIONS['delve-fight-live'] = { ...GS_SESSIONS['delve-live'], lines: fl.lines, detail: fl.detail, foeMax: { 'the shrine cavern': 30 }, foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' }, figures: ['Threat ' + fl.threat + '/12', fl.rolls + ' rolls', 'HP ' + fl.hp + '/21'], tracks: { progress: 2, rooms: 2, threat: fl.threat, threatMax: 12 }, threat: fl.threat, sheet: { used: {}, insp: true } };
 
-  // Wren mid-fight with the drowned captain, her last roll an advantage attack and the foe's roll back an advantage roll too (two d20s each, the lower dropped), so the held roll shows both dropped dice.
+  // Wren mid-fight with the drowned captain, two hits in a row giving her last roll, an attack, advantage, and the foe's roll back an advantage roll too (two d20s each, the lower dropped), so the held roll shows both dropped dice.
   const adv = dlRecord([
     ['chk', 'Dexterity', 'Slip the shrine gate', null, 16, [DEX], 12, { other: 5 }],
     ['room', 'the shrine cavern'],
     ['atk', 'Dexterity', 'Flurry', 9, [DEX, SIMP, HEAVY], 12, { dmg: ['d6', 4, [DEX, ['+', 2, 'Heavy']], 'Piercing'], foe: { roll: 6, bonus: 4, dd: [3, 2, 1] } }],
+    ['atk', 'Dexterity', null, 14, [DEX, SIMP], 12, { dmg: ['d6', 3, [DEX], 'Piercing'], foe: { roll: 5, bonus: 4 } }],
     ['atk', 'Dexterity', null, 17, [DEX, SIMP], 12, { other: 4, dmg: ['d6', 5, [DEX], 'Piercing'], foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }],
   ], 21, 14, FOE_TYPE);
   GS_SESSIONS['delve-advantage'] = { ...GS_SESSIONS['delve-live'], lines: adv.lines, detail: adv.detail, foeMax: { 'the shrine cavern': 30 }, foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' }, figures: ['Threat ' + adv.threat + '/12', adv.rolls + ' rolls', 'HP ' + adv.hp + '/21'], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };

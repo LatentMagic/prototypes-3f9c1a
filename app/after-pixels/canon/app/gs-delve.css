@@ -27,8 +27,8 @@
 .dvG { display: grid; gap: 16px; min-width: 0; }
 /* KEEP: the map's first and last boxes sit on the card's content edges: a box is 28px in its 44px column, so the map reaches 8px past each edge. */
 .dvG-mapw { container: dvg / inline-size; margin: 0 -8px; min-width: 0; }
-.dvG-map.is-few { justify-content: center; }
 .dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 16px; align-items: start; }
+.dvG-map.is-few { justify-content: center; }
 .dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; padding: 8px 0 4px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
 button.dvG-stop { cursor: pointer; }
 button.dvG-stop:focus-visible { outline: 2px solid var(--off-white); outline-offset: 0; }
@@ -43,8 +43,9 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-stop.is-on .dv2-num, .dvG-th .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dvG-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 .dvG-marks { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; max-width: 44px; }
-/* KEEP: a mini die's hexagon sits 2px inside its picture on every side, so the picture is pulled in by that much and the hexagon, not its empty margin, is what the map's spacing is measured to. */
-.dvG-marks .mcp-dl-die { width: 20px; height: auto; margin: -2px 0; }
+/* KEEP: a mini die's hexagon sits 2px inside its picture on every side, so a stop whose marks hold a die keeps 2px less padding under it: the map's spacing is measured to the hexagon, not its empty margin. */
+.dvG-marks .mcp-dl-die { width: 20px; height: auto; }
+.dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 2px; }
 .dvG-marks .dl-now-mark { width: 7px; height: 7px; }
 .dvG-open { display: grid; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); min-width: 0; }
 .dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
