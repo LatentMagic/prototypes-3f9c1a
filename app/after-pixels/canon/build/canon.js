@@ -3440,6 +3440,7 @@
   };
   const DlFx = ({ s }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvT-fx" }, s.d && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, s.d[0], s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop))), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: i }, s.d || i ? " " + p[0] + " " : p[0] === "+" ? "" : p[0], p[1])));
   const DlTileIn = ({ s }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvT-in" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvT-tot" }, s.t), /* @__PURE__ */ React$1.createElement("span", { className: "dvT-vs" }, s.vs && /* @__PURE__ */ React$1.createElement("span", null, s.vs), s.typ && /* @__PURE__ */ React$1.createElement("span", null, s.typ), s.out && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-out " + s.out[1] }, s.out[0])), s.m.length > 0 && /* @__PURE__ */ React$1.createElement(DlFx, { s }));
+  const DlAdv = () => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-adv" }, ", with advantage");
   const DlSide = ({ id, label, sums }) => {
     const [open, setOpen] = React$1.useState(null);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dvT-side" }, label, /* @__PURE__ */ React$1.createElement("div", { className: "dvT-tiles" }, sums.map(([k, s]) => s.d ? /* @__PURE__ */ React$1.createElement("button", { key: k, type: "button", className: "esx-card dvT-tap" + (open === k ? " is-open" : ""), "aria-expanded": open === k, "aria-controls": id + k, onClick: () => setOpen(open === k ? null : k) }, /* @__PURE__ */ React$1.createElement(DlTileIn, { s })) : /* @__PURE__ */ React$1.createElement("div", { key: k, className: "esx-card dvT-tap is-still" }, /* @__PURE__ */ React$1.createElement(DlTileIn, { s })))), sums.filter(([, s]) => s.d).map(([k, s]) => /* @__PURE__ */ React$1.createElement("div", { key: k, id: id + k }, /* @__PURE__ */ React$1.createElement(EsxFold, { open: open === k }, open === k && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-pnl" }, /* @__PURE__ */ React$1.createElement(DlNamed, { s }))))));
@@ -3448,9 +3449,9 @@
     const mt = dlMeterOf(r);
     const cost = dlCost(r);
     const f = r.foe;
-    const act = r.use ? /* @__PURE__ */ React$1.createElement("p", { className: "dvH-act" }, "Used ", /* @__PURE__ */ React$1.createElement("b", null, r.name), r.does && /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, " ", r.does)) : r.action || r.fight ? /* @__PURE__ */ React$1.createElement("p", { className: "dvH-act" }, /* @__PURE__ */ React$1.createElement("b", null, r.action || "Attack"), (r.move || r.skill) && /* @__PURE__ */ React$1.createElement("span", null, " ", r.move || r.skill)) : null;
+    const act = r.use ? /* @__PURE__ */ React$1.createElement("p", { className: "dvH-act" }, "Used ", /* @__PURE__ */ React$1.createElement("b", null, r.name), r.does && /* @__PURE__ */ React$1.createElement("span", { className: "is-does" }, " ", r.does)) : r.action || r.fight ? /* @__PURE__ */ React$1.createElement("p", { className: "dvH-act" }, /* @__PURE__ */ React$1.createElement("b", null, r.action || "Attack"), (r.move || r.skill) && /* @__PURE__ */ React$1.createElement("span", null, " ", r.move || r.skill), r.two && /* @__PURE__ */ React$1.createElement(DlAdv, null)) : null;
     const mine = r.use ? [] : [["a", dlAtkSum(r)], ...r.dmg ? [["d", dlDmgSum(r)]] : []];
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlHeldHead, { r, x }), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-turns" }, /* @__PURE__ */ React$1.createElement(DlSide, { id: "dvH-" + r.t, label: act, sums: mine }), f && /* @__PURE__ */ React$1.createElement(DlSide, { id: "dvH-" + r.t + "f", label: /* @__PURE__ */ React$1.createElement("p", { className: "dvH-kick" }, "Struck back"), sums: [["a", dlFoeAtkSum(f)], ...f.hit && f.dmg > 0 ? [["d", dlFoeDmgSum(f)]] : []] })), (mt || cost) && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-after" }, mt && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })), cost && /* @__PURE__ */ React$1.createElement("p", { className: "dvH-cost" }, "Cost ", /* @__PURE__ */ React$1.createElement("b", null, cost))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlHeldHead, { r, x }), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-turns" }, /* @__PURE__ */ React$1.createElement(DlSide, { id: "dvH-" + r.t, label: act, sums: mine }), f && /* @__PURE__ */ React$1.createElement(DlSide, { id: "dvH-" + r.t + "f", label: /* @__PURE__ */ React$1.createElement("p", { className: "dvH-kick" }, "Struck back", f.other != null && /* @__PURE__ */ React$1.createElement(DlAdv, null)), sums: [["a", dlFoeAtkSum(f)], ...f.hit && f.dmg > 0 ? [["d", dlFoeDmgSum(f)]] : []] })), (mt || cost) && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-after" }, mt && /* @__PURE__ */ React$1.createElement("div", { className: "dvH-fm" }, /* @__PURE__ */ React$1.createElement(DlFoeMeter, { mt })), cost && /* @__PURE__ */ React$1.createElement("p", { className: "dvH-cost" }, "Cost ", /* @__PURE__ */ React$1.createElement("b", null, cost))));
   };
   const DlHeld = ({ m, act }) => {
     const r = act ? m.turns[act - 1] : null;
@@ -9568,6 +9569,11 @@
         c.setConnected(true);
         c.go("session", { id: "delve-key-moments" });
       } },
+      { group: "Screens", id: "session-delve-advantage", label: "7. Session page: Delve, an advantage roll held (two d20s, the lower dropped, on the hero's attack and the foe's roll back)", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-advantage" });
+      } },
       { group: "Screens", id: "session-delve-fight-live", label: "7. Session page: Delve, a fight in progress (the fight-hit count is the live Advantage mark)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -12333,6 +12339,13 @@
       ["atk", "Dexterity", null, 15, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 4, [DEX], "Piercing"], foe: { roll: 7, bonus: 4 } }]
     ], 21, 14, FOE_TYPE);
     GS_SESSIONS["delve-fight-live"] = { ...GS_SESSIONS["delve-live"], lines: fl.lines, detail: fl.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + fl.threat + "/12", fl.rolls + " rolls", "HP " + fl.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: fl.threat, threatMax: 12 }, threat: fl.threat, sheet: { used: {}, insp: true } };
+    const adv = dlRecord([
+      ["chk", "Dexterity", "Slip the shrine gate", null, 16, [DEX], 12, { other: 5 }],
+      ["room", "the shrine cavern"],
+      ["atk", "Dexterity", "Flurry", 9, [DEX, SIMP, HEAVY], 12, { dmg: ["d6", 4, [DEX, ["+", 2, "Heavy"]], "Piercing"], foe: { roll: 6, bonus: 4, dd: [3, 2, 1] } }],
+      ["atk", "Dexterity", null, 17, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 5, [DEX], "Piercing"], foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }]
+    ], 21, 14, FOE_TYPE);
+    GS_SESSIONS["delve-advantage"] = { ...GS_SESSIONS["delve-live"], lines: adv.lines, detail: adv.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + adv.threat + "/12", adv.rolls + " rolls", "HP " + adv.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };
     const ff = dlRecord([
       ["chk", "Dexterity", "Cross the trapped bridge", null, 3, [["+", 1, "DEX"]], 12, { harm: 14 }],
       ["room", "snaggle's den"],

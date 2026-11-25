@@ -221,7 +221,7 @@ const dlAtkSum = (r) => ({ d: [r.kept, 'd20'], adv: r.two, drop: r.other, m: r.p
 const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
 const dlFoeAtkSum = (f) => ({ d: [f.roll, 'd20'], adv: f.other != null, drop: f.other, m: f.bonus ? [['+', f.bonus, 'Bonus']] : [], t: f.roll + f.bonus, vs: 'vs AC ' + f.dc, out: f.hit ? ['Hit', 'err'] : ['Miss', ''] });
 const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg, typ: f.type || 'damage' });
-// The named form: each number with its source; a dropped advantage die follows the kept one, its number struck diagonally.
+// The named form: each number with its source; a dropped advantage die follows the kept one, its number struck through.
 const DlNamed = ({ s }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}{s.adv ? ' advantage' : ''}</span>
   {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
@@ -240,6 +240,8 @@ const DlFx = ({ s }) => (<span className="dvT-fx">{s.d && <>{s.d[0]}{s.drop != n
 const DlTileIn = ({ s }) => (<span className="dvT-in"><span className="dvT-tot">{s.t}</span>
   <span className="dvT-vs">{s.vs && <span>{s.vs}</span>}{s.typ && <span>{s.typ}</span>}{s.out && <span className={'dvH-out ' + s.out[1]}>{s.out[0]}</span>}</span>
   {s.m.length > 0 && <DlFx s={s} />}</span>);
+// KEEP: a roll made with advantage says so in its side's label ("Attack, with advantage"), and its working shows the kept die then the dropped one struck through, so two d20s read as two, not as a glitch.
+const DlAdv = () => <span className="dvH-adv">, with advantage</span>;
 const DlSide = ({ id, label, sums }) => { const [open, setOpen] = React.useState(null);
   return (<div className="dvT-side">{label}
     <div className="dvT-tiles">{sums.map(([k, s]) => (s.d
@@ -251,13 +253,13 @@ const DlSide = ({ id, label, sums }) => { const [open, setOpen] = React.useState
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
   const act = r.use
     ? <p className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</p>
-    : r.action || r.fight ? <p className="dvH-act"><b>{r.action || 'Attack'}</b>{(r.move || r.skill) && <span> {r.move || r.skill}</span>}</p> : null;
+    : r.action || r.fight ? <p className="dvH-act"><b>{r.action || 'Attack'}</b>{(r.move || r.skill) && <span> {r.move || r.skill}</span>}{r.two && <DlAdv />}</p> : null;
   const mine = r.use ? [] : [['a', dlAtkSum(r)], ...(r.dmg ? [['d', dlDmgSum(r)]] : [])];
   return (<>
     <DlHeldHead r={r} x={x} />
     <div className="dvH-turns">
       <DlSide id={'dvH-' + r.t} label={act} sums={mine} />
-      {f && <DlSide id={'dvH-' + r.t + 'f'} label={<p className="dvH-kick">Struck back</p>} sums={[['a', dlFoeAtkSum(f)], ...(f.hit && f.dmg > 0 ? [['d', dlFoeDmgSum(f)]] : [])]} />}
+      {f && <DlSide id={'dvH-' + r.t + 'f'} label={<p className="dvH-kick">Struck back{f.other != null && <DlAdv />}</p>} sums={[['a', dlFoeAtkSum(f)], ...(f.hit && f.dmg > 0 ? [['d', dlFoeDmgSum(f)]] : [])]} />}
     </div>
     {(mt || cost) && <div className="dvH-after">{mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}{cost && <p className="dvH-cost">Cost <b>{cost}</b></p>}</div>}
   </>); };

@@ -896,13 +896,13 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-typ { margin-left: 5px; }
 .dvH-out { font-weight: 700; font-size: 13px; }
 .dvH-out.ok { color: var(--success); } .dvH-out.err { color: var(--error); } .dvH-out.part { color: var(--warning); }
-/* KEEP: the named form opens in a panel under the sum, in the sum's open colour, through the 220ms fold; its parts break only between one another, and a dropped advantage die's number is struck diagonally. */
+/* KEEP: the named form opens in a panel under the sum, in the sum's open colour, through the 220ms fold; its parts break only between one another, and a dropped advantage die's number is struck through. */
 .dvH-pnl { margin-top: 8px; padding: 12px 10px; background: var(--dvH-lift); }
 .dvH-pn { display: flex; flex-wrap: wrap; column-gap: 7px; row-gap: 2px; font: 400 14px/22px var(--font-text); color: var(--muted); }
 .dvH-c { white-space: nowrap; }
 .dvH-pn b { font-weight: 600; color: var(--text); }
-.dvH-x { position: relative; display: inline-block; padding: 0 3px; font-weight: 600; }
-.dvH-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 13px; border-top: 1px solid var(--text); transform: translate(-50%, -50%) rotate(-60deg); }
+.dvH-x { display: inline-block; padding: 0 3px; font-weight: 600; text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.dvH-adv { font-weight: 400; color: var(--muted); }
 .dvH-fm { min-width: 0; }
 .dvH-cost { margin: 0; font: 600 13px/1.4 var(--font-text); color: var(--muted); }
 .dvH-cost b { color: var(--text); }
