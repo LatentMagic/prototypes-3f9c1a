@@ -3432,20 +3432,16 @@
   const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
   const dlFoeAtkSum = (f) => ({ d: [f.roll, "d20"], adv: f.other != null, drop: f.other, m: f.bonus ? [["+", f.bonus, "Bonus"]] : [], t: f.roll + f.bonus, vs: "vs AC " + f.dc, out: f.hit ? ["Hit", "err"] : ["Miss", ""] });
   const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], t: f.dmg, typ: f.type || "damage" });
-  const DlNamed = ({ s, total }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, s.d[0]), s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop)), " ", s.d[1], s.adv ? " advantage" : ""), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-c" }, p[0], " ", /* @__PURE__ */ React$1.createElement("b", null, p[1]), " ", p[2])));
+  const DlNamed = ({ s, total }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, s.d[0]), s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop)), " ", s.d[1], s.adv ? " advantage" : ""), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-c" }, p[0], " ", /* @__PURE__ */ React$1.createElement("b", null, p[1]), " ", p[2])), total != null && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, "= ", /* @__PURE__ */ React$1.createElement("b", null, total)));
   const dlTitle = (names) => names.join(" · ");
   const dlInk = (r) => r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5];
-  const dlHeadInk = (r, size, foeSize) => r.foe ? foeSize * 2 / 40 : size * dlInk(r)[0] / 46;
-  const dlHeadInkTop = (r, size, foeSize) => {
-    const hero = size * dlInk(r)[1] / 46;
-    return r.foe ? Math.min(hero, (size * 50 / 46 - Math.round(foeSize * 44 / 40)) / 2 + foeSize * 2 / 40) : hero;
-  };
   const DL_HELD_DIE = 32;
+  const DlInkFrame = ({ w, h, children }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ink", style: { width: w, height: h } }, children);
   const DlHeldHead = ({ r, x, cost }) => {
     const size = DL_HELD_DIE;
     const foeSize = Math.round(size * 40 / 46);
     const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : "Roll " + r.n];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvH-hd" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tt" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvH-k" }, dlTitle(names)), /* @__PURE__ */ React$1.createElement("p", { className: "dvH-rm" }, (x ? dlTurnName(r) + " · " : "") + dlRoomSaid(r), dlBeat(r) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· "), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-beat" }, dlBeat(r))), cost && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· "), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-cost" }, "Cost ", /* @__PURE__ */ React$1.createElement("b", null, cost))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-dd", style: { "--ink": dlHeadInk(r, size, foeSize) + "px", "--inky": dlHeadInkTop(r, size, foeSize) + "px" } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, surface: "popup", foe: false }), r.foe && /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe, size: foeSize })));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvH-hd" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tt" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvH-k" }, dlTitle(names)), /* @__PURE__ */ React$1.createElement("p", { className: "dvH-rm" }, (x ? dlTurnName(r) + " · " : "") + dlRoomSaid(r), dlBeat(r) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· "), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-beat" }, dlBeat(r))), cost && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· "), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-cost" }, "Cost ", /* @__PURE__ */ React$1.createElement("b", null, cost))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-dd" }, /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: size * (46 - 2 * dlInk(r)[0]) / 46, h: size * (50 - 2 * dlInk(r)[1]) / 46 }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, surface: "popup", foe: false })), r.foe && /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: foeSize * 36 / 40, h: Math.round(foeSize * 44 / 40) * 40 / 44 }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe, size: foeSize }))));
   };
   const DlAdv = () => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-adv" }, ", with advantage");
   const DlChipBreak = ({ atk, dmg }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvH-pnl" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvC-pr" }, dmg && /* @__PURE__ */ React$1.createElement("span", { className: "dvC-pk" }, "Attack"), /* @__PURE__ */ React$1.createElement(DlNamed, { s: atk, total: atk.t })), dmg && /* @__PURE__ */ React$1.createElement("div", { className: "dvC-pr" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvC-pk" }, "Damage", dmg.typ && dmg.typ !== "damage" ? " · " + dmg.typ : ""), dmg.d ? /* @__PURE__ */ React$1.createElement(DlNamed, { s: dmg, total: dmg.t }) : /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, dmg.t)))));
@@ -3840,7 +3836,7 @@
       hero: "Wren the Rogue",
       hpMax: 21,
       threat: 12,
-      foeMax: { "the shrine cavern": 5 },
+      foeMax: { "the shrine cavern": 6 },
       // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
       foeName: { "the shrine cavern": "Mortlake, the drowned captain" },
       // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
@@ -3853,7 +3849,7 @@
       lines: [
         ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 19/21"],
         ["Room", "Entered the chime run"],
-        ["Dexterity", "Failure", "d20 8 + 3 = 11 vs 12", "HP 17/21"],
+        ["Dexterity", "Partial success", "d20 8 + 3 = 11 vs 12", "HP 17/21"],
         ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
         ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 12"],
         ["Room", "Entered the warren"],
@@ -3867,15 +3863,15 @@
         ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Entered Snaggle's den"],
-        ["Dexterity", "Miss", "d20 7 + 3 = 10 vs 12", "Struck back: d20 13 vs 14, missed"],
-        ["Dexterity", "Hit", "Natural 20", "d20 20 + 3 = 23 vs 12", "Struck back: d20 8 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 13 vs 14, missed"],
+        ["Dexterity", "Heavy attack: Flurry", "Hit", "Natural 20", "d20 20 + 5 = 25 vs 12", "Struck back: d20 8 vs 14, missed"],
         ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
         ["Room", "Doubled back to Snaggle's den", "The ritual +1"],
         ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 12"],
         ["Room", "Doubled back to the warren", "The ritual +1"],
-        ["Strength", "Force the bone gate", "Failure", "d20 6 + 0 = 6 vs 12"],
-        ["Strength", "Force the bone gate", "Failure", "d20 11 + 0 = 11 vs 12"],
+        ["Strength", "Force the bone gate", "Partial success", "d20 9 + 0 = 9 vs 12"],
+        ["Strength", "Force the bone gate", "Partial success", "d20 11 + 0 = 11 vs 12"],
         ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 12"],
         ["Room", "Doubled back to the chime run", "The ritual +1"],
         ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
@@ -3904,7 +3900,7 @@
         ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
         ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
         ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 9 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 5 and 7, kept 7 + 3 = 10 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
+        ["Dexterity", "Hit", "d20s 5 and 12, kept 12 + 3 = 15 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
         ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 12 vs 14, missed"],
         ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
       ]
@@ -3912,8 +3908,8 @@
     {
       const hard = GS_SESSIONS["delve-hard"];
       const rollAt = (l) => /(d20 |d20s \d+ and \d+, kept )\d+ [+-] \d+ = /.test(l.slice(1).join(" · "));
-      const n = hard.lines.filter(rollAt).indexOf(hard.lines.find((l) => rollAt(l) && l.includes("Natural 20") && l[1] === "Hit")) + 1;
-      GS_SESSIONS["delve-hard"] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 12 }, detail: { [n]: { parts: [["+", 3, "DEX"]], dmg: { die: "d8", v: 8, parts: [["+", 3, "DEX"]], type: "Piercing" } } } };
+      const n = hard.lines.filter(rollAt).indexOf(hard.lines.find((l) => rollAt(l) && l.includes("Natural 20") && /^Heavy attack/.test(l[1]))) + 1;
+      GS_SESSIONS["delve-hard"] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 23 }, detail: { [n]: { parts: [["+", 3, "DEX"], ["+", 2, "Simple"], ["+", 1, "Magic"], ["+", 1, "Escalation"], ["−", 2, "Heavy"]], dmg: { die: "d8", v: 8, parts: [["+", 5, "d8"], ["+", 3, "DEX"], ["+", 1, "Magic"], ["+", 4, "Heavy"]], type: "Piercing" } } } };
     }
     GS_SESSIONS["delve-overrun-back"] = (() => {
       const L = GS_SESSIONS["delve-hard"].lines;

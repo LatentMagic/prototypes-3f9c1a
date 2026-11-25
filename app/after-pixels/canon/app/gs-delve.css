@@ -7,17 +7,17 @@
    ============================================================================ */
 /* ---- from delve-v3.html ---- */
 /* ---- The card and its top: result statement, character sheet (v2's, with its heading). ---- */
-.dv2 { container: dv2 / inline-size; display: grid; gap: 24px; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
+.dv2 { --dv-num: 28px; --dv-stop-top: 12px; container: dv2 / inline-size; display: grid; gap: 24px; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
 @container gs (min-width: 720px) {
   .dv2 { padding: 24px; }
 }
 /* ---- The die (v2, agreed). ---- */
 .dv2-dbtn { position: relative; z-index: 1; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: grid; place-items: center; color: inherit; }
 .dv2-dbtn:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
-/* KEEP: a die is drawn 24-40px but its tap target is 44px tall and as wide as a room's column allows (44px at most), centred on the die, so it meets the 44px touch floor wherever the page has the room. A target never reaches past its column, so it never covers a neighbouring die: where 9-11 rooms share a 280-390px phone, a column is 27-42px wide and the target is that wide. */
+/* KEEP: a die in the open room is drawn 32px, but its tap target is 44px tall and as wide as a room's column allows (44px at most), centred on the die, so it meets the 44px touch floor wherever the page has the room. A target never reaches past its column, so it never covers a neighbouring die: where 9-11 rooms share a 280-390px phone, a column is 27-42px wide and the target is that wide. */
 .dv2-dbtn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, var(--hit-w, 44px)); height: max(100%, 44px); transform: translate(-50%, -50%); }
 /* ---- The route (v2's E). ---- */
-.dv2-num { position: relative; z-index: 1; flex: none; min-width: 28px; height: 28px; padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
+.dv2-num { position: relative; z-index: 1; flex: none; min-width: var(--dv-num); height: var(--dv-num); padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
 .dv2-num.is-none { color: var(--muted); }
 .dv2-back { width: 0.8em; height: 0.8em; flex: none; }
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
@@ -29,7 +29,7 @@
 .dvG-mapw { container: dvg / inline-size; margin: 0 -8px; min-width: 0; }
 .dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 8px; align-items: start; }
 .dvG-map.is-few { justify-content: center; }
-.dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 48px; padding: 12px 0 8px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
+.dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 48px; padding: var(--dv-stop-top) 0 8px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
 button.dvG-stop { cursor: pointer; }
 button.dvG-stop:focus-visible { outline: 2px solid var(--off-white); outline-offset: 0; }
 /* KEEP: a stop's whole column is tinted a step lighter than the card while the mouse is over it (mouse only: touch has no hover) and while it is the open room, the tint the route's open stop had before the board; the open stop's box is also off-white. Hover is paint only: it never opens a room or holds a roll. Pressing scales the column to the press scale, as Escape's cards do. */
@@ -38,8 +38,8 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-stop.is-on { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
 @media (hover: hover) { button.dvG-stop:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); } }
 @media (prefers-reduced-motion: reduce) { button.dvG-stop { transition: none; } }
-/* KEEP: the line joining two stops on a row is drawn in halves, each stop drawing the half that reaches from its centre to midway across the gap, so no line is ever drawn inside another stop's column and none can show through a box when a pressed stop scales (a transform makes the stop its own layer, which put the next stop's whole line over it); a half is drawn 1/.97 long so a pressed stop's scaled half still meets its neighbour's. */
-.dvG-stop:not(.is-rs)::before, .dvG-stop:not(.is-re)::after { content: ''; position: absolute; top: 25px; width: calc((50% + var(--gap, 6px) / 2) / var(--press-scale, 1)); height: 2px; background: var(--control-edge); }
+/* KEEP: the line joining two stops on a row is drawn in halves, each stop drawing the half that reaches from its centre to midway across the gap, so no line is ever drawn inside another stop's column and none can show through a box when a pressed stop scales (a transform makes the stop its own layer, which put the next stop's whole line over it); a half is drawn 1/.97 long so a pressed stop's scaled half still meets its neighbour's, and it sits at the middle of the number box, worked out from the stop's top padding and the box's height (`--dv-stop-top`, `--dv-num`), the two values that place the box. */
+.dvG-stop:not(.is-rs)::before, .dvG-stop:not(.is-re)::after { content: ''; position: absolute; top: calc(var(--dv-stop-top) + var(--dv-num) / 2 - 1px); width: calc((50% + var(--gap, 6px) / 2) / var(--press-scale, 1)); height: 2px; background: var(--control-edge); }
 .dvG-stop:not(.is-rs)::before { right: 50%; }
 .dvG-stop:not(.is-re)::after { left: 50%; }
 .dvG-stop.is-on .dv2-num, .dvG-th .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
@@ -63,10 +63,12 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; min-width: 0; }
 .dvH-tt { display: grid; min-width: 0; }
 .dvH-k { margin: 0; font: 700 16px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
-.dvH-dd { position: relative; left: var(--ink, 0px); top: calc(-1 * var(--inky, 0px)); display: flex; align-items: center; gap: 6px; flex: none; }
-/* KEEP: the held roll's room line and, on the same line, what the turn beat or passed ("Roll 10 · The shrine cavern · Grizzletooth beaten", the last in green) balance their lines, so none ends on a lone word; the beaten or passed words and the Cost ("Cost Threat +1") wrap whole. */
+.dvH-dd { display: flex; align-items: center; gap: var(--space-2); flex: none; }
+.dvH-ink { display: flex; align-items: center; justify-content: center; flex: none; }
+.dvH-ink > svg { flex: none; margin: 0; }
+/* KEEP: the held roll's room line and, on the same line, what the turn beat or passed ("Roll 10 · The shrine cavern · Grizzletooth beaten", the last in green) balance their lines, so none ends on a lone word; the beaten or passed words and the Cost ("Cost Threat +1") wrap between their words, so they fit a 280px box. */
 .dvH-rm { margin: 2px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
-.dvH-beat { color: var(--success); white-space: nowrap; }
+.dvH-beat { color: var(--success); }
 /* KEEP: under a 480px box the beaten or passed words and the Cost each take their own line, without the dot that joins them to the room line on a wider box, so a wrapped line never starts with a dot. */
 @container dvh (max-width: 479px) { .dvH-sep { display: none; } .dvH-beat, .dvH-cost { display: block; } }
 .dvH-act { margin: 0; font: 600 14px/1.3 var(--font-text); }
@@ -84,7 +86,6 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-x { display: inline-block; padding: 0 3px; font-weight: 600; text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .dvH-adv { font-weight: 400; color: var(--muted); }
 .dvH-fm { min-width: 0; }
-.dvH-cost { white-space: nowrap; }
 .dvH-cost b { color: var(--text); }
 /* KEEP: the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
 .dvH-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
@@ -384,10 +385,11 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dv9-pips i.is-on { background: var(--muted); border-color: var(--muted); }
 .dv9-pips.is-lit i.is-on { background: var(--off-white); border-color: var(--off-white); }
 /* ---- The held roll's chips: one row, "You" and "Foe"; a chip is the hit and, when it dealt damage, a hairline and its damage. ---- */
-/* KEEP: the sides share one row from 280px, a label over each chip, 8px (--space-2) above its chip and 8px under the strip like the strip's gap to everything, and the chips stay one height (the labels sit in a row of their own, whatever their length, and a lone side with nothing to say over its chip, such as a plain check, has no label); a lone side takes the row under 400px and its half above it. The breakdown opens under its own chip as wide as the chip, in the row below, so a closed one leaves no gap (the panel's own 8px margin is the gap when open). */
+/* KEEP: the sides share one row from 280px, a label over each chip, 12px (--space-3) above its chip and 8px under the strip (the label's own line leaves the gap under the strip looking as large as the one above the chip), and the chips stay one height (the labels sit in a row of their own, whatever their length, and a lone side with nothing to say over its chip, such as a plain check, has no label); a lone side takes the row under 400px and its half above it. The breakdown opens under its own chip as wide as the chip, in the row below, so a closed one leaves no gap (the panel's own 8px margin is the gap when open). */
 .dvC-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; min-width: 0; }
 .dvC-side { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; min-width: 0; align-content: start; }
-.dvC-lab { margin: 0 0 var(--space-2); font: 400 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
+/* KEEP: the label stands 12px (--space-3) above its chip; `.gs-root p` zeroes a paragraph's margin and out-ranks a bare class, so the rule names its side. */
+.dvC-side > .dvC-lab { margin: 0 0 var(--space-3); font: 400 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dvC-lab b { font-weight: 700; color: var(--text); }
 .dvC-fold { min-width: 0; }
 @container dvh (max-width: 399px) { .dvC-row.is-lone { grid-template-columns: minmax(0, 1fr); } }
@@ -405,7 +407,6 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dvC-dm { display: block; padding-top: 6px; border-top: 1px solid var(--control-edge); font: 400 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; }
 .dvC-dm b { font: 700 16px/1.1 var(--font-heading); color: var(--text); }
 @container dvc (min-width: 200px) {
-  .dvC-in { padding-inline: 1px; }
   .dvC-in { grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
   .dvC-hit { grid-template-columns: auto auto; justify-content: start; column-gap: 10px; }
   .dvC-vs { display: inline-flex; flex-wrap: wrap; column-gap: 5px; }

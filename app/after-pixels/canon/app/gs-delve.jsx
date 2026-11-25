@@ -225,19 +225,22 @@ const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.
 const DlNamed = ({ s, total }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}{s.adv ? ' advantage' : ''}</span>
   {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
+  {total != null && <span className="dvH-c">= <b>{total}</b></span>}
 </span>);
 // A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit".
 const dlTitle = (names) => names.join(' · ');
-// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something or cost the hero something, those words ("Cost Threat +1"), and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words and the Cost each take their own row, without the dot that joins them on a wider box. Every die in the held roll is one size (32px), a key moment's included, so pressing between dice never resizes it (a key moment keeps its look, its rim or ring, and is no bigger), and the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall. The die's picture has an empty margin round its hexagon, so the strip's right end sits that margin (the rightmost drawing's) past the content edge and the strip's top sits the top margin above it: the die's drawn shape, not its picture, is 12px from the box's top and right edges, as the text is from its left.
-// The empty margin round a die's drawn shape in its picture box, in die units out of 46 (right, top): a hexagon 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7; the foe's diamond is 2 units of 40 on every side.
+// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something or cost the hero something, those words ("Cost Threat +1"), and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words and the Cost each take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
+// The empty margin round a die's drawn shape in its picture box, in die units (right, top; the same on the opposite side): the picture is 46 by 50, a hexagon leaves 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7.
 const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
-const dlHeadInk = (r, size, foeSize) => (r.foe ? foeSize * 2 / 40 : size * dlInk(r)[0] / 46);
-const dlHeadInkTop = (r, size, foeSize) => { const hero = size * dlInk(r)[1] / 46; return r.foe ? Math.min(hero, (size * 50 / 46 - Math.round(foeSize * 44 / 40)) / 2 + foeSize * 2 / 40) : hero; };
+// KEEP: every die in the open room and the held roll is one size (32px, a hexagon 25px wide), a key moment's included: the dice are not compared, so no die is bigger than another and pressing one never resizes or shifts any (a key moment keeps its rim, ring and colour; the selected die only rings), and the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
 const DL_HELD_DIE = 32;
+// A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
+const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
 const DlHeldHead = ({ r, x, cost }) => { const size = DL_HELD_DIE; const foeSize = Math.round(size * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p>
       <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}{cost && <> <span className="dvH-sep">· </span><span className="dvH-cost">Cost <b>{cost}</b></span></>}</p></div>
-    <div className="dvH-dd" style={{ '--ink': dlHeadInk(r, size, foeSize) + 'px', '--inky': dlHeadInkTop(r, size, foeSize) + 'px' }}><DlDie r={r} size={size} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={foeSize} />}</div></div>); };
+    <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" foe={false} /></DlInkFrame>
+      {r.foe && <DlInkFrame w={foeSize * 36 / 40} h={Math.round(foeSize * 44 / 40) * 40 / 44}><DlFoeDie f={r.foe} size={foeSize} /></DlInkFrame>}</div></div>); };
 // ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
 // KEEP: a side is one tap chip, at least 44px tall, in Escape's tap card (esx-card) at its own size; the two sides share one row from 280px and a lone side (a check, an option, a hero's attack the foe did not answer) takes the row under 400px and its half above it. The chip's own width sets its shape: from 200px it is one row (hit, hairline, damage); narrower, the hit's total stands beside its target and result and the damage drops to a second row under a hairline. The d20 sum ("8 + 3") is not on the chip: at 320px a chip is about 120px wide, where the hit and the damage already fill two rows, so the sum lives in the breakdown only, at every width.
 // KEEP: a chip's breakdown opens under the chip at the chip's own width through the 220ms fold, one per side at a time: the d20's named form with its total (`14 d20 + 3 Strength + 2 Martial = 19`, a dropped advantage die struck through) and, for a hit that dealt damage, a second named form under a small "Damage" caption naming the type ("Damage · slashing") with the damage dice, then each bonus with its source and the total. A miss opens the d20's form alone, with no caption. The parts break only between one another.
@@ -294,7 +297,6 @@ const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = us
     const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (i % cols === cols - 1 || i === stops.length - 1 ? ' is-re' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
     return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} /></button>
       : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} />}</span>; })}</div></div>); };
-// KEEP: every die in the open room is one size (32px, the held roll's), a key moment's included: the dice are not compared, so no die is bigger than another and pressing one never resizes or shifts any (a key moment keeps its rim, ring and colour; the selected die only rings).
 // KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
 const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
@@ -538,24 +540,24 @@ GS_SESSIONS['delve-story-fall'] = { ...GS_SESSIONS.delve, loss: true, end: 'fall
 GS_SESSIONS['delve-won-by-use'] = (() => { const base = GS_SESSIONS.delve.lines; const cut = base.findIndex((l) => l[0] === 'Ability');
   return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 4 → 2'], ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12', 'Struck back: d20 8 vs 10, missed'], ['Ability', 'Used shield bash', 'Grizzletooth: health 1 → 0']] }; })();
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
-  hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 5 },
+  hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 6 },
   // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
   foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' },
   // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
   lightName: 'the watchman\'s round', light: 0, lightMax: 9,
   figures: ['Threat 12/12', '36 rolls', '1 natural 20', 'HP 12/21'], tracks: { progress: 20, rooms: 13, threat: 12, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'd20 1 + 0 = 1 vs 12', 'HP 19/21'], ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Failure', 'd20 8 + 3 = 11 vs 12', 'HP 17/21'], ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'], ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 9 + 3 = 12 vs 12'],
+  ['Dexterity', 'Partial success', 'd20 8 + 3 = 11 vs 12', 'HP 17/21'], ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'], ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 9 + 3 = 12 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Struck back: d20 11 vs 14, missed'], ['Dexterity', 'Miss', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21'],
   ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'Miss', 'd20 7 + 3 = 10 vs 12', 'Struck back: d20 13 vs 14, missed'], ['Dexterity', 'Hit', 'Natural 20', 'd20 20 + 3 = 23 vs 12', 'Struck back: d20 8 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12'],
+  ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 13 vs 14, missed'], ['Dexterity', 'Heavy attack: Flurry', 'Hit', 'Natural 20', 'd20 20 + 5 = 25 vs 12', 'Struck back: d20 8 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
   ['Room', 'Doubled back to Snaggle\'s den', 'The ritual +1'], ['Wisdom', 'Listen at the den door', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
-  ['Strength', 'Force the bone gate', 'Failure', 'd20 6 + 0 = 6 vs 12'], ['Strength', 'Force the bone gate', 'Failure', 'd20 11 + 0 = 11 vs 12'], ['Strength', 'Force the bone gate', 'Partial success', 'd20 14 + 0 = 14 vs 12'],
+  ['Strength', 'Force the bone gate', 'Partial success', 'd20 9 + 0 = 9 vs 12'], ['Strength', 'Force the bone gate', 'Partial success', 'd20 11 + 0 = 11 vs 12'], ['Strength', 'Force the bone gate', 'Partial success', 'd20 14 + 0 = 14 vs 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Entered the flooded cellar'], ['Dexterity', 'Cross the flooded cellar', 'Success', 'd20 14 + 3 = 17 vs 12'],
   ['Room', 'Entered the armoury'], ['Intelligence', 'Read the maker\'s marks', 'Success', 'd20 12 + 1 = 13 vs 12'],
@@ -567,11 +569,13 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Entered the bone pit'], ['Strength', 'Cross the bone pit', 'Success', 'd20 18 + 0 = 18 vs 12'], ['Dexterity', 'Slip the trap', 'Success', 'd20 11 + 3 = 14 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
-  ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
-// The hard play's natural 20 in Snaggle's den (its first roll, a Dexterity attack) is also its biggest hit, so one roll earns Best roll and Biggest hit and the held roll reads "Best roll · Biggest hit". SAMPLE: its damage (a d8 rolling 8 and the +3 Dexterity, 11, piercing) and Snaggle's 12 health, so the next hit of 1 beats it; every other hit keeps no damage roll.
+  ['Dexterity', 'Hit', 'd20s 5 and 12, kept 12 + 3 = 15 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
+// The hard play's natural 20 in Snaggle's den (its second roll there, a heavy attack) is also its biggest hit, so one roll earns Best roll and Biggest hit and the held roll reads "Best roll · Biggest hit".
+// SAMPLE: it carries the fullest attack the game allows, the d20 and five parts (delve.md, Fighting a foe: the attack stat, proficiency, the weapon's magic bonus, the escalation die, less the heavy attack's cut), and a critical hit's damage, the d8 rolled twice with each flat part added once (the stat, the magic bonus, the rogue's heavy bonus of 4), 21 in all, piercing.
+// Snaggle's health is 23, so the hit before it (1) and this one leave 1 and the hit after beats it; every other hit keeps no damage roll.
 { const hard = GS_SESSIONS['delve-hard']; const rollAt = (l) => /(d20 |d20s \d+ and \d+, kept )\d+ [+-] \d+ = /.test(l.slice(1).join(' · '));
-  const n = hard.lines.filter(rollAt).indexOf(hard.lines.find((l) => rollAt(l) && l.includes('Natural 20') && l[1] === 'Hit')) + 1;
-  GS_SESSIONS['delve-hard'] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 12 }, detail: { [n]: { parts: [['+', 3, 'DEX']], dmg: { die: 'd8', v: 8, parts: [['+', 3, 'DEX']], type: 'Piercing' } } } }; }
+  const n = hard.lines.filter(rollAt).indexOf(hard.lines.find((l) => rollAt(l) && l.includes('Natural 20') && /^Heavy attack/.test(l[1]))) + 1;
+  GS_SESSIONS['delve-hard'] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 23 }, detail: { [n]: { parts: [['+', 3, 'DEX'], ['+', 2, 'Simple'], ['+', 1, 'Magic'], ['+', 1, 'Escalation'], ['−', 2, 'Heavy']], dmg: { die: 'd8', v: 8, parts: [['+', 5, 'd8'], ['+', 3, 'DEX'], ['+', 1, 'Magic'], ['+', 4, 'Heavy']], type: 'Piercing' } } } }; }
 // The hard play with a last going-back to the warren (The ritual +1) that filled the threat: no roll or use in that room, so the run ends on the loss cross. SAMPLE: the going-back is added to the hard play.
 // Its last roll leaves the threat at 11/12 (the hard play without the going-back to the warren before the shrine cavern), so the going-back (+1) is what fills it to 12/12.
 GS_SESSIONS['delve-overrun-back'] = (() => { const L = GS_SESSIONS['delve-hard'].lines; const at = L.findIndex((l) => l[1] === 'Entered the shrine cavern');
