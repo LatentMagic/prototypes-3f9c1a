@@ -19,12 +19,14 @@ const sideDist = (P) => { const L = sideNormals(0); const m = HP.map((_, i) => [
 const RIM_PTS = RIM.split(' ').map((p) => p.split(',').map(Number));
 const biggestRing = (size) => { const k = size / 46; const gap = sideDist(RIM_PTS) * k - RIM_W / 2; const band = -sideDist(HP.map(([x, y]) => [CEN[0] + (x - CEN[0]) * 0.8, CEN[1] + (y - CEN[1]) * 0.8])) * k - RING_W / 2;
   return { points: offHex(-(band + gap / 2) / k).map((p) => p[0].toFixed(3) + ',' + p[1].toFixed(3)).join(' '), width: gap }; };
+// KEEP: a biggest hit that is not a natural 20 is grown about the die's centre until its edge sits where a natural 20's rim sits, so the two biggest-hit dice take the same space (the user, 2026-11-25: "both should be of equal size"); its number is not grown.
+const GROW = 1.167;
 // KEEP: the foe's red hex sits one step out from whatever is behind the die (nothing, the advantage hex, or a natural 20's rim), so no two lines run together.
 const foeAt = (crit, adv) => (crit ? (adv ? [-10, -9.5] : [-5, -4.5]) : adv ? [-7, -6] : [-3.5, -3]);
 export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, foe = false, selected = false, surface = 'card', size = 36, className = '' }) {
   const big = size >= 64;
   const ringed = biggest && kind === 'strong';
-  const ring = ringed ? biggestRing(size) : null;
+  const ring = ringed ? biggestRing(crit ? size : size * GROW) : null;
   // KEEP: selected, a two-dice die stands alone and the foe's hex is cleared, so nothing crosses the selection ring; from 64px the foe's hex is cleared too and the second die sits at the die's corner.
   const adv = other != null && !big && !selected;
   const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
@@ -33,9 +35,11 @@ export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = f
     <svg className={cls} viewBox="-5 -5 46 50" width={size} height={Math.round(size * 50 / 46)} aria-hidden="true">
       {layer && <polygon className="fo" points={HEX} transform={'translate(' + layer[0] + ' ' + layer[1] + ')'} />}
       {adv && <polygon className="gh" points={HEX} transform={crit ? 'translate(-7 -6.5)' : 'translate(-3.5 -3)'} />}
-      <polygon className="hx" points={HEX} />
+      {ringed && !crit
+        ? <g transform={'translate(18 20) scale(' + GROW + ') translate(-18 -20)'}><polygon className="hx" points={HEX} /><polygon className="cut" points={ring.points} style={{ strokeWidth: ring.width + 'px' }} /></g>
+        : <polygon className="hx" points={HEX} />}
       {crit && <polygon className="rim" points={RIM} />}
-      {ringed && <polygon className="cut" points={ring.points} style={{ strokeWidth: ring.width + 'px' }} />}
+      {ringed && crit && <polygon className="cut" points={ring.points} style={{ strokeWidth: ring.width + 'px' }} />}
       {kind === 'use' ? <path className="gl" d={SPARKLE} /> : <text className="nm" x="18" y="20.5">{value}</text>}
       {other != null && big && <g className="tw" transform="translate(25 28) scale(.42)"><polygon points={HEX} /><text x="18" y="21">{other}</text></g>}
       <polygon className="sl" points={RIM} />

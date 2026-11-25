@@ -53,13 +53,12 @@ button.dvG-stop:focus-visible { outline: 2px solid var(--off-white); outline-off
 .dvH-tt { display: grid; min-width: 0; }
 .dvH-k { margin: 0; font: 700 18px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
 .dvH-dd { display: flex; align-items: center; gap: 6px; flex: none; }
-.dvH-rm { margin: -4px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
+.dvH-rm { margin: 2px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dvH-beat { margin: 0; font: 600 14px/1.3 var(--font-text); color: var(--success); text-wrap: balance; }
 .dvH-turns { display: grid; gap: 10px; min-width: 0; }
 .dvH-side { display: grid; gap: 10px; align-content: start; min-width: 0; max-width: 420px; }
 /* KEEP: the hero's turn and the foe's turn sit side by side once the box is 560px wide, each column 420px at most, so a long box is arranged, never stretched. */
-@container dvh (min-width: 560px) { .dvH-turns { grid-template-columns: repeat(2, minmax(0, 420px)); column-gap: 24px; } }
-.dvH-act, .dvH-kick { margin: 0; padding-top: 10px; border-top: 1px solid var(--line); font: 600 14px/1.3 var(--font-text); }
+.dvH-act, .dvH-kick { margin: 0; font: 600 14px/1.3 var(--font-text); }
 .dvH-act span { font-weight: 400; color: var(--muted); }
 /* KEEP: the held roll's short text (its room line, action, "beaten" line and the foe's name) balances its lines, so none ends on a lone word: "Climb to the skeleton / on the high ledge", "Mortlake, the / drowned captain". */
 .dvH-act, .dvH-fm .dv6-bar > span { text-wrap: balance; }
@@ -94,7 +93,7 @@ button.dvG-stop:focus-visible { outline: 2px solid var(--off-white); outline-off
 .dvH-pn b { font-weight: 600; color: var(--text); }
 .dvH-x { position: relative; display: inline-block; padding: 0 3px; font-weight: 600; }
 .dvH-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 13px; border-top: 1px solid var(--text); transform: translate(-50%, -50%) rotate(-60deg); }
-.dvH-fm { padding-top: 10px; border-top: 1px solid var(--line); }
+.dvH-fm { min-width: 0; }
 .dvH-cost { margin: 0; font: 600 13px/1.4 var(--font-text); color: var(--muted); }
 .dvH-cost b { color: var(--text); }
 /* KEEP: in a held roll the foe's name is on its own line and wraps in full, never cut with an ellipsis; the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
@@ -442,9 +441,23 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dv9-pips i { display: block; width: 12px; height: 12px; box-sizing: border-box; border: 1.5px solid var(--control-edge); }
 .dv9-pips i.is-on { background: var(--muted); border-color: var(--muted); }
 .dv9-pips.is-lit i.is-on { background: var(--off-white); border-color: var(--off-white); }
-/* KEEP: in the board's held roll a turn's sums fill the card's width, two to a row where each can be 240px or wider (a check's one sum takes the whole row), so the card holds no empty band beside its sums. */
-.dvG-held .dvH-side { max-width: none; display: flex; flex-wrap: wrap; gap: 10px; }
-.dvG-held .dvH-side > * { flex: 1 1 100%; }
-.dvG-held .dvH-side > .dvH-sm { flex: 1 1 240px; }
-.dvG-held .dvH-turns:has(> .dvH-side + .dvH-side) .dvH-side > .dvH-sm { flex-basis: 100%; }
-@container dvh (min-width: 560px) { .dvG-held .dvH-turns { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); } }
+/* ---- The held roll's tiles, totals first: no hairlines; sides stack; tiles two to a row; the after row holds the foe's health at half width and the Cost. ---- */
+.dvH-turns { gap: 12px; }
+.dvT-side { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.dvT-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+.dvT-tap.esx-card { display: block; width: 100%; height: auto; min-height: 44px; padding: 8px 10px; background: transparent; text-align: left; container-type: inline-size; }
+@media (hover: hover) { .dvT-tap.esx-card:not(.is-still):hover { background: var(--card); } }
+.dvT-tap.esx-card.is-open { background: var(--card); }
+.dvT-tap:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
+.dvT-tap.is-still { cursor: default; } .dvT-tap.is-still:active { transform: none; }
+.dvT-in { display: grid; justify-items: start; row-gap: 2px; width: 100%; min-width: 0; }
+.dvT-tot { font: 700 20px/1.1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
+.dvT-vs { display: inline-flex; flex-wrap: wrap; column-gap: 5px; font: 400 13px/1.3 var(--font-text); color: var(--muted); }
+.dvT-fx { font: 400 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+@container (min-width: 130px) and (max-width: 189px) { .dvT-in { grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; } .dvT-tot { grid-row: 1 / 3; } }
+@container (min-width: 190px) { .dvT-in { grid-template-columns: auto 1fr auto; align-items: baseline; column-gap: 12px; } .dvT-fx { justify-self: end; } }
+.dvH-after { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; align-items: end; min-width: 0; }
+.dvH-after > .dvH-cost { align-self: end; }
+@container dvh (max-width: 359px) { .dvH-after { grid-template-columns: minmax(0, 1fr); } }
+/* KEEP: in a held roll under 400px wide (the phone list) the tiles go one to a row, each one row tall, rather than two narrow tiles three rows tall. */
+@container dvh (max-width: 399px) { .dvT-tiles { grid-template-columns: minmax(0, 1fr); } }

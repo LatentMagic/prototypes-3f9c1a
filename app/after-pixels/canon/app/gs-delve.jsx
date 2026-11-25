@@ -195,11 +195,9 @@ const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result
   return (<div className="dv7r-band"><h2 className={'dv7r-word is-' + dlTone(m)}>{dlWord(m)}</h2>{line && <p className="dv7r-line">{line}</p>}</div>); };
 
 // ---- The held roll (a pressed die): its head, then the turn as sums. ----
-// The head: the title left (the key moment or moments the die earned, else "Roll n"), the dice right (the hero's d20, and the foe's diamond when it struck back), then one muted sentence under it (the roll's number and the room).
-// Each roll is a short sum, numbers only: the d20 boxed, each bonus, "= total", the target and the result in a word. The sum is a button that drops its named form open beneath it (`20 d20 + 3 STR + 2 Martial ...`).
+// The head: the title left (the key moment or moments the die earned, else "Roll n"), the dice right (the hero's d20, and the foe's diamond when it struck back), with one muted sentence under the title (the roll's number and the room).
 // The foe's turn is drawn the same way as the hero's: its attack, then its damage.
-// KEEP: the held roll is one layout at every width it appears at; the hero's turn and the foe's turn sit side by side only when the box itself is 560px or wider (above the route on a wide card), else one under the other.
-// KEEP: the sum is a button on its whole width in the box's own colour with the control edge (Escape's cards); hover, on a mouse only, turns it the panel's colour; open, its edge turns off-white and the named form opens in a panel under it through the 220ms fold. It never changes the box's order, and it opens and shuts alone.
+// KEEP: a tile is a button in the box's own colour with the control edge (Escape's cards); hover, on a mouse only, turns it the panel's colour; open, its edge turns off-white and the named form (`20 d20 + 3 STR + 2 Martial ...`) opens under the side's tiles through the 220ms fold; one tile of a side is open at a time.
 const DlFoeDie = ({ f, size = 34 }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" size={size} />;
 // "Back in the chime run": the room's name leads with "The", so it drops to lower case mid-sentence.
 const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ') : r.room);
@@ -222,44 +220,44 @@ const dlOutTone = (r) => (r.fumble ? 'err' : { strong: 'ok', weak: 'part' }[r.ti
 const dlAtkSum = (r) => ({ d: [r.kept, 'd20'], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: 'vs ' + (r.fight ? 'AC ' : 'DC ') + r.dc, out: [dlGrade(r), dlOutTone(r)] });
 const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
 const dlFoeAtkSum = (f) => ({ d: [f.roll, 'd20'], adv: f.other != null, drop: f.other, m: f.bonus ? [['+', f.bonus, 'Bonus']] : [], t: f.roll + f.bonus, vs: 'vs AC ' + f.dc, out: f.hit ? ['Hit', 'err'] : ['Miss', ''] });
-const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg, typ: f.type });
-const DlEq = ({ s }) => (<span className="dvH-eq">
-  {s.d && <span className={'dvH-die' + (s.adv ? ' is-adv' : '')}>{s.d[0]}</span>}
-  {s.m.map((p, i) => <span key={i} className="dvH-ru">{p[0]}{' '}{p[1]}</span>)}
-  {(s.m.length > 0 || !s.d) && <span className="dvH-ru">{s.d && <span className="dvH-eqs">=</span>}<span className="dvH-tot">{s.t}</span>{s.typ && <span className="dvH-typ">{s.typ}</span>}</span>}
-  {(s.vs || s.out) && <span className="dvH-ru dvH-tail">{s.vs && <span className="dvH-vs">{s.vs}</span>}{s.out && <span className={'dvH-out ' + s.out[1]}>{s.out[0]}</span>}</span>}
-</span>);
+const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg, typ: f.type || 'damage' });
 // The named form: each number with its source; a dropped advantage die follows the kept one, its number struck diagonally.
 const DlNamed = ({ s }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}{s.adv ? ' advantage' : ''}</span>
   {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
 </span>);
-const DlSum = ({ s, id, open, toggle }) => (s.d
-  ? <div className="dvH-sm">
-    <button type="button" className={'esx-card dvH-tap' + (open ? ' is-open' : '')} aria-expanded={open} aria-controls={id} onClick={toggle}><DlEq s={s} /></button>
-    <div id={id}><EsxFold open={open}>{open && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>
-  </div>
-  : <div className="dvH-sm"><div className="esx-card dvH-tap is-still"><DlEq s={s} /></div></div>);
 const DlHeldHead = ({ r, x }) => { const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<>
-    <div className="dvH-hd"><div className="dvH-tt">{names.map((n) => <p key={n} className="dvH-k">{n}</p>)}</div>
+    <div className="dvH-hd"><div className="dvH-tt">{names.map((n) => <p key={n} className="dvH-k">{n}</p>)}<p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}</p></div>
       <div className="dvH-dd"><DlDie r={r} size={44} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={36} />}</div></div>
-    <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}</p>
     {dlBeat(r) && <p className="dvH-beat">{dlBeat(r)}</p>}
   </>); };
-const DlHeldRoll = ({ r, x }) => { const [open, setOpen] = React.useState({}); const tg = (k) => () => setOpen((o) => ({ ...o, [k]: !o[k] })); const sm = (k, s) => <DlSum s={s} id={'dvH-' + r.t + k} open={!!open[k]} toggle={tg(k)} />;
-  const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
+// ---- The held roll's sums as tiles, totals first (the user, 2026-11-25, held-roll canvas 2): each tile leads with its total, then its target and result (or the damage type), then the sum's working at its right end. A tap opens the named form across the side, under its tiles. ----
+// KEEP: a side's tiles sit two to a row, a lone tile keeping its half, and a tile is one row from 190px wide: total, target and result, working; narrower, the working drops under. The sides stack, the hero's turn over the foe's, so a foe's turn is two short rows, never four boxes.
+const DlFx = ({ s }) => (<span className="dvT-fx">{s.d && <>{s.d[0]}{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>}</>}{s.m.map((p, i) => <React.Fragment key={i}>{(s.d || i) ? ' ' + p[0] + ' ' : p[0] === '+' ? '' : p[0]}{p[1]}</React.Fragment>)}</span>);
+const DlTileIn = ({ s }) => (<span className="dvT-in"><span className="dvT-tot">{s.t}</span>
+  <span className="dvT-vs">{s.vs && <span>{s.vs}</span>}{s.typ && <span>{s.typ}</span>}{s.out && <span className={'dvH-out ' + s.out[1]}>{s.out[0]}</span>}</span>
+  {s.m.length > 0 && <DlFx s={s} />}</span>);
+const DlSide = ({ id, label, sums }) => { const [open, setOpen] = React.useState(null);
+  return (<div className="dvT-side">{label}
+    <div className="dvT-tiles">{sums.map(([k, s]) => (s.d
+      ? <button key={k} type="button" className={'esx-card dvT-tap' + (open === k ? ' is-open' : '')} aria-expanded={open === k} aria-controls={id + k} onClick={() => setOpen(open === k ? null : k)}><DlTileIn s={s} /></button>
+      : <div key={k} className="esx-card dvT-tap is-still"><DlTileIn s={s} /></div>))}</div>
+    {sums.filter(([, s]) => s.d).map(([k, s]) => <div key={k} id={id + k}><EsxFold open={open === k}>{open === k && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>)}
+  </div>); };
+// KEEP: under the sides one row holds the after-effects: the foe's health at half the box's width, and the turn's Cost beside it; with only one of them it keeps its half.
+const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
   const act = r.use
     ? <p className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</p>
     : r.action || r.fight ? <p className="dvH-act"><b>{r.action || 'Attack'}</b>{(r.move || r.skill) && <span> {r.move || r.skill}</span>}</p> : null;
+  const mine = r.use ? [] : [['a', dlAtkSum(r)], ...(r.dmg ? [['d', dlDmgSum(r)]] : [])];
   return (<>
     <DlHeldHead r={r} x={x} />
     <div className="dvH-turns">
-      {(act || !r.use) && <div className="dvH-side">{act}{!r.use && sm('a', dlAtkSum(r))}{!r.use && r.dmg && sm('d', dlDmgSum(r))}</div>}
-      {f && <div className="dvH-side"><p className="dvH-kick">Struck back</p>{sm('fa', dlFoeAtkSum(f))}{f.hit && f.dmg > 0 && sm('fd', dlFoeDmgSum(f))}</div>}
+      <DlSide id={'dvH-' + r.t} label={act} sums={mine} />
+      {f && <DlSide id={'dvH-' + r.t + 'f'} label={<p className="dvH-kick">Struck back</p>} sums={[['a', dlFoeAtkSum(f)], ...(f.hit && f.dmg > 0 ? [['d', dlFoeDmgSum(f)]] : [])]} />}
     </div>
-    {mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}
-    {cost && <p className="dvH-cost">Cost <b>{cost}</b></p>}
+    {(mt || cost) && <div className="dvH-after">{mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}{cost && <p className="dvH-cost">Cost <b>{cost}</b></p>}</div>}
   </>); };
 const DlHeld = ({ m, act, live = true }) => { const r = act ? m.turns[act - 1] : null; if (!r) return null;
   return (<div className="dv3-live" aria-live={live ? 'polite' : undefined}><div className="dvH-box"><DlHeldRoll key={r.t} r={r} x={m.mom[r.t]} /></div></div>); };
@@ -268,11 +266,11 @@ const DlHeld = ({ m, act, live = true }) => { const r = act ? m.turns[act - 1] :
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
 const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
   <path d="M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
-// KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column, the gaps between columns stretching from 6px up to 76px so the first and last boxes sit on the card's content edges; a row never ends with one stop alone, and a short last row ends early on the right.
+// KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. A map that fits one row spreads edge to edge, its first and last boxes on the card's content edges, however few its stops (the user, 2026-11-25: Spread); a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
 const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8;
 const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
   const rows = Math.ceil(n / per); const cols = Math.ceil(n / rows);
-  const gap = cols > 1 ? Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, (w - cols * DL_MAP_COL) / (cols - 1))) : DL_MAP_GAP;
+  const room = (w - cols * DL_MAP_COL) / Math.max(1, cols - 1); const gap = cols < 2 ? DL_MAP_GAP : rows === 1 ? Math.max(DL_MAP_GAP, room) : Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, room));
   return cols + ':' + gap.toFixed(1); };
 const useDlMap = (n) => { const ref = React.useRef(null); const measure = React.useMemo(() => dlMapOf(n), [n]); const v = useDlWidth(ref, measure, n + ':6'); const [cols, gap] = v.split(':').map(Number); return [ref, cols, gap]; };
 // What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey dot, the loss cross as itself.

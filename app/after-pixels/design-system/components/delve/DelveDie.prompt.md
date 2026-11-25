@@ -12,7 +12,7 @@ DelveDie is one turn of a Delve run, drawn as a hexagon on the route. DelveUseDi
 ```
 
 - Grade is the fill: green strong, yellow weak, empty miss. The number is always drawn, so colour is never the only signal. A use has no grade, so no fill and no number.
-- `biggest` marks the run's Biggest hit (the attack that dealt the most damage): a hit with a dark ring just inside its edge, which also sits inside a natural 20's rim. Only a strong die takes it.
+- `biggest` marks the run's Biggest hit (the attack that dealt the most damage): a hit with a dark ring just inside its edge, which also sits inside a natural 20's rim; without a natural 20 the die is grown to the size the rim takes, so both take the same space. Only a strong die takes it.
 - `won` fills a use's sparkle green: only the use that ends a won run, as its closing key moment. Every other use stays grey.
 - One sparkle stands for every use: an ability, the ultimate, gear of any kind. Never give a kind its own icon.
 - The foe's red hex shows that the foe struck back, hit or missed; the held roll says which. It never appears on the held roll's large die.
