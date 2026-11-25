@@ -826,7 +826,8 @@ button.mcp-cb-ent{cursor:pointer}
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
 .dv3-live { display: grid; min-width: 0; }
 /* ---- The board, Glance: the map, then the open room and the held roll. ---- */
-.dvG { display: grid; gap: 20px; min-width: 0; }
+/* KEEP: the hairline between the map and the open room sits midway between what is drawn: 20px from the lowest mark of the map to the line (16px gap and the stop's 4px foot) and 20px from the line to the open room's top (its number box or the held roll's edge), measured on the drawn edges, not the boxes. */
+.dvG { display: grid; gap: 16px; min-width: 0; }
 /* KEEP: the map's first and last boxes sit on the card's content edges: a box is 28px in its 44px column, so the map reaches 8px past each edge. */
 .dvG-mapw { container: dvg / inline-size; margin: 0 -8px; min-width: 0; }
 .dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 16px; align-items: start; }
@@ -844,7 +845,8 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-stop.is-on .dv2-num, .dvG-th .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dvG-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 .dvG-marks { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; max-width: 44px; }
-.dvG-marks .mcp-dl-die { width: 20px; height: auto; }
+/* KEEP: a mini die's hexagon sits 2px inside its picture on every side, so the picture is pulled in by that much and the hexagon, not its empty margin, is what the map's spacing is measured to. */
+.dvG-marks .mcp-dl-die { width: 20px; height: auto; margin: -2px 0; }
 .dvG-marks .dl-now-mark { width: 7px; height: 7px; }
 .dvG-open { display: grid; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); min-width: 0; }
 .dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
