@@ -23,13 +23,13 @@
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
 .dv3-live { display: grid; min-width: 0; }
 /* ---- The board, Glance: the map, then the open room and the held roll. ---- */
-/* KEEP: the hairline between the map and the open room sits midway between what is drawn: 20px from the lowest mark of the map to the line (16px gap and the stop's 4px foot) and 20px from the line to the open room's top (its number box or the held roll's edge), measured on the drawn edges, not the boxes. */
-.dvG { display: grid; gap: 16px; min-width: 0; }
+/* KEEP: the hairline between the map and the open room sits midway between what is drawn: 20px from the lowest mark of the map to the line (12px gap and the stop's 8px foot) and 20px from the line to the open room's top (its number box or the held roll's edge), measured on the drawn edges, not the boxes. */
+.dvG { display: grid; gap: 12px; min-width: 0; }
 /* KEEP: the map's first and last boxes sit on the card's content edges: a box is 28px in its 44px column, so the map reaches 8px past each edge. */
 .dvG-mapw { container: dvg / inline-size; margin: 0 -8px; min-width: 0; }
-.dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 16px; align-items: start; }
+.dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 8px; align-items: start; }
 .dvG-map.is-few { justify-content: center; }
-.dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; padding: 8px 0 4px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
+.dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 48px; padding: 12px 0 8px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
 button.dvG-stop { cursor: pointer; }
 button.dvG-stop:focus-visible { outline: 2px solid var(--off-white); outline-offset: 0; }
 /* KEEP: a stop's whole column is tinted a step lighter than the card while the mouse is over it (mouse only: touch has no hover) and while it is the open room, the tint the route's open stop had before the board; the open stop's box is also off-white. Hover is paint only: it never opens a room or holds a roll. Pressing scales the column to the press scale, as Escape's cards do. */
@@ -38,14 +38,16 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-stop.is-on { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
 @media (hover: hover) { button.dvG-stop:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); } }
 @media (prefers-reduced-motion: reduce) { button.dvG-stop { transition: none; } }
-/* The line joining a stop to the one before it on its row, behind the boxes. */
-.dvG-stop:not(.is-rs)::before { content: ''; position: absolute; top: 21px; right: 50%; width: calc(100% + var(--gap, 6px)); height: 2px; background: var(--control-edge); }
+/* KEEP: the line joining two stops on a row is drawn in halves, each stop drawing the half that reaches from its centre to midway across the gap, so no line is ever drawn inside another stop's column and none can show through a box when a pressed stop scales (a transform makes the stop its own layer, which put the next stop's whole line over it); a half is drawn 1/.97 long so a pressed stop's scaled half still meets its neighbour's. */
+.dvG-stop:not(.is-rs)::before, .dvG-stop:not(.is-re)::after { content: ''; position: absolute; top: 25px; width: calc((50% + var(--gap, 6px) / 2) / var(--press-scale, 1)); height: 2px; background: var(--control-edge); }
+.dvG-stop:not(.is-rs)::before { right: 50%; }
+.dvG-stop:not(.is-re)::after { left: 50%; }
 .dvG-stop.is-on .dv2-num, .dvG-th .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dvG-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 .dvG-marks { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; max-width: 44px; }
 /* KEEP: a mini die's hexagon sits 2px inside its picture on every side, so a stop whose marks hold a die keeps 2px less padding under it: the map's spacing is measured to the hexagon, not its empty margin. */
 .dvG-marks .mcp-dl-die { width: 20px; height: auto; }
-.dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 2px; }
+.dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 6px; }
 .dvG-marks .dl-now-mark { width: 7px; height: 7px; }
 .dvG-open { display: grid; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); min-width: 0; }
 .dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
@@ -61,7 +63,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-hd { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
 .dvH-tt { display: grid; min-width: 0; }
 .dvH-k { margin: 0; font: 700 18px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
-.dvH-dd { display: flex; align-items: center; gap: 6px; flex: none; }
+.dvH-dd { position: relative; left: var(--ink, 0px); display: flex; align-items: center; gap: 6px; flex: none; }
 /* KEEP: the held roll's room line and, on the same line, what the turn beat or passed ("Roll 10 · The shrine cavern · Grizzletooth beaten", the last in green) balance their lines, so none ends on a lone word; the beaten or passed words wrap whole. */
 .dvH-rm { margin: 2px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dvH-beat { color: var(--success); white-space: nowrap; }
@@ -385,9 +387,12 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dv9-pips.is-lit i.is-on { background: var(--off-white); border-color: var(--off-white); }
 /* ---- The held roll's tiles, totals first: no hairlines; the sides stack, the hero's over the foe's; a side is its label and its tiles, two to a row; the after row holds the foe's health and the Cost. ---- */
 .dvT-side { display: grid; gap: 6px; align-content: start; min-width: 0; }
-.dvT-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+/* KEEP: a tile's named form opens under that tile, as wide as the tile (a chip), never across the side. The tiles are row 1 and each form is row 2 of its own column, so tiles in a row stay one height whichever is open; no row gap, so a closed form leaves no gap (the form's own 8px margin is the gap when open). From a 400px box the tiles go one to a row and each form follows its own tile. */
+.dvT-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; min-width: 0; }
+.dvT-tap { grid-column: calc(var(--i) + 1); grid-row: 1; }
+.dvT-fold { grid-column: calc(var(--i) + 1); grid-row: 2; min-width: 0; }
 /* KEEP: the sum is Escape's tap card (esx-card) at its own size: at least 44px tall and as wide as its side's tiles, a tile on the box's own surface until hovered or opened. */
-.dvT-tap.esx-card { display: block; width: 100%; height: auto; min-height: 44px; padding: 8px 10px; background: transparent; text-align: left; container-type: inline-size; }
+.dvT-tap.esx-card { display: flex; align-items: center; width: 100%; height: auto; min-height: 44px; padding: 8px 10px; background: transparent; text-align: left; container-type: inline-size; }
 /* KEEP: a pressable surface is lifted a step lighter than the surface it sits on while a mouse is over it and while it is open, and an open one has the off-white edge (Escape's card: 6% of the text colour mixed into its surface). On the held roll's box (--popup) that surface is the popup, not the card: the card fill is darker than the box, so a hover or open tile sank into it, the reverse of Escape's cards. Pressing scales it to the press scale. */
 @media (hover: hover) { .dvT-tap.esx-card:not(.is-still):hover { background: var(--dvH-lift); } }
 .dvT-tap.esx-card.is-open { background: var(--dvH-lift); }
@@ -400,14 +405,21 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dvT-fx { font: 400 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 @container (min-width: 130px) and (max-width: 189px) { .dvT-in { grid-template-columns: auto 1fr; column-gap: 12px; align-items: center; } .dvT-tot { grid-row: 1 / 3; } }
 @container (min-width: 190px) { .dvT-in { grid-template-columns: auto 1fr auto; align-items: baseline; column-gap: 12px; } .dvT-fx { justify-self: end; } }
-/* KEEP: from a 580px box a side is one row: its label (the action, or "Struck back") in a 140px column beside its tiles, so the box is two tile rows tall, not four rows of boxes and labels; an open tile's named form runs under the whole row. A side with no tiles or no label is the label or the tiles alone, across the row. */
+/* KEEP: from a 580px box a side is one row: its label (the action, or "Struck back") in a column beside its tiles as wide as the widest label of the box's sides (at most 180px), so the sides' tiles line up and no label sits in a wide empty column, so the box is two tile rows tall, not four rows of boxes and labels; an open tile's named form runs under that tile. A side with no tiles or no label is the label or the tiles alone, across the row. */
 @container dvh (min-width: 580px) {
-  .dvT-side:not(.is-bare) { grid-template-columns: 140px minmax(0, 1fr); column-gap: 12px; align-items: center; }
-  .dvT-side > .dvT-fold { grid-column: 1 / -1; }
+  .dvH-turns { grid-template-columns: fit-content(180px) minmax(0, 1fr); column-gap: 12px; }
+  .dvT-side { grid-column: 1 / -1; }
+  .dvT-side:not(.is-bare) { display: grid; grid-template-columns: subgrid; column-gap: normal; align-items: start; }
+  .dvT-side:not(.is-bare) > :first-child { align-self: start; margin-top: max(0px, calc((44px - 1lh) / 2)); }
 }
 /* KEEP: the after row holds the foe's health and the Cost side by side, each at its own width, and wraps the Cost under the health only when they do not fit. */
 .dvH-after { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 20px; min-width: 0; }
 .dvH-after > .dvH-fm { flex: 1 1 240px; }
 .dvH-after > .dvH-cost { flex: 0 1 auto; }
 /* KEEP: in a held roll under 400px wide the tiles go one to a row, each one row tall, rather than two narrow tiles three rows tall. */
-@container dvh (max-width: 399px) { .dvT-tiles { grid-template-columns: minmax(0, 1fr); } }
+@container dvh (max-width: 399px) {
+  .dvT-tiles { grid-template-columns: minmax(0, 1fr); }
+  .dvT-tap { grid-column: 1; grid-row: calc(var(--i) * 2 + 1); }
+  .dvT-fold { grid-column: 1; grid-row: calc(var(--i) * 2 + 2); }
+  .dvT-tap:not(:first-child) { margin-top: 8px; }
+}

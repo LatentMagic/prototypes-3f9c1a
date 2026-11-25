@@ -228,10 +228,12 @@ const DlNamed = ({ s }) => (<span className="dvH-pn">
 </span>);
 // A roll that earned more than one moment is titled with all of them in one sentence-case row: "Best roll and biggest hit", "Best roll, closest call and biggest hit".
 const dlTitle = (names) => names.map((n, i) => (i ? n.charAt(0).toLowerCase() + n.slice(1) : n)).reduce((t, n, i, all) => t + (i === 0 ? '' : i === all.length - 1 ? ' and ' : ', ') + n, '');
-const DlHeldHead = ({ r, x }) => { const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
+// KEEP: the held roll's die is drawn at the size it has in its room (44px for a key moment, else 30px), so pressing a die never resizes it, and the foe's diamond is as tall as the die's hexagon beside it. The die's picture has an empty margin round its hexagon, so the head's right end sits that margin (the rightmost drawing's) past the content edge and the drawing lines up with the tiles' right edge.
+const dlHeadInk = (r, size, foeSize) => (r.foe ? foeSize * 2 / 40 : size * (r.crit ? 2 : 5) / 46);
+const DlHeldHead = ({ r, x }) => { const size = x ? 44 : 30; const foeSize = Math.round(size * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<>
     <div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p><p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}</p></div>
-      <div className="dvH-dd"><DlDie r={r} size={44} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={30} />}</div></div>
+      <div className="dvH-dd" style={{ '--ink': dlHeadInk(r, size, foeSize) + 'px' }}><DlDie r={r} size={size} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={foeSize} />}</div></div>
   </>); };
 // ---- The held roll's sums as tiles, totals first (the user, 2026-11-25, held-roll canvas 2): each tile leads with its total, then its target and result (or the damage type), then the sum's working at its right end. A tap opens the named form across the side, under its tiles. ----
 // KEEP: a side's tiles sit two to a row, a lone tile keeping its half, and a tile is one row from 190px wide: total, target and result, working; narrower, the working drops under. The sides stack, the hero's turn over the foe's, so a foe's turn is two short rows, never four boxes; from a 580px box a side's label sits beside its tiles instead of over them (gs-delve.css).
@@ -243,10 +245,12 @@ const DlTileIn = ({ s }) => (<span className="dvT-in"><span className="dvT-tot">
 const DlAdv = () => <span className="dvH-adv">, with advantage</span>;
 const DlSide = ({ id, label, sums, foe }) => { const [open, setOpen] = React.useState(null);
   return (<div className={'dvT-side' + (foe ? ' is-foe' : '') + (!label || !sums.length ? ' is-bare' : '')}>{label}
-    <div className="dvT-tiles">{sums.map(([k, s]) => (s.d
-      ? <button key={k} type="button" className={'esx-card dvT-tap' + (open === k ? ' is-open' : '')} aria-expanded={open === k} aria-controls={id + k} onClick={() => setOpen(open === k ? null : k)}><DlTileIn s={s} /></button>
-      : <div key={k} className="esx-card dvT-tap is-still"><DlTileIn s={s} /></div>))}</div>
-    {sums.filter(([, s]) => s.d).map(([k, s]) => <div key={k} id={id + k} className="dvT-fold"><EsxFold open={open === k}>{open === k && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>)}
+    <div className="dvT-tiles">
+      {sums.map(([k, s], i) => (s.d
+        ? <button key={k} type="button" style={{ '--i': i }} className={'esx-card dvT-tap' + (open === k ? ' is-open' : '')} aria-expanded={open === k} aria-controls={id + k} onClick={() => setOpen(open === k ? null : k)}><DlTileIn s={s} /></button>
+        : <div key={k} style={{ '--i': i }} className="esx-card dvT-tap is-still"><DlTileIn s={s} /></div>))}
+      {sums.map(([k, s], i) => s.d && <div key={'f' + k} id={id + k} style={{ '--i': i }} className="dvT-fold"><EsxFold open={open === k}>{open === k && <div className="dvH-pnl"><DlNamed s={s} /></div>}</EsxFold></div>)}
+    </div>
   </div>); };
 // KEEP: under the sides one row holds the after-effects: the foe's health (a thin bar, on one row from a 420px box) and the turn's Cost beside it, each at its own width; the Cost wraps under the health only when they do not fit.
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
@@ -287,7 +291,7 @@ const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = us
   return (<div className="dvG-mapw"><div ref={ref} className={'dvG-map' + (stops.length <= DL_MAP_FEW ? ' is-few' : '')} style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
     const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
     const box = <span className={dlNum(st)}>{st.back && <DlBackArrow />}{st.num}</span>;
-    const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
+    const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (i % cols === cols - 1 || i === stops.length - 1 ? ' is-re' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
     return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} /></button>
       : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} />}</span>; })}</div></div>); };
 // KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
@@ -538,7 +542,7 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' },
   // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
   lightName: 'the watchman\'s round', light: 0, lightMax: 9,
-  figures: ['Threat 12/12', '24 rolls', '1 natural 20', 'HP 12/21'], tracks: { progress: 5, rooms: 5, threat: 12, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
+  figures: ['Threat 12/12', '36 rolls', '1 natural 20', 'HP 12/21'], tracks: { progress: 20, rooms: 13, threat: 12, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Wisdom', 'Search the lock-keeper\'s niche', 'Failure', 'Natural 1', 'd20 1 + 0 = 1 vs 12', 'HP 19/21'], ['Room', 'Entered the chime run'],
   ['Dexterity', 'Failure', 'd20 8 + 3 = 11 vs 12', 'HP 17/21'], ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'], ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 9 + 3 = 12 vs 12'],
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
@@ -552,6 +556,14 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Doubled back to the warren', 'The ritual +1'],
   ['Strength', 'Force the bone gate', 'Failure', 'd20 6 + 0 = 6 vs 12'], ['Strength', 'Force the bone gate', 'Failure', 'd20 11 + 0 = 11 vs 12'], ['Strength', 'Force the bone gate', 'Partial success', 'd20 14 + 0 = 14 vs 12'],
   ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
+  ['Room', 'Entered the flooded cellar'], ['Dexterity', 'Cross the flooded cellar', 'Success', 'd20 14 + 3 = 17 vs 12'],
+  ['Room', 'Entered the armoury'], ['Intelligence', 'Read the maker\'s marks', 'Success', 'd20 12 + 1 = 13 vs 12'],
+  ['Room', 'Entered the shrine of the drowned saint'], ['Wisdom', 'Hear the saint\'s bell', 'Success', 'd20 15 + 1 = 16 vs 12'], ['Constitution', 'Hold your breath', 'Success', 'd20 13 + 2 = 15 vs 12'],
+  ['Room', 'Entered the well shaft'], ['Strength', 'Climb the well shaft', 'Success', 'd20 12 + 0 = 12 vs 12'], ['Dexterity', 'Slip the rope', 'Success', 'd20 17 + 3 = 20 vs 12'],
+  ['Room', 'Entered the barracks'], ['Dexterity', 'Slip past the sleeping guard', 'Success', 'd20 16 + 3 = 19 vs 12'],
+  ['Room', 'Entered the chapel'], ['Wisdom', 'Listen at the altar', 'Success', 'd20 14 + 1 = 15 vs 12'], ['Intelligence', 'Read the psalm board', 'Success', 'd20 13 + 1 = 14 vs 12'],
+  ['Room', 'Entered the crypt'], ['Dexterity', 'Pick the crypt lock', 'Success', 'd20 15 + 3 = 18 vs 12'],
+  ['Room', 'Entered the bone pit'], ['Strength', 'Cross the bone pit', 'Success', 'd20 18 + 0 = 18 vs 12'], ['Dexterity', 'Slip the trap', 'Success', 'd20 11 + 3 = 14 vs 12'],
   ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
   ['Dexterity', 'Miss', 'd20s 5 and 7, kept 7 + 3 = 10 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
