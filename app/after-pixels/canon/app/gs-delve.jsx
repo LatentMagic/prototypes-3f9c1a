@@ -268,6 +268,9 @@ const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
 const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
   <path d="M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
+// KEEP: a stop's number is grey (muted text, the control edge) when nothing was rolled or used in it and white when anything was, a return or not; the back-arrow alone marks a return. A room not yet reached keeps its own fainter outline.
+const dlNone = (st) => !(st.turns && st.turns.some((r) => !r.lost));
+const dlNum = (st, extra = '') => 'dv2-num' + (st.back ? ' is-back' : '') + (dlNone(st) ? ' is-none' : '') + extra;
 // KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. A map that fits one row spreads edge to edge, its first and last boxes on the card's content edges, however few its stops (the user, 2026-11-25: Spread); a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
 const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8;
 const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
@@ -281,14 +284,14 @@ const DlMapMarks = ({ m, st }) => (st.turns.length ? <span className="dvG-marks"
 const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length);
   return (<div className="dvG-mapw"><div ref={ref} className="dvG-map" style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
     const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
-    const box = <span className={'dv2-num' + (st.back ? ' is-back' : '')}>{st.back && <DlBackArrow />}{st.num}</span>;
+    const box = <span className={dlNum(st)}>{st.back && <DlBackArrow />}{st.num}</span>;
     const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
     return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} /></button>
       : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} />}</span>; })}</div></div>); };
 // KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
 const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
-    <p className="dvG-th"><span className={'dv2-num is-on' + (st.back ? ' is-back' : '')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.back ? 'Back to ' + st.name : st.name}</span></p>
+    <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.back ? 'Back to ' + st.name : st.name}</span></p>
     <div className="dvG-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
   </div>
   {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
@@ -463,8 +466,8 @@ const useDlNowWide = (n) => { const ref = React.useRef(null); const measure = Re
 const DlNowStrip = ({ stops, count, on }) => { const [ref, numbered] = useDlNowWide(stops.length);
   return (<div className="dl-now-strip">
     <div ref={ref} className="dl-now-boxes">{stops.map((st, i) => (numbered
-      ? <span key={i} className={'dv2-num' + (st.back ? ' is-back' : '') + (on === i ? ' is-on' : '')}>{st.back && <DlBackArrow />}{st.num}</span>
-      : <i key={i} className={'dl-now-tick' + (st.back ? ' is-back' : '') + (on === i ? ' is-on' : '')} />))}</div>
+      ? <span key={i} className={dlNum(st, on === i ? ' is-on' : '')}>{st.back && <DlBackArrow />}{st.num}</span>
+      : <i key={i} className={'dl-now-tick' + (st.back ? ' is-back' : '') + (dlNone(st) ? '' : ' is-rolled') + (on === i ? ' is-on' : '')} />))}</div>
     <span className="dl-now-count">{count > 0 ? '+' + count : ''}</span></div>); };
 const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
   const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost); const others = m.rolls.filter((r) => !m.mom[r.t]).length;

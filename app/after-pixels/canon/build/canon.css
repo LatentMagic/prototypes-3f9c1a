@@ -821,7 +821,7 @@ button.mcp-cb-ent{cursor:pointer}
 .dv2-dbtn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, var(--hit-w, 44px)); height: max(100%, 44px); transform: translate(-50%, -50%); }
 /* ---- The route (v2's E). ---- */
 .dv2-num { position: relative; z-index: 1; flex: none; min-width: 28px; height: 28px; padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
-.dv2-num.is-back { box-shadow: inset 0 0 0 1.5px var(--muted); color: var(--muted); }
+.dv2-num.is-none { color: var(--muted); }
 .dv2-back { width: 0.8em; height: 0.8em; flex: none; }
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
 .dv3-live { display: grid; min-width: 0; }
@@ -1147,7 +1147,9 @@ moments are dice buttons (the session page's phone form a step smaller, 34px), t
 .dl-now-boxes .dv2-num { min-width: 20px; height: 20px; padding: 0 2px; font-size: 11px; }
 .dl-now-boxes .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
-.dl-now-tick.is-back { background: var(--card); box-shadow: inset 0 0 0 1.5px var(--muted); }
+.dl-now-tick.is-rolled { background: var(--text); }
+.dl-now-tick.is-back { background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); }
+.dl-now-tick.is-back.is-rolled { box-shadow: inset 0 0 0 1.5px var(--text); }
 .dl-now-tick.is-on { background: var(--off-white); }
 .dl-now-count { flex: none; min-width: 30px; text-align: right; font: 600 13px/1 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; }
 /* KEEP: the key dice are one group on the card's centre line, a fixed gap apart whatever their number: 34px dice 10px apart under 300px, 38px 14px apart to 400px, 46px 24px apart above; the group wraps only if five dice cannot fit. */

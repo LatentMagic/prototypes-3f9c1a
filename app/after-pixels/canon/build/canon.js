@@ -3458,6 +3458,8 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "dv3-live", "aria-live": "polite" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-box" }, /* @__PURE__ */ React$1.createElement(DlHeldRoll, { key: r.t, r, x: m.mom[r.t] })));
   };
   const DlBackArrow = () => /* @__PURE__ */ React$1.createElement("svg", { className: "dv2-back", viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }));
+  const dlNone = (st) => !(st.turns && st.turns.some((r) => !r.lost));
+  const dlNum = (st, extra = "") => "dv2-num" + (st.back ? " is-back" : "") + (dlNone(st) ? " is-none" : "") + extra;
   const DL_MAP_COL = 44;
   const DL_MAP_GAP = 6;
   const DL_MAP_GAP_MAX = 76;
@@ -3483,12 +3485,12 @@
     return /* @__PURE__ */ React$1.createElement("div", { className: "dvG-mapw" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map", style: { "--cols": cols, "--gap": gap + "px" }, "aria-label": "The way you went" }, stops.map((st, i) => {
       const has = st.turns && st.turns.some((r) => !r.lost);
       const label = (st.back ? "Back to " : "Room " + st.num + ", ") + st.name;
-      const box = /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num" + (st.back ? " is-back" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num);
+      const box = /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st) }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num);
       const cls = "dvG-stop" + (i % cols === 0 ? " is-rs" : "") + (open === st.i ? " is-on" : "") + (far && far(st) ? " is-far" : "");
       return has ? /* @__PURE__ */ React$1.createElement("button", { key: st.i, type: "button", className: cls, title: st.name, "aria-label": label, "aria-pressed": open === st.i, onClick: () => onOpen(st) }, box, /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st })) : /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: cls, title: st.name, role: "img", "aria-label": label + (st.turns && st.turns.length ? "" : ", no rolls") }, box, m && /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st }));
     })));
   };
-  const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv2-num is-on" + (st.back ? " is-back" : ""), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.back ? "Back to " + st.name : st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
+  const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st, " is-on"), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.back ? "Back to " + st.name : st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
   const DlGlance = ({ m, act, setSel }) => {
     const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : m.stops.length - 1);
     const [lit, setLit] = React$1.useState(null);
@@ -3700,7 +3702,7 @@
   };
   const DlNowStrip = ({ stops, count, on }) => {
     const [ref, numbered] = useDlNowWide(stops.length);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-strip" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-boxes" }, stops.map((st, i) => numbered ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dv2-num" + (st.back ? " is-back" : "") + (on === i ? " is-on" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num) : /* @__PURE__ */ React$1.createElement("i", { key: i, className: "dl-now-tick" + (st.back ? " is-back" : "") + (on === i ? " is-on" : "") }))), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-count" }, count > 0 ? "+" + count : ""));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-strip" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-boxes" }, stops.map((st, i) => numbered ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: dlNum(st, on === i ? " is-on" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num) : /* @__PURE__ */ React$1.createElement("i", { key: i, className: "dl-now-tick" + (st.back ? " is-back" : "") + (dlNone(st) ? "" : " is-rolled") + (on === i ? " is-on" : "") }))), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-count" }, count > 0 ? "+" + count : ""));
   };
   const DlNowRoute = ({ m, open }) => {
     const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
