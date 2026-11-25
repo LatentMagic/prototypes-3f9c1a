@@ -96,7 +96,7 @@ const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? 
 const DL_END = { won: 'Winning blow', fallen: 'Last blow', overrun: 'Last roll', live: 'Latest roll' };
 // The key moments, keyed by turn: Best roll (a natural 20 on any roll, else the check with the widest margin), Closest call (the first roll whose total equals its target, an attack against the foe's AC included),
 // Worst roll (a natural 1, else the miss furthest below its target, attacks included), Biggest hit (the attack that dealt the most damage, the first on a tie), and the turn the run ended on (a roll or a use).
-// KEEP: a roll earns every moment it deserves, so one roll can be two or more (a natural 20 whose damage is the run's biggest is Best roll and Biggest hit); its held roll's title names each, and the die carries the marks of each.
+// KEEP: a roll earns every moment it deserves, so one roll can be two or more (a natural 20 whose damage is the run's biggest is Best roll and Biggest hit); its held roll's title names each in one row ("Best roll and biggest hit"), and the die carries the marks of each.
 const DL_MOMENT_ORDER = ['Best roll', 'Closest call', 'Worst roll', 'Biggest hit'];
 const dlMoments = (T, end) => {
   if (!T.length) return [];
@@ -226,9 +226,11 @@ const DlNamed = ({ s }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}{s.adv ? ' advantage' : ''}</span>
   {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
 </span>);
+// A roll that earned more than one moment is titled with all of them in one sentence-case row: "Best roll and biggest hit", "Best roll, closest call and biggest hit".
+const dlTitle = (names) => names.map((n, i) => (i ? n.charAt(0).toLowerCase() + n.slice(1) : n)).reduce((t, n, i, all) => t + (i === 0 ? '' : i === all.length - 1 ? ' and ' : ', ') + n, '');
 const DlHeldHead = ({ r, x }) => { const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<>
-    <div className="dvH-hd"><div className="dvH-tt">{names.map((n) => <p key={n} className="dvH-k">{n}</p>)}<p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}</p></div>
+    <div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p><p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}</p></div>
       <div className="dvH-dd"><DlDie r={r} size={44} surface="popup" foe={false} />{r.foe && <DlFoeDie f={r.foe} size={36} />}</div></div>
     {dlBeat(r) && <p className="dvH-beat">{dlBeat(r)}</p>}
   </>); };
