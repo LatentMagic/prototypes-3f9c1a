@@ -21,7 +21,6 @@ const PG_SITS = {
 // The wording of each marks option: the label and the small line under it, for a mark that is dimmed or not.
 const PG_MARKS = {
   1: { s: { label: 'Success streak' }, h: { label: 'Hit streak' } },
-  2: { s: { label: 'Success streak', sub: 'Checks', dimSub: 'Not in a fight' }, h: { label: 'Hit streak', sub: 'Fights' } },
 };
 const pgLongestSay = (n, ended) => (n > 0 ? 'Longest streak ' + n : ended ? 'No streak' : 'No streak yet');
 
@@ -59,7 +58,7 @@ export const initPlaygroundAdvantage = () => {
     { key: 'sit', label: 'State', options: [
       o('scene1', 'Mid-scene, Success streak 1', 'session-delve-in-progress'), o('scene3', 'Scene with advantage, Success streak 3', 'session-delve-in-progress'),
       o('fight2', 'Mid-fight, Hit streak 2', 'session-delve-fight-live'), o('fightAfter', 'Fight, just after the advantaged attack', 'session-delve-fight-live'), o('ended', 'Run ended', 'session-delve')] },
-    { key: 'marks', label: 'Marks', options: [o('1', '1. Plain labels'), o('2', '2. Sub-labels')] },
+    { key: 'marks', label: 'Marks', options: [o('1', '1. Plain labels')] },
     { key: 'longest', label: 'Longest streak value', options: ['3', '0', '2', '5'].map((v) => o(v, v)) },
   ] });
   if (pgActive()) GS_SESSION_BODY.delve = (p) => <PgBody key={p.sid} {...p} />;
