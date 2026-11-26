@@ -3207,12 +3207,12 @@
   const dlGrade = (r) => (r.fight ? { strong: "Hit", miss: "Miss" } : { strong: "Success", weak: "Partial success", miss: "Failure" })[r.tier];
   const DL_GRADE = /^(Hit|Miss)$/;
   const DL_GRADED = /^(Success|Partial success|Failure)$/;
-  const dlStruck = (parts, type) => {
+  const dlStruck = (parts) => {
     const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+))(?: \+ (\d+))? vs (\d+), (hit|missed)(?:, (?:d(\d+) (\d+) \+ (\d+) = )?(\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || "");
     if (!sb) return null;
     const two = sb[1] != null;
     const roll = +(sb[3] || sb[4]);
-    return { roll, other: two ? +sb[1] === roll ? +sb[2] : +sb[1] : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === "hit", dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: "d" + sb[8], v: +sb[9], b: +sb[10] } : null, type };
+    return { roll, other: two ? +sb[1] === roll ? +sb[2] : +sb[1] : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === "hit", dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: "d" + sb[8], v: +sb[9], b: +sb[10] } : null };
   };
   const dlSigned = (n) => n < 0 ? "−" : "+";
   const dlParts = (mod, stat, d) => d && d.parts ? d.parts : mod ? [[dlSigned(mod), Math.abs(mod), stat.slice(0, 3).toUpperCase()]] : [];
@@ -3233,7 +3233,7 @@
     const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
     const bonus = dlParts(mod, l[0], d);
     const dmg = d && d.dmg ? { ...d.dmg, total: dlSumOf(d.dmg.v, d.dmg.parts) } : null;
-    return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts, d && d.foeType), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
+    return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
   };
   const dlUseDoes = (d) => {
     const s = d.replace(/,? *no roll$/i, "");
@@ -3434,7 +3434,7 @@
   const dlAtkSum = (r) => ({ d: [r.kept, "d20"], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: "vs " + (r.fight ? "AC " : "DC ") + r.dc, out: [dlGrade(r), dlOutTone(r)] });
   const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
   const dlFoeAtkSum = (f) => ({ d: [f.roll, "d20"], adv: f.other != null, drop: f.other, m: f.bonus ? [["+", f.bonus, "Bonus"]] : [], t: f.roll + f.bonus, vs: "vs AC " + f.dc, out: f.hit ? ["Hit", "err"] : ["Miss", ""] });
-  const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], t: f.dmg, typ: f.type || "damage" });
+  const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], t: f.dmg });
   const DlNamed = ({ s, total }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, s.d[0]), s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop)), " ", s.d[1]), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-c" }, p[0], " ", /* @__PURE__ */ React$1.createElement("b", null, p[1]), " ", p[2])), total != null && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, "= ", /* @__PURE__ */ React$1.createElement("b", null, total)));
   const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(" · ");
   const dlInk = (r) => r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5];
@@ -12216,15 +12216,13 @@
     }, [load]);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement("h1", { className: "gs-h1" }, "Discover"), load === "hold" || load === "loading" ? /* @__PURE__ */ React$1.createElement("div", { className: "gs-inplace" }, /* @__PURE__ */ React$1.createElement(GsSpin, null)) : load === "failed" ? /* @__PURE__ */ React$1.createElement(GsLoadFailed, { onRetry: () => setLoad(null) }) : /* @__PURE__ */ React$1.createElement(CprDiscoverBody, { f, setF })));
   };
-  const FOE_TYPE = { "snaggle's den": "piercing", "the great hall": "bludgeoning", "the shrine cavern": "slashing" };
   const sumP = (mods) => mods.reduce((n, p) => n + (p[0] === "−" ? -p[1] : p[1]), 0);
   const nat = (die) => die === 20 ? "Natural 20" : die === 1 ? "Natural 1" : null;
   const sumText = (die, other, mods, vs) => {
     const net = sumP(mods);
     return (other != null ? "d20s " + other + " and " + die + ", kept " + die : "d20 " + die) + (net < 0 ? " - " : " + ") + Math.abs(net) + " = " + (die + net) + " vs " + vs;
   };
-  function dlRecord(steps, hpMax, heroAc, foeTypes = {}, threatMax = 12) {
-    let room = null;
+  function dlRecord(steps, hpMax, heroAc, threatMax = 12) {
     let hp = hpMax;
     let n = 0;
     let threat = 0;
@@ -12233,7 +12231,7 @@
     const hpOf = (h) => "HP " + h + "/" + hpMax;
     steps.forEach(([k, ...a]) => {
       if (hp <= 0 || threat >= threatMax) throw new Error("dlRecord: a step after the run has ended (" + k + " " + a[0] + ")");
-      if (k === "room" || k === "back") room = a[0];
+      if (k === "room" || k === "back") a[0];
       if (k === "room") {
         lines.push(["Room", "Entered " + a[0]]);
         return;
@@ -12274,7 +12272,7 @@
         back = ["Struck back: " + (f.other != null ? "d20s " + f.other + " and " + f.roll + ", kept " + f.roll : "d20 " + f.roll) + (f.bonus ? " + " + f.bonus : "") + " vs " + heroAc + ", " + (fhit ? "hit, " + (f.dd ? "d" + f.dd[0] + " " + f.dd[1] + " + " + f.dd[2] + " = " : "") + dmgDone + " damage, " + hpOf(hp) : "missed")];
       }
       lines.push([stat, ...heavy ? ["Heavy attack: " + heavy] : [], hit ? "Hit" : "Miss", ...nat(die) ? [nat(die)] : [], sumText(die, o.other, mods, ac), ...back]);
-      detail[n] = { parts: mods, ...dmg ? { dmg } : {}, ...f && foeTypes[room] ? { foeType: foeTypes[room] } : {} };
+      detail[n] = { parts: mods, ...dmg ? { dmg } : {} };
     });
     return { lines, detail, hp, threat, rolls: n };
   }
@@ -12333,7 +12331,7 @@
         }
       }
     });
-    return dlRecord(steps, hpMax, 10, FOE_TYPE);
+    return dlRecord(steps, hpMax, 10);
   }
   const dlLongRun = (n, live = false) => {
     const { lines, detail, hp, threat, rolls } = longRoute(n, 23);
@@ -12383,7 +12381,7 @@
       ["room", "the shrine cavern"],
       ["atk", "Strength", null, 12, [STR, MART], 12, { dmg: ["d8", 6, [STR], "Slashing"], foe: { roll: 4, bonus: 4, dd: [3, 2, 1] } }],
       ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d8", 7, [STR], "Slashing"] }]
-    ], 23, 10, FOE_TYPE);
+    ], 23, 10);
     GS_SESSIONS["delve-key-moments"] = { ...GS_SESSIONS.delve, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 40, "the shrine cavern": 19 }, figures: ["Threat " + km.threat + "/12", km.rolls + " rolls", "1 natural 20", "HP " + km.hp + "/23"], threat: km.threat, sheet: { used: {}, insp: true } };
     const DEX = ["+", 3, "DEX"];
     const SIMP = ["+", 2, "Simple"];
@@ -12392,7 +12390,7 @@
       ["room", "the shrine cavern"],
       ["atk", "Dexterity", "Flurry", 6, [DEX, SIMP, HEAVY], 12, { dmg: null, foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }],
       ["atk", "Dexterity", null, 15, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 4, [DEX], "Piercing"], foe: { roll: 7, bonus: 4 } }]
-    ], 21, 14, FOE_TYPE);
+    ], 21, 14);
     GS_SESSIONS["delve-fight-live"] = { ...GS_SESSIONS["delve-live"], lines: fl.lines, detail: fl.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + fl.threat + "/12", fl.rolls + " rolls", "HP " + fl.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: fl.threat, threatMax: 12 }, threat: fl.threat, sheet: { used: {}, insp: true } };
     const adv = dlRecord([
       ["chk", "Dexterity", "Slip the shrine gate", null, 16, [DEX], 12, { other: 5 }],
@@ -12400,7 +12398,7 @@
       ["atk", "Dexterity", "Flurry", 9, [DEX, SIMP, HEAVY], 12, { dmg: ["d6", 4, [DEX, ["+", 2, "Heavy"]], "Piercing"], foe: { roll: 6, bonus: 4, dd: [3, 2, 1] } }],
       ["atk", "Dexterity", null, 14, [DEX, SIMP], 12, { dmg: ["d6", 3, [DEX], "Piercing"], foe: { roll: 5, bonus: 4 } }],
       ["atk", "Dexterity", null, 17, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 5, [DEX], "Piercing"], foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }]
-    ], 21, 14, FOE_TYPE);
+    ], 21, 14);
     GS_SESSIONS["delve-advantage"] = { ...GS_SESSIONS["delve-live"], lines: adv.lines, detail: adv.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + adv.threat + "/12", adv.rolls + " rolls", "HP " + adv.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };
     const ff = dlRecord([
       ["chk", "Dexterity", "Cross the trapped bridge", null, 3, [["+", 1, "DEX"]], 12, { harm: 14 }],
@@ -12408,7 +12406,7 @@
       ["atk", "Strength", "Cleave", 15, [STR, MART, HEAVY], 12, { dmg: ["d10", 6, [STR, ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 18, bonus: 4, dd: [3, 3, 1] } }],
       ["atk", "Strength", null, 8, [STR, MART], 12, { foe: { roll: 17, bonus: 4, dd: [3, 3, 1] } }],
       ["atk", "Strength", null, 14, [STR, MART], 12, { dmg: ["d8", 6, [STR], "Slashing"], foe: { roll: 16, bonus: 4, dd: [3, 3, 1] } }]
-    ], 23, 10, FOE_TYPE);
+    ], 23, 10);
     GS_SESSIONS["delve-fight-fallen"] = { ...GS_SESSIONS["delve-fallen"], lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 40 }, result: "Fell in Snaggle's den", reached: "Fell in Snaggle's den", share: "Fell in Snaggle's den", figures: ["Threat " + ff.threat + "/12", ff.rolls + " rolls", "HP " + ff.hp + "/23"], tracks: { progress: 2, rooms: 2, threat: ff.threat, threatMax: 12 }, threat: ff.threat, sheet: { used: {}, insp: false } };
   }
   const PG = {};

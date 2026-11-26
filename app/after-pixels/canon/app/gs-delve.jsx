@@ -59,9 +59,9 @@ const dlGrade = (r) => (r.fight ? { strong: 'Hit', miss: 'Miss' } : { strong: 'S
 const DL_GRADE = /^(Hit|Miss)$/;
 // An attempt on the room's own obstacle or hazard is graded and names no action: ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 19/23"].
 const DL_GRADED = /^(Success|Partial success|Failure)$/;
-const dlStruck = (parts, type) => { const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+))(?: \+ (\d+))? vs (\d+), (hit|missed)(?:, (?:d(\d+) (\d+) \+ (\d+) = )?(\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
+const dlStruck = (parts) => { const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+))(?: \+ (\d+))? vs (\d+), (hit|missed)(?:, (?:d(\d+) (\d+) \+ (\d+) = )?(\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
   if (!sb) return null; const two = sb[1] != null; const roll = +(sb[3] || sb[4]);
-  return { roll, other: two ? (+sb[1] === roll ? +sb[2] : +sb[1]) : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === 'hit', dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: 'd' + sb[8], v: +sb[9], b: +sb[10] } : null, type }; };
+  return { roll, other: two ? (+sb[1] === roll ? +sb[2] : +sb[1]) : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === 'hit', dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: 'd' + sb[8], v: +sb[9], b: +sb[10] } : null }; };
 // The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 10, hit, 1 damage, HP 21/23" or "..., missed"; with advantage, "d20s 14 and 6, kept 14 vs 10". Its target is the hero's defence.
 const dlSigned = (n) => (n < 0 ? '−' : '+');
 // The parts of a roll's bonus, as the record names them: `detail` (the run's `detail[roll number]`) lists them; a record that lists none has the stat alone, as the platform names it first.
@@ -76,7 +76,7 @@ const dlRoll = (l, d) => {
   const tier = fumble ? 'miss' : /Partial success/.test(t) ? 'weak' : /\bMiss\b|Failure/.test(t) ? 'miss' : (/\bHit\b|\bSuccess\b/.test(t) || crit) ? 'strong' : 'miss';
   const hp = /HP\s+(\d+)\/(\d+)/.exec(t);
   const bonus = dlParts(mod, l[0], d); const dmg = d && d.dmg ? { ...d.dmg, total: dlSumOf(d.dmg.v, d.dmg.parts) } : null;
-  return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts, d && d.foeType), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
+  return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
 // KEEP: under a held use's name, the grey words say only what it does ("strikes at once", "heals 10"): the heading already names the kind
 // and the sparkle already says no roll, so both drop there; the hero sheet keeps the full text (owner, 2026-11-10).
@@ -221,7 +221,7 @@ const dlOutTone = (r) => (r.fumble ? 'err' : { strong: 'ok', weak: 'part' }[r.ti
 const dlAtkSum = (r) => ({ d: [r.kept, 'd20'], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: 'vs ' + (r.fight ? 'AC ' : 'DC ') + r.dc, out: [dlGrade(r), dlOutTone(r)] });
 const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
 const dlFoeAtkSum = (f) => ({ d: [f.roll, 'd20'], adv: f.other != null, drop: f.other, m: f.bonus ? [['+', f.bonus, 'Bonus']] : [], t: f.roll + f.bonus, vs: 'vs AC ' + f.dc, out: f.hit ? ['Hit', 'err'] : ['Miss', ''] });
-const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg, typ: f.type || 'damage' });
+const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : [], t: f.dmg });
 // The named form: each number with its source; a dropped advantage die follows the kept one, its number struck diagonally.
 const DlNamed = ({ s, total }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}</span>
