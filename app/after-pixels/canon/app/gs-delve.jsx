@@ -60,7 +60,7 @@ const DL_GRADE = /^(Hit|Miss)$/;
 const DL_GRADED = /^(Success|Partial success|Failure)$/;
 const dlStruck = (parts) => { const sb = /^Struck back: (?:d20s (\d+) and (\d+), kept (\d+)|d20 (\d+))(?: \+ (\d+))? vs (\d+), (hit|missed)(?:, (?:d(\d+) (\d+) \+ (\d+) = )?(\d+) damage)?/.exec(parts.find((p) => /^Struck back: /.test(p)) || '');
   if (!sb) return null; const two = sb[1] != null; const roll = +(sb[3] || sb[4]);
-  return { roll, other: two ? (+sb[1] === roll ? +sb[2] : +sb[1]) : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === 'hit', dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: 'd' + sb[8], v: +sb[9], b: +sb[10] } : null }; };
+  return { roll, other: two ? (+sb[1] === roll ? +sb[2] : +sb[1]) : null, bonus: sb[5] ? +sb[5] : 0, dc: +sb[6], hit: sb[7] === 'hit', critical: roll === 20 && sb[7] === 'hit', dmg: sb[11] ? +sb[11] : 0, dd: sb[8] ? { die: 'd' + sb[8], v: +sb[9], b: +sb[10] } : null }; };
 // The foe's roll back is the last part of a hero roll's or a use's line: "Struck back: d20 14 vs 10, hit, 1 damage, HP 21/23" or "..., missed"; with advantage, "d20s 14 and 6, kept 14 vs 10". Its target is the hero's defence.
 const dlSigned = (n) => (n < 0 ? '−' : '+');
 // The parts of a roll's bonus, as the record names them: `detail` (the run's `detail[roll number]`) lists them; a record that lists none has the stat alone, as the platform names it first.
