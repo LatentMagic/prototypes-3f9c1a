@@ -302,7 +302,7 @@ const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
     <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.back ? 'Back to ' + st.name : st.name}</span></p>
     {/* KEEP: in the open room a key moment's die is drawn bigger (44px) than any other roll's (30px), as everywhere a key moment stands among other rolls (the user, 2026-11-25: "all big moments are big throughout relationally"); pressing a die only rings it, never resizes it. */}
-    <div className="dvG-dice">{st.turns.map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
+    <div className="dvG-dice">{st.turns.filter((r) => !r.lost).map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
   </div>
   {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
 </div>);
