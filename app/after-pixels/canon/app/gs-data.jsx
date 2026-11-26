@@ -355,7 +355,7 @@ export const GS_ED_SIDS = {
   casebook: { average: 'casebook', hard: 'casebook-hard', failed: 'casebook-failed' },
 };
 // How a finished session reads in a row: a loss (`loss`) is bad, anything else is ok.
-export const gsSessStatus = (s) => ({ kind: s.loss ? 'bad' : 'ok', label: s.result });
+export const gsSessStatus = (s) => ({ kind: s.live ? 'live' : s.loss ? 'bad' : 'ok', label: s.result });
 // The finished play Config → This edition picks for a game, or null to keep the seeded one.
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.

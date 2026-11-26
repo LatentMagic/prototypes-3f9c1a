@@ -87,8 +87,7 @@ function longRoute(n, hpMax, live) {
 // n is the number of room visits (1 to 25); `live` makes it a run still in progress.
 export const dlLongRun = (n, live = false) => { const { lines, detail, hp, threat, rolls } = longRoute(n, 24, live); const stops = ROUTE.slice(0, n); const rooms = new Set(stops.map((r) => r[0])).size;
   return { ...GS_SESSIONS['delve-hard'], hero: 'Bryn the Fighter', hpMax: 24, threat, foeMax: { "snaggle's den": 27, 'the great hall': 16 }, foeName: {}, lightName: 'the torch', light: 0, lightMax: 6,
-    ...(n === 25 && !live ? { lostOff: { over: true, name: 'Going back' } } : {}), ...(live ? { live: true } : {}),
-    result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed',
+    ...(n === 25 && !live ? { lostOff: { over: true, name: 'Going back' } } : {}), ...(live ? { live: true, loss: false, end: null, lostOff: null, result: 'In progress', reached: 'In progress', share: 'In progress' } : { result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed' }),
     figures: ['Threat ' + threat + '/12', rolls + ' rolls', 'HP ' + hp + '/24'], tracks: { progress: n, rooms, threat, threatMax: 12 }, lines, detail }; };
 
 export function initGsDelveRuns() {

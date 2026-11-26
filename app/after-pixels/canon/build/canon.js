@@ -1706,7 +1706,7 @@
     delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use", "lost-no-roll": "delve-lost-no-roll", "long-run": "delve-route-25", "long-live": "delve-route-20-live" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
-  const gsSessStatus = (s) => ({ kind: s.loss ? "bad" : "ok", label: s.result });
+  const gsSessStatus = (s) => ({ kind: s.live ? "live" : s.loss ? "bad" : "ok", label: s.result });
   const gsEdPick = (gid, gs) => {
     gs = gs || window.gsApi;
     const e = gs && gs.review && gs.review.ed;
@@ -12457,10 +12457,7 @@
       light: 0,
       lightMax: 6,
       ...n === 25 && !live ? { lostOff: { over: true, name: "Going back" } } : {},
-      ...live ? { live: true } : {},
-      result: "Too late: the chant was completed",
-      reached: "Too late: the chant was completed",
-      share: "Too late: the chant was completed",
+      ...live ? { live: true, loss: false, end: null, lostOff: null, result: "In progress", reached: "In progress", share: "In progress" } : { result: "Too late: the chant was completed", reached: "Too late: the chant was completed", share: "Too late: the chant was completed" },
       figures: ["Threat " + threat + "/12", rolls + " rolls", "HP " + hp + "/24"],
       tracks: { progress: n, rooms, threat, threatMax: 12 },
       lines,
