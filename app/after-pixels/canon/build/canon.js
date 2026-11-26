@@ -3646,8 +3646,8 @@
     const f = c.fight;
     if (!f) return [];
     return [
-      { key: "ac", label: "Armour class", num: f.defence, text: c.cls + " " + (f.defence - f.armour) + ", " + f.armourName + " +" + f.armour + "." },
-      { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.needs, text: "Needs " + f.heavy.needs + " to hit, " + f.heavy.dmg + " damage." }
+      { key: "ac", label: "Armour class", num: f.defence, text: c.cls + " " + (f.defence - f.armour) + ", " + f.armourName + " +" + f.armour },
+      { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.needs, text: "Needs " + f.heavy.needs + " to hit, " + f.heavy.dmg + " damage" }
     ];
   };
   const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== "used").length) }, (_, i) => c.gear[i] || null);

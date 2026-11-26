@@ -408,8 +408,8 @@ const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><div className="
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
   // KEEP: the game's armour class is the hero class's own plus what carried armour gear adds (monorepo campaign-game.ts heroAc; the sheet sends the total as `ac` and the gear's share as `acGear`, delve-sheet.ts). `defence` is that total, the same number as the struck-back target in the record's lines, so the parts are the class's own (the total less the armour's share) and the armour by name with its +.
-  return [{ key: 'ac', label: 'Armour class', num: f.defence, text: c.cls + ' ' + (f.defence - f.armour) + ', ' + f.armourName + ' +' + f.armour + '.' },
-    { key: 'heavy', label: f.heavy.name, kind: 'Heavy attack', num: f.heavy.needs, text: 'Needs ' + f.heavy.needs + ' to hit, ' + f.heavy.dmg + ' damage.' }]; };
+  return [{ key: 'ac', label: 'Armour class', num: f.defence, text: c.cls + ' ' + (f.defence - f.armour) + ', ' + f.armourName + ' +' + f.armour },
+    { key: 'heavy', label: f.heavy.name, kind: 'Heavy attack', num: f.heavy.needs, text: 'Needs ' + f.heavy.needs + ' to hit, ' + f.heavy.dmg + ' damage' }]; };
 const DlLabel = ({ name, kind }) => (kind ? <>{name}<small className="dv8-sub">{kind}</small></> : name);
 const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== 'used').length) }, (_, i) => c.gear[i] || null);
 
