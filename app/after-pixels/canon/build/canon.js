@@ -3412,9 +3412,9 @@
   const DlDieBtn = ({ r, size, act, on, foe, lit }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r, foe !== false), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t, foe }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
-  const DlResult = ({ s, m }) => {
+  const DlResult = ({ s, m, extra }) => {
     const line = m.end === "live" ? null : s.result;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dv7r-band" }, /* @__PURE__ */ React$1.createElement("h2", { className: "dv7r-word is-" + dlTone(m) }, dlWord(m)), line && /* @__PURE__ */ React$1.createElement("p", { className: "dv7r-line" }, line), extra);
   };
   const DlFoeDie = ({ f, size = 34 }) => /* @__PURE__ */ React$1.createElement(DS.DelveFoeDie, { value: f.roll, other: f.other != null ? f.other : void 0, hit: f.hit, surface: "popup", size });
   const dlRoomSaid = (r) => r.back ? "Back in " + r.room.replace(/^The /, "the ") : r.room;
@@ -3530,14 +3530,14 @@
   };
   const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: "Room " + (i + 1) }));
   const DlEmptyMap = ({ rooms }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG" }, /* @__PURE__ */ React$1.createElement(DlMap, { stops: dlEmptyStops(rooms).map((st) => ({ ...st, name: st.i === 0 ? "First room" : "Not reached", turns: [] })), open: 0, far: (st) => st.i > 0 }));
-  const DlCard = ({ s, m, roll, turn }) => {
+  const DlCard = ({ s, m, roll, turn, beside, summary }) => {
     const rooms = m.turns.length ? m.stops.length : s.tracks && s.tracks.rooms || 5;
     const [sel, setSel] = React$1.useState(() => turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null);
     const act = sel;
     if (!m.turns.length) {
-      return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlEmptyMap, { rooms }));
+      return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m, extra: beside }), summary, /* @__PURE__ */ React$1.createElement(DlEmptyMap, { rooms }));
     }
-    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlGlance, { m, act, setSel }));
+    return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m, extra: beside }), summary, /* @__PURE__ */ React$1.createElement(DlGlance, { m, act, setSel }));
   };
   const DL_STATE = { worn: "Worn", held: "Held", used: "Used" };
   const STAT_ORDER = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"];
@@ -3642,7 +3642,7 @@
     const of = c.abilities.reduce((n, a) => n + a.of, 0);
     return [
       { key: "stats", head: "Stats", icon: "stats", cells: /* @__PURE__ */ React$1.createElement(DlStatCells, { c }), after: /* @__PURE__ */ React$1.createElement(DlSkills, { c }), cls: "dv8-stats" },
-      { key: "advantage", head: "Advantage", icon: "advantage", cells: /* @__PURE__ */ React$1.createElement(DlAdvCells, { c }), cls: "dv8-adv" },
+      { key: "advantage", head: "Advantage", icon: "advantage", cells: c.advCells || /* @__PURE__ */ React$1.createElement(DlAdvCells, { c }), cls: "dv8-adv" },
       {
         key: "pack",
         head: "Pack",
@@ -3676,11 +3676,11 @@
     return /* @__PURE__ */ React$1.createElement(EsxFold, { open: !!grp }, grp && (grp.rows ? /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dvp-rows dl-panel esx-in", role: "group", "aria-label": grp.head }, grp.rows.map((r) => /* @__PURE__ */ React$1.createElement(DlTapRow, { key: r.key, ...r }))) : /* @__PURE__ */ React$1.createElement("div", { key: grp.key, className: "dl-panel dl-cellpanel esx-in " + grp.cls, role: "group", "aria-label": grp.head }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-cells" }, grp.cells), grp.after)));
   };
   const DlHead = ({ c, folded, fold }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-head is-fold" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp is-hero" }, /* @__PURE__ */ React$1.createElement("p", { className: "dv7-hero" }, /* @__PURE__ */ React$1.createElement("b", null, c.name), /* @__PURE__ */ React$1.createElement("span", null, c.cls))), /* @__PURE__ */ React$1.createElement(DlMeters, { c }), /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dl-fold", "aria-expanded": !folded, "aria-controls": "dl-sheet-tabs", "aria-label": "Character sheet details", onClick: fold }, /* @__PURE__ */ React$1.createElement(DS.Icon, { name: "next", size: 20 })));
-  const DlSheet = ({ c }) => {
+  const DlSheet = ({ c, openTab }) => {
     const ref = React$1.useRef(null);
     const one = useDlOneRow(ref);
-    const [card, setCard] = React$1.useState(null);
-    const [folded, setFolded] = React$1.useState(true);
+    const [card, setCard] = React$1.useState(openTab || null);
+    const [folded, setFolded] = React$1.useState(!openTab);
     const [seen, setSeen] = React$1.useState(one);
     const [tap, setTap] = React$1.useState(null);
     const groups = dlTabGroups(c, dlSlots(c));
@@ -12557,6 +12557,60 @@
     ] });
     if (pgActive()) GS_LIBRARY.delve = PgLibrary;
   };
+  const PG_SITS = {
+    scene1: { streak: 1, hits: 0, fight: false, ended: false },
+    scene3: { streak: 3, hits: 0, fight: false, ended: false },
+    fight2: { streak: 2, hits: 2, fight: true, ended: false },
+    fightAfter: { streak: 3, hits: 0, fight: true, ended: false },
+    ended: { streak: 2, hits: 0, fight: false, ended: true }
+  };
+  const PG_MARKS = {
+    1: { s: { label: "Success streak" }, h: { label: "Hit streak" } },
+    2: { s: { label: "Success streak", dimSub: "No advantage in a fight" }, h: { label: "Hit streak" } },
+    3: { s: { label: "Success streak", sub: "Checks", dimSub: "Not in a fight" }, h: { label: "Hit streak", sub: "Fights" } }
+  };
+  const pgLongestSay = (n, ended) => n > 0 ? "Longest streak " + n : ended ? "No streak" : "No streak yet";
+  const PgMark = ({ v, n, dim, name, title }) => /* @__PURE__ */ React$1.createElement(DlCell, { label: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, v.label, (dim ? v.dimSub : v.sub) && /* @__PURE__ */ React$1.createElement("small", { className: "dv8-sub" }, dim ? v.dimSub : v.sub)), used: dim, title }, /* @__PURE__ */ React$1.createElement("span", { className: dim ? "pga-dim" : "" }, /* @__PURE__ */ React$1.createElement(DlPips, { n, lit: true, name })));
+  const pgAdvCells = (c, sit, marks, longest, concept) => {
+    const w = PG_MARKS[marks];
+    const cells = [
+      /* @__PURE__ */ React$1.createElement(DlCell, { key: "insp", label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })),
+      /* @__PURE__ */ React$1.createElement(PgMark, { key: "s", v: w.s, n: sit.streak, dim: sit.fight, name: "Success streak", title: "Successes or hits in a row. From two on, every check outside a fight has advantage." }),
+      /* @__PURE__ */ React$1.createElement(PgMark, { key: "h", v: w.h, n: sit.hits, dim: false, name: "Hit streak", title: "Hits in a row in a fight. At two, the next attack has advantage and resets it." })
+    ];
+    if (concept === "2") cells.push(/* @__PURE__ */ React$1.createElement(DlCell, { key: "l", label: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, "Longest streak", /* @__PURE__ */ React$1.createElement("small", { className: "dv8-sub" }, sit.ended ? "This run" : "So far")), used: longest === 0, title: "The most the Success streak reached this run, fights included." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num pga-num" }, longest)));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, cells);
+  };
+  const PgBody = ({ s }) => {
+    const gs = useGs();
+    const sit = PG_SITS[usePgSetting("sit")];
+    const marks = usePgSetting("marks");
+    const concept = usePgSetting("concept");
+    const longest = +usePgSetting("longest");
+    const m = React$1.useMemo(() => dlBuild(s), [s]);
+    const base = React$1.useMemo(() => dlSheet(s, m), [s, m]);
+    const c = { ...base, advCells: pgAdvCells(base, sit, marks, longest, concept) };
+    const say = pgLongestSay(longest, sit.ended);
+    const summary = concept === "1" ? /* @__PURE__ */ React$1.createElement("p", { className: "pga-sum" + (longest === 0 ? " is-none" : "") }, say) : null;
+    const beside = concept === "3" ? /* @__PURE__ */ React$1.createElement("div", { className: "pga-tile" + (longest === 0 ? " is-none" : ""), role: "group", "aria-label": say }, /* @__PURE__ */ React$1.createElement("b", null, longest), /* @__PURE__ */ React$1.createElement("span", null, "Longest streak")) : null;
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { key: sit.fight + "" + marks + concept, c, openTab: "advantage" }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn, summary, beside })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
+  };
+  const initPlaygroundAdvantage = () => {
+    const o = (value, label, state) => ({ value, label, ...state ? { state } : {} });
+    pgRegister("advantage", { title: "Delve Advantage tab", settings: [
+      { key: "concept", kind: "concept", label: "Longest streak", options: [o("1", "1. On the run card"), o("2", "2. Own cell in Advantage"), o("3", "3. Beside the result")] },
+      { key: "sit", label: "State", options: [
+        o("scene1", "Mid-scene, Success streak 1", "session-delve-in-progress"),
+        o("scene3", "Scene with advantage, Success streak 3", "session-delve-in-progress"),
+        o("fight2", "Mid-fight, Hit streak 2", "session-delve-fight-live"),
+        o("fightAfter", "Fight, just after the advantaged attack", "session-delve-fight-live"),
+        o("ended", "Run ended", "session-delve")
+      ] },
+      { key: "marks", label: "Marks", options: [o("1", "1. Plain labels"), o("2", "2. Tag under dim"), o("3", "3. Sub-labels")] },
+      { key: "longest", label: "Longest streak value", options: ["3", "0", "2", "5"].map((v) => o(v, v)) }
+    ] });
+    if (pgActive()) GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(PgBody, { key: p.sid, ...p });
+  };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
   const whBand = (km) => km === null ? "found" : km >= 1e3 ? "far" : km >= 100 ? "mid" : "near";
@@ -13213,4 +13267,5 @@
   initGsCommon();
   initGsSalvage();
   initPlaygroundNowCard();
+  initPlaygroundAdvantage();
 })(React, ReactDOM);
