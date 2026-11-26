@@ -488,7 +488,7 @@ const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET *
 const DlNowPic = ({ m }) => {
   const ref = React.useRef(null); const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
   const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);
-  const keys = [...m.turns, ...(m.lostMark ? [m.lostMark] : [])].filter((r) => m.mom[r.t]).reverse().slice(0, 4);
+  const keys = [...m.turns, ...(m.lostMark ? [m.lostMark] : [])].filter((r) => m.mom[r.t]).reverse();
   const few = shown.length <= DL_MAP_FEW;
   return (<div ref={ref} className="dl-now-pic" role="group" aria-label="The way you went">
     <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={m.stops.length ? 'The last ' + shown.length + ' stops' : 'The run has started, no stop yet'}>

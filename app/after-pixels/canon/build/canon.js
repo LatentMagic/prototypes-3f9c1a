@@ -3744,7 +3744,7 @@
     const ref = React$1.useRef(null);
     const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
     const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);
-    const keys = [...m.turns, ...m.lostMark ? [m.lostMark] : []].filter((r) => m.mom[r.t]).reverse().slice(0, 4);
+    const keys = [...m.turns, ...m.lostMark ? [m.lostMark] : []].filter((r) => m.mom[r.t]).reverse();
     const few = shown.length <= DL_MAP_FEW;
     return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-pic", role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops" + (few ? " is-few" : ""), style: { "--n": shown.length, "--few": DL_NOW_GAP_FEW + "px" }, role: "img", "aria-label": m.stops.length ? "The last " + shown.length + " stops" : "The run has started, no stop yet" }, shown.map((st) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st, "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dl-now-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-name" }, dlNowNames(m.mom[r.t].kickers).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
   };
