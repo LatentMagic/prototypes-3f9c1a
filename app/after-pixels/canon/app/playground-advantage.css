@@ -12,5 +12,7 @@
 .pga-tile span { font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 .pga-tile.is-none b { color: var(--muted); }
 @media (max-width: 600px) { .pga-tile { margin-left: 0; margin-top: 8px; } }
-/* Concept 2: two pairs of cells that wrap as pairs (one row of four, or two rows of two). */
-.pga-pair { display: flex; gap: 16px 24px; }
+/* Concept 2: one row of four equal columns, or on a phone two rows of two, so the columns line up. */
+.dl-cellpanel .dv7-cells:has(> .pga-pair) { display: grid; width: max-content; max-width: 100%; margin: 0 auto; grid-template-columns: repeat(4, 1fr); gap: 16px 24px; }
+.pga-pair { display: contents; }
+@media (max-width: 640px) { .dl-cellpanel .dv7-cells:has(> .pga-pair) { grid-template-columns: repeat(2, 1fr); } }
