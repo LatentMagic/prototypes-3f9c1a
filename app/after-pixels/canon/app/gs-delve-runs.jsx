@@ -1,50 +1,12 @@
 // ============================================================================
 // After Pixels — Delve's long and detailed sample runs, for the session page and the Now card at their worst (hard states):
 // a 20-stop and a 25-stop route with returns, a run that earns all five key moments (one roll earning two), a fight in progress and a fight lost.
-// Each run is written as steps and turned into the record's lines, plus `detail` (the bonuses named, the damage roll, the foe's bonus) that app/gs-delve.jsx reads by roll number.
-// SAMPLE: the rolls and damage below; stat and proficiency bonuses follow the game rules.
+// Each run is written as dice and turned into the record's lines, plus `detail` (the bonuses named, the damage roll, the foe's bonus) that app/gs-delve.jsx reads by roll number, by app/gs-delve-record.jsx.
+// SAMPLE: the dice and damage faces below; every bonus, grade, damage and health follows from the game's rules there.
 // Loads after app/gs-delve.jsx, whose sessions it copies.
 // ============================================================================
 import { GS_SESSIONS, GS_DV_TURNCOAT } from './gs-data.jsx';
-
-const sumP = (mods) => mods.reduce((n, p) => n + (p[0] === '−' ? -p[1] : p[1]), 0);
-const nat = (die) => (die === 20 ? 'Natural 20' : die === 1 ? 'Natural 1' : null);
-// "d20 14 + 3 = 17 vs 12", "d20s 4 and 12, kept 12 + 3 = 15 vs 12"
-const sumText = (die, other, mods, vs) => { const net = sumP(mods);
-  return (other != null ? 'd20s ' + other + ' and ' + die + ', kept ' + die : 'd20 ' + die) + (net < 0 ? ' - ' : ' + ') + Math.abs(net) + ' = ' + (die + net) + ' vs ' + vs; };
-
-// A recorder: steps in, `lines`, `detail`, and the `hp` and `threat` the record ends on, out.
-// It throws if a step comes after the hero is at 0 HP or the threat has filled, so no sample can play on past its own end.
-//   ['room', name] · ['back', name] · ['raw', line]
-//   ['chk', stat, action, skill, die, mods, dc, { other, harm }]   a check against a DC
-//   ['atk', stat, heavy, die, mods, ac, { other, dmg: [die, value, mods, type], foe: { roll, other, bonus, dd: [die, value, bonus] }, harm }]   an attack on a foe, its damage and the foe's turn
-function dlRecord(steps, hpMax, heroAc, threatMax = 12) {
-  let room = null; let hp = hpMax; let n = 0; let threat = 0; let escalation = 0; const lines = []; const detail = {};
-  const hpOf = (h) => 'HP ' + h + '/' + hpMax;
-  steps.forEach(([k, ...a]) => {
-    if (hp <= 0 || threat >= threatMax) throw new Error('dlRecord: a step after the run has ended (' + k + ' ' + a[0] + ')');
-    if (k === 'room' || k === 'back') { room = a[0]; escalation = 0; }
-    if (k === 'room') { lines.push(['Room', 'Entered ' + a[0]]); return; }
-    if (k === 'back') { threat += 1; lines.push(['Room', 'Doubled back to ' + a[0], 'The chant +1']); return; }
-    if (k === 'raw') { lines.push(a[0]); return; }
-    n += 1;
-    if (k === 'chk') { const [stat, action, skill, die, mods, dc, o = {}] = a; const total = die + sumP(mods);
-      const grade = die === 1 ? 'Failure' : die === 20 || total >= dc ? 'Success' : total >= dc - 5 ? 'Partial success' : 'Failure';
-      const paidThreat = o.threat || 0; threat += paidThreat;
-      const harm = grade === 'Success' ? 0 : Math.min(o.harm || 0, Math.max(0, hp - 2)); hp -= harm;
-      lines.push([stat, action, grade, ...(nat(die) ? [nat(die)] : []), sumText(die, o.other, mods, dc), ...(harm ? [hpOf(hp)] : []), ...(paidThreat ? ['Threat +' + paidThreat] : [])]);
-      detail[n] = { parts: mods, skill }; return; }
-    const [stat, heavy, die, baseMods, ac, o = {}] = a; const mods = [...baseMods.filter((p) => p[2] !== 'Escalation'), ...(escalation ? [['+', escalation, 'Escalation']] : [])]; const total = die + sumP(mods); const hit = die !== 1 && (die === 20 || total >= ac); const f = o.foe;
-    const dmg = hit && o.dmg ? { die: o.dmg[0], v: o.dmg[1], parts: o.dmg[2], type: o.dmg[3] } : null;
-    let back = [];
-    if (f) { escalation = Math.min(2, escalation + 1); const ft = f.roll + (f.bonus || 0); const fhit = ft >= heroAc; const dmgDone = fhit ? (f.dd ? f.dd[1] + f.dd[2] : f.dmg) : 0; if (fhit) hp = Math.max(0, hp - dmgDone);
-      back = ['Struck back: ' + (f.other != null ? 'd20s ' + f.other + ' and ' + f.roll + ', kept ' + f.roll : 'd20 ' + f.roll) + (f.bonus ? ' + ' + f.bonus : '') + ' vs ' + heroAc + ', '
-        + (fhit ? 'hit, ' + (f.dd ? 'd' + f.dd[0] + ' ' + f.dd[1] + ' + ' + f.dd[2] + ' = ' : '') + dmgDone + ' damage, ' + hpOf(hp) : 'missed')]; }
-    lines.push([stat, ...(heavy ? ['Heavy attack: ' + heavy] : []), hit ? 'Hit' : 'Miss', ...(nat(die) ? [nat(die)] : []), sumText(die, o.other, mods, ac), ...back]);
-    detail[n] = { parts: mods, ...(dmg ? { dmg } : {}) };
-  });
-  return { lines, detail, hp, threat, rolls: n };
-}
+import { dlRecorder, dlRecord, dlFigures } from './gs-delve-record.jsx';
 
 // Seeded dice, so the long runs are the same every load.
 const seeded = (seed) => () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
@@ -54,46 +16,53 @@ const ROUTE = [['the gate'], ["snaggle's den"], ['the gate', 1], ['the chime run
   ['the well shaft'], ['the barracks'], ['the well shaft', 1], ['the chapel'], ['the crypt'], ['the chapel', 1], ['the bone pit'], ['the treasury'], ['the bone pit', 1], ['the crypt', 1], ['the treasury', 1],
   ['the great hall'], ['the crypt', 1], ['the great hall', 1], ['the chapel', 1], ['the great hall', 1]];
 const ROLLS = [1, 3, 0, 3, 1, 0, 4, 2, 1, 2, 3, 0, 1, 2, 0, 3, 1, 1, 0, 1, 4, 1, 2, 0, 0];
-const CHECKS = [['Strength', 'Force the door', 'Athletics', 3, 'STR'], ['Wisdom', 'Listen at the wall', 'Perception', 0, 'WIS'], ['Dexterity', 'Slip the trap', null, 1, 'DEX'], ['Constitution', 'Hold your breath', null, 2, 'CON']];
+const CHECKS = [['Strength', 'Force the door', 'Athletics'], ['Wisdom', 'Listen at the wall', 'Perception'], ['Dexterity', 'Slip the trap', null], ['Constitution', 'Hold your breath', null]];
 // The threat is full on the run's last turn and not before: every going back costs 1, so the 25-stop run (12 returns) fills it on its last return and every roll before it succeeds;
 // the 20-stop run (8 returns) adds a natural 1 on the chime run (2), a failed check in the well shaft (1) and a failed check that is its last roll (1).
 const MISS = (n, i, k) => n === 20 && ((i === 3 && k === 0) || (i === 9 && k === 0) || (i === 19 && k === 0));
-function longRoute(n, hpMax, live) {
-  const rnd = seeded(7); const steps = []; const health = { "snaggle's den": 27, 'the great hall': 16 };
+const FOE_ROOMS = ["snaggle's den", 'the great hall'];
+function longRoute(n, live) {
+  const rnd = seeded(7); const rec = dlRecorder('Bryn the Fighter', 24); const die = () => 10 + Math.floor(rnd() * 10);
+  const blow = () => ({ faces: [1 + Math.floor(rnd() * 4), 1 + Math.floor(rnd() * 4)], foe: { roll: 3 + Math.floor(rnd() * 17), faces: [1 + Math.floor(rnd() * 3), 1 + Math.floor(rnd() * 3)] } });
   ROUTE.slice(0, n).forEach(([name, back], i) => {
-    steps.push([back && !(live && i === 24) ? 'back' : 'room', live && i === 24 ? 'the watchtower' : name]);
-    const fight = (name === "snaggle's den" || name === 'the great hall') && health[name] > 0;
+    rec.step(back && !(live && i === 24) ? 'back' : 'room', live && i === 24 ? 'the watchtower' : name);
     for (let k = 0; k < ROLLS[i]; k += 1) {
       const lose = !live && MISS(n, i, k); const nat1 = lose && i === 3;
-      const die = nat1 ? 1 : lose ? 3 : i === 6 && k === 1 ? 20 : 10 + Math.floor(rnd() * 10);
-      if (fight) {
-        const heavy = k === 0 ? 'Cleave' : null; const mods = [['+', 3, 'STR'], ['+', 2, 'Martial'], ...(heavy ? [['−', 2, 'Heavy']] : [])];
-        const attackDie = die;
-        const ac = name === "snaggle's den" ? 14 : 12; const face = name === 'the great hall' ? 1 : 1 + Math.floor(rnd() * 4);
-        const damage = face + 3 + (heavy ? 2 : 0); const hit = attackDie + sumP(mods) >= ac;
-        if (hit) health[name] = Math.max(0, health[name] - damage);
-        steps.push(['atk', 'Strength', heavy, attackDie, mods, ac, { dmg: ['d4', face, [['+', 3, 'STR'], ...(heavy ? [['+', 2, 'Heavy']] : [])], 'Slashing'], ...(health[name] > 0 ? { foe: { roll: 3 + Math.floor(rnd() * 17), bonus: name === "snaggle's den" ? 4 : 3, dd: [3, 1, 1] } } : {}) }]);
-      } else {
-        const c = CHECKS[(i + k) % 4]; const mods = [...(c[3] > 0 ? [['+', c[3], c[4]]] : []), ...(c[2] ? [['+', 2, c[2]]] : [])];
-        steps.push(['chk', c[0], c[1], c[2], die, mods, lose ? 15 : 10, { harm: 1, threat: lose ? (nat1 ? 2 : 1) : 0 }]);
-      }
+      const d = nat1 ? 1 : lose ? 3 : i === 6 && k === 1 ? 20 : die();
+      if (FOE_ROOMS.includes(name) && rec.foeLeft() > 0) rec.step('atk', d, { ...blow(), heavy: k === 0 });
+      else { const c = CHECKS[(i + k) % 4]; rec.step('chk', c[0], c[1], c[2], d, lose ? 15 : 10, { harm: 1, threat: lose ? (nat1 ? 2 : 1) : 0 }); }
     }
-    if ((name === "snaggle's den" || name === 'the great hall') && health[name] > 0) {
-      while (health[name] > 0) {
-        health[name] = Math.max(0, health[name] - 7);
-        steps.push(['atk', 'Strength', null, 14, [['+', 3, 'STR'], ['+', 2, 'Martial']], name === "snaggle's den" ? 14 : 12, { dmg: ['d4', 4, [['+', 3, 'STR']], 'Slashing'], ...(health[name] ? { foe: { roll: 3, bonus: name === "snaggle's den" ? 4 : 3 } } : {}) }]);
-      }
-    }
+    // A foe still standing when the room's rolls are spent is fought to the end before the hero goes on.
+    while (FOE_ROOMS.includes(name) && rec.foeLeft() > 0) rec.step('atk', 14, blow());
   });
-  return dlRecord(steps, hpMax, 16);
+  return rec.done();
 }
 
 // A long run lost to the ritual, ended: the most going back the editions allow, the hero still standing. The 25-stop run fills the threat on its last going back, so it ends on the loss cross.
 // n is the number of room visits (1 to 25); `live` makes it a run still in progress.
-export const dlLongRun = (n, live = false) => { const { lines, detail, hp, threat, rolls } = longRoute(n, 24, live); const stops = ROUTE.slice(0, n).map((r, i) => live && i === 24 ? ['the watchtower'] : r); const rooms = new Set(stops.map((r) => r[0])).size;
-  return { ...GS_SESSIONS['delve-hard'], hero: 'Bryn the Fighter', hpMax: 24, threat, foeMax: { "snaggle's den": 27, 'the great hall': 16 }, foeName: {}, lightName: 'the torch', light: 0, lightMax: 6,
+export const dlLongRun = (n, live = false) => { const rec = longRoute(n, live); const stops = ROUTE.slice(0, n).map((r, i) => live && i === 24 ? ['the watchtower'] : r); const rooms = new Set(stops.map((r) => r[0])).size;
+  return { ...GS_SESSIONS['delve-hard'], hero: 'Bryn the Fighter', hpMax: 24, threat: rec.threat, foeMax: { "snaggle's den": 27, 'the great hall': 16 }, foeName: {}, lightName: 'the torch', light: 0, lightMax: 6,
     ...(n === 25 && !live ? { lostOff: { over: true, name: 'Going back' } } : {}), ...(live ? { live: true, loss: false, end: null, lostOff: null, result: 'In progress', reached: 'In progress', share: 'In progress' } : { result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed' }),
-    figures: ['Threat ' + threat + '/12', rolls + ' rolls', 'HP ' + hp + '/24'], tracks: { progress: n, rooms, threat, threatMax: 12 }, lines, detail }; };
+    figures: dlFigures(rec, 24), tracks: { progress: n, rooms, threat: rec.threat, threatMax: 12 }, lines: rec.lines, detail: rec.detail }; };
+
+// A won run that earns all five key moments: Worst roll (a natural 1), Closest call (10 against 10), Best roll and Biggest hit on one roll (a natural 20 Cleave), and the Winning blow.
+// `five` is the variant whose Biggest hit is another roll than the natural 20 (a Cleave of 9 against the critical's 7): five moments on five rolls.
+const keyMoments = (five) => dlRecord('Bryn the Fighter', 24, [
+  ['chk', 'Wisdom', "Search the lock-keeper's niche", 'Perception', 11, 10],
+  ['room', 'the chime run'],
+  ['chk', 'Strength', 'Climb the bone stair', 'Athletics', 1, 10, { harm: 3 }],
+  ['chk', 'Dexterity', 'Slip past the chimes', null, 9, 10],
+  ['room', 'the warren'], ['raw', ['Turn', 'The turncoat joins', GS_DV_TURNCOAT]],
+  ['room', "Snaggle's den"],
+  ['atk', 12, { heavy: true, faces: [five ? 4 : 2], foe: { roll: 15, faces: [2] } }],
+  ['atk', 9, { faces: [3], foe: { roll: 6, faces: [1] } }],
+  ['atk', 20, { heavy: true, faces: five ? [1, 1] : [4, 3], foe: { roll: 16, faces: [3] } }],
+  ['atk', 4, { foe: { roll: 7, faces: [1] } }],
+  ['atk', 14, { faces: [2] }],
+  ['room', 'the shrine cavern'],
+  ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [4], foe: { roll: 4, faces: [1] } }],
+  ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [4] }],
+]);
 
 export function initGsDelveRuns() {
   const long = dlLongRun;
@@ -101,75 +70,49 @@ export function initGsDelveRuns() {
   GS_SESSIONS['delve-route-20-live'] = long(20, true);
   GS_SESSIONS['delve-route-25'] = long(25);
 
-  // A won run that earns all five key moments: Worst roll (a natural 1), Closest call (12 against 12), Best roll and Biggest hit on one roll (a natural 20 Cleave), and the Winning blow.
-  const STR = ['+', 3, 'STR']; const MART = ['+', 2, 'Martial']; const HEAVY = ['−', 2, 'Heavy'];
-  const km = dlRecord([
-    ['chk', 'Wisdom', "Search the lock-keeper's niche", 'Perception', 11, [['+', 2, 'Perception']], 10],
-    ['room', 'the chime run'],
-    ['chk', 'Strength', 'Climb the bone stair', 'Athletics', 1, [STR, ['+', 2, 'Athletics']], 10, { harm: 3 }],
-    ['chk', 'Dexterity', 'Slip past the chimes', null, 11, [['+', 1, 'DEX']], 10],
-    ['room', 'the warren'], ['raw', ['Turn', 'The turncoat joins', GS_DV_TURNCOAT]],
+  const km = keyMoments(false); const five = keyMoments(true);
+  const kmBase = { ...GS_SESSIONS.delve, hpMax: 24, foeMax: { "snaggle's den": 27, 'the shrine cavern': 44 }, sheet: { used: {}, insp: true } };
+  const kmSession = (r) => ({ ...kmBase, lines: r.lines, detail: r.detail, figures: dlFigures(r, 24), threat: r.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: r.threat } });
+  GS_SESSIONS['delve-key-moments'] = kmSession(km);
+  GS_SESSIONS['delve-five-moments'] = kmSession(five);
+
+  // Bryn in Snaggle's den: a critical hit from the foe (two d3 and the dark's 1) and a roll that spent the light.
+  const fd = dlRecord('Bryn the Fighter', 24, [['room', "snaggle's den"], ['atk', 12, { faces: [2], foe: { roll: 20, faces: [2, 3], dark: true } }]]);
+  fd.detail[1].light = 1;
+  const fdBase = { ...GS_SESSIONS['delve-live'], hero: 'Bryn the Fighter', hpMax: 24, light: 0, lightMax: 6, tracks: { progress: 1, rooms: 1, threatMax: 12 } };
+  const play = (r, more = {}) => ({ ...fdBase, threat: r.threat, lines: r.lines, detail: r.detail, figures: dlFigures(r, 24), tracks: { ...fdBase.tracks, threat: r.threat }, ...more });
+  GS_SESSIONS['delve-fight-details'] = play(fd);
+  // Gear: the pepper pouch strikes Snaggle and he answers; the flask of lamp oil restores light.
+  GS_SESSIONS['delve-gear-strike'] = play(dlRecord('Bryn the Fighter', 24, [['room', "snaggle's den"], ['use', 'Gear', 'pepper pouch', { dmg: 4, foe: { roll: 9, faces: [1] } }]]));
+  GS_SESSIONS['delve-gear-light'] = play(dlRecord('Bryn the Fighter', 24, [['room', 'the gate'], ['raw', ['Gear', 'Used flask of lamp oil']]]), { light: 3 });
+  // Fallen on a use: five misses beaten down to 4 hit points, then the pouch, and Snaggle's answer brings the hero down.
+  const fu = dlRecord('Bryn the Fighter', 24, [
+    ['room', 'the gate'], ['room', "snaggle's den"],
+    ['atk', 3, { foe: { roll: 15, faces: [3] } }], ['atk', 5, { foe: { roll: 14, faces: [3] } }], ['atk', 2, { foe: { roll: 18, faces: [3] } }], ['atk', 6, { foe: { roll: 13, faces: [3] } }], ['atk', 4, { foe: { roll: 16, faces: [3] } }],
+    ['use', 'Gear', 'pepper pouch', { dmg: 4, foe: { roll: 15, faces: [3] } }],
+  ]);
+  GS_SESSIONS['delve-fallen-use'] = play(fu, { live: false, loss: true, end: 'fallen', result: "Fell in Snaggle's den" });
+
+  // Wren in the shrine cavern, mid-fight with the drowned captain: a missed heavy attack, then a hit, so the streak stands at 1.
+  const wrenBase = { ...GS_SESSIONS['delve-live'], hpMax: 22, foeMax: { 'the shrine cavern': 44 }, foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' }, sheet: { used: {}, insp: true } };
+  const wren = (r) => ({ ...wrenBase, lines: r.lines, detail: r.detail, figures: dlFigures(r, 22), tracks: { progress: 2, rooms: 2, threat: r.threat, threatMax: 12 }, threat: r.threat });
+  GS_SESSIONS['delve-fight-live'] = wren(dlRecord('Wren the Rogue', 22, [
+    ['chk', 'Dexterity', 'Slip the shrine gate', null, 14, 10], ['room', 'the shrine cavern'],
+    ['atk', 6, { heavy: true, foe: { roll: 15, faces: [2] } }], ['atk', 15, { faces: [4], foe: { roll: 5, faces: [1] } }],
+  ]));
+  // Wren mid-fight with the drowned captain, two hits in a row giving her last roll advantage (two d20s, the lower dropped); it is a heavy attack that misses, so the foe's roll back has advantage too, and the held roll shows both dropped dice.
+  GS_SESSIONS['delve-advantage'] = wren(dlRecord('Wren the Rogue', 22, [
+    ['chk', 'Dexterity', 'Slip the shrine gate', null, 16, 10], ['room', 'the shrine cavern'],
+    ['atk', 14, { faces: [4], foe: { roll: 5, faces: [1] } }], ['atk', 12, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 6, { heavy: true, foe: { roll: 15, faces: [3] } }],
+  ]));
+
+  // Bryn lost in the same kind of fight: the run ends mid-fight on a hit that left Snaggle standing, so the streak freezes at 1 and the longest streak stays.
+  const ff = dlRecord('Bryn the Fighter', 24, [
+    ['chk', 'Dexterity', 'Cross the trapped bridge', null, 3, 10, { harm: 2 }],
     ['room', "snaggle's den"],
-    ['atk', 'Strength', 'Cleave', 13, [STR, MART, HEAVY], 14, { dmg: ['d4', 1, [STR, ['+', 2, 'Heavy']], 'Slashing'], foe: { roll: 15, bonus: 4, dd: [3, 2, 1] } }],
-    ['atk', 'Strength', null, 9, [STR, MART], 14, { dmg: ['d4', 1, [STR], 'Slashing'], foe: { roll: 6, bonus: 4, dd: [3, 1, 1] } }],
-    ['atk', 'Strength', 'Cleave', 20, [STR, MART, ['+', 1, 'Magic'], HEAVY], 14, { dmg: ['d4', 1, [['+', 1, 'd4'], STR, ['+', 1, 'Magic'], ['+', 2, 'Heavy']], 'Slashing'], foe: { roll: 16, other: 5, bonus: 4, dd: [3, 3, 1] } }],
-    ['atk', 'Strength', null, 4, [STR, MART], 14, { foe: { roll: 7, bonus: 4, dd: [3, 1, 1] } }],
-    ['atk', 'Strength', null, 14, [STR, MART], 14, { dmg: ['d4', 1, [STR], 'Slashing'], foe: { roll: 5, bonus: 4, dd: [3, 1, 1] } }],
-    ['atk', 'Strength', null, 14, [STR, MART], 14, { dmg: ['d4', 2, [STR], 'Slashing'] }],
-    ['room', 'the shrine cavern'],
-    ['atk', 'Strength', null, 12, [STR, MART], 12, { dmg: ['d4', 3, [STR], 'Slashing'], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Strength', null, 17, [STR, MART], 12, { dmg: ['d4', 3, [STR], 'Slashing'], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Strength', null, 17, [STR, MART], 12, { dmg: ['d4', 3, [STR], 'Slashing'], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Strength', null, 17, [STR, MART], 12, { dmg: ['d4', 3, [STR], 'Slashing'], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Strength', null, 17, [STR, MART], 12, { dmg: ['d4', 3, [STR], 'Slashing'], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Strength', null, 17, [STR, MART], 12, { dmg: ['d4', 4, [STR], 'Slashing'], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Strength', null, 17, [STR, MART], 12, { dmg: ['d4', 4, [STR], 'Slashing'] }],
-  ], 24, 16);
-  GS_SESSIONS['delve-key-moments'] = { ...GS_SESSIONS.delve, hpMax: 24, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 27, 'the shrine cavern': 44 }, figures: ['Threat ' + km.threat + '/12', km.rolls + ' rolls', '1 natural 20', 'HP ' + km.hp + '/24'], threat: km.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: km.threat }, sheet: { used: {}, insp: true } };
-
-  // Shift damage between two attacks so Best roll and Biggest hit belong to different rolls.
-  const fiveDetail = { ...km.detail, 4: { ...km.detail[4], dmg: { ...km.detail[4].dmg, v: 4, parts: [STR, ['+', 2, 'Heavy']] } }, 6: { ...km.detail[6], dmg: { ...km.detail[6].dmg, v: 1, parts: [['+', 1, 'd4'], STR, ['+', 1, 'Magic'], ['+', 2, 'Heavy']] } } };
-  GS_SESSIONS['delve-five-moments'] = { ...GS_SESSIONS['delve-key-moments'], detail: fiveDetail };
-
-  const extras = dlRecord([
-    ['room', "snaggle's den"],
-    ['atk', 'Strength', null, 12, [STR, MART], 14, { dmg: ['d4', 2, [STR], 'Slashing'], foe: { roll: 20, bonus: 4, dd: [3, 3, 1] } }],
-  ], 24, 16);
-  extras.lines[1][extras.lines[1].length - 1] = 'Struck back: d20 20 + 4 vs 16, hit, 5 damage, HP 19/24';
-  extras.detail[1].foe = { critical: true, dark: true, dd: { die: 'd3', v: 2, b: 1, extra: 1 } };
-  extras.detail[1].light = 1;
-  GS_SESSIONS['delve-fight-details'] = { ...GS_SESSIONS['delve-live'], hero: 'Bryn the Fighter', hpMax: 24, threat: extras.threat, light: 0, lightMax: 6, lines: extras.lines, detail: extras.detail, figures: ['Threat 0/12', '1 roll', 'HP 19/24'], tracks: { progress: 1, rooms: 1, threat: 0, threatMax: 12 } };
-  GS_SESSIONS['delve-gear-strike'] = { ...GS_SESSIONS['delve-fight-details'], figures: ['Threat 0/12', '0 rolls', 'HP 24/24'], lines: [['Room', "Entered snaggle's den"], ['Gear', 'Used pepper pouch', 'Snaggle: health 27 → 23', 'Struck back: d20 9 + 4 vs 16, missed']], detail: {} };
-  GS_SESSIONS['delve-fallen-use'] = { ...GS_SESSIONS['delve-fight-details'], live: false, loss: true, end: 'fallen', result: "Fell in Snaggle's den", figures: ['Threat 0/12', '1 roll', 'HP 0/24'], lines: [['Room', 'Entered the gate'], ['Strength', 'Failure', 'd20 2 + 3 = 5 vs 15', 'HP 4/24'], ['Room', "Entered snaggle's den"], ['Gear', 'Used pepper pouch', 'Snaggle: health 27 → 23', 'Struck back: d20 20 + 4 vs 16, hit, 4 damage, HP 0/24']], detail: {} };
-  GS_SESSIONS['delve-gear-light'] = { ...GS_SESSIONS['delve-fight-details'], light: 3, figures: ['Threat 0/12', '0 rolls', 'HP 24/24'], lines: [['Room', 'Entered the gate'], ['Gear', 'Used flask of lamp oil']], detail: {} };
-
-  // Wren in the shrine cavern, mid-fight with the drowned captain: a miss then a hit, so the streak stands at 1.
-  const DEX = ['+', 3, 'DEX']; const SIMP = ['+', 2, 'Simple'];
-  const fl = dlRecord([
-    ['chk', 'Dexterity', 'Slip the shrine gate', null, 14, [DEX], 10],
-    ['room', 'the shrine cavern'],
-    ['atk', 'Dexterity', 'Flurry', 6, [DEX, SIMP, HEAVY], 12, { dmg: null, foe: { roll: 15, other: 9, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Dexterity', null, 15, [DEX, SIMP], 12, { other: 4, dmg: ['d4', 4, [DEX], 'Piercing'], foe: { roll: 5, bonus: 8 } }],
-  ], 22, 14);
-  GS_SESSIONS['delve-fight-live'] = { ...GS_SESSIONS['delve-live'], hpMax: 22, lines: fl.lines, detail: fl.detail, foeMax: { 'the shrine cavern': 44 }, foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' }, figures: ['Threat ' + fl.threat + '/12', fl.rolls + ' rolls', 'HP ' + fl.hp + '/22'], tracks: { progress: 2, rooms: 2, threat: fl.threat, threatMax: 12 }, threat: fl.threat, sheet: { used: {}, insp: true } };
-
-  // Wren mid-fight with the drowned captain, two hits in a row giving her last roll, an attack, advantage, and the foe's roll back an advantage roll too (two d20s each, the lower dropped), so the held roll shows both dropped dice.
-  const adv = dlRecord([
-    ['chk', 'Dexterity', 'Slip the shrine gate', null, 16, [DEX], 10, { other: 5 }],
-    ['room', 'the shrine cavern'],
-    ['atk', 'Dexterity', 'Flurry', 9, [DEX, SIMP, HEAVY], 12, { dmg: ['d4', 4, [DEX, ['+', 4, 'Heavy']], 'Piercing'], foe: { roll: 6, bonus: 8, dd: [3, 2, 1] } }],
-    ['atk', 'Dexterity', null, 14, [DEX, SIMP], 12, { dmg: ['d4', 3, [DEX], 'Piercing'], foe: { roll: 5, bonus: 8 } }],
-    ['atk', 'Dexterity', null, 17, [DEX, SIMP], 12, { other: 4, dmg: ['d4', 4, [DEX], 'Piercing'], foe: { roll: 15, other: 9, bonus: 8, dd: [3, 2, 1] } }],
-  ], 22, 14);
-  GS_SESSIONS['delve-advantage'] = { ...GS_SESSIONS['delve-live'], hpMax: 22, lines: adv.lines, detail: adv.detail, foeMax: { 'the shrine cavern': 44 }, foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' }, figures: ['Threat ' + adv.threat + '/12', adv.rolls + ' rolls', 'HP ' + adv.hp + '/22'], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };
-
-  // Bryn lost in the same kind of fight: the run ends mid-fight, so the streak freezes at 1 and the longest streak stays.
-  const ff = dlRecord([
-    ['chk', 'Dexterity', 'Cross the trapped bridge', null, 3, [['+', 1, 'DEX']], 10, { harm: 14 }],
-    ['room', "snaggle's den"],
-    ['atk', 'Strength', 'Cleave', 15, [STR, MART, HEAVY], 14, { dmg: ['d4', 3, [STR, ['+', 2, 'Heavy']], 'Slashing'], foe: { roll: 18, bonus: 4, dd: [3, 3, 1] } }],
-    ['atk', 'Strength', null, 6, [STR, MART], 14, { foe: { roll: 17, bonus: 4, dd: [3, 3, 1] } }],
-    ['atk', 'Strength', null, 14, [STR, MART], 14, { dmg: ['d4', 3, [STR], 'Slashing'], foe: { roll: 16, bonus: 4, dd: [3, 3, 1] } }],
-  ], 24, 16);
-  GS_SESSIONS['delve-fight-fallen'] = { ...GS_SESSIONS['delve-fallen'], hpMax: 24, lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 27 }, result: "Fell in Snaggle's den", reached: "Fell in Snaggle's den", share: "Fell in Snaggle's den", figures: ['Threat ' + ff.threat + '/12', ff.rolls + ' rolls', 'HP ' + ff.hp + '/24'], tracks: { progress: 2, rooms: 2, threat: ff.threat, threatMax: 12 }, threat: ff.threat, sheet: { used: {}, insp: false } };
+    ['atk', 15, { heavy: true, faces: [3], foe: { roll: 18, faces: [3] } }], ['atk', 5, { foe: { roll: 17, faces: [3] } }], ['atk', 4, { heavy: true, foe: { roll: 16, faces: [3] } }],
+    ['atk', 2, { foe: { roll: 15, faces: [3] } }], ['atk', 6, { foe: { roll: 14, faces: [3] } }], ['atk', 12, { faces: [3], foe: { roll: 17, faces: [3] } }],
+  ]);
+  GS_SESSIONS['delve-fight-fallen'] = { ...GS_SESSIONS['delve-fallen'], hpMax: 24, lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 27 }, result: "Fell in Snaggle's den", reached: "Fell in Snaggle's den", share: "Fell in Snaggle's den", figures: dlFigures(ff, 24),
+    tracks: { progress: 2, rooms: 2, threat: ff.threat, threatMax: 12 }, threat: ff.threat, sheet: { used: {}, insp: false } };
 }
