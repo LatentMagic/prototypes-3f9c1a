@@ -482,32 +482,38 @@ const DlBody = ({ s }) => {
 // KEEP: a stop is drawn as the session page's map draws it (a 28px number box, a return keeping its back-arrow) and is never shrunk or wrapped; the row shows the latest stops that fit at the session map's pitch (a 44px column and a 6px gap), up to 12, so a phone card shows fewer.
 // KEEP: from 5 stops the boxes spread edge to edge on the card's content width; fewer sit centred at a 56px gap, wider than the session map's 32px (the user, 2026-11-26: "on 2-4 can we have a slighter greater spread?"), and never wider than the card.
 // KEEP: the key dice are the session page's 44px, up to four, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
-// A run with no stop draws the run's rooms empty (five unless the run says otherwise), the first reached, as the session page does before the first roll.
-// A run not started has no stop, roll or key moment.
-const DL_NOW_NONE = { stops: [], turns: [], mom: {} };
+// KEEP: a run started with no stop yet (nothing played) draws one stop box, [1], centred as the other stops are, and no dice row; "not started" is its own state, DlNowEmpty (the user, 2026-11-26: "i dont mind that we show just a [1] once its started ... the \"not started\" is just sort of its own state").
 const DL_NOW_MAX = 12; const DL_NOW_GAP_FEW = 56;
 // The roll that ended an overrun run is named "Latest roll" under its die, first among its names, whatever the held roll's title says.
 const dlNowNames = (kickers) => { const k = kickers.map((x) => (x === 'Last roll' ? 'Latest roll' : x)); return [...k.filter((x) => x === 'Latest roll'), ...k.filter((x) => x !== 'Latest roll')]; };
+// KEEP: the not-started card's picture is its own: the run's rooms as one strip of boxes on one row, none lit, as it was before the Now card took the latest stops. A strip too narrow for numbers (under 20px a room) draws each room as a small tick.
+const DL_NOW_NUM_MIN = 20;
+const useDlNowWide = (n) => { const ref = React.useRef(null); const measure = React.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]); return [ref, useDlWidth(ref, measure, true)]; };
+const DlNowRooms = ({ rooms }) => { const [ref, numbered] = useDlNowWide(rooms);
+  return (<div className="dl-now-rooms" role="img" aria-label={'The run has ' + rooms + ' rooms, none entered yet'}>
+    <div className="dl-now-strip"><div ref={ref} className="dl-now-boxes">{dlEmptyStops(rooms).map((st) => (numbered
+      ? <span key={st.i} className={dlNum(st, '')}>{st.num}</span>
+      : <i key={st.i} className="dl-now-tick" />))}</div>
+      <span className="dl-now-count" /></div></div>); };
 const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET * 2 + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
-const DlNowPic = ({ m, rooms = 5 }) => {
+const DlNowPic = ({ m }) => {
   const ref = React.useRef(null); const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
-  const empty = !m.stops.length;
-  const shown = empty ? dlEmptyStops(rooms).slice(0, fit) : m.stops.slice(-Math.min(DL_NOW_MAX, fit));
+  const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);
   const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
   const few = shown.length <= DL_MAP_FEW;
   return (<div ref={ref} className="dl-now-pic" role="group" aria-label="The way you went">
-    <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={empty ? 'The run has ' + rooms + ' rooms, the first reached, no rolls yet' : 'The last ' + shown.length + ' stops'}>
-      {shown.map((st, i) => <span key={st.i} className={dlNum(st, empty ? (i === 0 ? ' is-on' : ' is-far') : '')}>{st.back && <DlBackArrow />}{st.num}</span>)}</div>
+    <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={m.stops.length ? 'The last ' + shown.length + ' stops' : 'The run has started, no stop yet'}>
+      {shown.map((st) => <span key={st.i} className={dlNum(st, '')}>{st.back && <DlBackArrow />}{st.num}</span>)}</div>
     {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => (
       <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} /><span className="dl-now-name">{dlNowNames(m.mom[r.t].kickers).map((k) => <span key={k}>{k}</span>)}</span></span>))}</div>}
   </div>);
 };
-// The Now card of a run not started: the week's title (label: a free first run passes its own), the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
+// The Now card of a run not started: the week's title (label: a free first run passes its own), the run's rooms empty and none lit, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
 // laterWeek: the free player's card once a later week is current: no Play, and the Pass sentence (passText) in the slot.
 export const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => (
   <LbNowCard gid="delve" className="dl-now" label={label} title={title} play={onPlay} next={next}
     {...(laterWeek ? { bare: true, pass: 'nostop', passText: 'Play it with the Pass.' } : {})}>
-    <div className="dl-now-route"><DlNowPic m={DL_NOW_NONE} rooms={rooms} /></div>
+    <div className="dl-now-route"><DlNowRooms rooms={rooms} /></div>
   </LbNowCard>);
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
   const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
@@ -515,7 +521,7 @@ export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Ne
   const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
     <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
-      <div className="dl-now-route"><DlNowPic m={m} rooms={(s.tracks && s.tracks.rooms) || 5} /></div>
+      <div className="dl-now-route"><DlNowPic m={m} /></div>
     </LbNowCard>
   );
 };

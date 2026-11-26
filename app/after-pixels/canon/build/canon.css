@@ -1133,13 +1133,19 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 /* The now card's route: the latest stops in one row, the key moments in one centred row beneath. Nothing in it is pressable. */
 .dl-now-route { min-width: 0; container: dlnow / inline-size; display: grid; align-content: center; }
 .dl-now-pic { --dv-num: 28px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; pointer-events: none; }
+/* The not-started card's rooms strip (DlNowRooms): a row of boxes on the route line, the count slot empty. */
+.dl-now-rooms { display: grid; align-content: center; min-height: 92px; min-width: 0; }
+.dl-now-strip { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dl-now-boxes { position: relative; flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; align-items: center; height: 24px; }
+.dl-now-boxes::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
+.dl-now-boxes .dv2-num { min-width: 20px; height: 20px; padding: 0 2px; font-size: 11px; }
+.dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
+.dl-now-count { flex: none; min-width: 30px; }
 /* Boxes spread edge to edge, the route line behind; the line's ends are hidden by the first and last box. */
 .dl-now-stops { position: relative; display: flex; justify-content: space-between; align-items: center; height: var(--dv-num); min-width: 0; }
 .dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
 /* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
 .dl-now-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
-.dl-now-stops .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
-.dl-now-stops .dv2-num.is-far { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 /* Up to four slots in a centred row; a die and its name share a slot, so one die sits on the card's centre. */
 .dl-now-keys { display: flex; justify-content: center; align-items: flex-start; gap: 4px; min-width: 0; }
 .dl-now-key { flex: 0 0 auto; min-width: 56px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
