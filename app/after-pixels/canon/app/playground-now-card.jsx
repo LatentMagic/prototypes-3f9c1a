@@ -9,7 +9,7 @@ import { GS_SESSIONS, GS_GAMES, useGs } from './gs-data.jsx';
 import { lbAccess, LbHead, LbNowCard, LbRun, lbStreak, lbRunOf, LbAch } from './gs-library.jsx';
 import { phAch } from './gs-history.jsx';
 import { DV_ACH, DV_BADGES, DV_NEXT, dvRun } from './gs-delve-library.jsx';
-import { dlBuild, dlWord, dlNum, DlMap, DlMapMarks, DlBackArrow, DlDie, useDlWidth, DL_MAP_COL, DL_MAP_GAP, DL_MAP_INSET, DL_MAP_FEW, DL_MAP_GAP_FEW } from './gs-delve.jsx';
+import { dlBuild, dlWord, dlNum, DlMap, DlMapMarks, DlBackArrow, DlDie, useDlWidth, DL_MAP_COL, DL_MAP_GAP, DL_MAP_INSET, DL_MAP_FEW } from './gs-delve.jsx';
 import { dlLongRun } from './gs-delve-runs.jsx';
 import { GS_LIBRARY } from './registry.js';
 import { pgRegister, pgActive, usePgSetting } from './playground.jsx';
@@ -36,10 +36,10 @@ const PgMap = ({ m, v, concept }) => {
 
 // Concept 3: the stops in one row (the latest up to 12) and the run's key moments in one centred row beneath.
 // KEEP: a stop is drawn as the session page's map draws it (a 28px number box, a return keeping its back-arrow) and is never shrunk or wrapped; the row shows the latest stops that fit at the session map's pitch (a 44px column and a 6px gap), up to 12, so a phone card shows fewer.
-// KEEP: from 5 stops the boxes spread edge to edge on the card's content width; fewer sit gathered at a 32px gap, centred (DL_MAP_GAP_FEW, the session map's rule, the user, 2026-11-25).
+// KEEP: from 5 stops the boxes spread edge to edge on the card's content width; fewer sit centred at a 56px gap, wider than the session map's 32px (the user, 2026-11-26: "on 2-4 can we have a slighter greater spread?"), and never wider than the card.
 // KEEP: the key dice are the session page's 44px, up to four, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
 // A run not started draws the run's five rooms empty, the first reached, as the session page does before the first roll.
-const PG3_MAX = 12; const PG3_ROOMS = 5;
+const PG3_MAX = 12; const PG3_ROOMS = 5; const PG3_GAP_FEW = 56;
 // The roll that ended an overrun run is named "Latest roll" under its die, first among its names, whatever the held roll's title says.
 const pg3Names = (kickers) => { const k = kickers.map((x) => (x === 'Last roll' ? 'Latest roll' : x)); return [...k.filter((x) => x === 'Latest roll'), ...k.filter((x) => x !== 'Latest roll')]; };
 const pg3Fit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET * 2 + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
@@ -50,7 +50,7 @@ const PgSpread = ({ m }) => {
   const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
   const few = rooms.length <= DL_MAP_FEW;
   return (<div ref={ref} className={'pgn3' + (keys.length ? '' : ' is-alone')} role="group" aria-label="The way you went">
-    <div className={'pgn3-stops' + (few ? ' is-few' : '')} style={{ '--n': rooms.length, '--few': DL_MAP_GAP_FEW + 'px' }} role="img" aria-label={empty ? 'The run has ' + PG3_ROOMS + ' rooms, the first reached, no rolls yet' : 'The last ' + rooms.length + ' stops'}>
+    <div className={'pgn3-stops' + (few ? ' is-few' : '')} style={{ '--n': rooms.length, '--few': PG3_GAP_FEW + 'px' }} role="img" aria-label={empty ? 'The run has ' + PG3_ROOMS + ' rooms, the first reached, no rolls yet' : 'The last ' + rooms.length + ' stops'}>
       {rooms.map((st, i) => <span key={st.i} className={dlNum(st, empty ? (i === 0 ? ' is-on' : ' is-far') : '')}>{st.back && <DlBackArrow />}{st.num}</span>)}</div>
     {keys.length > 0 && <div className="pgn3-keys">{keys.map((r) => (
       <span key={r.t} className="pgn3-key"><DlDie r={r} size={44} /><span className="pgn3-name">{pg3Names(m.mom[r.t].kickers).map((k) => <span key={k}>{k}</span>)}</span></span>))}</div>}

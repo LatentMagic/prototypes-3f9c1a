@@ -12546,6 +12546,7 @@
   };
   const PG3_MAX = 12;
   const PG3_ROOMS = 5;
+  const PG3_GAP_FEW = 56;
   const pg3Names = (kickers) => {
     const k = kickers.map((x) => x === "Last roll" ? "Latest roll" : x);
     return [...k.filter((x) => x === "Latest roll"), ...k.filter((x) => x !== "Latest roll")];
@@ -12558,7 +12559,7 @@
     const rooms = empty ? Array.from({ length: PG3_ROOMS }, (_, i) => ({ i, num: i + 1, back: false, turns: [] })).slice(0, fit) : m.stops.slice(-Math.min(PG3_MAX, fit));
     const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
     const few = rooms.length <= DL_MAP_FEW;
-    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "pgn3" + (keys.length ? "" : " is-alone"), role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn3-stops" + (few ? " is-few" : ""), style: { "--n": rooms.length, "--few": DL_MAP_GAP_FEW + "px" }, role: "img", "aria-label": empty ? "The run has " + PG3_ROOMS + " rooms, the first reached, no rolls yet" : "The last " + rooms.length + " stops" }, rooms.map((st, i) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st, empty ? i === 0 ? " is-on" : " is-far" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "pgn3-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "pgn3-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "pgn3-name" }, pg3Names(m.mom[r.t].kickers).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "pgn3" + (keys.length ? "" : " is-alone"), role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn3-stops" + (few ? " is-few" : ""), style: { "--n": rooms.length, "--few": PG3_GAP_FEW + "px" }, role: "img", "aria-label": empty ? "The run has " + PG3_ROOMS + " rooms, the first reached, no rolls yet" : "The last " + rooms.length + " stops" }, rooms.map((st, i) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st, empty ? i === 0 ? " is-on" : " is-far" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "pgn3-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "pgn3-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "pgn3-name" }, pg3Names(m.mom[r.t].kickers).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
   };
   const PgNow = ({ concept, visits, ended, rolled }) => {
     const s = React$1.useMemo(() => {
