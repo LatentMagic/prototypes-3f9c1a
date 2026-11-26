@@ -888,7 +888,6 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-pn b { font-weight: 600; color: var(--text); }
 .dvH-x { position: relative; display: inline-block; padding: 0 3px; font-weight: 600; }
 .dvH-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 13px; border-top: 1px solid var(--text); transform: translate(-50%, -50%) rotate(-60deg); }
-.dvH-adv { font-weight: 400; color: var(--muted); }
 .dvH-fm { min-width: 0; }
 .dvH-cost b { color: var(--text); }
 /* KEEP: the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */

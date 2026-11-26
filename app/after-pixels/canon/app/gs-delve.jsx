@@ -244,8 +244,7 @@ const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46
 // ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
 // KEEP: a side is one tap chip, at least 44px tall, in Escape's tap card (esx-card) at its own size; the two sides share one row while the held roll is 452px wide or more, else they stack, You over Foe, each chip at full width; a lone side (a check, an option, a hero's attack the foe did not answer) has its chip take the row under 400px and its half above it, and its label the whole row. The chip's own width sets its shape: from 200px it is one row (hit, hairline, damage), which two rows always give it; the narrower shape (the damage on a second row under a hairline) stays for a chip below 200px. The d20 sum ("8 + 3") is not on the chip: in a chip of about 120px, where the hit and the damage already fill two rows, so the sum lives in the breakdown only, at every width.
 // KEEP: a chip's breakdown opens under the chip at the chip's own width through the 220ms fold, one per side at a time: the d20's named form with its total (`14 d20 + 3 Strength + 2 Martial = 19`, a dropped advantage die struck diagonally) and, for a hit that dealt damage, a second named form under a small "Damage" caption naming the type ("Damage · slashing") with the damage dice, then each bonus with its source and the total. A miss opens the d20's form alone, with no caption. The parts break only between one another.
-// An attack made with advantage says so in its side's label ("You, with advantage"); a check has no label text beyond "You", so its advantage shows in the breakdown only.
-const DlAdv = () => <span className="dvH-adv">, with advantage</span>;
+// KEEP: advantage is never written in a side's label ("You", "Foe"): the die in the strip's top right already shows it (the second die behind the first) and the opened breakdown names it with the dropped number struck (the user, 2026-11-26).
 const DlChipBreak = ({ atk, dmg }) => (<div className="dvH-pnl">
   <div className="dvC-pr">{dmg && <span className="dvC-pk">Attack</span>}<DlNamed s={atk} total={atk.t} /></div>
   {dmg && <div className="dvC-pr"><span className="dvC-pk">Damage{dmg.typ && dmg.typ !== 'damage' ? ' · ' + dmg.typ : ''}</span>{dmg.d ? <DlNamed s={dmg} total={dmg.t} /> : <span className="dvH-pn"><span className="dvH-c"><b>{dmg.t}</b></span></span>}</div>}
@@ -263,13 +262,13 @@ const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(
   // KEEP: the You label carries what the hero did and what the turn cost them, each after a middle dot: "You · Slip the trap · Cost Threat +1" (the user, 2026-11-25: the cost sits "next to the You", with "a . there"); a turn with nothing to say over its chip and no cost has no label.
   const costSaid = cost ? <span className="dvH-cost"> · Cost <b>{cost}</b></span> : null;
   const said = [r.action, r.move || r.skill].filter(Boolean).join(' ');
-  const act = r.use ? (f || cost ? <><b>You</b>{costSaid}</> : null) : r.action || r.fight || r.skill || r.two || f || cost ? <><b>You</b>{!r.use && (r.action || r.skill || r.move) && said && <span> · {said}</span>}{r.two && <DlAdv />}{costSaid}</> : null;
+  const act = r.use ? (f || cost ? <><b>You</b>{costSaid}</> : null) : r.action || r.fight || r.skill || f || cost ? <><b>You</b>{!r.use && (r.action || r.skill || r.move) && said && <span> · {said}</span>}{costSaid}</> : null;
   const used = r.use ? (<span className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</span>) : null;
   return (<>
     <DlHeldHead r={r} x={x} />
     <div className={'dvC-row' + (f ? '' : ' is-lone')}>
       <DlChip id={'dvH-' + r.t} label={act} atk={r.use ? null : dlAtkSum(r)} dmg={r.use || !r.dmg ? null : dlDmgSum(r)} lone={!f} still={r.use} body={used} />
-      {f && <DlChip foe id={'dvH-' + r.t + 'f'} label={<><b>Foe</b>{f.other != null && <DlAdv />}</>} atk={dlFoeAtkSum(f)} dmg={f.hit && f.dmg > 0 ? dlFoeDmgSum(f) : null} />}
+      {f && <DlChip foe id={'dvH-' + r.t + 'f'} label={<><b>Foe</b></>} atk={dlFoeAtkSum(f)} dmg={f.hit && f.dmg > 0 ? dlFoeDmgSum(f) : null} />}
     </div>
     {mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}
   </>); };
