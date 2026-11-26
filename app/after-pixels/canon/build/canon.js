@@ -3612,7 +3612,7 @@
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
   const DlPips = ({ n, lit, name }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv9-pips" + (lit ? " is-lit" : ""), role: "img", "aria-label": name + ", " + Math.min(n, 2) + " of 2" }, [0, 1].map((i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < n ? "is-on" : "" })));
   const DlAdvCells = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", used: c.adv.fight, title: "Successes in a row on checks. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.streak, lit: !c.adv.fight, name: "Streak" })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Fight hits", used: !c.adv.fight, title: "Hits in a row in this fight. From two on, it gives advantage on the next attack." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.hits, lit: c.adv.fight, name: "Fight hits" })));
-  const DL_CHIP_MIN = 94;
+  const DL_CHIP_MIN = 100;
   const DL_CHIP_GAP = 8;
   const dlSkillsPerRow = (n) => (el) => {
     const most = Math.max(1, Math.min(n, Math.floor((el.clientWidth + DL_CHIP_GAP) / (DL_CHIP_MIN + DL_CHIP_GAP))));
@@ -3622,7 +3622,7 @@
     const n = c.skills.length;
     const ref = React$1.useRef(null);
     const per = useDlWidth(ref, React$1.useMemo(() => dlSkillsPerRow(n), [n]), n);
-    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv9-rule" }), /* @__PURE__ */ React$1.createElement("div", { ref, className: "dv9-skills", style: { "--per": per } }, c.skills.map((k) => /* @__PURE__ */ React$1.createElement("div", { key: k.name, className: "dv9-sk" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv9-nm" }, k.name), /* @__PURE__ */ React$1.createElement("span", { className: "dv9-tot" }, k.say)))));
+    return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv9-rule" }), /* @__PURE__ */ React$1.createElement("div", { ref, className: "dv9-skills", style: { "--per": per, "--gap": DL_CHIP_GAP + "px" } }, c.skills.map((k) => /* @__PURE__ */ React$1.createElement("div", { key: k.name, className: "dv9-sk" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv9-nm" }, k.name), /* @__PURE__ */ React$1.createElement("span", { className: "dv9-tot" }, k.say)))));
   };
   const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const DlMeters = ({ c }) => /* @__PURE__ */ React$1.createElement("div", { className: "dv7-grp dv8-meters" }, /* @__PURE__ */ React$1.createElement("div", { className: "dv8-mgrid" }, /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Hit points", n: c.hp, of: c.hpMax }), /* @__PURE__ */ React$1.createElement(DlMeter, { label: "Threat", n: c.threat, of: c.threatMax }), c.lightName && /* @__PURE__ */ React$1.createElement(DlMeter, { label: dlLightLabel(c.lightName), n: c.light, of: c.lightMax })));

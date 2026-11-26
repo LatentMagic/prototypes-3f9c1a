@@ -390,10 +390,10 @@ const DlAdvCells = ({ c }) => (<><DlCell label="Inspiration" used={!c.insp} titl
   <DlCell label="Streak" used={c.adv.fight} title="Successes in a row on checks. From two on, it gives advantage."><DlPips n={c.adv.streak} lit={!c.adv.fight} name="Streak" /></DlCell>
   <DlCell label="Fight hits" used={!c.adv.fight} title="Hits in a row in this fight. From two on, it gives advantage on the next attack."><DlPips n={c.adv.hits} lit={c.adv.fight} name="Fight hits" /></DlCell></>);
 // The trained skills under the stats: equal chips, name left and total right. How many sit on a row is read from the chips' container (see the KEEP in gs-delve.css); the chip's width follows from it.
-const DL_CHIP_MIN = 94; const DL_CHIP_GAP = 8;
+const DL_CHIP_MIN = 100; const DL_CHIP_GAP = 8;
 const dlSkillsPerRow = (n) => (el) => { const most = Math.max(1, Math.min(n, Math.floor((el.clientWidth + DL_CHIP_GAP) / (DL_CHIP_MIN + DL_CHIP_GAP)))); return Math.ceil(n / Math.ceil(n / most)); };
 const DlSkills = ({ c }) => { const n = c.skills.length; const ref = React.useRef(null); const per = useDlWidth(ref, React.useMemo(() => dlSkillsPerRow(n), [n]), n);
-  return (<><div className="dv9-rule" /><div ref={ref} className="dv9-skills" style={{ '--per': per }}>{c.skills.map((k) => <div key={k.name} className="dv9-sk"><span className="dv9-nm">{k.name}</span><span className="dv9-tot">{k.say}</span></div>)}</div></>); };
+  return (<><div className="dv9-rule" /><div ref={ref} className="dv9-skills" style={{ '--per': per, '--gap': DL_CHIP_GAP + 'px' }}>{c.skills.map((k) => <div key={k.name} className="dv9-sk"><span className="dv9-nm">{k.name}</span><span className="dv9-tot">{k.say}</span></div>)}</div></>); };
 // The light's label is its module's own name as written with the first letter capitalised, "the torch" → "The torch". Only a run whose edition has the light module carries `lightName`. How the labels lay out is the KEEP in gs-delve.css: they sit above their bars at every width, one line, never wrapping. The editions' name cap (≈20 characters) is a ticket item.
 const dlLightLabel = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><div className="dv8-mgrid"><DlMeter label="Hit points" n={c.hp} of={c.hpMax} /><DlMeter label="Threat" n={c.threat} of={c.threatMax} />
