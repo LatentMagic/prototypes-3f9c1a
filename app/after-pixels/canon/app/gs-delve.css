@@ -323,6 +323,10 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
+/* KEEP: the six core stats never leave one alone on a second row: all six on one row where they fit (a panel at least 336px wide, six 36px dice and five 24px gaps), otherwise two rows of three, never 5 + 1 or 4 + 2 (the user, 2026-11-26: "can we make sure core never has 1 on second row? go to 2?"). The panel's own width decides, not a breakpoint. Three across needs only 156px, which the narrowest sheet (280px screen) clears. */
+.dv8.is-3b .dv8-stats { container: dlstats / inline-size; }
+.dv8.is-3b .dv8-stats .dv7-cells { max-width: calc(3 * 36px + 2 * 24px); margin: 0 auto; }
+@container dlstats (min-width: 336px) { .dv8.is-3b .dv8-stats .dv7-cells { max-width: none; flex-wrap: nowrap; } }
 /* Advantage: its cells sit on a grid of equal columns, each as wide as the widest cell, centred as a group rather than spread across the row. */
 .dv8.is-3b .dv8-adv .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: max-content; max-width: 100%; margin: 0 auto; gap: 16px; }
 /* At the narrowest widths the columns close up rather than wrap "Longest streak": a cell is wider than its short labels, so the space between labels stays wide. */
