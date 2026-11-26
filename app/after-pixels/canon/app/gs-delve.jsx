@@ -169,7 +169,7 @@ const dlBuild = (s) => {
   const moments = dlMoments(lost ? [...turns, lost] : turns, end);
   // KEEP: a closing use on a won run is drawn green (the one use that is not grey); on any other end it keeps the use's grey sparkle.
   const closer = turns[turns.length - 1]; if (closer && closer.use && end === 'won') closer.won = true;
-  return { stops, rolls, turns, hp, run, longest: best, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
+  return { stops, rolls, turns, lostMark: lost, hp, run, longest: best, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
 const dlSay = (r, foe = true) => r.lost && r.over ? 'The threat filled in ' + r.room + ': ' + r.name : r.lost ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
 
@@ -488,7 +488,7 @@ const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET *
 const DlNowPic = ({ m }) => {
   const ref = React.useRef(null); const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
   const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);
-  const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
+  const keys = [...m.turns, ...(m.lostMark ? [m.lostMark] : [])].filter((r) => m.mom[r.t]).reverse().slice(0, 4);
   const few = shown.length <= DL_MAP_FEW;
   return (<div ref={ref} className="dl-now-pic" role="group" aria-label="The way you went">
     <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={m.stops.length ? 'The last ' + shown.length + ' stops' : 'The run has started, no stop yet'}>
