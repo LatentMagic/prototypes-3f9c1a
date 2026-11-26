@@ -3728,7 +3728,7 @@
   };
   const DL_NOW_MAX = 12;
   const DL_NOW_GAP_FEW = 56;
-  const dlNowNames = (kickers) => dlTitle(kickers.map((x) => x === DL_END.overrun ? DL_END.live : x)).split(" · ");
+  const dlNowNames = (kickers) => dlTitle(kickers).split(" · ");
   const DL_NOW_NUM_MIN = 20;
   const useDlNowWide = (n) => {
     const ref = React$1.useRef(null);
