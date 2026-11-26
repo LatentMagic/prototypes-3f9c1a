@@ -117,7 +117,7 @@ const dlBuild = (s) => {
     // KEEP: leaving a room with its foe still standing (fled, or gone back) ends that fight, so the streak starts again from 0 (delve.md: Streak).
     if (cur && standing()) { run = 0; }
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [], turns: [] }; stops.push(cur);
-    // KEEP: the streak starts again from 0 when a fight with a foe begins (delve.md: Streak); it also does when that fight ends, however it ends. A hazard is no fight: its successes add to the streak.
+    // Entering a fight resets the streak; defeating the foe resets it again. A hazard is no fight.
     if (standing()) { run = 0; } };
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
@@ -128,12 +128,14 @@ const dlBuild = (s) => {
     // The turn that takes a foe's health to 0 beats it: its held roll says so and keeps the foe's bar, at 0.
     const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
     const u = dlUse(l, s.hero);
+    if (u && wear && fo) { const dealt = Math.max(0, was - +wear[1]); if (dealt) u.does = dealt + ' damage to ' + fo.f[0]; }
+    if (u) { const healed = /Healed (\d+)/i.exec(l.join(' · ')); if (healed) u.does = 'restored ' + healed[1] + ' hit points'; }
     // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number and breaks no streak. It is a key moment only as the run's last turn.
     if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
       if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) }; }
       // KEEP: a weakness strike has no foe roll, so its foe health is carried as `meter`, drawn as a kill's is ("health alone"), at the health after the blow.
-      if (fo && l[0] === 'Weakness') u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
+      if (fo && wear && !u.foe) u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
       if (downed) { u.downed = downed; run = 0; } turns.push(u); cur.turns.push(u); return; }
     const r = dlRoll(l, (s.detail || {})[rolls.length + 1]); if (!r) return;
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
@@ -147,10 +149,8 @@ const dlBuild = (s) => {
       foeHp[fo.k] = Math.max(0, left - (r.tier === 'strong' ? (r.crit ? 4 : 2) : r.tier === 'weak' ? 1 : 0));
       r.meter = { name: fo.f[0], health: foeHp[fo.k], max }; if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
     }
-    // A failed attempt on an obstacle or hazard adds 1 threat, 2 on a natural 1.
-    if (!r.fight && r.tier === 'weak') r.threat = 1;
-    else if ((hazard || obstacle) && graded && r.tier === 'miss') r.threat = r.fumble ? 2 : 1;
-    else { const cost = l.find((v) => /^Threat \+\d+$/.test(String(v))); if (cost) r.threat = +String(cost).split('+')[1]; }
+    // The record names the threat actually paid, independent of the roll's grade.
+    const cost = l.find((v) => /^Threat \+\d+$/.test(String(v))); if (cost) r.threat = +String(cost).split('+')[1];
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20); a band takes the hero's damage (DL_HIT). Its roll back, where the line holds one, rides on the roll.
     if (fo && !hazard && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const dmg = r.dmg ? r.dmg.total : (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1); foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - dmg); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
       if (r.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) }; } }
@@ -218,7 +218,7 @@ const dlOutTone = (r) => (r.fumble ? 'err' : { strong: 'ok', weak: 'part' }[r.ti
 const dlAtkSum = (r) => ({ d: [r.kept, 'd20'], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: 'vs ' + (r.fight ? 'AC ' : 'DC ') + r.dc, out: [dlGrade(r), dlOutTone(r)] });
 const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
 const dlFoeAtkSum = (f) => ({ d: [f.roll, 'd20'], adv: f.other != null, drop: f.other, m: f.bonus ? [['+', f.bonus, 'Bonus']] : [], t: f.roll + f.bonus, vs: 'vs AC ' + f.dc, out: f.hit ? [f.critical ? 'Critical hit' : 'Hit', 'err'] : ['Miss', ''] });
-const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: [...(f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : []), ...(f.dark ? [['+', 1, 'dark']] : [])], t: f.dmg });
+const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: [...(f.dd && f.dd.extra ? [['+', f.dd.extra, f.dd.die]] : []), ...(f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : []), ...(f.dark ? [['+', 1, 'dark']] : [])], t: f.dmg });
 // The named form: each number with its source; a dropped advantage die follows the kept one, its number struck diagonally.
 const DlNamed = ({ s, total }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}</span>
@@ -548,7 +548,7 @@ GS_SESSIONS['delve-story-fall'] = { ...GS_SESSIONS.delve, loss: true, end: 'fall
   ['Room', 'Entered the armoury'], ['Strength', 'Pry the locker', 'Failure', 'd20 7 + 0 = 7 vs 15', 'HP 12/22'], ['Wisdom', 'Listen for the hunt', 'Partial success', 'd20 11 + 1 = 12 vs 15'], ['Dexterity', 'Force the cage', 'Failure', 'd20 4 + 3 = 7 vs 15', 'HP 5/22'],
   ['Room', 'Entered the medbay']] };
 GS_SESSIONS['delve-won-by-use'] = (() => { const base = GS_SESSIONS.delve.lines; const cut = base.findIndex((l) => l[0] === 'Ability');
-  return { ...GS_SESSIONS.delve, figures: ['Threat 4/12', '18 rolls', '1 natural 20', 'HP 22/24'], lines: [...base.slice(0, cut), ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 39 → 22'], ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'], ['Strength', 'Hit', 'd20 16 + 3 = 19 vs 12'], ['Strength', 'Hit', 'd20 15 + 3 = 18 vs 12'], ['Ability', 'Used shield bash', 'Grizzletooth: health 7 → 0']] }; })();
+  return { ...GS_SESSIONS.delve, figures: ['Threat 4/12', '18 rolls', '1 natural 20', 'HP 22/24'], lines: [...base.slice(0, cut), ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 39 → 31'], ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'], ['Strength', 'Hit', 'd20 16 + 3 = 19 vs 12'], ['Strength', 'Hit', 'd20 15 + 3 = 18 vs 12'], ['Ability', 'Used shield bash', 'Grizzletooth: health 7 → 0']] }; })();
 GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 22, threat: 12, foeMax: { 'the shrine cavern': 44 },
   // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
@@ -596,12 +596,12 @@ GS_SESSIONS['delve-overrun-back'] = (() => { const L = GS_SESSIONS['delve-hard']
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.
 GS_SESSIONS['delve-hazard'] = { ...GS_SESSIONS.delve, noEd: true, date: 'Monday 12 October', live: true, loss: false, end: 'won', result: 'In progress', reached: null, share: null, shareLines: null,
   setting: 'The Briar Keep', hero: 'Hal the Woodcutter', hpMax: 24, threat: 3, threatMax: 14, lightName: null, light: 0, lightMax: 0, foeMax: {},
-  figures: ['Threat 3/14', '10 rolls', 'HP 20/24'], tracks: { progress: 4, rooms: 6, threat: 3, threatMax: 14 }, sheet: { used: {}, insp: true }, lines: [
+  figures: ['Threat 3/14', '11 rolls', 'HP 20/24'], tracks: { progress: 4, rooms: 6, threat: 3, threatMax: 14 }, sheet: { used: {}, insp: true }, lines: [
   ['Intelligence', 'Read the rhyme on the gatepost', 'Success', 'd20 17 + 0 = 17 vs 15'],
   ['Room', 'Entered the rose walk'], ['Dexterity', 'Climb the garden wall to the sundial', 'Success', 'd20 16 + 1 = 17 vs 15'],
   ['Room', 'Entered the well court'], ['Charisma', 'Flatter the witch', 'Partial success', 'd20 13 + 0 = 13 vs 15'],
   ['Room', 'Entered the great hall'],
-  ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 4 + 3 vs 16, missed'], ['Strength', 'Hit', 'd20 12 + 3 = 15 vs 12', 'Struck back: d20 13 + 3 vs 16, hit, 2 damage, HP 22/24'], ['Strength', 'Hit', 'd20 14 + 3 = 17 vs 12'],
+  ['Strength', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 4 + 3 vs 16, missed'], ['Strength', 'Hit', 'd20 12 + 3 = 15 vs 12', 'Struck back: d20 13 + 3 vs 16, hit, 2 damage, HP 22/24'], ['Strength', 'Hit', 'd20 14 + 3 = 17 vs 12'], ['Strength', 'Hit', 'd20 14 + 3 = 17 vs 12'],
   ['Room', 'Entered the thorn stair'],
   ['Strength', 'Partial success', 'd20 11 + 3 = 14 vs 15'], ['Strength', 'Failure', 'd20 6 + 3 = 9 vs 15', 'HP 20/24'], ['Strength', 'Success', 'd20 15 + 3 = 18 vs 18'], ['Strength', 'Success', 'd20 16 + 3 = 19 vs 18']] };
 // The hand-written plays use the same d4 weapon as the generated plays.

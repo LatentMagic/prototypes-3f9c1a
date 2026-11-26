@@ -1406,7 +1406,7 @@
     ["Room", "Entered the shrine cavern"],
     ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 + 8 vs 16, missed"],
     ["Ability", "Used shield bash", "Grizzletooth: health 39 → 31", "Struck back: d20 7 + 8 vs 16, missed"],
-    ["Weakness", "A flask of lamp oil", "Grizzletooth: health 31 → 14"],
+    ["Weakness", "A flask of lamp oil", "Grizzletooth: health 31 → 23"],
     ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12", "Struck back: d20 7 + 8 vs 16, missed"],
     ["Strength", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 7 + 8 vs 16, missed"],
     ["Strength", "Hit", "d20 15 + 3 = 18 vs 12"]
@@ -1424,8 +1424,8 @@
     ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 18"],
     ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 18"],
     ["Room", "Entered Snaggle's den"],
-    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 + 4 vs 14, missed"],
-    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12"],
+    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 14", "Struck back: d20 9 + 4 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 14"],
     ["Room", "Doubled back to the warren", "The chant +1"]
   ];
   const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the chant was completed", "Fell in the warren"];
@@ -3338,6 +3338,14 @@
       if (wear && fo) foeHp[fo.k] = +wear[1];
       const downed = fo && was > 0 && foeHp[fo.k] === 0 ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
       const u = dlUse(l, s.hero);
+      if (u && wear && fo) {
+        const dealt = Math.max(0, was - +wear[1]);
+        if (dealt) u.does = dealt + " damage to " + fo.f[0];
+      }
+      if (u) {
+        const healed = /Healed (\d+)/i.exec(l.join(" · "));
+        if (healed) u.does = "restored " + healed[1] + " hit points";
+      }
       if (u) {
         u.t = turns.length + 1;
         u.stop = cur.i;
@@ -3349,7 +3357,7 @@
           const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
           u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) };
         }
-        if (fo && l[0] === "Weakness") u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
+        if (fo && wear && !u.foe) u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
         if (downed) {
           u.downed = downed;
           run = 0;
@@ -3381,12 +3389,8 @@
         r.meter = { name: fo.f[0], health: foeHp[fo.k], max };
         if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
       }
-      if (!r.fight && r.tier === "weak") r.threat = 1;
-      else if ((hazard || obstacle) && graded && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
-      else {
-        const cost = l.find((v) => /^Threat \+\d+$/.test(String(v)));
-        if (cost) r.threat = +String(cost).split("+")[1];
-      }
+      const cost = l.find((v) => /^Threat \+\d+$/.test(String(v)));
+      if (cost) r.threat = +String(cost).split("+")[1];
       if (fo && !hazard && (!r.action || r.action === "Heavy attack")) {
         const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
         const dmg = r.dmg ? r.dmg.total : (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1);
@@ -3445,7 +3449,7 @@
   const dlAtkSum = (r) => ({ d: [r.kept, "d20"], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: "vs " + (r.fight ? "AC " : "DC ") + r.dc, out: [dlGrade(r), dlOutTone(r)] });
   const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
   const dlFoeAtkSum = (f) => ({ d: [f.roll, "d20"], adv: f.other != null, drop: f.other, m: f.bonus ? [["+", f.bonus, "Bonus"]] : [], t: f.roll + f.bonus, vs: "vs AC " + f.dc, out: f.hit ? [f.critical ? "Critical hit" : "Hit", "err"] : ["Miss", ""] });
-  const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: [...f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], ...f.dark ? [["+", 1, "dark"]] : []], t: f.dmg });
+  const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: [...f.dd && f.dd.extra ? [["+", f.dd.extra, f.dd.die]] : [], ...f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], ...f.dark ? [["+", 1, "dark"]] : []], t: f.dmg });
   const DlNamed = ({ s, total }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, s.d[0]), s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop)), " ", s.d[1]), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-c" }, p[2] === "Escalation" ? "you have its measure" : /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, p[0], " ", /* @__PURE__ */ React$1.createElement("b", null, p[1]), " ", p[2]))), total != null && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, "= ", /* @__PURE__ */ React$1.createElement("b", null, total)));
   const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(" · ");
   const dlInk = (r) => r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5];
@@ -3857,7 +3861,7 @@
     GS_SESSIONS["delve-won-by-use"] = (() => {
       const base = GS_SESSIONS.delve.lines;
       const cut = base.findIndex((l) => l[0] === "Ability");
-      return { ...GS_SESSIONS.delve, figures: ["Threat 4/12", "18 rolls", "1 natural 20", "HP 22/24"], lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 39 → 22"], ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"], ["Strength", "Hit", "d20 16 + 3 = 19 vs 12"], ["Strength", "Hit", "d20 15 + 3 = 18 vs 12"], ["Ability", "Used shield bash", "Grizzletooth: health 7 → 0"]] };
+      return { ...GS_SESSIONS.delve, figures: ["Threat 4/12", "18 rolls", "1 natural 20", "HP 22/24"], lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 39 → 31"], ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"], ["Strength", "Hit", "d20 16 + 3 = 19 vs 12"], ["Strength", "Hit", "d20 15 + 3 = 18 vs 12"], ["Ability", "Used shield bash", "Grizzletooth: health 7 → 0"]] };
     })();
     GS_SESSIONS["delve-hard"] = {
       ...GS_SESSIONS.delve,
@@ -3970,7 +3974,7 @@
       light: 0,
       lightMax: 0,
       foeMax: {},
-      figures: ["Threat 3/14", "10 rolls", "HP 20/24"],
+      figures: ["Threat 3/14", "11 rolls", "HP 20/24"],
       tracks: { progress: 4, rooms: 6, threat: 3, threatMax: 14 },
       sheet: { used: {}, insp: true },
       lines: [
@@ -3982,6 +3986,7 @@
         ["Room", "Entered the great hall"],
         ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 + 3 vs 16, missed"],
         ["Strength", "Hit", "d20 12 + 3 = 15 vs 12", "Struck back: d20 13 + 3 vs 16, hit, 2 damage, HP 22/24"],
+        ["Strength", "Hit", "d20 14 + 3 = 17 vs 12"],
         ["Strength", "Hit", "d20 14 + 3 = 17 vs 12"],
         ["Room", "Entered the thorn stair"],
         ["Strength", "Partial success", "d20 11 + 3 = 14 vs 15"],
@@ -9722,7 +9727,7 @@
         c.setConnected(true);
         c.go("session", { id: "delve-fight-live" });
       } },
-      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that fell mid-fight in Snaggle’s den (the fight ended with the run: streak at 0, longest streak kept)", stage: (c) => {
+      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that fell mid-fight in Snaggle’s den (the run ended mid-fight: streak at 1, longest streak kept)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "delve-fight-fallen" });
@@ -12330,16 +12335,19 @@
     return (other != null ? "d20s " + other + " and " + die + ", kept " + die : "d20 " + die) + (net < 0 ? " - " : " + ") + Math.abs(net) + " = " + (die + net) + " vs " + vs;
   };
   function dlRecord(steps, hpMax, heroAc, threatMax = 12) {
-    let room = null;
     let hp = hpMax;
     let n = 0;
     let threat = 0;
+    let escalation = 0;
     const lines = [];
     const detail = {};
     const hpOf = (h) => "HP " + h + "/" + hpMax;
     steps.forEach(([k, ...a]) => {
       if (hp <= 0 || threat >= threatMax) throw new Error("dlRecord: a step after the run has ended (" + k + " " + a[0] + ")");
-      if (k === "room" || k === "back") room = a[0];
+      if (k === "room" || k === "back") {
+        a[0];
+        escalation = 0;
+      }
       if (k === "room") {
         lines.push(["Room", "Entered " + a[0]]);
         return;
@@ -12358,21 +12366,23 @@
         const [stat2, action, skill, die2, mods2, dc, o2 = {}] = a;
         const total2 = die2 + sumP(mods2);
         const grade = die2 === 1 ? "Failure" : die2 === 20 || total2 >= dc ? "Success" : total2 >= dc - 5 ? "Partial success" : "Failure";
-        if (grade === "Partial success") threat += 1;
-        if (grade === "Failure") threat += die2 === 1 ? 2 : 1;
+        const paidThreat = o2.threat || 0;
+        threat += paidThreat;
         const harm = grade === "Success" ? 0 : Math.min(o2.harm || 0, Math.max(0, hp - 2));
         hp -= harm;
-        lines.push([stat2, action, grade, ...nat(die2) ? [nat(die2)] : [], sumText(die2, o2.other, mods2, dc), ...harm ? [hpOf(hp)] : [], ...grade === "Failure" && room !== "the chime run" ? ["Threat +" + (die2 === 1 ? 2 : 1)] : []]);
+        lines.push([stat2, action, grade, ...nat(die2) ? [nat(die2)] : [], sumText(die2, o2.other, mods2, dc), ...harm ? [hpOf(hp)] : [], ...paidThreat ? ["Threat +" + paidThreat] : []]);
         detail[n] = { parts: mods2, skill };
         return;
       }
-      const [stat, heavy, die, mods, ac, o = {}] = a;
+      const [stat, heavy, die, baseMods, ac, o = {}] = a;
+      const mods = [...baseMods.filter((p) => p[2] !== "Escalation"), ...escalation ? [["+", escalation, "Escalation"]] : []];
       const total = die + sumP(mods);
       const hit = die !== 1 && (die === 20 || total >= ac);
       const f = o.foe;
       const dmg = hit && o.dmg ? { die: o.dmg[0], v: o.dmg[1], parts: o.dmg[2], type: o.dmg[3] } : null;
       let back = [];
       if (f) {
+        escalation = Math.min(2, escalation + 1);
         const ft = f.roll + (f.bonus || 0);
         const fhit = ft >= heroAc;
         const dmgDone = fhit ? f.dd ? f.dd[1] + f.dd[2] : f.dmg : 0;
@@ -12423,8 +12433,8 @@
     const steps = [];
     const health = { "snaggle's den": 27, "the great hall": 16 };
     ROUTE.slice(0, n).forEach(([name, back], i) => {
-      steps.push([back ? "back" : "room", name]);
-      const fight = name === "snaggle's den" || name === "the great hall";
+      steps.push([back && !(live && i === 24) ? "back" : "room", live && i === 24 ? "the watchtower" : name]);
+      const fight = (name === "snaggle's den" || name === "the great hall") && health[name] > 0;
       for (let k = 0; k < ROLLS[i]; k += 1) {
         const lose = !live && MISS(n, i, k);
         const nat1 = lose && i === 3;
@@ -12432,7 +12442,7 @@
         if (fight) {
           const heavy = k === 0 ? "Cleave" : null;
           const mods = [["+", 3, "STR"], ["+", 2, "Martial"], ...heavy ? [["−", 2, "Heavy"]] : []];
-          const attackDie = name === "the great hall" && i === 20 && k > 0 ? 2 : die;
+          const attackDie = die;
           const ac = name === "snaggle's den" ? 14 : 12;
           const face = name === "the great hall" ? 1 : 1 + Math.floor(rnd() * 4);
           const damage = face + 3 + (heavy ? 2 : 0);
@@ -12442,7 +12452,13 @@
         } else {
           const c = CHECKS[(i + k) % 4];
           const mods = [...c[3] > 0 ? [["+", c[3], c[4]]] : [], ...c[2] ? [["+", 2, c[2]]] : []];
-          steps.push(["chk", c[0], c[1], c[2], die, mods, lose ? 15 : 10, { harm: 1 }]);
+          steps.push(["chk", c[0], c[1], c[2], die, mods, lose ? 15 : 10, { harm: 1, threat: lose ? nat1 ? 2 : 1 : 0 }]);
+        }
+      }
+      if ((name === "snaggle's den" || name === "the great hall") && health[name] > 0) {
+        while (health[name] > 0) {
+          health[name] = Math.max(0, health[name] - 7);
+          steps.push(["atk", "Strength", null, 14, [["+", 3, "STR"], ["+", 2, "Martial"]], name === "snaggle's den" ? 14 : 12, { dmg: ["d4", 4, [["+", 3, "STR"]], "Slashing"], ...health[name] ? { foe: { roll: 3, bonus: name === "snaggle's den" ? 4 : 3 } } : {} }]);
         }
       }
     });
@@ -12450,7 +12466,7 @@
   }
   const dlLongRun = (n, live = false) => {
     const { lines, detail, hp, threat, rolls } = longRoute(n, 24, live);
-    const stops = ROUTE.slice(0, n);
+    const stops = ROUTE.slice(0, n).map((r, i) => live && i === 24 ? ["the watchtower"] : r);
     const rooms = new Set(stops.map((r) => r[0])).size;
     return {
       ...GS_SESSIONS["delve-hard"],
@@ -12491,6 +12507,7 @@
       ["atk", "Strength", "Cleave", 20, [STR, MART, ["+", 1, "Magic"], HEAVY], 14, { dmg: ["d4", 1, [["+", 1, "d4"], STR, ["+", 1, "Magic"], ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 16, other: 5, bonus: 4, dd: [3, 3, 1] } }],
       ["atk", "Strength", null, 4, [STR, MART], 14, { foe: { roll: 7, bonus: 4, dd: [3, 1, 1] } }],
       ["atk", "Strength", null, 14, [STR, MART], 14, { dmg: ["d4", 1, [STR], "Slashing"], foe: { roll: 5, bonus: 4, dd: [3, 1, 1] } }],
+      ["atk", "Strength", null, 14, [STR, MART], 14, { dmg: ["d4", 2, [STR], "Slashing"] }],
       ["room", "the shrine cavern"],
       ["atk", "Strength", null, 12, [STR, MART], 12, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
       ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
@@ -12501,19 +12518,19 @@
       ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 4, [STR], "Slashing"] }]
     ], 24, 16);
     GS_SESSIONS["delve-key-moments"] = { ...GS_SESSIONS.delve, hpMax: 24, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 27, "the shrine cavern": 44 }, figures: ["Threat " + km.threat + "/12", km.rolls + " rolls", "1 natural 20", "HP " + km.hp + "/24"], threat: km.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: km.threat }, sheet: { used: {}, insp: true } };
-    const fiveDetail = { ...km.detail, 4: { ...km.detail[4], dmg: { ...km.detail[4].dmg, v: 4 } }, 6: { ...km.detail[6], dmg: { ...km.detail[6].dmg, v: 1, parts: [STR, ["+", 1, "Magic"], ["+", 2, "Heavy"]] } } };
+    const fiveDetail = { ...km.detail, 4: { ...km.detail[4], dmg: { ...km.detail[4].dmg, v: 4, parts: [STR, ["+", 2, "Heavy"]] } }, 6: { ...km.detail[6], dmg: { ...km.detail[6].dmg, v: 1, parts: [["+", 1, "d4"], STR, ["+", 1, "Magic"], ["+", 2, "Heavy"]] } } };
     GS_SESSIONS["delve-five-moments"] = { ...GS_SESSIONS["delve-key-moments"], detail: fiveDetail };
     const extras = dlRecord([
       ["room", "snaggle's den"],
-      ["atk", "Strength", null, 12, [STR, MART], 14, { dmg: ["d4", 2, [STR], "Slashing"], foe: { roll: 20, bonus: 4, dd: [3, 2, 1] } }]
+      ["atk", "Strength", null, 12, [STR, MART], 14, { dmg: ["d4", 2, [STR], "Slashing"], foe: { roll: 20, bonus: 4, dd: [3, 3, 1] } }]
     ], 24, 16);
-    extras.lines[1][extras.lines[1].length - 1] = "Struck back: d20 20 + 4 vs 16, hit, d3 2 + 1 = 4 damage, HP 20/24";
-    extras.detail[1].foe = { critical: true, dark: true };
+    extras.lines[1][extras.lines[1].length - 1] = "Struck back: d20 20 + 4 vs 16, hit, 5 damage, HP 19/24";
+    extras.detail[1].foe = { critical: true, dark: true, dd: { die: "d3", v: 2, b: 1, extra: 1 } };
     extras.detail[1].light = 1;
-    GS_SESSIONS["delve-fight-details"] = { ...GS_SESSIONS["delve-live"], hero: "Bryn the Fighter", hpMax: 24, light: 0, lightMax: 6, lines: extras.lines, detail: extras.detail, figures: ["Threat 0/12", "1 roll", "HP 20/24"], tracks: { progress: 1, rooms: 1, threat: 0, threatMax: 12 } };
-    GS_SESSIONS["delve-gear-strike"] = { ...GS_SESSIONS["delve-fight-details"], lines: [["Room", "Entered snaggle's den"], ["Gear", "Used pepper pouch", "Snaggle: health 27 → 23"]], detail: {} };
+    GS_SESSIONS["delve-fight-details"] = { ...GS_SESSIONS["delve-live"], hero: "Bryn the Fighter", hpMax: 24, threat: extras.threat, light: 0, lightMax: 6, lines: extras.lines, detail: extras.detail, figures: ["Threat 0/12", "1 roll", "HP 19/24"], tracks: { progress: 1, rooms: 1, threat: 0, threatMax: 12 } };
+    GS_SESSIONS["delve-gear-strike"] = { ...GS_SESSIONS["delve-fight-details"], figures: ["Threat 0/12", "0 rolls", "HP 24/24"], lines: [["Room", "Entered snaggle's den"], ["Gear", "Used pepper pouch", "Snaggle: health 27 → 23", "Struck back: d20 9 + 4 vs 16, missed"]], detail: {} };
     GS_SESSIONS["delve-fallen-use"] = { ...GS_SESSIONS["delve-fight-details"], live: false, loss: true, end: "fallen", result: "Fell in Snaggle's den", figures: ["Threat 0/12", "1 roll", "HP 0/24"], lines: [["Room", "Entered the gate"], ["Strength", "Failure", "d20 2 + 3 = 5 vs 15", "HP 4/24"], ["Room", "Entered snaggle's den"], ["Gear", "Used pepper pouch", "Snaggle: health 27 → 23", "Struck back: d20 20 + 4 vs 16, hit, 4 damage, HP 0/24"]], detail: {} };
-    GS_SESSIONS["delve-gear-light"] = { ...GS_SESSIONS["delve-fight-details"], light: 3, lines: [["Room", "Entered the gate"], ["Gear", "Used flask of lamp oil"]], detail: {} };
+    GS_SESSIONS["delve-gear-light"] = { ...GS_SESSIONS["delve-fight-details"], light: 3, figures: ["Threat 0/12", "0 rolls", "HP 24/24"], lines: [["Room", "Entered the gate"], ["Gear", "Used flask of lamp oil"]], detail: {} };
     const DEX = ["+", 3, "DEX"];
     const SIMP = ["+", 2, "Simple"];
     const fl = dlRecord([

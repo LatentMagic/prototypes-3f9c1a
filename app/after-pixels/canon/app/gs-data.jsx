@@ -165,7 +165,7 @@ const GS_DV_WON = [
   ['Room', 'Entered the shrine cavern'],
   ['Strength', 'Hit', 'd20s 11 and 19, kept 19 + 3 = 22 vs 12', 'Struck back: d20 5 + 8 vs 16, missed'],
   ['Ability', 'Used shield bash', 'Grizzletooth: health 39 → 31', 'Struck back: d20 7 + 8 vs 16, missed'],
-  ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 31 → 14'],
+  ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 31 → 23'],
   ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12', 'Struck back: d20 7 + 8 vs 16, missed'],
   ['Strength', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 7 + 8 vs 16, missed'],
   ['Strength', 'Hit', 'd20 15 + 3 = 18 vs 12'],
@@ -183,8 +183,8 @@ const GS_DV_LIVE = [
   ['Intelligence', 'Study the wall scratchings', 'Success', 'd20s 19 and 15, kept 19 + 1 = 20 vs 18'],
   ['Dexterity', 'Climb to the skeleton on the high ledge', 'Success', 'Natural 20', 'd20s 20 and 6, kept 20 + 3 = 23 vs 18'],
   ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'Hit', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 + 4 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12'],
+  ['Dexterity', 'Hit', 'd20s 14 and 5, kept 14 + 3 = 17 vs 14', 'Struck back: d20 9 + 4 vs 14, missed'],
+  ['Dexterity', 'Hit', 'd20s 18 and 7, kept 18 + 3 = 21 vs 14'],
   ['Room', 'Doubled back to the warren', 'The chant +1'],
 ];
 export const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the chant was completed', 'Fell in the warren'];
