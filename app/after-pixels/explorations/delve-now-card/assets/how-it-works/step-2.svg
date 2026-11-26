@@ -1,0 +1,8 @@
+<!-- Step 2, Play it in the chat. Ground: wine #421A28. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid slice">
+  <rect width="240" height="120" fill="#421A28"/>
+  <rect x="116" y="14" width="60" height="20" fill="#F2EBE0"/>
+  <rect x="102" y="42" width="36" height="36" fill="#E5A63B"/>
+  <circle cx="120" cy="60" r="10" fill="#421A28"/>
+  <rect x="62" y="86" width="74" height="20" fill="#328A88"/>
+</svg>
