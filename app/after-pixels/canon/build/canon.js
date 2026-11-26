@@ -1381,44 +1381,51 @@
   const GS_ES_DIG3 = ["123", "482", "907", "256"];
   const GS_DV_TURNCOAT = "As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.";
   const GS_DV_WON = [
-    ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 17 + 0 = 17 vs 12"],
+    ["Wisdom", "Search the lock-keeper's niche", "Success", "d20 17 + 0 = 17 vs 15"],
     ["Room", "Entered the chime run"],
-    ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 12", "HP 21/23"],
-    ["Strength", "Success", "d20 16 + 3 = 19 vs 12"],
-    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 11 + 1 = 12 vs 12"],
+    ["Strength", "Failure", "Natural 1", "d20 1 + 3 = 4 vs 10", "HP 22/24"],
+    ["Strength", "Success", "d20 16 + 3 = 19 vs 18"],
+    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 11 + 1 = 12 vs 15"],
     ["Room", "Entered the warren"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23"],
-    ["Strength", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 8 vs 10, missed"],
-    ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"],
-    ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 12"],
+    ["Strength", "Hit", "d20 9 + 3 = 12 vs 12", "Struck back: d20 15 + 2 vs 16, hit, 2 damage, HP 20/24"],
+    ["Strength", "Hit", "d20 13 + 3 = 16 vs 12", "Struck back: d20 8 + 2 vs 16, missed"],
+    ["Strength", "Search the sentries", "Success", "d20 17 + 3 = 20 vs 18"],
+    ["Dexterity", "Rifle the stolen sacks", "Success", "Natural 20", "d20 20 + 1 = 21 vs 18"],
     ["Room", "Entered Snaggle's den"],
-    ["Gear", "Used a healing draught", "Healed 4, HP 22/23", "Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23"],
-    ["Strength", "Hit", "d20s 15 and 18, kept 18 + 3 = 21 vs 12"],
+    ["Gear", "Used a healing draught", "Healed 4, HP 22/24", "Struck back: d20 15 + 4 vs 16, hit, 2 damage, HP 22/24"],
+    ["Strength", "Hit", "d20s 15 and 18, kept 18 + 3 = 21 vs 14"],
+    ["Strength", "Hit", "d20 15 + 3 = 18 vs 14"],
+    ["Strength", "Hit", "d20 15 + 3 = 18 vs 14"],
+    ["Strength", "Hit", "d20 15 + 3 = 18 vs 14"],
+    ["Strength", "Hit", "d20 15 + 3 = 18 vs 14"],
+    ["Strength", "Hit", "d20 15 + 3 = 18 vs 14"],
     ["Gear", "Took the iron key"],
     ["Room", "Doubled back to the warren", "The chant +1"],
     ["Lock", "Opened the bone gate with the iron key"],
     ["Room", "Entered the shrine cavern"],
-    ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
-    ["Ability", "Used shield bash", "Grizzletooth: health 4 → 3", "Struck back: d20 7 vs 10, missed"],
-    ["Weakness", "A flask of lamp oil", "Grizzletooth: health 3 → 1"],
-    ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12"]
+    ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 + 8 vs 16, missed"],
+    ["Ability", "Used shield bash", "Grizzletooth: health 39 → 31", "Struck back: d20 7 + 8 vs 16, missed"],
+    ["Weakness", "A flask of lamp oil", "Grizzletooth: health 31 → 14"],
+    ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12", "Struck back: d20 7 + 8 vs 16, missed"],
+    ["Strength", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 7 + 8 vs 16, missed"],
+    ["Strength", "Hit", "d20 15 + 3 = 18 vs 12"]
   ];
   const GS_DV_LIVE = [
     ["Room", "Entered the chime run"],
-    ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
-    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 3 = 16 vs 12"],
+    ["Dexterity", "Success", "d20 16 + 3 = 19 vs 18"],
+    ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 3 = 16 vs 18"],
     ["Room", "Entered the warren"],
     ["Gear", "Took a pepper pouch"],
     ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-    ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 vs 14, missed"],
-    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
-    ["Dexterity", "Hit", "d20 12 + 3 = 15 vs 12"],
-    ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 12"],
+    ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 3 + 2 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 8 and 14, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 + 2 vs 14, missed"],
+    ["Dexterity", "Search the sentries", "Success", "d20 12 + 3 = 15 vs 15"],
+    ["Intelligence", "Study the wall scratchings", "Success", "d20s 19 and 15, kept 19 + 1 = 20 vs 18"],
+    ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 18"],
     ["Room", "Entered Snaggle's den"],
-    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
+    ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 + 4 vs 14, missed"],
     ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12"],
-    ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 12"],
     ["Room", "Doubled back to the warren", "The chant +1"]
   ];
   const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the chant was completed", "Fell in the warren"];
@@ -1486,8 +1493,8 @@
       art: "delve",
       result: "Elsie rescued",
       date: "Monday 5 October",
-      figures: ["Threat 5/12", "11 rolls", "1 natural 20", "HP 22/23"],
-      tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
+      figures: ["Threat 4/12", "18 rolls", "1 natural 20", "HP 22/24"],
+      tracks: { progress: 5, rooms: 5, threat: 4, threatMax: 12 },
       lines: GS_DV_WON,
       endings: GS_DV_ENDINGS,
       reached: "Elsie rescued",
@@ -1495,16 +1502,16 @@
       setting: "The Goblin Warren",
       end: "won",
       hero: "Bryn the Fighter",
-      hpMax: 23,
-      threat: 5,
+      hpMax: 24,
+      threat: 4,
       threatMax: 12,
       lightName: "the torch",
       light: 1,
       lightMax: 6,
       sheet: { used: { "Shield bash": 1 }, insp: true },
       share: "Elsie rescued",
-      foeMax: { "snaggle's den": 1, "the shrine cavern": 5 },
-      shareLines: ["The Goblin Warren", "Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩"]
+      foeMax: { "snaggle's den": 27, "the shrine cavern": 44 },
+      shareLines: ["The Goblin Warren", "Bryn the Fighter · ✅ Elsie rescued · 18 rolls", "🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩"]
     },
     // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
     "word-today": {
@@ -1747,17 +1754,17 @@
       ...GS_SESSIONS.delve,
       live: true,
       result: "In progress",
-      figures: ["Threat 3/12", "9 rolls", "1 natural 20", "HP 21/21"],
-      tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 },
+      figures: ["Threat 2/12", "9 rolls", "1 natural 20", "HP 22/22"],
+      tracks: { progress: 4, rooms: 5, threat: 2, threatMax: 12 },
       lines: GS_DV_LIVE,
       reached: null,
       share: null,
       shareLines: null,
       hero: "Wren the Rogue",
-      hpMax: 21,
-      threat: 3,
+      hpMax: 22,
+      threat: 2,
       light: 2,
-      foeMax: { "snaggle's den": 2 },
+      foeMax: { "snaggle's den": 27 },
       sheet: { used: {}, insp: true }
     }
   });
@@ -1771,7 +1778,7 @@
     "word-begun": { ...GS_SESSIONS["word-live"], lines: [] },
     "groups-begun": { ...GS_SESSIONS["groups-live"], figures: ["0 of 4 groups", "No mistakes"], lines: [] },
     "escape-begun": { ...GS_SESSIONS["escape-live"], lines: [] },
-    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 21/21"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } }
+    "delve-begun": { ...GS_SESSIONS["delve-live"], figures: ["Threat 0/12", "0 rolls", "HP 22/22"], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } }
   });
   GS_SESSIONS["escape-0928"] = GS_SESSIONS["escape-week"];
   const gsLapsed = (gs) => gs.view !== "pass" && !!gs.sub.hadPass;
@@ -3165,13 +3172,13 @@
   };
   const DL_OBSTACLES = { "the chime run": "The bone chimes" };
   const DL_HAZARDS = /* @__PURE__ */ new Set(["the thorn stair"]);
-  const DL_FOES = { "the thorn stair": ["The tangle", 4], "the great hall": ["The briar knight", 3], "the warren": ["The goblin sentries", 12, 3], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 5] };
+  const DL_FOES = { "the thorn stair": ["The tangle", 4], "the great hall": ["The briar knight", 16], "the warren": ["The goblin sentries", 10, 2], "snaggle's den": ["Snaggle", 27], "the shrine cavern": ["Grizzletooth", 44] };
   const DL_HIT = { "Bryn the Fighter": 5, "Wren the Rogue": 4 };
   const dlStanding = (members, health, max) => health <= 0 ? 0 : Math.ceil(health * members / max);
   const DL_CARRY = 3;
   const DL_HEROES = {
     // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the protection an ox shield (a name; no armour gear),
-    // the starting gear a healing draught and a crowbar (a key), 23 health, stats as the archetype sets them.
+    // the starting gear a healing draught and a crowbar (a key), 24 health, stats as the archetype sets them.
     "Bryn the Fighter": {
       name: "Bryn",
       cls: "Fighter",
@@ -3181,7 +3188,7 @@
       fight: { defence: 16, acGear: 0, protection: "Ox shield", heavy: { name: "Cleave", die: "d4", modifier: 3, bonus: 2 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
     },
-    // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Thunderstroke, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
+    // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 24 health; his own heavy attack Timberfall, ultimate Thunderstroke, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
     "Hal the Woodcutter": {
       name: "Hal",
       cls: "Woodcutter",
@@ -3192,7 +3199,7 @@
       fight: { defence: 16, acGear: 0, protection: "Elder-bark cloak", heavy: { name: "Timberfall", die: "d4", modifier: 3, bonus: 2 } },
       gear: [{ name: "Honey cake", kind: "once", does: "Heals 6" }, { name: "Axe", kind: "key", does: "" }]
     },
-    // Wren, from the same source (rogue): defence 14, protection a leather jerkin (a name), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
+    // Wren, from the same source (rogue): defence 14, protection a leather jerkin (a name), heavy attack Flurry, ultimate Sneak attack, 22 health, gear a healing draught and a rope (a key).
     "Wren the Rogue": {
       name: "Wren",
       cls: "Rogue",
@@ -3371,7 +3378,12 @@
         r.meter = { name: fo.f[0], health: foeHp[fo.k], max };
         if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
       }
-      if ((hazard || obstacle) && graded && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
+      if (!r.fight && r.tier === "weak") r.threat = 1;
+      else if ((hazard || obstacle) && graded && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
+      else {
+        const cost = l.find((v) => /^Threat \+\d+$/.test(String(v)));
+        if (cost) r.threat = +String(cost).split("+")[1];
+      }
       if (fo && !hazard && (!r.action || r.action === "Heavy attack")) {
         const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
         const dmg = r.dmg ? r.dmg.total : (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1);
@@ -3771,35 +3783,35 @@
       reached: "Fell in the warren",
       share: "Fell in the warren",
       shareLines: null,
-      threat: 6,
+      threat: 3,
       light: 4,
-      figures: ["Threat 6/12", "8 rolls", "HP 0/23"],
-      tracks: { progress: 3, rooms: 5, threat: 6, threatMax: 12 },
+      figures: ["Threat 3/12", "8 rolls", "HP 0/24"],
+      tracks: { progress: 3, rooms: 5, threat: 3, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 12", "HP 21/23"],
+        ["Wisdom", "Search the lock-keeper's niche", "Partial success", "d20 14 + 0 = 14 vs 15", "HP 22/24"],
         ["Room", "Entered the chime run"],
-        ["Strength", "Failure", "d20 3 + 3 = 6 vs 12", "HP 19/23"],
-        ["Strength", "Success", "d20 17 + 3 = 20 vs 12"],
-        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 12", "HP 17/23"],
+        ["Strength", "Failure", "d20 3 + 3 = 6 vs 15", "HP 20/24"],
+        ["Strength", "Success", "d20 17 + 3 = 20 vs 18"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 13 + 1 = 14 vs 15", "HP 18/24"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 vs 10, hit, 4 damage, HP 13/23"],
-        ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 vs 10, hit, 6 damage, HP 7/23"],
-        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 vs 10, hit, 6 damage, HP 1/23"],
-        ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 12 vs 10, hit, 6 damage, HP 0/23"]
+        ["Strength", "Miss", "d20 3 + 3 = 6 vs 12", "Struck back: d20 17 + 2 vs 16, hit, 4 damage, HP 14/24"],
+        ["Strength", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 15 + 2 vs 16, hit, 6 damage, HP 8/24"],
+        ["Strength", "Miss", "Natural 1", "d20 1 + 3 = 4 vs 12", "Struck back: d20 16 + 2 vs 16, hit, 6 damage, HP 2/24"],
+        ["Strength", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 14 + 2 vs 16, hit, 6 damage, HP 0/24"]
       ]
     };
     GS_SESSIONS["delve-lost-no-roll"] = {
       ...GS_SESSIONS.delve,
       loss: true,
       end: "fallen",
-      lostOff: { name: "Collapsing tunnel", harm: 23 },
+      lostOff: { name: "Collapsing tunnel", harm: 24 },
       result: "Fell in the warren",
       reached: "Fell in the warren",
       share: "Fell in the warren",
       shareLines: null,
-      figures: ["Threat 0/12", "0 rolls", "HP 0/23"],
+      figures: ["Threat 0/12", "0 rolls", "HP 0/24"],
       tracks: { progress: 1, rooms: 5, threat: 0, threatMax: 12 },
       threat: 0,
       sheet: { used: {}, insp: true },
@@ -3809,11 +3821,11 @@
       ...GS_SESSIONS.delve,
       loss: true,
       end: "fallen",
-      lostOff: { name: "Crank panel", harm: 4 },
+      lostOff: { name: "Crank panel", harm: 5 },
       setting: "Cold Sleep",
       hero: "Wren the Rogue",
-      hpMax: 21,
-      threat: 2,
+      hpMax: 22,
+      threat: 1,
       threatMax: 12,
       lightName: null,
       light: 0,
@@ -3823,24 +3835,24 @@
       reached: "Fell in the medbay",
       share: "Fell in the medbay",
       shareLines: null,
-      figures: ["Threat 2/12", "5 rolls", "HP 0/21"],
-      tracks: { progress: 3, rooms: 6, threat: 2, threatMax: 12 },
+      figures: ["Threat 1/12", "5 rolls", "HP 0/22"],
+      tracks: { progress: 3, rooms: 6, threat: 1, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
         ["Room", "Entered the cryo deck"],
-        ["Intelligence", "Read the wake log", "Success", "d20 15 + 0 = 15 vs 12"],
-        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 12", "HP 17/21"],
+        ["Intelligence", "Read the wake log", "Success", "d20 15 + 0 = 15 vs 15"],
+        ["Dexterity", "Slip the frozen vent", "Failure", "d20 5 + 3 = 8 vs 15", "HP 18/22"],
         ["Room", "Entered the armoury"],
-        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 12", "HP 11/21"],
-        ["Wisdom", "Listen for the hunt", "Partial success", "d20 11 + 1 = 12 vs 12"],
-        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 12", "HP 4/21"],
+        ["Strength", "Pry the locker", "Failure", "d20 7 + 0 = 7 vs 15", "HP 12/22"],
+        ["Wisdom", "Listen for the hunt", "Partial success", "d20 11 + 1 = 12 vs 15"],
+        ["Dexterity", "Force the cage", "Failure", "d20 4 + 3 = 7 vs 15", "HP 5/22"],
         ["Room", "Entered the medbay"]
       ]
     };
     GS_SESSIONS["delve-won-by-use"] = (() => {
       const base = GS_SESSIONS.delve.lines;
       const cut = base.findIndex((l) => l[0] === "Ability");
-      return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 4 → 2"], ["Strength", "Hit", "d20s 17 and 9, kept 17 + 3 = 20 vs 12", "Struck back: d20 8 vs 10, missed"], ["Ability", "Used shield bash", "Grizzletooth: health 1 → 0"]] };
+      return { ...GS_SESSIONS.delve, figures: ["Threat 4/12", "18 rolls", "1 natural 20", "HP 22/24"], lines: [...base.slice(0, cut), ["Weakness", "A flask of lamp oil", "Grizzletooth: health 39 → 22"], ["Strength", "Hit", "d20 17 + 3 = 20 vs 12"], ["Strength", "Hit", "d20 16 + 3 = 19 vs 12"], ["Strength", "Hit", "d20 15 + 3 = 18 vs 12"], ["Ability", "Used shield bash", "Grizzletooth: health 7 → 0"]] };
     })();
     GS_SESSIONS["delve-hard"] = {
       ...GS_SESSIONS.delve,
@@ -3851,87 +3863,87 @@
       share: "Too late: the chant was completed",
       shareLines: null,
       hero: "Wren the Rogue",
-      hpMax: 21,
+      hpMax: 22,
       threat: 12,
-      foeMax: { "the shrine cavern": 6 },
+      foeMax: { "the shrine cavern": 44 },
       // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
       foeName: { "the shrine cavern": "Mortlake, the drowned captain" },
       // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
       lightName: "the watchman's round",
       light: 0,
       lightMax: 9,
-      figures: ["Threat 12/12", "36 rolls", "1 natural 20", "HP 12/21"],
+      figures: ["Threat 12/12", "37 rolls", "1 natural 20", "HP 13/22"],
       tracks: { progress: 20, rooms: 13, threat: 12, threatMax: 12 },
       sheet: { used: {}, insp: false },
       lines: [
-        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 12", "HP 19/21"],
+        ["Wisdom", "Search the lock-keeper's niche", "Failure", "Natural 1", "d20 1 + 0 = 1 vs 10", "HP 20/22"],
         ["Room", "Entered the chime run"],
-        ["Dexterity", "Partial success", "d20 8 + 3 = 11 vs 12", "HP 17/21"],
-        ["Dexterity", "Success", "d20 16 + 3 = 19 vs 12"],
-        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 12"],
+        ["Dexterity", "Partial success", "d20 8 + 3 = 11 vs 15", "HP 18/22"],
+        ["Dexterity", "Check the chime wires", "Success", "d20 16 + 3 = 19 vs 18"],
+        ["Dexterity", "Gather up the fallen bones", "Partial success", "d20 9 + 3 = 12 vs 15"],
         ["Room", "Entered the warren"],
         ["Turn", "The turncoat joins", GS_DV_TURNCOAT],
-        ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 vs 14, missed"],
-        ["Dexterity", "Hit", "d20s 6 and 15, kept 15 + 3 = 18 vs 12", "Struck back: d20 11 vs 14, missed"],
-        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21"],
-        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 14 + 3 = 17 vs 12", "Struck back: d20 6 + 2 vs 14, missed"],
+        ["Dexterity", "Miss", "d20 6 + 3 = 9 vs 12", "Struck back: d20 11 + 2 vs 14, missed"],
+        ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 + 2 vs 14, hit, 1 damage, HP 17/22"],
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 4 + 2 vs 14, missed"],
         ["Dexterity", "Hit", "d20 15 + 3 = 18 vs 12"],
         ["Room", "Doubled back to the chime run", "The chant +1"],
-        ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
+        ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 15"],
         ["Room", "Doubled back to the warren", "The chant +1"],
         ["Room", "Entered Snaggle's den"],
-        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 13 vs 14, missed"],
-        ["Dexterity", "Heavy attack: Flurry", "Hit", "Natural 20", "d20 20 + 5 = 25 vs 12", "Struck back: d20 8 vs 14, missed"],
-        ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
+        ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 14", "Struck back: d20 9 + 4 vs 14, missed"],
+        ["Dexterity", "Heavy attack: Flurry", "Hit", "Natural 20", "d20 20 + 5 = 25 vs 14", "Struck back: d20 8 + 4 vs 14, missed"],
+        ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 14"],
         ["Room", "Doubled back to the warren", "The chant +1"],
         ["Room", "Doubled back to Snaggle's den", "The chant +1"],
-        ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 12"],
+        ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 15"],
         ["Room", "Doubled back to the warren", "The chant +1"],
-        ["Strength", "Force the bone gate", "Partial success", "d20 9 + 0 = 9 vs 12"],
-        ["Strength", "Force the bone gate", "Partial success", "d20 11 + 0 = 11 vs 12"],
-        ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 12"],
+        ["Strength", "Force the bone gate", "Failure", "d20 9 + 0 = 9 vs 15"],
+        ["Strength", "Force the bone gate", "Failure", "d20 8 + 0 = 8 vs 15"],
+        ["Strength", "Force the bone gate", "Success", "d20 15 + 0 = 15 vs 15"],
         ["Room", "Doubled back to the chime run", "The chant +1"],
-        ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
+        ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 18"],
         ["Room", "Entered the flooded cellar"],
-        ["Dexterity", "Cross the flooded cellar", "Success", "d20 14 + 3 = 17 vs 12"],
+        ["Dexterity", "Cross the flooded cellar", "Success", "d20 14 + 3 = 17 vs 15"],
         ["Room", "Entered the armoury"],
-        ["Intelligence", "Read the maker's marks", "Success", "d20 12 + 1 = 13 vs 12"],
+        ["Intelligence", "Read the maker's marks", "Success", "d20 12 + 1 = 13 vs 10"],
         ["Room", "Entered the shrine of the drowned saint"],
-        ["Wisdom", "Hear the saint's bell", "Success", "d20 15 + 1 = 16 vs 12"],
-        ["Constitution", "Hold your breath", "Success", "d20 13 + 2 = 15 vs 12"],
+        ["Wisdom", "Hear the saint's bell", "Success", "d20 15 + 1 = 16 vs 15"],
+        ["Constitution", "Hold your breath", "Success", "d20 13 + 2 = 15 vs 15"],
         ["Room", "Entered the well shaft"],
-        ["Strength", "Climb the well shaft", "Success", "d20 12 + 0 = 12 vs 12"],
-        ["Dexterity", "Slip the rope", "Success", "d20 17 + 3 = 20 vs 12"],
+        ["Strength", "Climb the well shaft", "Success", "d20 12 + 0 = 12 vs 10"],
+        ["Dexterity", "Slip the rope", "Success", "d20 17 + 3 = 20 vs 18"],
         ["Room", "Entered the barracks"],
-        ["Dexterity", "Slip past the sleeping guard", "Success", "d20 16 + 3 = 19 vs 12"],
+        ["Dexterity", "Slip past the sleeping guard", "Success", "d20 16 + 3 = 19 vs 18"],
         ["Room", "Entered the chapel"],
-        ["Wisdom", "Listen at the altar", "Success", "d20 14 + 1 = 15 vs 12"],
-        ["Intelligence", "Read the psalm board", "Success", "d20 13 + 1 = 14 vs 12"],
+        ["Wisdom", "Listen at the altar", "Success", "d20 14 + 1 = 15 vs 15"],
+        ["Intelligence", "Read the psalm board", "Success", "d20 13 + 1 = 14 vs 10"],
         ["Room", "Entered the crypt"],
-        ["Dexterity", "Pick the crypt lock", "Success", "d20 15 + 3 = 18 vs 12"],
+        ["Dexterity", "Pick the crypt lock", "Success", "d20 15 + 3 = 18 vs 18"],
         ["Room", "Entered the bone pit"],
-        ["Strength", "Cross the bone pit", "Success", "d20 18 + 0 = 18 vs 12"],
-        ["Dexterity", "Slip the trap", "Success", "d20 11 + 3 = 14 vs 12"],
-        ["Room", "Doubled back to the warren", "The chant +1"],
+        ["Strength", "Cross the bone pit", "Success", "d20 18 + 0 = 18 vs 18"],
+        ["Dexterity", "Slip the trap", "Success", "d20 11 + 3 = 14 vs 10"],
         ["Room", "Entered the shrine cavern"],
-        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
-        ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
-        ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 9 vs 14, missed"],
-        ["Dexterity", "Hit", "d20s 5 and 12, kept 12 + 3 = 15 vs 12", "Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21"],
-        ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 12 vs 14, missed"],
-        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21"]
+        ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 + 8 vs 14, hit, 2 damage, HP 15/22"],
+        ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 18", "Struck back: d20 5 + 8 vs 14, missed"],
+        ["Dexterity", "Hit", "d20 18 + 3 = 21 vs 12", "Struck back: d20 5 + 8 vs 14, missed"],
+        ["Dexterity", "Hit", "d20s 5 and 12, kept 12 + 3 = 15 vs 12", "Struck back: d20 17 + 8 vs 14, hit, 1 damage, HP 14/22"],
+        ["Dexterity", "Hit", "d20 11 + 3 = 14 vs 12", "Struck back: d20 5 + 8 vs 14, missed"],
+        ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 16 + 8 vs 14, hit, 1 damage, HP 13/22"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
+        ["Wisdom", "Find the way out", "Partial success", "d20 11 + 0 = 11 vs 15"]
       ]
     };
     {
       const hard = GS_SESSIONS["delve-hard"];
       const rollAt = (l) => /(d20 |d20s \d+ and \d+, kept )\d+ [+-] \d+ = /.test(l.slice(1).join(" · "));
       const n = hard.lines.filter(rollAt).indexOf(hard.lines.find((l) => rollAt(l) && l.includes("Natural 20") && /^Heavy attack/.test(l[1]))) + 1;
-      GS_SESSIONS["delve-hard"] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 23 }, detail: { [n]: { parts: [["+", 3, "DEX"], ["+", 2, "Simple"], ["+", 1, "Magic"], ["+", 1, "Escalation"], ["−", 2, "Heavy"]], dmg: { die: "d8", v: 8, parts: [["+", 5, "d8"], ["+", 3, "DEX"], ["+", 1, "Magic"], ["+", 4, "Heavy"]], type: "Piercing" } } } };
+      GS_SESSIONS["delve-hard"] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 27 }, detail: { [n]: { parts: [["+", 3, "DEX"], ["+", 2, "Simple"], ["+", 1, "Magic"], ["+", 1, "Escalation"], ["−", 2, "Heavy"]], dmg: { die: "d4", v: 4, parts: [["+", 4, "d4"], ["+", 3, "DEX"], ["+", 1, "Magic"], ["+", 4, "Heavy"]], type: "Piercing" } } } };
     }
     GS_SESSIONS["delve-overrun-back"] = (() => {
-      const L = GS_SESSIONS["delve-hard"].lines;
-      const at = L.findIndex((l) => l[1] === "Entered the shrine cavern");
-      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...L.slice(0, at - 1), ...L.slice(at), ["Room", "Doubled back to the warren", "The chant +1"]] };
+      const L = GS_SESSIONS["delve-hard"].lines.slice(0, -1).map((l) => l[1] === "Force the bone gate" && l.includes("d20 15 + 0 = 15 vs 15") ? ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 15"] : l);
+      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, figures: ["Threat 12/12", "36 rolls", "1 natural 20", "HP 13/22"], lines: L };
     })();
     GS_SESSIONS["delve-hazard"] = {
       ...GS_SESSIONS.delve,
@@ -3946,33 +3958,73 @@
       shareLines: null,
       setting: "The Briar Keep",
       hero: "Hal the Woodcutter",
-      hpMax: 23,
-      threat: 2,
+      hpMax: 24,
+      threat: 3,
       threatMax: 14,
       lightName: null,
       light: 0,
       lightMax: 0,
       foeMax: {},
-      figures: ["Threat 2/14", "10 rolls", "HP 20/23"],
-      tracks: { progress: 4, rooms: 6, threat: 2, threatMax: 14 },
+      figures: ["Threat 3/14", "10 rolls", "HP 20/24"],
+      tracks: { progress: 4, rooms: 6, threat: 3, threatMax: 14 },
       sheet: { used: {}, insp: true },
       lines: [
-        ["Intelligence", "Read the rhyme on the gatepost", "Success", "d20 17 + 0 = 17 vs 12"],
+        ["Intelligence", "Read the rhyme on the gatepost", "Success", "d20 17 + 0 = 17 vs 15"],
         ["Room", "Entered the rose walk"],
-        ["Dexterity", "Climb the garden wall to the sundial", "Success", "d20 16 + 1 = 17 vs 12"],
+        ["Dexterity", "Climb the garden wall to the sundial", "Success", "d20 16 + 1 = 17 vs 15"],
         ["Room", "Entered the well court"],
-        ["Charisma", "Flatter the witch", "Partial success", "d20 13 + 0 = 13 vs 12"],
+        ["Charisma", "Flatter the witch", "Partial success", "d20 13 + 0 = 13 vs 15"],
         ["Room", "Entered the great hall"],
-        ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 vs 10, missed"],
-        ["Strength", "Hit", "d20 12 + 3 = 15 vs 12", "Struck back: d20 12 vs 10, hit, 1 damage, HP 22/23"],
+        ["Strength", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 4 + 3 vs 16, missed"],
+        ["Strength", "Hit", "d20 12 + 3 = 15 vs 12", "Struck back: d20 13 + 3 vs 16, hit, 2 damage, HP 22/24"],
         ["Strength", "Hit", "d20 14 + 3 = 17 vs 12"],
         ["Room", "Entered the thorn stair"],
-        ["Strength", "Partial success", "d20 11 + 3 = 14 vs 12"],
-        ["Strength", "Failure", "d20 6 + 3 = 9 vs 12", "HP 20/23"],
-        ["Strength", "Success", "d20 15 + 3 = 18 vs 12"],
-        ["Strength", "Success", "d20 16 + 3 = 19 vs 12"]
+        ["Strength", "Partial success", "d20 11 + 3 = 14 vs 15"],
+        ["Strength", "Failure", "d20 6 + 3 = 9 vs 15", "HP 20/24"],
+        ["Strength", "Success", "d20 15 + 3 = 18 vs 18"],
+        ["Strength", "Success", "d20 16 + 3 = 19 vs 18"]
       ]
     };
+    const sampleCombat = (session) => {
+      const maxima = { "the warren": 10, "snaggle's den": 27, "the great hall": 16, "the shrine cavern": 44 };
+      const bonuses = { "the warren": 2, "snaggle's den": 4, "the great hall": 3, "the shrine cavern": 8 };
+      const left = {};
+      let room = "";
+      let roll = 0;
+      const detail = { ...session.detail || {} };
+      const lines = session.lines.map((line) => {
+        const l = [...line];
+        if (l[0] === "Room") {
+          room = l[1].replace(/^(Entered |Doubled back to )/i, "").toLowerCase();
+          return l;
+        }
+        if (/^(Ability|Weakness|Gear)$/.test(l[0])) {
+          const m = /health \d+ → (\d+)/.exec(String(l[2] || ""));
+          if (m) left[room] = +m[1];
+          return l;
+        }
+        if (!l.some((x) => /(?:d20 |d20s \d+ and \d+, kept )\d+ [+-] \d+ = /.test(String(x)))) return l;
+        roll += 1;
+        const fight = l.includes("Hit") || l.includes("Miss");
+        if (!fight || !maxima[room]) return l;
+        const existing = detail[roll] || {};
+        const heavy = l.some((x) => /^Heavy attack:/.test(String(x)));
+        if (l.includes("Hit")) {
+          const face = room === "snaggle's den" && session.hero === "Wren the Rogue" && left[room] === 6 ? 3 : 2;
+          const dmg = existing.dmg || { die: "d4", v: face, parts: [["+", 3, session.hero === "Wren the Rogue" ? "DEX" : "STR"], ...heavy ? [["+", session.hero === "Wren the Rogue" ? 4 : 2, "Heavy"]] : []], type: "Edged" };
+          detail[roll] = { ...existing, dmg };
+          const damage = dmg.v + dmg.parts.reduce((n, part) => n + (part[0] === "−" ? -part[1] : part[1]), 0);
+          left[room] = Math.max(0, (left[room] ?? maxima[room]) - damage);
+        }
+        if ((left[room] ?? maxima[room]) === 0) return l.filter((x) => !/^Struck back:/.test(String(x)));
+        if (!l.some((x) => /^Struck back:/.test(String(x)))) l.push("Struck back: d20 3 + " + bonuses[room] + " vs " + (session.hero === "Wren the Rogue" ? 14 : 16) + ", missed");
+        return l;
+      });
+      return { ...session, lines, detail };
+    };
+    ["delve", "delve-live", "delve-replay", "delve-fallen", "delve-won-by-use", "delve-hard", "delve-overrun-back", "delve-hazard"].forEach((id) => {
+      GS_SESSIONS[id] = sampleCombat(GS_SESSIONS[id]);
+    });
   }
   let DV_END;
   let DV_RUN1;
@@ -12219,6 +12271,7 @@
     return (other != null ? "d20s " + other + " and " + die + ", kept " + die : "d20 " + die) + (net < 0 ? " - " : " + ") + Math.abs(net) + " = " + (die + net) + " vs " + vs;
   };
   function dlRecord(steps, hpMax, heroAc, threatMax = 12) {
+    let room = null;
     let hp = hpMax;
     let n = 0;
     let threat = 0;
@@ -12227,7 +12280,7 @@
     const hpOf = (h) => "HP " + h + "/" + hpMax;
     steps.forEach(([k, ...a]) => {
       if (hp <= 0 || threat >= threatMax) throw new Error("dlRecord: a step after the run has ended (" + k + " " + a[0] + ")");
-      if (k === "room" || k === "back") a[0];
+      if (k === "room" || k === "back") room = a[0];
       if (k === "room") {
         lines.push(["Room", "Entered " + a[0]]);
         return;
@@ -12246,10 +12299,11 @@
         const [stat2, action, skill, die2, mods2, dc, o2 = {}] = a;
         const total2 = die2 + sumP(mods2);
         const grade = die2 === 1 ? "Failure" : die2 === 20 || total2 >= dc ? "Success" : total2 >= dc - 5 ? "Partial success" : "Failure";
+        if (grade === "Partial success") threat += 1;
         if (grade === "Failure") threat += die2 === 1 ? 2 : 1;
         const harm = grade === "Success" ? 0 : Math.min(o2.harm || 0, Math.max(0, hp - 2));
         hp -= harm;
-        lines.push([stat2, action, grade, ...nat(die2) ? [nat(die2)] : [], sumText(die2, o2.other, mods2, dc), ...harm ? [hpOf(hp)] : []]);
+        lines.push([stat2, action, grade, ...nat(die2) ? [nat(die2)] : [], sumText(die2, o2.other, mods2, dc), ...harm ? [hpOf(hp)] : [], ...grade === "Failure" && room !== "the chime run" ? ["Threat +" + (die2 === 1 ? 2 : 1)] : []]);
         detail[n] = { parts: mods2, skill };
         return;
       }
@@ -12257,7 +12311,6 @@
       const total = die + sumP(mods);
       const hit = die !== 1 && (die === 20 || total >= ac);
       const f = o.foe;
-      if (!hit) threat += die === 1 ? 2 : 1;
       const dmg = hit && o.dmg ? { die: o.dmg[0], v: o.dmg[1], parts: o.dmg[2], type: o.dmg[3] } : null;
       let back = [];
       if (f) {
@@ -12309,6 +12362,7 @@
   function longRoute(n, hpMax) {
     const rnd = seeded(7);
     const steps = [];
+    const health = { "snaggle's den": 27, "the great hall": 16 };
     ROUTE.slice(0, n).forEach(([name, back], i) => {
       steps.push([back ? "back" : "room", name]);
       const fight = name === "snaggle's den" || name === "the great hall";
@@ -12319,26 +12373,32 @@
         if (fight) {
           const heavy = k === 0 ? "Cleave" : null;
           const mods = [["+", 3, "STR"], ["+", 2, "Martial"], ...heavy ? [["−", 2, "Heavy"]] : []];
-          steps.push(["atk", "Strength", heavy, die, mods, 12, { dmg: ["d10", 3 + Math.floor(rnd() * 7), [["+", 3, "STR"], ...heavy ? [["+", 2, "Heavy"]] : []], "Slashing"], foe: { roll: 3 + Math.floor(rnd() * 17), bonus: 4, dd: [3, 1, 1] } }]);
+          const attackDie = name === "the great hall" && i === 20 && k > 0 ? 2 : die;
+          const ac = name === "snaggle's den" ? 14 : 12;
+          const face = name === "the great hall" ? 1 : 1 + Math.floor(rnd() * 4);
+          const damage = face + 3 + (heavy ? 2 : 0);
+          const hit = attackDie + sumP(mods) >= ac;
+          if (hit) health[name] = Math.max(0, health[name] - damage);
+          steps.push(["atk", "Strength", heavy, attackDie, mods, ac, { dmg: ["d4", face, [["+", 3, "STR"], ...heavy ? [["+", 2, "Heavy"]] : []], "Slashing"], ...health[name] > 0 ? { foe: { roll: 3 + Math.floor(rnd() * 17), bonus: name === "snaggle's den" ? 4 : 3, dd: [3, 1, 1] } } : {} }]);
         } else {
           const c = CHECKS[(i + k) % 4];
           const mods = [...c[3] > 0 ? [["+", c[3], c[4]]] : [], ...c[2] ? [["+", 2, c[2]]] : []];
-          steps.push(["chk", c[0], c[1], c[2], die, mods, 12, { harm: 1 }]);
+          steps.push(["chk", c[0], c[1], c[2], die, mods, lose ? 15 : 10, { harm: 1 }]);
         }
       }
     });
-    return dlRecord(steps, hpMax, 10);
+    return dlRecord(steps, hpMax, 16);
   }
   const dlLongRun = (n, live = false) => {
-    const { lines, detail, hp, threat, rolls } = longRoute(n, 23);
+    const { lines, detail, hp, threat, rolls } = longRoute(n, 24);
     const stops = ROUTE.slice(0, n);
     const rooms = new Set(stops.map((r) => r[0])).size;
     return {
       ...GS_SESSIONS["delve-hard"],
       hero: "Bryn the Fighter",
-      hpMax: 23,
+      hpMax: 24,
       threat,
-      foeMax: { "snaggle's den": 40, "the great hall": 60 },
+      foeMax: { "snaggle's den": 27, "the great hall": 16 },
       foeName: {},
       lightName: "the torch",
       light: 0,
@@ -12348,7 +12408,7 @@
       result: "Too late: the chant was completed",
       reached: "Too late: the chant was completed",
       share: "Too late: the chant was completed",
-      figures: ["Threat " + threat + "/12", rolls + " rolls", "HP " + hp + "/23"],
+      figures: ["Threat " + threat + "/12", rolls + " rolls", "HP " + hp + "/24"],
       tracks: { progress: n, rooms, threat, threatMax: 12 },
       lines,
       detail
@@ -12362,48 +12422,53 @@
     const MART = ["+", 2, "Martial"];
     const HEAVY = ["−", 2, "Heavy"];
     const km = dlRecord([
-      ["chk", "Wisdom", "Search the lock-keeper's niche", "Perception", 11, [["+", 2, "Perception"]], 12],
+      ["chk", "Wisdom", "Search the lock-keeper's niche", "Perception", 11, [["+", 2, "Perception"]], 10],
       ["room", "the chime run"],
-      ["chk", "Strength", "Climb the bone stair", "Athletics", 1, [STR, ["+", 2, "Athletics"]], 12, { harm: 3 }],
-      ["chk", "Dexterity", "Slip past the chimes", null, 11, [["+", 1, "DEX"]], 12],
+      ["chk", "Strength", "Climb the bone stair", "Athletics", 1, [STR, ["+", 2, "Athletics"]], 10, { harm: 3 }],
+      ["chk", "Dexterity", "Slip past the chimes", null, 11, [["+", 1, "DEX"]], 10],
       ["room", "the warren"],
       ["raw", ["Turn", "The turncoat joins", GS_DV_TURNCOAT]],
       ["room", "snaggle's den"],
-      ["atk", "Strength", "Cleave", 13, [STR, MART, HEAVY], 12, { dmg: ["d10", 7, [STR, ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 15, bonus: 4, dd: [3, 2, 1] } }],
-      ["atk", "Strength", null, 9, [STR, MART], 12, { dmg: ["d8", 5, [STR], "Slashing"], foe: { roll: 6, bonus: 4, dd: [3, 1, 1] } }],
-      ["atk", "Strength", "Cleave", 20, [STR, MART, ["+", 1, "Magic"], HEAVY], 12, { dmg: ["d10", 10, [STR, ["+", 1, "Magic"], ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 16, other: 5, bonus: 4, dd: [3, 3, 1] } }],
-      ["atk", "Strength", null, 4, [STR, MART], 12, { foe: { roll: 7, bonus: 4, dd: [3, 1, 1] } }],
-      ["atk", "Strength", null, 14, [STR, MART], 12, { dmg: ["d8", 3, [STR], "Slashing"] }],
+      ["atk", "Strength", "Cleave", 13, [STR, MART, HEAVY], 14, { dmg: ["d4", 1, [STR, ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 15, bonus: 4, dd: [3, 2, 1] } }],
+      ["atk", "Strength", null, 9, [STR, MART], 14, { dmg: ["d4", 1, [STR], "Slashing"], foe: { roll: 6, bonus: 4, dd: [3, 1, 1] } }],
+      ["atk", "Strength", "Cleave", 20, [STR, MART, ["+", 1, "Magic"], HEAVY], 14, { dmg: ["d4", 1, [["+", 1, "d4"], STR, ["+", 1, "Magic"], ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 16, other: 5, bonus: 4, dd: [3, 3, 1] } }],
+      ["atk", "Strength", null, 4, [STR, MART], 14, { foe: { roll: 7, bonus: 4, dd: [3, 1, 1] } }],
+      ["atk", "Strength", null, 14, [STR, MART], 14, { dmg: ["d4", 1, [STR], "Slashing"], foe: { roll: 5, bonus: 4, dd: [3, 1, 1] } }],
       ["room", "the shrine cavern"],
-      ["atk", "Strength", null, 12, [STR, MART], 12, { dmg: ["d8", 6, [STR], "Slashing"], foe: { roll: 4, bonus: 4, dd: [3, 2, 1] } }],
-      ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d8", 7, [STR], "Slashing"] }]
-    ], 23, 10);
-    GS_SESSIONS["delve-key-moments"] = { ...GS_SESSIONS.delve, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 40, "the shrine cavern": 19 }, figures: ["Threat " + km.threat + "/12", km.rolls + " rolls", "1 natural 20", "HP " + km.hp + "/23"], threat: km.threat, sheet: { used: {}, insp: true } };
+      ["atk", "Strength", null, 12, [STR, MART], 12, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 4, [STR], "Slashing"], foe: { roll: 4, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 4, [STR], "Slashing"] }]
+    ], 24, 16);
+    GS_SESSIONS["delve-key-moments"] = { ...GS_SESSIONS.delve, hpMax: 24, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 27, "the shrine cavern": 44 }, figures: ["Threat " + km.threat + "/12", km.rolls + " rolls", "1 natural 20", "HP " + km.hp + "/24"], threat: km.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: km.threat }, sheet: { used: {}, insp: true } };
     const DEX = ["+", 3, "DEX"];
     const SIMP = ["+", 2, "Simple"];
     const fl = dlRecord([
-      ["chk", "Dexterity", "Slip the shrine gate", null, 14, [DEX], 12],
+      ["chk", "Dexterity", "Slip the shrine gate", null, 14, [DEX], 10],
       ["room", "the shrine cavern"],
-      ["atk", "Dexterity", "Flurry", 6, [DEX, SIMP, HEAVY], 12, { dmg: null, foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }],
-      ["atk", "Dexterity", null, 15, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 4, [DEX], "Piercing"], foe: { roll: 7, bonus: 4 } }]
-    ], 21, 14);
-    GS_SESSIONS["delve-fight-live"] = { ...GS_SESSIONS["delve-live"], lines: fl.lines, detail: fl.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + fl.threat + "/12", fl.rolls + " rolls", "HP " + fl.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: fl.threat, threatMax: 12 }, threat: fl.threat, sheet: { used: {}, insp: true } };
+      ["atk", "Dexterity", "Flurry", 6, [DEX, SIMP, HEAVY], 12, { dmg: null, foe: { roll: 15, other: 9, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Dexterity", null, 15, [DEX, SIMP], 12, { other: 4, dmg: ["d4", 4, [DEX], "Piercing"], foe: { roll: 5, bonus: 8 } }]
+    ], 22, 14);
+    GS_SESSIONS["delve-fight-live"] = { ...GS_SESSIONS["delve-live"], hpMax: 22, lines: fl.lines, detail: fl.detail, foeMax: { "the shrine cavern": 44 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + fl.threat + "/12", fl.rolls + " rolls", "HP " + fl.hp + "/22"], tracks: { progress: 2, rooms: 2, threat: fl.threat, threatMax: 12 }, threat: fl.threat, sheet: { used: {}, insp: true } };
     const adv = dlRecord([
-      ["chk", "Dexterity", "Slip the shrine gate", null, 16, [DEX], 12, { other: 5 }],
+      ["chk", "Dexterity", "Slip the shrine gate", null, 16, [DEX], 10, { other: 5 }],
       ["room", "the shrine cavern"],
-      ["atk", "Dexterity", "Flurry", 9, [DEX, SIMP, HEAVY], 12, { dmg: ["d6", 4, [DEX, ["+", 2, "Heavy"]], "Piercing"], foe: { roll: 6, bonus: 4, dd: [3, 2, 1] } }],
-      ["atk", "Dexterity", null, 14, [DEX, SIMP], 12, { dmg: ["d6", 3, [DEX], "Piercing"], foe: { roll: 5, bonus: 4 } }],
-      ["atk", "Dexterity", null, 17, [DEX, SIMP], 12, { other: 4, dmg: ["d6", 5, [DEX], "Piercing"], foe: { roll: 15, other: 9, bonus: 4, dd: [3, 2, 1] } }]
-    ], 21, 14);
-    GS_SESSIONS["delve-advantage"] = { ...GS_SESSIONS["delve-live"], lines: adv.lines, detail: adv.detail, foeMax: { "the shrine cavern": 30 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + adv.threat + "/12", adv.rolls + " rolls", "HP " + adv.hp + "/21"], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };
+      ["atk", "Dexterity", "Flurry", 9, [DEX, SIMP, HEAVY], 12, { dmg: ["d4", 4, [DEX, ["+", 4, "Heavy"]], "Piercing"], foe: { roll: 6, bonus: 8, dd: [3, 2, 1] } }],
+      ["atk", "Dexterity", null, 14, [DEX, SIMP], 12, { dmg: ["d4", 3, [DEX], "Piercing"], foe: { roll: 5, bonus: 8 } }],
+      ["atk", "Dexterity", null, 17, [DEX, SIMP], 12, { other: 4, dmg: ["d4", 4, [DEX], "Piercing"], foe: { roll: 15, other: 9, bonus: 8, dd: [3, 2, 1] } }]
+    ], 22, 14);
+    GS_SESSIONS["delve-advantage"] = { ...GS_SESSIONS["delve-live"], hpMax: 22, lines: adv.lines, detail: adv.detail, foeMax: { "the shrine cavern": 44 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, figures: ["Threat " + adv.threat + "/12", adv.rolls + " rolls", "HP " + adv.hp + "/22"], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };
     const ff = dlRecord([
-      ["chk", "Dexterity", "Cross the trapped bridge", null, 3, [["+", 1, "DEX"]], 12, { harm: 14 }],
+      ["chk", "Dexterity", "Cross the trapped bridge", null, 3, [["+", 1, "DEX"]], 10, { harm: 14 }],
       ["room", "snaggle's den"],
-      ["atk", "Strength", "Cleave", 15, [STR, MART, HEAVY], 12, { dmg: ["d10", 6, [STR, ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 18, bonus: 4, dd: [3, 3, 1] } }],
-      ["atk", "Strength", null, 8, [STR, MART], 12, { foe: { roll: 17, bonus: 4, dd: [3, 3, 1] } }],
-      ["atk", "Strength", null, 14, [STR, MART], 12, { dmg: ["d8", 6, [STR], "Slashing"], foe: { roll: 16, bonus: 4, dd: [3, 3, 1] } }]
-    ], 23, 10);
-    GS_SESSIONS["delve-fight-fallen"] = { ...GS_SESSIONS["delve-fallen"], lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 40 }, result: "Fell in Snaggle's den", reached: "Fell in Snaggle's den", share: "Fell in Snaggle's den", figures: ["Threat " + ff.threat + "/12", ff.rolls + " rolls", "HP " + ff.hp + "/23"], tracks: { progress: 2, rooms: 2, threat: ff.threat, threatMax: 12 }, threat: ff.threat, sheet: { used: {}, insp: false } };
+      ["atk", "Strength", "Cleave", 15, [STR, MART, HEAVY], 14, { dmg: ["d4", 3, [STR, ["+", 2, "Heavy"]], "Slashing"], foe: { roll: 18, bonus: 4, dd: [3, 3, 1] } }],
+      ["atk", "Strength", null, 6, [STR, MART], 14, { foe: { roll: 17, bonus: 4, dd: [3, 3, 1] } }],
+      ["atk", "Strength", null, 14, [STR, MART], 14, { dmg: ["d4", 3, [STR], "Slashing"], foe: { roll: 16, bonus: 4, dd: [3, 3, 1] } }]
+    ], 24, 16);
+    GS_SESSIONS["delve-fight-fallen"] = { ...GS_SESSIONS["delve-fallen"], hpMax: 24, lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 27 }, result: "Fell in Snaggle's den", reached: "Fell in Snaggle's den", share: "Fell in Snaggle's den", figures: ["Threat " + ff.threat + "/12", ff.rolls + " rolls", "HP " + ff.hp + "/24"], tracks: { progress: 2, rooms: 2, threat: ff.threat, threatMax: 12 }, threat: ff.threat, sheet: { used: {}, insp: false } };
   }
   const PG = {};
   const PG_DESK = 1280;
