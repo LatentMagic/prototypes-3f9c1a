@@ -3177,7 +3177,7 @@
       cls: "Fighter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       skills: [["Athletics", "Strength"], ["Intimidation", "Charisma"], ["Perception", "Wisdom"], ["Survival", "Wisdom"]],
-      abilities: [{ name: "Shield bash", of: 1, ult: true, does: "Strikes at once, no roll" }],
+      abilities: [{ name: "Shield bash", of: 1, ult: true, does: "" }],
       fight: { defence: 16, acGear: 0, protection: "Ox shield", heavy: { name: "Cleave", die: "d4", modifier: 3, bonus: 2 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
     },
@@ -3188,7 +3188,7 @@
       fightClass: "Fighter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       skills: [["Athletics", "Strength"], ["Intimidation", "Charisma"], ["Perception", "Wisdom"], ["Survival", "Wisdom"]],
-      abilities: [{ name: "Thunderstroke", of: 1, ult: true, does: "Strikes at once, no roll" }],
+      abilities: [{ name: "Thunderstroke", of: 1, ult: true, does: "" }],
       fight: { defence: 16, acGear: 0, protection: "Elder-bark cloak", heavy: { name: "Timberfall", die: "d4", modifier: 3, bonus: 2 } },
       gear: [{ name: "Honey cake", kind: "once", does: "Heals 6" }, { name: "Axe", kind: "key", does: "" }]
     },
@@ -3198,12 +3198,12 @@
       cls: "Rogue",
       stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
       skills: [["Stealth", "Dexterity"], ["Acrobatics", "Dexterity"], ["Sleight of Hand", "Dexterity"], ["Deception", "Charisma"], ["Perception", "Wisdom"], ["Investigation", "Intelligence"], ["Persuasion", "Charisma"]],
-      abilities: [{ name: "Sneak attack", of: 1, ult: true, does: "Strikes at once, no roll" }],
+      abilities: [{ name: "Sneak attack", of: 1, ult: true, does: "" }],
       fight: { defence: 14, acGear: 0, protection: "Leather jerkin", heavy: { name: "Flurry", die: "d4", modifier: 3, bonus: 4 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Coil of rope", kind: "key", does: "" }]
     }
   };
-  const DL_GEAR_DOES = { "Iron key": "Opens the lock it fits", "Pepper pouch": "Deals 4 damage", "Flask of lamp oil": "Restores 3 light" };
+  const DL_GEAR_DOES = { "Pepper pouch": "Deals 4 damage", "Flask of lamp oil": "Restores 3 light" };
   const dlGrade = (r) => (r.fight ? { strong: "Hit", miss: "Miss" } : { strong: "Success", weak: "Partial success", miss: "Failure" })[r.tier];
   const DL_GRADE = /^(Hit|Miss)$/;
   const DL_GRADED = /^(Success|Partial success|Failure)$/;
@@ -3235,16 +3235,12 @@
     const dmg = d && d.dmg ? { ...d.dmg, total: dlSumOf(d.dmg.v, d.dmg.parts) } : null;
     return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? "" : /^Heavy attack/.test(parts[0]) ? "Heavy attack" : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || "" };
   };
-  const dlUseDoes = (d) => {
-    const s = d.replace(/,? *no roll$/i, "");
-    return s.charAt(0).toLowerCase() + s.slice(1);
-  };
+  const dlUseDoes = (d) => d ? d.charAt(0).toLowerCase() + d.slice(1) : "";
   const DL_USE_KINDS = /^(Ability|Ultimate|Gear|Weakness)$/;
-  const DL_WEAK_DOES = "no blow back";
   const dlUse = (l, hero) => {
     if (l[0] === "Weakness") {
       const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1]));
-      return w ? { use: true, what: "Weakness", name: dlCap(w[1]), does: DL_WEAK_DOES, tier: "use", foe: null, hp: null } : null;
+      return w ? { use: true, what: "Weakness", name: dlCap(w[1]), does: "", tier: "use", foe: null, hp: null } : null;
     }
     const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1]));
     if (!m) return null;
@@ -3615,7 +3611,7 @@
   };
   const useDlOneRow = (ref) => useDlWidth(ref, dlOneRowOf, false);
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
-  const DlAdvCells = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Successes or hits in a row." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, c.adv.streak)), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Longest streak", title: "The longest streak of the run." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, c.adv.longest)));
+  const DlAdvCells = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, c.adv.streak)), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Longest streak" }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, c.adv.longest)));
   const DL_CHIP_MIN = 100;
   const DL_CHIP_GAP = 8;
   const dlSkillsPerRow = (n) => (el) => {
@@ -3657,7 +3653,7 @@
         say: carried + " of " + slots.length + " carried",
         rows: [
           ...c.gear.map((g) => ({ key: g.name, fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: g.kind, state: g.state }), name: g.name, tag: g.label, text: g.does })),
-          ...free > 0 ? [{ key: "free", fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: null }), name: "Free", text: "Room for " + (free === 1 ? "one more" : free + " more") + "." }] : []
+          ...free > 0 ? [{ key: "free", fig: /* @__PURE__ */ React$1.createElement(DlBox, { k: null }), name: "Free", text: free + " free" }] : []
         ]
       },
       {

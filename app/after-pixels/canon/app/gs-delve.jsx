@@ -32,23 +32,23 @@ const DL_HEROES = {
   // the starting gear a healing draught and a crowbar (a key), 23 health, stats as the archetype sets them.
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
-    abilities: [{ name: 'Shield bash', of: 1, ult: true, does: 'Strikes at once, no roll' }],
+    abilities: [{ name: 'Shield bash', of: 1, ult: true, does: '' }],
     fight: { defence: 16, acGear: 0, protection: 'Ox shield', heavy: { name: 'Cleave', die: 'd4', modifier: 3, bonus: 2 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Crowbar', kind: 'key', does: '' }] },
   // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Thunderstroke, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
   'Hal the Woodcutter': { name: 'Hal', cls: 'Woodcutter', fightClass: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
-    abilities: [{ name: 'Thunderstroke', of: 1, ult: true, does: 'Strikes at once, no roll' }],
+    abilities: [{ name: 'Thunderstroke', of: 1, ult: true, does: '' }],
     fight: { defence: 16, acGear: 0, protection: 'Elder-bark cloak', heavy: { name: 'Timberfall', die: 'd4', modifier: 3, bonus: 2 } },
     gear: [{ name: 'Honey cake', kind: 'once', does: 'Heals 6' }, { name: 'Axe', kind: 'key', does: '' }] },
   // Wren, from the same source (rogue): defence 14, protection a leather jerkin (a name), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
     skills: [['Stealth', 'Dexterity'], ['Acrobatics', 'Dexterity'], ['Sleight of Hand', 'Dexterity'], ['Deception', 'Charisma'], ['Perception', 'Wisdom'], ['Investigation', 'Intelligence'], ['Persuasion', 'Charisma']],
-    abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: 'Strikes at once, no roll' }],
+    abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: '' }],
     fight: { defence: 14, acGear: 0, protection: 'Leather jerkin', heavy: { name: 'Flurry', die: 'd4', modifier: 3, bonus: 4 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Coil of rope', kind: 'key', does: '' }] },
 };
-const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits', 'Pepper pouch': 'Deals 4 damage', 'Flask of lamp oil': 'Restores 3 light' };
+const DL_GEAR_DOES = { 'Pepper pouch': 'Deals 4 damage', 'Flask of lamp oil': 'Restores 3 light' };
 
 // ---- The model: the record's lines read into the rooms stood in (going back included), the rolls and the gear. ----
 // A fight roll is a hit or a miss (delve.md: Check); an option or an obstacle is a success, a partial success or a failure. A fight die is never the middle tone.
@@ -78,15 +78,12 @@ const dlRoll = (l, d) => {
   const bonus = dlParts(mod, l[0], d); const dmg = d && d.dmg ? { ...d.dmg, total: dlSumOf(d.dmg.v, d.dmg.parts) } : null;
   return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: dlStruck(parts), action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
-// KEEP: under a held use's name, the grey words say only what it does ("strikes at once", "heals 10"): the heading already names the kind
-// and the sparkle already says no roll, so both drop there; the hero sheet keeps the full text (owner, 2026-11-10).
-const dlUseDoes = (d) => { const s = d.replace(/,? *no roll$/i, ''); return s.charAt(0).toLowerCase() + s.slice(1); };
+const dlUseDoes = (d) => d ? d.charAt(0).toLowerCase() + d.slice(1) : '';
 // A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Ability · Used shield bash · Grizzletooth: health 4 → 3 · Struck back: d20 7 vs 10, missed").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
 const DL_USE_KINDS = /^(Ability|Ultimate|Gear|Weakness)$/;
 // A weakness strike is a use too: the line is ["Weakness", "A flask of lamp oil", "Grizzletooth: health 24 → 16"], the item named with no "Used", and the foe staggered, so no roll back.
-const DL_WEAK_DOES = 'no blow back';
-const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1])); return w ? { use: true, what: 'Weakness', name: dlCap(w[1]), does: DL_WEAK_DOES, tier: 'use', foe: null, hp: null } : null; }
+const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1])); return w ? { use: true, what: 'Weakness', name: dlCap(w[1]), does: '', tier: 'use', foe: null, hp: null } : null; }
   const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
   const parts = l.slice(1).map(String); const sheet = DL_HEROES[hero] || DL_HEROES['Wren the Rogue']; const name = dlCap(m[1]);
   const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(' · '));
@@ -387,8 +384,8 @@ const useDlOneRow = (ref) => useDlWidth(ref, dlOneRowOf, false);
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
 // Advantage opens three cells: Inspiration, then the streak and the run's longest streak as numbers (the count the game's chat shows as "Streak N": successes or hits in a row, fights included). Both stay as the run left them, and 0 shows as 0.
 const DlAdvCells = ({ c }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
-  <DlCell label="Streak" title="Successes or hits in a row."><span className="dv8-num">{c.adv.streak}</span></DlCell>
-  <DlCell label="Longest streak" title="The longest streak of the run."><span className="dv8-num">{c.adv.longest}</span></DlCell></>);
+  <DlCell label="Streak"><span className="dv8-num">{c.adv.streak}</span></DlCell>
+  <DlCell label="Longest streak"><span className="dv8-num">{c.adv.longest}</span></DlCell></>);
 // The trained skills under the stats: equal chips, name left and total right. How many sit on a row is read from the chips' container (see the KEEP in gs-delve.css); the chip's width follows from it.
 const DL_CHIP_MIN = 100; const DL_CHIP_GAP = 8;
 const dlSkillsPerRow = (n) => (el) => { const most = Math.max(1, Math.min(n, Math.floor((el.clientWidth + DL_CHIP_GAP) / (DL_CHIP_MIN + DL_CHIP_GAP)))); return Math.ceil(n / Math.ceil(n / most)); };
@@ -414,7 +411,7 @@ const dlTabGroups = (c, slots) => {
     { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} />, cls: 'dv8-adv' },
     { key: 'pack', head: 'Pack', icon: 'pack', say: carried + ' of ' + slots.length + ' carried',
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
-        ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
+        ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: free + ' free' }] : [])] },
     { key: 'abilities', head: 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
       rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: a.ult ? 'Ultimate' : null, text: a.does })) },
     ...(c.fight ? [{ key: 'fight', head: 'Fight', icon: 'fight', say: 'armour class ' + c.fight.defence,
