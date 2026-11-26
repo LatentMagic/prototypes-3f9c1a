@@ -12546,12 +12546,27 @@
     const cols = useDlWidth(ref, measure, n);
     return /* @__PURE__ */ React$1.createElement("div", { className: "pgn-map pgn-c" + concept, style: { "--dv-num": v.box + "px", "--dv-stop-top": "4px", "--pgn-die": v.die + "px", "--pgn-dot": v.dot + "px", "--pgn-font": v.font + "px" } }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map pgn-grid", style: { "--cols": cols, "--gap": "0px" }, role: "img", "aria-label": "The way you went: " + n + " room visits" }, m.stops.map((st, i) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: "dvG-stop" + (i % cols === 0 ? " is-rs" : "") + (i % cols === cols - 1 || i === n - 1 ? " is-re" : ""), title: st.name }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st) }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st })))));
   };
-  const PgNow = ({ concept, visits, ended }) => {
-    const s = React$1.useMemo(() => dlLongRun(visits, !ended), [visits, ended]);
+  const PG4_STOP = 34;
+  const PG4_SLOT = 56;
+  const PG4_GAP = 6;
+  const PG4_FOLD = (n) => (el) => el.clientWidth >= 4 * PG4_SLOT + 3 * PG4_GAP + 2 * n * PG4_STOP;
+  const PgRecent = ({ m, last }) => {
+    const stops = m.stops.slice(-last);
+    const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
+    const ref = React$1.useRef(null);
+    const measure = React$1.useMemo(() => PG4_FOLD(stops.length), [stops.length]);
+    const wide = useDlWidth(ref, measure, true);
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "pgn4" + (keys.length && wide ? " is-row" : "") + (keys.length ? "" : " is-alone"), role: "group", "aria-label": "Recent stops and key moments" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn4-stops", style: { "--n": stops.length }, role: "img", "aria-label": "The last " + stops.length + " stops" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-boxes" }, stops.map((st) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st) }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num)))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "pgn4-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "pgn4-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 34 }), /* @__PURE__ */ React$1.createElement("span", { className: "pgn4-name" }, m.mom[r.t].kickers.map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
+  };
+  const PgNow = ({ concept, visits, ended, last, rolled }) => {
+    const s = React$1.useMemo(() => {
+      const run = dlLongRun(visits, !ended || !rolled);
+      return rolled ? run : { ...run, lines: run.lines.filter((l) => l[0] === "Room") };
+    }, [visits, ended, rolled]);
     const m = React$1.useMemo(() => dlBuild(s), [s]);
-    const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
+    const result = m.end === "live" || !rolled ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
     return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pgn-now", title: "The Goblin Warren", result, open: () => {
-    }, next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, concept === "1" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-map pgn-c1" }, /* @__PURE__ */ React$1.createElement(DlMap, { m, stops: m.stops, open: null, onOpen: () => {
+    }, next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, concept === "4" ? /* @__PURE__ */ React$1.createElement(PgRecent, { m, last }) : concept === "1" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-map pgn-c1" }, /* @__PURE__ */ React$1.createElement(DlMap, { m, stops: m.stops, open: null, onOpen: () => {
     } })) : /* @__PURE__ */ React$1.createElement(PgMap, { m, v: PG_MAPS[concept], concept })));
   };
   const PgLibrary = () => {
@@ -12561,12 +12576,16 @@
     const concept = usePgSetting("concept");
     const visits = +usePgSetting("rooms");
     const ended = usePgSetting("run") === "ended";
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PgNow, { concept, visits, ended }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: phAch(gs, "delve", DV_ACH), badges: DV_BADGES, access, ed: GS_GAMES.delve.ed })));
+    const last = +usePgSetting("recent");
+    const rolled = usePgSetting("rolls") !== "none";
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PgNow, { concept, visits, ended, last, rolled }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: phAch(gs, "delve", DV_ACH), badges: DV_BADGES, access, ed: GS_GAMES.delve.ed })));
   };
   const initPlaygroundNowCard = () => {
     const rooms = [20, ...Array.from({ length: 25 }, (_, i) => i + 1).filter((x) => x !== 20)].map((x) => ({ value: String(x), label: String(x) }));
     pgRegister("now-card", { title: "Delve Now card", settings: [
-      { key: "concept", kind: "concept", label: "Concept", options: [{ value: "1", label: "1. Straight lift" }, { value: "2", label: "2. One row where it fits" }, { value: "3", label: "3. Tighter stops" }] },
+      { key: "concept", kind: "concept", label: "Concept", options: [{ value: "1", label: "1. Straight lift" }, { value: "2", label: "2. One row where it fits" }, { value: "3", label: "3. Tighter stops" }, { value: "4", label: "4. Recent stops and moments" }] },
+      { key: "recent", label: "Recent stops", options: [4, 5, 6, 7, 8].map((x) => ({ value: String(x), label: String(x) })), when: { key: "concept", value: "4" } },
+      { key: "rolls", label: "Rolls", options: [{ value: "some", label: "Played" }, { value: "none", label: "None yet" }], when: { key: "concept", value: "4" } },
       { key: "rooms", label: "Room visits", options: rooms },
       { key: "run", label: "Run", options: [{ value: "ended", label: "Ended", state: "library-delve" }, { value: "live", label: "In progress", state: "library-delve" }] }
     ] });

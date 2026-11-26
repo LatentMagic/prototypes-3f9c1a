@@ -3817,6 +3817,23 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .pgn-grid .dvG-marks { max-width: 100%; gap: 3px; }
 .pgn-grid .dvG-marks .mcp-dl-die { width: var(--pgn-die); }
 .pgn-grid .dvG-marks .dl-now-mark { width: var(--pgn-dot); height: var(--pgn-dot); }
+
+/* Concept 4: the run's last stops and its key moments in one band. */
+.pgn4 { --k: 34px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; pointer-events: none; }
+/* The stops take the room their count needs and no more; their boxes spread evenly across it, the route line behind. */
+.pgn4-stops { width: min(100%, calc(var(--n) * 34px)); min-width: 0; }
+.pgn4-stops .dl-now-boxes { flex: none; }
+/* One row: stops left, the four dice slots in the card's middle, an equal share on each side of them. */
+.pgn4.is-row { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; column-gap: 0; }
+.pgn4.is-row .pgn4-stops { margin-top: calc((var(--k) - 24px) / 2); }
+.pgn4.is-row .pgn4-keys { grid-column: 2; grid-row: 1; }
+/* Four slots always, the dice centred in them: one die sits on the card's centre. */
+.pgn4-keys { display: flex; justify-content: center; align-items: flex-start; gap: 6px; width: min(100%, 242px); min-width: 0; justify-self: center; box-sizing: border-box; }
+.pgn4-key { flex: 0 1 56px; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pgn4-key .mcp-dl-die { width: var(--k); height: auto; }
+.pgn4-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; overflow-wrap: anywhere; }
+/* A card stretched to its neighbour's height keeps the band in the middle of the room the picture has, as the Now card standard does. */
+.pgn-now .dl-now-route:has(.pgn4) { display: grid; align-content: center; }
 /* Playground (prototype aid): the Delve Advantage tab (app/playground-advantage.jsx). */
 /* A dimmed mark: its squares and label step back, so full squares do not read as advantage. */
 .pga-dim { opacity: .4; }
