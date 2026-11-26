@@ -475,37 +475,36 @@ const DlBody = ({ s }) => {
 };
 
 // ---- The now card on Delve's library game page, once this week's run is played or started: the shared frame (LbNowCard), with the
-// session page's ending word as its result and the run's route at the card's size in place of the line and bar. No sheet, no held roll.
-// KEEP: only a key moment is a button (it keeps its number and opens the session page with that roll held, as Escape's doors open
-// their lock); every other roll is a small outcome mark with no number, not focusable, so it never reads as pressable (owner, 2026-10-30).
-// Rooms wrap onto further rows when the card is too narrow for them in one (balanced, below), and the dice of a room wrap inside its column, so nothing overlaps.
-// A free player's first run (CprFirst, app/gs-pass-library.jsx) passes its own label, its session ids, no next run, and pass.
-const DL_NO_HOVER = () => {};
-// KEEP: the Now card's picture is one fixed shape however long the run: a strip of one box per stop on one row, the other rolls counted as "+N" at its right, and the key dice beneath as one centred group with no labels. A strip too narrow for numbers (under 20px a stop) draws each stop as a small tick, a return hollow; 25 stops still fit one row.
-// KEEP: with no key moment yet the strip alone sits centred in the picture's height (the Now card standard centres the picture), so the card keeps its size and no empty band stands under the strip.
-const DL_NOW_NUM_MIN = 20;
-const useDlNowWide = (n) => { const ref = React.useRef(null); const measure = React.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]); return [ref, useDlWidth(ref, measure, true)]; };
-const DlNowStrip = ({ stops, count, on }) => { const [ref, numbered] = useDlNowWide(stops.length);
-  return (<div className="dl-now-strip">
-    <div ref={ref} className="dl-now-boxes">{stops.map((st, i) => (numbered
-      ? <span key={i} className={dlNum(st, on === i ? ' is-on' : '')}>{st.back && <DlBackArrow />}{st.num}</span>
-      : <i key={i} className={'dl-now-tick' + (st.back ? ' is-back' : '') + (dlNone(st) ? '' : ' is-rolled') + (on === i ? ' is-on' : '')} />))}</div>
-    <span className="dl-now-count">{count > 0 ? '+' + count : ''}</span></div>); };
-const DlNowRoute = ({ m, open }) => { const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
-  const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost); const others = m.rolls.filter((r) => !m.mom[r.t]).length;
-  return (<div className="dl-now-pic" role="group" aria-label="The way you went">
-    <div role="img" aria-label={m.stops.length + ' stops, ' + others + ' other rolls'}><DlNowStrip stops={m.stops} count={others} /></div>
-    {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => <DlDieBtn key={r.t} r={r} act={null} on={on} size={34} foe />)}</div>}
-  </div>); };
-// The Now card's route with nothing rolled: the run's rooms as the strip. `reached` lights room 1, as the session page's empty route does; a run not started lights none.
-const DlNowEmptyRoute = ({ rooms, reached }) => (<div className="dl-now-pic" role="img" aria-label={'The run has ' + rooms + ' rooms, ' + (reached ? 'the first reached, no rolls yet' : 'none entered yet')}>
-  <DlNowStrip stops={dlEmptyStops(rooms)} count={0} on={reached ? 0 : null} /></div>);
+// session page's ending word as its result and the run's latest stops over its key moments in place of the line and bar. No sheet, no held roll. Nothing in the picture is pressable: the card opens the session page.
+// KEEP: a stop is drawn as the session page's map draws it (a 28px number box, a return keeping its back-arrow) and is never shrunk or wrapped; the row shows the latest stops that fit at the session map's pitch (a 44px column and a 6px gap), up to 12, so a phone card shows fewer.
+// KEEP: from 5 stops the boxes spread edge to edge on the card's content width; fewer sit centred at a 56px gap, wider than the session map's 32px (the user, 2026-11-26: "on 2-4 can we have a slighter greater spread?"), and never wider than the card.
+// KEEP: the key dice are the session page's 44px, up to four, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
+// A run with no stop draws the run's rooms empty (five unless the run says otherwise), the first reached, as the session page does before the first roll.
+// A run not started has no stop, roll or key moment.
+const DL_NOW_NONE = { stops: [], turns: [], mom: {} };
+const DL_NOW_MAX = 12; const DL_NOW_GAP_FEW = 56;
+// The roll that ended an overrun run is named "Latest roll" under its die, first among its names, whatever the held roll's title says.
+const dlNowNames = (kickers) => { const k = kickers.map((x) => (x === 'Last roll' ? 'Latest roll' : x)); return [...k.filter((x) => x === 'Latest roll'), ...k.filter((x) => x !== 'Latest roll')]; };
+const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET * 2 + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
+const DlNowPic = ({ m, rooms = 5 }) => {
+  const ref = React.useRef(null); const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
+  const empty = !m.stops.length;
+  const shown = empty ? dlEmptyStops(rooms).slice(0, fit) : m.stops.slice(-Math.min(DL_NOW_MAX, fit));
+  const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
+  const few = shown.length <= DL_MAP_FEW;
+  return (<div ref={ref} className="dl-now-pic" role="group" aria-label="The way you went">
+    <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={empty ? 'The run has ' + rooms + ' rooms, the first reached, no rolls yet' : 'The last ' + shown.length + ' stops'}>
+      {shown.map((st, i) => <span key={st.i} className={dlNum(st, empty ? (i === 0 ? ' is-on' : ' is-far') : '')}>{st.back && <DlBackArrow />}{st.num}</span>)}</div>
+    {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => (
+      <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} /><span className="dl-now-name">{dlNowNames(m.mom[r.t].kickers).map((k) => <span key={k}>{k}</span>)}</span></span>))}</div>}
+  </div>);
+};
 // The Now card of a run not started: the week's title (label: a free first run passes its own), the run's rooms empty, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").
 // laterWeek: the free player's card once a later week is current: no Play, and the Pass sentence (passText) in the slot.
 export const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => (
   <LbNowCard gid="delve" className="dl-now" label={label} title={title} play={onPlay} next={next}
     {...(laterWeek ? { bare: true, pass: 'nostop', passText: 'Play it with the Pass.' } : {})}>
-    <div className="dl-now-route"><DlNowEmptyRoute rooms={rooms} /></div>
+    <div className="dl-now-route"><DlNowPic m={DL_NOW_NONE} rooms={rooms} /></div>
   </LbNowCard>);
 export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Next run: ' + DV_NEXT, pass }) => {
   const gs = useGs(); const sid = wk.end ? gsEdPick('delve', gs) || sids[0] : gsLiveSid(sids[1], gs); const s = GS_SESSIONS[sid]; const m = React.useMemo(() => dlBuild(s), [s]);
@@ -513,7 +512,7 @@ export const DlNow = ({ s: wk, label, sids = ['delve', 'delve-live'], next = 'Ne
   const result = m.end === 'live' ? { kind: 'live', label: 'In progress' } : { kind: m.end === 'won' ? 'ok' : 'bad', label: dlWord(m) };
   return (
     <LbNowCard gid="delve" className="dl-now" label={label} title={wk.title} result={result} open={() => open()} next={next} pass={pass}>
-      <div className="dl-now-route">{m.turns.length || m.lost ? <DlNowRoute m={m} open={open} /> : <DlNowEmptyRoute rooms={(s.tracks && s.tracks.rooms) || 5} reached />}</div>
+      <div className="dl-now-route"><DlNowPic m={m} rooms={(s.tracks && s.tracks.rooms) || 5} /></div>
     </LbNowCard>
   );
 };

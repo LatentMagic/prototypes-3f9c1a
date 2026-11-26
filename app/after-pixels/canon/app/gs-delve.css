@@ -327,36 +327,26 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv8.is-3b .dv8-adv .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: max-content; max-width: 100%; margin: 0 auto; gap: 16px; }
 /* At the narrowest widths the columns close up rather than wrap "Longest streak": a cell is wider than its short labels, so the space between labels stays wide. */
 @media (max-width: 360px) { .dv8.is-3b .dv8-adv .dv7-cells { gap: 4px; } }
-/* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
-moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
-.dl-now-route { min-width: 0; container: dlnow / inline-size; }
-.dl-now-pic { display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; gap: 14px; min-height: 92px; min-width: 0; }
-.dl-now-strip { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.dl-now-boxes { position: relative; flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; align-items: center; height: 24px; }
-.dl-now-boxes::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
-.dl-now-boxes .dv2-num { min-width: 20px; height: 20px; padding: 0 2px; font-size: 11px; }
-.dl-now-boxes .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
-.dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
-.dl-now-tick.is-rolled { background: var(--text); }
-.dl-now-tick.is-back { background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-.dl-now-tick.is-back.is-rolled { box-shadow: inset 0 0 0 1.5px var(--text); }
-.dl-now-tick.is-on { background: var(--off-white); }
-.dl-now-count { flex: none; min-width: 30px; text-align: right; font: 600 13px/1 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; }
-/* KEEP: the key dice are one group on the card's centre line, a fixed gap apart whatever their number: 34px dice 10px apart under 300px, 38px 14px apart to 400px, 46px 24px apart above; the group wraps only if five dice cannot fit. */
-.dl-now-keys { --k: 34px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; min-width: 0; }
-.dl-now-keys .mcp-dl-die { width: var(--k); height: auto; }
-@container dlnow (min-width: 300px) { .dl-now-keys { --k: 38px; gap: 8px 14px; } }
-@container dlnow (min-width: 400px) { .dl-now-keys { --k: 46px; gap: 8px 24px; } }
+/* The now card's route: the latest stops in one row, the key moments in one centred row beneath. Nothing in it is pressable. */
+.dl-now-route { min-width: 0; container: dlnow / inline-size; display: grid; align-content: center; }
+.dl-now-pic { --dv-num: 28px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; pointer-events: none; }
+/* Boxes spread edge to edge, the route line behind; the line's ends are hidden by the first and last box. */
+.dl-now-stops { position: relative; display: flex; justify-content: space-between; align-items: center; height: var(--dv-num); min-width: 0; }
+.dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
+/* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
+.dl-now-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
+.dl-now-stops .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
+.dl-now-stops .dv2-num.is-far { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
+/* Up to four slots in a centred row; a die and its name share a slot, so one die sits on the card's centre. */
+.dl-now-keys { display: flex; justify-content: center; align-items: flex-start; gap: 4px; min-width: 0; }
+.dl-now-key { flex: 0 1 60px; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dl-now-key .mcp-dl-die { width: 44px; height: auto; }
+.dl-now-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; overflow-wrap: break-word; max-width: 100%; }
 /* KEEP: the other rolls are 8px dots with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring, a use a filled grey dot, so each takes the same 8px slot. */
 .dl-now-mark { display: block; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
 .dl-now-mark.is-strong { background: var(--success); }
 .dl-now-mark.is-weak { background: var(--warning); }
 .dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-/* Hover or focus rings a key moment's die as the session page rings the held roll; a press opens the session page on that roll. */
-.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .sl { display: inline; }
-/* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
-.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .gh { display: none; }
-.dl-now-route .dv2-dbtn:focus-visible { outline: 0; }
 /* KEEP: on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
 @container gs (max-width: 300px) {
   .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }

@@ -3727,25 +3727,23 @@
     const c = React$1.useMemo(() => dlSheet(s, m), [s, m]);
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("div", { className: "dv4-lay" }, /* @__PURE__ */ React$1.createElement(DlSheet, { c }), /* @__PURE__ */ React$1.createElement(DlCard, { s, m, roll: gs.route && gs.route.roll, turn: gs.route && gs.route.turn })), /* @__PURE__ */ React$1.createElement(GsMoves, { s }));
   };
-  const DL_NO_HOVER = () => {
+  const DL_NOW_NONE = { stops: [], turns: [], mom: {} };
+  const DL_NOW_MAX = 12;
+  const DL_NOW_GAP_FEW = 56;
+  const dlNowNames = (kickers) => {
+    const k = kickers.map((x) => x === "Last roll" ? "Latest roll" : x);
+    return [...k.filter((x) => x === "Latest roll"), ...k.filter((x) => x !== "Latest roll")];
   };
-  const DL_NOW_NUM_MIN = 20;
-  const useDlNowWide = (n) => {
+  const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET * 2 + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
+  const DlNowPic = ({ m, rooms = 5 }) => {
     const ref = React$1.useRef(null);
-    const measure = React$1.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]);
-    return [ref, useDlWidth(ref, measure, true)];
+    const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
+    const empty = !m.stops.length;
+    const shown = empty ? dlEmptyStops(rooms).slice(0, fit) : m.stops.slice(-Math.min(DL_NOW_MAX, fit));
+    const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
+    const few = shown.length <= DL_MAP_FEW;
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-pic", role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops" + (few ? " is-few" : ""), style: { "--n": shown.length, "--few": DL_NOW_GAP_FEW + "px" }, role: "img", "aria-label": empty ? "The run has " + rooms + " rooms, the first reached, no rolls yet" : "The last " + shown.length + " stops" }, shown.map((st, i) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st, empty ? i === 0 ? " is-on" : " is-far" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dl-now-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-name" }, dlNowNames(m.mom[r.t].kickers).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
   };
-  const DlNowStrip = ({ stops, count, on }) => {
-    const [ref, numbered] = useDlNowWide(stops.length);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-strip" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-boxes" }, stops.map((st, i) => numbered ? /* @__PURE__ */ React$1.createElement("span", { key: i, className: dlNum(st, on === i ? " is-on" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num) : /* @__PURE__ */ React$1.createElement("i", { key: i, className: "dl-now-tick" + (st.back ? " is-back" : "") + (dlNone(st) ? "" : " is-rolled") + (on === i ? " is-on" : "") }))), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-count" }, count > 0 ? "+" + count : ""));
-  };
-  const DlNowRoute = ({ m, open }) => {
-    const on = { sel: (t) => open(t), hov: DL_NO_HOVER };
-    const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost);
-    const others = m.rolls.filter((r) => !m.mom[r.t]).length;
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-pic", role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { role: "img", "aria-label": m.stops.length + " stops, " + others + " other rolls" }, /* @__PURE__ */ React$1.createElement(DlNowStrip, { stops: m.stops, count: others })), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act: null, on, size: 34, foe: true }))));
-  };
-  const DlNowEmptyRoute = ({ rooms, reached }) => /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-pic", role: "img", "aria-label": "The run has " + rooms + " rooms, " + (reached ? "the first reached, no rolls yet" : "none entered yet") }, /* @__PURE__ */ React$1.createElement(DlNowStrip, { stops: dlEmptyStops(rooms), count: 0, on: reached ? 0 : null }));
   const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => /* @__PURE__ */ React$1.createElement(
     LbNowCard,
     {
@@ -3757,16 +3755,16 @@
       next,
       ...laterWeek ? { bare: true, pass: "nostop", passText: "Play it with the Pass." } : {}
     },
-    /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms }))
+    /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowPic, { m: DL_NOW_NONE, rooms }))
   );
   const DlNow = ({ s: wk, label, sids = ["delve", "delve-live"], next = "Next run: " + DV_NEXT, pass }) => {
     const gs = useGs();
     const sid = wk.end ? gsEdPick("delve", gs) || sids[0] : gsLiveSid(sids[1], gs);
     const s = GS_SESSIONS[sid];
     const m = React$1.useMemo(() => dlBuild(s), [s]);
-    const open = (turn) => gs.go("session", turn ? { id: sid, turn } : { id: sid });
+    const open = (turn) => gs.go("session", { id: sid });
     const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
-    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, m.turns.length || m.lost ? /* @__PURE__ */ React$1.createElement(DlNowRoute, { m, open }) : /* @__PURE__ */ React$1.createElement(DlNowEmptyRoute, { rooms: s.tracks && s.tracks.rooms || 5, reached: true })));
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now", label, title: wk.title, result, open: () => open(), next, pass }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, /* @__PURE__ */ React$1.createElement(DlNowPic, { m, rooms: s.tracks && s.tracks.rooms || 5 })));
   };
   const registerDelve = () => {
     GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(DlBody, { key: p.sid, ...p });
