@@ -288,7 +288,7 @@ export const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" 
 const dlNone = (st) => !(st.turns && st.turns.some((r) => !r.lost));
 export const dlNum = (st, extra = '') => 'dv2-num' + (st.back ? ' is-back' : '') + (dlNone(st) ? ' is-none' : '') + extra;
 // KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. From 5 stops a map that fits one row spreads edge to edge, its first and last boxes on the card's content edges (the user, 2026-11-25: Spread); 1-4 stops sit centred, below; a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
-export const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8; const DL_MAP_FEW = 4; const DL_MAP_GAP_FEW = 32;
+export const DL_MAP_COL = 44; export const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; export const DL_MAP_INSET = 8; export const DL_MAP_FEW = 4; export const DL_MAP_GAP_FEW = 32;
 // KEEP: a map of 1-4 stops sits centred at a 32px gap (less where a phone is too narrow), so a short run never stretches its boxes across the card; from 5 stops one row spreads edge to edge (the user, 2026-11-25).
 const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
   const rows = Math.ceil(n / per); const cols = Math.ceil(n / rows);
