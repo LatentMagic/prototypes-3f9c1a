@@ -49,6 +49,8 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-marks .mcp-dl-die { width: 20px; height: auto; }
 .dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 6px; }
 .dvG-marks .dl-now-mark { width: 7px; height: 7px; }
+/* KEEP: a use among a stop's marks is a grey sparkle 9px across with a -1px margin, so it takes the 7px a dot takes and the other marks do not spread. */
+.dvG-spark { display: block; width: 9px; height: 9px; margin: -1px; fill: var(--control-edge); flex: none; }
 .dvG-open { display: grid; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); min-width: 0; }
 .dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
 .dvG-th { margin: 0; display: flex; gap: 10px; align-items: center; min-width: 0; }

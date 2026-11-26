@@ -286,9 +286,10 @@ const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(
   const room = (w - cols * DL_MAP_COL) / Math.max(1, cols - 1); const gap = cols < 2 ? DL_MAP_GAP : n <= DL_MAP_FEW ? Math.max(DL_MAP_GAP, Math.min(DL_MAP_GAP_FEW, room)) : rows === 1 ? Math.max(DL_MAP_GAP, room) : Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, room));
   return cols + ':' + gap.toFixed(1); };
 const useDlMap = (n) => { const ref = React.useRef(null); const measure = React.useMemo(() => dlMapOf(n), [n]); const v = useDlWidth(ref, measure, n + ':6'); const [cols, gap] = v.split(':').map(Number); return [ref, cols, gap]; };
-// What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey dot, the loss cross as itself.
+// What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey sparkle (as the Now card of the deployed run draws one), the loss cross as itself.
+const DL_SPARK = 'M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z';
 const DlMapMarks = ({ m, st }) => (st.turns.length ? <span className="dvG-marks">{st.turns.map((r) => (r.lost ? <DlDie key={r.t} r={r} size={20} />
-  : m.mom[r.t] ? <DlDie key={r.t} r={r} size={20} /> : <i key={r.t} className={'dl-now-mark is-' + (r.use ? 'use' : r.tier || 'miss')} />))}</span> : null);
+  : m.mom[r.t] ? <DlDie key={r.t} r={r} size={20} /> : r.use ? <svg key={r.t} className="dvG-spark" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d={DL_SPARK} /></svg> : <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'miss')} />))}</span> : null);
 const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length);
   return (<div className="dvG-mapw"><div ref={ref} className={'dvG-map' + (stops.length <= DL_MAP_FEW ? ' is-few' : '')} style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
     const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;

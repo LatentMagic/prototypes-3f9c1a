@@ -3745,7 +3745,8 @@
     const [cols, gap] = v.split(":").map(Number);
     return [ref, cols, gap];
   };
-  const DlMapMarks = ({ m, st }) => st.turns.length ? /* @__PURE__ */ React$1.createElement("span", { className: "dvG-marks" }, st.turns.map((r) => r.lost ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.use ? "use" : r.tier || "miss") }))) : null;
+  const DL_SPARK = "M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z";
+  const DlMapMarks = ({ m, st }) => st.turns.length ? /* @__PURE__ */ React$1.createElement("span", { className: "dvG-marks" }, st.turns.map((r) => r.lost ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : r.use ? /* @__PURE__ */ React$1.createElement("svg", { key: r.t, className: "dvG-spark", viewBox: "0 0 10 10", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_SPARK })) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.tier || "miss") }))) : null;
   const DlMap = ({ m, stops, open, onOpen, far }) => {
     const [ref, cols, gap] = useDlMap(stops.length);
     return /* @__PURE__ */ React$1.createElement("div", { className: "dvG-mapw" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map" + (stops.length <= DL_MAP_FEW ? " is-few" : ""), style: { "--cols": cols, "--gap": gap + "px" }, "aria-label": "The way you went" }, stops.map((st, i) => {
