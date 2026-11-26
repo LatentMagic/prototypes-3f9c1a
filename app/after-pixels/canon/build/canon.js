@@ -3404,10 +3404,6 @@
       cur.turns.push(r);
     });
     const end = s.live ? "live" : s.end;
-    if (!s.live && cur && standing()) {
-      run = 0;
-      fh = 0;
-    }
     const lost = cur && !s.live && s.lostOff ? { lost: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
     if (lost) {
       cur.turns.push(lost);

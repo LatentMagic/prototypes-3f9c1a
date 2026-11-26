@@ -165,8 +165,6 @@ export const dlBuild = (s) => {
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
   const end = s.live ? 'live' : s.end;
-  // KEEP: a run that ends with its foe still standing ends that fight: both counts are back at 0.
-  if (!s.live && cur && standing()) { run = 0; fh = 0; }
   // KEEP: a run lost with no roll or use in its last room (a story turn killed the hero, or the threat filled on a story turn or on going back) ends on a plain grey cross
   // on that room: no die outline, not pressable, nothing held open, and no "Last blow" or "Last roll" on an earlier roll. A roll that filled the threat keeps "Last roll". The record
   // keeps no turn for this, so the cross is no turn: it sits on the room and ends the key moments, and the roll before it competes for best, closest or worst like any other.
