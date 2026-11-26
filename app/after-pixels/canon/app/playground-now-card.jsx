@@ -15,9 +15,11 @@ import { GS_LIBRARY } from './registry.js';
 import { pgRegister, pgActive, usePgSetting } from './playground.jsx';
 
 // Concepts 2 and 3 draw the map's stops in equal columns that share the card's whole width, so a map never reaches past the card's content edges.
+// KEEP: concept 2's stops never sit closer than a 48px column, the spacing of the liked two-row map, so a wide card wraps its stops into evened rows instead of squeezing them onto one.
+// KEEP: concept 2's stops never sit closer than a 46px column (about the spacing of the two rows of ten, 20 stops on a phone-to-tablet card), so a wide card wraps its stops into evened rows instead of squeezing them onto one.
 // col: the narrowest a stop's column may be, which sets how many stops one row holds; box: the number box; die, dot: the marks under a stop.
 const PG_MAPS = {
-  2: { col: 28, box: 24, die: 20, dot: 7, font: 12 },
+  2: { col: 46, box: 24, die: 20, dot: 7, font: 12 },
   3: { col: 22, box: 18, die: 16, dot: 6, font: 11 },
 };
 

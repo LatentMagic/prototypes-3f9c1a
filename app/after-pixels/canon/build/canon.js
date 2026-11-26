@@ -12519,7 +12519,7 @@
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
   const PG_MAPS = {
-    2: { col: 28, box: 24, die: 20, dot: 7, font: 12 },
+    2: { col: 46, box: 24, die: 20, dot: 7, font: 12 },
     3: { col: 22, box: 18, die: 16, dot: 6, font: 11 }
   };
   const PgMap = ({ m, v, concept }) => {
