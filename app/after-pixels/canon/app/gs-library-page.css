@@ -156,13 +156,15 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .lb-box .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub { padding-left: calc(var(--lb-pad) + 52px); }
 @container mcp-rows (min-width: 640px) { .lb-box .mcp-rows .mcp-row.is-slots.is-sub, .lb-box .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub { padding-left: var(--lb-pad); } }
 .lb-probe { position: absolute; left: 0; right: 0; top: 0; visibility: hidden; pointer-events: none; }
-.lb-achbtn { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; min-height: 64px; padding: 8px var(--lb-pad); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--time-press) var(--ease); }
+.lb-achbtn { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; min-height: 64px; padding: 8px var(--lb-pad); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; position: relative; isolation: isolate; }
+/* KEEP: the hover and press band stops 8px short of the card's sides and 2px short of the row's top and bottom, so neighbouring shades never meet; rows keep their size (the shade is painted inset, not by growing the row), and the 120ms fade stays */
+.lb-achbtn::before { content: ""; position: absolute; inset: calc(var(--space-2) / 4) var(--space-2); z-index: -1; pointer-events: none; background: transparent; transition: background-color var(--time-press) var(--ease); }
 .lb-achtx { display: grid; gap: 2px; min-width: 0; }
 @media (hover: hover) {
-  .lb-achbtn:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
+  .lb-achbtn:hover::before { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
   .lb-achbtn:hover .lb-chev { color: var(--text); transform: translateX(3px); }
 }
-.lb-achbtn:active { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
+.lb-achbtn:active::before { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
 .lb-achbtn:focus-visible { outline-offset: -2px; }
 .lb-achpop { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 16px; align-items: start; }
 .lb-achpop .lb-badge { width: 48px; height: 48px; }
