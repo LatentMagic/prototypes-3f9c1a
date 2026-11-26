@@ -3686,8 +3686,7 @@
     const groups = dlTabGroups(c, dlSlots(c));
     if (seen !== one) {
       setSeen(one);
-      setCard(null);
-      setFolded(true);
+      if (card !== null) setFolded(false);
       setTap(null);
     }
     React$1.useEffect(() => {

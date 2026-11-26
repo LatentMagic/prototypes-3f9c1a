@@ -441,8 +441,8 @@ const DlHead = ({ c, folded, fold }) => (<div className="dl-head is-fold">
 const DlSheet = ({ c }) => { const ref = React.useRef(null); const one = useDlOneRow(ref); const [card, setCard] = React.useState(null); const [folded, setFolded] = React.useState(true);
   const [seen, setSeen] = React.useState(one); const [tap, setTap] = React.useState(null);
   const groups = dlTabGroups(c, dlSlots(c));
-  // KEEP: a new layout opens as a first one does: the tab shut and, in two rows, the sheet folded. Changing between one row and two is the new layout.
-  if (seen !== one) { setSeen(one); setCard(null); setFolded(true); setTap(null); }
+  // KEEP: the sheet is the same sheet in either layout: switching between one row and two (a resize, a tablet turned) keeps the open tab and keeps the sheet unfolded if it was; a tab that is open always leaves the two-row sheet unfolded, since one row has no fold to carry that. No motion on the switch.
+  if (seen !== one) { setSeen(one); if (card !== null) setFolded(false); setTap(null); }
   // KEEP: the fold and the tabs animate only for a tap: `is-tap` is on the sheet from the tap until the motion is over, and CSS gives every fold a transition only then, so a window resize across a breakpoint changes the layout without any motion.
   React.useEffect(() => { if (!tap) return undefined; const t = setTimeout(() => setTap(null), 600); return () => clearTimeout(t); }, [tap]);
   const fold = () => { setTap({}); setFolded(!folded); setCard(null); };
