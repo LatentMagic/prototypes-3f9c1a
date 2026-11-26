@@ -473,7 +473,8 @@ const DlBody = ({ s }) => {
 // KEEP: the key dice are the session page's 44px, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
 // KEEP: a run started with no stop yet (nothing played) draws one stop box, [1], centred as the other stops are, and no dice row; "not started" is its own state, DlNowEmpty (the user, 2026-11-26: "i dont mind that we show just a [1] once its started ... the \"not started\" is just sort of its own state").
 const DL_NOW_MAX = 12; const DL_NOW_GAP_FEW = 56;
-const dlNowNames = (kickers) => dlTitle(kickers).split(' · ');
+// The roll that ended an overrun run is named "Latest roll" under its die, first among its names, whatever the held roll's title says.
+const dlNowNames = (kickers) => dlTitle(kickers.map((x) => x === DL_END.overrun ? DL_END.live : x)).split(' · ');
 // KEEP: the not-started card's picture is its own: the run's rooms as one strip of boxes on one row, none lit, as it was before the Now card took the latest stops. A strip too narrow for numbers (under 20px a room) draws each room as a small tick.
 const DL_NOW_NUM_MIN = 20;
 const useDlNowWide = (n) => { const ref = React.useRef(null); const measure = React.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]); return [ref, useDlWidth(ref, measure, true)]; };
