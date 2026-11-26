@@ -490,7 +490,7 @@ const DlNowPic = ({ m }) => {
   const few = shown.length <= DL_MAP_FEW;
   return (<div ref={ref} className="dl-now-pic" role="group" aria-label="The way you went">
     <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={m.stops.length ? 'The last ' + shown.length + ' stops' : 'The run has started, no stop yet'}>
-      {shown.map((st) => <span key={st.i} className={dlNum(st, '')}>{st.back && <DlBackArrow />}{st.num}{m.lostMark && m.lostMark.stop === st.i && <span className="dl-now-loss" role="img" aria-label={dlSay(m.lostMark)}><DlDie r={m.lostMark} size={20} /></span>}</span>)}</div>
+      {shown.map((st) => <span key={st.i} className={dlNum(st, '')}>{st.back && <DlBackArrow />}{st.num}{m.lostMark && m.lostMark.stop === st.i && <span className="dl-now-loss" role="img" aria-label={dlSay(m.lostMark)}><DlDie r={m.lostMark} size={30} /></span>}</span>)}</div>
     {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => (
       <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} /><span className="dl-now-name">{dlNowNames(m.mom[r.t].kickers).map((k) => <span key={k}>{k}</span>)}</span></span>))}</div>}
   </div>);

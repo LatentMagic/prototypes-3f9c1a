@@ -1146,7 +1146,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
 /* Boxes spread edge to edge, the route line behind; the line's ends are hidden by the first and last box. */
 .dl-now-stops { position: relative; display: flex; justify-content: space-between; align-items: center; height: var(--dv-num); min-width: 0; }
-.dl-now-loss { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); }
+.dl-now-loss { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); padding-top: 3px; }
 .dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
 /* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
 .dl-now-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
