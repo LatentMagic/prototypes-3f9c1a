@@ -35,7 +35,7 @@ const pgAdvCells = (c, sit, marks, longest, concept) => {
     <DlCell key="insp" label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>,
     <PgMark key="s" v={w.s} n={sit.streak} dim={sit.fight} name="Success streak" title="Successes or hits in a row. From two on, every check outside a fight has advantage." />,
     <PgMark key="h" v={w.h} n={sit.hits} dim={false} name="Hit streak" title="Hits in a row in a fight. At two, the next attack has advantage and resets it." />];
-  if (concept === '2') cells.push(<DlCell key="l" label={<>Longest streak<small className="dv8-sub">{sit.ended ? 'This run' : 'So far'}</small></>} used={longest === 0} title="The most the Success streak reached this run, fights included."><span className="dv8-num pga-num">{longest}</span></DlCell>);
+  if (concept === '2') cells.push(<DlCell key="l" label="Longest streak" used={longest === 0} title="The most the Success streak reached this run, fights included."><span className="dv8-num pga-num">{longest}</span></DlCell>);
   return <>{cells}</>;
 };
 
