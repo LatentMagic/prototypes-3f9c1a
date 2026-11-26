@@ -54,7 +54,7 @@ export const gsShareText = (s) => {
     return [head, '', ...guesses.map((g) => gsWordRow(g, answer)), link];
   }
   if (s.shareHead) return [s.shareHead, ...(s.rows || []), link];
-  if (s.kind === 'delve') return ['Delve 🎲 ' + s.result + ', ' + s.reached.toLowerCase(), '🎲 ' + s.lines.length + ' rolls  ⏳ threat ' + s.tracks.threat + '/6', link];
+  if (s.kind === 'delve') return ['Delve 🎲 ' + s.result + ', ' + s.reached.toLowerCase(), '🎲 ' + s.lines.length + ' rolls  ⏳ threat ' + s.tracks.threat + '/' + s.tracks.threatMax, link];
   if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];
   return [s.game + ' · ' + s.share, link];
 };

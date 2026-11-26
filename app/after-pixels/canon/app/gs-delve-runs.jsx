@@ -28,7 +28,7 @@ function dlRecord(steps, hpMax, heroAc, foeTypes = {}, threatMax = 12) {
     if (hp <= 0 || threat >= threatMax) throw new Error('dlRecord: a step after the run has ended (' + k + ' ' + a[0] + ')');
     if (k === 'room' || k === 'back') room = a[0];
     if (k === 'room') { lines.push(['Room', 'Entered ' + a[0]]); return; }
-    if (k === 'back') { threat += 1; lines.push(['Room', 'Doubled back to ' + a[0], 'The ritual +1']); return; }
+    if (k === 'back') { threat += 1; lines.push(['Room', 'Doubled back to ' + a[0], 'The chant +1']); return; }
     if (k === 'raw') { lines.push(a[0]); return; }
     n += 1;
     if (k === 'chk') { const [stat, action, skill, die, mods, dc, o = {}] = a; const total = die + sumP(mods);
@@ -86,7 +86,7 @@ function longRoute(n, hpMax) {
 export const dlLongRun = (n, live = false) => { const { lines, detail, hp, threat, rolls } = longRoute(n, 23); const stops = ROUTE.slice(0, n); const rooms = new Set(stops.map((r) => r[0])).size;
   return { ...GS_SESSIONS['delve-hard'], hero: 'Bryn the Fighter', hpMax: 23, threat, foeMax: { "snaggle's den": 40, 'the great hall': 60 }, foeName: {}, lightName: 'the torch', light: 0, lightMax: 6,
     ...(n === 25 && !live ? { lostOff: { over: true, name: 'Going back' } } : {}), ...(live ? { live: true } : {}),
-    result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed',
+    result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed',
     figures: ['Threat ' + threat + '/12', rolls + ' rolls', 'HP ' + hp + '/23'], tracks: { progress: n, rooms, threat, threatMax: 12 }, lines, detail }; };
 
 export function initGsDelveRuns() {

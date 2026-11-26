@@ -10,12 +10,11 @@
 // The record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence (10 the fighter, 14 the rogue).
 // The warren's foe is deployed (content/delve/1.v2.json): The goblin sentries, a band of 3 on 12 health. Snaggle and Grizzletooth are deployed names with sample health; the Briar Keep's great hall holds the briar knight, also on sample health.
 // A foe is [name, health, members]; a band has members. A hazard is a foe-shaped room with health and no roll back (the thorn stair, edition 3, health 4); an obstacle is no foe at all.
-// KEEP: sample health only. Deployed foes have health 12 to 24, a hit takes the archetype's damage (fighter 5, rogue 4, twice on a natural 20; archetype.ts), and a weakness strike takes the edition's blow (8 for Grizzletooth); the band takes the hero's real damage here, so its count of members standing follows deployed.
 // An obstacle (the chime run holds the bone chimes, edition 1) is passed by one success or partial success: no health, nothing strikes back, and the turn that gets past it says "<name> passed".
 // A hazard has health (setting.ts: kind 'hazard'), never strikes back, and a success takes 2 off it (4 on a natural 20), a partial success 1 (scene-game.ts). A failure takes none, lands the hazard's harm of 2 and adds 1 threat (2 on a natural 1).
 const DL_OBSTACLES = { 'the chime run': 'The bone chimes' };
 const DL_HAZARDS = new Set(['the thorn stair']);
-const DL_FOES = { 'the thorn stair': ['The thorn stair', 4], 'the great hall': ['The briar knight', 3], 'the warren': ['The goblin sentries', 12, 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 5] };
+const DL_FOES = { 'the thorn stair': ['The tangle', 4], 'the great hall': ['The briar knight', 3], 'the warren': ['The goblin sentries', 12, 3], "snaggle's den": ['Snaggle', 3], 'the shrine cavern': ['Grizzletooth', 5] };
 const DL_HIT = { 'Bryn the Fighter': 5, 'Wren the Rogue': 4 };
 // How many of a band stand at this health, out of the health it began at (scene-game.ts standingAt): ceil(health x members / max); 0 once beaten.
 const dlStanding = (members, health, max) => (health <= 0 ? 0 : Math.ceil((health * members) / max));
@@ -36,10 +35,10 @@ const DL_HEROES = {
     abilities: [{ name: 'Shield bash', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 10, heavy: { name: 'Cleave', needs: 14, dmg: 7 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Crowbar', kind: 'key', does: '' }] },
-  // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
+  // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Thunderstroke, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
   'Hal the Woodcutter': { name: 'Hal', cls: 'Woodcutter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
-    abilities: [{ name: 'Tree-felling', of: 1, ult: true, does: 'Strikes at once, no roll' }],
+    abilities: [{ name: 'Thunderstroke', of: 1, ult: true, does: 'Strikes at once, no roll' }],
     fight: { defence: 10, heavy: { name: 'Timberfall', needs: 14, dmg: 7 } },
     gear: [{ name: 'Honey cake', kind: 'once', does: 'Heals 6' }, { name: 'Axe', kind: 'key', does: '' }] },
   // Wren, from the same source (rogue): defence 14, protection a leather jerkin (a name), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
@@ -208,7 +207,7 @@ const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ')
 const dlMeterOf = (r) => { const x = r.foe ? r.foe : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
   return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing }; };
 const DlFoeMeter = ({ mt }) => (mt.members
-  ? <div className="dv6-band"><b>{mt.name}</b> <span>{mt.standing} of {mt.members} standing</span></div>
+  ? <div className="dv6-band"><b>{mt.name}</b> <span>{mt.standing === mt.members ? 'all ' + mt.members : mt.standing + ' of ' + mt.members} standing</span></div>
   : <DlMeter label={mt.name} n={mt.n} of={mt.of} />);
 // The line under the heading: the foe or hazard a turn took to 0 is beaten, and an obstacle a turn got past is passed.
 const dlBeat = (r) => (r.downed ? r.downed.name + ' beaten' : r.passed ? r.passed + ' passed' : '');
@@ -402,7 +401,7 @@ const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><div className="
   {c.lightName && <DlMeter label={dlLightLabel(c.lightName)} n={c.light} of={c.lightMax} />}</div></div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
-  // KEEP: the game's armour class is the hero class's own plus what each carried armour item adds (monorepo campaign-game.ts heroAc; the sheet sends the total as `ac` and the carried share as `acGear`, delve-sheet.ts fightRows). `defence` is that total, the number the record's struck-back lines aim at; the sentence under it is the class's own (the total less the carried armour's share) first, then each carried armour item by name with its +. The hero's protection (ox shield, cloak) is a name only and adds nothing, so it is no part of the sum.
+  // KEEP: the game's armour class is the hero class's own plus what each carried armour item adds (monorepo scene-game.ts heroAcOf; the sheet sends the total as `ac` and the carried share as `acGear`, delve-sheet.ts fightRows). `defence` is that total, the number the record's struck-back lines aim at; the sentence under it is the class's own (the total less the carried armour's share) first, then each carried armour item by name with its +. The hero's protection (ox shield, cloak) is a name only and adds nothing, so it is no part of the sum.
   const carried = c.gear.filter((g) => g.kind === 'armour' && g.state !== 'used');
   const own = f.defence - carried.reduce((n, g) => n + g.ac, 0);
   return [{ key: 'ac', label: 'Armour class', num: f.defence, text: [c.cls + ' ' + own, ...carried.map((g) => g.name.toLowerCase() + ' +' + g.ac)].join(', ') },
@@ -555,7 +554,7 @@ GS_SESSIONS['delve-story-fall'] = { ...GS_SESSIONS.delve, loss: true, end: 'fall
   ['Room', 'Entered the medbay']] };
 GS_SESSIONS['delve-won-by-use'] = (() => { const base = GS_SESSIONS.delve.lines; const cut = base.findIndex((l) => l[0] === 'Ability');
   return { ...GS_SESSIONS.delve, lines: [...base.slice(0, cut), ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 4 → 2'], ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12', 'Struck back: d20 8 vs 10, missed'], ['Ability', 'Used shield bash', 'Grizzletooth: health 1 → 0']] }; })();
-GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed', shareLines: null,
+GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed', shareLines: null,
   hero: 'Wren the Rogue', hpMax: 21, threat: 12, foeMax: { 'the shrine cavern': 6 },
   // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
   foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' },
@@ -567,14 +566,14 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Entered the warren'], ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
   ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 6 and 15, kept 15 + 3 = 18 vs 12', 'Struck back: d20 11 vs 14, missed'], ['Dexterity', 'Miss', 'd20s 4 and 2, kept 4 + 3 = 7 vs 12', 'Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21'],
   ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 4 vs 14, missed'], ['Dexterity', 'Hit', 'd20 15 + 3 = 18 vs 12'],
-  ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered Snaggle\'s den'],
+  ['Room', 'Doubled back to the chime run', 'The chant +1'], ['Intelligence', 'Read the chime wires', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
+  ['Room', 'Doubled back to the warren', 'The chant +1'], ['Room', 'Entered Snaggle\'s den'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 13 vs 14, missed'], ['Dexterity', 'Heavy attack: Flurry', 'Hit', 'Natural 20', 'd20 20 + 5 = 25 vs 12', 'Struck back: d20 8 vs 14, missed'], ['Dexterity', 'Hit', 'd20s 12 and 3, kept 12 + 3 = 15 vs 12'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'],
-  ['Room', 'Doubled back to Snaggle\'s den', 'The ritual +1'], ['Wisdom', 'Listen at the den door', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'],
+  ['Room', 'Doubled back to the warren', 'The chant +1'],
+  ['Room', 'Doubled back to Snaggle\'s den', 'The chant +1'], ['Wisdom', 'Listen at the den door', 'Partial success', 'd20 13 + 1 = 14 vs 12'],
+  ['Room', 'Doubled back to the warren', 'The chant +1'],
   ['Strength', 'Force the bone gate', 'Partial success', 'd20 9 + 0 = 9 vs 12'], ['Strength', 'Force the bone gate', 'Partial success', 'd20 11 + 0 = 11 vs 12'], ['Strength', 'Force the bone gate', 'Partial success', 'd20 14 + 0 = 14 vs 12'],
-  ['Room', 'Doubled back to the chime run', 'The ritual +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
+  ['Room', 'Doubled back to the chime run', 'The chant +1'], ['Dexterity', 'Slip past the chime wires', 'Success', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Entered the flooded cellar'], ['Dexterity', 'Cross the flooded cellar', 'Success', 'd20 14 + 3 = 17 vs 12'],
   ['Room', 'Entered the armoury'], ['Intelligence', 'Read the maker\'s marks', 'Success', 'd20 12 + 1 = 13 vs 12'],
   ['Room', 'Entered the shrine of the drowned saint'], ['Wisdom', 'Hear the saint\'s bell', 'Success', 'd20 15 + 1 = 16 vs 12'], ['Constitution', 'Hold your breath', 'Success', 'd20 13 + 2 = 15 vs 12'],
@@ -583,7 +582,7 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
   ['Room', 'Entered the chapel'], ['Wisdom', 'Listen at the altar', 'Success', 'd20 14 + 1 = 15 vs 12'], ['Intelligence', 'Read the psalm board', 'Success', 'd20 13 + 1 = 14 vs 12'],
   ['Room', 'Entered the crypt'], ['Dexterity', 'Pick the crypt lock', 'Success', 'd20 15 + 3 = 18 vs 12'],
   ['Room', 'Entered the bone pit'], ['Strength', 'Cross the bone pit', 'Success', 'd20 18 + 0 = 18 vs 12'], ['Dexterity', 'Slip the trap', 'Success', 'd20 11 + 3 = 14 vs 12'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'], ['Room', 'Entered the shrine cavern'],
+  ['Room', 'Doubled back to the warren', 'The chant +1'], ['Room', 'Entered the shrine cavern'],
   ['Dexterity', 'Hit', 'd20 10 + 3 = 13 vs 12', 'Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21'], ['Dexterity', 'Hit', 'd20 17 + 3 = 20 vs 12', 'Struck back: d20 6 vs 14, missed'], ['Dexterity', 'Hit', 'd20 18 + 3 = 21 vs 12', 'Struck back: d20 9 vs 14, missed'],
   ['Dexterity', 'Hit', 'd20s 5 and 12, kept 12 + 3 = 15 vs 12', 'Struck back: d20 17 vs 14, hit, 1 damage, HP 13/21'], ['Dexterity', 'Hit', 'd20 11 + 3 = 14 vs 12', 'Struck back: d20 12 vs 14, missed'], ['Dexterity', 'Miss', 'd20 8 + 3 = 11 vs 12', 'Struck back: d20 16 vs 14, hit, 1 damage, HP 12/21']] };
 // The hard play's natural 20 in Snaggle's den (its second roll there, a heavy attack) is also its biggest hit, so one roll earns Best roll and Biggest hit and the held roll reads "Best roll · Biggest hit".
@@ -592,10 +591,10 @@ GS_SESSIONS['delve-hard'] = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', 
 { const hard = GS_SESSIONS['delve-hard']; const rollAt = (l) => /(d20 |d20s \d+ and \d+, kept )\d+ [+-] \d+ = /.test(l.slice(1).join(' · '));
   const n = hard.lines.filter(rollAt).indexOf(hard.lines.find((l) => rollAt(l) && l.includes('Natural 20') && /^Heavy attack/.test(l[1]))) + 1;
   GS_SESSIONS['delve-hard'] = { ...hard, foeMax: { ...hard.foeMax, "snaggle's den": 23 }, detail: { [n]: { parts: [['+', 3, 'DEX'], ['+', 2, 'Simple'], ['+', 1, 'Magic'], ['+', 1, 'Escalation'], ['−', 2, 'Heavy']], dmg: { die: 'd8', v: 8, parts: [['+', 5, 'd8'], ['+', 3, 'DEX'], ['+', 1, 'Magic'], ['+', 4, 'Heavy']], type: 'Piercing' } } } }; }
-// The hard play with a last going-back to the warren (The ritual +1) that filled the threat: no roll or use in that room, so the run ends on the loss cross. SAMPLE: the going-back is added to the hard play.
+// The hard play with a last going-back to the warren (The chant +1) that filled the threat: no roll or use in that room, so the run ends on the loss cross. SAMPLE: the going-back is added to the hard play.
 // Its last roll leaves the threat at 11/12 (the hard play without the going-back to the warren before the shrine cavern), so the going-back (+1) is what fills it to 12/12.
 GS_SESSIONS['delve-overrun-back'] = (() => { const L = GS_SESSIONS['delve-hard'].lines; const at = L.findIndex((l) => l[1] === 'Entered the shrine cavern');
-  return { ...GS_SESSIONS['delve-hard'], lostOff: { over: true, name: 'Going back' }, lines: [...L.slice(0, at - 1), ...L.slice(at), ['Room', 'Doubled back to the warren', 'The ritual +1']] }; })();
+  return { ...GS_SESSIONS['delve-hard'], lostOff: { over: true, name: 'Going back' }, lines: [...L.slice(0, at - 1), ...L.slice(at), ['Room', 'Doubled back to the warren', 'The chant +1']] }; })();
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's health are sample; the route follows the edition's order.
 // noEd: the library lists one run (the Goblin Warren), so this sample names its own setting rather than that run's title.

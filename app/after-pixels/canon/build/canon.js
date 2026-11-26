@@ -1396,7 +1396,7 @@
     ["Gear", "Used a healing draught", "Healed 4, HP 22/23", "Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23"],
     ["Strength", "Hit", "d20s 15 and 18, kept 18 + 3 = 21 vs 12"],
     ["Gear", "Took the iron key"],
-    ["Room", "Doubled back to the warren", "The ritual +1"],
+    ["Room", "Doubled back to the warren", "The chant +1"],
     ["Lock", "Opened the bone gate with the iron key"],
     ["Room", "Entered the shrine cavern"],
     ["Strength", "Hit", "d20s 11 and 19, kept 19 + 3 = 22 vs 12", "Struck back: d20 5 vs 10, missed"],
@@ -1419,9 +1419,9 @@
     ["Dexterity", "Hit", "d20s 14 and 5, kept 14 + 3 = 17 vs 12", "Struck back: d20 9 vs 14, missed"],
     ["Dexterity", "Hit", "d20s 18 and 7, kept 18 + 3 = 21 vs 12"],
     ["Dexterity", "Climb to the skeleton on the high ledge", "Success", "Natural 20", "d20s 20 and 6, kept 20 + 3 = 23 vs 12"],
-    ["Room", "Doubled back to the warren", "The ritual +1"]
+    ["Room", "Doubled back to the warren", "The chant +1"]
   ];
-  const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the ritual was completed", "Fell in the warren"];
+  const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the chant was completed", "Fell in the warren"];
   const GS_ES1 = {
     bench: "A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth. The crank turns the 20-tooth gear, which turns the 9, which turns the 3, which turns the 11. The tray reads “One tooth, one letter.” Below it, a drawer with a four-letter lock.",
     clock: "A tall case clock, stopped, its hands stiff. There is a winding hole in its face.",
@@ -1789,7 +1789,7 @@
     escape: (r) => "Escaped in " + r.min + " min, " + r.par,
     casebook: (r) => r.ok ? "Solved" : "Wrong accusation",
     // The setting's own ending words (The Goblin Warren).
-    delve: (r) => ({ won: "Elsie rescued", ritual: "Too late: the ritual was completed", fell: "Fell in the warren" })[r.end],
+    delve: (r) => ({ won: "Elsie rescued", ritual: "Too late: the chant was completed", fell: "Fell in the warren" })[r.end],
     // A restarted day (no ending) reads Not finished.
     hunter: (r) => r.restarted ? "Not finished" : "Finished"
   };
@@ -3165,7 +3165,7 @@
   };
   const DL_OBSTACLES = { "the chime run": "The bone chimes" };
   const DL_HAZARDS = /* @__PURE__ */ new Set(["the thorn stair"]);
-  const DL_FOES = { "the thorn stair": ["The thorn stair", 4], "the great hall": ["The briar knight", 3], "the warren": ["The goblin sentries", 12, 3], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 5] };
+  const DL_FOES = { "the thorn stair": ["The tangle", 4], "the great hall": ["The briar knight", 3], "the warren": ["The goblin sentries", 12, 3], "snaggle's den": ["Snaggle", 3], "the shrine cavern": ["Grizzletooth", 5] };
   const DL_HIT = { "Bryn the Fighter": 5, "Wren the Rogue": 4 };
   const dlStanding = (members, health, max) => health <= 0 ? 0 : Math.ceil(health * members / max);
   const DL_CARRY = 3;
@@ -3181,13 +3181,13 @@
       fight: { defence: 10, heavy: { name: "Cleave", needs: 14, dmg: 7 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
     },
-    // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
+    // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Thunderstroke, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
     "Hal the Woodcutter": {
       name: "Hal",
       cls: "Woodcutter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       skills: [["Athletics", "Strength"], ["Intimidation", "Charisma"], ["Perception", "Wisdom"], ["Survival", "Wisdom"]],
-      abilities: [{ name: "Tree-felling", of: 1, ult: true, does: "Strikes at once, no roll" }],
+      abilities: [{ name: "Thunderstroke", of: 1, ult: true, does: "Strikes at once, no roll" }],
       fight: { defence: 10, heavy: { name: "Timberfall", needs: 14, dmg: 7 } },
       gear: [{ name: "Honey cake", kind: "once", does: "Heals 6" }, { name: "Axe", kind: "key", does: "" }]
     },
@@ -3425,7 +3425,7 @@
     const x = r.foe ? r.foe : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
     return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing };
   };
-  const DlFoeMeter = ({ mt }) => mt.members ? /* @__PURE__ */ React$1.createElement("div", { className: "dv6-band" }, /* @__PURE__ */ React$1.createElement("b", null, mt.name), " ", /* @__PURE__ */ React$1.createElement("span", null, mt.standing, " of ", mt.members, " standing")) : /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of });
+  const DlFoeMeter = ({ mt }) => mt.members ? /* @__PURE__ */ React$1.createElement("div", { className: "dv6-band" }, /* @__PURE__ */ React$1.createElement("b", null, mt.name), " ", /* @__PURE__ */ React$1.createElement("span", null, mt.standing === mt.members ? "all " + mt.members : mt.standing + " of " + mt.members, " standing")) : /* @__PURE__ */ React$1.createElement(DlMeter, { label: mt.name, n: mt.n, of: mt.of });
   const dlBeat = (r) => r.downed ? r.downed.name + " beaten" : r.passed ? r.passed + " passed" : "";
   const dlCost = (r) => [r.harm > 0 && !r.foe && "Hit points −" + r.harm, r.threat > 0 && "Threat +" + r.threat].filter(Boolean).join(" · ");
   const dlKindSay = (k) => k === "Weakness" ? "Weak spot" : k;
@@ -3848,9 +3848,9 @@
       ...GS_SESSIONS.delve,
       loss: true,
       end: "overrun",
-      result: "Too late: the ritual was completed",
-      reached: "Too late: the ritual was completed",
-      share: "Too late: the ritual was completed",
+      result: "Too late: the chant was completed",
+      reached: "Too late: the chant was completed",
+      share: "Too late: the chant was completed",
       shareLines: null,
       hero: "Wren the Rogue",
       hpMax: 21,
@@ -3878,21 +3878,21 @@
         ["Dexterity", "Miss", "d20s 4 and 2, kept 4 + 3 = 7 vs 12", "Struck back: d20 15 vs 14, hit, 1 damage, HP 16/21"],
         ["Dexterity", "Miss", "d20 8 + 3 = 11 vs 12", "Struck back: d20 4 vs 14, missed"],
         ["Dexterity", "Hit", "d20 15 + 3 = 18 vs 12"],
-        ["Room", "Doubled back to the chime run", "The ritual +1"],
+        ["Room", "Doubled back to the chime run", "The chant +1"],
         ["Intelligence", "Read the chime wires", "Partial success", "d20 13 + 1 = 14 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
         ["Room", "Entered Snaggle's den"],
         ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 13 vs 14, missed"],
         ["Dexterity", "Heavy attack: Flurry", "Hit", "Natural 20", "d20 20 + 5 = 25 vs 12", "Struck back: d20 8 vs 14, missed"],
         ["Dexterity", "Hit", "d20s 12 and 3, kept 12 + 3 = 15 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
-        ["Room", "Doubled back to Snaggle's den", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
+        ["Room", "Doubled back to Snaggle's den", "The chant +1"],
         ["Wisdom", "Listen at the den door", "Partial success", "d20 13 + 1 = 14 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
         ["Strength", "Force the bone gate", "Partial success", "d20 9 + 0 = 9 vs 12"],
         ["Strength", "Force the bone gate", "Partial success", "d20 11 + 0 = 11 vs 12"],
         ["Strength", "Force the bone gate", "Partial success", "d20 14 + 0 = 14 vs 12"],
-        ["Room", "Doubled back to the chime run", "The ritual +1"],
+        ["Room", "Doubled back to the chime run", "The chant +1"],
         ["Dexterity", "Slip past the chime wires", "Success", "d20 15 + 3 = 18 vs 12"],
         ["Room", "Entered the flooded cellar"],
         ["Dexterity", "Cross the flooded cellar", "Success", "d20 14 + 3 = 17 vs 12"],
@@ -3914,7 +3914,7 @@
         ["Room", "Entered the bone pit"],
         ["Strength", "Cross the bone pit", "Success", "d20 18 + 0 = 18 vs 12"],
         ["Dexterity", "Slip the trap", "Success", "d20 11 + 3 = 14 vs 12"],
-        ["Room", "Doubled back to the warren", "The ritual +1"],
+        ["Room", "Doubled back to the warren", "The chant +1"],
         ["Room", "Entered the shrine cavern"],
         ["Dexterity", "Hit", "d20 10 + 3 = 13 vs 12", "Struck back: d20 16 vs 14, hit, 2 damage, HP 14/21"],
         ["Dexterity", "Hit", "d20 17 + 3 = 20 vs 12", "Struck back: d20 6 vs 14, missed"],
@@ -3933,7 +3933,7 @@
     GS_SESSIONS["delve-overrun-back"] = (() => {
       const L = GS_SESSIONS["delve-hard"].lines;
       const at = L.findIndex((l) => l[1] === "Entered the shrine cavern");
-      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...L.slice(0, at - 1), ...L.slice(at), ["Room", "Doubled back to the warren", "The ritual +1"]] };
+      return { ...GS_SESSIONS["delve-hard"], lostOff: { over: true, name: "Going back" }, lines: [...L.slice(0, at - 1), ...L.slice(at), ["Room", "Doubled back to the warren", "The chant +1"]] };
     })();
     GS_SESSIONS["delve-hazard"] = {
       ...GS_SESSIONS.delve,
@@ -8231,7 +8231,7 @@
       return [head, "", ...guesses.map((g) => gsWordRow(g, answer)), link];
     }
     if (s.shareHead) return [s.shareHead, ...s.rows || [], link];
-    if (s.kind === "delve") return ["Delve 🎲 " + s.result + ", " + s.reached.toLowerCase(), "🎲 " + s.lines.length + " rolls  ⏳ threat " + s.tracks.threat + "/6", link];
+    if (s.kind === "delve") return ["Delve 🎲 " + s.result + ", " + s.reached.toLowerCase(), "🎲 " + s.lines.length + " rolls  ⏳ threat " + s.tracks.threat + "/" + s.tracks.threatMax, link];
     if (s.kind === "case") return [s.game + " 🔎 " + s.result, s.figures.join(" · "), link];
     return [s.game + " · " + s.share, link];
   };
@@ -12238,7 +12238,7 @@
       }
       if (k === "back") {
         threat += 1;
-        lines.push(["Room", "Doubled back to " + a[0], "The ritual +1"]);
+        lines.push(["Room", "Doubled back to " + a[0], "The chant +1"]);
         return;
       }
       if (k === "raw") {
@@ -12349,9 +12349,9 @@
       lightMax: 6,
       ...n === 25 && !live ? { lostOff: { over: true, name: "Going back" } } : {},
       ...live ? { live: true } : {},
-      result: "Too late: the ritual was completed",
-      reached: "Too late: the ritual was completed",
-      share: "Too late: the ritual was completed",
+      result: "Too late: the chant was completed",
+      reached: "Too late: the chant was completed",
+      share: "Too late: the chant was completed",
       figures: ["Threat " + threat + "/12", rolls + " rolls", "HP " + hp + "/23"],
       tracks: { progress: n, rooms, threat, threatMax: 12 },
       lines,

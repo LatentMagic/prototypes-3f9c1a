@@ -329,7 +329,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 @container dlstats (min-width: 336px) { .dv8.is-3b .dv8-stats .dv7-cells { max-width: none; flex-wrap: nowrap; } }
 /* Advantage: its cells sit on a grid of equal columns, each as wide as the widest cell, centred as a group rather than spread across the row. */
 .dv8.is-3b .dv8-adv .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: max-content; max-width: 100%; margin: 0 auto; gap: 16px; }
-/* At the narrowest widths the columns close up rather than wrap "Longest streak": a cell is wider than its short labels, so the space between labels stays wide. */
+/* KEEP: at the narrowest widths the columns close up rather than wrap "Longest streak": a cell is wider than its short labels, so the space between labels stays wide. */
 @media (max-width: 360px) { .dv8.is-3b .dv8-adv .dv7-cells { gap: 4px; } }
 /* The now card's route: the latest stops in one row, the key moments in one centred row beneath. Nothing in it is pressable. */
 .dl-now-route { min-width: 0; container: dlnow / inline-size; display: grid; align-content: center; }

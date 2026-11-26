@@ -155,7 +155,7 @@ const GS_DV_WON = [
   ['Gear', 'Used a healing draught', 'Healed 4, HP 22/23', 'Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23'],
   ['Strength', 'Hit', 'd20s 15 and 18, kept 18 + 3 = 21 vs 12'],
   ['Gear', 'Took the iron key'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'],
+  ['Room', 'Doubled back to the warren', 'The chant +1'],
   ['Lock', 'Opened the bone gate with the iron key'],
   ['Room', 'Entered the shrine cavern'],
   ['Strength', 'Hit', 'd20s 11 and 19, kept 19 + 3 = 22 vs 12', 'Struck back: d20 5 vs 10, missed'],
@@ -178,9 +178,9 @@ const GS_DV_LIVE = [
   ['Dexterity', 'Hit', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
   ['Dexterity', 'Hit', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12'],
   ['Dexterity', 'Climb to the skeleton on the high ledge', 'Success', 'Natural 20', 'd20s 20 and 6, kept 20 + 3 = 23 vs 12'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'],
+  ['Room', 'Doubled back to the warren', 'The chant +1'],
 ];
-export const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the ritual was completed', 'Fell in the warren'];
+export const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the chant was completed', 'Fell in the warren'];
 
 // ---- Escape No. 1, The Clockmaker’s Study (par 30). GS_ES1 is the room's deployed text (content/escape/1.v3.json); GS_ES1_LINES is a
 // sample play of it, written as the engine writes a line: a typed try keeps what was typed, a mechanism names its parts. ----
@@ -394,7 +394,7 @@ export const GS_RESULT = {
   escape: (r) => 'Escaped in ' + r.min + ' min, ' + r.par,
   casebook: (r) => (r.ok ? 'Solved' : 'Wrong accusation'),
   // The setting's own ending words (The Goblin Warren).
-  delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the ritual was completed', fell: 'Fell in the warren' })[r.end],
+  delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the chant was completed', fell: 'Fell in the warren' })[r.end],
   // A restarted day (no ending) reads Not finished.
   hunter: (r) => (r.restarted ? 'Not finished' : 'Finished'),
 };
