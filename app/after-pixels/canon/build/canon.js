@@ -3746,15 +3746,39 @@
     return [ref, cols, gap];
   };
   const DL_SPARK = "M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z";
-  const DlMapMarks = ({ m, st }) => st.turns.length ? /* @__PURE__ */ React$1.createElement("span", { className: "dvG-marks" }, st.turns.map((r) => r.lost ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { key: r.t, r, size: 20 }) : r.use ? /* @__PURE__ */ React$1.createElement("svg", { key: r.t, className: "dvG-spark", viewBox: "0 0 10 10", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_SPARK })) : /* @__PURE__ */ React$1.createElement("i", { key: r.t, className: "dl-now-mark is-" + (r.tier || "miss") }))) : null;
+  const dlRows = (items, most) => {
+    const rows = Math.ceil(items.length / Math.max(1, most));
+    const base = Math.floor(items.length / rows);
+    const longer = items.length % rows;
+    let at = 0;
+    return Array.from({ length: rows }, (_, i) => {
+      const n = i < longer ? base + 1 : base;
+      const row = items.slice(at, at + n);
+      at += n;
+      return row;
+    });
+  };
+  const DL_PIP_ROW = 4;
+  const DL_PIP_ROW_PHONE = 3;
+  const DL_PIP_PHONE_W = 480;
+  const DL_KEY_ROW = 2;
+  const DlMapMark = ({ m, r }) => r.lost || m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 20 }) : r.use ? /* @__PURE__ */ React$1.createElement("svg", { className: "dvG-spark", viewBox: "0 0 10 10", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_SPARK })) : /* @__PURE__ */ React$1.createElement("i", { className: "dl-now-mark is-" + (r.tier || "miss") });
+  const DlMapMarks = ({ m, st, phone }) => {
+    if (!st.turns.length) return null;
+    const keys = st.turns.filter((r) => r.lost || m.mom[r.t]);
+    const pips = st.turns.filter((r) => !r.lost && !m.mom[r.t]);
+    const rows = [...dlRows(pips, phone ? DL_PIP_ROW_PHONE : DL_PIP_ROW), ...dlRows(keys, DL_KEY_ROW)];
+    return /* @__PURE__ */ React$1.createElement("span", { className: "dvG-marks" }, rows.map((row, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvG-mrow" }, row.map((r) => /* @__PURE__ */ React$1.createElement(DlMapMark, { key: r.t, m, r })))));
+  };
   const DlMap = ({ m, stops, open, onOpen, far }) => {
     const [ref, cols, gap] = useDlMap(stops.length);
+    const phone = useGs().width < DL_PIP_PHONE_W;
     return /* @__PURE__ */ React$1.createElement("div", { className: "dvG-mapw" }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map" + (stops.length <= DL_MAP_FEW ? " is-few" : ""), style: { "--cols": cols, "--gap": gap + "px" }, "aria-label": "The way you went" }, stops.map((st, i) => {
       const has = st.turns && st.turns.some((r) => !r.lost);
       const label = (st.back ? "Back to " : "Room " + st.num + ", ") + st.name;
       const box = /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st) }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num);
       const cls = "dvG-stop" + (i % cols === 0 ? " is-rs" : "") + (i % cols === cols - 1 || i === stops.length - 1 ? " is-re" : "") + (open === st.i ? " is-on" : "") + (far && far(st) ? " is-far" : "");
-      return has ? /* @__PURE__ */ React$1.createElement("button", { key: st.i, type: "button", className: cls, title: st.name, "aria-label": label, "aria-pressed": open === st.i, onClick: () => onOpen(st) }, box, /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st })) : /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: cls, title: st.name, role: "img", "aria-label": label + (st.turns && st.turns.length ? "" : ", no rolls") }, box, m && /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st }));
+      return has ? /* @__PURE__ */ React$1.createElement("button", { key: st.i, type: "button", className: cls, title: st.name, "aria-label": label, "aria-pressed": open === st.i, onClick: () => onOpen(st) }, box, /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st, phone })) : /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: cls, title: st.name, role: "img", "aria-label": label + (st.turns && st.turns.length ? "" : ", no rolls") }, box, m && /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st, phone }));
     })));
   };
   const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st, " is-on"), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.back ? "Back to " + st.name : st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.filter((r) => !r.lost).map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);

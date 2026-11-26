@@ -288,15 +288,22 @@ const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(
 const useDlMap = (n) => { const ref = React.useRef(null); const measure = React.useMemo(() => dlMapOf(n), [n]); const v = useDlWidth(ref, measure, n + ':6'); const [cols, gap] = v.split(':').map(Number); return [ref, cols, gap]; };
 // What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey sparkle (as the Now card of the deployed run draws one), the loss cross as itself.
 const DL_SPARK = 'M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z';
-const DlMapMarks = ({ m, st }) => (st.turns.length ? <span className="dvG-marks">{st.turns.map((r) => (r.lost ? <DlDie key={r.t} r={r} size={20} />
-  : m.mom[r.t] ? <DlDie key={r.t} r={r} size={20} /> : r.use ? <svg key={r.t} className="dvG-spark" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d={DL_SPARK} /></svg> : <i key={r.t} className={'dl-now-mark is-' + (r.tier || 'miss')} />))}</span> : null);
-const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length);
+// KEEP: a stop's marks stand in rows of at most 4 dots (3 on a phone, under 480px), balanced so no row is left with one (7 dots: 4 / 3 on a wide screen, 3 / 2 / 2 on a phone), and the room's key-moment dice come after the dots, two to a row, the loss cross with them; a room's dice have no play order (the user, 2026-11-26).
+const dlRows = (items, most) => { const rows = Math.ceil(items.length / Math.max(1, most)); const base = Math.floor(items.length / rows); const longer = items.length % rows; let at = 0;
+  return Array.from({ length: rows }, (_, i) => { const n = i < longer ? base + 1 : base; const row = items.slice(at, at + n); at += n; return row; }); };
+const DL_PIP_ROW = 4; const DL_PIP_ROW_PHONE = 3; const DL_PIP_PHONE_W = 480; const DL_KEY_ROW = 2;
+const DlMapMark = ({ m, r }) => (r.lost || m.mom[r.t] ? <DlDie r={r} size={20} /> : r.use ? <svg className="dvG-spark" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d={DL_SPARK} /></svg> : <i className={'dl-now-mark is-' + (r.tier || 'miss')} />);
+const DlMapMarks = ({ m, st, phone }) => { if (!st.turns.length) return null;
+  const keys = st.turns.filter((r) => r.lost || m.mom[r.t]); const pips = st.turns.filter((r) => !r.lost && !m.mom[r.t]);
+  const rows = [...dlRows(pips, phone ? DL_PIP_ROW_PHONE : DL_PIP_ROW), ...dlRows(keys, DL_KEY_ROW)];
+  return <span className="dvG-marks">{rows.map((row, i) => <span key={i} className="dvG-mrow">{row.map((r) => <DlMapMark key={r.t} m={m} r={r} />)}</span>)}</span>; };
+const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length); const phone = useGs().width < DL_PIP_PHONE_W;
   return (<div className="dvG-mapw"><div ref={ref} className={'dvG-map' + (stops.length <= DL_MAP_FEW ? ' is-few' : '')} style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
     const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
     const box = <span className={dlNum(st)}>{st.back && <DlBackArrow />}{st.num}</span>;
     const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (i % cols === cols - 1 || i === stops.length - 1 ? ' is-re' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
-    return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} /></button>
-      : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} />}</span>; })}</div></div>); };
+    return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} phone={phone} /></button>
+      : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} phone={phone} />}</span>; })}</div></div>); };
 // KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
 const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
