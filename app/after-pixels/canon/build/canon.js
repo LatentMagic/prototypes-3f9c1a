@@ -12531,67 +12531,6 @@
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
   };
-  const PG_MAPS = { 2: { col: 22, box: 18, die: 16, dot: 6, font: 11 } };
-  const PgMap = ({ m, v, concept }) => {
-    const n = m.stops.length;
-    const ref = React$1.useRef(null);
-    const measure = React$1.useMemo(() => (el) => {
-      const per = Math.max(1, Math.floor(el.clientWidth / v.col));
-      return Math.ceil(n / Math.ceil(n / per));
-    }, [n, v.col]);
-    const cols = useDlWidth(ref, measure, n);
-    return /* @__PURE__ */ React$1.createElement("div", { className: "pgn-map pgn-c" + concept, style: { "--dv-num": v.box + "px", "--dv-stop-top": "4px", "--pgn-die": v.die + "px", "--pgn-dot": v.dot + "px", "--pgn-font": v.font + "px" } }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map pgn-grid", style: { "--cols": cols, "--gap": "0px" }, role: "img", "aria-label": "The way you went: " + n + " room visits" }, m.stops.map((st, i) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: "dvG-stop" + (i % cols === 0 ? " is-rs" : "") + (i % cols === cols - 1 || i === n - 1 ? " is-re" : ""), title: st.name }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st) }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st })))));
-  };
-  const PG3_MAX = 12;
-  const PG3_ROOMS = 5;
-  const PG3_GAP_FEW = 56;
-  const pg3Names = (kickers) => {
-    const k = kickers.map((x) => x === "Last roll" ? "Latest roll" : x);
-    return [...k.filter((x) => x === "Latest roll"), ...k.filter((x) => x !== "Latest roll")];
-  };
-  const pg3Fit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET * 2 + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
-  const PgSpread = ({ m }) => {
-    const ref = React$1.useRef(null);
-    const fit = useDlWidth(ref, pg3Fit, PG3_MAX);
-    const empty = !m.stops.length;
-    const rooms = empty ? Array.from({ length: PG3_ROOMS }, (_, i) => ({ i, num: i + 1, back: false, turns: [] })).slice(0, fit) : m.stops.slice(-Math.min(PG3_MAX, fit));
-    const keys = m.turns.filter((r) => m.mom[r.t] && !r.lost).reverse().slice(0, 4);
-    const few = rooms.length <= DL_MAP_FEW;
-    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "pgn3" + (keys.length ? "" : " is-alone"), role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { className: "pgn3-stops" + (few ? " is-few" : ""), style: { "--n": rooms.length, "--few": PG3_GAP_FEW + "px" }, role: "img", "aria-label": empty ? "The run has " + PG3_ROOMS + " rooms, the first reached, no rolls yet" : "The last " + rooms.length + " stops" }, rooms.map((st, i) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st, empty ? i === 0 ? " is-on" : " is-far" : "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "pgn3-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "pgn3-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "pgn3-name" }, pg3Names(m.mom[r.t].kickers).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
-  };
-  const PgNow = ({ concept, visits, ended, rolled }) => {
-    const s = React$1.useMemo(() => {
-      const run = dlLongRun(visits, !ended || !rolled);
-      return rolled ? run : { ...run, lines: run.lines.filter((l) => l[0] === "Room") };
-    }, [visits, ended, rolled]);
-    const m = React$1.useMemo(() => dlBuild(s), [s]);
-    const result = m.end === "live" || !rolled ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
-    const route = /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, concept === "3" || !m.stops.length ? /* @__PURE__ */ React$1.createElement(PgSpread, { m }) : concept === "1" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-map pgn-c1" }, /* @__PURE__ */ React$1.createElement(DlMap, { m, stops: m.stops, open: null, onOpen: () => {
-    } })) : /* @__PURE__ */ React$1.createElement(PgMap, { m, v: PG_MAPS[2], concept }));
-    return !m.stops.length ? /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pgn-now", title: "The Goblin Warren", play: () => {
-    }, next: "Next run: " + DV_NEXT }, route) : /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pgn-now", title: "The Goblin Warren", result, open: () => {
-    }, next: "Next run: " + DV_NEXT }, route);
-  };
-  const PgLibrary = () => {
-    const gs = useGs();
-    const access = lbAccess(gs, "delve");
-    const list = dvRun(gs);
-    const concept = usePgSetting("concept");
-    const visits = +usePgSetting("stops");
-    const ended = usePgSetting("run") === "ended";
-    const rolled = usePgSetting("rolls") !== "none";
-    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PgNow, { concept, visits, ended, rolled }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: phAch(gs, "delve", DV_ACH), badges: DV_BADGES, access, ed: GS_GAMES.delve.ed })));
-  };
-  const initPlaygroundNowCard = () => {
-    const stops = [20, ...Array.from({ length: 26 }, (_, i) => i).filter((x) => x !== 20)].map((x) => ({ value: String(x), label: String(x) }));
-    pgRegister("now-card", { title: "Delve Now card", settings: [
-      { key: "concept", kind: "concept", label: "Concept", options: [{ value: "1", label: "1. Straight lift" }, { value: "2", label: "2. Tighter stops" }, { value: "3", label: "3. Spread stops and key dice" }] },
-      { key: "stops", label: "Stops visited", options: stops },
-      { key: "rolls", label: "Rolls", options: [{ value: "some", label: "Played" }, { value: "none", label: "None yet" }] },
-      { key: "run", label: "Run", options: [{ value: "ended", label: "Ended", state: "library-delve" }, { value: "live", label: "In progress", state: "library-delve" }] }
-    ] });
-    if (pgActive()) GS_LIBRARY.delve = PgLibrary;
-  };
   const PG_SITS = {
     scene1: { streak: 1, hits: 0, fight: false, ended: false },
     scene3: { streak: 3, hits: 0, fight: false, ended: false },
@@ -13302,6 +13241,5 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
-  initPlaygroundNowCard();
   initPlaygroundAdvantage();
 })(React, ReactDOM);

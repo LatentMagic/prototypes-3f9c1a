@@ -3794,36 +3794,6 @@ details[open] > .wn-sum .wn-caret { transform: rotate(90deg); }
 .acn .acc-sent { font-size: 13px; line-height: 1.35; }
 .acn .acc-blank { height: 16px; margin-top: 4px; }
 .acn .acc-blank.is-s { height: 10px; }
-/* Playground (prototype aid): the Delve Now card with the route map (app/playground-now-card.jsx). */
-/* Nothing in the display is pressable: the map ignores the pointer, so no hover or press shows. */
-.pgn-map { --dv-num: 28px; --dv-stop-top: 12px; pointer-events: none; min-width: 0; }
-/* Concept 1: canon's map as it stands. */
-.pgn-c1 .dvG-mapw { margin: 0 -8px; }
-/* Concepts 2 and 3: equal columns across the card's content width; a row's first and last box sit on its edges. */
-.pgn-grid { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); row-gap: 4px; }
-.pgn-grid .dvG-stop { min-height: 0; gap: 4px; padding-bottom: 4px; min-width: 0; }
-.pgn-grid .dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 4px; }
-.pgn-grid .dv2-num { min-width: var(--dv-num); height: var(--dv-num); padding: 0 2px; font-size: var(--pgn-font); }
-.pgn-grid .dvG-marks { max-width: 100%; gap: 3px; }
-.pgn-grid .dvG-marks .mcp-dl-die { width: var(--pgn-die); }
-.pgn-grid .dvG-marks .dl-now-mark { width: var(--pgn-dot); height: var(--pgn-dot); }
-
-/* Concept 3: the latest stops in one row, the key moments in one centred row beneath. */
-.pgn3 { --dv-num: 28px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; pointer-events: none; }
-/* Boxes spread edge to edge, the route line behind; the line's ends are hidden by the first and last box. */
-.pgn3-stops { position: relative; display: flex; justify-content: space-between; align-items: center; height: var(--dv-num); min-width: 0; }
-.pgn3-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
-/* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
-.pgn3-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
-.pgn3-stops .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
-.pgn3-stops .dv2-num.is-far { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
-/* Up to four slots in a centred row; a die and its name share a slot, so one die sits on the card's centre. */
-.pgn3-keys { display: flex; justify-content: center; align-items: flex-start; gap: 4px; min-width: 0; }
-.pgn3-key { flex: 0 1 60px; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.pgn3-key .mcp-dl-die { width: 44px; height: auto; }
-.pgn3-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; overflow-wrap: break-word; max-width: 100%; }
-/* A card stretched to its neighbour's height keeps the picture in the middle of the room it has, as the Now card standard does. */
-.pgn-now .dl-now-route:has(.pgn3) { display: grid; align-content: center; }
 /* Playground (prototype aid): the Delve Advantage tab (app/playground-advantage.jsx). */
 /* A dimmed mark: its squares and label step back, so full squares do not read as advantage. */
 .pga-dim { opacity: .4; }
