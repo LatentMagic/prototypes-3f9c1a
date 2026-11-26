@@ -59,13 +59,13 @@ const CHECKS = [['Strength', 'Force the door', 'Athletics', 3, 'STR'], ['Wisdom'
 // The threat is full on the run's last turn and not before: every going back costs 1, so the 25-stop run (12 returns) fills it on its last return and every roll before it succeeds;
 // the 20-stop run (8 returns) adds a natural 1 on the chime run (2), a failed check in the well shaft (1) and a failed check that is its last roll (1).
 const MISS = (n, i, k) => n === 20 && ((i === 3 && k === 0) || (i === 9 && k === 0) || (i === 19 && k === 0));
-function longRoute(n, hpMax) {
+function longRoute(n, hpMax, live) {
   const rnd = seeded(7); const steps = []; const health = { "snaggle's den": 27, 'the great hall': 16 };
   ROUTE.slice(0, n).forEach(([name, back], i) => {
     steps.push([back ? 'back' : 'room', name]);
     const fight = name === "snaggle's den" || name === 'the great hall';
     for (let k = 0; k < ROLLS[i]; k += 1) {
-      const lose = MISS(n, i, k); const nat1 = lose && i === 3;
+      const lose = !live && MISS(n, i, k); const nat1 = lose && i === 3;
       const die = nat1 ? 1 : lose ? 3 : i === 6 && k === 1 ? 20 : 10 + Math.floor(rnd() * 10);
       if (fight) {
         const heavy = k === 0 ? 'Cleave' : null; const mods = [['+', 3, 'STR'], ['+', 2, 'Martial'], ...(heavy ? [['−', 2, 'Heavy']] : [])];
@@ -85,7 +85,7 @@ function longRoute(n, hpMax) {
 
 // A long run lost to the ritual, ended: the most going back the editions allow, the hero still standing. The 25-stop run fills the threat on its last going back, so it ends on the loss cross.
 // n is the number of room visits (1 to 25); `live` makes it a run still in progress.
-export const dlLongRun = (n, live = false) => { const { lines, detail, hp, threat, rolls } = longRoute(n, 24); const stops = ROUTE.slice(0, n); const rooms = new Set(stops.map((r) => r[0])).size;
+export const dlLongRun = (n, live = false) => { const { lines, detail, hp, threat, rolls } = longRoute(n, 24, live); const stops = ROUTE.slice(0, n); const rooms = new Set(stops.map((r) => r[0])).size;
   return { ...GS_SESSIONS['delve-hard'], hero: 'Bryn the Fighter', hpMax: 24, threat, foeMax: { "snaggle's den": 27, 'the great hall': 16 }, foeName: {}, lightName: 'the torch', light: 0, lightMax: 6,
     ...(n === 25 && !live ? { lostOff: { over: true, name: 'Going back' } } : {}), ...(live ? { live: true } : {}),
     result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed',
@@ -94,6 +94,7 @@ export const dlLongRun = (n, live = false) => { const { lines, detail, hp, threa
 export function initGsDelveRuns() {
   const long = dlLongRun;
   GS_SESSIONS['delve-route-20'] = long(20);
+  GS_SESSIONS['delve-route-20-live'] = long(20, true);
   GS_SESSIONS['delve-route-25'] = long(25);
 
   // A won run that earns all five key moments: Worst roll (a natural 1), Closest call (12 against 12), Best roll and Biggest hit on one roll (a natural 20 Cleave), and the Winning blow.
