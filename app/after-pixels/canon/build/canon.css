@@ -1009,7 +1009,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv8-sub { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 /* The streak is a count, not slots: a figure in the cell's 36px row. */
 .dv8-num { font: 700 22px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
-/* KEEP: Advantage's two cells take their own widths, not equal columns, since "Inspiration" would double the streak's cell, so the group's visible content, not a stretched grid, sits centred between its dividers. */
+/* KEEP: Advantage's three cells (Inspiration, Streak, Longest streak) take their own widths and stay on one row from 320px up, so the group's visible content sits centred between its dividers. */
 .dv8.is-3b .dv8-adv .dv7-cells { grid-auto-columns: auto; }
 
 /* ---- the sheet: Stats, Advantage, Pack, Ability and Fight are five tabs at every width; the header (name, then bars) and the tabs take one of four steps by the sheet's own width (the dv4 container) ---- */
@@ -1126,6 +1126,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
+.dv8.is-3b .dv8-adv .dv7-cells { flex-wrap: nowrap; gap: 16px; }
 /* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
 moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
 .dl-now-route { min-width: 0; container: dlnow / inline-size; }

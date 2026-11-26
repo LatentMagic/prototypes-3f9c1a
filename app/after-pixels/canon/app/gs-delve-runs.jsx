@@ -114,7 +114,7 @@ export function initGsDelveRuns() {
   ], 23, 10, FOE_TYPE);
   GS_SESSIONS['delve-key-moments'] = { ...GS_SESSIONS.delve, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 40, 'the shrine cavern': 19 }, figures: ['Threat ' + km.threat + '/12', km.rolls + ' rolls', '1 natural 20', 'HP ' + km.hp + '/23'], threat: km.threat, sheet: { used: {}, insp: true } };
 
-  // Wren in the shrine cavern, mid-fight with the drowned captain: a miss then a hit, so the fight-hit count stands at 1 of 2 and is the live Advantage mark.
+  // Wren in the shrine cavern, mid-fight with the drowned captain: a miss then a hit, so the streak stands at 1.
   const DEX = ['+', 3, 'DEX']; const SIMP = ['+', 2, 'Simple'];
   const fl = dlRecord([
     ['chk', 'Dexterity', 'Slip the shrine gate', null, 14, [DEX], 12],
@@ -134,7 +134,7 @@ export function initGsDelveRuns() {
   ], 21, 14, FOE_TYPE);
   GS_SESSIONS['delve-advantage'] = { ...GS_SESSIONS['delve-live'], lines: adv.lines, detail: adv.detail, foeMax: { 'the shrine cavern': 30 }, foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' }, figures: ['Threat ' + adv.threat + '/12', adv.rolls + ' rolls', 'HP ' + adv.hp + '/21'], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };
 
-  // Bryn lost in the same kind of fight: the fight ends with the run, so the streak and the fight hits are back at 0.
+  // Bryn lost in the same kind of fight: the fight ends with the run, so the streak is back at 0 and the longest streak stays.
   const ff = dlRecord([
     ['chk', 'Dexterity', 'Cross the trapped bridge', null, 3, [['+', 1, 'DEX']], 12, { harm: 14 }],
     ['room', "snaggle's den"],

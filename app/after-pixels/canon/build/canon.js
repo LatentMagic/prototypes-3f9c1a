@@ -3603,7 +3603,7 @@
       abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })),
       insp: !!sh.insp,
       fight: h.fight || null,
-      adv: { streak: m.run, hits: m.fh, fight: m.fightLive },
+      adv: { streak: m.run, longest: m.longest },
       // KEEP: a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
       skills: STAT_ORDER.flatMap((st) => (h.skills || []).filter((k) => k[1] === st).map((k) => ({ name: k[0], say: dlSigned(h.stats[st] + 2) + Math.abs(h.stats[st] + 2) }))),
       stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? "−" : "+") + Math.abs(n) }))
@@ -3625,8 +3625,8 @@
   };
   const useDlOneRow = (ref) => useDlWidth(ref, dlOneRowOf, false);
   const DlStatCells = ({ c }) => c.stats.map((x) => /* @__PURE__ */ React$1.createElement(DlCell, { key: x.k, label: x.ab, title: x.k }, /* @__PURE__ */ React$1.createElement(DlHex, { x })));
+  const DlAdvCells = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", title: "Successes or hits in a row." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, c.adv.streak)), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Longest streak", title: "The longest streak of the run." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num" }, c.adv.longest)));
   const DlPips = ({ n, lit, name }) => /* @__PURE__ */ React$1.createElement("span", { className: "dv9-pips" + (lit ? " is-lit" : ""), role: "img", "aria-label": name + ", " + Math.min(n, 2) + " of 2" }, [0, 1].map((i) => /* @__PURE__ */ React$1.createElement("i", { key: i, className: i < n ? "is-on" : "" })));
-  const DlAdvCells = ({ c }) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement(DlCell, { label: "Inspiration", used: !c.insp, title: c.insp ? "Ready" : "Spent" }, /* @__PURE__ */ React$1.createElement(DlInsp, { on: c.insp })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Streak", used: c.adv.fight, title: "Successes in a row on checks. From two on, it gives advantage." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.streak, lit: !c.adv.fight, name: "Streak" })), /* @__PURE__ */ React$1.createElement(DlCell, { label: "Fight hits", used: !c.adv.fight, title: "Hits in a row in this fight. From two on, it gives advantage on the next attack." }, /* @__PURE__ */ React$1.createElement(DlPips, { n: c.adv.hits, lit: c.adv.fight, name: "Fight hits" })));
   const DL_CHIP_MIN = 100;
   const DL_CHIP_GAP = 8;
   const dlSkillsPerRow = (n) => (el) => {
@@ -9633,12 +9633,12 @@
         c.setConnected(true);
         c.go("session", { id: "delve-advantage" });
       } },
-      { group: "Screens", id: "session-delve-fight-live", label: "7. Session page: Delve, a fight in progress (the fight-hit count is the live Advantage mark)", stage: (c) => {
+      { group: "Screens", id: "session-delve-fight-live", label: "7. Session page: Delve, a fight in progress (Advantage shows the streak at 1)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "delve-fight-live" });
       } },
-      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that fell mid-fight in Snaggle’s den (the fight ended with the run: streak and fight hits at 0)", stage: (c) => {
+      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that fell mid-fight in Snaggle’s den (the fight ended with the run: streak at 0, longest streak kept)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "delve-fight-fallen" });

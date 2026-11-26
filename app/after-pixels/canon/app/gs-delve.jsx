@@ -362,7 +362,7 @@ export const dlSheet = (s, m) => {
   gear.forEach((g) => { g.label = g.note || DL_STATE[g.state]; });
   return { name: h.name, cls: h.cls, hp: m.hp, hpMax: s.hpMax, threat: s.threat, threatMax: s.threatMax, lightName: s.lightName, light: s.light, lightMax: s.lightMax, carry: DL_CARRY, gear,
     abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })), insp: !!sh.insp,
-    fight: h.fight || null, adv: { streak: m.run, hits: m.fh, fight: m.fightLive },
+    fight: h.fight || null, adv: { streak: m.run, longest: m.longest },
     // KEEP: a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
     skills: STAT_ORDER.flatMap((st) => (h.skills || []).filter((k) => k[1] === st).map((k) => ({ name: k[0], say: dlSigned(h.stats[st] + 2) + Math.abs(h.stats[st] + 2) }))), stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? '−' : '+') + Math.abs(n) })) };
 };
@@ -390,11 +390,12 @@ const DL_ONE_ROW = 796;
 const dlOneRowOf = (el) => { const cs = getComputedStyle(el); const edge = ['borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); return el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW; };
 const useDlOneRow = (ref) => useDlWidth(ref, dlOneRowOf, false);
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
-// Two marks, each a pair of pips: the scene streak (successes in a row on checks) and the fight hits (hits in a row in this fight); two of either gives advantage. Only the live one is lit: the fight's while a fight is on, else the streak's. A fight that ends or the run's end sets both to 0.
-export const DlPips = ({ n, lit, name }) => (<span className={'dv9-pips' + (lit ? ' is-lit' : '')} role="img" aria-label={name + ', ' + Math.min(n, 2) + ' of 2'}>{[0, 1].map((i) => <i key={i} className={i < n ? 'is-on' : ''} />)}</span>);
+// Advantage opens three cells: Inspiration, then the streak and the run's longest streak as numbers (the count the game's chat shows as "Streak N": successes or hits in a row, fights included). Both stay as the run left them, and 0 shows as 0.
 const DlAdvCells = ({ c }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
-  <DlCell label="Streak" used={c.adv.fight} title="Successes in a row on checks. From two on, it gives advantage."><DlPips n={c.adv.streak} lit={!c.adv.fight} name="Streak" /></DlCell>
-  <DlCell label="Fight hits" used={!c.adv.fight} title="Hits in a row in this fight. From two on, it gives advantage on the next attack."><DlPips n={c.adv.hits} lit={c.adv.fight} name="Fight hits" /></DlCell></>);
+  <DlCell label="Streak" title="Successes or hits in a row."><span className="dv8-num">{c.adv.streak}</span></DlCell>
+  <DlCell label="Longest streak" title="The longest streak of the run."><span className="dv8-num">{c.adv.longest}</span></DlCell></>);
+// Two pips, for the advantage playground only; the sheet shows the streak as a number.
+export const DlPips = ({ n, lit, name }) => (<span className={'dv9-pips' + (lit ? ' is-lit' : '')} role="img" aria-label={name + ', ' + Math.min(n, 2) + ' of 2'}>{[0, 1].map((i) => <i key={i} className={i < n ? 'is-on' : ''} />)}</span>);
 // The trained skills under the stats: equal chips, name left and total right. How many sit on a row is read from the chips' container (see the KEEP in gs-delve.css); the chip's width follows from it.
 const DL_CHIP_MIN = 100; const DL_CHIP_GAP = 8;
 const dlSkillsPerRow = (n) => (el) => { const most = Math.max(1, Math.min(n, Math.floor((el.clientWidth + DL_CHIP_GAP) / (DL_CHIP_MIN + DL_CHIP_GAP)))); return Math.ceil(n / Math.ceil(n / most)); };
