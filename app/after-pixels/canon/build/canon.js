@@ -3294,19 +3294,28 @@
     const foeHp = {};
     let run = 0;
     let fh = 0;
+    let best = 0;
     const passedRooms = /* @__PURE__ */ new Set();
     const foeOf = () => {
       const f = cur && DL_FOES[cur.name.toLowerCase()];
       const nm = f && (s.foeName || {})[cur.key.toLowerCase()];
       return f ? { f: nm ? [nm, ...f.slice(1)] : f, k: cur.key } : null;
     };
+    const standing = () => {
+      const f = foeOf();
+      return !!f && !DL_HAZARDS.has(cur.name.toLowerCase()) && foeHp[f.k] !== 0;
+    };
     const open = (name, back) => {
       name = name && dlCap(name);
       const key = name || "_first";
       if (!order.includes(key)) order.push(key);
+      if (cur && standing()) {
+        run = 0;
+        fh = 0;
+      }
       cur = { i: stops.length, key, name: name || "First room", back, num: order.indexOf(key) + 1, rolls: [], turns: [] };
       stops.push(cur);
-      if (DL_FOES[(name || "").toLowerCase()] && !DL_HAZARDS.has((name || "").toLowerCase())) {
+      if (standing()) {
         run = 0;
         fh = 0;
       }
@@ -3381,8 +3390,10 @@
           r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) };
         }
       }
-      if (r.fight) fh = r.tier === "strong" ? fh + 1 : 0;
-      else run = r.tier === "strong" ? run + 1 : 0;
+      const won = r.tier === "strong";
+      run = won ? run + 1 : 0;
+      if (r.fight) fh = fh >= 2 || !won ? 0 : fh + 1;
+      best = Math.max(best, run);
       if (fo && !hazard && foeHp[fo.k] === 0) {
         run = 0;
         fh = 0;
@@ -3393,6 +3404,10 @@
       cur.turns.push(r);
     });
     const end = s.live ? "live" : s.end;
+    if (!s.live && cur && standing()) {
+      run = 0;
+      fh = 0;
+    }
     const lost = cur && !s.live && s.lostOff ? { lost: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
     if (lost) {
       cur.turns.push(lost);
@@ -3403,7 +3418,7 @@
     if (closer && closer.use && end === "won") closer.won = true;
     const fe = foeOf();
     const fightLive = !!fe && !DL_HAZARDS.has(cur.name.toLowerCase()) && (foeHp[fe.k] == null || foeHp[fe.k] > 0);
-    return { stops, rolls, turns, hp, run, fh, fightLive, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
+    return { stops, rolls, turns, hp, run, fh, longest: best, fightLive, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
   };
   const dlSay = (r, foe = true) => r.lost && r.over ? "The threat filled in " + r.room + ": " + r.name : r.lost ? "Fell in " + r.room + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
@@ -9623,7 +9638,7 @@
         c.setConnected(true);
         c.go("session", { id: "delve-fight-live" });
       } },
-      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that fell mid-fight in Snaggle’s den (the Advantage marks keep their state)", stage: (c) => {
+      { group: "Screens", id: "session-delve-fight-fallen", label: "7. Session page: Delve, a run that fell mid-fight in Snaggle’s den (the fight ended with the run: streak and fight hits at 0)", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
         c.go("session", { id: "delve-fight-fallen" });

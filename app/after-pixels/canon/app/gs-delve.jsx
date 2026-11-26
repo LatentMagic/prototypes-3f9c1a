@@ -114,13 +114,17 @@ const dlMoments = (T, end) => {
 const dlBand = (f, health, max) => (f[2] ? { members: f[2], standing: dlStanding(f[2], health, max) } : {});
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
 export const dlBuild = (s) => {
-  const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {}; let run = 0; let fh = 0; const passedRooms = new Set();
+  const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {}; let run = 0; let fh = 0; let best = 0; const passedRooms = new Set();
   // A play may name its foe afresh (`foeName`, by room), the health and band of the room's foe kept.
   const foeOf = () => { const f = cur && DL_FOES[cur.name.toLowerCase()]; const nm = f && (s.foeName || {})[cur.key.toLowerCase()]; return f ? { f: nm ? [nm, ...f.slice(1)] : f, k: cur.key } : null; };
+  // A fight is on while the room's foe stands: a hazard or an obstacle is no fight, and a foe already beaten is no fight to come back to.
+  const standing = () => { const f = foeOf(); return !!f && !DL_HAZARDS.has(cur.name.toLowerCase()) && foeHp[f.k] !== 0; };
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
+    // KEEP: leaving a room with its foe still standing (fled, or gone back) ends that fight, so both counts start again from 0 (delve.md: Streak).
+    if (cur && standing()) { run = 0; fh = 0; }
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [], turns: [] }; stops.push(cur);
-    // KEEP: the streak starts again from 0 when a fight with a foe begins (delve.md: Streak); it also does when that fight ends, below. A hazard is no fight: its successes add to the streak.
-    if (DL_FOES[(name || '').toLowerCase()] && !DL_HAZARDS.has((name || '').toLowerCase())) { run = 0; fh = 0; } };
+    // KEEP: the streak starts again from 0 when a fight with a foe begins (delve.md: Streak); it also does when that fight ends, however it ends. A hazard is no fight: its successes add to the streak.
+    if (standing()) { run = 0; fh = 0; } };
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Room') { const p = String(l[1]); open(p.replace(/^(Entered|Doubled back to) /, ''), /^Doubled back to /.test(p)); return; }
     if (!cur) open(null, false);
@@ -155,12 +159,14 @@ export const dlBuild = (s) => {
     if (fo && !hazard && r.fight && r.tier === 'miss') r.threat = r.fumble ? 2 : 1;
     if (fo && !hazard && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const dmg = r.dmg ? r.dmg.total : (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1); foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - dmg); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
       if (r.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) }; } }
-    // KEEP: the scene streak counts checks only; a fight's hits are counted apart (fight hits), and both start again from 0 when the fight begins and when it ends.
-    if (r.fight) fh = r.tier === 'strong' ? fh + 1 : 0; else run = r.tier === 'strong' ? run + 1 : 0;
+    // KEEP: a fight's hits add to the streak, and run apart as the fight hits (a fight has no partial hit): two hits in a row give the next attack advantage, and that attack starts the fight hits again from 0, hit or miss. The longest streak is the streak's highest point, the hit that beats the foe included (delve.md: Streak).
+    const won = r.tier === 'strong'; run = won ? run + 1 : 0; if (r.fight) fh = fh >= 2 || !won ? 0 : fh + 1; best = Math.max(best, run);
     if (fo && !hazard && foeHp[fo.k] === 0) { run = 0; fh = 0; }
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
   const end = s.live ? 'live' : s.end;
+  // KEEP: a run that ends with its foe still standing ends that fight: both counts are back at 0.
+  if (!s.live && cur && standing()) { run = 0; fh = 0; }
   // KEEP: a run lost with no roll or use in its last room (a story turn killed the hero, or the threat filled on a story turn or on going back) ends on a plain grey cross
   // on that room: no die outline, not pressable, nothing held open, and no "Last blow" or "Last roll" on an earlier roll. A roll that filled the threat keeps "Last roll". The record
   // keeps no turn for this, so the cross is no turn: it sits on the room and ends the key moments, and the roll before it competes for best, closest or worst like any other.
@@ -170,7 +176,7 @@ export const dlBuild = (s) => {
   // KEEP: a closing use on a won run is drawn green (the one use that is not grey); on any other end it keeps the use's grey sparkle.
   const closer = turns[turns.length - 1]; if (closer && closer.use && end === 'won') closer.won = true;
   const fe = foeOf(); const fightLive = !!fe && !DL_HAZARDS.has(cur.name.toLowerCase()) && (foeHp[fe.k] == null || foeHp[fe.k] > 0);
-  return { stops, rolls, turns, hp, run, fh, fightLive, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
+  return { stops, rolls, turns, hp, run, fh, longest: best, fightLive, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
 const dlSay = (r, foe = true) => r.lost && r.over ? 'The threat filled in ' + r.room + ': ' + r.name : r.lost ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
 
@@ -384,7 +390,7 @@ const DL_ONE_ROW = 796;
 const dlOneRowOf = (el) => { const cs = getComputedStyle(el); const edge = ['borderLeftWidth', 'borderRightWidth'].reduce((n, k) => n + parseFloat(cs[k]), 0); return el.getBoundingClientRect().width - edge - 2 * DL_GUTTER >= DL_ONE_ROW; };
 const useDlOneRow = (ref) => useDlWidth(ref, dlOneRowOf, false);
 const DlStatCells = ({ c }) => c.stats.map((x) => <DlCell key={x.k} label={x.ab} title={x.k}><DlHex x={x} /></DlCell>);
-// Two marks, each a pair of pips: the scene streak (successes in a row on checks) and the fight hits (hits in a row in this fight); two of either gives advantage. Only the live one is lit: the fight's while a fight is on, else the streak's. After a fight or the run they keep their state, with no longest streak.
+// Two marks, each a pair of pips: the scene streak (successes in a row on checks) and the fight hits (hits in a row in this fight); two of either gives advantage. Only the live one is lit: the fight's while a fight is on, else the streak's. A fight that ends or the run's end sets both to 0.
 export const DlPips = ({ n, lit, name }) => (<span className={'dv9-pips' + (lit ? ' is-lit' : '')} role="img" aria-label={name + ', ' + Math.min(n, 2) + ' of 2'}>{[0, 1].map((i) => <i key={i} className={i < n ? 'is-on' : ''} />)}</span>);
 const DlAdvCells = ({ c }) => (<><DlCell label="Inspiration" used={!c.insp} title={c.insp ? 'Ready' : 'Spent'}><DlInsp on={c.insp} /></DlCell>
   <DlCell label="Streak" used={c.adv.fight} title="Successes in a row on checks. From two on, it gives advantage."><DlPips n={c.adv.streak} lit={!c.adv.fight} name="Streak" /></DlCell>

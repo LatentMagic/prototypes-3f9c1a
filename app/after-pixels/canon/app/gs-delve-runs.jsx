@@ -134,7 +134,7 @@ export function initGsDelveRuns() {
   ], 21, 14, FOE_TYPE);
   GS_SESSIONS['delve-advantage'] = { ...GS_SESSIONS['delve-live'], lines: adv.lines, detail: adv.detail, foeMax: { 'the shrine cavern': 30 }, foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' }, figures: ['Threat ' + adv.threat + '/12', adv.rolls + ' rolls', 'HP ' + adv.hp + '/21'], tracks: { progress: 2, rooms: 2, threat: adv.threat, threatMax: 12 }, threat: adv.threat, sheet: { used: {}, insp: true } };
 
-  // Bryn lost in the same kind of fight: the run ends with one hit in the fight's count, which the sheet keeps showing.
+  // Bryn lost in the same kind of fight: the fight ends with the run, so the streak and the fight hits are back at 0.
   const ff = dlRecord([
     ['chk', 'Dexterity', 'Cross the trapped bridge', null, 3, [['+', 1, 'DEX']], 12, { harm: 14 }],
     ['room', "snaggle's den"],
