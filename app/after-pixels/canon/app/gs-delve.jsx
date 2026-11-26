@@ -486,11 +486,11 @@ const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET *
 const DlNowPic = ({ m }) => {
   const ref = React.useRef(null); const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
   const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);
-  const keys = [...m.turns, ...(m.lostMark ? [m.lostMark] : [])].filter((r) => m.mom[r.t]).reverse();
+  const keys = m.turns.filter((r) => m.mom[r.t]).reverse();
   const few = shown.length <= DL_MAP_FEW;
   return (<div ref={ref} className="dl-now-pic" role="group" aria-label="The way you went">
     <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={m.stops.length ? 'The last ' + shown.length + ' stops' : 'The run has started, no stop yet'}>
-      {shown.map((st) => <span key={st.i} className={dlNum(st, '')}>{st.back && <DlBackArrow />}{st.num}</span>)}</div>
+      {shown.map((st) => <span key={st.i} className={dlNum(st, '')}>{st.back && <DlBackArrow />}{st.num}{m.lostMark && m.lostMark.stop === st.i && <span className="dl-now-loss" role="img" aria-label={dlSay(m.lostMark)}><DlDie r={m.lostMark} size={20} /></span>}</span>)}</div>
     {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => (
       <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} /><span className="dl-now-name">{dlNowNames(m.mom[r.t].kickers).map((k) => <span key={k}>{k}</span>)}</span></span>))}</div>}
   </div>);
@@ -540,7 +540,7 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
 // SAMPLE: the room and the harm; the record keeps no turn for the story harm.
 GS_SESSIONS['delve-lost-no-roll'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', lostOff: { name: 'Collapsing tunnel', harm: 24 }, result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null,
   figures: ['Threat 0/12', '0 rolls', 'HP 0/24'], tracks: { progress: 1, rooms: 5, threat: 0, threatMax: 12 }, threat: 0, sheet: { used: {}, insp: true }, lines: [['Room', 'Entered the warren']] };
-GS_SESSIONS['delve-no-roll-live'] = { ...GS_SESSIONS['delve-lost-no-roll'], live: true, loss: false, lostOff: null, result: 'In progress', lines: [['Room', 'Entered the gate'], ['Room', 'Entered the warren']] };
+GS_SESSIONS['delve-no-roll-live'] = { ...GS_SESSIONS['delve-lost-no-roll'], live: true, loss: false, lostOff: null, result: 'In progress', figures: ['Threat 0/12', '0 rolls', 'HP 24/24'], lines: [['Room', 'Entered the gate'], ['Room', 'Entered the warren']] };
 GS_SESSIONS['delve-no-roll-lost'] = { ...GS_SESSIONS['delve-lost-no-roll'], lines: [['Room', 'Entered the gate'], ['Room', 'Entered the warren']] };
 GS_SESSIONS['delve-story-fall'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', lostOff: { name: 'Crank panel', harm: 5 }, setting: 'Cold Sleep', hero: 'Wren the Rogue', hpMax: 22, threat: 1, threatMax: 12, lightName: null, light: 0, lightMax: 0, foeMax: {},
   result: 'Fell in the medbay', reached: 'Fell in the medbay', share: 'Fell in the medbay', shareLines: null, figures: ['Threat 1/12', '5 rolls', 'HP 0/22'], tracks: { progress: 3, rooms: 6, threat: 1, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [

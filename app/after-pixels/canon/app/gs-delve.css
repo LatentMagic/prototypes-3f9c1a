@@ -343,6 +343,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
 /* Boxes spread edge to edge, the route line behind; the line's ends are hidden by the first and last box. */
 .dl-now-stops { position: relative; display: flex; justify-content: space-between; align-items: center; height: var(--dv-num); min-width: 0; }
+.dl-now-loss { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); }
 .dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
 /* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
 .dl-now-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
@@ -352,7 +353,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 /* KEEP: each key moment's name stays on one line, so a die with two moments reads as two rows, never three (the user, 2026-11-26: "two rows is FINE. 3 rows ... not fine"); names may wrap when the available slots cannot hold them. */
 .dl-now-name > span { overflow-wrap: anywhere; }
 @media (max-width: 319px) { .dl-now-key { flex: 0 1 56px; min-width: 0; } .dl-now-name > span { white-space: normal; } }
-.dl-now-key .mcp-dl-die { width: 44px; height: auto; }
+.dl-now-key .mcp-dl-die { width: min(44px, 100%); height: auto; }
 .dl-now-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; overflow-wrap: break-word; max-width: 100%; }
 /* KEEP: the other rolls are 8px dots with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring, a use a filled grey dot, so each takes the same 8px slot. */
 .dl-now-mark { display: block; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }

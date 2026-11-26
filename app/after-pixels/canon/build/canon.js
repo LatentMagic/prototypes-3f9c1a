@@ -1703,7 +1703,7 @@
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
-    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use", "lost-no-roll": "delve-lost-no-roll", "long-run": "delve-route-25" },
+    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use", "lost-no-roll": "delve-lost-no-roll", "long-run": "delve-route-25", "long-live": "delve-route-20-live" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
   const gsSessStatus = (s) => ({ kind: s.loss ? "bad" : "ok", label: s.result });
@@ -3747,9 +3747,9 @@
     const ref = React$1.useRef(null);
     const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
     const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);
-    const keys = [...m.turns, ...m.lostMark ? [m.lostMark] : []].filter((r) => m.mom[r.t]).reverse();
+    const keys = m.turns.filter((r) => m.mom[r.t]).reverse();
     const few = shown.length <= DL_MAP_FEW;
-    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-pic", role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops" + (few ? " is-few" : ""), style: { "--n": shown.length, "--few": DL_NOW_GAP_FEW + "px" }, role: "img", "aria-label": m.stops.length ? "The last " + shown.length + " stops" : "The run has started, no stop yet" }, shown.map((st) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st, "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dl-now-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-name" }, dlNowNames(m.mom[r.t].kickers).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-pic", role: "group", "aria-label": "The way you went" }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-stops" + (few ? " is-few" : ""), style: { "--n": shown.length, "--few": DL_NOW_GAP_FEW + "px" }, role: "img", "aria-label": m.stops.length ? "The last " + shown.length + " stops" : "The run has started, no stop yet" }, shown.map((st) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: dlNum(st, "") }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num, m.lostMark && m.lostMark.stop === st.i && /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-loss", role: "img", "aria-label": dlSay(m.lostMark) }, /* @__PURE__ */ React$1.createElement(DlDie, { r: m.lostMark, size: 20 }))))), keys.length > 0 && /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-keys" }, keys.map((r) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dl-now-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-name" }, dlNowNames(m.mom[r.t].kickers).map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k }, k)))))));
   };
   const DlNowEmpty = ({ label, title, rooms, next, onPlay, laterWeek }) => /* @__PURE__ */ React$1.createElement(
     LbNowCard,
@@ -3820,7 +3820,7 @@
       sheet: { used: {}, insp: true },
       lines: [["Room", "Entered the warren"]]
     };
-    GS_SESSIONS["delve-no-roll-live"] = { ...GS_SESSIONS["delve-lost-no-roll"], live: true, loss: false, lostOff: null, result: "In progress", lines: [["Room", "Entered the gate"], ["Room", "Entered the warren"]] };
+    GS_SESSIONS["delve-no-roll-live"] = { ...GS_SESSIONS["delve-lost-no-roll"], live: true, loss: false, lostOff: null, result: "In progress", figures: ["Threat 0/12", "0 rolls", "HP 24/24"], lines: [["Room", "Entered the gate"], ["Room", "Entered the warren"]] };
     GS_SESSIONS["delve-no-roll-lost"] = { ...GS_SESSIONS["delve-lost-no-roll"], lines: [["Room", "Entered the gate"], ["Room", "Entered the warren"]] };
     GS_SESSIONS["delve-story-fall"] = {
       ...GS_SESSIONS.delve,
@@ -9759,6 +9759,12 @@
         c.go("session", { id: "gs-pu-barrow-ch1" });
         gsPassSet({ bwDone: true });
       } },
+      { group: "Screens", id: "session-delve-kept-pass-ended", label: "Delve, session kept after the Pass ended", stage: (c) => {
+        c.setView("free");
+        c.setConnected(true);
+        c.setSub({ hadPass: true });
+        c.go("session", { id: "delve-r0-live" });
+      } },
       { group: "Screens", id: "session-kept-pass-ended", label: "7. Session page: Pass ended, a Common day in progress (kept, no Play)", stage: (c) => {
         c.setView("free");
         c.setConnected(true);
@@ -9864,6 +9870,12 @@
         c.setView("pass");
         c.setConnected(true);
         c.setReview({ ed: "won-by-use" });
+        c.go("delve", { page: "record" });
+      } },
+      { group: "Library", id: "library-delve-20-stops-live", label: "Delve Now card, 20 stops in progress", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "long-live" });
         c.go("delve", { page: "record" });
       } },
       { group: "Library", id: "library-delve-25-stops", label: "Delve in your library, a 25-stop run (the Now card at its hardest)", stage: (c) => {
