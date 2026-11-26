@@ -87,7 +87,6 @@ const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? 
   const parts = l.slice(1).map(String); const sheet = DL_HEROES[hero] || DL_HEROES['Wren the Rogue']; const name = dlCap(m[1]);
   const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(' · '));
   return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : dlUseDoes(DL_GEAR_DOES[name] || ''), tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
-// KEEP: a run that did not win and ends on a use has no settled kicker yet: these words are a roll's, and no state reaches that case.
 const DL_END = { won: 'Winning blow', fallen: 'Last blow', overrun: 'Last roll', live: 'Latest roll' };
 // The key moments, keyed by turn: Best roll (a natural 20 on any roll, else the check with the widest margin), Closest call (the first roll whose total equals its target, an attack against the foe's AC included),
 // Worst roll (a natural 1, else the miss furthest below its target, attacks included), Biggest hit (the attack that dealt the most damage, the first on a tie), and the turn the run ended on (a roll or a use).
