@@ -1288,17 +1288,20 @@
     if (!Number.isInteger(v) || v < 1 || v > sides) throw new Error("dlRecord: " + what + " face " + v + " is not on a d" + sides);
     return v;
   };
-  function dlRecorder(hero, hpMax, { threatMax = 12, magic = 0 } = {}) {
+  function dlRecorder(hero, hpMax, { threatMax = 12, magic = 0, name = hero } = {}) {
     const H = DL_HERO_RULES[hero];
     if (!H) throw new Error("dlRecord: no hero " + hero);
     let room = null;
     let hp = hpMax;
     let n = 0;
+    let stepNo = 0;
     let threat = 0;
     let esc = 0;
     let nat20 = 0;
     let streak = 0;
     let hitRun = 0;
+    let won = false;
+    const passed = /* @__PURE__ */ new Set();
     const marks = [];
     const foeHp = {};
     const lines = [];
@@ -1332,9 +1335,13 @@
       return { text: "Struck back: " + (other != null ? "d20s " + other + " and " + f.roll + ", kept " + f.roll : "d20 " + f.roll) + " + " + r.atk + " vs " + H.defence + ", " + (hit ? "hit, " + (dd ? "d" + dd[0] + " " + dd[1] + " + " + dd[2] + " = " : "") + dmg + " damage, " + hpOf() : "missed"), out };
     };
     const step = (k, ...a) => {
-      if (hp <= 0 || threat >= threatMax) throw new Error("dlRecord: a step after the run has ended (" + k + " " + a[0] + ")");
+      stepNo += 1;
+      const refuse = (why) => {
+        throw new Error("dlRecord: " + name + ", step " + stepNo + " (" + k + " " + a[0] + "): " + why);
+      };
+      if (won || hp <= 0 || threat >= threatMax) refuse("a step after the run has ended");
       if (k === "room" || k === "back") {
-        if (room && rule() && left() > 0) streak = 0;
+        if (room && rule() && left() > 0) refuse(rule().name + " still stands");
         room = a[0].toLowerCase();
         esc = 0;
         hitRun = 0;
@@ -1363,11 +1370,13 @@
         const other = streak >= 2 ? dropped(die, n) : null;
         const grade = die === 1 ? "Failure" : die === 20 || total >= dc ? "Success" : total >= dc - 5 ? "Partial success" : "Failure";
         const hz = DL_HAZARD_RULES[room];
+        const obstacle = room === "the chime run" && !passed.has(room);
         const cost = hz ? grade === "Partial success" ? hz.partial : hz.harm : o.harm || 0;
         const harm = grade === "Success" ? 0 : Math.min(cost, hp);
         hp -= harm;
-        const paid = hz ? grade === "Failure" ? die === 1 ? 2 : 1 : 0 : o.threat || 0;
+        const paid = hz || obstacle ? grade === "Failure" ? die === 1 ? 2 : 1 : 0 : o.threat || 0;
         threat += paid;
+        if (obstacle && grade !== "Failure") passed.add(room);
         lines.push([stat, ...action ? [action] : [], grade, ...nat(die) ? [nat(die)] : [], sumText(die, other, mods, dc), ...harm ? [hpOf()] : [], ...paid ? ["Threat +" + paid] : []]);
         marks.push({ n, die, total, dc, grade: grade === "Success" ? "strong" : grade === "Partial success" ? "weak" : "miss" });
         streak = grade === "Success" ? streak + 1 : 0;
@@ -1408,31 +1417,40 @@
           line.push(ans.text);
           Object.assign(d, ans.out);
         }
-        if (!stands) streak = 0;
+        if (!stands) {
+          streak = 0;
+          if (room === "the shrine cavern") won = true;
+        }
         marks.push({ n, die, total, dc: r.ac, grade: hit ? "strong" : "miss" });
         lines.push(line);
         detail[n] = d;
         return;
       }
       if (k === "use") {
-        const [kind, name, o = {}] = a;
-        const line = [kind, "Used " + name];
+        const [kind, name2, o = {}] = a;
+        const line = [kind, "Used " + name2];
         let healed = 0;
         if (o.heal) {
+          if (hp >= hpMax) refuse("healing at full health");
           healed = Math.min(o.heal, hpMax - hp);
           hp += healed;
           line.push("Healed " + healed);
         }
         if (o.dmg) {
-          if (!r || left() <= 0) throw new Error("dlRecord: a blow on no foe (" + name + ")");
+          if (!r || left() <= 0) throw new Error("dlRecord: a blow on no foe (" + name2 + ")");
           const was = left();
           foeHp[room] = Math.max(0, was - o.dmg);
           line.push(r.short + ": health " + was + " → " + foeHp[room]);
         }
-        if (r && left() > 0 && (o.dmg || o.heal)) {
+        if (r && left() > 0 && (o.dmg || o.heal || o.light)) {
           const ans = answer(o.foe, false, null);
           line.push(ans.text);
-        } else if (o.heal) line.push(hpOf());
+        }
+        if (o.heal) line.push(hpOf());
+        if (o.dmg && left() === 0) {
+          streak = 0;
+          if (room === "the shrine cavern") won = true;
+        }
         lines.push(line);
         return;
       }
@@ -1441,6 +1459,10 @@
         if (!r || left() <= 0) throw new Error("dlRecord: a weakness blow on no foe");
         const was = left();
         foeHp[room] = Math.max(0, was - blow);
+        if (!left()) {
+          streak = 0;
+          if (room === "the shrine cavern") won = true;
+        }
         lines.push(["Weakness", item, r.short + ": health " + was + " → " + foeHp[room]]);
         return;
       }
@@ -1627,12 +1649,12 @@
     ["atk", 15, { faces: [2], foe: { roll: 7, faces: [1] } }],
     ["use", "Ability", "shield bash", { dmg: 8 }]
   ];
-  const GS_DV_WON = dlRecord("Bryn the Fighter", 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_END]);
-  const GS_DV_WON_BY_USE = dlRecord("Bryn the Fighter", 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_BY_USE_END]);
+  const GS_DV_WON = dlRecord("Bryn the Fighter", 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_END], { name: "delve" });
+  const GS_DV_WON_BY_USE = dlRecord("Bryn the Fighter", 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_BY_USE_END], { name: "delve-won-by-use" });
   const GS_DV_LIVE = dlRecord("Wren the Rogue", 22, [
     ["room", "the chime run"],
-    ["chk", "Dexterity", null, null, 16, 18],
-    ["chk", "Dexterity", "Gather up the fallen bones", null, 13, 18, { harm: 1 }],
+    ["chk", "Dexterity", null, null, 3, 18, { harm: 1 }],
+    ["chk", "Dexterity", null, null, 13, 18, { harm: 1 }],
     ["room", "the warren"],
     ["raw", ["Gear", "Took a pepper pouch"]],
     ["raw", ["Turn", "The turncoat joins", GS_DV_TURNCOAT]],
@@ -1643,9 +1665,8 @@
     ["chk", "Dexterity", "Climb to the skeleton on the high ledge", null, 20, 18],
     ["room", "Snaggle's den"],
     ["atk", 14, { faces: [2], foe: { roll: 9, faces: [1] } }],
-    ["atk", 18, { faces: [3], foe: { roll: 4, faces: [1] } }],
-    ["back", "the warren"]
-  ]);
+    ["atk", 18, { faces: [3], foe: { roll: 4, faces: [1] } }]
+  ], { name: "delve-live" });
   const GS_DV_ENDINGS = ["Elsie rescued", "Too late: the chant was completed", "Fell in the warren"];
   const GS_ES1 = {
     bench: "A workbench scattered with tools. On a tray sits a train of four brass gears with 20, 9, 3 and 11 teeth. The crank turns the 20-tooth gear, which turns the 9, which turns the 3, which turns the 11. The tray reads “One tooth, one letter.” Below it, a drawer with a four-letter lock.",
@@ -3535,9 +3556,6 @@
       name = name && dlCap(name);
       const key = name || "_first";
       if (!order.includes(key)) order.push(key);
-      if (cur && standing()) {
-        run = 0;
-      }
       cur = { i: stops.length, key, name: name || "First room", back, num: order.indexOf(key) + 1, rolls: [], turns: [] };
       stops.push(cur);
       if (standing()) {
@@ -4016,7 +4034,7 @@
       ["atk", 5, { foe: { roll: 15, faces: [3, 2] } }],
       ["atk", 1, { foe: { roll: 16, faces: [3, 3] } }],
       ["atk", 4, { foe: { roll: 14, faces: [3, 3] } }]
-    ]);
+    ], { name: "delve-fallen" });
     GS_SESSIONS["delve-fallen"] = dvPlay(dvFallen, 24, { ...GS_SESSIONS.delve, loss: true, end: "fallen", result: "Fell in the warren", reached: "Fell in the warren", share: "Fell in the warren", shareLines: null, light: 4, tracks: { progress: 3, rooms: 5, threatMax: 12 }, sheet: { used: {}, insp: false } });
     GS_SESSIONS["delve-lost-no-roll"] = {
       ...GS_SESSIONS.delve,
@@ -4045,7 +4063,7 @@
       ["chk", "Wisdom", "Listen for the hunt", null, 11, 15, { threat: 1 }],
       ["chk", "Dexterity", "Force the cage", null, 4, 15, { harm: 7 }],
       ["room", "the medbay"]
-    ]);
+    ], { name: "delve-story-fall" });
     GS_SESSIONS["delve-story-fall"] = dvPlay(dvStory, 22, {
       ...GS_SESSIONS.delve,
       loss: true,
@@ -4115,13 +4133,8 @@
       ["room", "the bone pit"],
       ["chk", "Strength", "Cross the bone pit", null, 18, 18],
       ["chk", "Dexterity", "Slip the trap", null, 11, 10],
-      ["room", "the shrine cavern"],
-      ["atk", 10, { faces: [2], foe: { roll: 16, faces: [2] } }],
-      ["atk", 17, { faces: [4], foe: { roll: 5, faces: [1] } }],
-      ["atk", 18, { faces: [2], foe: { roll: 5, faces: [1] } }],
-      ["atk", 12, { faces: [3], foe: { roll: 4, faces: [1] } }],
-      ["atk", 11, { faces: [2], foe: { roll: 4, faces: [1] } }],
-      ["atk", 3, { foe: { roll: 4, faces: [1] } }],
+      ["room", "the watchtower"],
+      ["chk", "Dexterity", "Cross the watchtower", null, 14, 15],
       ["back", "the warren"],
       ...overrunBack ? [] : [["chk", "Wisdom", "Find the way out", null, 11, 15, { threat: 1 }]]
     ];
@@ -4135,8 +4148,6 @@
       shareLines: null,
       hero: "Wren the Rogue",
       foeMax: { "the shrine cavern": 44 },
-      // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
-      foeName: { "the shrine cavern": "Mortlake, the drowned captain" },
       // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
       lightName: "the watchman's round",
       light: 0,
@@ -4144,9 +4155,9 @@
       tracks: { progress: 20, rooms: 13, threatMax: 12 },
       sheet: { used: {}, insp: false }
     };
-    const dvHard = dlRecord("Wren the Rogue", 22, dvHardSteps(false), { magic: 1 });
+    const dvHard = dlRecord("Wren the Rogue", 22, dvHardSteps(false), { magic: 1, name: "delve-hard" });
     GS_SESSIONS["delve-hard"] = dvPlay(dvHard, 22, { ...dvHardBase, foeMax: { ...dvHardBase.foeMax, "snaggle's den": 27 } });
-    const dvOver = dlRecord("Wren the Rogue", 22, dvHardSteps(true), { magic: 1 });
+    const dvOver = dlRecord("Wren the Rogue", 22, dvHardSteps(true), { magic: 1, name: "delve-overrun-back" });
     GS_SESSIONS["delve-overrun-back"] = dvPlay(dvOver, 22, { ...dvHardBase, foeMax: { ...dvHardBase.foeMax, "snaggle's den": 27 }, lostOff: { over: true, name: "Going back" } });
     const dvHazard = dlRecord("Hal the Woodcutter", 24, [
       ["chk", "Intelligence", "Read the rhyme on the gatepost", null, 17, 15],
@@ -4163,7 +4174,7 @@
       ["chk", "Strength", null, null, 6, 15],
       ["chk", "Strength", null, null, 15, 15],
       ["chk", "Strength", null, null, 16, 15]
-    ], { threatMax: 14 });
+    ], { threatMax: 14, name: "delve-hazard" });
     GS_SESSIONS["delve-hazard"] = dvPlay(dvHazard, 24, {
       ...GS_SESSIONS.delve,
       noEd: true,
@@ -12515,7 +12526,7 @@
   const FOE_ROOMS = ["snaggle's den", "the great hall"];
   function longRoute(n, live) {
     const rnd = seeded(7);
-    const rec = dlRecorder("Bryn the Fighter", 24);
+    const rec = dlRecorder("Bryn the Fighter", 24, { name: "delve-route-" + n + (live ? "-live" : "") });
     const die = () => 10 + Math.floor(rnd() * 10);
     const blow = () => ({ faces: [1 + Math.floor(rnd() * 4), 1 + Math.floor(rnd() * 4)], foe: { roll: 3 + Math.floor(rnd() * 17), faces: [1 + Math.floor(rnd() * 3), 1 + Math.floor(rnd() * 3)] } });
     ROUTE.slice(0, n).forEach(([name, back], i) => {
@@ -12563,6 +12574,8 @@
     ["chk", "Dexterity", "Slip past the chimes", null, 9, 10],
     ["room", "the warren"],
     ["raw", ["Turn", "The turncoat joins", GS_DV_TURNCOAT]],
+    ["atk", 14, { faces: [3], foe: { roll: 3 } }],
+    ["atk", 14, { faces: [3] }],
     ["room", "Snaggle's den"],
     ["atk", 12, { heavy: true, faces: [five ? 4 : 2], foe: { roll: 15, faces: [2] } }],
     ["atk", 9, { faces: [3], foe: { roll: 6, faces: [1] } }],
@@ -12578,7 +12591,7 @@
     ["atk", 17, { faces: [3], foe: { roll: 4, faces: [1] } }],
     ["atk", 17, { faces: [2], foe: { roll: 4, faces: [1] } }],
     ["atk", 17, { faces: [4] }]
-  ]);
+  ], { name: five ? "delve-five-moments" : "delve-key-moments" });
   function initGsDelveRuns() {
     const long = dlLongRun;
     GS_SESSIONS["delve-route-20"] = long(20);
@@ -12590,13 +12603,13 @@
     const kmSession = (r) => ({ ...kmBase, lines: r.lines, detail: r.detail, figures: dlFigures(r, 24), threat: r.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: r.threat } });
     GS_SESSIONS["delve-key-moments"] = kmSession(km);
     GS_SESSIONS["delve-five-moments"] = kmSession(five);
-    const fd = dlRecord("Bryn the Fighter", 24, [["room", "snaggle's den"], ["atk", 12, { faces: [2], foe: { roll: 20, faces: [2, 3], dark: true } }]]);
+    const fd = dlRecord("Bryn the Fighter", 24, [["room", "snaggle's den"], ["atk", 12, { faces: [2], foe: { roll: 20, faces: [2, 3], dark: true } }]], { name: "delve-fight-details" });
     fd.detail[1].light = 1;
     const fdBase = { ...GS_SESSIONS["delve-live"], hero: "Bryn the Fighter", hpMax: 24, light: 0, lightMax: 6, tracks: { progress: 1, rooms: 1, threatMax: 12 } };
     const play = (r, more = {}) => ({ ...fdBase, threat: r.threat, lines: r.lines, detail: r.detail, figures: dlFigures(r, 24), tracks: { ...fdBase.tracks, threat: r.threat }, ...more });
     GS_SESSIONS["delve-fight-details"] = play(fd);
-    GS_SESSIONS["delve-gear-strike"] = play(dlRecord("Bryn the Fighter", 24, [["room", "snaggle's den"], ["use", "Gear", "pepper pouch", { dmg: 4, foe: { roll: 9, faces: [1] } }]]));
-    GS_SESSIONS["delve-gear-light"] = play(dlRecord("Bryn the Fighter", 24, [["room", "the gate"], ["raw", ["Gear", "Used flask of lamp oil"]]]), { light: 3 });
+    GS_SESSIONS["delve-gear-strike"] = play(dlRecord("Bryn the Fighter", 24, [["room", "snaggle's den"], ["use", "Gear", "pepper pouch", { dmg: 4, foe: { roll: 9, faces: [1] } }]], { name: "delve-gear-strike" }));
+    GS_SESSIONS["delve-gear-light"] = play(dlRecord("Bryn the Fighter", 24, [["room", "snaggle's den"], ["use", "Gear", "flask of lamp oil", { light: 3, foe: { roll: 9 } }]], { name: "delve-gear-light" }), { light: 3 });
     const fu = dlRecord("Bryn the Fighter", 24, [
       ["room", "the gate"],
       ["room", "snaggle's den"],
@@ -12606,7 +12619,7 @@
       ["atk", 6, { foe: { roll: 13, faces: [3] } }],
       ["atk", 4, { foe: { roll: 16, faces: [3] } }],
       ["use", "Gear", "pepper pouch", { dmg: 4, foe: { roll: 15, faces: [3] } }]
-    ]);
+    ], { name: "delve-fallen-use" });
     GS_SESSIONS["delve-fallen-use"] = play(fu, { live: false, loss: true, end: "fallen", result: "Fell in Snaggle's den" });
     const wrenBase = { ...GS_SESSIONS["delve-live"], hpMax: 22, foeMax: { "the shrine cavern": 44 }, foeName: { "the shrine cavern": "Mortlake, the drowned captain" }, sheet: { used: {}, insp: true } };
     const wren = (r) => ({ ...wrenBase, lines: r.lines, detail: r.detail, figures: dlFigures(r, 22), tracks: { progress: 2, rooms: 2, threat: r.threat, threatMax: 12 }, threat: r.threat });
@@ -12615,14 +12628,14 @@
       ["room", "the shrine cavern"],
       ["atk", 6, { heavy: true, foe: { roll: 15, faces: [2] } }],
       ["atk", 15, { faces: [4], foe: { roll: 5, faces: [1] } }]
-    ]));
+    ], { name: "delve-fight-live" }));
     GS_SESSIONS["delve-advantage"] = wren(dlRecord("Wren the Rogue", 22, [
       ["chk", "Dexterity", "Slip the shrine gate", null, 16, 10],
       ["room", "the shrine cavern"],
       ["atk", 14, { faces: [4], foe: { roll: 5, faces: [1] } }],
       ["atk", 12, { faces: [3], foe: { roll: 4, faces: [1] } }],
       ["atk", 6, { heavy: true, foe: { roll: 15, faces: [3] } }]
-    ]));
+    ], { name: "delve-advantage" }));
     const ff = dlRecord("Bryn the Fighter", 24, [
       ["chk", "Dexterity", "Cross the trapped bridge", null, 3, 10, { harm: 2 }],
       ["room", "snaggle's den"],
@@ -12632,7 +12645,7 @@
       ["atk", 2, { foe: { roll: 15, faces: [3] } }],
       ["atk", 6, { foe: { roll: 14, faces: [3] } }],
       ["atk", 12, { faces: [3], foe: { roll: 17, faces: [3] } }]
-    ]);
+    ], { name: "delve-fight-fallen" });
     GS_SESSIONS["delve-fight-fallen"] = {
       ...GS_SESSIONS["delve-fallen"],
       hpMax: 24,

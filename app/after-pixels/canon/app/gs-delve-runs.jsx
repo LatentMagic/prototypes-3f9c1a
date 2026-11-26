@@ -22,7 +22,7 @@ const CHECKS = [['Strength', 'Force the door', 'Athletics'], ['Wisdom', 'Listen 
 const MISS = (n, i, k) => n === 20 && ((i === 3 && k === 0) || (i === 9 && k === 0) || (i === 19 && k === 0));
 const FOE_ROOMS = ["snaggle's den", 'the great hall'];
 function longRoute(n, live) {
-  const rnd = seeded(7); const rec = dlRecorder('Bryn the Fighter', 24); const die = () => 10 + Math.floor(rnd() * 10);
+  const rnd = seeded(7); const rec = dlRecorder('Bryn the Fighter', 24, { name: 'delve-route-' + n + (live ? '-live' : '') }); const die = () => 10 + Math.floor(rnd() * 10);
   const blow = () => ({ faces: [1 + Math.floor(rnd() * 4), 1 + Math.floor(rnd() * 4)], foe: { roll: 3 + Math.floor(rnd() * 17), faces: [1 + Math.floor(rnd() * 3), 1 + Math.floor(rnd() * 3)] } });
   ROUTE.slice(0, n).forEach(([name, back], i) => {
     rec.step(back && !(live && i === 24) ? 'back' : 'room', live && i === 24 ? 'the watchtower' : name);
@@ -53,6 +53,7 @@ const keyMoments = (five) => dlRecord('Bryn the Fighter', 24, [
   ['chk', 'Strength', 'Climb the bone stair', 'Athletics', 1, 10, { harm: 3 }],
   ['chk', 'Dexterity', 'Slip past the chimes', null, 9, 10],
   ['room', 'the warren'], ['raw', ['Turn', 'The turncoat joins', GS_DV_TURNCOAT]],
+  ['atk', 14, { faces: [3], foe: { roll: 3 } }], ['atk', 14, { faces: [3] }],
   ['room', "Snaggle's den"],
   ['atk', 12, { heavy: true, faces: [five ? 4 : 2], foe: { roll: 15, faces: [2] } }],
   ['atk', 9, { faces: [3], foe: { roll: 6, faces: [1] } }],
@@ -62,7 +63,7 @@ const keyMoments = (five) => dlRecord('Bryn the Fighter', 24, [
   ['room', 'the shrine cavern'],
   ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [4], foe: { roll: 4, faces: [1] } }],
   ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [4] }],
-]);
+], { name: five ? 'delve-five-moments' : 'delve-key-moments' });
 
 export function initGsDelveRuns() {
   const long = dlLongRun;
@@ -77,20 +78,20 @@ export function initGsDelveRuns() {
   GS_SESSIONS['delve-five-moments'] = kmSession(five);
 
   // Bryn in Snaggle's den: a critical hit from the foe (two d3 and the dark's 1) and a roll that spent the light.
-  const fd = dlRecord('Bryn the Fighter', 24, [['room', "snaggle's den"], ['atk', 12, { faces: [2], foe: { roll: 20, faces: [2, 3], dark: true } }]]);
+  const fd = dlRecord('Bryn the Fighter', 24, [['room', "snaggle's den"], ['atk', 12, { faces: [2], foe: { roll: 20, faces: [2, 3], dark: true } }]], { name: 'delve-fight-details' });
   fd.detail[1].light = 1;
   const fdBase = { ...GS_SESSIONS['delve-live'], hero: 'Bryn the Fighter', hpMax: 24, light: 0, lightMax: 6, tracks: { progress: 1, rooms: 1, threatMax: 12 } };
   const play = (r, more = {}) => ({ ...fdBase, threat: r.threat, lines: r.lines, detail: r.detail, figures: dlFigures(r, 24), tracks: { ...fdBase.tracks, threat: r.threat }, ...more });
   GS_SESSIONS['delve-fight-details'] = play(fd);
   // Gear: the pepper pouch strikes Snaggle and he answers; the flask of lamp oil restores light.
-  GS_SESSIONS['delve-gear-strike'] = play(dlRecord('Bryn the Fighter', 24, [['room', "snaggle's den"], ['use', 'Gear', 'pepper pouch', { dmg: 4, foe: { roll: 9, faces: [1] } }]]));
-  GS_SESSIONS['delve-gear-light'] = play(dlRecord('Bryn the Fighter', 24, [['room', 'the gate'], ['raw', ['Gear', 'Used flask of lamp oil']]]), { light: 3 });
+  GS_SESSIONS['delve-gear-strike'] = play(dlRecord('Bryn the Fighter', 24, [['room', "snaggle's den"], ['use', 'Gear', 'pepper pouch', { dmg: 4, foe: { roll: 9, faces: [1] } }]], { name: 'delve-gear-strike' }));
+  GS_SESSIONS['delve-gear-light'] = play(dlRecord('Bryn the Fighter', 24, [['room', "snaggle's den"], ['use', 'Gear', 'flask of lamp oil', { light: 3, foe: { roll: 9 } }]], { name: 'delve-gear-light' }), { light: 3 });
   // Fallen on a use: five misses beaten down to 4 hit points, then the pouch, and Snaggle's answer brings the hero down.
   const fu = dlRecord('Bryn the Fighter', 24, [
     ['room', 'the gate'], ['room', "snaggle's den"],
     ['atk', 3, { foe: { roll: 15, faces: [3] } }], ['atk', 5, { foe: { roll: 14, faces: [3] } }], ['atk', 2, { foe: { roll: 18, faces: [3] } }], ['atk', 6, { foe: { roll: 13, faces: [3] } }], ['atk', 4, { foe: { roll: 16, faces: [3] } }],
     ['use', 'Gear', 'pepper pouch', { dmg: 4, foe: { roll: 15, faces: [3] } }],
-  ]);
+  ], { name: 'delve-fallen-use' });
   GS_SESSIONS['delve-fallen-use'] = play(fu, { live: false, loss: true, end: 'fallen', result: "Fell in Snaggle's den" });
 
   // Wren in the shrine cavern, mid-fight with the drowned captain: a missed heavy attack, then a hit, so the streak stands at 1.
@@ -99,12 +100,12 @@ export function initGsDelveRuns() {
   GS_SESSIONS['delve-fight-live'] = wren(dlRecord('Wren the Rogue', 22, [
     ['chk', 'Dexterity', 'Slip the shrine gate', null, 14, 10], ['room', 'the shrine cavern'],
     ['atk', 6, { heavy: true, foe: { roll: 15, faces: [2] } }], ['atk', 15, { faces: [4], foe: { roll: 5, faces: [1] } }],
-  ]));
+  ], { name: 'delve-fight-live' }));
   // Wren mid-fight with the drowned captain, two hits in a row giving her last roll advantage (two d20s, the lower dropped); it is a heavy attack that misses, so the foe's roll back has advantage too, and the held roll shows both dropped dice.
   GS_SESSIONS['delve-advantage'] = wren(dlRecord('Wren the Rogue', 22, [
     ['chk', 'Dexterity', 'Slip the shrine gate', null, 16, 10], ['room', 'the shrine cavern'],
     ['atk', 14, { faces: [4], foe: { roll: 5, faces: [1] } }], ['atk', 12, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 6, { heavy: true, foe: { roll: 15, faces: [3] } }],
-  ]));
+  ], { name: 'delve-advantage' }));
 
   // Bryn lost in the same kind of fight: the run ends mid-fight on a hit that left Snaggle standing, so the streak freezes at 1 and the longest streak stays.
   const ff = dlRecord('Bryn the Fighter', 24, [
@@ -112,7 +113,7 @@ export function initGsDelveRuns() {
     ['room', "snaggle's den"],
     ['atk', 15, { heavy: true, faces: [3], foe: { roll: 18, faces: [3] } }], ['atk', 5, { foe: { roll: 17, faces: [3] } }], ['atk', 4, { heavy: true, foe: { roll: 16, faces: [3] } }],
     ['atk', 2, { foe: { roll: 15, faces: [3] } }], ['atk', 6, { foe: { roll: 14, faces: [3] } }], ['atk', 12, { faces: [3], foe: { roll: 17, faces: [3] } }],
-  ]);
+  ], { name: 'delve-fight-fallen' });
   GS_SESSIONS['delve-fight-fallen'] = { ...GS_SESSIONS['delve-fallen'], hpMax: 24, lines: ff.lines, detail: ff.detail, foeMax: { "snaggle's den": 27 }, result: "Fell in Snaggle's den", reached: "Fell in Snaggle's den", share: "Fell in Snaggle's den", figures: dlFigures(ff, 24),
     tracks: { progress: 2, rooms: 2, threat: ff.threat, threatMax: 12 }, threat: ff.threat, sheet: { used: {}, insp: false } };
 }

@@ -115,8 +115,6 @@ const dlBuild = (s) => {
   // A fight is on while the room's foe stands: a hazard or an obstacle is no fight, and a foe already beaten is no fight to come back to.
   const standing = () => { const f = foeOf(); return !!f && !DL_HAZARDS.has(cur.name.toLowerCase()) && foeHp[f.k] !== 0; };
   const open = (name, back) => { name = name && dlCap(name); const key = name || '_first'; if (!order.includes(key)) order.push(key);
-    // KEEP: leaving a room with its foe still standing (fled, or gone back) ends that fight, so the streak starts again from 0 (delve.md: Streak).
-    if (cur && standing()) { run = 0; }
     cur = { i: stops.length, key, name: name || 'First room', back, num: order.indexOf(key) + 1, rolls: [], turns: [] }; stops.push(cur);
     // Entering a fight resets the streak; defeating the foe resets it again. A hazard is no fight.
     if (standing()) { run = 0; } };
@@ -534,7 +532,7 @@ const dvFallen = dlRecord('Bryn the Fighter', 24, [
   ['chk', 'Strength', null, null, 3, 15, { harm: 2 }], ['chk', 'Strength', null, null, 17, 18], ['chk', 'Dexterity', 'Gather up the fallen bones', null, 13, 15, { harm: 1 }],
   ['room', 'the warren'], dvTurn,
   ['atk', 6, { foe: { roll: 14, faces: [3, 3] } }], ['atk', 5, { foe: { roll: 15, faces: [3, 2] } }], ['atk', 1, { foe: { roll: 16, faces: [3, 3] } }], ['atk', 4, { foe: { roll: 14, faces: [3, 3] } }],
-]);
+], { name: 'delve-fallen' });
 GS_SESSIONS['delve-fallen'] = dvPlay(dvFallen, 24, { ...GS_SESSIONS.delve, loss: true, end: 'fallen', result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null, light: 4, tracks: { progress: 3, rooms: 5, threatMax: 12 }, sheet: { used: {}, insp: false } });
 // A first run lost on its first room's story turn, with no roll or use anywhere: the route is that one room, ending on the loss cross (`lostOff`).
 // SAMPLE: the room and the harm; the record keeps no turn for the story harm.
@@ -548,7 +546,7 @@ const dvStory = dlRecord('Wren the Rogue', 22, [
   ['room', 'the cryo deck'], ['chk', 'Intelligence', 'Read the wake log', null, 15, 15], ['chk', 'Dexterity', 'Slip the frozen vent', null, 5, 15, { harm: 4 }],
   ['room', 'the armoury'], ['chk', 'Strength', 'Pry the locker', null, 7, 15, { harm: 6 }], ['chk', 'Wisdom', 'Listen for the hunt', null, 11, 15, { threat: 1 }], ['chk', 'Dexterity', 'Force the cage', null, 4, 15, { harm: 7 }],
   ['room', 'the medbay'],
-]);
+], { name: 'delve-story-fall' });
 GS_SESSIONS['delve-story-fall'] = dvPlay(dvStory, 22, { ...GS_SESSIONS.delve, loss: true, end: 'fallen', lostOff: { name: 'Crank panel', harm: 5 }, setting: 'Cold Sleep', hero: 'Wren the Rogue', threatMax: 12, lightName: null, light: 0, lightMax: 0, foeMax: {},
   result: 'Fell in the medbay', reached: 'Fell in the medbay', share: 'Fell in the medbay', shareLines: null, tracks: { progress: 3, rooms: 6, threatMax: 12 }, sheet: { used: {}, insp: false } }, { figures: dlFigures({ ...dvStory, hp: 0 }, 22) });
 // The won play whose last turn is a use: the average run's play to the shrine cavern, then the flask, hits, and Bryn's ultimate (one use a run, kept for last) taking Grizzletooth's last health.
@@ -581,22 +579,19 @@ const dvHardSteps = (overrunBack) => [
   ['room', 'the chapel'], ['chk', 'Wisdom', 'Listen at the altar', null, 14, 15], ['chk', 'Intelligence', 'Read the psalm board', null, 13, 10],
   ['room', 'the crypt'], ['chk', 'Dexterity', 'Pick the crypt lock', null, 15, 18],
   ['room', 'the bone pit'], ['chk', 'Strength', 'Cross the bone pit', null, 18, 18], ['chk', 'Dexterity', 'Slip the trap', null, 11, 10],
-  ['room', 'the shrine cavern'],
-  ['atk', 10, { faces: [2], foe: { roll: 16, faces: [2] } }], ['atk', 17, { faces: [4], foe: { roll: 5, faces: [1] } }], ['atk', 18, { faces: [2], foe: { roll: 5, faces: [1] } }],
-  ['atk', 12, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 11, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 3, { foe: { roll: 4, faces: [1] } }],
+  ['room', 'the watchtower'],
+  ['chk', 'Dexterity', 'Cross the watchtower', null, 14, 15],
   ['back', 'the warren'],
   ...(overrunBack ? [] : [['chk', 'Wisdom', 'Find the way out', null, 11, 15, { threat: 1 }]]),
 ];
 const dvHardBase = { ...GS_SESSIONS.delve, loss: true, end: 'overrun', result: 'Too late: the chant was completed', reached: 'Too late: the chant was completed', share: 'Too late: the chant was completed', shareLines: null,
   hero: 'Wren the Rogue', foeMax: { 'the shrine cavern': 44 },
-  // The longest deployed foe name (Delve 9), on the shrine cavern's foe, so the held roll's foe row is seen with a name that wraps.
-  foeName: { 'the shrine cavern': 'Mortlake, the drowned captain' },
   // The light is The Midas Vault's (content/delve/7.v2.json), borrowed so the sheet carries the longest light name an edition has.
   lightName: 'the watchman\'s round', light: 0, lightMax: 9, tracks: { progress: 20, rooms: 13, threatMax: 12 }, sheet: { used: {}, insp: false } };
-const dvHard = dlRecord('Wren the Rogue', 22, dvHardSteps(false), { magic: 1 });
+const dvHard = dlRecord('Wren the Rogue', 22, dvHardSteps(false), { magic: 1, name: 'delve-hard' });
 GS_SESSIONS['delve-hard'] = dvPlay(dvHard, 22, { ...dvHardBase, foeMax: { ...dvHardBase.foeMax, "snaggle's den": 27 } });
 // The hard play with a last going-back to the warren (The chant +1) that filled the threat: no roll or use in that room, so the run ends on the loss cross.
-const dvOver = dlRecord('Wren the Rogue', 22, dvHardSteps(true), { magic: 1 });
+const dvOver = dlRecord('Wren the Rogue', 22, dvHardSteps(true), { magic: 1, name: 'delve-overrun-back' });
 GS_SESSIONS['delve-overrun-back'] = dvPlay(dvOver, 22, { ...dvHardBase, foeMax: { ...dvHardBase.foeMax, "snaggle's den": 27 }, lostOff: { over: true, name: 'Going back' } });
 // A run in the Briar Keep (edition 3, content/delve/3.v1.json) that has climbed the thorn stair, a hazard of health 4: a partial success, a failure, a success, and the success that beats it.
 // The rooms before the stair and the briar knight's blows are sample; the route follows the edition's order.
@@ -609,7 +604,7 @@ const dvHazard = dlRecord('Hal the Woodcutter', 24, [
   ['atk', 10, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 12, { faces: [3], foe: { roll: 13, faces: [2] } }], ['atk', 14, { faces: [2] }],
   ['room', 'the thorn stair'],
   ['chk', 'Strength', null, null, 11, 15], ['chk', 'Strength', null, null, 6, 15], ['chk', 'Strength', null, null, 15, 15], ['chk', 'Strength', null, null, 16, 15],
-], { threatMax: 14 });
+], { threatMax: 14, name: 'delve-hazard' });
 GS_SESSIONS['delve-hazard'] = dvPlay(dvHazard, 24, { ...GS_SESSIONS.delve, noEd: true, date: 'Monday 12 October', live: true, loss: false, end: 'won', result: 'In progress', reached: null, share: null, shareLines: null,
   setting: 'The Briar Keep', hero: 'Hal the Woodcutter', threatMax: 14, lightName: null, light: 0, lightMax: 0, foeMax: {}, tracks: { progress: 4, rooms: 6, threatMax: 14 }, sheet: { used: {}, insp: true } });
 

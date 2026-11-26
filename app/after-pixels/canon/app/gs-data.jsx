@@ -186,13 +186,13 @@ const GS_DV_WON_BY_USE_END = [
   ['atk', 15, { faces: [2], foe: { roll: 7, faces: [1] } }],
   ['use', 'Ability', 'shield bash', { dmg: 8 }],
 ];
-export const GS_DV_WON = dlRecord('Bryn the Fighter', 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_END]);
-export const GS_DV_WON_BY_USE = dlRecord('Bryn the Fighter', 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_BY_USE_END]);
-// Run 1 in progress, Wren the Rogue: the sentries beaten, Snaggle hurt, and a going back with him standing.
+export const GS_DV_WON = dlRecord('Bryn the Fighter', 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_END], { name: 'delve' });
+export const GS_DV_WON_BY_USE = dlRecord('Bryn the Fighter', 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_BY_USE_END], { name: 'delve-won-by-use' });
+// Run 1 in progress, Wren the Rogue: the sentries beaten and Snaggle hurt.
 const GS_DV_LIVE = dlRecord('Wren the Rogue', 22, [
   ['room', 'the chime run'],
-  ['chk', 'Dexterity', null, null, 16, 18],
-  ['chk', 'Dexterity', 'Gather up the fallen bones', null, 13, 18, { harm: 1 }],
+  ['chk', 'Dexterity', null, null, 3, 18, { harm: 1 }],
+  ['chk', 'Dexterity', null, null, 13, 18, { harm: 1 }],
   ['room', 'the warren'],
   ['raw', ['Gear', 'Took a pepper pouch']],
   ['raw', ['Turn', 'The turncoat joins', GS_DV_TURNCOAT]],
@@ -204,8 +204,7 @@ const GS_DV_LIVE = dlRecord('Wren the Rogue', 22, [
   ['room', "Snaggle's den"],
   ['atk', 14, { faces: [2], foe: { roll: 9, faces: [1] } }],
   ['atk', 18, { faces: [3], foe: { roll: 4, faces: [1] } }],
-  ['back', 'the warren'],
-]);
+], { name: 'delve-live' });
 export const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the chant was completed', 'Fell in the warren'];
 
 // ---- Escape No. 1, The Clockmaker’s Study (par 30). GS_ES1 is the room's deployed text (content/escape/1.v3.json); GS_ES1_LINES is a

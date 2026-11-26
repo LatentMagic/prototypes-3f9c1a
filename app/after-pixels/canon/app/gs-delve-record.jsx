@@ -1,9 +1,10 @@
 // ============================================================================
+// This file only generates sample data for the prototype; an engineer builds nothing from it. The platform's own engine is the source of every rule.
 // After Pixels — Delve's sample-run recorder: the dice of a play go in, its record comes out (lines, `detail`, hit points, threat, rolls).
 // Every sample run on the session page and the Now card is written as steps and turned into its record here, so the arithmetic is the engine's and never typed twice:
 // d20 + bonus = total, the grade against the target (a partial success starts 5 below it, a natural 20 always succeeds, a natural 1 always fails), a hit against the foe's armour class,
 // the damage roll (a critical hit rolls the die twice), the foe's health after each blow, the foe's roll back while it stands, the escalation die, hit points and threat.
-// SAMPLE: the dice and faces a run is given; every rule below follows deployed delve.md (monorepo specs/projects/mcp-games/game-specs) and scene.archetype / hero-class.
+// SAMPLE: the dice and faces a run is given.
 // ============================================================================
 
 // A hero: the defence, the six stat modifiers, the skills the class is trained in, the attack stat, the weapon proficiency, the heavy attack and its bonus, the weapon's damage type
@@ -39,13 +40,13 @@ const face = (v, sides, what) => { if (!Number.isInteger(v) || v < 1 || v > side
 //   ['atk', die, { heavy, faces: [d4, d4 on a critical hit], foe: { roll, faces: [d3 per member standing, twice on a critical hit], dark } }]   an attack on the room's foe
 // A roll with advantage rolls two d20s and keeps the higher: a check once the streak is 2 or more, an attack after two hits in a row in the fight, a foe's roll back after a heavy attack that missed.
 // The recorder gives such a roll its dropped die; a step names only the kept one.
-//   ['use', kind, name, { dmg, heal, foe }]   an ability or gear: it strikes the foe for dmg or heals the hero, and the foe answers if it still stands
+//   ['use', kind, name, { dmg, heal, light, foe }]   an ability or gear, answered by a foe still standing
 //   ['weak', item, blow]   a weakness blow: no roll back
 // `magic` (an option of the recorder) is the weapon's bonus, added to every attack and every damage roll of the run.
 // `foe` on a step is the foe's roll back; a foe still standing after the hero's turn must have one, and a foe that fell must not.
-export function dlRecorder(hero, hpMax, { threatMax = 12, magic = 0 } = {}) {
+export function dlRecorder(hero, hpMax, { threatMax = 12, magic = 0, name = hero } = {}) {
   const H = DL_HERO_RULES[hero]; if (!H) throw new Error('dlRecord: no hero ' + hero);
-  let room = null; let hp = hpMax; let n = 0; let threat = 0; let esc = 0; let nat20 = 0; let streak = 0; let hitRun = 0; const marks = []; const foeHp = {}; const lines = []; const detail = {};
+  let room = null; let hp = hpMax; let n = 0; let stepNo = 0; let threat = 0; let esc = 0; let nat20 = 0; let streak = 0; let hitRun = 0; let won = false; const passed = new Set(); const marks = []; const foeHp = {}; const lines = []; const detail = {};
   const hpOf = () => 'HP ' + hp + '/' + hpMax;
   const rule = () => DL_FOE_RULES[room];
   const modOf = () => rule().mod + (rule().phaseAt != null && left() <= rule().phaseAt ? 1 : 0);
@@ -63,15 +64,17 @@ export function dlRecorder(hero, hpMax, { threatMax = 12, magic = 0 } = {}) {
     return { text: 'Struck back: ' + (other != null ? 'd20s ' + other + ' and ' + f.roll + ', kept ' + f.roll : 'd20 ' + f.roll) + ' + ' + r.atk + ' vs ' + H.defence + ', '
       + (hit ? 'hit, ' + (dd ? 'd' + dd[0] + ' ' + dd[1] + ' + ' + dd[2] + ' = ' : '') + dmg + ' damage, ' + hpOf() : 'missed'), out }; };
   const step = (k, ...a) => {
-    if (hp <= 0 || threat >= threatMax) throw new Error('dlRecord: a step after the run has ended (' + k + ' ' + a[0] + ')');
-    if (k === 'room' || k === 'back') { if (room && rule() && left() > 0) streak = 0; room = a[0].toLowerCase(); esc = 0; hitRun = 0; if (rule() && left() > 0) streak = 0; }
+    stepNo += 1; const refuse = (why) => { throw new Error('dlRecord: ' + name + ', step ' + stepNo + ' (' + k + ' ' + a[0] + '): ' + why); };
+    if (won || hp <= 0 || threat >= threatMax) refuse('a step after the run has ended');
+    if (k === 'room' || k === 'back') { if (room && rule() && left() > 0) refuse(rule().name + ' still stands'); room = a[0].toLowerCase(); esc = 0; hitRun = 0; if (rule() && left() > 0) streak = 0; }
     if (k === 'room') { lines.push(['Room', 'Entered ' + a[0]]); return; }
     if (k === 'back') { threat += 1; lines.push(['Room', 'Doubled back to ' + a[0], 'The chant +1']); return; }
     if (k === 'raw') { lines.push(a[0]); return; }
     if (k === 'chk') { n += 1; const [stat, action, askill, die, dc, o = {}] = a; const skill = askill && H.trained.includes(askill) ? askill : null;
       const mods = [...(H.stats[stat] ? [['+', H.stats[stat], stat.slice(0, 3).toUpperCase()]] : []), ...(skill ? [['+', 2, skill]] : [])]; const total = die + dlSum(mods); if (die === 20) nat20 += 1; const other = streak >= 2 ? dropped(die, n) : null;
       const grade = die === 1 ? 'Failure' : die === 20 || total >= dc ? 'Success' : total >= dc - 5 ? 'Partial success' : 'Failure';
-      const hz = DL_HAZARD_RULES[room]; const cost = hz ? (grade === 'Partial success' ? hz.partial : hz.harm) : o.harm || 0; const harm = grade === 'Success' ? 0 : Math.min(cost, hp); hp -= harm; const paid = hz ? (grade === 'Failure' ? (die === 1 ? 2 : 1) : 0) : o.threat || 0; threat += paid;
+      const hz = DL_HAZARD_RULES[room]; const obstacle = room === 'the chime run' && !passed.has(room); const cost = hz ? (grade === 'Partial success' ? hz.partial : hz.harm) : o.harm || 0; const harm = grade === 'Success' ? 0 : Math.min(cost, hp); hp -= harm; const paid = hz || obstacle ? (grade === 'Failure' ? (die === 1 ? 2 : 1) : 0) : o.threat || 0; threat += paid;
+      if (obstacle && grade !== 'Failure') passed.add(room);
       lines.push([stat, ...(action ? [action] : []), grade, ...(nat(die) ? [nat(die)] : []), sumText(die, other, mods, dc), ...(harm ? [hpOf()] : []), ...(paid ? ['Threat +' + paid] : [])]);
       marks.push({ n, die, total, dc, grade: grade === 'Success' ? 'strong' : grade === 'Partial success' ? 'weak' : 'miss' });
       streak = grade === 'Success' ? streak + 1 : 0; detail[n] = { parts: mods, skill }; return; }
@@ -85,15 +88,16 @@ export function dlRecorder(hero, hpMax, { threatMax = 12, magic = 0 } = {}) {
       const stands = left() > 0; const line = [H.stat, ...(o.heavy ? ['Heavy attack: ' + H.heavy] : []), hit ? 'Hit' : 'Miss', ...(nat(die) ? [nat(die)] : []), sumText(die, other, mods, r.ac)];
       streak = hit ? streak + 1 : 0; if (adv) hitRun = 0;
       if (stands) { const ans = answer(o.foe, o.heavy && !hit, hit ? 'hit' : 'miss'); if (adv) hitRun = 0; line.push(ans.text); Object.assign(d, ans.out); } 
-      if (!stands) streak = 0;
+      if (!stands) { streak = 0; if (room === 'the shrine cavern') won = true; }
       marks.push({ n, die, total, dc: r.ac, grade: hit ? 'strong' : 'miss' });
       lines.push(line); detail[n] = d; return; }
     if (k === 'use') { const [kind, name, o = {}] = a; const line = [kind, 'Used ' + name]; let healed = 0;
-      if (o.heal) { healed = Math.min(o.heal, hpMax - hp); hp += healed; line.push('Healed ' + healed); }
+      if (o.heal) { if (hp >= hpMax) refuse('healing at full health'); healed = Math.min(o.heal, hpMax - hp); hp += healed; line.push('Healed ' + healed); }
       if (o.dmg) { if (!r || left() <= 0) throw new Error('dlRecord: a blow on no foe (' + name + ')'); const was = left(); foeHp[room] = Math.max(0, was - o.dmg); line.push(r.short + ': health ' + was + ' → ' + foeHp[room]); }
-      if (r && left() > 0 && (o.dmg || o.heal)) { const ans = answer(o.foe, false, null); line.push(ans.text); } else if (o.heal) line.push(hpOf());
+      if (r && left() > 0 && (o.dmg || o.heal || o.light)) { const ans = answer(o.foe, false, null); line.push(ans.text); } if (o.heal) line.push(hpOf());
+      if (o.dmg && left() === 0) { streak = 0; if (room === 'the shrine cavern') won = true; }
       lines.push(line); return; }
-    if (k === 'weak') { const [item, blow] = a; if (!r || left() <= 0) throw new Error('dlRecord: a weakness blow on no foe'); const was = left(); foeHp[room] = Math.max(0, was - blow); lines.push(['Weakness', item, r.short + ': health ' + was + ' → ' + foeHp[room]]); return; }
+    if (k === 'weak') { const [item, blow] = a; if (!r || left() <= 0) throw new Error('dlRecord: a weakness blow on no foe'); const was = left(); foeHp[room] = Math.max(0, was - blow); if (!left()) { streak = 0; if (room === 'the shrine cavern') won = true; } lines.push(['Weakness', item, r.short + ': health ' + was + ' → ' + foeHp[room]]); return; }
     throw new Error('dlRecord: unknown step ' + k);
   };
   // `foeLeft` is the health of the foe in the room the hero stands in (0 with none), for a run written as a loop.
