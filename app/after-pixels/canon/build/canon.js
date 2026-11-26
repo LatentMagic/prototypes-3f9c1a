@@ -12591,7 +12591,10 @@
       /* @__PURE__ */ React$1.createElement(PgMark, { key: "s", v: w.s, n: sit.streak, dim: sit.fight, name: "Success streak", title: "Successes or hits in a row. From two on, every check outside a fight has advantage." }),
       /* @__PURE__ */ React$1.createElement(PgMark, { key: "h", v: w.h, n: sit.hits, dim: false, name: "Hit streak", title: "Hits in a row in a fight. At two, the next attack has advantage and resets it." })
     ];
-    if (concept === "2") cells.push(/* @__PURE__ */ React$1.createElement(DlCell, { key: "l", label: "Longest streak", used: longest === 0, title: "The most the Success streak reached this run, fights included." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num pga-num" }, longest)));
+    if (concept === "2") {
+      const long = /* @__PURE__ */ React$1.createElement(DlCell, { key: "l", label: "Longest streak", used: longest === 0, title: "The most the Success streak reached this run, fights included." }, /* @__PURE__ */ React$1.createElement("span", { className: "dv8-num pga-num" }, longest));
+      return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, /* @__PURE__ */ React$1.createElement("span", { className: "pga-pair" }, cells[1], cells[2]), /* @__PURE__ */ React$1.createElement("span", { className: "pga-pair" }, cells[0], long));
+    }
     return /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, cells);
   };
   const PgBody = ({ s }) => {
