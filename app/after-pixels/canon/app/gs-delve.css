@@ -323,7 +323,8 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
-.dv8.is-3b .dv8-adv .dv7-cells { flex-wrap: nowrap; gap: 16px; }
+/* Advantage: its cells sit on a grid of equal columns, each as wide as the widest cell, centred as a group rather than spread across the row. */
+.dv8.is-3b .dv8-adv .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: max-content; max-width: 100%; margin: 0 auto; gap: 16px; }
 /* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
 moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
 .dl-now-route { min-width: 0; container: dlnow / inline-size; }
