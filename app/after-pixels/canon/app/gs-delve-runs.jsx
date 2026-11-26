@@ -121,6 +121,17 @@ export function initGsDelveRuns() {
   ], 24, 16);
   GS_SESSIONS['delve-key-moments'] = { ...GS_SESSIONS.delve, hpMax: 24, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 27, 'the shrine cavern': 44 }, figures: ['Threat ' + km.threat + '/12', km.rolls + ' rolls', '1 natural 20', 'HP ' + km.hp + '/24'], threat: km.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: km.threat }, sheet: { used: {}, insp: true } };
 
+  const extras = dlRecord([
+    ['room', "snaggle's den"],
+    ['atk', 'Strength', null, 12, [STR, MART], 14, { dmg: ['d4', 2, [STR], 'Slashing'], foe: { roll: 20, bonus: 4, dd: [3, 2, 1] } }],
+  ], 24, 16);
+  extras.lines[1][extras.lines[1].length - 1] = 'Struck back: d20 20 + 4 vs 16, hit, d3 2 + 1 = 4 damage, HP 20/24';
+  extras.detail[1].foe = { critical: true, dark: true };
+  extras.detail[1].light = 1;
+  GS_SESSIONS['delve-fight-details'] = { ...GS_SESSIONS['delve-live'], hero: 'Bryn the Fighter', hpMax: 24, light: 0, lightMax: 6, lines: extras.lines, detail: extras.detail, figures: ['Threat 0/12', '1 roll', 'HP 20/24'], tracks: { progress: 1, rooms: 1, threat: 0, threatMax: 12 } };
+  GS_SESSIONS['delve-gear-strike'] = { ...GS_SESSIONS['delve-fight-details'], lines: [['Room', "Entered snaggle's den"], ['Gear', 'Used pepper pouch', 'Snaggle: health 27 → 23']], detail: {} };
+  GS_SESSIONS['delve-gear-light'] = { ...GS_SESSIONS['delve-fight-details'], light: 3, lines: [['Room', 'Entered the gate'], ['Gear', 'Used flask of lamp oil']], detail: {} };
+
   // Wren in the shrine cavern, mid-fight with the drowned captain: a miss then a hit, so the streak stands at 1.
   const DEX = ['+', 3, 'DEX']; const SIMP = ['+', 2, 'Simple'];
   const fl = dlRecord([
