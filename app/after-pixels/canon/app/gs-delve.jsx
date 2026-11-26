@@ -172,17 +172,17 @@ const dlBuild = (s) => {
 const dlSay = (r, foe = true) => r.lost && r.over ? 'The threat filled in ' + r.room + ': ' + r.name : r.lost ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
-// natural 1 red-edged, a use a quiet sparkle. A turn the foe answered has the foe's roll as a red hex behind it. DL_HEX and DL_RIM
+// natural 1 red-edged, a use a quiet sparkle. Only the held roll's head draws the advantage die's grey hex behind the die (`behind`). DL_HEX and DL_RIM
 // still draw the sheet's hexes (stats, inspiration). ----
 const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
-const DlDie = ({ r, size = 36, sel, foe = true, surface }) => (r.lost
+const DlDie = ({ r, size = 36, sel, behind = false, surface }) => (r.lost
   ? <svg className="dl-cross" viewBox="0 0 12 12" width={Math.round(size * 0.45)} height={Math.round(size * 0.45)} aria-hidden="true" focusable="false"><path d="M2 2l8 8M10 2l-8 8" /></svg>
   : r.use
-  ? <DS.DelveUseDie foe={foe && !!r.foe} selected={sel} surface={surface} size={size} won={!!r.won} />
-  : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} crit={r.crit} biggest={!!r.big && r.tier === 'strong'} fumble={r.fumble} foe={foe && !!r.foe} selected={sel} surface={surface} size={size} />);
-const DlDieBtn = ({ r, size, act, on, foe, lit }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
-  <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r, foe !== false)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
-    <DlDie r={r} size={size} sel={act === r.t || lit === r.t} foe={foe} />
+  ? <DS.DelveUseDie selected={sel} surface={surface} size={size} won={!!r.won} />
+  : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} behind={behind} crit={r.crit} biggest={!!r.big && r.tier === 'strong'} fumble={r.fumble} selected={sel} surface={surface} size={size} />);
+const DlDieBtn = ({ r, size, act, on, lit }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
+  <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
+    <DlDie r={r} size={size} sel={act === r.t || lit === r.t} />
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
@@ -236,7 +236,7 @@ const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ wi
 const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
   return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names).split(' · ').map((name, i) => <React.Fragment key={name}>{i > 0 && ' · ' }<span>{name}</span></React.Fragment>)}</p>
       <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}</p></div>
-    <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" foe={false} /></DlInkFrame>
+    <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" behind /></DlInkFrame>
       {r.foe && <DlInkFrame w={foeSize * 36 / 40} h={Math.round(foeSize * 44 / 40) * 40 / 44}><DlFoeDie f={r.foe} size={foeSize} /></DlInkFrame>}</div></div>); };
 // ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
 // KEEP: a side is one tap chip, at least 44px tall, in Escape's tap card (esx-card) at its own size; the two sides share one row while the held roll is 452px wide or more, else they stack, You over Foe, each chip at full width; a lone side (a check, an option, a hero's attack the foe did not answer) has its chip take the row under 400px and its half above it, and its label the whole row. The chip's own width sets its shape: from 200px it is one row (hit, hairline, damage), which two rows always give it; the narrower shape (the damage on a second row under a hairline) stays for a chip below 200px. The d20 sum ("8 + 3") is not on the chip: in a chip of about 120px, where the hit and the damage already fill two rows, so the sum lives in the breakdown only, at every width.
@@ -288,7 +288,7 @@ const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(
 const useDlMap = (n) => { const ref = React.useRef(null); const measure = React.useMemo(() => dlMapOf(n), [n]); const v = useDlWidth(ref, measure, n + ':6'); const [cols, gap] = v.split(':').map(Number); return [ref, cols, gap]; };
 // What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey dot, the loss cross as itself.
 const DlMapMarks = ({ m, st }) => (st.turns.length ? <span className="dvG-marks">{st.turns.map((r) => (r.lost ? <DlDie key={r.t} r={r} size={20} />
-  : m.mom[r.t] ? <DlDie key={r.t} r={r} size={20} foe={false} /> : <i key={r.t} className={'dl-now-mark is-' + (r.use ? 'use' : r.tier || 'miss')} />))}</span> : null);
+  : m.mom[r.t] ? <DlDie key={r.t} r={r} size={20} /> : <i key={r.t} className={'dl-now-mark is-' + (r.use ? 'use' : r.tier || 'miss')} />))}</span> : null);
 const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length);
   return (<div className="dvG-mapw"><div ref={ref} className={'dvG-map' + (stops.length <= DL_MAP_FEW ? ' is-few' : '')} style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
     const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
@@ -307,7 +307,7 @@ const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
 </div>);
 const DlGlance = ({ m, act, setSel }) => {
   const [open, setOpen] = React.useState(() => (act ? m.turns[act - 1].stop : m.stops.length - 1));
-  // KEEP: a mouse over a die rings it as the open room's selected die is ringed (its foe and second hexes cleared), but the held roll stays the pressed one's; touch gives no hover, so a tap never leaves a ring behind.
+  // KEEP: a mouse over a die rings it as the open room's selected die is ringed (the ring clears the second die's hex), but the held roll stays the pressed one's; touch gives no hover, so a tap never leaves a ring behind.
   const [lit, setLit] = React.useState(null);
   const on = React.useMemo(() => ({ sel: setSel, hov: (t) => { if (t == null || window.matchMedia('(hover: hover)').matches) setLit(t); } }), [setSel]);
   // A room tapped on the map opens, and holds its first key moment, else its last roll.

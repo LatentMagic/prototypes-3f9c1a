@@ -21,20 +21,20 @@ const biggestRing = (size) => { const k = size / 46; const gap = sideDist(RIM_PT
   return { points: offHex(-(band + gap / 2) / k).map((p) => p[0].toFixed(3) + ',' + p[1].toFixed(3)).join(' '), width: gap }; };
 // KEEP: a biggest hit that is not a natural 20 is grown about the die's centre until its edge sits where a natural 20's rim sits, so the two biggest-hit dice take the same space (the user, 2026-11-25: "both should be of equal size"); its number is not grown.
 const GROW = 1.167;
-// KEEP: the foe's red hex sits one step out from whatever is behind the die (nothing, the advantage hex, or a natural 20's rim), so no two lines run together.
-const foeAt = (crit, adv) => (crit ? (adv ? [-10, -9.5] : [-5, -4.5]) : adv ? [-7, -6] : [-3.5, -3]);
-export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, foe = false, selected = false, surface = 'card', size = 36, className = '' }) {
+// KEEP: the held roll's grey advantage hex is the die's own outline moved a fixed 2.5px up and left, whatever the die's size or shape (a natural 20's rim, a grown biggest hit, a plain hexagon), so it sits evenly behind the die; nothing else is drawn behind a die.
+const BEHIND_PX = 2.5;
+const grownHex = () => HP.map(([x, y]) => (CEN[0] + (x - CEN[0]) * GROW).toFixed(3) + ',' + (CEN[1] + (y - CEN[1]) * GROW).toFixed(3)).join(' ');
+export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = 'card', size = 36, className = '' }) {
   const big = size >= 64;
   const ringed = biggest && kind === 'strong';
   const ring = ringed ? biggestRing(crit ? size : size * GROW) : null;
-  // KEEP: selected, a two-dice die stands alone and the foe's hex is cleared, so nothing crosses the selection ring; from 64px the foe's hex is cleared too and the second die sits at the die's corner.
-  const adv = other != null && !big && !selected;
-  const layer = foe && !big && !selected ? foeAt(crit, adv) : null;
+  // KEEP: selected, a two-dice die stands alone with nothing behind it, so nothing crosses the selection ring; from 64px the second die sits at the die's corner instead.
+  const adv = other != null && behind && !big && !selected;
+  const away = -BEHIND_PX * 46 / size;
   const cls = ['mcp-dl-die', 'is-' + kind, crit && 'is-crit', ringed && 'is-biggest', fumble && 'is-fumble', won && kind === 'use' && 'is-won', selected && 'is-sel', surface === 'popup' && 'is-popup', className].filter(Boolean).join(' ');
   return (
     <svg className={cls} viewBox="-5 -5 46 50" width={size} height={Math.round(size * 50 / 46)} aria-hidden="true">
-      {layer && <polygon className="fo" points={HEX} transform={'translate(' + layer[0] + ' ' + layer[1] + ')'} />}
-      {adv && <polygon className="gh" points={HEX} transform={crit ? 'translate(-7 -6.5)' : 'translate(-3.5 -3)'} />}
+      {adv && <polygon className="gh" points={crit ? RIM : ringed ? grownHex() : HEX} transform={'translate(' + away.toFixed(3) + ' ' + away.toFixed(3) + ')'} />}
       {ringed && !crit
         ? <g transform={'translate(18 20) scale(' + GROW + ') translate(-18 -20)'}><polygon className="hx" points={HEX} /><polygon className="cut" points={ring.points} style={{ strokeWidth: ring.width + 'px' }} /></g>
         : <polygon className="hx" points={HEX} />}
@@ -47,6 +47,6 @@ export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = f
   );
 }
 // A turn where the hero used an ability, the ultimate or gear and made no roll: one sparkle for every kind of use. `won` fills it green, for the use that ends a won run.
-export function DelveUseDie({ won = false, foe = false, selected = false, surface = 'card', size = 36, className = '' }) {
-  return <DelveDie kind="use" won={won} foe={foe} selected={selected} surface={surface} size={size} className={className} />;
+export function DelveUseDie({ won = false, behind = false, selected = false, surface = 'card', size = 36, className = '' }) {
+  return <DelveDie kind="use" won={won} selected={selected} surface={surface} size={size} className={className} />;
 }

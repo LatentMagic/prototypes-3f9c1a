@@ -763,8 +763,6 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-dl-die .gl{fill:var(--muted);stroke:none}
 .mcp-dl-die.is-won .hx{fill:var(--success);stroke:none}.mcp-dl-die.is-won .gl{fill:var(--success-on)}
 .mcp-dl-die .gh{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke}
-/* The foe's roll: a red hex behind the die, outside the advantage hex. */
-.mcp-dl-die .fo{fill:color-mix(in srgb,var(--error) 50%,var(--card));stroke:var(--error);stroke-opacity:.9;stroke-width:1;vector-effect:non-scaling-stroke}
 .mcp-dl-die .tw polygon{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1.25;vector-effect:non-scaling-stroke}
 .mcp-dl-die .tw text{font:700 17px var(--font-heading);fill:var(--muted);text-anchor:middle;dominant-baseline:central}
 /* KEEP: the picked die gets an off-white ring outside its own rim, so a natural's rim still shows. */
