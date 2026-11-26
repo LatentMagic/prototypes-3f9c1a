@@ -331,7 +331,7 @@ const DlEmptyMap = ({ rooms }) => (<div className="dvG"><DlMap stops={dlEmptySto
 const DlCard = ({ s, m, roll, turn }) => {
   const rooms = m.turns.length ? m.stops.length : (s.tracks && s.tracks.rooms) || 5;
   const [sel, setSel] = React.useState(() => (turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null)); const act = sel;
-  if (!m.turns.length) {
+  if (!m.turns.length && m.stops.length <= 1 && !m.lost) {
     return (<section className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} /><DlEmptyMap rooms={rooms} /></section>); }
   return (<section className="dv2 dv7r is-3" aria-label="How the run went"><DlResult s={s} m={m} />
     <DlGlance m={m} act={act} setSel={setSel} /></section>);
@@ -542,6 +542,8 @@ GS_SESSIONS['delve-fallen'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen',
 // SAMPLE: the room and the harm; the record keeps no turn for the story harm.
 GS_SESSIONS['delve-lost-no-roll'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', lostOff: { name: 'Collapsing tunnel', harm: 24 }, result: 'Fell in the warren', reached: 'Fell in the warren', share: 'Fell in the warren', shareLines: null,
   figures: ['Threat 0/12', '0 rolls', 'HP 0/24'], tracks: { progress: 1, rooms: 5, threat: 0, threatMax: 12 }, threat: 0, sheet: { used: {}, insp: true }, lines: [['Room', 'Entered the warren']] };
+GS_SESSIONS['delve-no-roll-live'] = { ...GS_SESSIONS['delve-lost-no-roll'], live: true, loss: false, lostOff: null, result: 'In progress', lines: [['Room', 'Entered the gate'], ['Room', 'Entered the warren']] };
+GS_SESSIONS['delve-no-roll-lost'] = { ...GS_SESSIONS['delve-lost-no-roll'], lines: [['Room', 'Entered the gate'], ['Room', 'Entered the warren']] };
 GS_SESSIONS['delve-story-fall'] = { ...GS_SESSIONS.delve, loss: true, end: 'fallen', lostOff: { name: 'Crank panel', harm: 5 }, setting: 'Cold Sleep', hero: 'Wren the Rogue', hpMax: 22, threat: 1, threatMax: 12, lightName: null, light: 0, lightMax: 0, foeMax: {},
   result: 'Fell in the medbay', reached: 'Fell in the medbay', share: 'Fell in the medbay', shareLines: null, figures: ['Threat 1/12', '5 rolls', 'HP 0/22'], tracks: { progress: 3, rooms: 6, threat: 1, threatMax: 12 }, sheet: { used: {}, insp: false }, lines: [
   ['Room', 'Entered the cryo deck'], ['Intelligence', 'Read the wake log', 'Success', 'd20 15 + 0 = 15 vs 15'], ['Dexterity', 'Slip the frozen vent', 'Failure', 'd20 5 + 3 = 8 vs 15', 'HP 18/22'],

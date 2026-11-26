@@ -3546,7 +3546,7 @@
     const rooms = m.turns.length ? m.stops.length : s.tracks && s.tracks.rooms || 5;
     const [sel, setSel] = React$1.useState(() => turn && m.turns[turn - 1] ? turn : roll && m.rolls[roll - 1] ? m.rolls[roll - 1].t : m.turns.length && !m.lost ? m.turns.length : null);
     const act = sel;
-    if (!m.turns.length) {
+    if (!m.turns.length && m.stops.length <= 1 && !m.lost) {
       return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlEmptyMap, { rooms }));
     }
     return /* @__PURE__ */ React$1.createElement("section", { className: "dv2 dv7r is-3", "aria-label": "How the run went" }, /* @__PURE__ */ React$1.createElement(DlResult, { s, m }), /* @__PURE__ */ React$1.createElement(DlGlance, { m, act, setSel }));
@@ -3817,6 +3817,8 @@
       sheet: { used: {}, insp: true },
       lines: [["Room", "Entered the warren"]]
     };
+    GS_SESSIONS["delve-no-roll-live"] = { ...GS_SESSIONS["delve-lost-no-roll"], live: true, loss: false, lostOff: null, result: "In progress", lines: [["Room", "Entered the gate"], ["Room", "Entered the warren"]] };
+    GS_SESSIONS["delve-no-roll-lost"] = { ...GS_SESSIONS["delve-lost-no-roll"], lines: [["Room", "Entered the gate"], ["Room", "Entered the warren"]] };
     GS_SESSIONS["delve-story-fall"] = {
       ...GS_SESSIONS.delve,
       loss: true,
@@ -9645,6 +9647,16 @@
         c.setConnected(true);
         c.setReview({ ed: "won-by-use" });
         c.go("session", { id: "delve-won-by-use" });
+      } },
+      { group: "Screens", id: "session-delve-no-roll-live", label: "Delve, two stops and no rolls", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-no-roll-live" });
+      } },
+      { group: "Screens", id: "session-delve-no-roll-lost", label: "Delve, lost after two stops and no rolls", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.go("session", { id: "delve-no-roll-lost" });
       } },
       { group: "Screens", id: "session-delve-story-fall", label: "7. Session page: Delve, a run lost to a story turn (ends on the loss cross)", stage: (c) => {
         c.setView("pass");
