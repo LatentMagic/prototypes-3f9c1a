@@ -12581,8 +12581,7 @@
   };
   const PG_MARKS = {
     1: { s: { label: "Success streak" }, h: { label: "Hit streak" } },
-    2: { s: { label: "Success streak", dimSub: "No advantage in a fight" }, h: { label: "Hit streak" } },
-    3: { s: { label: "Success streak", sub: "Checks", dimSub: "Not in a fight" }, h: { label: "Hit streak", sub: "Fights" } }
+    2: { s: { label: "Success streak", sub: "Checks", dimSub: "Not in a fight" }, h: { label: "Hit streak", sub: "Fights" } }
   };
   const pgLongestSay = (n, ended) => n > 0 ? "Longest streak " + n : ended ? "No streak" : "No streak yet";
   const PgMark = ({ v, n, dim, name, title }) => /* @__PURE__ */ React$1.createElement(DlCell, { label: /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, v.label, (dim ? v.dimSub : v.sub) && /* @__PURE__ */ React$1.createElement("small", { className: "dv8-sub" }, dim ? v.dimSub : v.sub)), used: dim, title }, /* @__PURE__ */ React$1.createElement("span", { className: dim ? "pga-dim" : "" }, /* @__PURE__ */ React$1.createElement(DlPips, { n, lit: true, name })));
@@ -12621,7 +12620,7 @@
         o("fightAfter", "Fight, just after the advantaged attack", "session-delve-fight-live"),
         o("ended", "Run ended", "session-delve")
       ] },
-      { key: "marks", label: "Marks", options: [o("1", "1. Plain labels"), o("2", "2. Tag under dim"), o("3", "3. Sub-labels")] },
+      { key: "marks", label: "Marks", options: [o("1", "1. Plain labels"), o("2", "2. Sub-labels")] },
       { key: "longest", label: "Longest streak value", options: ["3", "0", "2", "5"].map((v) => o(v, v)) }
     ] });
     if (pgActive()) GS_SESSION_BODY.delve = (p) => /* @__PURE__ */ React$1.createElement(PgBody, { key: p.sid, ...p });
