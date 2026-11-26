@@ -1,0 +1,13 @@
+/* Playground (prototype aid): the Delve Now card with the route map (app/playground-now-card.jsx). */
+/* Nothing in the display is pressable: the map ignores the pointer, so no hover or press shows. */
+.pgn-map { --dv-num: 28px; --dv-stop-top: 12px; pointer-events: none; min-width: 0; }
+/* Concept 1: canon's map as it stands. */
+.pgn-c1 .dvG-mapw { margin: 0 -8px; }
+/* Concepts 2 and 3: equal columns across the card's content width; a row's first and last box sit on its edges. */
+.pgn-grid { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); row-gap: 4px; }
+.pgn-grid .dvG-stop { min-height: 0; gap: 4px; padding-bottom: 4px; min-width: 0; }
+.pgn-grid .dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 4px; }
+.pgn-grid .dv2-num { min-width: var(--dv-num); height: var(--dv-num); padding: 0 2px; font-size: var(--pgn-font); }
+.pgn-grid .dvG-marks { max-width: 100%; gap: 3px; }
+.pgn-grid .dvG-marks .mcp-dl-die { width: var(--pgn-die); }
+.pgn-grid .dvG-marks .dl-now-mark { width: var(--pgn-dot); height: var(--pgn-dot); }

@@ -81,14 +81,16 @@ function longRoute(n, hpMax) {
   return dlRecord(steps, hpMax, 10, FOE_TYPE);
 }
 
+// A long run lost to the ritual, ended: the most going back the editions allow, the hero still standing. The 25-stop run fills the threat on its last going back, so it ends on the loss cross.
+// n is the number of room visits (1 to 25); `live` makes it a run still in progress.
+export const dlLongRun = (n, live = false) => { const { lines, detail, hp, threat, rolls } = longRoute(n, 23); const stops = ROUTE.slice(0, n); const rooms = new Set(stops.map((r) => r[0])).size;
+  return { ...GS_SESSIONS['delve-hard'], hero: 'Bryn the Fighter', hpMax: 23, threat, foeMax: { "snaggle's den": 40, 'the great hall': 60 }, foeName: {}, lightName: 'the torch', light: 0, lightMax: 6,
+    ...(n === 25 && !live ? { lostOff: { over: true, name: 'Going back' } } : {}), ...(live ? { live: true } : {}),
+    result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed',
+    figures: ['Threat ' + threat + '/12', rolls + ' rolls', 'HP ' + hp + '/23'], tracks: { progress: n, rooms, threat, threatMax: 12 }, lines, detail }; };
+
 export function initGsDelveRuns() {
-  const base = GS_SESSIONS['delve-hard'];
-  // A long run lost to the ritual, ended: the most going back the editions allow, the hero still standing. The 25-stop run fills the threat on its last going back, so it ends on the loss cross.
-  const long = (n) => { const { lines, detail, hp, threat, rolls } = longRoute(n, 23); const stops = ROUTE.slice(0, n); const rooms = new Set(stops.map((r) => r[0])).size;
-    return { ...base, hero: 'Bryn the Fighter', hpMax: 23, threat, foeMax: { "snaggle's den": 40, 'the great hall': 60 }, foeName: {}, lightName: 'the torch', light: 0, lightMax: 6,
-      ...(n === 25 ? { lostOff: { over: true, name: 'Going back' } } : {}),
-      result: 'Too late: the ritual was completed', reached: 'Too late: the ritual was completed', share: 'Too late: the ritual was completed',
-      figures: ['Threat ' + threat + '/12', rolls + ' rolls', 'HP ' + hp + '/23'], tracks: { progress: n, rooms, threat, threatMax: 12 }, lines, detail }; };
+  const long = dlLongRun;
   GS_SESSIONS['delve-route-20'] = long(20);
   GS_SESSIONS['delve-route-25'] = long(25);
 

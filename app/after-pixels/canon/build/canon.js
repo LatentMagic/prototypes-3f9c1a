@@ -12316,32 +12316,33 @@
     });
     return dlRecord(steps, hpMax, 10, FOE_TYPE);
   }
-  function initGsDelveRuns() {
-    const base = GS_SESSIONS["delve-hard"];
-    const long = (n) => {
-      const { lines, detail, hp, threat, rolls } = longRoute(n, 23);
-      const stops = ROUTE.slice(0, n);
-      const rooms = new Set(stops.map((r) => r[0])).size;
-      return {
-        ...base,
-        hero: "Bryn the Fighter",
-        hpMax: 23,
-        threat,
-        foeMax: { "snaggle's den": 40, "the great hall": 60 },
-        foeName: {},
-        lightName: "the torch",
-        light: 0,
-        lightMax: 6,
-        ...n === 25 ? { lostOff: { over: true, name: "Going back" } } : {},
-        result: "Too late: the ritual was completed",
-        reached: "Too late: the ritual was completed",
-        share: "Too late: the ritual was completed",
-        figures: ["Threat " + threat + "/12", rolls + " rolls", "HP " + hp + "/23"],
-        tracks: { progress: n, rooms, threat, threatMax: 12 },
-        lines,
-        detail
-      };
+  const dlLongRun = (n, live = false) => {
+    const { lines, detail, hp, threat, rolls } = longRoute(n, 23);
+    const stops = ROUTE.slice(0, n);
+    const rooms = new Set(stops.map((r) => r[0])).size;
+    return {
+      ...GS_SESSIONS["delve-hard"],
+      hero: "Bryn the Fighter",
+      hpMax: 23,
+      threat,
+      foeMax: { "snaggle's den": 40, "the great hall": 60 },
+      foeName: {},
+      lightName: "the torch",
+      light: 0,
+      lightMax: 6,
+      ...n === 25 && !live ? { lostOff: { over: true, name: "Going back" } } : {},
+      ...live ? { live: true } : {},
+      result: "Too late: the ritual was completed",
+      reached: "Too late: the ritual was completed",
+      share: "Too late: the ritual was completed",
+      figures: ["Threat " + threat + "/12", rolls + " rolls", "HP " + hp + "/23"],
+      tracks: { progress: n, rooms, threat, threatMax: 12 },
+      lines,
+      detail
     };
+  };
+  function initGsDelveRuns() {
+    const long = dlLongRun;
     GS_SESSIONS["delve-route-20"] = long(20);
     GS_SESSIONS["delve-route-25"] = long(25);
     const STR = ["+", 3, "STR"];
@@ -12393,6 +12394,9 @@
   }
   const PG = {};
   const PG_DESK = 1280;
+  const pgRegister = (id, def) => {
+    PG[id] = def;
+  };
   const pgQuery = () => new URLSearchParams(window.location.search);
   const pgActive = () => {
     const id = pgQuery().get("pg");
@@ -12408,6 +12412,17 @@
   const pgSubscribe = (f) => {
     pgSubs.add(f);
     return () => pgSubs.delete(f);
+  };
+  const usePgSetting = (key) => {
+    const [, bump] = React$1.useState(0);
+    React$1.useEffect(() => {
+      const f = () => bump((n) => n + 1);
+      pgSubs.add(f);
+      return () => pgSubs.delete(f);
+    }, []);
+    const def = pgActive();
+    const s = def && def.settings.find((x) => x.key === key);
+    return s ? pgValue(s) : null;
   };
   const pgOpen = (o, url, arriving) => {
     if (o.state) {
@@ -12492,6 +12507,46 @@
     const concept = shown.find((s) => s.kind === "concept");
     const config = shown.filter((s) => s !== concept);
     return /* @__PURE__ */ React$1.createElement("header", { className: "gs-top pg-top", "aria-label": "Playground: " + def.title, ...framed ? { inert: "", "aria-hidden": "true" } : {} }, /* @__PURE__ */ React$1.createElement("div", { className: "gs-wrap pg-top-in" }, concept && /* @__PURE__ */ React$1.createElement(PgPick, { s: concept, v: pgValue(concept) }), /* @__PURE__ */ React$1.createElement("div", { className: "pg-tools" }, config.length > 0 && /* @__PURE__ */ React$1.createElement(PgConfig, { settings: config }), (narrow || fitted) && /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "pg-fit-btn", "aria-pressed": fitted, onClick: () => setFit(!fitted) }, "Fit"))));
+  };
+  const PG_MAPS = {
+    2: { col: 28, box: 24, die: 20, dot: 7, font: 12 },
+    3: { col: 22, box: 18, die: 16, dot: 6, font: 11 }
+  };
+  const PgMap = ({ m, v, concept }) => {
+    const n = m.stops.length;
+    const ref = React$1.useRef(null);
+    const measure = React$1.useMemo(() => (el) => {
+      const per = Math.max(1, Math.floor(el.clientWidth / v.col));
+      return Math.ceil(n / Math.ceil(n / per));
+    }, [n, v.col]);
+    const cols = useDlWidth(ref, measure, n);
+    return /* @__PURE__ */ React$1.createElement("div", { className: "pgn-map pgn-c" + concept, style: { "--dv-num": v.box + "px", "--dv-stop-top": "4px", "--pgn-die": v.die + "px", "--pgn-dot": v.dot + "px", "--pgn-font": v.font + "px" } }, /* @__PURE__ */ React$1.createElement("div", { ref, className: "dvG-map pgn-grid", style: { "--cols": cols, "--gap": "0px" }, role: "img", "aria-label": "The way you went: " + n + " room visits" }, m.stops.map((st, i) => /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: "dvG-stop" + (i % cols === 0 ? " is-rs" : "") + (i % cols === cols - 1 || i === n - 1 ? " is-re" : ""), title: st.name }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st) }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st })))));
+  };
+  const PgNow = ({ concept, visits, ended }) => {
+    const s = React$1.useMemo(() => dlLongRun(visits, !ended), [visits, ended]);
+    const m = React$1.useMemo(() => dlBuild(s), [s]);
+    const result = m.end === "live" ? { kind: "live", label: "In progress" } : { kind: m.end === "won" ? "ok" : "bad", label: dlWord(m) };
+    return /* @__PURE__ */ React$1.createElement(LbNowCard, { gid: "delve", className: "dl-now pgn-now", title: "The Goblin Warren", result, open: () => {
+    }, next: "Next run: " + DV_NEXT }, /* @__PURE__ */ React$1.createElement("div", { className: "dl-now-route" }, concept === "1" ? /* @__PURE__ */ React$1.createElement("div", { className: "pgn-map pgn-c1" }, /* @__PURE__ */ React$1.createElement(DlMap, { m, stops: m.stops, open: null, onOpen: () => {
+    } })) : /* @__PURE__ */ React$1.createElement(PgMap, { m, v: PG_MAPS[concept], concept })));
+  };
+  const PgLibrary = () => {
+    const gs = useGs();
+    const access = lbAccess(gs, "delve");
+    const list = dvRun(gs);
+    const concept = usePgSetting("concept");
+    const visits = +usePgSetting("rooms");
+    const ended = usePgSetting("run") === "ended";
+    return /* @__PURE__ */ React$1.createElement("main", { className: "gs-wrap gs-main" }, /* @__PURE__ */ React$1.createElement(LbHead, { id: "delve" }), /* @__PURE__ */ React$1.createElement("div", { className: "lb-lay" }, /* @__PURE__ */ React$1.createElement(PgNow, { concept, visits, ended }), /* @__PURE__ */ React$1.createElement(LbRun, { n: lbStreak(list), unit: "weeks", weeks: lbRunOf(list) }), /* @__PURE__ */ React$1.createElement(LbAch, { items: phAch(gs, "delve", DV_ACH), badges: DV_BADGES, access, ed: GS_GAMES.delve.ed })));
+  };
+  const initPlaygroundNowCard = () => {
+    const rooms = [20, ...Array.from({ length: 25 }, (_, i) => i + 1).filter((x) => x !== 20)].map((x) => ({ value: String(x), label: String(x) }));
+    pgRegister("now-card", { title: "Delve Now card", settings: [
+      { key: "concept", kind: "concept", label: "Concept", options: [{ value: "1", label: "1. Straight lift" }, { value: "2", label: "2. One row where it fits" }, { value: "3", label: "3. Tighter stops" }] },
+      { key: "rooms", label: "Room visits", options: rooms },
+      { key: "run", label: "Run", options: [{ value: "ended", label: "Ended", state: "library-delve" }, { value: "live", label: "In progress", state: "library-delve" }] }
+    ] });
+    if (pgActive()) GS_LIBRARY.delve = PgLibrary;
   };
   const whKm = (km) => km.toLocaleString("en-GB") + " km";
   const whDist = (km) => km === null ? "Found" : km === 0 ? "Border" : whKm(km);
@@ -13148,4 +13203,5 @@
   initGsWhere();
   initGsCommon();
   initGsSalvage();
+  initPlaygroundNowCard();
 })(React, ReactDOM);

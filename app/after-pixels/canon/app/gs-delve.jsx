@@ -113,7 +113,7 @@ const dlMoments = (T, end) => {
 // A band's members and how many stand, carried beside its health, which is never drawn for a band.
 const dlBand = (f, health, max) => (f[2] ? { members: f[2], standing: dlStanding(f[2], health, max) } : {});
 const dlCap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
-const dlBuild = (s) => {
+export const dlBuild = (s) => {
   const stops = []; const rolls = []; const turns = []; const order = []; let cur = null; let hp = s.hpMax; const foeHp = {}; let run = 0; let fh = 0; const passedRooms = new Set();
   // A play may name its foe afresh (`foeName`, by room), the health and band of the room's foe kept.
   const foeOf = () => { const f = cur && DL_FOES[cur.name.toLowerCase()]; const nm = f && (s.foeName || {})[cur.key.toLowerCase()]; return f ? { f: nm ? [nm, ...f.slice(1)] : f, k: cur.key } : null; };
@@ -189,7 +189,7 @@ const DlDieBtn = ({ r, size, act, on, foe, lit }) => (r.lost ? <span className="
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
-const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
+export const dlWord = (m) => ({ live: 'In progress', fallen: 'Fallen', won: 'Triumphed', overrun: 'Overwhelmed' }[m.end]);
 const dlTone = (m) => (m.end === 'won' ? 'ok' : m.end === 'live' ? 'live' : 'bad');
 const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result;
   return (<div className="dv7r-band"><h2 className={'dv7r-word is-' + dlTone(m)}>{dlWord(m)}</h2>{line && <p className="dv7r-line">{line}</p>}</div>); };
@@ -277,13 +277,13 @@ const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r
   return (<div className="dv3-live" aria-live="polite"><div className="dvH-box"><DlHeldRoll key={r.t} r={r} x={m.mom[r.t]} /></div></div>); };
 // ---- The board, Glance: the run as a map (the Now card's number strip grown to the board, every stop a box, its rolls small beneath), and under it the open room: its name and dice at full size, the held roll on the right. ----
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
-const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+export const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
   <path d="M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
 // KEEP: a stop's number is grey (muted text, the control edge) when nothing was rolled or used in it and white when anything was, a return or not; the back-arrow alone marks a return. A room not yet reached keeps its own fainter outline.
 const dlNone = (st) => !(st.turns && st.turns.some((r) => !r.lost));
-const dlNum = (st, extra = '') => 'dv2-num' + (st.back ? ' is-back' : '') + (dlNone(st) ? ' is-none' : '') + extra;
+export const dlNum = (st, extra = '') => 'dv2-num' + (st.back ? ' is-back' : '') + (dlNone(st) ? ' is-none' : '') + extra;
 // KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. From 5 stops a map that fits one row spreads edge to edge, its first and last boxes on the card's content edges (the user, 2026-11-25: Spread); 1-4 stops sit centred, below; a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
-const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8; const DL_MAP_FEW = 4; const DL_MAP_GAP_FEW = 32;
+export const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8; const DL_MAP_FEW = 4; const DL_MAP_GAP_FEW = 32;
 // KEEP: a map of 1-4 stops sits centred at a 32px gap (less where a phone is too narrow), so a short run never stretches its boxes across the card; from 5 stops one row spreads edge to edge (the user, 2026-11-25).
 const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
   const rows = Math.ceil(n / per); const cols = Math.ceil(n / rows);
@@ -291,9 +291,9 @@ const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(
   return cols + ':' + gap.toFixed(1); };
 const useDlMap = (n) => { const ref = React.useRef(null); const measure = React.useMemo(() => dlMapOf(n), [n]); const v = useDlWidth(ref, measure, n + ':6'); const [cols, gap] = v.split(':').map(Number); return [ref, cols, gap]; };
 // What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey dot, the loss cross as itself.
-const DlMapMarks = ({ m, st }) => (st.turns.length ? <span className="dvG-marks">{st.turns.map((r) => (r.lost ? <DlDie key={r.t} r={r} size={20} />
+export const DlMapMarks = ({ m, st }) => (st.turns.length ? <span className="dvG-marks">{st.turns.map((r) => (r.lost ? <DlDie key={r.t} r={r} size={20} />
   : m.mom[r.t] ? <DlDie key={r.t} r={r} size={20} foe={false} /> : <i key={r.t} className={'dl-now-mark is-' + (r.use ? 'use' : r.tier || 'miss')} />))}</span> : null);
-const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length);
+export const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length);
   return (<div className="dvG-mapw"><div ref={ref} className={'dvG-map' + (stops.length <= DL_MAP_FEW ? ' is-few' : '')} style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
     const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
     const box = <span className={dlNum(st)}>{st.back && <DlBackArrow />}{st.num}</span>;
@@ -319,7 +319,7 @@ const DlGlance = ({ m, act, setSel }) => {
   const st = m.stops.find((x) => x.i === open) || m.stops[m.stops.length - 1];
   return (<div className="dvG"><DlMap m={m} stops={m.stops} open={st.i} onOpen={onOpen} /><DlOpenRoom m={m} st={st} act={act} lit={lit} on={on} /></div>); };
 // What a width-reading hook reads is the element's own size, taken before paint and on every resize: `measure(el)` returns the value, and must keep its identity between renders.
-const useDlWidth = (ref, measure, initial) => { const [value, setValue] = React.useState(initial);
+export const useDlWidth = (ref, measure, initial) => { const [value, setValue] = React.useState(initial);
   React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
     const read = () => setValue(measure(el)); read(); const ro = new ResizeObserver(read); ro.observe(el); return () => ro.disconnect(); }, [ref, measure]);
   return value; };
