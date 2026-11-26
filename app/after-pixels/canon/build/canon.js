@@ -1703,7 +1703,7 @@
     groups: { average: "groups-today", hard: "groups-today-hard", failed: "groups-today-failed" },
     mystery: { average: "mystery-today-avg", hard: "mystery-today-hard", failed: "mystery-today" },
     escape: { hard: "escape-hard" },
-    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use", "lost-no-roll": "delve-lost-no-roll", "long-run": "delve-route-25", "long-live": "delve-route-20-live" },
+    delve: { average: "delve", hard: "delve-hard", failed: "delve-fallen", live: "delve-live", "won-by-use": "delve-won-by-use", "lost-no-roll": "delve-lost-no-roll", "long-run": "delve-route-25", "long-live": "delve-route-20-live", "five-moments": "delve-five-moments" },
     casebook: { average: "casebook", hard: "casebook-hard", failed: "casebook-failed" }
   };
   const gsSessStatus = (s) => ({ kind: s.live ? "live" : s.loss ? "bad" : "ok", label: s.result });
@@ -9873,6 +9873,12 @@
         c.setReview({ ed: "won-by-use" });
         c.go("delve", { page: "record" });
       } },
+      { group: "Library", id: "library-delve-five-moments", label: "Delve Now card, five key moments on five rolls", stage: (c) => {
+        c.setView("pass");
+        c.setConnected(true);
+        c.setReview({ ed: "five-moments" });
+        c.go("delve", { page: "record" });
+      } },
       { group: "Library", id: "library-delve-20-stops-live", label: "Delve Now card, 20 stops in progress", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
@@ -12495,6 +12501,8 @@
       ["atk", "Strength", null, 17, [STR, MART], 12, { dmg: ["d4", 4, [STR], "Slashing"] }]
     ], 24, 16);
     GS_SESSIONS["delve-key-moments"] = { ...GS_SESSIONS.delve, hpMax: 24, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 27, "the shrine cavern": 44 }, figures: ["Threat " + km.threat + "/12", km.rolls + " rolls", "1 natural 20", "HP " + km.hp + "/24"], threat: km.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: km.threat }, sheet: { used: {}, insp: true } };
+    const fiveDetail = { ...km.detail, 4: { ...km.detail[4], dmg: { ...km.detail[4].dmg, v: 4 } }, 6: { ...km.detail[6], dmg: { ...km.detail[6].dmg, v: 1, parts: [STR, ["+", 1, "Magic"], ["+", 2, "Heavy"]] } } };
+    GS_SESSIONS["delve-five-moments"] = { ...GS_SESSIONS["delve-key-moments"], detail: fiveDetail };
     const extras = dlRecord([
       ["room", "snaggle's den"],
       ["atk", "Strength", null, 12, [STR, MART], 14, { dmg: ["d4", 2, [STR], "Slashing"], foe: { roll: 20, bonus: 4, dd: [3, 2, 1] } }]

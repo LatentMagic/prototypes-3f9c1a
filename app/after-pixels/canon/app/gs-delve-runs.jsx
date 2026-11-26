@@ -121,6 +121,10 @@ export function initGsDelveRuns() {
   ], 24, 16);
   GS_SESSIONS['delve-key-moments'] = { ...GS_SESSIONS.delve, hpMax: 24, lines: km.lines, detail: km.detail, foeMax: { "snaggle's den": 27, 'the shrine cavern': 44 }, figures: ['Threat ' + km.threat + '/12', km.rolls + ' rolls', '1 natural 20', 'HP ' + km.hp + '/24'], threat: km.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: km.threat }, sheet: { used: {}, insp: true } };
 
+  // Shift damage between two attacks so Best roll and Biggest hit belong to different rolls.
+  const fiveDetail = { ...km.detail, 4: { ...km.detail[4], dmg: { ...km.detail[4].dmg, v: 4 } }, 6: { ...km.detail[6], dmg: { ...km.detail[6].dmg, v: 1, parts: [STR, ['+', 1, 'Magic'], ['+', 2, 'Heavy']] } } };
+  GS_SESSIONS['delve-five-moments'] = { ...GS_SESSIONS['delve-key-moments'], detail: fiveDetail };
+
   const extras = dlRecord([
     ['room', "snaggle's den"],
     ['atk', 'Strength', null, 12, [STR, MART], 14, { dmg: ['d4', 2, [STR], 'Slashing'], foe: { roll: 20, bonus: 4, dd: [3, 2, 1] } }],
