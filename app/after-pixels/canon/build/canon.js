@@ -9679,6 +9679,7 @@
       { group: "Screens", id: "session-delve-route-20-live", label: "Delve, 20 stops in progress", stage: (c) => {
         c.setView("pass");
         c.setConnected(true);
+        c.setReview({ ed: "long-live" });
         c.go("session", { id: "delve-route-20-live" });
       } },
       { group: "Screens", id: "session-delve-route-20", label: "7. Session page: Delve, a 20-stop route (12 rooms, going back 8 times, the longest room names)", stage: (c) => {
