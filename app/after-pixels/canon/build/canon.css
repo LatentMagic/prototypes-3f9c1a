@@ -1174,12 +1174,10 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dv2-lost { display: grid; place-items: center; }
 
 /* ---- The sheet's trained skills, two advantage marks ---- */
-/* KEEP: a trained skill is drawn in the stat cells' rhythm under a hairline: its total where a hex sits, its name under it, on one row from a 400px panel and otherwise four to a row (7 go 4 then 3), the short last row centred on the full ones. */
+/* KEEP: a trained skill is drawn in the stat cells' rhythm under a hairline: its total where a hex sits, its name under it, at its natural width (at least 72px, as a stat cell) and not stretched across the panel; the skills sit as a centred group with the stats' 16px by 24px gaps, so on desktop they cluster in the middle under the six stats, and they wrap as they fall (seven skills no longer wrap 4 then 3: on a phone they wrap as many as fit, the short last row centred). */
 .dv9-rule { border-top: 1px solid var(--line); margin: 16px 0; }
-.dv9-skills { display: flex; flex-wrap: wrap; justify-content: center; row-gap: 16px; --per: min(var(--n), 4); }
-@container dv4 (min-width: 400px) { .dv9-skills { --per: var(--n); } }
-@container dv4 (max-width: 240px) { .dv9-skills { --per: min(var(--n), 3); } }
-.dv9-sk { flex: 0 0 calc(100% / var(--per)); min-width: 0; box-sizing: border-box; display: grid; justify-items: center; align-content: start; gap: 2px; text-align: center; }
+.dv9-skills { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
+.dv9-sk { min-width: 72px; box-sizing: border-box; display: grid; justify-items: center; align-content: start; gap: 2px; text-align: center; }
 .dv9-tot { font: 700 16px/1.2 var(--font-heading); color: var(--text); }
 .dv9-nm { font: 600 12px/1.2 var(--font-text); color: var(--muted); text-wrap: balance; }
 @container dv4 (max-width: 270px) { .dv9-nm { font-size: 11px; font-weight: 500; letter-spacing: -.01em; } }
