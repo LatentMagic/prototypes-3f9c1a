@@ -3375,7 +3375,6 @@
         if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
       }
       if ((hazard || obstacle) && graded && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
-      if (fo && !hazard && r.fight && r.tier === "miss") r.threat = r.fumble ? 2 : 1;
       if (fo && !hazard && (!r.action || r.action === "Heavy attack")) {
         const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1];
         const dmg = r.dmg ? r.dmg.total : (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1);

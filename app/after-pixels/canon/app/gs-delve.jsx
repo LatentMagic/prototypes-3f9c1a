@@ -152,10 +152,9 @@ const dlBuild = (s) => {
       foeHp[fo.k] = Math.max(0, left - (r.tier === 'strong' ? (r.crit ? 4 : 2) : r.tier === 'weak' ? 1 : 0));
       r.meter = { name: fo.f[0], health: foeHp[fo.k], max }; if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
     }
-    // A missed attack on a foe adds 1 threat too, 2 on a natural 1, drawn as the Cost under the foe's roll back; a failed attempt on an obstacle or a hazard adds 1 threat, 2 on a natural 1 (scene-game.ts foeOutcomeOf).
+    // A failed attempt on an obstacle or hazard adds 1 threat, 2 on a natural 1.
     if ((hazard || obstacle) && graded && r.tier === 'miss') r.threat = r.fumble ? 2 : 1;
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20); a band takes the hero's damage (DL_HIT). Its roll back, where the line holds one, rides on the roll.
-    if (fo && !hazard && r.fight && r.tier === 'miss') r.threat = r.fumble ? 2 : 1;
     if (fo && !hazard && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const dmg = r.dmg ? r.dmg.total : (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1); foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - dmg); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
       if (r.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) }; } }
     // KEEP: a fight's hits add to the streak. The longest streak is the streak's highest point, the hit that beats the foe included (delve.md: Streak).
