@@ -240,7 +240,7 @@ const DL_HELD_DIE = 32;
 // A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
 const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
 const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
-  return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names)}</p>
+  return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names).split(' · ').map((name, i) => <React.Fragment key={name}>{i > 0 && ' · ' }<span>{name}</span></React.Fragment>)}</p>
       <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}</p></div>
     <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" foe={false} /></DlInkFrame>
       {r.foe && <DlInkFrame w={foeSize * 36 / 40} h={Math.round(foeSize * 44 / 40) * 40 / 44}><DlFoeDie f={r.foe} size={foeSize} /></DlInkFrame>}</div></div>); };
@@ -480,7 +480,7 @@ const DlBody = ({ s }) => {
 // KEEP: a run started with no stop yet (nothing played) draws one stop box, [1], centred as the other stops are, and no dice row; "not started" is its own state, DlNowEmpty (the user, 2026-11-26: "i dont mind that we show just a [1] once its started ... the \"not started\" is just sort of its own state").
 const DL_NOW_MAX = 12; const DL_NOW_GAP_FEW = 56;
 // The roll that ended an overrun run is named "Latest roll" under its die, first among its names, whatever the held roll's title says.
-const dlNowNames = (kickers) => { const k = kickers.map((x) => (x === 'Last roll' ? 'Latest roll' : x)); return [...k.filter((x) => x === 'Latest roll'), ...k.filter((x) => x !== 'Latest roll')]; };
+const dlNowNames = (kickers) => dlTitle(kickers.map((x) => x === DL_END.overrun ? DL_END.live : x)).split(' · ');
 // KEEP: the not-started card's picture is its own: the run's rooms as one strip of boxes on one row, none lit, as it was before the Now card took the latest stops. A strip too narrow for numbers (under 20px a room) draws each room as a small tick.
 const DL_NOW_NUM_MIN = 20;
 const useDlNowWide = (n) => { const ref = React.useRef(null); const measure = React.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]); return [ref, useDlWidth(ref, measure, true)]; };

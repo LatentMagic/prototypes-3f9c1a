@@ -865,7 +865,9 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-box { --dvH-lift: color-mix(in srgb, var(--text) 6%, var(--popup)); container: dvh / inline-size; box-sizing: border-box; min-width: 0; display: grid; gap: 8px; align-content: start; padding: 12px; background: var(--popup); border: 1px solid var(--control-edge); color: var(--text); font-variant-numeric: tabular-nums; }
 .dvH-hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; min-width: 0; }
 .dvH-tt { display: grid; min-width: 0; }
+.dvH-k span { white-space: nowrap; }
 .dvH-k { margin: 0; font: 700 16px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
+@container dvh (max-width: 300px) { .dvH-k { font-size: 14px; } }
 .dvH-dd { display: flex; align-items: center; gap: var(--space-2); flex: none; }
 .dvH-ink { display: flex; align-items: center; justify-content: center; flex: none; }
 .dvH-ink > svg { flex: none; margin: 0; }

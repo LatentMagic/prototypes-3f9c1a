@@ -3444,7 +3444,7 @@
     const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]);
     const foeSize = Math.round(DL_HELD_DIE * 40 / 46);
     const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : "Roll " + r.n];
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvH-hd" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tt" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvH-k" }, dlTitle(names)), /* @__PURE__ */ React$1.createElement("p", { className: "dvH-rm" }, (x ? dlTurnName(r) + " · " : "") + dlRoomSaid(r), dlBeat(r) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· "), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-beat" }, dlBeat(r))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-dd" }, /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: size * (46 - 2 * dlInk(r)[0]) / 46, h: size * (50 - 2 * dlInk(r)[1]) / 46 }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, surface: "popup", foe: false })), r.foe && /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: foeSize * 36 / 40, h: Math.round(foeSize * 44 / 40) * 40 / 44 }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe, size: foeSize }))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvH-hd" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tt" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvH-k" }, dlTitle(names).split(" · ").map((name, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: name }, i > 0 && " · ", /* @__PURE__ */ React$1.createElement("span", null, name)))), /* @__PURE__ */ React$1.createElement("p", { className: "dvH-rm" }, (x ? dlTurnName(r) + " · " : "") + dlRoomSaid(r), dlBeat(r) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· "), /* @__PURE__ */ React$1.createElement("span", { className: "dvH-beat" }, dlBeat(r))))), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-dd" }, /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: size * (46 - 2 * dlInk(r)[0]) / 46, h: size * (50 - 2 * dlInk(r)[1]) / 46 }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, surface: "popup", foe: false })), r.foe && /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: foeSize * 36 / 40, h: Math.round(foeSize * 44 / 40) * 40 / 44 }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe, size: foeSize }))));
   };
   const DlChipBreak = ({ atk, dmg }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvH-pnl" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvC-pr" }, dmg && /* @__PURE__ */ React$1.createElement("span", { className: "dvC-pk" }, "Attack"), /* @__PURE__ */ React$1.createElement(DlNamed, { s: atk, total: atk.t })), dmg && /* @__PURE__ */ React$1.createElement("div", { className: "dvC-pr" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvC-pk" }, "Damage", dmg.typ && dmg.typ !== "damage" ? " · " + dmg.typ : ""), dmg.d ? /* @__PURE__ */ React$1.createElement(DlNamed, { s: dmg, total: dmg.t }) : /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, dmg.t)))));
   const DlChip = ({ id, label, atk, dmg, foe, lone, still, body }) => {
@@ -3718,10 +3718,7 @@
   };
   const DL_NOW_MAX = 12;
   const DL_NOW_GAP_FEW = 56;
-  const dlNowNames = (kickers) => {
-    const k = kickers.map((x) => x === "Last roll" ? "Latest roll" : x);
-    return [...k.filter((x) => x === "Latest roll"), ...k.filter((x) => x !== "Latest roll")];
-  };
+  const dlNowNames = (kickers) => dlTitle(kickers.map((x) => x === DL_END.overrun ? DL_END.live : x)).split(" · ");
   const DL_NOW_NUM_MIN = 20;
   const useDlNowWide = (n) => {
     const ref = React$1.useRef(null);
