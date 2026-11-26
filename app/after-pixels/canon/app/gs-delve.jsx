@@ -469,7 +469,7 @@ const DlBody = ({ s }) => {
 // session page's ending word as its result and the run's latest stops over its key moments in place of the line and bar. No sheet, no held roll. Nothing in the picture is pressable: the card opens the session page.
 // KEEP: a stop is drawn as the session page's map draws it (a 28px number box, a return keeping its back-arrow) and is never shrunk or wrapped; the row shows the latest stops that fit at the session map's pitch (a 44px column and a 6px gap), up to 12, so a phone card shows fewer.
 // KEEP: from 5 stops the boxes spread edge to edge on the card's content width; fewer sit centred at a 56px gap, wider than the session map's 32px (the user, 2026-11-26: "on 2-4 can we have a slighter greater spread?"), and never wider than the card.
-// KEEP: the key dice are the session page's 44px, up to four, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
+// KEEP: the key dice are the session page's 44px, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
 // KEEP: a run started with no stop yet (nothing played) draws one stop box, [1], centred as the other stops are, and no dice row; "not started" is its own state, DlNowEmpty (the user, 2026-11-26: "i dont mind that we show just a [1] once its started ... the \"not started\" is just sort of its own state").
 const DL_NOW_MAX = 12; const DL_NOW_GAP_FEW = 56;
 const dlNowNames = (kickers) => dlTitle(kickers).split(' · ');
