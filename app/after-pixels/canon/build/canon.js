@@ -3448,7 +3448,7 @@
   const dlFoeAtkSum = (f) => ({ d: [f.roll, "d20"], adv: f.other != null, drop: f.other, m: f.bonus ? [["+", f.bonus, "Bonus"]] : [], t: f.roll + f.bonus, vs: "vs AC " + f.dc, out: f.hit ? ["Hit", "err"] : ["Miss", ""] });
   const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], t: f.dmg, typ: f.type || "damage" });
   const DlNamed = ({ s, total }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, s.d[0]), s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop)), " ", s.d[1]), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-c" }, p[0], " ", /* @__PURE__ */ React$1.createElement("b", null, p[1]), " ", p[2])), total != null && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, "= ", /* @__PURE__ */ React$1.createElement("b", null, total)));
-  const dlTitle = (names) => names.join(" · ");
+  const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(" · ");
   const dlInk = (r) => r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5];
   const DL_HELD_DIE = 32;
   const DlInkFrame = ({ w, h, children }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ink", style: { width: w, height: h } }, children);
@@ -3673,7 +3673,7 @@
         head: "Ability",
         icon: "ability",
         say: left + " of " + of + " uses left",
-        rows: c.abilities.map((a) => ({ key: a.name, fig: /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of }), name: a.name, tag: (a.ult ? "Ultimate · " : "") + a.left + " of " + a.of + " left", text: a.does }))
+        rows: c.abilities.map((a) => ({ key: a.name, fig: /* @__PURE__ */ React$1.createElement(DlUses, { left: a.left, of: a.of }), name: a.name, tag: a.ult ? "Ultimate" : null, text: a.does }))
       },
       ...c.fight ? [{
         key: "fight",

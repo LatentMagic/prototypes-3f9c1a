@@ -233,8 +233,8 @@ const DlNamed = ({ s, total }) => (<span className="dvH-pn">
   {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
   {total != null && <span className="dvH-c">= <b>{total}</b></span>}
 </span>);
-// A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit".
-const dlTitle = (names) => names.join(' · ');
+// A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit". "Latest roll" always comes first: "Latest roll · Best roll".
+const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(' · ');
 // KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something, those words, and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
 // The empty margin round a die's drawn shape in its picture box, in die units (right, top; the same on the opposite side): the picture is 46 by 50, a hexagon leaves 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7.
 const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
@@ -422,7 +422,7 @@ const dlTabGroups = (c, slots) => {
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
         ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: 'Room for ' + (free === 1 ? 'one more' : free + ' more') + '.' }] : [])] },
     { key: 'abilities', head: 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
-      rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: (a.ult ? 'Ultimate · ' : '') + a.left + ' of ' + a.of + ' left', text: a.does })) },
+      rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: a.ult ? 'Ultimate' : null, text: a.does })) },
     ...(c.fight ? [{ key: 'fight', head: 'Fight', icon: 'fight', say: 'armour class ' + c.fight.defence,
       rows: dlFight(c).map((f) => ({ key: f.key, fig: <span className="dv8-num">{f.num}</span>, name: f.label, tag: f.kind || f.tip, text: f.text })) }] : []),
   ];
