@@ -29,24 +29,24 @@ import { GS_SESSION_BODY, GS_SESSION_QUIET } from './registry.js';
 
 const DL_CARRY = 3;
 const DL_HEROES = {
-  // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the armour an ox shield,
+  // Bryn is deployed content (monorepo delve/1.v2.json, archetype.ts): the heavy attack Cleave, the ultimate Shield bash (one use a run), the protection an ox shield (a name; no armour gear),
   // the starting gear a healing draught and a crowbar (a key), 23 health, stats as the archetype sets them.
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
     abilities: [{ name: 'Shield bash', of: 1, ult: true, does: 'Strikes at once, no roll' }],
-    fight: { defence: 10, armour: 2, armourName: 'ox shield', heavy: { name: 'Cleave', needs: 14, dmg: 7 } },
+    fight: { defence: 10, heavy: { name: 'Cleave', needs: 14, dmg: 7 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Crowbar', kind: 'key', does: '' }] },
-  // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak (armour value as Bryn's, sample), a honey cake (heals 6) and an axe (a key).
+  // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Tree-felling, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
   'Hal the Woodcutter': { name: 'Hal', cls: 'Woodcutter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
     abilities: [{ name: 'Tree-felling', of: 1, ult: true, does: 'Strikes at once, no roll' }],
-    fight: { defence: 10, armour: 2, armourName: 'elder-bark cloak', heavy: { name: 'Timberfall', needs: 14, dmg: 7 } },
+    fight: { defence: 10, heavy: { name: 'Timberfall', needs: 14, dmg: 7 } },
     gear: [{ name: 'Honey cake', kind: 'once', does: 'Heals 6' }, { name: 'Axe', kind: 'key', does: '' }] },
-  // Wren, from the same source (rogue): defence 14, protection 1 (a leather jerkin), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
+  // Wren, from the same source (rogue): defence 14, protection a leather jerkin (a name), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
     skills: [['Stealth', 'Dexterity'], ['Acrobatics', 'Dexterity'], ['Sleight of Hand', 'Dexterity'], ['Deception', 'Charisma'], ['Perception', 'Wisdom'], ['Investigation', 'Intelligence'], ['Persuasion', 'Charisma']],
     abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: 'Strikes at once, no roll' }],
-    fight: { defence: 14, armour: 1, armourName: 'leather jerkin', heavy: { name: 'Flurry', needs: 13, dmg: 6 } },
+    fight: { defence: 14, heavy: { name: 'Flurry', needs: 13, dmg: 6 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Coil of rope', kind: 'key', does: '' }] },
 };
 const DL_GEAR_DOES = { 'Iron key': 'Opens the lock it fits', 'Pepper pouch': 'Deals 4 damage', 'Flask of lamp oil': 'Restores 3 light' };
@@ -407,8 +407,10 @@ const DlMeters = ({ c }) => <div className="dv7-grp dv8-meters"><div className="
   {c.lightName && <DlMeter label={dlLightLabel(c.lightName)} n={c.light} of={c.lightMax} />}</div></div>;
 // The fight facts: a number in a cell, as Streak is. A named thing says what it is under its name.
 const dlFight = (c) => { const f = c.fight; if (!f) return [];
-  // KEEP: the game's armour class is the hero class's own plus what carried armour gear adds (monorepo campaign-game.ts heroAc; the sheet sends the total as `ac` and the gear's share as `acGear`, delve-sheet.ts). `defence` is that total, the same number as the struck-back target in the record's lines, so the parts are the class's own (the total less the armour's share) and the armour by name with its +.
-  return [{ key: 'ac', label: 'Armour class', num: f.defence, text: c.cls + ' ' + (f.defence - f.armour) + ', ' + f.armourName + ' +' + f.armour },
+  // KEEP: the game's armour class is the hero class's own plus what each carried armour item adds (monorepo campaign-game.ts heroAc; the sheet sends the total as `ac` and the carried share as `acGear`, delve-sheet.ts fightRows). `defence` is that total, the number the record's struck-back lines aim at; the sentence under it is the class's own (the total less the carried armour's share) first, then each carried armour item by name with its +. The hero's protection (ox shield, cloak) is a name only and adds nothing, so it is no part of the sum.
+  const carried = c.gear.filter((g) => g.kind === 'armour' && g.state !== 'used');
+  const own = f.defence - carried.reduce((n, g) => n + g.ac, 0);
+  return [{ key: 'ac', label: 'Armour class', num: f.defence, text: [c.cls + ' ' + own, ...carried.map((g) => g.name.toLowerCase() + ' +' + g.ac)].join(', ') },
     { key: 'heavy', label: f.heavy.name, kind: 'Heavy attack', num: f.heavy.needs, text: 'Needs ' + f.heavy.needs + ' to hit, ' + f.heavy.dmg + ' damage' }]; };
 const DlLabel = ({ name, kind }) => (kind ? <>{name}<small className="dv8-sub">{kind}</small></> : name);
 const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== 'used').length) }, (_, i) => c.gear[i] || null);
