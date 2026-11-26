@@ -222,7 +222,7 @@ const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: f.dd && f.
 // The named form: each number with its source; a dropped advantage die follows the kept one, its number struck diagonally.
 const DlNamed = ({ s, total }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}</span>
-  {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
+  {s.m.map((p, i) => <span key={i} className="dvH-c">{p[2] === 'Escalation' ? 'you have its measure' : <>{p[0]}{' '}<b>{p[1]}</b> {p[2]}</>}</span>)}
   {total != null && <span className="dvH-c">= <b>{total}</b></span>}
 </span>);
 // A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit". "Latest roll" always comes first: "Latest roll · Best roll".
