@@ -206,8 +206,6 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv8-sub { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 /* The streak is a count, not slots: a figure in the cell's 36px row. */
 .dv8-num { font: 700 22px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
-/* KEEP: Advantage's three cells (Inspiration, Streak, Longest streak) take their own widths and stay on one row from 320px up, so the group's visible content sits centred between its dividers. */
-.dv8.is-3b .dv8-adv .dv7-cells { grid-auto-columns: auto; }
 
 /* ---- the sheet: Stats, Advantage, Pack, Ability and Fight are five tabs at every width; the header (name, then bars) and the tabs take one of four steps by the sheet's own width (the dv4 container) ---- */
 /* KEEP: the sheet card has no padding of its own: each part carries the 16px side gutter, so the header's hover tint reaches the card's edges. The steps below are the card's width less those 32px, so each is written as a number plus 32px, and --dlw is that width for the sizes that follow it. */
@@ -341,7 +339,6 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-now-boxes::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
 .dl-now-boxes .dv2-num { min-width: 20px; height: 20px; padding: 0 2px; font-size: 11px; }
 .dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
-.dl-now-count { flex: none; min-width: 30px; }
 /* Boxes spread edge to edge, the route line behind; the line's ends are hidden by the first and last box. */
 .dl-now-stops { position: relative; display: flex; justify-content: space-between; align-items: center; height: var(--dv-num); min-width: 0; }
 .dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
@@ -384,10 +381,6 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dv9-sk { box-sizing: border-box; flex: none; width: calc((100% - (var(--per) - 1) * var(--gap)) / var(--per)); min-width: min-content; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 6px; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
 .dv9-nm { min-width: 0; font: 600 12px/1.15 var(--font-text); color: var(--text); }
 .dv9-tot { flex: none; font: 700 14px/1 var(--font-heading); color: var(--text); }
-.dv9-pips { display: inline-flex; gap: 4px; }
-.dv9-pips i { display: block; width: 12px; height: 12px; box-sizing: border-box; border: 1.5px solid var(--control-edge); }
-.dv9-pips i.is-on { background: var(--muted); border-color: var(--muted); }
-.dv9-pips.is-lit i.is-on { background: var(--off-white); border-color: var(--off-white); }
 /* ---- The held roll's chips: one row, "You" and "Foe"; a chip is the hit and, when it dealt damage, a hairline and its damage. ---- */
 /* KEEP: the sides share one row while a chip holds its hit and damage on one line, that is the held roll's content 452px wide or more (the chip's own 200px of content, where "25 vs AC 12 Hit | 21 damage" needs about 191px); narrower, they stack in two rows, You over Foe, each chip at the roll's full width so nothing wraps inside a chip, with 16px (--space-4) between You's chip and the Foe's label, so each label sits nearer its own chip. A label stands over each chip, 12px (--space-3) above its chip and 8px under the strip (the label's own line leaves the gap under the strip looking as large as the one above the chip), and the chips stay one height (the labels sit in a row of their own, whatever their length, and a lone side with nothing to say over its chip, such as a plain check, has no label); a lone side's chip takes the row under 400px and its half above it, its label the whole row. The breakdown opens under its own chip as wide as the chip (in two rows, the roll's full width), in the row below, so a closed one leaves no gap (the panel's own 8px margin is the gap when open). */
 .dvC-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; min-width: 0; }
