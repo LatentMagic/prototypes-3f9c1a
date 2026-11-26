@@ -3178,17 +3178,18 @@
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       skills: [["Athletics", "Strength"], ["Intimidation", "Charisma"], ["Perception", "Wisdom"], ["Survival", "Wisdom"]],
       abilities: [{ name: "Shield bash", of: 1, ult: true, does: "Strikes at once, no roll" }],
-      fight: { defence: 10, heavy: { name: "Cleave", needs: 14, dmg: 7 } },
+      fight: { defence: 16, acGear: 0, protection: "Ox shield", heavy: { name: "Cleave", die: "d4", modifier: 3, bonus: 2 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Crowbar", kind: "key", does: "" }]
     },
     // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 23 health; his own heavy attack Timberfall, ultimate Thunderstroke, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
     "Hal the Woodcutter": {
       name: "Hal",
       cls: "Woodcutter",
+      fightClass: "Fighter",
       stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
       skills: [["Athletics", "Strength"], ["Intimidation", "Charisma"], ["Perception", "Wisdom"], ["Survival", "Wisdom"]],
       abilities: [{ name: "Thunderstroke", of: 1, ult: true, does: "Strikes at once, no roll" }],
-      fight: { defence: 10, heavy: { name: "Timberfall", needs: 14, dmg: 7 } },
+      fight: { defence: 16, acGear: 0, protection: "Elder-bark cloak", heavy: { name: "Timberfall", die: "d4", modifier: 3, bonus: 2 } },
       gear: [{ name: "Honey cake", kind: "once", does: "Heals 6" }, { name: "Axe", kind: "key", does: "" }]
     },
     // Wren, from the same source (rogue): defence 14, protection a leather jerkin (a name), heavy attack Flurry needing 13 for 6, ultimate Sneak attack, 21 health, gear a healing draught and a rope (a key).
@@ -3198,7 +3199,7 @@
       stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
       skills: [["Stealth", "Dexterity"], ["Acrobatics", "Dexterity"], ["Sleight of Hand", "Dexterity"], ["Deception", "Charisma"], ["Perception", "Wisdom"], ["Investigation", "Intelligence"], ["Persuasion", "Charisma"]],
       abilities: [{ name: "Sneak attack", of: 1, ult: true, does: "Strikes at once, no roll" }],
-      fight: { defence: 14, heavy: { name: "Flurry", needs: 13, dmg: 6 } },
+      fight: { defence: 14, acGear: 0, protection: "Leather jerkin", heavy: { name: "Flurry", die: "d4", modifier: 3, bonus: 4 } },
       gear: [{ name: "Healing draught", kind: "once", does: "Heals 10" }, { name: "Coil of rope", kind: "key", does: "" }]
     }
   };
@@ -3579,6 +3580,7 @@
     return {
       name: h.name,
       cls: h.cls,
+      fightClass: h.fightClass,
       hp: m.hp,
       hpMax: s.hpMax,
       threat: s.threat,
@@ -3631,11 +3633,12 @@
   const dlFight = (c) => {
     const f = c.fight;
     if (!f) return [];
-    const carried = c.gear.filter((g) => g.kind === "armour" && g.state !== "used");
-    const own = f.defence - carried.reduce((n, g) => n + g.ac, 0);
+    const gear = f.acGear || 0;
+    const h = f.heavy;
+    const modifier = h.modifier + h.bonus;
     return [
-      { key: "ac", label: "Armour class", num: f.defence, text: [c.cls + " " + own, ...carried.map((g) => g.name.toLowerCase() + " +" + g.ac)].join(", ") },
-      { key: "heavy", label: f.heavy.name, kind: "Heavy attack", num: f.heavy.needs, text: "Needs " + f.heavy.needs + " to hit, " + f.heavy.dmg + " damage" }
+      { key: "ac", label: "Armour class", kind: f.protection, num: f.defence, text: [(c.fightClass || c.cls) + " " + (f.defence - gear), ...gear ? ["Armour +" + gear] : []].join(", ") },
+      { key: "heavy", label: h.name, kind: "Heavy attack", num: h.die + (modifier > 0 ? "+" + modifier : modifier < 0 ? modifier : ""), text: "+" + h.bonus + " heavy damage" }
     ];
   };
   const dlSlots = (c) => Array.from({ length: Math.max(c.carry, c.gear.filter((g) => g.state !== "used").length) }, (_, i) => c.gear[i] || null);
