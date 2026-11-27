@@ -1,0 +1,8 @@
+<!-- Step 4, When it ends. Ground: indigo #1D1B3A. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid slice">
+  <rect width="240" height="120" fill="#1D1B3A"/>
+  <rect x="64" y="46" width="60" height="60" fill="#F2EBE0"/>
+  <circle cx="94" cy="76" r="16" fill="#4CC38A"/>
+  <rect x="136" y="14" width="40" height="40" fill="#F2EBE0"/>
+  <circle cx="156" cy="34" r="11" fill="#4CC38A"/>
+</svg>

@@ -755,14 +755,14 @@ button.mcp-cb-ent{cursor:pointer}
 .mcp-dl-die .nm{font:700 15px var(--font-heading);fill:var(--muted);text-anchor:middle;dominant-baseline:central;font-variant-numeric:tabular-nums}
 .mcp-dl-die.is-strong .nm{fill:var(--success-on)}.mcp-dl-die.is-weak .nm{fill:var(--warning-on)}
 .mcp-dl-die .rim{fill:none;stroke:var(--success);stroke-width:1.75;vector-effect:non-scaling-stroke}
+/* Biggest hit: a dark ring in the surface's fill inside the die's edge; its width is set on the element, from the die's size. */
+.mcp-dl-die .cut{fill:none;stroke:var(--dl-fill);vector-effect:non-scaling-stroke}
 /* KEEP: a natural 1 is a miss with a red edge, heavier than a miss's grey one; no rim, so only the natural 20 has one. */
 .mcp-dl-die.is-fumble .hx{stroke:var(--error);stroke-width:2.25}.mcp-dl-die.is-fumble .nm{fill:var(--error)}
 /* KEEP: a use has no hero roll, so no grade colour: the empty hex with a muted sparkle where the numbers are. */
 .mcp-dl-die .gl{fill:var(--muted);stroke:none}
 .mcp-dl-die.is-won .hx{fill:var(--success);stroke:none}.mcp-dl-die.is-won .gl{fill:var(--success-on)}
 .mcp-dl-die .gh{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke}
-/* The foe's roll: a red hex behind the die, outside the advantage hex. */
-.mcp-dl-die .fo{fill:color-mix(in srgb,var(--error) 50%,var(--card));stroke:var(--error);stroke-opacity:.9;stroke-width:1;vector-effect:non-scaling-stroke}
 .mcp-dl-die .tw polygon{fill:var(--dl-fill);stroke:var(--muted);stroke-width:1.25;vector-effect:non-scaling-stroke}
 .mcp-dl-die .tw text{font:700 17px var(--font-heading);fill:var(--muted);text-anchor:middle;dominant-baseline:central}
 /* KEEP: the picked die gets an off-white ring outside its own rim, so a natural's rim still shows. */
@@ -808,126 +808,105 @@ button.mcp-cb-ent{cursor:pointer}
    ============================================================================ */
 /* ---- from delve-v3.html ---- */
 /* ---- The card and its top: result statement, character sheet (v2's, with its heading). ---- */
-.dv2 { container: dv2 / inline-size; display: grid; gap: 24px; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
+.dv2 { --dv-num: 28px; --dv-stop-top: 12px; container: dv2 / inline-size; display: grid; gap: 24px; min-width: 0; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-card); padding: 16px; }
 @container gs (min-width: 720px) {
   .dv2 { padding: 24px; }
 }
 /* ---- The die (v2, agreed). ---- */
 .dv2-dbtn { position: relative; z-index: 1; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: grid; place-items: center; color: inherit; }
 .dv2-dbtn:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
-/* KEEP: a die is drawn 24-40px but its tap target is 44px tall and as wide as a room's column allows (44px at most), centred on the die, so it meets the 44px touch floor wherever the page has the room. A target never reaches past its column, so it never covers a neighbouring die: where 9-11 rooms share a 280-390px phone, a column is 27-42px wide and the target is that wide. */
+/* KEEP: a die in the open room is drawn 30px (a key moment 44px), but its tap target is 44px tall and as wide as a room's column allows (44px at most), centred on the die, so it meets the 44px touch floor wherever the page has the room. A target never reaches past its column, so it never covers a neighbouring die: where 9-11 rooms share a 280-390px phone, a column is 27-42px wide and the target is that wide. */
 .dv2-dbtn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, var(--hit-w, 44px)); height: max(100%, 44px); transform: translate(-50%, -50%); }
-.dvA2-route { container: dvr / inline-size; }
-.dvA2-route .dv2-dbtn { --hit-w: min(44px, calc(100cqw / var(--dv-stops, 1))); }
 /* ---- The route (v2's E). ---- */
-.dv2-num { position: relative; z-index: 1; flex: none; min-width: 28px; height: 28px; padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
-.dv2-num.is-back { box-shadow: inset 0 0 0 1.5px var(--muted); color: var(--muted); }
+.dv2-num { position: relative; z-index: 1; flex: none; min-width: var(--dv-num); height: var(--dv-num); padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
+.dv2-num.is-none { color: var(--muted); }
 .dv2-back { width: 0.8em; height: 0.8em; flex: none; }
-.dv2-sname { font: 600 12px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
-.dvA2-route { display: flex; min-width: 0; }
-.dvA2-stop { flex: 1 1 0; min-width: 0; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 10px; padding: 8px 0 9px; }
-.dvA2-stop.is-on { background: color-mix(in srgb, var(--text) 5%, var(--card)); }
-.dvA2-stop.is-on .dv2-num, .dl-now-stop.is-on .dv2-num { background: var(--off-white); color: var(--page); box-shadow: none; }
-.dvA2-head { position: relative; width: 100%; display: grid; justify-items: center; gap: 4px; text-align: center; padding: 0 4px; box-sizing: border-box; }
-.dvA2-head::before { content: ''; position: absolute; top: 13px; left: 0; right: 0; height: 2px; background: var(--control-edge); }
-.dvA2-stop:first-child .dvA2-head::before { left: 50%; }
-.dvA2-stop:last-child .dvA2-head::before { right: 50%; }
-.dvA2-dice { position: relative; display: grid; gap: 4px; align-content: start; justify-items: center; }
-.dvE-mom { display: grid; justify-items: center; margin: 4px 0; }
-.dvE-mom:last-child { margin-bottom: 0; }
-/* Column lines, the study (brief item 0): a rule between rooms, or a line down each room behind its dice. */
-.dvA2-route.is-cols-between .dvA2-stop + .dvA2-stop { box-shadow: inset 1px 0 0 var(--line); }
-.dvE-main { display: grid; gap: 16px; min-width: 0; }
-/* KEEP: on desktop the held roll is as tall as the route beside it, so the two end level. It sits beside the route (is-beside) from a run card of 800px, or wider when the run has many rooms (288px for the held roll plus 64px for each room, so every room keeps a named column); the step depends on room count. Below that it sits above the route. */
-.dvE-main.is-beside { grid-template-columns: minmax(0, 1fr) 272px; align-items: stretch; }
-.dvE-side, .dv3-live { display: grid; min-width: 0; }
-.dvE-main:not(.is-beside) > .dvE-side { order: -1; }
-/* ---- The held roll, three designs. Shared: the pop-up fill and edge, the name of the roll, the moment line. ---- */
-.dv3-held { box-sizing: border-box; min-width: 0; display: grid; align-content: start; gap: 12px; padding: 16px; background: var(--popup); border: 1px solid var(--control-edge); }
-.dv3-hk { display: grid; gap: 2px; min-width: 0; }
-.dv3-k { margin: 0; font: 700 20px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
-.dv3-n { margin: 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); }
-.dv3-beat { margin: 0; font: 600 14px/1.3 var(--font-text); color: var(--success); }
-.dv3-lht { display: grid; gap: 4px; min-width: 0; }
-.is-strong { --tc: var(--success); }
-.is-weak { --tc: var(--warning); }
-.is-miss { --tc: var(--text); }
-.is-fumble { --tc: var(--error); }
-/* 1 · Ledger: the die and its name centred, then a labelled row per fact. */
-.dv3-lh { display: grid; justify-items: center; gap: 10px; text-align: center; }
-.dv3-dl { margin: 0; display: grid; border-top: 1px solid var(--line); }
-/* KEEP: every label in the held roll (Used, Foe roll and the rest) sits centred on its row's height, so a row that wraps to two lines, or holds the foe's die, keeps its label in the middle, not at the top. */
-.dv3-dl > div { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
-.dv3-dl dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
-.dv3-dl dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
-.dv3-dl dd span { font-weight: 400; color: var(--muted); }
-/* KEEP: a "vs 12" or "vs defence 13" never splits, so a number never ends up alone on a line; the whole unit drops to the next line instead (280px: "Dexterity 6" then "vs 12"). */
-.dv3-dl dd span { white-space: nowrap; }
-/* KEEP: what a used ability or gear does is a muted second line under its name that wraps inside the held roll, so a long line never runs past the box at 280px. */
-.dv3-dl dd span.is-does { display: block; white-space: normal; }
-.dv3-dl dd[class*="is-"] { color: var(--tc); }
-/* The foe's roll in the held roll: its diamond (DelveFoeDie), what it did, the defence; then the foe's health as a meter. */
-.dv3-foe dd { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.dv3-foe dd b { color: var(--text); }
-.dv3-foe dd b.is-err { color: var(--error); }
-.dv3-dl > .dv3-fm { grid-template-columns: minmax(0, 1fr); align-items: center; }
-/* KEEP: at the narrowest width (a 280px window) every label in the held roll sits above its value instead of beside it: the 76px label column leaves about 50px, so "Dexterity" spills, and the foe roll's diamond and "Hit you for 2" share a line with "vs defence 13" second. */
-@container dv2 (max-width: 240px) {
-  .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.dv3-live { display: grid; min-width: 0; }
+/* ---- The board, Glance: the map, then the open room and the held roll. ---- */
+/* KEEP: the hairline between the map and the open room sits midway between what is drawn: 20px from the lowest mark of the map to the line (12px gap and the stop's 8px foot) and 20px from the line to the open room's top (its number box or the held roll's edge), measured on the drawn edges, not the boxes. */
+.dvG { display: grid; gap: 12px; min-width: 0; }
+/* KEEP: the map's first and last boxes sit on the card's content edges: a box is 28px in its 44px column, so the map reaches 8px past each edge. */
+.dvG-mapw { container: dvg / inline-size; margin: 0 -8px; min-width: 0; }
+.dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 8px; align-items: start; }
+.dvG-map.is-few { justify-content: center; }
+.dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 48px; padding: var(--dv-stop-top) 0 8px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
+button.dvG-stop { cursor: pointer; }
+button.dvG-stop:focus-visible { outline: 2px solid var(--off-white); outline-offset: 0; }
+/* KEEP: a stop's whole column is tinted a step lighter than the card while the mouse is over it (mouse only: touch has no hover) and while it is the open room, the tint the route's open stop had before the board; the open stop's box is also off-white. Hover is paint only: it never opens a room or holds a roll. The tint reaches 3px past the 44px column each side (half the map's smallest gap, so two tinted neighbours only touch), which leaves the widest marks (two dots and a die, 42px) at least 4px clear of its edge, where they used to touch it. Pressing scales the column to the press scale, as Escape's cards do. */
+button.dvG-stop { transition: background var(--time-swap) var(--ease), box-shadow var(--time-swap) var(--ease), transform var(--time-press) var(--ease); }
+button.dvG-stop:active { transform: scale(var(--press-scale)); }
+.dvG-stop.is-on { --dv-tint: color-mix(in srgb, var(--text) 6%, var(--card)); background: var(--dv-tint); box-shadow: -3px 0 0 var(--dv-tint), 3px 0 0 var(--dv-tint); }
+@media (hover: hover) { button.dvG-stop:hover { --dv-tint: color-mix(in srgb, var(--text) 6%, var(--card)); background: var(--dv-tint); box-shadow: -3px 0 0 var(--dv-tint), 3px 0 0 var(--dv-tint); } }
+@media (prefers-reduced-motion: reduce) { button.dvG-stop { transition: none; } }
+/* KEEP: the line joining two stops on a row is drawn in halves, each stop drawing the half that reaches from its centre to midway across the gap, so no line is ever drawn inside another stop's column and none can show through a box when a pressed stop scales (a transform makes the stop its own layer, which put the next stop's whole line over it); a half is drawn 1/.97 long so a pressed stop's scaled half still meets its neighbour's, and it sits at the middle of the number box, worked out from the stop's top padding and the box's height (`--dv-stop-top`, `--dv-num`), the two values that place the box. */
+.dvG-stop:not(.is-rs)::before, .dvG-stop:not(.is-re)::after { content: ''; position: absolute; top: calc(var(--dv-stop-top) + var(--dv-num) / 2 - 1px); width: calc((50% + var(--gap, 6px) / 2) / var(--press-scale, 1)); height: 2px; background: var(--control-edge); }
+.dvG-stop:not(.is-rs)::before { right: 50%; }
+.dvG-stop:not(.is-re)::after { left: 50%; }
+.dvG-stop.is-on .dv2-num, .dvG-th .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
+.dvG-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
+.dvG-marks { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 44px; max-width: 44px; }
+.dvG-mrow { display: flex; justify-content: center; align-items: center; gap: 4px; }
+/* KEEP: a mini die's hexagon sits 2px inside its picture on every side, so a stop whose marks hold a die keeps 2px less padding under it: the map's spacing is measured to the hexagon, not its empty margin. */
+.dvG-marks .mcp-dl-die { width: 20px; height: auto; }
+.dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 6px; }
+.dvG-marks .dl-now-mark { width: 7px; height: 7px; }
+/* KEEP: a use among a stop's marks is a grey sparkle 9px across with a -1px margin, so it takes the 7px a dot takes and the other marks do not spread. */
+.dvG-spark { display: block; width: 9px; height: 9px; margin: -1px; fill: var(--control-edge); flex: none; }
+.dvG-open { display: grid; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); min-width: 0; }
+.dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.dvG-th { margin: 0; display: flex; gap: 10px; align-items: center; min-width: 0; }
+.dvG-name { font: 700 16px/1.25 var(--font-heading); color: var(--text); text-wrap: balance; }
+.dvG-dice { display: flex; flex-wrap: wrap; gap: 8px 4px; align-items: center; }
+.dvG-held { display: grid; min-width: 0; }
+@container dv2 (min-width: 700px) {
+  .dvG-open { grid-template-columns: minmax(0, 1fr) minmax(0, 66%); column-gap: 24px; align-items: start; }
 }
-/* KEEP: under a room in the phone list the held roll reads its own width, not the run card's (the list drops the card's side padding, so the card never gets narrow enough): below 240px its labels sit above their values: the held roll is 174, 194 and 214px at 280, 300 and 320px windows (stacked), and 254 and 284px at 360 and 390px (two columns). */
-.dvL-held { container: dvlh / inline-size; }
-@container dvlh (max-width: 240px) {
-  .dvL-held .dv3-dl > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+/* ---- The held roll (a pressed die): the head, then the turn as sums. ---- */
+.dvH-box { --dvH-lift: color-mix(in srgb, var(--text) 6%, var(--popup)); container: dvh / inline-size; box-sizing: border-box; min-width: 0; display: grid; gap: 8px; align-content: start; padding: 12px; background: var(--popup); border: 1px solid var(--control-edge); color: var(--text); font-variant-numeric: tabular-nums; }
+.dvH-hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; min-width: 0; }
+.dvH-tt { display: grid; min-width: 0; }
+.dvH-k span { white-space: nowrap; }
+.dvH-k { margin: 0; font: 700 16px/1.2 var(--font-heading); color: var(--text); text-wrap: balance; }
+@container dvh (max-width: 300px) { .dvH-k { font-size: 14px; } }
+.dvH-dd { display: flex; align-items: center; gap: var(--space-2); flex: none; }
+.dvH-ink { display: flex; align-items: center; justify-content: center; flex: none; }
+.dvH-ink > svg { flex: none; margin: 0; }
+/* KEEP: the held roll's room line and, on the same line, what the turn beat or passed ("Roll 10 · The shrine cavern · Grizzletooth beaten", the last in green) balance their lines, so none ends on a lone word; the beaten or passed words and the Cost ("Cost Threat +1") wrap between their words, so they fit a 280px box. */
+.dvH-rm { margin: 2px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
+.dvH-beat { color: var(--success); }
+/* KEEP: under a 480px box the beaten or passed words and the Cost each take their own line, without the dot that joins them to the room line on a wider box, so a wrapped line never starts with a dot. */
+@container dvh (max-width: 479px) { .dvH-sep { display: none; } .dvH-beat { display: block; } }
+.dvH-act { margin: 0; font: 600 14px/1.3 var(--font-text); }
+.dvH-act span { font-weight: 400; color: var(--muted); }
+/* KEEP: the held roll's short text (its action, "beaten" line and the foe's name) balances its lines, so none ends on a lone word: "Climb to the skeleton / on the high ledge", "Mortlake, the / drowned captain". */
+.dvH-act, .dvH-fm .dv6-bar > span { text-wrap: balance; }
+.dvH-act span.is-does { display: block; }
+.dvH-out { font-weight: 700; font-size: 13px; }
+.dvH-out.ok { color: var(--success); } .dvH-out.err { color: var(--error); } .dvH-out.part { color: var(--warning); }
+/* KEEP: the named form opens in a panel under the sum, in the sum's open colour, through the 220ms fold; its parts break only between one another, and a dropped advantage die's number is struck by a white diagonal stroke, not a horizontal line through the text. */
+.dvH-pnl { margin-top: 8px; padding: 10px; background: var(--dvH-lift); }
+.dvH-pn { display: flex; flex-wrap: wrap; column-gap: 7px; row-gap: 2px; font: 400 14px/22px var(--font-text); color: var(--muted); }
+.dvH-c { white-space: nowrap; }
+.dvH-pn b { font-weight: 600; color: var(--text); }
+.dvH-x { position: relative; display: inline-block; padding: 0 3px; font-weight: 600; }
+.dvH-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 13px; border-top: 1px solid var(--text); transform: translate(-50%, -50%) rotate(-60deg); }
+.dvH-fm { min-width: 0; }
+.dvH-lab { display: flex; flex-wrap: wrap; column-gap: 12px; overflow: hidden; }
+.dvH-who { flex: 0 1 auto; min-width: 0; }
+.dvH-cost { position: relative; flex: 0 1 auto; min-width: 0; }
+/* KEEP: the cost's middle dot hangs in the gap before it and is clipped by the label when the cost drops to its own line, so the dot shows only when the cost shares the You line. */
+.dvH-cost::before { content: '·'; position: absolute; left: -12px; width: 12px; text-align: center; }
+.dvH-nb { white-space: nowrap; }
+/* KEEP: the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
+.dvH-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
+.dvH-fm .dv6-bar > span { grid-column: 1 / -1; align-self: start; font: 600 13px/1.4 var(--font-text); color: var(--text); white-space: normal; overflow-wrap: break-word; }
+.dvH-fm .dv6-bar small { font: 600 14px/1.4 var(--font-text); color: var(--text); }
+.dvH-fm .mcp-track { height: 4px; }
+@container dvh (min-width: 420px) {
+  .dvH-fm .dv6-bar { grid-template-columns: minmax(0, auto) minmax(48px, 1fr) auto; grid-template-rows: none; column-gap: 10px; }
+  .dvH-fm .dv6-bar > span { grid-column: auto; align-self: center; }
 }
-/* KEEP: when the held roll sits above the route (not beside it, a step that depends on room count) or under a room in the list, it is kept short: the ledger's die moves beside its name, the big figures shrink. */
-.dvL-held .dv3-held, .dvE-main:not(.is-beside) .dv3-held { padding: 12px; gap: 8px; }
-.dvL-held .dv3-lh, .dvE-main:not(.is-beside) .dv3-lh { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; text-align: left; gap: 12px; }
-.dvL-held .dv3-lh svg, .dvE-main:not(.is-beside) .dv3-lh svg { width: 52px; height: 57px; }
-.dvL-held .dv3-dl > div, .dvE-main:not(.is-beside) .dv3-dl > div { padding: 6px 0; }
-.dvL-held .dv3-k, .dvE-main:not(.is-beside) .dv3-k { font-size: 18px; }
-.dvL-held .dv3-mk, .dvE-main:not(.is-beside) .dv3-mk { top: 12px; right: 12px; }
-/* ---- A key moment picked: an off-white diamond in the held box's top right. ---- */
-.dv3-held { position: relative; }
-.dv3-mk { position: absolute; top: 16px; right: 16px; width: 10px; height: 10px; background: var(--off-white); transform: rotate(45deg); }
-/* ---- The held roll above the route (stacked): one layout at every width, no window or container query. Tokens and existing parts only. ---- */
-/* KEEP: the stacked box is padded 16px all round (the key-moment diamond 16px from its top and right), the roomier of the two paddings above; the extra class beats `.dvE-main:not(.is-beside) .dv3-held` (12px) whatever the order. */
-.dv3-held.is-stacked { --dvS-head: fit-content(calc(52px + 12px + 104px)); }
-.dvE-main:not(.is-beside) .dv3-held.is-stacked { padding: 16px; }
-.dvE-main:not(.is-beside) .dv3-held.is-stacked .dv3-mk { top: 16px; right: 16px; }
-/* KEEP: the head column (die and name) is as wide as its title and no wider, so the facts sit 24px after "Roll 2" and shift little as the roll changes; it stops at 168px (the die, a 12px gap and 104px of text, the widest one-line title the runs have being "Closest call" at 100px), past which the title wraps ("The winning blow" on two lines). */
-.dvS-body { display: grid; grid-template-columns: var(--dvS-head) minmax(0, 1fr); gap: 0 24px; align-items: center; min-width: 0; }
-.dvS-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.dvS-head .dv3-hk { min-width: 0; }
-.dvS-head .dv3-k { text-wrap: balance; }
-.dvS-lines { display: grid; gap: 12px; min-width: 0; }
-/* KEEP: line 1 wraps only between its two groups (what was tried; the dice), never inside one: the room never shrinks, and a long action or use wraps inside its own value, never past the box. */
-.dvS-line { margin: 0; display: flex; flex-wrap: wrap; align-items: start; gap: 12px 36px; padding-right: 24px; min-width: 0; }
-.dvS-grp { display: flex; gap: 0 24px; min-width: 0; }
-.dvS-fact { display: grid; gap: 2px; align-content: start; min-width: 0; }
-.dvS-grp > .dvS-fact { flex: 0 1 auto; }
-.dvS-grp > .dvS-fact:first-child { flex-shrink: 0; }
-.dvS-grp > .dvS-fact:first-child dd { white-space: nowrap; }
-.dvS-grp > .dvS-fact + .dvS-fact dd { text-wrap: pretty; }
-.dvS-fact dt { font: 600 13px/1.4 var(--font-text); color: var(--muted); }
-.dvS-fact dd { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
-.dvS-fact dd span { font-weight: 400; color: var(--muted); white-space: nowrap; }
-/* KEEP: what a used ability or gear does always sits on its own muted row under its name, in every card shape and at every width, so the layout never depends on how long the words are. */
-.dvS-fact dd span.is-does { display: block; white-space: normal; }
-.dvS-fact dd[class*="is-"] { color: var(--tc); }
-/* KEEP: line 2 is the foe's answer, under a 1px rule: its roll (a diamond, what it did, the defence), then the foe's health as a fact named for the foe, its bar and count beside it (8px apart). The bar grows to 240px and no further (96px at least), so it never runs to the box's right edge; a foe beaten with no strike-back shows the health fact alone, at 0. No foe, no rule and no line 2. */
-.dvS-line.is-foe { flex-wrap: nowrap; align-items: stretch; padding: 12px 0 0; border-top: 1px solid var(--line); gap: 12px 24px; }
-.dvS-line.is-foe > .dvS-fact { flex: 0 0 auto; }
-.dvS-foe { display: flex; align-items: center; column-gap: 6px; row-gap: 0; flex-wrap: wrap; font-weight: 400; color: inherit; white-space: normal; }
-.dvS-foe b { color: var(--text); white-space: nowrap; }
-.dvS-foe b.is-err { color: var(--error); }
-.dvS-line.is-foe .dvS-meter { display: grid; flex: 1 1 96px; min-width: 96px; max-width: 240px; }
-.dvS-meter .dv6-bar, .dv3-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
-/* KEEP: in a held roll the foe's name is on its own line and wraps in full, never cut with an ellipsis; the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
-.dvS-meter .dv6-bar > span, .dv3-fm .dv6-bar > span { grid-column: 1 / -1; align-self: start; font: 600 13px/1.4 var(--font-text); color: var(--muted); white-space: normal; overflow-wrap: break-word; }
-.dv3-fm .dv6-bar > span { color: var(--text); }
-.dvS-meter .dv6-bar small, .dv3-fm .dv6-bar small { font: 600 14px/1.4 var(--font-text); color: var(--text); }
 /* ---- from delve-v4.html ---- */
 /* ---- The sheet card: the session card's surface. ---- */
 .dv4-lay { display: grid; gap: var(--gs-sec-gap); min-width: 0; }
@@ -1038,8 +1017,6 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8-sub { display: block; margin-top: 2px; font: 600 11px/1.2 var(--font-text); color: var(--muted); }
 /* The streak is a count, not slots: a figure in the cell's 36px row. */
 .dv8-num { font: 700 22px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
-/* KEEP: Advantage's two cells take their own widths, not equal columns, since "Inspiration" would double the streak's cell, so the group's visible content, not a stretched grid, sits centred between its dividers. */
-.dv8.is-3b .dv8-adv .dv7-cells { grid-auto-columns: auto; }
 
 /* ---- the sheet: Stats, Advantage, Pack, Ability and Fight are five tabs at every width; the header (name, then bars) and the tabs take one of four steps by the sheet's own width (the dv4 container) ---- */
 /* KEEP: the sheet card has no padding of its own: each part carries the 16px side gutter, so the header's hover tint reaches the card's edges. The steps below are the card's width less those 32px, so each is written as a number plus 32px, and --dlw is that width for the sizes that follow it. */
@@ -1072,7 +1049,7 @@ button.mcp-cb-ent{cursor:pointer}
 @media (prefers-reduced-motion: reduce) { .dv8.is-3b.is-tap .dl-fold svg, .dv8.is-3b.is-tap .esx-fold, .dv8.is-3b.is-tap .dl-tabwrap > .esx-fold { transition: none; } }
 
 /* One row (a sheet 796px wide or more). KEEP: the header's padding is 20px above and below its contents; the tallest part, the stacked meters, sets the header's height, and the hairlines and the five tabs stretch to fill it, each tab's icon and word centred in it, with no fixed height in the row; a part shorter than the meters stretches, and a taller one would leave the meters centred.
-   KEEP: the tabs take the width the name and bars leave, each at most 140px wide, so the sheet has no empty side gaps; they shrink with the sheet (their word 10px down to 8px, its letter-spacing to 0) and the bars give way first, down to 128px. The tabs are always shown here, whatever the fold's state, so a resize never waits on a render. */
+   KEEP: the tabs take the width the name and bars leave, each at most 140px wide, so the sheet has no empty side gaps; they shrink with the sheet (their word at 11px, its letter-spacing at 0) and the bars give way first, down to 128px. The tabs are always shown here, whatever the fold's state, so a resize never waits on a render. */
 @container dv4 (min-width: calc(796px + 32px)) {
   .dv8-r1 { display: flex; flex-wrap: nowrap; align-items: stretch; padding: 20px 16px; }
   .dl-head { display: contents; }
@@ -1082,7 +1059,7 @@ button.mcp-cb-ent{cursor:pointer}
   .dl-tabwrap > .esx-fold { grid-template-rows: 1fr; opacity: 1; visibility: visible; flex: 100 1 0; min-width: 0; max-width: 756px; }
   .dv8.is-3b .dl-tabgrp { padding: 0 0 0 14px; border-left: 1px solid var(--line); justify-items: stretch; align-content: stretch; flex: 1 1 auto; }
   .dv8.is-3b .dl-tabwrap > .esx-fold > div { display: flex; flex-direction: column; }
-  .dv8.is-3b .esx-cards.dl-tabs { grid-template-rows: minmax(0, 1fr); flex: 1 1 auto; --f: clamp(8px, calc(8px + (var(--dlw) - 680px) / 60), 10px); grid-template-columns: repeat(var(--dl-tabs), minmax(calc(var(--f) * 6.27 + 8px), 140px)); gap: clamp(4px, calc((var(--dlw) - 560px) / 30), 10px); }
+  .dv8.is-3b .esx-cards.dl-tabs { grid-template-rows: minmax(0, 1fr); flex: 1 1 auto; --f: 11px; grid-template-columns: repeat(var(--dl-tabs), minmax(calc(var(--f) * 6.27 + 8px), 140px)); gap: clamp(4px, calc((var(--dlw) - 560px) / 30), 10px); }
   .dv8.is-3b .esx-card.dl-tab { height: auto; }
   .dv8.is-3b .dl-tab-w { font-size: var(--f); letter-spacing: 0; }
 }
@@ -1093,7 +1070,7 @@ button.mcp-cb-ent{cursor:pointer}
   .dv8.is-3b .dl-tabgrp { margin: 0 16px; padding: 12px 0; justify-items: stretch; }
   .dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: repeat(var(--dl-tabs), minmax(0, 1fr)); gap: clamp(4px, calc(var(--dlw) * .023), 10px); }
   .dv8.is-3b .esx-card.dl-tab { height: clamp(64px, calc(var(--dlw) * .182), 80px); }
-  .dv8.is-3b .dl-tab-w { font-size: clamp(8px, calc(var(--dlw) / 44), 10px); letter-spacing: clamp(0px, calc((var(--dlw) - 352px) / 120), .07em); }
+  .dv8.is-3b .dl-tab-w { font-size: 11px; letter-spacing: clamp(0px, calc((var(--dlw) - 352px) / 120), .07em); }
   /* A folded sheet shows no panel, so a panel left open by the one-row layout never shows for a frame. A tap that folds it lets the panel close with the tabs, then hides it. */
   .dv8.is-3b:not(.is-unfolded):not(.is-tap) .dv7-band > .esx-fold { display: none; }
 }
@@ -1155,85 +1132,42 @@ button.mcp-cb-ent{cursor:pointer}
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
-/* ---- The route as a list of closed rooms (a run card under 610px: gs-delve.jsx, DL_LIST_BELOW). ---- */
-/* KEEP: as a list the run card has no side padding of its own: the result and each room carry the 16px gutter, as the hero sheet's parts do, so a room's hover band runs edge to edge of the card like the sheet header's, and the rooms' chevrons sit 28px from the edge. */
-.dv2.is-list { padding: 16px 0; }
-.dv2.is-list > .dv7r-band { padding: 0 16px; }
-.dvL-list { position: relative; isolation: isolate; display: grid; min-width: 0; }
-.dvL-row { position: relative; min-width: 0; }
-/* The path: the route's 2px control-edge rule down the left, through every room's number, from the first number's centre to the last's. */
-.dvL-row::before { content: ''; position: absolute; z-index: 1; left: 29px; top: 0; bottom: 0; width: 2px; background: var(--control-edge); }
-.dvL-row.is-first::before { top: 24px; }
-.dvL-row.is-last::before { bottom: auto; height: 24px; }
-.dvL-row.is-first.is-last::before { display: none; }
-/* KEEP: one room is one line at least 48px tall (the system's control height): its number box, its name, its tally pushed to the line's right end, and the chevron in the 64px kept clear at the right, as the hero sheet's header keeps it. The number and the chevron sit on the name's line, so a line whose tally wraps under the name keeps them level with the name. */
-.dvL-top { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; align-items: start; min-height: 48px; padding: 0 64px 0 16px; transition: background-color var(--time-press) var(--ease); }
-.dvL-row .dv2-num.dvL-num { justify-self: center; margin-top: 10px; pointer-events: none; }
-.dvL-row.is-open .dv2-num { background: var(--off-white); color: var(--page); box-shadow: none; }
-.dvL-line { display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; row-gap: 2px; min-width: 0; min-height: 48px; padding: 6px 0; box-sizing: border-box; }
-.dvL-head { display: flex; align-items: center; flex: 0 1 auto; min-width: 0; min-height: 36px; margin: 0; padding: 0; background: none; border: 0; color: var(--text); text-align: left; }
-/* KEEP: a room's name is a list row's title (Hanken Grotesk 600, 16px, text colour) at every width; a room passed through with no rolls is the same size at body weight, quieter by weight, not colour. */
-.dvL-name { min-width: 0; font: 600 16px/1.3 var(--font-text); color: var(--text); text-wrap: balance; overflow-wrap: break-word; }
-.dvL-name.is-pass { font-weight: 400; }
-/* KEEP: the tap target is the whole line: the button's ::before covers it, above the number, name and dots, and only the tally's dice sit above it, so a tap anywhere else on the line opens or shuts the room. Rows with no rolls are not buttons and take no hover. */
-button.dvL-head { cursor: pointer; -webkit-tap-highlight-color: transparent; }
-button.dvL-head::before { content: ''; position: absolute; inset: 0; z-index: 1; }
-button.dvL-head:focus-visible { outline: 0; }
-button.dvL-head:focus-visible::before { outline: 2px solid var(--off-white); outline-offset: -2px; }
-/* KEEP: hover (mouse only) lifts the whole line to the pop-up fill, the hero sheet header's hover, and turns the chevron to full text colour; a press lifts it a step further. An open room's dice and held roll take no band: the line alone is the control. */
-@media (hover: hover) { .dvL-top.is-tap:hover { background: var(--popup); } .dvL-top.is-tap:hover button.dvL-head svg { color: var(--text); } }
-.dvL-top.is-tap:has(button.dvL-head:active) { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
-/* KEEP: the chevron points down on a shut room and turns 180° to point up as it opens, on the dropdown's 220ms curve, and never moves: it is centred on the 48px line in every state, and sits 22px from the right edge, in line with the sheet header's chevron. */
-button.dvL-head svg { position: absolute; right: 22px; top: 14px; color: var(--muted); transform: rotate(90deg); transition: transform var(--time-dropdown) var(--ease), color var(--time-press) var(--ease); }
-button.dvL-head[aria-expanded="true"] svg { transform: rotate(270deg); color: var(--text); }
-/* KEEP: a closed room's key moments are 24px dice (the smallest target WCAG 2.2 AA allows) and its other rolls 8px dots, as the now card draws a room (a use is a grey dot here, a sparkle on the now card); a die's tap target is 28px wide so neighbours never overlap, and 44px tall. The tally fades out as its room opens, since the opened dice repeat it. */
-.dvL-tally { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; margin-left: auto; min-width: 0; transition: opacity var(--time-swap) var(--ease), visibility 0s; }
-/* KEEP: an open room's hidden tally takes no room in the line, or one that wrapped under the name (a narrow phone, or many dots) leaves a blank band between the header and the dice. */
-.dvL-row.is-open .dvL-tally { position: absolute; opacity: 0; visibility: hidden; transition: opacity var(--time-swap) var(--ease), visibility 0s linear var(--time-swap); }
-.dvL-tally .dv2-dbtn { --hit-w: 28px; z-index: 2; }
-.dvL-dots { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
-.dvL-dots .dl-now-mark.is-use { background: var(--control-edge); }
-.dvL-pass { margin: 0 0 0 auto; flex: none; }
-/* KEEP: a room opens and shuts as the system's dropdown does (height and fade, 220ms), its dice and held roll set in under its name; shut, they are hidden once the motion is over, so a keyboard never lands on one. */
-.dvL-fold > .esx-fold { visibility: hidden; transition: grid-template-rows var(--time-dropdown) var(--ease), opacity var(--time-dropdown) var(--ease), visibility 0s linear var(--time-dropdown); }
-.dvL-fold > .esx-fold.is-open { visibility: visible; transition-delay: 0s; }
-@media (prefers-reduced-motion: reduce) { .dvL-top, button.dvL-head svg, .dvL-tally, .dvL-row.is-open .dvL-tally, .dvL-fold > .esx-fold { transition: none; } }
-.dvL-open { display: grid; padding: var(--dvL-up, 12px) 16px 0 56px; }
-.dvL-open > .dvL-dice { padding-bottom: var(--dvL-down, 12px); }
-.dvL-open > .dvL-held { padding-bottom: 12px; }
-/* KEEP: in a list room's held roll the last row (the foe's meter) has no hairline under it: the box's own edge closes it, 12px below, as its top padding is. */
-.dvL-held .dv3-dl > div:last-child { border-bottom: 0; padding-bottom: 0; }
-.dvL-dice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.dvL-dice .dv2-dbtn { --hit-w: 30px; }
-.dvL-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-/* The now card's route. Rooms are columns of a grid that wraps onto further rows when the card is too narrow for them in one; a room's key
-moments are dice buttons (the session page's phone form a step smaller, 34px), then its other rolls as small marks. */
-.dl-now-route { min-width: 0; }
-/* KEEP: a room's column is at least 44px wide, so a 34px die and four marks fit it; rooms that do not fit in one row go on the next, never over each other. No line joins the rooms: a wrapped row would end in a stub. */
-.dl-now-stops { display: grid; grid-template-columns: repeat(var(--dl-cols, 1), minmax(0, 1fr)); gap: 8px 0; min-width: 0; }
-.dl-now-stop { display: grid; justify-items: center; align-content: start; gap: 8px; padding: 8px 0 9px; min-width: 0; }
-.dl-now-stop .dvA2-head { justify-self: stretch; }
-.dl-now-stop .dvA2-head::before { top: 10px; }
-.dl-now-stop.is-row-start .dvA2-head::before { left: 50%; }
-.dl-now-stop.is-row-end .dvA2-head::before { right: 50%; }
-/* The rule between room columns, as the session page's route draws it (is-cols-between); none before a row's first room. */
-.dl-now-stop + .dl-now-stop:not(.is-row-start) { box-shadow: inset 1px 0 0 var(--line); }
-.dl-now-stop .dv2-num { min-width: 22px; height: 22px; padding: 0 2px; font-size: 12px; }
-/* KEEP: a room's key moments wrap inside its column, 8px apart so a natural 20's rim and a two-dice die's second hex never touch the next die. */
-.dl-now-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-width: 0; }
-/* KEEP: the other rolls are 8px marks with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring; a use is a 10px grey sparkle with a -1px margin, so it takes the same 8px slot. */
-/* KEEP: a short last row of marks is centred under the row above (flex, not grid, so a partial row centres). */
-.dl-now-marks { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; width: calc(var(--dl-marks, 3) * 12px - 4px); max-width: 100%; cursor: default; }
+/* KEEP: the six core stats never leave one alone on a second row: all six on one row where they fit (a panel at least 336px wide, six 36px dice and five 24px gaps), otherwise two rows of three, never 5 + 1 or 4 + 2 (the user, 2026-11-26: "can we make sure core never has 1 on second row? go to 2?"). The panel's own width decides, not a breakpoint. Three across needs only 156px, which the narrowest sheet (280px screen) clears. */
+.dv8.is-3b .dv8-stats { container: dlstats / inline-size; }
+.dv8.is-3b .dv8-stats .dv7-cells { max-width: calc(3 * 36px + 2 * 24px); margin: 0 auto; }
+@container dlstats (min-width: 336px) { .dv8.is-3b .dv8-stats .dv7-cells { max-width: none; flex-wrap: nowrap; } }
+/* Advantage: its cells sit on a grid of equal columns, each as wide as the widest cell, centred as a group rather than spread across the row. */
+.dv8.is-3b .dv8-adv .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: max-content; max-width: 100%; margin: 0 auto; gap: 16px; }
+/* KEEP: at the narrowest widths the columns close up rather than wrap "Longest streak": a cell is wider than its short labels, so the space between labels stays wide. */
+@media (max-width: 360px) { .dv8.is-3b .dv8-adv .dv7-cells { gap: 4px; } }
+/* The now card's route: the latest stops in one row, the key moments in one centred row beneath. Nothing in it is pressable. */
+.dl-now-route { min-width: 0; container: dlnow / inline-size; display: grid; align-content: center; }
+.dl-now-pic { --dv-num: 28px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; pointer-events: none; }
+/* The not-started card's rooms strip (DlNowRooms): a row of boxes on the route line, the count slot empty. */
+.dl-now-rooms { display: grid; align-content: center; min-height: 92px; min-width: 0; }
+.dl-now-strip { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.dl-now-boxes { position: relative; flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; align-items: center; height: 24px; }
+.dl-now-boxes::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
+.dl-now-boxes .dv2-num { min-width: 20px; height: 20px; padding: 0 2px; font-size: 11px; }
+.dl-now-tick { position: relative; z-index: 1; flex: 1 1 0; max-width: 10px; min-width: 3px; margin: 0 1.5px; height: 12px; box-sizing: border-box; background: var(--control-edge); }
+/* Boxes spread edge to edge, the route line behind; the line's ends are hidden by the first and last box. */
+.dl-now-stops { position: relative; display: flex; justify-content: space-between; align-items: center; height: var(--dv-num); min-width: 0; }
+.dl-now-loss { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); padding-top: 3px; }
+.dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
+/* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
+.dl-now-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
+/* KEEP: the key dice are one row of equal columns at every width, 4px apart and each no wider than 96px, so a few dice centre as one group; DlNowKeys decides one line or two for every name together. */
+.dl-now-keys { display: grid; grid-template-columns: repeat(var(--k), minmax(0, 1fr)); gap: 0 var(--kgap); align-items: start; justify-items: center; width: min(100%, calc(var(--k) * var(--col) + (var(--k) - 1) * var(--kgap))); margin-inline: auto; min-width: 0; }
+.dl-now-key { min-width: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dl-now-k { display: block; white-space: nowrap; }
+.dl-now-keys.is-two .dl-now-k > span { display: block; }
+.dl-now-key .mcp-dl-die { width: min(44px, 100%); height: auto; }
+.dl-now-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; max-width: 100%; }
+/* KEEP: the other rolls are 8px dots with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring, a use a filled grey dot, so each takes the same 8px slot. */
 .dl-now-mark { display: block; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
 .dl-now-mark.is-strong { background: var(--success); }
 .dl-now-mark.is-weak { background: var(--warning); }
 .dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--control-edge); }
-/* Hover or focus rings a key moment's die as the session page rings the held roll; a press opens the session page on that roll. */
-.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .sl { display: inline; }
-/* KEEP: ringed, a two-dice die stands alone, as on the session page: the hex behind is hidden so no line crosses the ring. */
-.dl-now-route .dv2-dbtn:is(:hover, :focus-visible) .mcp-dl-die .gh { display: none; }
-.dl-now-route .dv2-dbtn:focus-visible { outline: 0; }
 /* KEEP: on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
 @container gs (max-width: 300px) {
   .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }
@@ -1241,21 +1175,62 @@ svg.dl-now-mark.is-use { width: 10px; height: 10px; margin: -1px; fill: var(--co
 /* KEEP: Delve's now card label balances its lines, so the free first run's "THE FIRST RUN · FREE" at 320px breaks as "THE FIRST" over "RUN · FREE" and never leaves "FREE" alone on a line. */
 .dl-now .gs-label { text-wrap: balance; }
 
-/* An empty room, before anything is rolled: a hex outline where its dice will go, the die's own hex at 30px. */
-.dl-empty-hex { display: block; width: 30px; height: 33px; overflow: visible; }
-.dl-empty-hex polygon { fill: none; stroke: var(--control-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: .6; }
 /* The session page before the first roll: a quiet box in the held roll's place, saying there are none, and the rooms not yet reached dimmed. */
-.dvA2-stop.is-far .dv2-num, .dvL-row.is-far .dv2-num, .dl-now-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
-.dvL-row.is-far .dvL-head .dl-empty-hex { width: 24px; height: 27px; }
 /* A band's foe line: its name, then "N of M standing" in grey, on one line; both wrap as words only when the box is too narrow. */
 .dv6-band { font: 600 14px/1.4 var(--font-text); color: var(--text); min-width: 0; }
 .dv6-band span { font-weight: 400; color: var(--muted); white-space: nowrap; }
-.dvS-line.is-foe .dvS-meter.is-band { max-width: none; }
 
 /* The loss mark: a plain cross in the grey of the no-rolls square, on the room where the run ended. */
 svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-width: 1.6; stroke-linecap: round; }
 /* The loss cross's box: no hit area and no pointer, as high as a die so the cross centres on the dice in its row. */
 .dv2-lost { display: grid; place-items: center; }
+
+/* ---- The sheet's trained skills, two advantage marks ---- */
+/* KEEP: a trained skill is a chip under a hairline: its name on the left, its total on the right, every chip one width and at least 40px tall. A row holds as many chips as fit at a chip's narrowest (100px, set by DL_CHIP_MIN in gs-delve.jsx: the widest unbreakable name, "Investigation", with the chip's padding and its total), then the chips are evened over the fewest rows that holds (7 skills at 5 a row make 4 + 3, never 5 + 2; Fighter's 4 stay on one row wherever they fit), the short last row centred. The count is read live from the container's width, at every width, never from a breakpoint. A name never truncates: a long one ("Sleight of Hand") wraps onto a second row inside its chip, and a chip is never narrower than its longest word. Its name is 12px, weight 600, in the stat labels' text colour, so it meets the text-size floor. */
+.dv9-rule { border-top: 1px solid var(--line); margin: 16px 0; }
+.dv9-skills { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gap); }
+.dv9-sk { box-sizing: border-box; flex: none; width: calc((100% - (var(--per) - 1) * var(--gap)) / var(--per)); min-width: min-content; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 6px; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
+.dv9-nm { min-width: 0; font: 600 12px/1.15 var(--font-text); color: var(--text); }
+.dv9-tot { flex: none; font: 700 14px/1 var(--font-heading); color: var(--text); }
+/* ---- The held roll's chips: one row, "You" and "Foe"; a chip is the hit and, when it dealt damage, a hairline and its damage. ---- */
+/* KEEP: the sides share one row while a chip holds its hit and damage on one line, that is the held roll's content 452px wide or more (the chip's own 200px of content, where "25 vs AC 12 Hit | 21 damage" needs about 191px); narrower, they stack in two rows, You over Foe, each chip at the roll's full width so nothing wraps inside a chip, with 16px (--space-4) between You's chip and the Foe's label, so each label sits nearer its own chip. A label stands over each chip, 12px (--space-3) above its chip and 8px under the strip (the label's own line leaves the gap under the strip looking as large as the one above the chip), and the chips stay one height (the labels sit in a row of their own, whatever their length, and a lone side with nothing to say over its chip, such as a plain check, has no label); a lone side's chip takes the row under 400px and its half above it, its label the whole row. The breakdown opens under its own chip as wide as the chip (in two rows, the roll's full width), in the row below, so a closed one leaves no gap (the panel's own 8px margin is the gap when open). */
+.dvC-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; min-width: 0; }
+.dvC-side { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; min-width: 0; align-content: start; }
+/* KEEP: the label stands 4px (half --space-2) above its chip, closer to its own chip than to anything above it; `.gs-root p` zeroes a paragraph's margin and out-ranks a bare class, so the rule names its side. */
+.dvC-side > .dvC-lab { margin: 0 0 calc(var(--space-2) / 2); font: 400 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
+.dvC-lab b { font-weight: 700; color: var(--text); }
+.dvC-fold { min-width: 0; }
+@container dvh (max-width: 451px) { .dvC-row { grid-template-columns: minmax(0, 1fr); } .dvC-side.is-foe { margin-top: var(--space-4); } }
+@container dvh (max-width: 399px) { .dvC-row.is-lone { grid-template-columns: minmax(0, 1fr); } }
+/* KEEP: a lone side's chip stays at half the row from 452px, but its label (the action sentence) runs the row's full width and wraps only when the whole sentence does not fit it, so a roll with room beside its chip does not break its sentence at half the card. */
+@container dvh (min-width: 452px) { .dvC-row.is-lone > .dvC-side { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; } .dvC-row.is-lone > .dvC-side > .dvC-lab { grid-column: 1 / -1; } .dvC-row.is-lone > .dvC-side > :not(.dvC-lab) { grid-column: 1; } }
+/* KEEP: a chip's content stands 10px from its edges on all four sides: sides and top and bottom alike (a one-row chip is 44px tall, so its content stands 11px above and below, and gets 11px at its sides). */
+/* KEEP: the chip is Escape's tap card (esx-card) at its own size: at least 44px tall, a chip on the box's own surface until hovered or opened; a pressable surface is lifted a step lighter than the surface it sits on while a mouse is over it and while it is open, and an open one has the off-white edge (6% of the text colour mixed into the box's popup surface, since the card fill is darker than the box and a hover or open chip would sink into it). Pressing scales it to the press scale. */
+.dvC-chip.esx-card { display: flex; align-items: center; width: 100%; height: auto; min-height: 44px; padding: 10px; background: transparent; text-align: left; container: dvc / inline-size; }
+@media (hover: hover) { .dvC-chip.esx-card:not(.is-still):hover { background: var(--dvH-lift); } }
+.dvC-chip.esx-card.is-open { background: var(--dvH-lift); }
+.dvC-chip:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
+.dvC-chip.is-still { cursor: default; } .dvC-chip.is-still:active { transform: none; }
+.dvC-in { display: grid; row-gap: 6px; width: 100%; min-width: 0; }
+.dvC-hit { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; align-items: center; justify-items: start; }
+.dvC-vs { display: grid; font: 400 13px/1.3 var(--font-text); color: var(--muted); }
+.dvT-tot { font: 700 18px/1.1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
+.dvC-dm { display: block; padding-top: 6px; border-top: 1px solid var(--control-edge); font: 400 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; }
+.dvC-dm b { font: 700 16px/1.1 var(--font-heading); color: var(--text); }
+/* KEEP: a use's box: gear is its name, a hairline, its effect; a move is its effect alone on the left, with no hairline, where a rolled attack's roll would stand. A long name wraps inside its half. */
+.dvC-item { min-width: 0; font: 600 14px/1.3 var(--font-text); color: var(--text); overflow-wrap: anywhere; }
+.dvC-dm.is-solo { padding: 0; border: 0; }
+@container dvc (min-width: 200px) {
+  .dvC-in { grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
+  .dvC-hit { grid-template-columns: auto auto; justify-content: start; column-gap: 10px; }
+  .dvC-vs { display: inline-flex; flex-wrap: wrap; column-gap: 5px; }
+  .dvC-dm { padding: 0 0 0 10px; border-top: 0; border-left: 1px solid var(--control-edge); }
+  .dvC-dm.is-solo { padding: 0; border: 0; }
+}
+/* The breakdown: each part has a small caption only when there are two ("Attack", "Damage · slashing"), then its named form. */
+.dvC-pr { display: grid; gap: 2px; min-width: 0; }
+.dvC-pr + .dvC-pr { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--control-edge); }
+.dvC-pk { font: 600 12px/1.3 var(--font-text); color: var(--text); }
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
 /* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).
@@ -1932,13 +1907,15 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .lb-box .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub { padding-left: calc(var(--lb-pad) + 52px); }
 @container mcp-rows (min-width: 640px) { .lb-box .mcp-rows .mcp-row.is-slots.is-sub, .lb-box .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub { padding-left: var(--lb-pad); } }
 .lb-probe { position: absolute; left: 0; right: 0; top: 0; visibility: hidden; pointer-events: none; }
-.lb-achbtn { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; min-height: 64px; padding: 8px var(--lb-pad); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--time-press) var(--ease); }
+.lb-achbtn { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; min-height: 64px; padding: 8px var(--lb-pad); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; position: relative; isolation: isolate; }
+/* KEEP: the hover and press band stops 8px short of the card's sides and 2px short of the row's top and bottom, so neighbouring shades never meet; rows keep their size (the shade is painted inset, not by growing the row), and the 120ms fade stays */
+.lb-achbtn::before { content: ""; position: absolute; inset: calc(var(--space-2) / 4) var(--space-2); z-index: -1; pointer-events: none; background: transparent; transition: background-color var(--time-press) var(--ease); }
 .lb-achtx { display: grid; gap: 2px; min-width: 0; }
 @media (hover: hover) {
-  .lb-achbtn:hover { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
+  .lb-achbtn:hover::before { background: color-mix(in srgb, var(--text) 6%, var(--card)); }
   .lb-achbtn:hover .lb-chev { color: var(--text); transform: translateX(3px); }
 }
-.lb-achbtn:active { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
+.lb-achbtn:active::before { background: color-mix(in srgb, var(--text) 10%, var(--card)); }
 .lb-achbtn:focus-visible { outline-offset: -2px; }
 .lb-achpop { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 16px; align-items: start; }
 .lb-achpop .lb-badge { width: 48px; height: 48px; }

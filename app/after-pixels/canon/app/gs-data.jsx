@@ -3,6 +3,7 @@
 // DS is the bound design system's namespace (loaded by _ds_bundle.js).
 // ============================================================================
 import React from 'react';
+import { dlRecord, dlFigures, dlShareRow } from './gs-delve-record.jsx';
 
 export const DS = window.MCPGameStoreDesignSystem_ef1abd;
 export const GsCtx = React.createContext(null);
@@ -137,50 +138,80 @@ const GS_ES_WORDS5 = ['TRAIN', 'STEAM', 'TRACK', 'PLATE']; const GS_ES_DIG3 = ['
 // Delve: a name sits mid-sentence in lower case ("Entered the warren"), as the engine writes it.
 const gsDvName = (n) => n.replace(/^The /, 'the ');
 
-// ---- Delve run 1, The Goblin Warren: two recorded plays of the deployed engine. ----
+// ---- Delve run 1, The Goblin Warren: two sample plays. ----
 export const GS_DV_TURNCOAT = 'As the sentries come at you, a scrawny goblin chained to the wall behind them wrenches at his rusted staple, his back striped from the whip. It gives, and he scrambles free and turns on his masters with murder in his eyes.';
-const GS_DV_WON = [
-  ['Wisdom', 'Search the lock-keeper\'s niche', 'Success', 'd20 17 + 0 = 17 vs 12'],
-  ['Room', 'Entered the chime run'],
-  ['Strength', 'Failure', 'Natural 1', 'd20 1 + 3 = 4 vs 12', 'HP 21/23'],
-  ['Strength', 'Success', 'd20 16 + 3 = 19 vs 12'],
-  ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 11 + 1 = 12 vs 12'],
-  ['Room', 'Entered the warren'],
-  ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Strength', 'Hit', 'd20 9 + 3 = 12 vs 12', 'Struck back: d20 15 vs 10, hit, 2 damage, HP 19/23'],
-  ['Strength', 'Hit', 'd20 13 + 3 = 16 vs 12', 'Struck back: d20 8 vs 10, missed'],
-  ['Strength', 'Hit', 'd20 17 + 3 = 20 vs 12'],
-  ['Dexterity', 'Rifle the stolen sacks', 'Success', 'Natural 20', 'd20 20 + 1 = 21 vs 12'],
-  ['Room', 'Entered Snaggle\'s den'],
-  ['Gear', 'Used a healing draught', 'Healed 4, HP 22/23', 'Struck back: d20 15 vs 10, hit, 1 damage, HP 22/23'],
-  ['Strength', 'Hit', 'd20s 15 and 18, kept 18 + 3 = 21 vs 12'],
-  ['Gear', 'Took the iron key'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'],
-  ['Lock', 'Opened the bone gate with the iron key'],
-  ['Room', 'Entered the shrine cavern'],
-  ['Strength', 'Hit', 'd20s 11 and 19, kept 19 + 3 = 22 vs 12', 'Struck back: d20 5 vs 10, missed'],
-  ['Ability', 'Used shield bash', 'Grizzletooth: health 4 → 3', 'Struck back: d20 7 vs 10, missed'],
-  ['Weakness', 'A flask of lamp oil', 'Grizzletooth: health 3 → 1'],
-  ['Strength', 'Hit', 'd20s 17 and 9, kept 17 + 3 = 20 vs 12'],
+// ---- Delve's two seeded plays, written as the dice of a play and turned into their records by app/gs-delve-record.jsx (the arithmetic is the recorder's, never typed). ----
+// Run 1 won, Bryn the Fighter in the Goblin Warren: the chime run's obstacle, the sentries, Snaggle, then Grizzletooth (the ultimate and the weakness blow among the attacks).
+// SAMPLE: the dice, the damage faces and the foes' rolls back.
+const GS_DV_WON_STEPS = [
+  ['chk', 'Wisdom', "Search the lock-keeper's niche", 'Perception', 17, 15],
+  ['room', 'the chime run'],
+  ['chk', 'Strength', null, null, 1, 10, { harm: 2 }],
+  ['chk', 'Strength', null, null, 16, 18],
+  ['chk', 'Dexterity', 'Gather up the fallen bones', null, 11, 15, { harm: 1 }],
+  ['room', 'the warren'],
+  ['raw', ['Turn', 'The turncoat joins', GS_DV_TURNCOAT]],
+  ['atk', 7, { faces: [3], foe: { roll: 15, faces: [2] } }],
+  ['atk', 13, { faces: [3] }],
+  ['chk', 'Strength', 'Search the sentries', null, 17, 18, { threat: 1 }],
+  ['chk', 'Dexterity', 'Rifle the stolen sacks', null, 20, 18],
+  ['room', "Snaggle's den"],
+  ['use', 'Gear', 'a healing draught', { heal: 10, foe: { roll: 15, faces: [2] } }],
+  ['atk', 15, { faces: [2], foe: { roll: 4, faces: [1] } }],
+  ['atk', 15, { faces: [3], foe: { roll: 3, faces: [1] } }],
+  ['atk', 18, { faces: [4], foe: { roll: 5, faces: [1] } }],
+  ['atk', 15, { faces: [3], foe: { roll: 6, faces: [1] } }],
+  ['atk', 14, { faces: [1] }],
+  ['raw', ['Gear', 'Took the iron key']],
+  ['room', 'the flooded cellar'], ['chk', 'Dexterity', 'Cross the flooded cellar', null, 15, 14],
+  ['room', 'the armoury'], ['chk', 'Strength', 'Pry the weapon locker', 'Athletics', 6, 15],
+  ['room', 'the well shaft'], ['chk', 'Strength', 'Climb the well shaft', 'Athletics', 12, 12],
+  ['room', 'the barracks'], ['chk', 'Wisdom', 'Listen at the barracks door', 'Perception', 8, 12],
+  ['room', 'the chapel'], ['chk', 'Intelligence', 'Read the psalm board', null, 13, 12],
+  ['room', 'the crypt'], ['chk', 'Strength', 'Shift the crypt lid', 'Athletics', 7, 15],
+  ['back', 'the warren'],
+  ['raw', ['Lock', 'Opened the bone gate with the iron key']],
+  ['room', 'the shrine cavern'],
 ];
-const GS_DV_LIVE = [
-  ['Room', 'Entered the chime run'],
-  ['Dexterity', 'Success', 'd20 16 + 3 = 19 vs 12'],
-  ['Dexterity', 'Gather up the fallen bones', 'Partial success', 'd20 13 + 3 = 16 vs 12'],
-  ['Room', 'Entered the warren'],
-  ['Gear', 'Took a pepper pouch'],
-  ['Turn', 'The turncoat joins', GS_DV_TURNCOAT],
-  ['Dexterity', 'Hit', 'd20 14 + 3 = 17 vs 12', 'Struck back: d20 3 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20s 8 and 14, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20 12 + 3 = 15 vs 12'],
-  ['Intelligence', 'Study the wall scratchings', 'Success', 'd20s 19 and 15, kept 19 + 1 = 20 vs 12'],
-  ['Room', 'Entered Snaggle\'s den'],
-  ['Dexterity', 'Hit', 'd20s 14 and 5, kept 14 + 3 = 17 vs 12', 'Struck back: d20 9 vs 14, missed'],
-  ['Dexterity', 'Hit', 'd20s 18 and 7, kept 18 + 3 = 21 vs 12'],
-  ['Dexterity', 'Climb to the skeleton on the high ledge', 'Success', 'Natural 20', 'd20s 20 and 6, kept 20 + 3 = 23 vs 12'],
-  ['Room', 'Doubled back to the warren', 'The ritual +1'],
+// Bryn's two ends in the shrine cavern: the average run's (the ultimate and the weakness blow among the attacks), and the one won by the ultimate's last blow (the played flask first).
+const GS_DV_WON_END = [
+  ['atk', 19, { faces: [3], foe: { roll: 5, faces: [1] } }],
+  ['use', 'Ability', 'shield bash', { dmg: 8, foe: { roll: 7, faces: [1] } }],
+  ['weak', 'A flask of lamp oil', 8],
+  ['atk', 17, { faces: [3], foe: { roll: 7, faces: [1] } }],
+  ['atk', 14, { faces: [4], foe: { roll: 7, faces: [1] } }],
+  ['atk', 15, { faces: [2], foe: { roll: 7, faces: [1] } }],
+  ['atk', 15, { faces: [1] }],
 ];
-export const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the ritual was completed', 'Fell in the warren'];
+const GS_DV_WON_BY_USE_END = [
+  ['atk', 19, { faces: [3], foe: { roll: 5, faces: [1] } }],
+  ['weak', 'A flask of lamp oil', 8],
+  ['atk', 17, { faces: [3], foe: { roll: 7, faces: [1] } }],
+  ['atk', 14, { faces: [3], foe: { roll: 7, faces: [1] } }],
+  ['atk', 15, { faces: [3], foe: { roll: 7, faces: [1] } }],
+  ['atk', 15, { faces: [2], foe: { roll: 7, faces: [1] } }],
+  ['use', 'Ability', 'shield bash', { dmg: 8 }],
+];
+export const GS_DV_WON = dlRecord('Bryn the Fighter', 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_END], { name: 'delve' });
+export const GS_DV_WON_BY_USE = dlRecord('Bryn the Fighter', 24, [...GS_DV_WON_STEPS, ...GS_DV_WON_BY_USE_END], { name: 'delve-won-by-use' });
+// Run 1 in progress, Wren the Rogue: the sentries beaten and Snaggle hurt.
+const GS_DV_LIVE = dlRecord('Wren the Rogue', 22, [
+  ['room', 'the chime run'],
+  ['chk', 'Dexterity', null, null, 3, 18, { harm: 1 }],
+  ['chk', 'Dexterity', null, null, 13, 18, { harm: 1 }],
+  ['room', 'the warren'],
+  ['raw', ['Gear', 'Took a pepper pouch']],
+  ['raw', ['Turn', 'The turncoat joins', GS_DV_TURNCOAT]],
+  ['atk', 14, { faces: [2], foe: { roll: 3, faces: [1] } }],
+  ['atk', 14, { faces: [3] }],
+  ['chk', 'Dexterity', 'Search the sentries', null, 12, 15],
+  ['chk', 'Intelligence', 'Study the wall scratchings', null, 19, 18],
+  ['chk', 'Dexterity', 'Climb to the skeleton on the high ledge', null, 20, 18],
+  ['room', "Snaggle's den"],
+  ['atk', 14, { faces: [2], foe: { roll: 9, faces: [1] } }],
+  ['atk', 18, { faces: [3], foe: { roll: 4, faces: [1] } }],
+], { name: 'delve-live' });
+export const GS_DV_ENDINGS = ['Elsie rescued', 'Too late: the chant was completed', 'Fell in the warren'];
 
 // ---- Escape No. 1, The Clockmaker’s Study (par 30). GS_ES1 is the room's deployed text (content/escape/1.v3.json); GS_ES1_LINES is a
 // sample play of it, written as the engine writes a line: a typed try keeps what was typed, a mechanism names its parts. ----
@@ -246,19 +277,19 @@ export const GS_CB_HARD = [
 ];
 export const GS_CB_FAILED = [...GS_CB_REC.slice(0, 7), { c: 'A', act: 'Accusation', what: 'Tobias Pike', out: 'Wrong' }];
 
-// Session records: sample plays (Delve's lines are the deployed engine's, above).
+// Session records: sample plays.
 export const GS_SESSIONS = {
   // Delve run 1 won, Bryn the Fighter.
   delve: {
     kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Elsie rescued', date: 'Monday 5 October',
-    figures: ['Threat 5/12', '11 rolls', '1 natural 20', 'HP 22/23'],
-    tracks: { progress: 5, rooms: 5, threat: 5, threatMax: 12 },
-    lines: GS_DV_WON,
+    figures: dlFigures(GS_DV_WON, 24),
+    tracks: { progress: 12, rooms: 11, threat: GS_DV_WON.threat, threatMax: 12 },
+    lines: GS_DV_WON.lines, detail: GS_DV_WON.detail,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
-    setting: 'The Goblin Warren', end: 'won', hero: 'Bryn the Fighter', hpMax: 23, threat: 5, threatMax: 12, lightName: 'the torch', light: 1, lightMax: 6, sheet: { used: { 'Shield bash': 1 }, insp: true },
-    share: 'Elsie rescued', foeMax: { "snaggle's den": 1, 'the shrine cavern': 5 },
-    shareLines: ['The Goblin Warren', 'Bryn the Fighter · ✅ Elsie rescued · 11 rolls · longest streak 3', '🟩💀🟩🟨🟩🟩🟩✨🟩🟩🟩'],
+    setting: 'The Goblin Warren', end: 'won', hero: 'Bryn the Fighter', hpMax: 24, threat: GS_DV_WON.threat, threatMax: 12, lightName: 'the torch', light: 1, lightMax: 6, sheet: { used: { 'Shield bash': 1 }, insp: true },
+    share: 'Elsie rescued', foeMax: { "snaggle's den": 27, 'the shrine cavern': 44 },
+    shareLines: ['The Goblin Warren', 'Bryn the Fighter · ✅ Elsie rescued · ' + GS_DV_WON.rolls + ' rolls', dlShareRow(GS_DV_WON)],
   },
   // Guess and Accuse tell one story per game on every surface: today's play, its in-progress form and one earlier play.
   'word-today': {
@@ -344,11 +375,11 @@ export const GS_ED_SIDS = {
   groups: { average: 'groups-today', hard: 'groups-today-hard', failed: 'groups-today-failed' },
   mystery: { average: 'mystery-today-avg', hard: 'mystery-today-hard', failed: 'mystery-today' },
   escape: { hard: 'escape-hard' },
-  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use', 'lost-no-roll': 'delve-lost-no-roll' },
+  delve: { average: 'delve', hard: 'delve-hard', failed: 'delve-fallen', live: 'delve-live', 'won-by-use': 'delve-won-by-use', 'lost-no-roll': 'delve-lost-no-roll', 'long-run': 'delve-route-25', 'long-live': 'delve-route-20-live', 'five-moments': 'delve-five-moments' },
   casebook: { average: 'casebook', hard: 'casebook-hard', failed: 'casebook-failed' },
 };
 // How a finished session reads in a row: a loss (`loss`) is bad, anything else is ok.
-export const gsSessStatus = (s) => ({ kind: s.loss ? 'bad' : 'ok', label: s.result });
+export const gsSessStatus = (s) => ({ kind: s.live ? 'live' : s.loss ? 'bad' : 'ok', label: s.result });
 // The finished play Config → This edition picks for a game, or null to keep the seeded one.
 export const gsEdPick = (gid, gs) => { gs = gs || window.gsApi; const e = gs && gs.review && gs.review.ed; return (e && GS_ED_SIDS[gid] && GS_ED_SIDS[gid][e]) || null; };
 // This edition in progress (Config: This week, or today): the record so far. No sharing until it ends.
@@ -360,8 +391,8 @@ Object.assign(GS_SESSIONS, {
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
-  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: ['Threat 3/12', '9 rolls', '1 natural 20', 'HP 21/21'], tracks: { progress: 4, rooms: 5, threat: 3, threatMax: 12 }, lines: GS_DV_LIVE, reached: null, share: null, shareLines: null,
-    hero: 'Wren the Rogue', hpMax: 21, threat: 3, light: 2, foeMax: { "snaggle's den": 2 }, sheet: { used: {}, insp: true } },
+  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: dlFigures(GS_DV_LIVE, 22), tracks: { progress: 4, rooms: 12, threat: GS_DV_LIVE.threat, threatMax: 12 }, lines: GS_DV_LIVE.lines, detail: GS_DV_LIVE.detail, reached: null, share: null, shareLines: null,
+    hero: 'Wren the Rogue', hpMax: 22, threat: GS_DV_LIVE.threat, light: 2, foeMax: { "snaggle's den": 27 }, sheet: { used: {}, insp: true } },
 });
 // In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets
 // review.begun beside week 'live'; every surface that opens the in-progress play reads its id through gsLiveSid.
@@ -371,7 +402,7 @@ Object.assign(GS_SESSIONS, {
   'word-begun': { ...GS_SESSIONS['word-live'], lines: [] },
   'groups-begun': { ...GS_SESSIONS['groups-live'], figures: ['0 of 4 groups', 'No mistakes'], lines: [] },
   'escape-begun': { ...GS_SESSIONS['escape-live'], lines: [] },
-  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 21/21'], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } },
+  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 22/22'], tracks: { progress: 0, rooms: 12, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } },
 });
 // The old earlier-room id reads this week's.
 GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];
@@ -394,7 +425,7 @@ export const GS_RESULT = {
   escape: (r) => 'Escaped in ' + r.min + ' min, ' + r.par,
   casebook: (r) => (r.ok ? 'Solved' : 'Wrong accusation'),
   // The setting's own ending words (The Goblin Warren).
-  delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the ritual was completed', fell: 'Fell in the warren' })[r.end],
+  delve: (r) => ({ won: 'Elsie rescued', ritual: 'Too late: the chant was completed', fell: 'Fell in the warren' })[r.end],
   // A restarted day (no ending) reads Not finished.
   hunter: (r) => (r.restarted ? 'Not finished' : 'Finished'),
 };
