@@ -264,11 +264,11 @@ const DlUseBody = ({ r }) => { const e = dlEffect(r); const item = r.what === 'G
   return <span className="dvC-in">{item || !eff ? <span className="dvC-item">{r.name}</span> : null}{eff}</span>; };
 // KEEP: the under-chip foe's health is one thin row (name, a 4px bar, the count) at the box's full width.
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
-  // KEEP: the You label names the turn and what it cost the hero, each after a middle dot: "You · Heavy attack · Cleave · Cost Hit points −1", "You · Gear · Weak spot", "You · Slip the trap · Cost Threat +1" (the user, 2026-11-25: the cost sits "next to the You", with "a . there"; 2026-11-27: moves are named in the label, items in the box). Every turn has the label. Each cost stays whole (no break inside "Cost Hit points −1"), so a label wraps only between its parts.
+  // KEEP: the You label names the turn after middle dots ("You · Heavy attack · Cleave", "You · Gear · Weak spot"; moves are named in the label, items in the box). A cost joins it only if the whole line fits: "You · Slip the trap · Cost · Threat +1"; else it drops to its own line, "Cost · Hit points −3 · Threat +3 · Light −3", wrapping only between whole parts ("Cost" never ends a line alone, "Hit points −3" never splits). "Cost" is bold white like "You"; its figures are grey like the action (the user, 2026-11-27).
   const parts = cost.split(' · ').filter(Boolean);
-  const costSaid = parts.length ? <span className="dvH-cost">{parts.map((c, i) => <React.Fragment key={i}>{'\u00a0· '}<span className="dvH-nb">{i === 0 ? 'Cost ' : ''}<b>{c}</b></span></React.Fragment>)}</span> : null;
+  const costSaid = parts.length ? <span className="dvH-cost"><span className="dvH-nb"><b>Cost</b>{'\u00a0· ' + parts[0]}</span>{parts.slice(1).map((c, i) => <React.Fragment key={i}>{'\u00a0· '}<span className="dvH-nb">{c}</span></React.Fragment>)}</span> : null;
   const said = dlMoveSaid(r);
-  const act = <><b>You</b>{said.map((t, i) => <React.Fragment key={i}>{'\u00a0· '}<span className={r.use || r.fight ? 'dvH-nb' : undefined}>{t}</span></React.Fragment>)}{costSaid}</>;
+  const act = <span className="dvH-lab"><span className="dvH-who"><b>You</b>{said.map((t, i) => <React.Fragment key={i}>{'\u00a0· '}<span className={r.use || r.fight ? 'dvH-nb' : undefined}>{t}</span></React.Fragment>)}</span>{costSaid}</span>;
   return (<>
     <DlHeldHead r={r} x={x} />
     <div className={'dvC-row' + (f ? '' : ' is-lone')}>

@@ -892,7 +892,11 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-x { position: relative; display: inline-block; padding: 0 3px; font-weight: 600; }
 .dvH-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 13px; border-top: 1px solid var(--text); transform: translate(-50%, -50%) rotate(-60deg); }
 .dvH-fm { min-width: 0; }
-.dvH-cost b { color: var(--text); }
+.dvH-lab { display: flex; flex-wrap: wrap; column-gap: 12px; overflow: hidden; }
+.dvH-who { flex: 0 1 auto; min-width: 0; }
+.dvH-cost { position: relative; flex: 0 1 auto; min-width: 0; }
+/* KEEP: the cost's middle dot hangs in the gap before it and is clipped by the label when the cost drops to its own line, so the dot shows only when the cost shares the You line. */
+.dvH-cost::before { content: '·'; position: absolute; left: -12px; width: 12px; text-align: center; }
 .dvH-nb { white-space: nowrap; }
 /* KEEP: the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
 .dvH-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
