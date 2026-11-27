@@ -11,8 +11,8 @@ import { dlRecorder, dlRecord, dlFigures } from './gs-delve-record.jsx';
 // Seeded dice, so the long runs are the same every load.
 const seeded = (seed) => () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
 
-// The long route: 25 stops over 13 rooms, 12 of them returns (the first 20 stops: 12 rooms, 8 returns); the names are the longest the editions hold (the 27-character "Shrine of the drowned saint").
-const ROUTE = [['the gate'], ["snaggle's den"], ['the gate', 1], ['the chime run'], ['the flooded cellar'], ['the chime run', 1], ['shrine of the drowned saint'], ['the armoury'], ['shrine of the drowned saint', 1],
+// The long route: 25 stops over 13 rooms, 12 of them returns (the first 20 stops: 12 rooms, 8 returns); the names are the longest the editions hold (the 31-character "The shrine of the drowned saint").
+const ROUTE = [['the gate'], ["snaggle's den"], ['the gate', 1], ['the chime run'], ['the flooded cellar'], ['the chime run', 1], ['the shrine of the drowned saint'], ['the armoury'], ['the shrine of the drowned saint', 1],
   ['the well shaft'], ['the barracks'], ['the well shaft', 1], ['the chapel'], ['the crypt'], ['the chapel', 1], ['the bone pit'], ['the treasury'], ['the bone pit', 1], ['the crypt', 1], ['the treasury', 1],
   ['the great hall'], ['the crypt', 1], ['the great hall', 1], ['the chapel', 1], ['the great hall', 1]];
 const ROLLS = [1, 3, 0, 3, 1, 0, 4, 2, 1, 2, 3, 0, 1, 2, 0, 3, 1, 1, 0, 1, 4, 1, 2, 0, 0];
@@ -60,6 +60,12 @@ const keyMoments = (five) => dlRecord('Bryn the Fighter', 24, [
   ['atk', 20, { heavy: true, faces: five ? [1, 1] : [4, 3], foe: { roll: 16, faces: [3] } }],
   ['atk', 4, { foe: { roll: 7, faces: [1] } }],
   ['atk', 14, { faces: [2] }],
+  ['room', 'the flooded cellar'], ['chk', 'Dexterity', 'Cross the flooded cellar', null, 15, 14],
+  ['room', 'the armoury'], ['chk', 'Strength', 'Pry the weapon locker', 'Athletics', 6, 15],
+  ['room', 'the well shaft'], ['chk', 'Strength', 'Climb the well shaft', 'Athletics', 12, 12],
+  ['room', 'the barracks'], ['chk', 'Wisdom', 'Listen at the barracks door', 'Perception', 8, 12],
+  ['room', 'the chapel'], ['chk', 'Intelligence', 'Read the psalm board', null, 13, 12],
+  ['room', 'the crypt'], ['chk', 'Strength', 'Shift the crypt lid', 'Athletics', 7, 15],
   ['room', 'the shrine cavern'],
   ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [4], foe: { roll: 4, faces: [1] } }],
   ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [3], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [2], foe: { roll: 4, faces: [1] } }], ['atk', 17, { faces: [4] }],
@@ -73,7 +79,7 @@ export function initGsDelveRuns() {
 
   const km = keyMoments(false); const five = keyMoments(true);
   const kmBase = { ...GS_SESSIONS.delve, hpMax: 24, foeMax: { "snaggle's den": 27, 'the shrine cavern': 44 }, sheet: { used: {}, insp: true } };
-  const kmSession = (r) => ({ ...kmBase, lines: r.lines, detail: r.detail, figures: dlFigures(r, 24), threat: r.threat, tracks: { ...GS_SESSIONS.delve.tracks, threat: r.threat } });
+  const kmSession = (r) => ({ ...kmBase, lines: r.lines, detail: r.detail, figures: dlFigures(r, 24), threat: r.threat, tracks: { ...GS_SESSIONS.delve.tracks, progress: 11, threat: r.threat } });
   GS_SESSIONS['delve-key-moments'] = kmSession(km);
   GS_SESSIONS['delve-five-moments'] = kmSession(five);
 

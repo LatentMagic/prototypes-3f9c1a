@@ -163,6 +163,12 @@ const GS_DV_WON_STEPS = [
   ['atk', 15, { faces: [3], foe: { roll: 6, faces: [1] } }],
   ['atk', 14, { faces: [1] }],
   ['raw', ['Gear', 'Took the iron key']],
+  ['room', 'the flooded cellar'], ['chk', 'Dexterity', 'Cross the flooded cellar', null, 15, 14],
+  ['room', 'the armoury'], ['chk', 'Strength', 'Pry the weapon locker', 'Athletics', 6, 15],
+  ['room', 'the well shaft'], ['chk', 'Strength', 'Climb the well shaft', 'Athletics', 12, 12],
+  ['room', 'the barracks'], ['chk', 'Wisdom', 'Listen at the barracks door', 'Perception', 8, 12],
+  ['room', 'the chapel'], ['chk', 'Intelligence', 'Read the psalm board', null, 13, 12],
+  ['room', 'the crypt'], ['chk', 'Strength', 'Shift the crypt lid', 'Athletics', 7, 15],
   ['back', 'the warren'],
   ['raw', ['Lock', 'Opened the bone gate with the iron key']],
   ['room', 'the shrine cavern'],
@@ -277,7 +283,7 @@ export const GS_SESSIONS = {
   delve: {
     kind: 'delve', gid: 'delve', game: 'Delve', art: 'delve', result: 'Elsie rescued', date: 'Monday 5 October',
     figures: dlFigures(GS_DV_WON, 24),
-    tracks: { progress: 5, rooms: 5, threat: GS_DV_WON.threat, threatMax: 12 },
+    tracks: { progress: 12, rooms: 11, threat: GS_DV_WON.threat, threatMax: 12 },
     lines: GS_DV_WON.lines, detail: GS_DV_WON.detail,
     endings: GS_DV_ENDINGS, reached: 'Elsie rescued',
     // What the session page's sheet and run card read (app/gs-delve.jsx): the setting, the hero, the tracks' ends, abilities used, inspiration.
@@ -385,7 +391,7 @@ Object.assign(GS_SESSIONS, {
   'escape-live': { kind: 'puzzle', gid: 'escape', game: 'Escape', art: 'escape', live: true, result: 'In progress', date: GS.today, share: null,
     lines: GS_SESSIONS['escape-week'].lines.slice(0, 4) },
   // Delve run 1 in progress, Wren the Rogue.
-  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: dlFigures(GS_DV_LIVE, 22), tracks: { progress: 4, rooms: 5, threat: GS_DV_LIVE.threat, threatMax: 12 }, lines: GS_DV_LIVE.lines, detail: GS_DV_LIVE.detail, reached: null, share: null, shareLines: null,
+  'delve-live': { ...GS_SESSIONS.delve, live: true, result: 'In progress', figures: dlFigures(GS_DV_LIVE, 22), tracks: { progress: 4, rooms: 12, threat: GS_DV_LIVE.threat, threatMax: 12 }, lines: GS_DV_LIVE.lines, detail: GS_DV_LIVE.detail, reached: null, share: null, shareLines: null,
     hero: 'Wren the Rogue', hpMax: 22, threat: GS_DV_LIVE.threat, light: 2, foeMax: { "snaggle's den": 27 }, sheet: { used: {}, insp: true } },
 });
 // In progress, nothing played yet: each game's begun play, `<game>-begun`, the `<game>-live` play with no moves. Config → This edition sets
@@ -396,7 +402,7 @@ Object.assign(GS_SESSIONS, {
   'word-begun': { ...GS_SESSIONS['word-live'], lines: [] },
   'groups-begun': { ...GS_SESSIONS['groups-live'], figures: ['0 of 4 groups', 'No mistakes'], lines: [] },
   'escape-begun': { ...GS_SESSIONS['escape-live'], lines: [] },
-  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 22/22'], tracks: { progress: 0, rooms: 5, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } },
+  'delve-begun': { ...GS_SESSIONS['delve-live'], figures: ['Threat 0/12', '0 rolls', 'HP 22/22'], tracks: { progress: 0, rooms: 12, threat: 0, threatMax: 12 }, lines: [], threat: 0, light: 6, sheet: { used: {}, insp: true } },
 });
 // The old earlier-room id reads this week's.
 GS_SESSIONS['escape-0928'] = GS_SESSIONS['escape-week'];

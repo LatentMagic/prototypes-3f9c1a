@@ -6,7 +6,7 @@
 // ============================================================================
 
 // SAMPLE, from deployed content (monorepo scene/src/lib/domain/archetype.ts and content/delve/1.v2.json): the stats, health, defence, heavy attack, ultimate, protection and starting gear of the fighter
-// and the rogue (one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three.
+// and the rogue (the weapon is edition content's `weapon`: Bryn's longsword, Wren's twin daggers; Hal's hatchet is SAMPLE, from his description; one consumable each and no armour gear, as delve.md says). The Warren's carry limit is three.
 // The record names no foe on a hero's roll, only the struck-back part, whose target is the hero's defence.
 // A foe is [name, health, members]; a band has members. A hazard is a foe-shaped room with health and no roll back (the thorn stair, edition 3, health 4); an obstacle is no foe at all.
 // An obstacle (the chime run holds the bone chimes, edition 1) is passed by one success or partial success: no health, nothing strikes back, and the turn that gets past it says "<name> passed".
@@ -32,19 +32,19 @@ const DL_HEROES = {
   // the starting gear a healing draught and a crowbar (a key), 24 health, stats as the archetype sets them.
   'Bryn the Fighter': { name: 'Bryn', cls: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
-    abilities: [{ name: 'Shield bash', of: 1, ult: true, does: '' }],
+    abilities: [{ name: 'Shield bash', of: 1, ult: true, does: '' }], weapon: 'Longsword',
     fight: { defence: 16, acGear: 0, protection: 'Ox shield', heavy: { name: 'Cleave', die: 'd4', modifier: 3, bonus: 2 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Crowbar', kind: 'key', does: '' }] },
   // Hal, the Briar Keep's woodcutter (content/delve/3.v1.json): a fighter, so Bryn's stats, defence and 24 health; his own heavy attack Timberfall, ultimate Thunderstroke, protection the elder-bark cloak (a name, no armour value), a honey cake (heals 6) and an axe (a key).
   'Hal the Woodcutter': { name: 'Hal', cls: 'Woodcutter', fightClass: 'Fighter', stats: { Strength: 3, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
     skills: [['Athletics', 'Strength'], ['Intimidation', 'Charisma'], ['Perception', 'Wisdom'], ['Survival', 'Wisdom']],
-    abilities: [{ name: 'Thunderstroke', of: 1, ult: true, does: '' }],
+    abilities: [{ name: 'Thunderstroke', of: 1, ult: true, does: '' }], weapon: 'Hatchet',
     fight: { defence: 16, acGear: 0, protection: 'Elder-bark cloak', heavy: { name: 'Timberfall', die: 'd4', modifier: 3, bonus: 2 } },
     gear: [{ name: 'Honey cake', kind: 'once', does: 'Heals 6' }, { name: 'Axe', kind: 'key', does: '' }] },
   // Wren, from the same source (rogue): defence 14, protection a leather jerkin (a name), heavy attack Flurry, ultimate Sneak attack, 22 health, gear a healing draught and a rope (a key).
   'Wren the Rogue': { name: 'Wren', cls: 'Rogue', stats: { Strength: 0, Dexterity: 3, Constitution: 1, Intelligence: 1, Wisdom: 0, Charisma: 2 },
     skills: [['Stealth', 'Dexterity'], ['Acrobatics', 'Dexterity'], ['Sleight of Hand', 'Dexterity'], ['Deception', 'Charisma'], ['Perception', 'Wisdom'], ['Investigation', 'Intelligence'], ['Persuasion', 'Charisma']],
-    abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: '' }],
+    abilities: [{ name: 'Sneak attack', of: 1, ult: true, does: '' }], weapon: 'Twin daggers',
     fight: { defence: 14, acGear: 0, protection: 'Leather jerkin', heavy: { name: 'Flurry', die: 'd4', modifier: 3, bonus: 4 } },
     gear: [{ name: 'Healing draught', kind: 'once', does: 'Heals 10' }, { name: 'Coil of rope', kind: 'key', does: '' }] },
 };
@@ -78,16 +78,16 @@ const dlRoll = (l, d) => {
   const bonus = dlParts(mod, l[0], d); const dmg = d && d.dmg ? { ...d.dmg, total: dlSumOf(d.dmg.v, d.dmg.parts) } : null;
   return { stat: l[0], fight, kept, other, mod, parts: bonus, dmg, skill: d && d.skill, total: +m[7], dc: +m[8], gap: +m[7] - +m[8], tier, crit, fumble, two, hp: hp ? +hp[1] : null, foe: (() => { const f = dlStruck(parts); return f && { ...f, ...(d && d.foe) }; })(), light: d && d.light, action: DL_GRADE.test(parts[0]) || DL_GRADED.test(parts[0]) ? '' : /^Heavy attack/.test(parts[0]) ? 'Heavy attack' : parts[0], move: (/^Heavy attack: (.+)$/.exec(parts[0]) || [])[1] || '' };
 };
-const dlUseDoes = (d) => d ? d.charAt(0).toLowerCase() + d.slice(1) : '';
 // A use: the hero spent an ability or the ultimate, or used gear, and rolled nothing ("Ability · Used shield bash · Grizzletooth: health 4 → 3 · Struck back: d20 7 vs 10, missed").
 // Its sheet entry gives what it does; the foe's roll back reads as a hero roll's does.
 const DL_USE_KINDS = /^(Ability|Ultimate|Gear|Weakness)$/;
 // A weakness strike is a use too: the line is ["Weakness", "A flask of lamp oil", "Grizzletooth: health 24 → 16"], the item named with no "Used", and the foe staggered, so no roll back.
-const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1])); return w ? { use: true, what: 'Weakness', name: dlCap(w[1]), does: '', tier: 'use', foe: null, hp: null } : null; }
+const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? )?(.+)$/i.exec(String(l[1])); return w ? { use: true, what: 'Weakness', name: dlCap(w[1]), tier: 'use', foe: null, hp: null } : null; }
   const m = DL_USE_KINDS.test(l[0]) && /^Used (?:the |an? )?(.+)$/i.exec(String(l[1])); if (!m) return null;
   const parts = l.slice(1).map(String); const sheet = DL_HEROES[hero] || DL_HEROES['Wren the Rogue']; const name = dlCap(m[1]);
   const has = [...sheet.abilities, ...sheet.gear].find((x) => x.name === name); const hp = /HP\s+(\d+)\/(\d+)/.exec(parts.join(' · '));
-  return { use: true, what: l[0], name, does: has ? dlUseDoes(has.does) : dlUseDoes(DL_GEAR_DOES[name] || ''), tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
+  const lit = /(\d+) light/i.exec((has && has.does) || DL_GEAR_DOES[name] || '');
+  return { use: true, what: l[0], ult: l[0] === 'Ultimate' || !!(has && has.ult), name, restored: lit ? +lit[1] : 0, tier: 'use', foe: dlStruck(parts), hp: hp ? +hp[1] : null }; };
 const DL_END = { won: 'Winning blow', fallen: 'Last blow', overrun: 'Last roll', live: 'Latest roll' };
 // The key moments, keyed by turn: Best roll (a natural 20 on any roll, else the check with the widest margin), Closest call (the first roll whose total equals its target, an attack against the foe's AC included),
 // Worst roll (a natural 1, else the miss furthest below its target, attacks included), Biggest hit (the attack that dealt the most damage, the first on a tie), and the turn the run ended on (a roll or a use).
@@ -127,8 +127,8 @@ const dlBuild = (s) => {
     // The turn that takes a foe's health to 0 beats it: its held roll says so and keeps the foe's bar, at 0.
     const downed = (fo && was > 0 && foeHp[fo.k] === 0) ? { name: fo.f[0], max: foeMx, members: fo.f[2] } : null;
     const u = dlUse(l, s.hero);
-    if (u && wear && fo) { const dealt = Math.max(0, was - +wear[1]); if (dealt) u.does = dealt + ' damage to ' + fo.f[0]; }
-    if (u) { const healed = /Healed (\d+)/i.exec(l.join(' · ')); if (healed) u.does = 'restored ' + healed[1] + ' hit points'; }
+    if (u && wear && fo) { const dealt = Math.max(0, was - +wear[1]); if (dealt) u.dealt = dealt; }
+    if (u) { const healed = /Healed (\d+)/i.exec(l.join(' · ')); if (healed) u.healed = +healed[1]; }
     // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number and breaks no streak. It is a key moment only as the run's last turn.
     if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
@@ -137,6 +137,7 @@ const dlBuild = (s) => {
       if (fo && wear && !u.foe) u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
       if (downed) { u.downed = downed; run = 0; } turns.push(u); cur.turns.push(u); return; }
     const r = dlRoll(l, (s.detail || {})[rolls.length + 1]); if (!r) return;
+    const sheet = DL_HEROES[s.hero] || DL_HEROES['Wren the Rogue']; r.weapon = sheet.weapon; if (r.action === 'Heavy attack' && !r.move) r.move = sheet.fight.heavy.name;
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
     const hazard = !!fo && DL_HAZARDS.has(cur.name.toLowerCase()); const graded = !r.action && !r.fight;
@@ -169,7 +170,9 @@ const dlBuild = (s) => {
   const closer = turns[turns.length - 1]; if (closer && closer.use && end === 'won') closer.won = true;
   return { stops, rolls, turns, lostMark: lost, hp, run, longest: best, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
-const dlSay = (r, foe = true) => r.lost && r.over ? 'The threat filled in ' + r.room + ': ' + r.name : r.lost ? 'Fell in ' + r.room + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
+// A room's name put mid-sentence drops its leading "The" to lower case ("Fell in the warren"); on its own it keeps its name.
+const dlMid = (name) => name.replace(/^The /, 'the ');
+const dlSay = (r, foe = true) => r.lost && r.over ? 'The threat filled in ' + dlMid(r.room) + ': ' + r.name : r.lost ? 'Fell in ' + dlMid(r.room) + ': ' + r.name + ', ' + r.harm + ' damage, 0 hit points left' : r.use ? dlKindSay(r.what) + ' used, ' + r.room + ': ' + r.name + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') : 'Roll ' + r.n + ', ' + r.room + ': ' + (r.action ? r.action + ', ' : '') + r.stat + ' ' + r.total + ' against ' + r.dc + ', ' + dlGrade(r).toLowerCase() + (r.crit ? ', natural 20' : r.fumble ? ', natural 1' : '') + (r.two ? ', two dice, the higher kept' : '') + (foe && r.foe ? (r.foe.hit ? ', the foe hit back' : ', the foe missed back') : '') + (r.downed ? ', ' + r.downed.name + ' beaten' : '') + (r.passed ? ', ' + r.passed + ' passed' : '');
 
 // ---- The die, from the design system (DS.DelveDie, DS.DelveUseDie): strong filled green, weak filled yellow, miss empty, natural 20 rimmed,
 // natural 1 red-edged, a use a quiet sparkle. Only the held roll's head draws the advantage die's grey hex behind the die (`behind`). DL_HEX and DL_RIM
@@ -196,8 +199,6 @@ const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result
 // The foe's turn is drawn the same way as the hero's: its attack, then its damage.
 // KEEP: a tile is a button in the box's own colour with the control edge (Escape's cards); hover, on a mouse only, turns it the panel's colour; open, its edge turns off-white and the named form (`20 d20 + 3 STR + 2 Martial ...`) opens under the side's tiles through the 220ms fold; one tile of a side is open at a time.
 const DlFoeDie = ({ f, size = 34 }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" size={size} />;
-// "Back in the chime run": the room's name leads with "The", so it drops to lower case mid-sentence.
-const dlRoomSaid = (r) => (r.back ? 'Back in ' + r.room.replace(/^The /, 'the ') : r.room);
 // The foe's health after the turn, or a band's count: a band's foe line is its name and "2 of 3 standing" in grey on one line, with no bar and never the band's health (delve.md: a band shows how many stand instead).
 const dlMeterOf = (r) => { const x = r.foe ? r.foe : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
   return x && { name: x.name, n: x.health, of: x.max, members: x.members, standing: x.standing }; };
@@ -209,33 +210,31 @@ const dlBeat = (r) => (r.downed ? r.downed.name + ' beaten' : r.passed ? r.passe
 // The Cost: what the turn took from the hero, in the terms the held roll uses. A foe's turn shows its harm in its damage sum instead.
 const dlCost = (r) => [r.harm > 0 && !r.foe && 'Hit points −' + r.harm, r.threat > 0 && 'Threat +' + r.threat, r.light > 0 && 'Light −' + r.light].filter(Boolean).join(' · ');
 const dlKindSay = (k) => (k === 'Weakness' ? 'Weak spot' : k);
-// Under a key moment's title: a roll's number, or a use's kind and name ("Ability · Dynamite").
-const dlTurnName = (r) => (r.use ? dlKindSay(r.what) + ' · ' + r.name : 'Roll ' + r.n);
 // The result word's tone: a hit or success green, a partial yellow, a natural 1 red, a plain miss the text's own colour.
 const dlOutTone = (r) => (r.fumble ? 'err' : { strong: 'ok', weak: 'part' }[r.tier] || '');
 // A sum: { d: [die, 'd20'], adv, drop, m: [[sign, n, source]], t: total, vs, out: [word, tone], typ }.
 const dlAtkSum = (r) => ({ d: [r.kept, 'd20'], adv: r.two, drop: r.other, m: r.parts, t: r.total, vs: 'vs ' + (r.fight ? 'AC ' : 'DC ') + r.dc, out: [dlGrade(r), dlOutTone(r)] });
-const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type && r.dmg.type.toLowerCase() });
+const dlDmgSum = (r) => ({ d: [r.dmg.v, r.dmg.die], m: r.dmg.parts, t: r.dmg.total, typ: r.dmg.type });
 const dlFoeAtkSum = (f) => ({ d: [f.roll, 'd20'], adv: f.other != null, drop: f.other, m: f.bonus ? [['+', f.bonus, 'Bonus']] : [], t: f.roll + f.bonus, vs: 'vs AC ' + f.dc, out: f.hit ? [f.critical ? 'Critical hit' : 'Hit', 'err'] : ['Miss', ''] });
-const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: [...(f.dd && f.dd.extra ? [['+', f.dd.extra, f.dd.die]] : []), ...(f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : []), ...(f.dark ? [['+', 1, 'dark']] : [])], t: f.dmg });
+const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: [...(f.dd && f.dd.extra ? [['+', f.dd.extra, f.dd.die]] : []), ...(f.dd && f.dd.b ? [['+', f.dd.b, 'Bonus']] : []), ...(f.dark ? [['+', 1, 'Dark']] : [])], t: f.dmg });
 // The named form: each number with its source; a dropped advantage die follows the kept one, its number struck diagonally.
 const DlNamed = ({ s, total }) => (<span className="dvH-pn">
   <span className="dvH-c"><b>{s.d[0]}</b>{s.drop != null && <> <span className="dvH-x" aria-label={s.drop + ', dropped'}>{s.drop}</span></>} {s.d[1]}</span>
-  {s.m.map((p, i) => <span key={i} className="dvH-c">{p[2] === 'Escalation' ? 'you have its measure' : <>{p[0]}{' '}<b>{p[1]}</b> {p[2]}</>}</span>)}
+  {s.m.map((p, i) => <span key={i} className="dvH-c">{p[0]}{' '}<b>{p[1]}</b> {p[2]}</span>)}
   {total != null && <span className="dvH-c">= <b>{total}</b></span>}
 </span>);
 // A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit". "Latest roll" always comes first: "Latest roll · Best roll".
 const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(' · ');
-// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"), the roll's number, room and, when the turn beat or passed something, those words, and at its right the dice (the hero's d20 and the foe's diamond when it struck back). Under a 480px box the beaten or passed words take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
+// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"; a use that earned none is titled with its room), under it the roll's number on a key moment's (never its room, which the open room's heading names) and, when the turn beat or passed something, those words, and at its right the dice (the hero's d20 and the foe's diamond when it struck back). What a use was (its kind and name) is said only in the You label below, never in the strip. Under a 480px box the beaten or passed words take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
 // The empty margin round a die's drawn shape in its picture box, in die units (right, top; the same on the opposite side): the picture is 46 by 50, a hexagon leaves 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7.
 const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
 // KEEP: the held roll's dice are one drawn size on every roll it holds (a hexagon 25px wide), a key moment's included, so moving between rolls never changes their size: a die whose rim reaches further into its picture (a natural 20, a biggest hit) is drawn smaller to match (the user, 2026-11-25: "BETWEEN CARDS these are changing sizes"); the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
 const DL_HELD_DIE = 32;
 // A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
 const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
-const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? dlKindSay(r.what) : 'Roll ' + r.n];
+const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? r.room : 'Roll ' + r.n]; const roll = x && !r.use ? 'Roll ' + r.n : '';
   return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names).split(' · ').map((name, i) => <React.Fragment key={name}>{i > 0 && ' · ' }<span>{name}</span></React.Fragment>)}</p>
-      <p className="dvH-rm">{(x ? dlTurnName(r) + ' · ' : '') + dlRoomSaid(r)}{dlBeat(r) && <> <span className="dvH-sep">· </span><span className="dvH-beat">{dlBeat(r)}</span></>}</p></div>
+      {(roll || dlBeat(r)) && <p className="dvH-rm">{roll}{roll && dlBeat(r) && <> <span className="dvH-sep">· </span></>}{dlBeat(r) && <span className="dvH-beat">{dlBeat(r)}</span>}</p>}</div>
     <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" behind /></DlInkFrame>
       {r.foe && <DlInkFrame w={foeSize * 36 / 40} h={Math.round(foeSize * 44 / 40) * 40 / 44}><DlFoeDie f={r.foe} size={foeSize} /></DlInkFrame>}</div></div>); };
 // ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
@@ -244,7 +243,7 @@ const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46
 // KEEP: advantage is never written in a side's label ("You", "Foe"): the die in the strip's top right already shows it (the second die behind the first) and the opened breakdown shows it as the dropped number struck, with no "advantage" word (the user, 2026-11-26).
 const DlChipBreak = ({ atk, dmg }) => (<div className="dvH-pnl">
   <div className="dvC-pr">{dmg && <span className="dvC-pk">Attack</span>}<DlNamed s={atk} total={atk.t} /></div>
-  {dmg && <div className="dvC-pr"><span className="dvC-pk">Damage{dmg.typ && dmg.typ !== 'damage' ? ' · ' + dmg.typ : ''}</span>{dmg.d ? <DlNamed s={dmg} total={dmg.t} /> : <span className="dvH-pn"><span className="dvH-c"><b>{dmg.t}</b></span></span>}</div>}
+  {dmg && <div className="dvC-pr"><span className="dvC-pk">Damage{dmg.typ && dmg.typ.toLowerCase() !== 'damage' ? ' · ' + dmg.typ : ''}</span>{dmg.d ? <DlNamed s={dmg} total={dmg.t} /> : <span className="dvH-pn"><span className="dvH-c"><b>{dmg.t}</b></span></span>}</div>}
 </div>);
 const DlChip = ({ id, label, atk, dmg, foe, lone, still, body }) => { const [open, setOpen] = React.useState(false);
   const inner = body || (<span className="dvC-in"><span className="dvC-hit"><span className="dvT-tot">{atk.t}</span><span className="dvC-vs"><span>{atk.vs}</span><span className={'dvH-out ' + atk.out[1]}>{atk.out[0]}</span></span></span>
@@ -254,17 +253,26 @@ const DlChip = ({ id, label, atk, dmg, foe, lone, still, body }) => { const [ope
       : <button type="button" className={'esx-card dvC-chip' + (open ? ' is-open' : '')} aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>{inner}</button>}
     {!still && <div id={id} className="dvC-fold"><EsxFold open={open}>{open && <DlChipBreak atk={atk} dmg={dmg} />}</EsxFold></div>}
   </div>); };
-// KEEP: under the chips the foe's health is one thin row (name, a 4px bar, the count) at the box's full width.
+// What a use did, from the turn's outcome and in one tense: damage dealt, hit points healed or light restored ("8 damage", "+10 hit points", "+3 light").
+const dlEffect = (r) => (r.dealt ? { sign: '', n: r.dealt, word: 'damage' } : r.healed ? { sign: '+', n: r.healed, word: 'hit points' } : r.restored ? { sign: '+', n: r.restored, word: 'light' } : null);
+// The kind and name a You label says of a turn: a move names itself ("Heavy attack · Cleave", "Base attack · Longsword", "Ultimate · Shield bash", "Ability · <name>"), a use of gear says "Gear" (on a weak spot "Gear · Weak spot") and leaves the item to its box; an option says its action.
+const dlMoveSaid = (r) => (r.use ? (r.what === 'Weakness' ? ['Gear', 'Weak spot'] : r.what === 'Gear' ? ['Gear'] : [r.ult ? 'Ultimate' : 'Ability', r.name])
+  : r.fight ? (r.action === 'Heavy attack' ? ['Heavy attack', r.move] : ['Base attack', r.weapon]) : r.action ? [r.action] : []).filter(Boolean);
+// A use's box: gear shows the item on the left, a hairline and its effect on the right; a move shows its effect alone on the left, as a rolled attack's damage reads, with no hairline.
+const DlUseBody = ({ r }) => { const e = dlEffect(r); const item = r.what === 'Gear' || r.what === 'Weakness';
+  const eff = e && <span className={'dvC-dm' + (item ? '' : ' is-solo')}><b>{e.sign + e.n}</b> {e.word}</span>;
+  return <span className="dvC-in">{item || !eff ? <span className="dvC-item">{r.name}</span> : null}{eff}</span>; };
+// KEEP: the under-chip foe's health is one thin row (name, a 4px bar, the count) at the box's full width.
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
-  // KEEP: the You label carries what the hero did and what the turn cost them, each after a middle dot: "You · Slip the trap · Cost Threat +1" (the user, 2026-11-25: the cost sits "next to the You", with "a . there"); a turn with nothing to say over its chip and no cost has no label.
-  const costSaid = cost ? <span className="dvH-cost"> · Cost <b>{cost}</b></span> : null;
-  const said = [r.action, r.move || r.skill].filter(Boolean).join(' ');
-  const act = r.use ? (f || cost ? <><b>You</b>{costSaid}</> : null) : r.action || r.fight || r.skill || f || cost ? <><b>You</b>{(r.action || r.skill || r.move) && said && <span> · {said}</span>}{costSaid}</> : null;
-  const used = r.use ? (<span className="dvH-act">Used <b>{r.name}</b>{r.does && <span className="is-does"> {r.does}</span>}</span>) : null;
+  // KEEP: the You label names the turn and what it cost the hero, each after a middle dot: "You · Heavy attack · Cleave · Cost Hit points −1", "You · Gear · Weak spot", "You · Slip the trap · Cost Threat +1" (the user, 2026-11-25: the cost sits "next to the You", with "a . there"; 2026-11-27: moves are named in the label, items in the box). Every turn has the label. Each cost stays whole (no break inside "Cost Hit points −1"), so a label wraps only between its parts.
+  const parts = cost.split(' · ').filter(Boolean);
+  const costSaid = parts.length ? <span className="dvH-cost">{parts.map((c, i) => <React.Fragment key={i}>{'\u00a0· '}<span className="dvH-nb">{i === 0 ? 'Cost ' : ''}<b>{c}</b></span></React.Fragment>)}</span> : null;
+  const said = dlMoveSaid(r);
+  const act = <><b>You</b>{said.map((t, i) => <React.Fragment key={i}>{'\u00a0· '}<span className={r.use || r.fight ? 'dvH-nb' : undefined}>{t}</span></React.Fragment>)}{costSaid}</>;
   return (<>
     <DlHeldHead r={r} x={x} />
     <div className={'dvC-row' + (f ? '' : ' is-lone')}>
-      <DlChip id={'dvH-' + r.t} label={act} atk={r.use ? null : dlAtkSum(r)} dmg={r.use || !r.dmg ? null : dlDmgSum(r)} lone={!f} still={r.use} body={used} />
+      <DlChip id={'dvH-' + r.t} label={act} atk={r.use ? null : dlAtkSum(r)} dmg={r.use || !r.dmg ? null : dlDmgSum(r)} lone={!f} still={r.use} body={r.use ? <DlUseBody r={r} /> : null} />
       {f && <DlChip foe id={'dvH-' + r.t + 'f'} label={<b>Foe</b>} atk={dlFoeAtkSum(f)} dmg={f.hit && f.dmg > 0 ? dlFoeDmgSum(f) : null} />}
     </div>
     {mt && <div className="dvH-fm"><DlFoeMeter mt={mt} /></div>}
@@ -299,7 +307,7 @@ const DlMapMarks = ({ m, st, phone }) => { if (!st.turns.length) return null;
   return <span className="dvG-marks">{rows.map((row, i) => <span key={i} className="dvG-mrow">{row.map((r) => <DlMapMark key={r.t} m={m} r={r} />)}</span>)}</span>; };
 const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = useDlMap(stops.length); const phone = useGs().width < DL_PIP_PHONE_W;
   return (<div className="dvG-mapw"><div ref={ref} className={'dvG-map' + (stops.length <= DL_MAP_FEW ? ' is-few' : '')} style={{ '--cols': cols, '--gap': gap + 'px' }} aria-label="The way you went">{stops.map((st, i) => {
-    const has = st.turns && st.turns.some((r) => !r.lost); const label = (st.back ? 'Back to ' : 'Room ' + st.num + ', ') + st.name;
+    const has = st.turns && st.turns.some((r) => !r.lost); const label = st.back ? 'Back to ' + dlMid(st.name) : 'Room ' + st.num + ', ' + st.name;
     const box = <span className={dlNum(st)}>{st.back && <DlBackArrow />}{st.num}</span>;
     const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (i % cols === cols - 1 || i === stops.length - 1 ? ' is-re' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
     return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} phone={phone} /></button>
@@ -307,7 +315,7 @@ const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = us
 // KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
 const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
-    <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.back ? 'Back to ' + st.name : st.name}</span></p>
+    <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.name}</span></p>
     {/* KEEP: in the open room a key moment's die is drawn bigger (44px) than any other roll's (30px), as everywhere a key moment stands among other rolls (the user, 2026-11-25: "all big moments are big throughout relationally"); pressing a die only rings it, never resizes it. */}
     <div className="dvG-dice">{st.turns.filter((r) => !r.lost).map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
   </div>
@@ -418,7 +426,7 @@ const dlTabGroups = (c, slots) => {
     { key: 'advantage', head: 'Advantage', icon: 'advantage', cells: <DlAdvCells c={c} />, cls: 'dv8-adv' },
     { key: 'pack', head: 'Pack', icon: 'pack', say: carried + ' of ' + slots.length + ' carried',
       rows: [...c.gear.map((g) => ({ key: g.name, fig: <DlBox k={g.kind} state={g.state} />, name: g.name, tag: g.label, text: g.does })),
-        ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: 'Free', text: free + ' free' }] : [])] },
+        ...(free > 0 ? [{ key: 'free', fig: <DlBox k={null} />, name: free + ' Free' }] : [])] },
     { key: 'abilities', head: 'Ability', icon: 'ability', say: left + ' of ' + of + ' uses left',
       rows: c.abilities.map((a) => ({ key: a.name, fig: <DlUses left={a.left} of={a.of} />, name: a.name, tag: a.ult ? 'Ultimate' : null, text: a.does })) },
     ...(c.fight ? [{ key: 'fight', head: 'Fight', icon: 'fight', say: 'armour class ' + c.fight.defence,
@@ -491,6 +499,16 @@ const DlNowRooms = ({ rooms }) => { const [ref, numbered] = useDlNowWide(rooms);
       : <i key={st.i} className="dl-now-tick" />))}</div>
       </div></div>); };
 const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET * 2 + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
+// KEEP: the key dice stand in one row at every width, in equal columns (no wider than 96px each, a few dice centred as one group), each die centred over its name; the names stay on one line while every name fits its column, else every name takes two lines together (each word on its own line), so no die's name is shorter than another's (the user, 2026-11-27: "it's one row", "even across them all"). The fit is measured on the page's own font, and again once fonts arrive.
+const DL_KEY_COL = 96; const DL_KEY_GAP = 4;
+const DlNowKeys = ({ m, keys }) => { const ref = React.useRef(null); const n = keys.length; const [two, setTwo] = React.useState(false);
+  const names = keys.map((r) => dlNowNames(m.mom[r.t].kickers)); const sig = names.map((x) => x.join('|')).join('/');
+  React.useLayoutEffect(() => { const el = ref.current; if (!el) return undefined;
+    const read = () => { const col = (el.clientWidth - DL_KEY_GAP * (n - 1)) / n; const cs = getComputedStyle(el.querySelector('.dl-now-name')); const ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; setTwo(!names.every((x) => x.every((t) => ctx.measureText(t).width <= col))); };
+    read(); const ro = new ResizeObserver(read); ro.observe(el); if (document.fonts && document.fonts.ready) document.fonts.ready.then(read); return () => ro.disconnect(); }, [sig, n]);
+  return (<div ref={ref} className={'dl-now-keys' + (two ? ' is-two' : '')} style={{ '--k': n, '--col': DL_KEY_COL + 'px', '--kgap': DL_KEY_GAP + 'px' }}>{keys.map((r, i) => (
+    <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} /><span className="dl-now-name">{names[i].map((k) => <span key={k} className="dl-now-k">{k.split(' ').map((w, j) => <React.Fragment key={j}>{j > 0 && ' '}<span>{w}</span></React.Fragment>)}</span>)}</span></span>))}</div>); };
 const DlNowPic = ({ m }) => {
   const ref = React.useRef(null); const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
   const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);
@@ -499,8 +517,7 @@ const DlNowPic = ({ m }) => {
   return (<div ref={ref} className="dl-now-pic" role="group" aria-label="The way you went">
     <div className={'dl-now-stops' + (few ? ' is-few' : '')} style={{ '--n': shown.length, '--few': DL_NOW_GAP_FEW + 'px' }} role="img" aria-label={m.stops.length ? 'The last ' + shown.length + ' stops' : 'The run has started, no stop yet'}>
       {shown.map((st) => <span key={st.i} className={dlNum(st, '')}>{st.back && <DlBackArrow />}{st.num}{m.lostMark && m.lostMark.stop === st.i && <span className="dl-now-loss" role="img" aria-label={dlSay(m.lostMark)}><DlDie r={m.lostMark} size={30} /></span>}</span>)}</div>
-    {keys.length > 0 && <div className="dl-now-keys">{keys.map((r) => (
-      <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} /><span className="dl-now-name">{dlNowNames(m.mom[r.t].kickers).map((k) => <span key={k}>{k}</span>)}</span></span>))}</div>}
+    {keys.length > 0 && <DlNowKeys m={m} keys={keys} />}
   </div>);
 };
 // The Now card of a run not started: the week's title (label: a free first run passes its own), the run's rooms empty and none lit, Play, the next run. No line and no tag: the empty rooms say it (user, 2026-11-08, "looks fine").

@@ -857,7 +857,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
 .dvG-th { margin: 0; display: flex; gap: 10px; align-items: center; min-width: 0; }
 .dvG-name { font: 700 16px/1.25 var(--font-heading); color: var(--text); text-wrap: balance; }
-.dvG-dice { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.dvG-dice { display: flex; flex-wrap: wrap; gap: 8px 4px; align-items: center; }
 .dvG-held { display: grid; min-width: 0; }
 @container dv2 (min-width: 700px) {
   .dvG-open { grid-template-columns: minmax(0, 1fr) minmax(0, 66%); column-gap: 24px; align-items: start; }
@@ -893,6 +893,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-x::after { content: ''; position: absolute; left: 50%; top: 50%; width: 13px; border-top: 1px solid var(--text); transform: translate(-50%, -50%) rotate(-60deg); }
 .dvH-fm { min-width: 0; }
 .dvH-cost b { color: var(--text); }
+.dvH-nb { white-space: nowrap; }
 /* KEEP: the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
 .dvH-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
 .dvH-fm .dv6-bar > span { grid-column: 1 / -1; align-self: start; font: 600 13px/1.4 var(--font-text); color: var(--text); white-space: normal; overflow-wrap: break-word; }
@@ -1151,10 +1152,11 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
 /* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
 .dl-now-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
-/* KEEP: whole moment names stay readable even at 280px; dice wrap as a group when their labels cannot fit in one row. */
-.dl-now-keys { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 8px 4px; min-width: 0; }
-.dl-now-key { flex: 0 0 auto; min-width: 44px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.dl-now-name > span { white-space: nowrap; }
+/* KEEP: the key dice are one row of equal columns at every width, 4px apart and each no wider than 96px, so a few dice centre as one group; DlNowKeys decides one line or two for every name together. */
+.dl-now-keys { display: grid; grid-template-columns: repeat(var(--k), minmax(0, 1fr)); gap: 0 var(--kgap); align-items: start; justify-items: center; width: min(100%, calc(var(--k) * var(--col) + (var(--k) - 1) * var(--kgap))); margin-inline: auto; min-width: 0; }
+.dl-now-key { min-width: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dl-now-k { display: block; white-space: nowrap; }
+.dl-now-keys.is-two .dl-now-k > span { display: block; }
 .dl-now-key .mcp-dl-die { width: min(44px, 100%); height: auto; }
 .dl-now-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; max-width: 100%; }
 /* KEEP: the other rolls are 8px dots with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring, a use a filled grey dot, so each takes the same 8px slot. */
@@ -1211,11 +1213,15 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dvT-tot { font: 700 18px/1.1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
 .dvC-dm { display: block; padding-top: 6px; border-top: 1px solid var(--control-edge); font: 400 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; }
 .dvC-dm b { font: 700 16px/1.1 var(--font-heading); color: var(--text); }
+/* KEEP: a use's box: gear is its name, a hairline, its effect; a move is its effect alone on the left, with no hairline, where a rolled attack's roll would stand. A long name wraps inside its half. */
+.dvC-item { min-width: 0; font: 600 14px/1.3 var(--font-text); color: var(--text); overflow-wrap: anywhere; }
+.dvC-dm.is-solo { padding: 0; border: 0; }
 @container dvc (min-width: 200px) {
   .dvC-in { grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
   .dvC-hit { grid-template-columns: auto auto; justify-content: start; column-gap: 10px; }
   .dvC-vs { display: inline-flex; flex-wrap: wrap; column-gap: 5px; }
   .dvC-dm { padding: 0 0 0 10px; border-top: 0; border-left: 1px solid var(--control-edge); }
+  .dvC-dm.is-solo { padding: 0; border: 0; }
 }
 /* The breakdown: each part has a small caption only when there are two ("Attack", "Damage · slashing"), then its named form. */
 .dvC-pr { display: grid; gap: 2px; min-width: 0; }
