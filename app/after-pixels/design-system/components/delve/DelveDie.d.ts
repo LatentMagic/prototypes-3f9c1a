@@ -23,6 +23,8 @@ export interface DelveDieProps{
   even?:boolean;
   /** A pip with no number, for a map: `size` is the hexagon's own width. */
   mini?:boolean;
+  /** The number's size in px, whatever the die's size or shape; default scales with the die. */
+  num?:number;
   className?:string;
 }
 export declare function DelveDie(props:DelveDieProps):JSX.Element;

@@ -26,8 +26,8 @@ const GROW = 1.167;
 // the held roll's grey advantage hex is the die's own outline moved a fixed 2.5px up and left, whatever the die's size or shape (a natural 20's rim, a grown biggest hit, a plain hexagon), so it sits evenly behind the die; nothing else is drawn behind a die.
 const BEHIND_PX = 2.5;
 const grownHex = () => HP.map(([x, y]) => (CEN[0] + (x - CEN[0]) * GROW).toFixed(3) + ',' + (CEN[1] + (y - CEN[1]) * GROW).toFixed(3)).join(' ');
-// `even`: a key moment is one drawn size whether or not it is special, so a plain key die's hexagon is grown (as a biggest hit's is) to the footprint a natural 20's rim takes, in the same picture box, so a selection ring or a neighbour sits as close to it as to a natural 20; its number is not grown. `mini`: a pip, with no number, for the map; `size` is then the hexagon's own width.
-export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = 'card', size: asked = 36, even = false, mini = false, className = '' }) {
+// `even`: a key moment is one drawn size whether or not it is special, so a plain key die's hexagon is grown (as a biggest hit's is) to the footprint a natural 20's rim takes, in the same picture box, so a selection ring or a neighbour sits as close to it as to a natural 20; its number is not grown. `num`: the number's size in px, whatever the die's size or shape, so a surface holds every die's number at one size (default: it scales with the die). `mini`: a pip, with no number, for the map; `size` is then the hexagon's own width.
+export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = 'card', size: asked = 36, even = false, mini = false, num, className = '' }) {
   const size = mini ? asked * 46 / 36 : asked;
   const big = size >= 64;
   const ringed = biggest && kind === 'strong';
@@ -47,7 +47,7 @@ export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = f
         : <polygon className="hx" points={HEX} />}
       {crit && <polygon className="rim" points={RIM} style={{ strokeWidth: rimPx(size) + 'px' }} />}
       {ringed && crit && <polygon className="cut" points={ring.points} style={{ strokeWidth: ring.width + 'px' }} />}
-      {mini ? null : kind === 'use' ? <path className="gl" d={SPARKLE} /> : <text className="nm" x="18" y="20.5">{value}</text>}
+      {mini ? null : kind === 'use' ? <path className="gl" d={SPARKLE} /> : <text className="nm" x="18" y="20.5" style={num ? { fontSize: (num * 46 / size).toFixed(3) + 'px' } : undefined}>{value}</text>}
       {other != null && big && <g className="tw" transform="translate(25 28) scale(.42)"><polygon points={HEX} /><text x="18" y="21">{other}</text></g>}
       <polygon className="sl" points={RIM} />
     </svg>
