@@ -230,8 +230,8 @@ const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.
 const dlInk = (r, key) => (r.crit ? [2, 1.5] : r.big || key ? [2, 1.7] : [5, 5]);
 // the held roll's dice are one drawn size on every roll it holds (a hexagon 25px wide), a key moment's included, so moving between rolls never changes their size: a die whose rim reaches further into its picture (a natural 20, a biggest hit) is drawn smaller to match (the user, 2026-11-25: "BETWEEN CARDS these are changing sizes"); the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
 const DL_HELD_DIE = 32;
-// a die's number is one size on each surface, whatever the die is (plain, natural 1, natural 20, biggest hit): 9px on the map, 12px in the open room, and the held roll's own (what a plain die's is at its 32px).
-const DL_MAP_NUM = 9; const DL_ROOM_NUM = 12;
+// a die's number is one size on each surface, whatever the die is (plain, natural 1, natural 20, biggest hit): 9px on the map, 14.35px in the open room (what a 44px key die's number is), and the held roll's own (what a plain die's is at its 32px).
+const DL_MAP_NUM = 9; const DL_ROOM_NUM = 44 * 15 / 46;
 // A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
 const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
 const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r, !!x && !r.use)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? r.room : 'Roll ' + r.n]; const roll = x && !r.use ? 'Roll ' + r.n : '';

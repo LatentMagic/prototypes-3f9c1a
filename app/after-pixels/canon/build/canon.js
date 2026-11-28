@@ -3714,7 +3714,7 @@
   const dlInk = (r, key) => r.crit ? [2, 1.5] : r.big || key ? [2, 1.7] : [5, 5];
   const DL_HELD_DIE = 32;
   const DL_MAP_NUM = 9;
-  const DL_ROOM_NUM = 12;
+  const DL_ROOM_NUM = 44 * 15 / 46;
   const DlInkFrame = ({ w, h, children }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ink", style: { width: w, height: h } }, children);
   const DlHeldHead = ({ r, x }) => {
     const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r, !!x && !r.use)[0]);
