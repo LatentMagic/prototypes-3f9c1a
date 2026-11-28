@@ -845,14 +845,13 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-stop:not(.is-re)::after { left: 50%; }
 .dvG-stop.is-on .dv2-num, .dvG-th .dv2-num.is-on { background: var(--off-white); color: var(--page); box-shadow: none; }
 .dvG-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
-.dvG-marks { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 44px; max-width: 44px; }
+.dvG-marks { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 52px; max-width: 52px; }
 .dvG-mrow { display: flex; justify-content: center; align-items: center; gap: 4px; }
 /* a mini die's hexagon sits 2px inside its picture on every side, so a stop whose marks hold a die keeps 2px less padding under it: the map's spacing is measured to the hexagon, not its empty margin. */
-.dvG-marks .mcp-dl-die { width: 20px; height: auto; }
 .dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 6px; }
-.dvG-marks .dl-now-mark { width: 7px; height: 7px; }
-/* a use among a stop's marks is a grey sparkle 9px across with a -1px margin, so it takes the 7px a dot takes and the other marks do not spread. */
-.dvG-spark { display: block; width: 9px; height: 9px; margin: -1px; fill: var(--control-edge); flex: none; }
+.dvG-marks .dl-now-mark { width: 10px; height: 11px; }
+/* a use among a stop's marks is a grey sparkle 9px across with a margin that gives it the 10 by 11px slot a mini die takes, so the other marks do not spread. */
+.dvG-spark { display: block; width: 9px; height: 9px; margin: 1px 0.5px; fill: var(--control-edge); flex: none; }
 .dvG-open { display: grid; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); min-width: 0; }
 .dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
 .dvG-th { margin: 0; display: flex; gap: 10px; align-items: center; min-width: 0; }
@@ -1164,10 +1163,10 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-now-key .mcp-dl-die { width: min(44px, 100%); height: auto; }
 .dl-now-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; max-width: 100%; }
 /* the other rolls are 8px dots with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring, a use a filled grey dot, so each takes the same 8px slot. */
-.dl-now-mark { display: block; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
-.dl-now-mark.is-strong { background: var(--success); }
-.dl-now-mark.is-weak { background: var(--warning); }
-.dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
+.dl-now-mark { display: block; flex: none; overflow: visible; }
+.dl-now-mark polygon { fill: none; stroke: var(--control-edge); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.dl-now-mark.is-strong polygon { fill: var(--success); stroke: none; }
+.dl-now-mark.is-weak polygon { fill: var(--warning); stroke: none; }
 /* on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
 @container gs (max-width: 300px) {
   .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }

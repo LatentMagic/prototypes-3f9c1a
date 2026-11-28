@@ -183,9 +183,11 @@ const DlDie = ({ r, size = 36, sel, behind = false, surface }) => (r.lost
   : r.use
   ? <DS.DelveUseDie selected={sel} surface={surface} size={size} won={!!r.won} />
   : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} behind={behind} crit={r.crit} biggest={!!r.big && r.tier === 'strong'} fumble={r.fumble} selected={sel} surface={surface} size={size} />);
+// A key moment is drawn at one outer size whether or not it is special (the user, 2026-11-28: "Key moments should be the same size, whether or not they're special"): a die whose rim reaches further into its picture is drawn smaller, so its drawn shape is as wide as a plain hexagon at the same size. Not for the held roll, which does this itself in its frames.
+const dlEven = (r, size) => size * 36 / (46 - 2 * dlInk(r)[0]);
 const DlDieBtn = ({ r, size, act, on, lit }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
   <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
-    <DlDie r={r} size={size} sel={act === r.t || lit === r.t} />
+    <DlDie r={r} size={dlEven(r, size)} sel={act === r.t || lit === r.t} />
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
@@ -300,7 +302,9 @@ const DL_SPARK = 'M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z';
 const dlRows = (items, most) => { const rows = Math.ceil(items.length / Math.max(1, most)); const base = Math.floor(items.length / rows); const longer = items.length % rows; let at = 0;
   return Array.from({ length: rows }, (_, i) => { const n = i < longer ? base + 1 : base; const row = items.slice(at, at + n); at += n; return row; }); };
 const DL_PIP_ROW = 4; const DL_PIP_ROW_PHONE = 3; const DL_PIP_PHONE_W = 480; const DL_KEY_ROW = 2;
-const DlMapMark = ({ m, r }) => (r.lost || m.mom[r.t] ? <DlDie r={r} size={20} /> : r.use ? <svg className="dvG-spark" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d={DL_SPARK} /></svg> : <i className={'dl-now-mark is-' + (r.tier || 'miss')} />);
+// every non-key roll is a mini die: the design system's hexagon (36 by 40 units) at 10px wide, filled by its grade, a miss as its outline.
+const DlPip = ({ tier }) => <svg className={'dl-now-mark is-' + (tier || 'miss')} viewBox="0 0 36 40" aria-hidden="true" focusable="false"><polygon points={DL_HEX} /></svg>;
+const DlMapMark = ({ m, r }) => (r.lost ? <DlDie r={r} size={20} /> : m.mom[r.t] ? <DlDie r={r} size={dlEven(r, 20)} /> : r.use ? <svg className="dvG-spark" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d={DL_SPARK} /></svg> : <DlPip tier={r.tier} />);
 const DlMapMarks = ({ m, st, phone }) => { if (!st.turns.length) return null;
   const keys = st.turns.filter((r) => r.lost || m.mom[r.t]); const pips = st.turns.filter((r) => !r.lost && !m.mom[r.t]);
   const rows = [...dlRows(pips, phone ? DL_PIP_ROW_PHONE : DL_PIP_ROW), ...dlRows(keys, DL_KEY_ROW)];

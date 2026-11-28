@@ -3684,7 +3684,8 @@
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
   const DlDie = ({ r, size = 36, sel, behind = false, surface }) => r.lost ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, behind, crit: r.crit, biggest: !!r.big && r.tier === "strong", fumble: r.fumble, selected: sel, surface, size });
-  const DlDieBtn = ({ r, size, act, on, lit }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t }));
+  const dlEven = (r, size) => size * 36 / (46 - 2 * dlInk(r)[0]);
+  const DlDieBtn = ({ r, size, act, on, lit }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: dlEven(r, size), sel: act === r.t || lit === r.t }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
@@ -3788,7 +3789,8 @@
   const DL_PIP_ROW_PHONE = 3;
   const DL_PIP_PHONE_W = 480;
   const DL_KEY_ROW = 2;
-  const DlMapMark = ({ m, r }) => r.lost || m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 20 }) : r.use ? /* @__PURE__ */ React$1.createElement("svg", { className: "dvG-spark", viewBox: "0 0 10 10", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_SPARK })) : /* @__PURE__ */ React$1.createElement("i", { className: "dl-now-mark is-" + (r.tier || "miss") });
+  const DlPip = ({ tier }) => /* @__PURE__ */ React$1.createElement("svg", { className: "dl-now-mark is-" + (tier || "miss"), viewBox: "0 0 36 40", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("polygon", { points: DL_HEX }));
+  const DlMapMark = ({ m, r }) => r.lost ? /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 20 }) : m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { r, size: dlEven(r, 20) }) : r.use ? /* @__PURE__ */ React$1.createElement("svg", { className: "dvG-spark", viewBox: "0 0 10 10", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_SPARK })) : /* @__PURE__ */ React$1.createElement(DlPip, { tier: r.tier });
   const DlMapMarks = ({ m, st, phone }) => {
     if (!st.turns.length) return null;
     const keys = st.turns.filter((r) => r.lost || m.mom[r.t]);
