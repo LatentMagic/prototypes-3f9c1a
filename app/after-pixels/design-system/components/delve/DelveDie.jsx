@@ -24,14 +24,17 @@ const GROW = 1.167;
 // the held roll's grey advantage hex is the die's own outline moved a fixed 2.5px up and left, whatever the die's size or shape (a natural 20's rim, a grown biggest hit, a plain hexagon), so it sits evenly behind the die; nothing else is drawn behind a die.
 const BEHIND_PX = 2.5;
 const grownHex = () => HP.map(([x, y]) => (CEN[0] + (x - CEN[0]) * GROW).toFixed(3) + ',' + (CEN[1] + (y - CEN[1]) * GROW).toFixed(3)).join(' ');
-export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = 'card', size = 36, className = '' }) {
+// `even`: a key moment is one drawn size whether or not it is special, so a natural 20's rim or a grown biggest hit is drawn smaller until the die's drawn shape is as wide as a plain hexagon at `size` (the rim and ring are unchanged, only the die's size). `mini`: a pip, with no number, for the map; `size` is then the hexagon's own width.
+const EVEN = 36 / 42;
+export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = 'card', size: asked = 36, even = false, mini = false, className = '' }) {
+  const size = mini ? asked * 46 / 36 : even && (crit || (biggest && kind === 'strong')) ? asked * EVEN : asked;
   const big = size >= 64;
   const ringed = biggest && kind === 'strong';
   const ring = ringed ? biggestRing(crit ? size : size * GROW) : null;
   // selected, a two-dice die stands alone with nothing behind it, so nothing crosses the selection ring; from 64px the second die sits at the die's corner instead.
   const adv = other != null && behind && !big && !selected;
   const away = -BEHIND_PX * 46 / size;
-  const cls = ['mcp-dl-die', 'is-' + kind, crit && 'is-crit', ringed && 'is-biggest', fumble && 'is-fumble', won && kind === 'use' && 'is-won', selected && 'is-sel', surface === 'popup' && 'is-popup', className].filter(Boolean).join(' ');
+  const cls = ['mcp-dl-die', 'is-' + kind, crit && 'is-crit', ringed && 'is-biggest', fumble && 'is-fumble', won && kind === 'use' && 'is-won', selected && 'is-sel', mini && 'is-mini', surface === 'popup' && 'is-popup', className].filter(Boolean).join(' ');
   return (
     <svg className={cls} viewBox="-5 -5 46 50" width={size} height={Math.round(size * 50 / 46)} aria-hidden="true">
       {adv && <polygon className="gh" points={crit ? RIM : ringed ? grownHex() : HEX} transform={'translate(' + away.toFixed(3) + ' ' + away.toFixed(3) + ')'} />}
@@ -40,7 +43,7 @@ export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = f
         : <polygon className="hx" points={HEX} />}
       {crit && <polygon className="rim" points={RIM} />}
       {ringed && crit && <polygon className="cut" points={ring.points} style={{ strokeWidth: ring.width + 'px' }} />}
-      {kind === 'use' ? <path className="gl" d={SPARKLE} /> : <text className="nm" x="18" y="20.5">{value}</text>}
+      {mini ? null : kind === 'use' ? <path className="gl" d={SPARKLE} /> : <text className="nm" x="18" y="20.5">{value}</text>}
       {other != null && big && <g className="tw" transform="translate(25 28) scale(.42)"><polygon points={HEX} /><text x="18" y="21">{other}</text></g>}
       <polygon className="sl" points={RIM} />
     </svg>

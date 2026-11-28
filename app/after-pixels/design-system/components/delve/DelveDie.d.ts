@@ -19,6 +19,10 @@ export interface DelveDieProps{
   surface?:'card'|'popup';
   /** Width in px; the height follows. Default 36. */
   size?:number;
+  /** Draw a key moment at one size: a natural 20 or a grown biggest hit is drawn smaller until its shape is as wide as a plain hexagon at `size`. */
+  even?:boolean;
+  /** A pip with no number, for a map: `size` is the hexagon's own width. */
+  mini?:boolean;
   className?:string;
 }
 export declare function DelveDie(props:DelveDieProps):JSX.Element;
