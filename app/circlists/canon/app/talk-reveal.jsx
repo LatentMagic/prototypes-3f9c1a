@@ -21,7 +21,7 @@ const CandSwellReveal = ({ item, all, firstHere, onClose }) => {
   );
 };
 
-// KEEP: about 32px between the disc and the roster under it in the reveal, and
+// about 32px between the disc and the roster under it in the reveal, and
 // the disc in the same place as in the input step, so nothing jumps between
 // steps. The shipped review's reserve plus the body gap read loose once the
 // primary button sat under the roster. Candidate-scoped: app/swell-reactions.jsx stays.

@@ -64,7 +64,7 @@ const CnLinkRow = ({ items }) => {
 const cnFold = (g, per) => { const rows = Math.ceil(g.length / per); const size = Math.ceil(g.length / rows); const out = [];
   for (let i = 0; i < g.length; i += size) out.push(g.slice(i, i + size));
   return out; };
-// KEEP: the links fold into balanced rows, so no link shrinks and none stands alone: the card's width fixes how many links a row
+// the links fold into balanced rows, so no link shrinks and none stands alone: the card's width fixes how many links a row
 // holds (beside the count on desktop, the count's width taken off), and the rows share the guesses as evenly as they can (a hard
 // day of 20+ guesses is two or three rows). The numbers run on across rows. Measured, so it follows the card's width.
 const CnLinks = ({ g }) => {

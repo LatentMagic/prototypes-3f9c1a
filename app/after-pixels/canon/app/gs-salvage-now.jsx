@@ -12,9 +12,9 @@ import { SLV_WRECKS, SLV_DIVES, SLV_ALL, SLV_PLAYS, SLV_RESULT, SLV_ST, ICON } f
 
 // A hull in ninths of a square, as the session page draws one (the pill inset 1/9 each side), so it is never stretched: raised, a faint
 // outlined pill with a disc for every square; otherwise dashed with a disc for each square already hit, filled from the left.
-// KEEP: the card's hulls are deeper than the session page's pills (11/9 of a square, not 7/9), so at this size they read as ships, not lines.
+// the card's hulls are deeper than the session page's pills (11/9 of a square, not 7/9), so at this size they read as ships, not lines.
 const SVN_H = 11;
-// KEEP: a disc's radius in ninths; in a raised hull the gaps from each end and between discs are equal, so the discs sit evenly.
+// a disc's radius in ninths; in a raised hull the gaps from each end and between discs are equal, so the discs sit evenly.
 const SVN_R = 2.5;
 const SvnHull = ({ w, p }) => {
   const up = w.every((s) => p.hit.has(s)); const n = w.length; const L = 9 * n - 2;
@@ -27,7 +27,7 @@ const SvnHull = ({ w, p }) => {
         </>
         : <>
           <rect className="svn-dash" x=".3" y=".3" width={L - .6} height={SVN_H - .6} rx={SVN_H / 2 - .3} strokeDasharray="1.1 .9" />
-          {/* KEEP: while a play is live an unraised hull stays empty: a hit inside it would say which wreck it belongs to, and so its length,
+          {/* while a play is live an unraised hull stays empty: a hit inside it would say which wreck it belongs to, and so its length,
               which the game keeps secret until the play ends. Once a lost play ends, its unfound hulls turn the Failed colour and show their
               hits, filled from the left as a count. */}
           {p.state === 'live' ? null : w.filter((s) => p.hit.has(s)).map((s, i) => <circle key={s} cx={9 * i + SVN_H / 2} cy={SVN_H / 2} r={SVN_R} />)}

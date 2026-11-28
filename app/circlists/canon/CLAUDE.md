@@ -153,7 +153,7 @@ One external skill, vendored into `skills/` and adapted. It does not fire as par
 
 ## Code
 
-- **Comments carry intent and mapping, and flag the special; nothing else** (`ARCHITECTURE.md` § Conventions). Mapping comments help you find your way round a file. `// KEEP:` is different: it is written for another agent, the one that integrates this prototype into the product, which reads it as "preserve this outcome". Put it on anything special (adaptive styling, overlap or overflow handling, a value chosen against the default) so it never needs speccing in a ticket. Plain narration of what code does gets deleted.
+- **Comments carry intent and mapping; nothing else.** Mapping comments help you find your way around a file. Delete plain narration of what code does.
 
 <important if="you are touching routing, shells, module load order, or any in-shell surface">
 - **Three presentation postures, one shared core.** Desktop web, mobile web, and **app** (native mobile). `main.jsx` routes every in-shell surface through `inShell()`, which swaps ONLY the chrome; everything inside is the same shared component, so a shared-surface change must land in all three with no per-posture edit — never fork a surface for the app. Web is frozen.

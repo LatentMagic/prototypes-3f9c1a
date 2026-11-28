@@ -1,7 +1,7 @@
 /* Chain's session page body (app/gs-chain.jsx): the board of word rows and the guesses as a chain of links. Built on the shared
    session card (gs-sess-card.css) and Guess's tiles (gs-word.css: .wd-t, --wd-dash), so it is imported after both. */
 
-/* KEEP: the tile is 40px on a phone and 44px from 760px, shrunk only when the longest row (--chn-n tiles) would not fit the card
+/* the tile is 40px on a phone and 44px from 760px, shrunk only when the longest row (--chn-n tiles) would not fit the card
    (--wcap); the joint between rows is 20px; one chain unit --lu is 1.3px (1.5px from 760px), so a link stands about one tile tall;
    the key's type is 14px (15px from 760px). The board shows every word, so it is always five to seven rows high, and these sizes
    keep the guesses in proportion to it. */
@@ -24,7 +24,7 @@
 .chn-card .gs-sc-panel { grid-template-columns: 1fr; }
 .chn-guesses { display: grid; justify-items: center; gap: 16px; }
 .chn-chain { display: block; overflow: visible; width: min(calc(var(--cw) * var(--lu)), 100%); height: auto; aspect-ratio: var(--cw) / var(--ch); }
-/* KEEP: under 760px the guesses take the card's full width; from 760px the chain down never runs longer than the board (--bh);
+/* under 760px the guesses take the card's full width; from 760px the chain down never runs longer than the board (--bh);
    from 1100px the key stands beside the chain, so the board sets the card's height (between, a tablet has no room beside). */
 @container gs (max-width: 759.98px) { .chn-guesses { grid-template-columns: minmax(0, 1fr); width: 100%; } }
 @container gs (min-width: 760px) { .chn-chain.is-down { width: auto; height: min(calc(var(--ch) * var(--lu)), var(--bh)); } }

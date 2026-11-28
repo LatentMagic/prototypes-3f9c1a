@@ -14,7 +14,7 @@
 /* ---- The die (v2, agreed). ---- */
 .dv2-dbtn { position: relative; z-index: 1; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: grid; place-items: center; color: inherit; }
 .dv2-dbtn:focus-visible { outline: 2px solid var(--focus-ring, var(--off-white)); outline-offset: 2px; }
-/* KEEP: a die in the open room is drawn 30px (a key moment 44px), but its tap target is 44px tall and as wide as a room's column allows (44px at most), centred on the die, so it meets the 44px touch floor wherever the page has the room. A target never reaches past its column, so it never covers a neighbouring die: where 9-11 rooms share a 280-390px phone, a column is 27-42px wide and the target is that wide. */
+/* a die in the open room is drawn 30px (a key moment 44px), but its tap target is 44px tall and as wide as a room's column allows (44px at most), centred on the die, so it meets the 44px touch floor wherever the page has the room. A target never reaches past its column, so it never covers a neighbouring die: where 9-11 rooms share a 280-390px phone, a column is 27-42px wide and the target is that wide. */
 .dv2-dbtn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, var(--hit-w, 44px)); height: max(100%, 44px); transform: translate(-50%, -50%); }
 /* ---- The route (v2's E). ---- */
 .dv2-num { position: relative; z-index: 1; flex: none; min-width: var(--dv-num); height: var(--dv-num); padding: 0 4px; box-sizing: border-box; display: inline-flex; gap: 2px; align-items: center; justify-content: center; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--control-edge); font: 700 14px/1 var(--font-heading); color: var(--text); }
@@ -23,22 +23,22 @@
 .dv2-pass { position: relative; z-index: 1; display: block; width: 6px; height: 6px; background: var(--control-edge); margin-top: 8px; }
 .dv3-live { display: grid; min-width: 0; }
 /* ---- The board, Glance: the map, then the open room and the held roll. ---- */
-/* KEEP: the hairline between the map and the open room sits midway between what is drawn: 20px from the lowest mark of the map to the line (12px gap and the stop's 8px foot) and 20px from the line to the open room's top (its number box or the held roll's edge), measured on the drawn edges, not the boxes. */
+/* the hairline between the map and the open room sits midway between what is drawn: 20px from the lowest mark of the map to the line (12px gap and the stop's 8px foot) and 20px from the line to the open room's top (its number box or the held roll's edge), measured on the drawn edges, not the boxes. */
 .dvG { display: grid; gap: 12px; min-width: 0; }
-/* KEEP: the map's first and last boxes sit on the card's content edges: a box is 28px in its 44px column, so the map reaches 8px past each edge. */
+/* the map's first and last boxes sit on the card's content edges: a box is 28px in its 44px column, so the map reaches 8px past each edge. */
 .dvG-mapw { container: dvg / inline-size; margin: 0 -8px; min-width: 0; }
 .dvG-map { display: grid; grid-template-columns: repeat(var(--cols, 20), 44px); column-gap: var(--gap, 6px); row-gap: 8px; align-items: start; }
 .dvG-map.is-few { justify-content: center; }
 .dvG-stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 48px; padding: var(--dv-stop-top) 0 8px; margin: 0; border: 0; background: none; color: inherit; font: inherit; }
 button.dvG-stop { cursor: pointer; }
 button.dvG-stop:focus-visible { outline: 2px solid var(--off-white); outline-offset: 0; }
-/* KEEP: a stop's whole column is tinted a step lighter than the card while the mouse is over it (mouse only: touch has no hover) and while it is the open room, the tint the route's open stop had before the board; the open stop's box is also off-white. Hover is paint only: it never opens a room or holds a roll. The tint reaches 3px past the 44px column each side (half the map's smallest gap, so two tinted neighbours only touch), which leaves the widest marks (two dots and a die, 42px) at least 4px clear of its edge, where they used to touch it. Pressing scales the column to the press scale, as Escape's cards do. */
+/* a stop's whole column is tinted a step lighter than the card while the mouse is over it (mouse only: touch has no hover) and while it is the open room, the tint the route's open stop had before the board; the open stop's box is also off-white. Hover is paint only: it never opens a room or holds a roll. The tint reaches 3px past the 44px column each side (half the map's smallest gap, so two tinted neighbours only touch), which leaves the widest marks (two dots and a die, 42px) at least 4px clear of its edge, where they used to touch it. Pressing scales the column to the press scale, as Escape's cards do. */
 button.dvG-stop { transition: background var(--time-swap) var(--ease), box-shadow var(--time-swap) var(--ease), transform var(--time-press) var(--ease); }
 button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-stop.is-on { --dv-tint: color-mix(in srgb, var(--text) 6%, var(--card)); background: var(--dv-tint); box-shadow: -3px 0 0 var(--dv-tint), 3px 0 0 var(--dv-tint); }
 @media (hover: hover) { button.dvG-stop:hover { --dv-tint: color-mix(in srgb, var(--text) 6%, var(--card)); background: var(--dv-tint); box-shadow: -3px 0 0 var(--dv-tint), 3px 0 0 var(--dv-tint); } }
 @media (prefers-reduced-motion: reduce) { button.dvG-stop { transition: none; } }
-/* KEEP: the line joining two stops on a row is drawn in halves, each stop drawing the half that reaches from its centre to midway across the gap, so no line is ever drawn inside another stop's column and none can show through a box when a pressed stop scales (a transform makes the stop its own layer, which put the next stop's whole line over it); a half is drawn 1/.97 long so a pressed stop's scaled half still meets its neighbour's, and it sits at the middle of the number box, worked out from the stop's top padding and the box's height (`--dv-stop-top`, `--dv-num`), the two values that place the box. */
+/* the line joining two stops on a row is drawn in halves, each stop drawing the half that reaches from its centre to midway across the gap, so no line is ever drawn inside another stop's column and none can show through a box when a pressed stop scales (a transform makes the stop its own layer, which put the next stop's whole line over it); a half is drawn 1/.97 long so a pressed stop's scaled half still meets its neighbour's, and it sits at the middle of the number box, worked out from the stop's top padding and the box's height (`--dv-stop-top`, `--dv-num`), the two values that place the box. */
 .dvG-stop:not(.is-rs)::before, .dvG-stop:not(.is-re)::after { content: ''; position: absolute; top: calc(var(--dv-stop-top) + var(--dv-num) / 2 - 1px); width: calc((50% + var(--gap, 6px) / 2) / var(--press-scale, 1)); height: 2px; background: var(--control-edge); }
 .dvG-stop:not(.is-rs)::before { right: 50%; }
 .dvG-stop:not(.is-re)::after { left: 50%; }
@@ -46,11 +46,11 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvG-stop.is-far .dv2-num { color: var(--muted); box-shadow: inset 0 0 0 1.5px var(--line); }
 .dvG-marks { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 44px; max-width: 44px; }
 .dvG-mrow { display: flex; justify-content: center; align-items: center; gap: 4px; }
-/* KEEP: a mini die's hexagon sits 2px inside its picture on every side, so a stop whose marks hold a die keeps 2px less padding under it: the map's spacing is measured to the hexagon, not its empty margin. */
+/* a mini die's hexagon sits 2px inside its picture on every side, so a stop whose marks hold a die keeps 2px less padding under it: the map's spacing is measured to the hexagon, not its empty margin. */
 .dvG-marks .mcp-dl-die { width: 20px; height: auto; }
 .dvG-stop:has(.dvG-marks .mcp-dl-die) { padding-bottom: 6px; }
 .dvG-marks .dl-now-mark { width: 7px; height: 7px; }
-/* KEEP: a use among a stop's marks is a grey sparkle 9px across with a -1px margin, so it takes the 7px a dot takes and the other marks do not spread. */
+/* a use among a stop's marks is a grey sparkle 9px across with a -1px margin, so it takes the 7px a dot takes and the other marks do not spread. */
 .dvG-spark { display: block; width: 9px; height: 9px; margin: -1px; fill: var(--control-edge); flex: none; }
 .dvG-open { display: grid; gap: 16px; padding-top: 20px; border-top: 1px solid var(--line); min-width: 0; }
 .dvG-room { display: grid; gap: 12px; align-content: start; min-width: 0; }
@@ -71,19 +71,19 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-dd { display: flex; align-items: center; gap: var(--space-2); flex: none; }
 .dvH-ink { display: flex; align-items: center; justify-content: center; flex: none; }
 .dvH-ink > svg { flex: none; margin: 0; }
-/* KEEP: the held roll's room line and, on the same line, what the turn beat or passed ("Roll 10 · The shrine cavern · Grizzletooth beaten", the last in green) balance their lines, so none ends on a lone word; the beaten or passed words and the Cost ("Cost Threat +1") wrap between their words, so they fit a 280px box. */
+/* the held roll's room line and, on the same line, what the turn beat or passed ("Roll 10 · The shrine cavern · Grizzletooth beaten", the last in green) balance their lines, so none ends on a lone word; the beaten or passed words and the Cost ("Cost Threat +1") wrap between their words, so they fit a 280px box. */
 .dvH-rm { margin: 2px 0 0; font: 600 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dvH-beat { color: var(--success); }
-/* KEEP: under a 480px box the beaten or passed words and the Cost each take their own line, without the dot that joins them to the room line on a wider box, so a wrapped line never starts with a dot. */
+/* under a 480px box the beaten or passed words and the Cost each take their own line, without the dot that joins them to the room line on a wider box, so a wrapped line never starts with a dot. */
 @container dvh (max-width: 479px) { .dvH-sep { display: none; } .dvH-beat { display: block; } }
 .dvH-act { margin: 0; font: 600 14px/1.3 var(--font-text); }
 .dvH-act span { font-weight: 400; color: var(--muted); }
-/* KEEP: the held roll's short text (its action, "beaten" line and the foe's name) balances its lines, so none ends on a lone word: "Climb to the skeleton / on the high ledge", "Mortlake, the / drowned captain". */
+/* the held roll's short text (its action, "beaten" line and the foe's name) balances its lines, so none ends on a lone word: "Climb to the skeleton / on the high ledge", "Mortlake, the / drowned captain". */
 .dvH-act, .dvH-fm .dv6-bar > span { text-wrap: balance; }
 .dvH-act span.is-does { display: block; }
 .dvH-out { font-weight: 700; font-size: 13px; }
 .dvH-out.ok { color: var(--success); } .dvH-out.err { color: var(--error); } .dvH-out.part { color: var(--warning); }
-/* KEEP: the named form opens in a panel under the sum, in the sum's open colour, through the 220ms fold; its parts break only between one another, and a dropped advantage die's number is struck by a white diagonal stroke, not a horizontal line through the text. */
+/* the named form opens in a panel under the sum, in the sum's open colour, through the 220ms fold; its parts break only between one another, and a dropped advantage die's number is struck by a white diagonal stroke, not a horizontal line through the text. */
 .dvH-pnl { margin-top: 8px; padding: 10px; background: var(--dvH-lift); }
 .dvH-pn { display: flex; flex-wrap: wrap; column-gap: 7px; row-gap: 2px; font: 400 14px/22px var(--font-text); color: var(--muted); }
 .dvH-c { white-space: nowrap; }
@@ -94,10 +94,10 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvH-lab { display: flex; flex-wrap: wrap; column-gap: 12px; overflow: hidden; }
 .dvH-who { flex: 0 1 auto; min-width: 0; }
 .dvH-cost { position: relative; flex: 0 1 auto; min-width: 0; }
-/* KEEP: the cost's middle dot hangs in the gap before it and is clipped by the label when the cost drops to its own line, so the dot shows only when the cost shares the You line. */
+/* the cost's middle dot hangs in the gap before it and is clipped by the label when the cost drops to its own line, so the dot shows only when the cost shares the You line. */
 .dvH-cost::before { content: '·'; position: absolute; left: -12px; width: 12px; text-align: center; }
 .dvH-nb { white-space: nowrap; }
-/* KEEP: the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
+/* the foe's health is one thin row (name, a 4px bar, the count) from a 420px box, so it is never the box's biggest part; narrower, the foe's name takes its own line and wraps in full, never cut with an ellipsis, and the bar and count sit on the line under it; the longest deployed foe name (29 characters) must read in full in a 280px box. */
 .dvH-fm .dv6-bar { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; align-items: center; row-gap: 2px; column-gap: 8px; padding: 0; }
 .dvH-fm .dv6-bar > span { grid-column: 1 / -1; align-self: start; font: 600 13px/1.4 var(--font-text); color: var(--text); white-space: normal; overflow-wrap: break-word; }
 .dvH-fm .dv6-bar small { font: 600 14px/1.4 var(--font-text); color: var(--text); }
@@ -121,7 +121,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv4-uses { display: flex; gap: 3px; }
 .dv4-uses i { display: block; width: 10px; height: 10px; box-sizing: border-box; border: 1px solid var(--control-edge); }
 .dv4-uses i.is-on { background: var(--off-white); border-color: var(--off-white); }
-/* KEEP: inspiration is the die's hex, rimmed green as a natural 20 is (a natural 20 gives it back); spent, an empty hex. */
+/* inspiration is the die's hex, rimmed green as a natural 20 is (a natural 20 gives it back); spent, an empty hex. */
 .dv4-insp { display: block; overflow: visible; flex: none; }
 .dv4-insp .hx { fill: var(--card); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .dv4-insp.is-on .hx { fill: var(--off-white); stroke: none; }
@@ -133,8 +133,8 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv5 { gap: 12px; }
 .dv5-insw { display: inline-flex; min-height: 26px; align-items: center; }
 .dv5 .dv4-sx text { font-size: 14px; }
-/* KEEP: a free pack slot is a dashed outline, so it reads as room, not as a thing. */
-/* KEEP: the dashes are drawn, not a dashed outline or border: iPhone Safari drops the side dashes of a thin dashed edge on a
+/* a free pack slot is a dashed outline, so it reads as room, not as a thing. */
+/* the dashes are drawn, not a dashed outline or border: iPhone Safari drops the side dashes of a thin dashed edge on a
    small box, leaving only the top and bottom (Joe, 2026-10-30). 1.5px dashes 4px long, 3px apart, on all four sides. */
 .dv5 .dv4-g.is-empty { box-shadow: none;
   background: linear-gradient(90deg, var(--control-edge) 4px, transparent 0) top / 7px 1.5px repeat-x,
@@ -148,11 +148,11 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv6-bar small { font: 600 13px/1 var(--font-text); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .dv6-bar .mcp-prog-top { display: none; }
 /* 1G, 1H: one cell anatomy for every piece: a 36px figure, one line under it. */
-/* KEEP: cells in a group are equal width (the widest name's), so boxes sit evenly however long each name is. */
+/* cells in a group are equal width (the widest name's), so boxes sit evenly however long each name is. */
 .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px 12px; }
 .dv7-cell { display: grid; grid-template-rows: 36px auto; justify-items: center; align-items: center; align-content: start; gap: 6px; min-width: 32px; }
 .dv7-fig { position: relative; display: grid; place-items: center; }
-/* KEEP: a name wraps to at most two balanced lines inside its cell, so a long one never runs into the next box. */
+/* a name wraps to at most two balanced lines inside its cell, so a long one never runs into the next box. */
 .dv7-lb { max-width: 88px; align-self: start; text-align: center; text-wrap: balance; font: 600 12px/1.2 var(--font-text); color: var(--text); font-variant-numeric: tabular-nums; }
 .dv7-cell.is-used .dv7-lb { color: var(--muted); }
 .dv7 .dv7-cell .dv4-sx text { font-size: 20px; }
@@ -179,10 +179,10 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv7r-word.is-ok { color: var(--success); }
 .dv7r-word.is-bad { color: var(--warning); }
 .dv7r-word.is-live { color: var(--text); }
-/* KEEP: the line takes the system's 20px heading, so word and line read as one statement, not a heading over small print. */
+/* the line takes the system's 20px heading, so word and line read as one statement, not a heading over small print. */
 .dv7r-line { margin: 0; font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; color: var(--text); text-wrap: balance; min-width: 0; }
 .dv7r-band .dv7r-word { padding-right: 24px; flex: none; font-size: 28px; }
-/* KEEP: in the band the line is body text at label weight (Hanken 600), so only the word is display type. */
+/* in the band the line is body text at label weight (Hanken 600), so only the word is display type. */
 .dv7r-band .dv7r-line { align-self: stretch; display: flex; align-items: center; font: 600 16px/1.35 var(--font-text); letter-spacing: 0; }
 @container dv2 (max-width: 559.98px) {
   .dv7r-band { flex-direction: column; align-items: flex-start; gap: 4px; }
@@ -196,16 +196,16 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 /* v8: the band. Its groups use 1H's group and cell anatomy. */
 .dv8-rows { display: grid; gap: 16px; }
 .dv8.is-3b .dv7-band { padding: 8px 0; }
-/* KEEP: 3B's cells never shrink below their label, so names never run together; a group never shrinks below its cells either. */
+/* 3B's cells never shrink below their label, so names never run together; a group never shrinks below its cells either. */
 .dv8.is-3b .dv7-cells { gap: 8px; grid-auto-columns: minmax(min-content, 1fr); }
 .dv8.is-3b .dv7-cell { min-width: min-content; }
 .dv8.is-3b .dv7-cell .dv7-fig > svg { width: 24px; height: auto; }
 .dv8.is-3b .dv8-stats .dv7-cells { gap: 2px; }
-/* KEEP: the stat dice and Advantage's inspiration hex are the design system's die at its default 36px, at every width, so they sit in scale with the rows Pack, Ability and Fight open; the cell's figure row is the hex's 39px height. */
+/* the stat dice and Advantage's inspiration hex are the design system's die at its default 36px, at every width, so they sit in scale with the rows Pack, Ability and Fight open; the cell's figure row is the hex's 39px height. */
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell { grid-template-rows: 39px auto; }
 .dv8.is-3b :is(.dv8-stats, .dv8-adv) .dv7-cell .dv7-fig > svg, .dv8.is-3b .dv8-adv .dv5-insw > svg { width: 36px; height: auto; }
 .dv8.is-3b .dv7-cell .dv4-sx text { font-size: 18px; }
-/* KEEP: every meter's label and count sit on one line above a bar that runs the full width of the meters block, at every width; a label never wraps. The three meters are spaced evenly, 10px apart. The longest light name an edition may give is ≈20 characters, "The watchman's round"; the cap itself is a ticket item. */
+/* every meter's label and count sit on one line above a bar that runs the full width of the meters block, at every width; a label never wraps. The three meters are spaced evenly, 10px apart. The longest light name an edition may give is ≈20 characters, "The watchman's round"; the cap itself is a ticket item. */
 .dv8-meters { display: grid !important; align-content: center; justify-items: stretch !important; }
 .dv8-mgrid { font-size: 13px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .dv8-meters .dv6-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 6px; row-gap: 2px; align-items: center; font-size: 13px; }
@@ -218,16 +218,16 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dv8-num { font: 700 22px/1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
 
 /* ---- the sheet: Stats, Advantage, Pack, Ability and Fight are five tabs at every width; the header (name, then bars) and the tabs take one of four steps by the sheet's own width (the dv4 container) ---- */
-/* KEEP: the sheet card has no padding of its own: each part carries the 16px side gutter, so the header's hover tint reaches the card's edges. The steps below are the card's width less those 32px, so each is written as a number plus 32px, and --dlw is that width for the sizes that follow it. */
+/* the sheet card has no padding of its own: each part carries the 16px side gutter, so the header's hover tint reaches the card's edges. The steps below are the card's width less those 32px, so each is written as a number plus 32px, and --dlw is that width for the sizes that follow it. */
 .dv4.dv5.is-tight.dv8 { gap: 0; padding: 0; }
 .dv8.is-3b .dv8-rows { --dlw: calc(100cqw - 32px); gap: 0; }
-/* KEEP: from a sheet 796px wide, one row: the name, the stacked bars and the five tabs, with no fold. Below it the header and the tabs are two rows and the whole header is the fold. */
+/* from a sheet 796px wide, one row: the name, the stacked bars and the five tabs, with no fold. Below it the header and the tabs are two rows and the whole header is the fold. */
 .dv8.is-3b .dv7-band { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; min-width: 0; padding: 0; }
 .dv8.is-3b .esx-fold > div { display: block; }
 .dv8-r1 { min-width: 0; }
 .dl-head { position: relative; min-width: 0; }
 .dl-tabwrap { display: contents; }
-/* KEEP: the folds move only for a tap (the sheet carries is-tap from the tap until the motion is over). A layout change, such as a window crossing 878 or 877, shows or hides the tabs at once, never as a flash of motion. */
+/* the folds move only for a tap (the sheet carries is-tap from the tap until the motion is over). A layout change, such as a window crossing 878 or 877, shows or hides the tabs at once, never as a flash of motion. */
 .dv8.is-3b .esx-fold { transition: none; }
 .dv8.is-3b.is-tap .esx-fold { transition: grid-template-rows var(--time-dropdown) var(--ease), opacity var(--time-dropdown) var(--ease); }
 /* Folded, the tabs are hidden once their close has run, so a keyboard never lands on one that cannot be seen. */
@@ -247,8 +247,8 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-fold:focus-visible { outline: 2px solid var(--off-white); outline-offset: -2px; }
 @media (prefers-reduced-motion: reduce) { .dv8.is-3b.is-tap .dl-fold svg, .dv8.is-3b.is-tap .esx-fold, .dv8.is-3b.is-tap .dl-tabwrap > .esx-fold { transition: none; } }
 
-/* One row (a sheet 796px wide or more). KEEP: the header's padding is 20px above and below its contents; the tallest part, the stacked meters, sets the header's height, and the hairlines and the five tabs stretch to fill it, each tab's icon and word centred in it, with no fixed height in the row; a part shorter than the meters stretches, and a taller one would leave the meters centred.
-   KEEP: the tabs take the width the name and bars leave, each at most 140px wide, so the sheet has no empty side gaps; they shrink with the sheet (their word at 11px, its letter-spacing at 0) and the bars give way first, down to 128px. The tabs are always shown here, whatever the fold's state, so a resize never waits on a render. */
+/* One row (a sheet 796px wide or more). The header's padding is 20px above and below its contents; the tallest part, the stacked meters, sets the header's height, and the hairlines and the five tabs stretch to fill it, each tab's icon and word centred in it, with no fixed height in the row; a part shorter than the meters stretches, and a taller one would leave the meters centred.
+   the tabs take the width the name and bars leave, each at most 140px wide, so the sheet has no empty side gaps; they shrink with the sheet (their word at 11px, its letter-spacing at 0) and the bars give way first, down to 128px. The tabs are always shown here, whatever the fold's state, so a resize never waits on a render. */
 @container dv4 (min-width: calc(796px + 32px)) {
   .dv8-r1 { display: flex; flex-wrap: nowrap; align-items: stretch; padding: 20px 16px; }
   .dl-head { display: contents; }
@@ -273,7 +273,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
   /* A folded sheet shows no panel, so a panel left open by the one-row layout never shows for a frame. A tap that folds it lets the panel close with the tabs, then hides it. */
   .dv8.is-3b:not(.is-unfolded):not(.is-tap) .dv7-band > .esx-fold { display: none; }
 }
-/* KEEP: from a sheet 610px wide the name sits in its own cell beside the bars, centred between the card's edge and the divider, so the space either side of it is the same. The cell is 184px at 610 (152px of name, the gutter and the divider's 16px either side) and grows .35px for each px of sheet up to 216px, so the bars never run long and a name of 11 letters, "Thorgrimson", fits on one line at 22px. A longer name wraps between words, and a word too long for the cell breaks inside it, balanced across the lines. */
+/* from a sheet 610px wide the name sits in its own cell beside the bars, centred between the card's edge and the divider, so the space either side of it is the same. The cell is 184px at 610 (152px of name, the gutter and the divider's 16px either side) and grows .35px for each px of sheet up to 216px, so the bars never run long and a name of 11 letters, "Thorgrimson", fits on one line at 22px. A longer name wraps between words, and a word too long for the cell breaks inside it, balanced across the lines. */
 @container dv4 (min-width: calc(610px + 32px)) and (max-width: calc(795.98px + 32px)) {
   .dl-head { display: flex; align-items: stretch; }
   .dv8.is-3b .dv7-grp.is-hero { flex: 0 0 calc(clamp(168px, calc(168px + (var(--dlw) - 610px) * .35), 200px) + 16px); box-sizing: border-box; padding: 0 16px; justify-items: center; text-align: center; }
@@ -289,19 +289,19 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
   .dv8.is-3b .dv7-hero b { white-space: normal; text-wrap: balance; overflow-wrap: break-word; }
   .dv8.is-3b .dv8-meters { padding: 0; border-left: 0; }
 }
-/* KEEP: at a sheet 340px wide or less (a window of 406px or less) five squares no longer fit a row, so the tabs are a list, each with its icon beside its word. */
+/* at a sheet 340px wide or less (a window of 406px or less) five squares no longer fit a row, so the tabs are a list, each with its icon beside its word. */
 @container dv4 (max-width: calc(340px + 32px)) {
   .dv8.is-3b .esx-cards.dl-tabs { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .dv8.is-3b .esx-card.dl-tab { flex-direction: row; justify-content: flex-start; gap: 12px; height: 40px; padding: 0 12px; }
   .dv8.is-3b .dl-tab-w { font-size: var(--size-2xs); letter-spacing: .07em; }
 }
-/* KEEP: as a list (a sheet 340px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 341px the tabs are squares across and the column is 56px. */
+/* as a list (a sheet 340px wide or less) the tabs' icons sit 25px in from the sheet's edge (1px border, 12px padding, half of the 24px icon), so a row's figure column is 50px wide, which puts the figures 25px in too and every figure in line with the icon above it, at 390px and at 280px. From 341px the tabs are squares across and the column is 56px. */
 @container dv4 (max-width: calc(340px + 32px)) {
   .dvp-rows { --dvp-fig: 50px; }
 }
 /* A card's rows: the figure on the left, the name and its line on the right. */
 .dvp-rows { display: grid; margin-top: 8px; }
-/* KEEP: the icon box sits vertically centred on the whole text block (name plus grey line), not on the name alone. */
+/* the icon box sits vertically centred on the whole text block (name plus grey line), not on the name alone. */
 .dvp-row { display: grid; grid-template-columns: var(--dvp-fig, 56px) minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 0; }
 .dvp-row + .dvp-row { border-top: 1px solid var(--line); }
 .dvp-fig .dv4-uses { gap: 4px; }
@@ -312,7 +312,7 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dvp-nm b { font: 700 16px/1.25 var(--font-heading); color: var(--text); text-wrap: balance; overflow-wrap: break-word; }
 .dvp-nm span { font: 600 13px/1.3 var(--font-text); color: var(--muted); }
 .dvp-does { margin: 0; font: 400 14px/1.4 var(--font-text); color: var(--muted); text-wrap: pretty; overflow-wrap: break-word; }
-/* KEEP: on a phone (a sheet 560px wide or less) a panel's text steps down with the tab words: the name to 14px, as Escape's, its line to the 13px small size and the tag to the 11px caption size; the figure numbers to 18px. */
+/* on a phone (a sheet 560px wide or less) a panel's text steps down with the tab words: the name to 14px, as Escape's, its line to the 13px small size and the tag to the 11px caption size; the figure numbers to 18px. */
 @container dv4 (max-width: calc(559.98px + 32px)) {
   .dvp-nm b { font-size: 14px; }
   .dvp-nm span { font-size: var(--size-2xs); }
@@ -327,17 +327,17 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-tab-w { font: 600 var(--size-2xs)/1 var(--font-text); text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .dl-tab.is-open .dl-tab-w { color: var(--text); }
 /* The open tab's panel, under the row. */
-/* KEEP: in a Pack, Ability or Fight panel every row's content is centred between its hairlines, the first and last rows included: the rows' own 12px is all the space above the first row and below the last, and the panel adds none. Stats and Advantage show their cells instead, which sit 12px in from the panel's hairline and the card's edge. */
+/* in a Pack, Ability or Fight panel every row's content is centred between its hairlines, the first and last rows included: the rows' own 12px is all the space above the first row and below the last, and the panel adds none. Stats and Advantage show their cells instead, which sit 12px in from the panel's hairline and the card's edge. */
 .dv8.is-3b .dl-panel { margin: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
 .dv8.is-3b .dvp-rows.dl-panel { padding: 0; }
 .dv8.is-3b .dl-cellpanel .dv7-cells { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 24px; }
-/* KEEP: the six core stats never leave one alone on a second row: all six on one row where they fit (a panel at least 336px wide, six 36px dice and five 24px gaps), otherwise two rows of three, never 5 + 1 or 4 + 2 (the user, 2026-11-26: "can we make sure core never has 1 on second row? go to 2?"). The panel's own width decides, not a breakpoint. Three across needs only 156px, which the narrowest sheet (280px screen) clears. */
+/* the six core stats never leave one alone on a second row: all six on one row where they fit (a panel at least 336px wide, six 36px dice and five 24px gaps), otherwise two rows of three, never 5 + 1 or 4 + 2 (the user, 2026-11-26: "can we make sure core never has 1 on second row? go to 2?"). The panel's own width decides, not a breakpoint. Three across needs only 156px, which the narrowest sheet (280px screen) clears. */
 .dv8.is-3b .dv8-stats { container: dlstats / inline-size; }
 .dv8.is-3b .dv8-stats .dv7-cells { max-width: calc(3 * 36px + 2 * 24px); margin: 0 auto; }
 @container dlstats (min-width: 336px) { .dv8.is-3b .dv8-stats .dv7-cells { max-width: none; flex-wrap: nowrap; } }
 /* Advantage: its cells sit on a grid of equal columns, each as wide as the widest cell, centred as a group rather than spread across the row. */
 .dv8.is-3b .dv8-adv .dv7-cells { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: max-content; max-width: 100%; margin: 0 auto; gap: 16px; }
-/* KEEP: at the narrowest widths the columns close up rather than wrap "Longest streak": a cell is wider than its short labels, so the space between labels stays wide. */
+/* at the narrowest widths the columns close up rather than wrap "Longest streak": a cell is wider than its short labels, so the space between labels stays wide. */
 @media (max-width: 360px) { .dv8.is-3b .dv8-adv .dv7-cells { gap: 4px; } }
 /* The now card's route: the latest stops in one row, the key moments in one centred row beneath. Nothing in it is pressable. */
 .dl-now-route { min-width: 0; container: dlnow / inline-size; display: grid; align-content: center; }
@@ -355,23 +355,23 @@ button.dvG-stop:active { transform: scale(var(--press-scale)); }
 .dl-now-stops::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--control-edge); }
 /* Fewer than five stops gather at the few-stops gap, centred, and never wider than the row. */
 .dl-now-stops.is-few { width: min(100%, calc(var(--n) * var(--dv-num) + (var(--n) - 1) * var(--few))); margin-inline: auto; }
-/* KEEP: the key dice are one row of equal columns at every width, 4px apart and each no wider than 96px, so a few dice centre as one group; DlNowKeys decides one line or two for every name together. */
+/* the key dice are one row of equal columns at every width, 4px apart and each no wider than 96px, so a few dice centre as one group; DlNowKeys decides one line or two for every name together. */
 .dl-now-keys { display: grid; grid-template-columns: repeat(var(--k), minmax(0, 1fr)); gap: 0 var(--kgap); align-items: start; justify-items: center; width: min(100%, calc(var(--k) * var(--col) + (var(--k) - 1) * var(--kgap))); margin-inline: auto; min-width: 0; }
 .dl-now-key { min-width: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .dl-now-k { display: block; white-space: nowrap; }
 .dl-now-keys.is-two .dl-now-k > span { display: block; }
 .dl-now-key .mcp-dl-die { width: min(44px, 100%); height: auto; }
 .dl-now-name { display: flex; flex-direction: column; align-items: center; font: 600 11px/1.25 var(--font-text); color: var(--muted); text-align: center; max-width: 100%; }
-/* KEEP: the other rolls are 8px dots with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring, a use a filled grey dot, so each takes the same 8px slot. */
+/* the other rolls are 8px dots with no number, border or shadow of a button, no pointer cursor and no focus: strong filled green, weak filled yellow, a miss an empty ring, a use a filled grey dot, so each takes the same 8px slot. */
 .dl-now-mark { display: block; width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; }
 .dl-now-mark.is-strong { background: var(--success); }
 .dl-now-mark.is-weak { background: var(--warning); }
 .dl-now-mark.is-miss { box-shadow: inset 0 0 0 1.5px var(--control-edge); }
-/* KEEP: on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
+/* on Delve's now card at the narrowest width (280px) the result word steps from 18px to the 16px body size, so "Overwhelmed" fits the half-width box it sits in instead of running 6px over it. */
 @container gs (max-width: 300px) {
   .dl-now .lb-now-in > .lb-top > .gs-vd { font-size: 16px; }
 }
-/* KEEP: Delve's now card label balances its lines, so the free first run's "THE FIRST RUN · FREE" at 320px breaks as "THE FIRST" over "RUN · FREE" and never leaves "FREE" alone on a line. */
+/* Delve's now card label balances its lines, so the free first run's "THE FIRST RUN · FREE" at 320px breaks as "THE FIRST" over "RUN · FREE" and never leaves "FREE" alone on a line. */
 .dl-now .gs-label { text-wrap: balance; }
 
 /* The session page before the first roll: a quiet box in the held roll's place, saying there are none, and the rooms not yet reached dimmed. */
@@ -385,26 +385,26 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dv2-lost { display: grid; place-items: center; }
 
 /* ---- The sheet's trained skills, two advantage marks ---- */
-/* KEEP: a trained skill is a chip under a hairline: its name on the left, its total on the right, every chip one width and at least 40px tall. A row holds as many chips as fit at a chip's narrowest (100px, set by DL_CHIP_MIN in gs-delve.jsx: the widest unbreakable name, "Investigation", with the chip's padding and its total), then the chips are evened over the fewest rows that holds (7 skills at 5 a row make 4 + 3, never 5 + 2; Fighter's 4 stay on one row wherever they fit), the short last row centred. The count is read live from the container's width, at every width, never from a breakpoint. A name never truncates: a long one ("Sleight of Hand") wraps onto a second row inside its chip, and a chip is never narrower than its longest word. Its name is 12px, weight 600, in the stat labels' text colour, so it meets the text-size floor. */
+/* a trained skill is a chip under a hairline: its name on the left, its total on the right, every chip one width and at least 40px tall. A row holds as many chips as fit at a chip's narrowest (100px, set by DL_CHIP_MIN in gs-delve.jsx: the widest unbreakable name, "Investigation", with the chip's padding and its total), then the chips are evened over the fewest rows that holds (7 skills at 5 a row make 4 + 3, never 5 + 2; Fighter's 4 stay on one row wherever they fit), the short last row centred. The count is read live from the container's width, at every width, never from a breakpoint. A name never truncates: a long one ("Sleight of Hand") wraps onto a second row inside its chip, and a chip is never narrower than its longest word. Its name is 12px, weight 600, in the stat labels' text colour, so it meets the text-size floor. */
 .dv9-rule { border-top: 1px solid var(--line); margin: 16px 0; }
 .dv9-skills { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gap); }
 .dv9-sk { box-sizing: border-box; flex: none; width: calc((100% - (var(--per) - 1) * var(--gap)) / var(--per)); min-width: min-content; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 6px; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
 .dv9-nm { min-width: 0; font: 600 12px/1.15 var(--font-text); color: var(--text); }
 .dv9-tot { flex: none; font: 700 14px/1 var(--font-heading); color: var(--text); }
 /* ---- The held roll's chips: one row, "You" and "Foe"; a chip is the hit and, when it dealt damage, a hairline and its damage. ---- */
-/* KEEP: the sides share one row while a chip holds its hit and damage on one line, that is the held roll's content 452px wide or more (the chip's own 200px of content, where "25 vs AC 12 Hit | 21 damage" needs about 191px); narrower, they stack in two rows, You over Foe, each chip at the roll's full width so nothing wraps inside a chip, with 16px (--space-4) between You's chip and the Foe's label, so each label sits nearer its own chip. A label stands over each chip, 12px (--space-3) above its chip and 8px under the strip (the label's own line leaves the gap under the strip looking as large as the one above the chip), and the chips stay one height (the labels sit in a row of their own, whatever their length, and a lone side with nothing to say over its chip, such as a plain check, has no label); a lone side's chip takes the row under 400px and its half above it, its label the whole row. The breakdown opens under its own chip as wide as the chip (in two rows, the roll's full width), in the row below, so a closed one leaves no gap (the panel's own 8px margin is the gap when open). */
+/* the sides share one row while a chip holds its hit and damage on one line, that is the held roll's content 452px wide or more (the chip's own 200px of content, where "25 vs AC 12 Hit | 21 damage" needs about 191px); narrower, they stack in two rows, You over Foe, each chip at the roll's full width so nothing wraps inside a chip, with 16px (--space-4) between You's chip and the Foe's label, so each label sits nearer its own chip. A label stands over each chip, 12px (--space-3) above its chip and 8px under the strip (the label's own line leaves the gap under the strip looking as large as the one above the chip), and the chips stay one height (the labels sit in a row of their own, whatever their length, and a lone side with nothing to say over its chip, such as a plain check, has no label); a lone side's chip takes the row under 400px and its half above it, its label the whole row. The breakdown opens under its own chip as wide as the chip (in two rows, the roll's full width), in the row below, so a closed one leaves no gap (the panel's own 8px margin is the gap when open). */
 .dvC-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; min-width: 0; }
 .dvC-side { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; min-width: 0; align-content: start; }
-/* KEEP: the label stands 4px (half --space-2) above its chip, closer to its own chip than to anything above it; `.gs-root p` zeroes a paragraph's margin and out-ranks a bare class, so the rule names its side. */
+/* the label stands 4px (half --space-2) above its chip, closer to its own chip than to anything above it; `.gs-root p` zeroes a paragraph's margin and out-ranks a bare class, so the rule names its side. */
 .dvC-side > .dvC-lab { margin: 0 0 calc(var(--space-2) / 2); font: 400 13px/1.3 var(--font-text); color: var(--muted); text-wrap: balance; }
 .dvC-lab b { font-weight: 700; color: var(--text); }
 .dvC-fold { min-width: 0; }
 @container dvh (max-width: 451px) { .dvC-row { grid-template-columns: minmax(0, 1fr); } .dvC-side.is-foe { margin-top: var(--space-4); } }
 @container dvh (max-width: 399px) { .dvC-row.is-lone { grid-template-columns: minmax(0, 1fr); } }
-/* KEEP: a lone side's chip stays at half the row from 452px, but its label (the action sentence) runs the row's full width and wraps only when the whole sentence does not fit it, so a roll with room beside its chip does not break its sentence at half the card. */
+/* a lone side's chip stays at half the row from 452px, but its label (the action sentence) runs the row's full width and wraps only when the whole sentence does not fit it, so a roll with room beside its chip does not break its sentence at half the card. */
 @container dvh (min-width: 452px) { .dvC-row.is-lone > .dvC-side { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; } .dvC-row.is-lone > .dvC-side > .dvC-lab { grid-column: 1 / -1; } .dvC-row.is-lone > .dvC-side > :not(.dvC-lab) { grid-column: 1; } }
-/* KEEP: a chip's content stands 10px from its edges on all four sides: sides and top and bottom alike (a one-row chip is 44px tall, so its content stands 11px above and below, and gets 11px at its sides). */
-/* KEEP: the chip is Escape's tap card (esx-card) at its own size: at least 44px tall, a chip on the box's own surface until hovered or opened; a pressable surface is lifted a step lighter than the surface it sits on while a mouse is over it and while it is open, and an open one has the off-white edge (6% of the text colour mixed into the box's popup surface, since the card fill is darker than the box and a hover or open chip would sink into it). Pressing scales it to the press scale. */
+/* a chip's content stands 10px from its edges on all four sides: sides and top and bottom alike (a one-row chip is 44px tall, so its content stands 11px above and below, and gets 11px at its sides). */
+/* the chip is Escape's tap card (esx-card) at its own size: at least 44px tall, a chip on the box's own surface until hovered or opened; a pressable surface is lifted a step lighter than the surface it sits on while a mouse is over it and while it is open, and an open one has the off-white edge (6% of the text colour mixed into the box's popup surface, since the card fill is darker than the box and a hover or open chip would sink into it). Pressing scales it to the press scale. */
 .dvC-chip.esx-card { display: flex; align-items: center; width: 100%; height: auto; min-height: 44px; padding: 10px; background: transparent; text-align: left; container: dvc / inline-size; }
 @media (hover: hover) { .dvC-chip.esx-card:not(.is-still):hover { background: var(--dvH-lift); } }
 .dvC-chip.esx-card.is-open { background: var(--dvH-lift); }
@@ -416,7 +416,7 @@ svg.dl-cross { display: block; fill: none; stroke: var(--control-edge); stroke-w
 .dvT-tot { font: 700 18px/1.1 var(--font-heading); color: var(--text); font-variant-numeric: tabular-nums; }
 .dvC-dm { display: block; padding-top: 6px; border-top: 1px solid var(--control-edge); font: 400 13px/1.3 var(--font-text); color: var(--muted); white-space: nowrap; }
 .dvC-dm b { font: 700 16px/1.1 var(--font-heading); color: var(--text); }
-/* KEEP: a use's box: gear is its name, a hairline, its effect; a move is its effect alone on the left, with no hairline, where a rolled attack's roll would stand. A long name wraps inside its half. */
+/* a use's box: gear is its name, a hairline, its effect; a move is its effect alone on the left, with no hairline, where a rolled attack's roll would stand. A long name wraps inside its half. */
 .dvC-item { min-width: 0; font: 600 14px/1.3 var(--font-text); color: var(--text); overflow-wrap: anywhere; }
 .dvC-dm.is-solo { padding: 0; border: 0; }
 @container dvc (min-width: 200px) {

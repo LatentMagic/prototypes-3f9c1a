@@ -1497,7 +1497,7 @@
     today: "Tuesday 6 October",
     link: "https://play.afterpixels.com",
     tax: "Prices include tax",
-    // KEEP: no full stop where it stands alone (the user, 2026-11-18); Pricing adds one because it runs into the purchase sentence.
+    // no full stop where it stands alone (the user, 2026-11-18); Pricing adds one because it runs into the purchase sentence.
     taxShort: "includes tax",
     purchase: "Purchases only ever happen on this site; your AI will never ask you to pay.",
     works: "ChatGPT · Claude · Gemini · Grok · Muse · and more"
@@ -3898,7 +3898,7 @@
       insp: !!sh.insp,
       fight: h.fight || null,
       adv: { streak: m.run, longest: m.longest },
-      // KEEP: a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
+      // a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
       skills: STAT_ORDER.flatMap((st) => (h.skills || []).filter((k) => k[1] === st).map((k) => ({ name: k[0], say: dlSigned(h.stats[st] + 2) + Math.abs(h.stats[st] + 2) }))),
       stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? "−" : "+") + Math.abs(n) }))
     };
@@ -6581,7 +6581,7 @@
         recent: "Your seas",
         ach: [
           { k: "sv1", n: "Every Wreck Found", how: "Find all five wrecks in a Salvage.", by: (p) => p.status.kind === "ok" },
-          // KEEP: a deployed achievement (monorepo play-records.ts, "Last Dive"); the platform has nine, the library shows three.
+          // a deployed achievement (monorepo play-records.ts, "Last Dive"); the platform has nine, the library shows three.
           { k: "sv5", n: "Last Dive", how: "Find the last wreck with your twentieth and final dive.", by: (p) => {
             const m = new RegExp("^All 5 wrecks in (\\d+) of " + SLV_DIVES).exec(p.status.label);
             return !!m && +m[1] === SLV_DIVES;

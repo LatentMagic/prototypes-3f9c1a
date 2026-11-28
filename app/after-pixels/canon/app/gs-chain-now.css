@@ -41,7 +41,7 @@
 .cn-joints { display: inline-flex; gap: 4px; }
 .cn-under { display: flex; align-items: center; justify-content: center; gap: 24px; max-width: 100%; }
 
-/* KEEP: on a phone (card under 640px) a solved chain's two ends stack with the joints between them, each tile 36px, and the count
+/* on a phone (card under 640px) a solved chain's two ends stack with the joints between them, each tile 36px, and the count
    sits 16px under the links instead of beside them. Tiles stay 48px: a container query cannot restyle its own container. */
 @container cn (max-width: 639.98px) {
   .cn .is-ends { flex-direction: column; gap: 8px; --t: 36px; }

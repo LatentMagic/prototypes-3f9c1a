@@ -48,7 +48,7 @@ const CprFirst = ({ id }) => {
   // Delve's first run, once played or started: Delve's own now card (app/gs-delve.jsx), as Escape's above.
   if (id === 'delve' && st !== 'none') return <DlNow s={done ? DV_DONE : DV_LIVE} label={f.label} sids={['delve-first', 'delve-first-live']} next={null} pass={pass && 'nostop'} />;
   // Before the run: the empty route and Play, as the Pass holder's not-started card, in the free label. No Pass button or line.
-  // KEEP: five empty rooms before play, whatever the edition's own room count; the edition's count shows only once the run begins.
+  // five empty rooms before play, whatever the edition's own room count; the edition's count shows only once the run begins.
   if (id === 'delve') return <DlNowEmpty label={f.label} title={f.title} rooms={5} onPlay={f.play} />;
   const bar = st === 'live' ? f.liveBar : done ? f.doneBar : null;
   // The Barrow's next chapter is for Pass holders only: a free or Pass-ended player can't play it.
@@ -278,7 +278,7 @@ export const GsLibrary = () => {
 
 // ---- The daily games' now card, and Casebook's. While a play is under way the In progress tag (owner, 2026-10-30); a card
 // not yet ruled (tag: Groups, Salvage, Casebook) shows no result until finished. ----
-// KEEP: a finished card's result, line and bar come from this edition's play (c.today, which follows Config → This edition), never from the seeded `done` alone:
+// a finished card's result, line and bar come from this edition's play (c.today, which follows Config → This edition), never from the seeded `done` alone:
 // a picked play carries its own `now`, else the seeded line stands.
 const CprPzNow = ({ c, done, none, id }) => {
   const gs = useGs(); const s = GS_SESSIONS[c.today]; const st = done ? { ...c.done, ...s.now, st: gsSessStatus(s) } : c.live;

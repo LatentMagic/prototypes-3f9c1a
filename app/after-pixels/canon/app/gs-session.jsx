@@ -58,7 +58,7 @@ export const gsShareText = (s) => {
   if (s.kind === 'case') return [s.game + ' 🔎 ' + s.result, s.figures.join(' · '), link];
   return [s.game + ' · ' + s.share, link];
 };
-// KEEP: a blank share line (Guess's, after its head) shows as a blank line while the card's gaps stay one 4px token, and Copy
+// a blank share line (Guess's, after its head) shows as a blank line while the card's gaps stay one 4px token, and Copy
 // still carries it, so what's pasted matches what's shown.
 const GsShareText = ({ lines }) => {
   const shown = []; (lines || []).forEach((l) => { if (l === '' && shown.length) shown[shown.length - 1] += '\n'; else shown.push(l); });
@@ -156,7 +156,7 @@ const gsNoPlay = (gs, gid) => {
   if (gs.view === 'pass') return !!(PZ[gid] || GS_ED_SIDS[gid]) && !phThis(gs, gid);
   return !!PZ[gid] && gs.view !== 'out' && GS_GAMES[gid].free && !phThis(gs, gid);
 };
-// KEEP: This edition's session as Config → This edition and the demo bar leave it: in progress shows the play so far, finished shows the play Config
+// This edition's session as Config → This edition and the demo bar leave it: in progress shows the play so far, finished shows the play Config
 // picks, and null means this edition has no play (Not played). Every surface that opens this edition's play reads it from here.
 export const gsThisEdOf = (gs, gid) => {
   const c = PZ[gid]; const ids = (GS_ED_SIDS || {})[gid] || {}; const live = gs.review && gs.review.week === 'live';
@@ -164,7 +164,7 @@ export const gsThisEdOf = (gs, gid) => {
   if (live) return c ? c.liveSid : ids.live ? gsLiveSid(ids.live, gs) : null;
   return c ? c.today : gsEdPick(gid, gs) || ids.average;
 };
-// KEEP: a session page open on this edition's play follows Config → This edition and the demo bar while it is open: in progress
+// a session page open on this edition's play follows Config → This edition and the demo bar while it is open: in progress
 // shows the play so far, finished shows the play Config picks, Not played has no page. An earlier edition's page is left alone.
 export const gsThisEdSid = (gs, sid) => {
   const s = GS_SESSIONS[sid]; const gid = s && s.gid; if (!gid) return sid;

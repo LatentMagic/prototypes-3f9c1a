@@ -117,7 +117,7 @@ const usePgNarrow = () => {
   return n;
 };
 
-// KEEP: the bar takes the top bar's place (sticky), so the page below sits where it does in canon. At every width it is one row,
+// the bar takes the top bar's place (sticky), so the page below sits where it does in canon. At every width it is one row,
 // at most 56px tall, with no title: previous, the concept's dropdown (current choice only; it may ellipsize on a phone), next, then
 // Config for everything else, and Fit below 1280px.
 export const PgBar = () => {

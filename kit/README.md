@@ -44,10 +44,12 @@ Versions:
 - **5** (2026-10-18): briefs come from another agent with the user passing messages by hand, so every reply ends in two parts, a block for the other agent and a last part for the user (at most one open question, or "Nothing for you"); an answer from the other agent ratifies only if it says where the decision is written down. It also carried the "Ratification - the standing rule" section into the shared rules, which had been in the first cut but in no version, so a project may lack it.
 - **6** (2026-10-20): a handoff lists every earlier handoff in its folder under Earlier handoffs, each with what it holds, and a resuming session reads every earlier handoff in the folder as well as the latest; a Claude Design project has no git history, so the latest handoff is the only way to them. From the business-ops workspace.
 - **7** (2026-10-27): the `in-your-own-words` skill (declared only), and a Brain dumps rule: when the user brain dumps, take it in without acting, then synthesize with them; a brain dump ratifies nothing. From the business-ops workspace.
-- **8** (2026-10-27): comments carry intent, mapping and `// KEEP:` flags for the special (read by the agent that integrates the prototype), and no narration. From the business-ops workspace.
+- **8** (2026-10-27): comments carry intent and mapping, and no narration. From the business-ops workspace.
 - **9** (2026-10-28): the Config modal redesigned: a section rail (Global, then one section per feature) beside the chosen section's controls, a drill-in list on a phone, and nothing that scrolls sideways. Products declare rows through `ConfigGroup` (`scope="global"` for whole-prototype settings), `ConfigRow`, `ConfigAction` and `ConfigNote` instead of writing `kit-config-row` markup; `ConfigSeg` is gone. From the business-ops workspace.
 - **10** (2026-10-28): dropped the rule that an H1 reads as the largest thing on the page at every width; the lever order and "a role never changes" stay. From the After Pixels session page work (Joe).
 - **11** (2026-11-11): the `nodemo` flag: with `?nodemo` in the address `app/config.jsx` publishes no `window.ConfigLauncher`, so no Config pill renders and a screenshot shows the page alone. Circlists canon carries it as a hand edit recorded in its changelog; it reverts at the next export unless that is carried. From the business-ops workspace.
+
+- **12** (2026-11-28): removed the special comment marker standard. From the business-ops workspace.
 
 A change that starts in a project comes back the other way: the project's handoff names it as a kit change, it is made here, and its Versions line names the project it came from.
 

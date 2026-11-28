@@ -44,7 +44,7 @@ export const kitCopy = async (text) => {
 };
 
 // ---- Scroll lock, shared by the aids' dialogs --------------------------------
-// KEEP: a scroll that starts on a dialog's scrim never moves the page behind it (the phone frame's screen when
+// a scroll that starts on a dialog's scrim never moves the page behind it (the phone frame's screen when
 // forced-mobile), and stacked dialogs release it only when the last one closes.
 // Returns the release, so it reads as an effect: useEffect(kitLockScroll, []).
 const kitScrollLocks = new Map();

@@ -1,7 +1,7 @@
 /* The session card a daily puzzle's body is built on (app/gs-session.jsx GsSessCard): Delve's card (.dv2) and result band
    (.dv7r-band, gs-delve.css), then the game's board and a panel of captioned figures. Imported after gs-delve.css. */
 /* A board of tiles reads its tile size (--t) and gap (--g) from the card (Guess's and Chain's tiles, gs-word.css .wd-t).
-   KEEP: the tiles read 100cqi where they are drawn, inside the card (a container), so the phone size subtracts only the number
+   the tiles read 100cqi where they are drawn, inside the card (a container), so the phone size subtracts only the number
    gutters either side (2 x 28px): about 49px at 390px wide. From 640px: from the window's height, so the hard play fits under
    the head on a laptop, 56 to 72px. */
 .gs-sc { --g: 6px; --t: min(64px, calc((100cqi - 2 * 28px - 4 * var(--g)) / 5)); }
@@ -15,7 +15,7 @@
 /* The last row (the answer on a loss) spans the panel. */
 .gs-sc-panel > :not(.gs-sc-row) { grid-column: 1 / -1; }
 /* From a 672px card: the board and the panel side by side, centred in the card, the panel ruled off at its left.
-   KEEP: the panel and its rule rise past the result band and the card's gap (29px + 24px), so the panel centres on the whole
+   the panel and its rule rise past the result band and the card's gap (29px + 24px), so the panel centres on the whole
    card and fills the space beside the result (Joe, Guess 6a Ring lifted). */
 @container dv2 (min-width: 672px) {
   .gs-sc-duo { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 64px; }

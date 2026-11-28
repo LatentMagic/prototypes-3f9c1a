@@ -23,7 +23,7 @@
   .gs-pz-item:active { transform: none; }
 }
 
-/* KEEP: product page from 720px: the cover takes the play box's height, so the two always end level (the art is shown whole, its ground extended to fill, never stretched or cropped) */
+/* product page from 720px: the cover takes the play box's height, so the two always end level (the art is shown whole, its ground extended to fill, never stretched or cropped) */
 @container gs (min-width: 720px) {
   .gs-head-split { align-items: stretch; }
   .gs-hero-cover { min-height: 320px; }
@@ -31,7 +31,7 @@
   .gs-hero-cover .mcp-cover-art { aspect-ratio: auto; height: 100%; }
 }
 
-/* KEEP: Covers on a phone: the head of the product and session pages shows the cover small beside the title, as the library game page does, so the first action is in view; a More games card's art is 2:1 */
+/* Covers on a phone: the head of the product and session pages shows the cover small beside the title, as the library game page does, so the first action is in view; a More games card's art is 2:1 */
 @container gs (max-width: 719px) {
   .gs-hero-cover { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; align-items: center; }
   .gs-hero-cover .gs-cover-over { position: static; padding: 0; }
@@ -42,6 +42,6 @@
 /* C5: the pitch and "How it plays" share a top */
 .gs-pitch > * { align-self: start !important; }
 
-/* KEEP: S10: the pitch heading wraps at the column's width, as the paragraph under it does */
+/* S10: the pitch heading wraps at the column's width, as the paragraph under it does */
 
 .gs-pitch h2 { text-wrap: pretty; }

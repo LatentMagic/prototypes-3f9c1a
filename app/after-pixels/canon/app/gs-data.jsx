@@ -13,7 +13,7 @@ export const GS = {
   today: 'Tuesday 6 October',
   link: 'https://play.afterpixels.com',
   email: 'you@example.com',
-  tax: 'Prices include tax', // KEEP: no full stop where it stands alone (the user, 2026-11-18); Pricing adds one because it runs into the purchase sentence.
+  tax: 'Prices include tax', // no full stop where it stands alone (the user, 2026-11-18); Pricing adds one because it runs into the purchase sentence.
   taxShort: 'includes tax',
   purchase: 'Purchases only ever happen on this site; your AI will never ask you to pay.',
   works: 'ChatGPT · Claude · Gemini · Grok · Muse · and more',
@@ -50,7 +50,7 @@ export const GS_NAME = { casebook: 'Casebook', hunter: '36,000 Summers Ago' };
 // ed: the game's own word for one of its editions, [singular, plural]. Players never see a platform-wide word.
 // real: whether the game is a real After Pixels game. Only Guess, Accuse, Escape, Delve, Where, Chain, Salvage and Common are; every
 // other game here is fake, a proof of concept or canned sample content, kept to show a kind of game or page. Nothing on screen reads it.
-// KEEP: a game with real: false is not a product game. Build nothing for it, and read no rule about the product from its pages.
+// a game with real: false is not a product game. Build nothing for it, and read no rule about the product from its pages.
 // soon: the game is out for now and coming back. Every card, pick and tile shows it Coming soon, dimmed, with no way in.
 export const GS_GAMES = {
   word: { real: true, access: 'daily', name: 'Guess', category: 'PUZZLE', art: 'word', route: 'word', ed: ['word', 'words'], daily: true, once: true, blurb: 'One hidden word a day: find it in six guesses.', tags: ['Daily'], size: 'tiny' },
@@ -65,7 +65,7 @@ export const GS_GAMES = {
   hunter: { real: false, access: 'pass', name: GS_NAME.hunter, category: 'LEARNING', art: 'hunter', route: 'hunter', ed: ['summer', 'summers'], blurb: 'Grey dawn below Chauvet cave. Go where you like.', tags: ['2 hours'] },
 };
 // Derives a game's free, first and its access tag ('FREE' | 'FIRST' | 'PASS', first in tags) from access, and a sized game's time chip (last in tags).
-// KEEP: a sized game's time chip is its size's chip from the design system (DS.TIME_CHIPS), never typed per game.
+// a sized game's time chip is its size's chip from the design system (DS.TIME_CHIPS), never typed per game.
 export const gsAccess = (g) => { g.free = g.access === 'daily'; g.first = g.access === 'first'; g.tags = [{ daily: 'FREE', first: 'FIRST', pass: 'PASS' }[g.access], ...g.tags.filter((t) => !['FREE', 'FIRST', 'PASS'].includes(t)), ...(g.size ? [DS.TIME_CHIPS[g.size]] : [])]; return g; };
 Object.values(GS_GAMES).forEach(gsAccess);
 export const GS_GAME_ORDER = ['word', 'groups', 'mystery', 'escape', 'casebook', 'delve', 'barrow', 'hunter'];
@@ -525,7 +525,7 @@ export const gsForms = (s) => {
   if ((m = /^All 4 groups, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
   if ((m = /^Found in (.+)$/.exec(s)) || (m = /^All 5 wrecks, (.+)$/.exec(s))) return [s, m[1]];
   if ((m = /^Solved, (.+)$/.exec(s))) return [s, m[1][0].toUpperCase() + m[1].slice(1)];
-  // KEEP: a fallen Delve run's row reads "Fallen" in place of "Fell in the warren" when the row itself is under 440px wide (not the screen), so the library's plays column shows "Fallen" at every screen width and History only on narrow phones; ListRow picks the form from the row's width.
+  // a fallen Delve run's row reads "Fallen" in place of "Fell in the warren" when the row itself is under 440px wide (not the screen), so the library's plays column shows "Fallen" at every screen width and History only on narrow phones; ListRow picks the form from the row's width.
   if (s === 'Fell in the warren') return [s, 'Fallen'];
   if (/ (is|are) ready$/.test(s)) return [s, 'Ready'];
   if (/^Done (today|this week)$/.test(s) || /^(Every|Free) \w+ done$/.test(s)) return [s, 'Done'];

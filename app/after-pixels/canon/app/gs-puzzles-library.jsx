@@ -159,7 +159,7 @@ Object.entries(PZ).forEach(([id, c]) => {
   c.badges = lbAutoBadges(c.ach);
   // pin: an earlier edition whose play is a hand-built record (index → session id); its row reads that record.
   Object.entries(c.pin || {}).forEach(([i, sid]) => { const x = c.all[+i]; const s = GS_SESSIONS[sid]; Object.assign(x, { played: true, ok: !s.loss, done: !s.loss, line: s.result, sid }); });
-  // KEEP: this edition's finished play is read through c.today everywhere, so Config → This edition (gsEdPick) changes every surface at once.
+  // this edition's finished play is read through c.today everywhere, so Config → This edition (gsEdPick) changes every surface at once.
   const base = c.today; c.todayBase = base;
   Object.defineProperty(c, 'today', { configurable: true, get: () => (id === 'escape' && window.gsApi && typeof esFinished === 'function' ? esFinished(window.gsApi) : gsEdPick(id) || base) });
 });

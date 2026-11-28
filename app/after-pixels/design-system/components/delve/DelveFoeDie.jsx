@@ -1,7 +1,7 @@
 import React from 'react';
 // The foe's d20 in a Delve held roll: a diamond, so it never reads as a second hero roll.
-// KEEP: when the foe rolled two d20s (advantage), the other roll is an empty diamond tucked up and left behind the first, with no number, so the pair never reads as two rolls.
-// KEEP: the number is 15px so it does not clip the diamond's points.
+// when the foe rolled two d20s (advantage), the other roll is an empty diamond tucked up and left behind the first, with no number, so the pair never reads as two rolls.
+// the number is 15px so it does not clip the diamond's points.
 export function DelveFoeDie({ value, other, hit = false, surface = 'card', size = 34, className = '' }) {
   const cls = ['mcp-dl-foe', other != null && 'has-other', hit && 'is-hit', surface === 'popup' && 'is-popup', className].filter(Boolean).join(' ');
   return (

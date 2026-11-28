@@ -817,7 +817,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // member" under a handset's home indicator. `--space-5` plus the
             // safe-area inset, which is what AddReveal's own sheet uses.
             padding: '0 0 calc(var(--space-5) + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))',
-            // KEEP: The view-options panel is the only thing on its surface that scrolls; the contributor list never scrolls inside it, except on a window too short for both.
+            // The view-options panel is the only thing on its surface that scrolls; the contributor list never scrolls inside it, except on a window too short for both.
             // ONE scroll region, which is the second thing four groups broke.
             // The popover scrolled AND the filter list scrolled inside it — a
             // scroller nested in a scroller, which Linear's own display popover
@@ -836,7 +836,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             transition: 'transform var(--duration-slow) var(--ease-quiet)',
           } : {
             position: 'absolute', top: '100%', right: 0, zIndex: 119, outline: 'none',
-            // KEEP: the desktop panel is 340px wide, so "Comfortable | Compact | Grid"
+            // the desktop panel is 340px wide, so "Comfortable | Compact | Grid"
             // reads in full in the View control; at 300 the labels spilled or truncated.
             minWidth: 340, maxWidth: 340,
             background: 'var(--color-surface)', border: '1px solid var(--color-border-1)',
@@ -845,7 +845,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
             // must meet the panel's own edge, or the "there is more" cut reads
             // as clipping. Groups carry their own top spacing.
             padding: '4px 0 0', outline: 'none',
-            // KEEP: the desktop panel's cap is 78vh (or the window less 132px), so at
+            // the desktop panel's cap is 78vh (or the window less 132px), so at
             // 1280x800 the panel fits its content and only `Added by` scrolls. Below
             // about 760px of window height both scroll; fewer pixels of content is the
             // fix there, not a bigger box.
@@ -940,7 +940,7 @@ const FeedLens = ({ order, who, contributors, onOrder, onWho, density = 'comfort
   );
 };
 
-// KEEP: Chips stay 44px tall and their remove targets tile edge to edge without overlapping.
+// Chips stay 44px tall and their remove targets tile edge to edge without overlapping.
 // ---- What is applied -------------------------------------------------------
 // Shown ONLY when something is non-default; the default feed carries nothing.
 // This is what pays for folding the sort label away — and it is the applied-
@@ -1141,7 +1141,7 @@ const LensChips = ({ who, onWho, saved, onSaved, watching = false, onWatching, i
   // accessible name starts with what is on screen.
   const reopen = { onReopen: onReopenLens, reopenLabel: (l) => l + '. Change filters' };
   return (
-    // KEEP: The chip row stays stuck under the tab bar, its edge in line with the tabs.
+    // The chip row stays stuck under the tab bar, its edge in line with the tabs.
     // Two nested boxes, deliberately. The OUTER one is full-bleed and carries
     // the sticky, the ground and the rule — so its edge lines up with the tab
     // bar's own rule directly above it, which is also full-bleed. The INNER one

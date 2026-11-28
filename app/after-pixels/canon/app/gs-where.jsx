@@ -43,7 +43,7 @@ const WhLog = ({ p }) => (
 
 // The globe: six gores between meridians at -90, -60 … 90 degrees, each drawn as two half-ellipses from pole to pole. Each gore
 // is its guess, shaded by how close it came, green for the find; a loss stays grey, as the result says Failed (Joe, 2026-10-30).
-// KEEP: with no guess made the globe takes is-none, so its "0 of 6" caption reads grey, not the text colour.
+// with no guess made the globe takes is-none, so its "0 of 6" caption reads grey, not the text colour.
 const WhGlobe = ({ p }) => {
   const c = 60; const R = 52; const lon = [-90, -60, -30, 0, 30, 60, 90].map((d) => d * Math.PI / 180);
   const down = (l) => 'A ' + Math.abs(R * Math.sin(l)) + ' ' + R + ' 0 0 ' + (l < 0 ? 0 : 1) + ' ' + c + ' ' + (c + R);
@@ -61,7 +61,7 @@ const WhGlobe = ({ p }) => {
 // The chart: a ruled box with a faint grid, N at the top, the bearing dashed out from the guessed country to an open ring. The box
 // is unfilled, so it takes the card's colour.
 const WhChart = ({ p }) => {
-  // KEEP: the same 120 box and 104 span as the globe (WhGlobe), so the square is exactly as wide as the globe (Joe, 2026-10-31).
+  // the same 120 box and 104 span as the globe (WhGlobe), so the square is exactly as wide as the globe (Joe, 2026-10-31).
   const h = p.hint; const a = h ? (WH_POINTS.indexOf(h.dir) * 45 - 90) * Math.PI / 180 : 0; const c = 60; const L = 44;
   return (
     <div className={'wh-chart' + (h ? '' : ' is-none')} role="img" aria-label={h ? 'Hint: the country lies ' + h.dir + ' of ' + h.from : whSay(p)}>

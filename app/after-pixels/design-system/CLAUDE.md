@@ -8,7 +8,7 @@
 
 ## Code
 
-- **Comments carry intent and mapping, and flag the special; nothing else**. Mapping comments help you find your way round a file. `// KEEP:` is different: it is written for another agent, the one that integrates this prototype into the product, which reads it as "preserve this outcome". Put it on anything special (adaptive styling, overlap or overflow handling, a value chosen against the default) so it never needs speccing in a ticket. Plain narration of what code does gets deleted.
+- **Comments carry intent and mapping; nothing else.** Mapping comments help you find your way around a file. Delete plain narration of what code does.
 
 ## Replying in chat (not product copy)
 

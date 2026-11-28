@@ -5,7 +5,7 @@
 /* the cover's door, shut: its teal leaf and amber knob */
 .es-door { position: relative; display: block; flex: none; background: var(--cover-teal); }
 .es-door > i { position: absolute; right: 2px; top: 52%; width: 4px; aspect-ratio: 1; background: var(--cover-amber); }
-/* KEEP: the exit door left open: the frame filled with the page colour, so the bar never shows through it; the leaf swung out */
+/* the exit door left open: the frame filled with the page colour, so the bar never shows through it; the leaf swung out */
 .es-od { position: relative; display: block; flex: none; box-sizing: border-box; border: 2px solid var(--cover-teal); background: var(--page); }
 .es-od > i { position: absolute; left: calc(100% - 1px); top: -2px; height: calc(100% + 4px); width: 55%; background: var(--cover-teal); transform-origin: left top; transform: skewY(24deg); }
 .es-od > i > b { position: absolute; left: 25%; top: 50%; width: max(2px, 45%); aspect-ratio: 1; background: var(--cover-amber); }
@@ -31,7 +31,7 @@
 .es-ptxt { position: absolute; white-space: nowrap; font: 400 13px/18px var(--font-text); color: var(--muted); }
 .es-ptk { position: absolute; width: 2px; background: var(--off-white); }
 .es-track { position: absolute; left: 0; background: color-mix(in srgb, var(--text) 3%, var(--card)); box-shadow: inset 0 0 0 1px var(--line); }
-/* KEEP: 3:1 against the empty track (WCAG 1.4.11): elapsed 40%, over par 50% */
+/* 3:1 against the empty track (WCAG 1.4.11): elapsed 40%, over par 50% */
 .es-fill { position: absolute; left: 0; background: color-mix(in srgb, var(--text) 40%, var(--card)); }
 .es-fill.is-over { background: color-mix(in srgb, var(--warning) 50%, var(--card)); }
 .es-edge { position: absolute; width: 2px; background: var(--off-white); }
@@ -64,7 +64,7 @@
 .es-mk.is-on { background: var(--cover-cream); border-color: var(--cover-cream); }
 .es-mk > i { flex: 1; background: color-mix(in srgb, var(--text) 12%, var(--card)); }
 .es-mk > i.is-on { background: var(--cover-cream); }
-/* KEEP: the lane's line: one rule per row, full width, so a wrapped first row runs to the edge. Every step is 44px tall; rows 8px apart. */
+/* the lane's line: one rule per row, full width, so a wrapped first row runs to the edge. Every step is 44px tall; rows 8px apart. */
 .es-steps { position: relative; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px; min-width: 0;
   background: repeating-linear-gradient(to bottom, transparent 0 11px, var(--control-edge) 11px 12px, transparent 12px 52px); }
 .es-step { position: relative; height: 44px; box-sizing: border-box; display: grid; justify-items: center; gap: 4px; }
@@ -72,9 +72,9 @@
 .es-step.is-hint { padding-top: 8px; gap: 12px; }
 .es-step.is-door { margin-left: auto; justify-items: end; }
 .es-step .es-door > i { width: 3px; }
-/* KEEP: Two lanes to a row from 720px; a short lane beside a long one keeps space at its foot (accepted, owner 2026-10-27). */
+/* Two lanes to a row from 720px; a short lane beside a long one keeps space at its foot (accepted, owner 2026-10-27). */
 @container gs (min-width: 720px) { .es-lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-/* KEEP: On a phone (under 720px) only the lock you picked shows, at full width, so its door on the line and its lane stay on one screen. */
+/* On a phone (under 720px) only the lock you picked shows, at full width, so its door on the line and its lane stay on one screen. */
 @container gs (max-width: 719px) {
   .es-detail .es-lane:not(.is-sel) { display: none; }
   .es-detail .es-lane.is-sel { background: none; border-color: var(--line); }

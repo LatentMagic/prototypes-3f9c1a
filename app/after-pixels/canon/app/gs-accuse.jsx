@@ -51,7 +51,7 @@ const ACC_CASE_13 = {
 export const ACC_TRUTH = ACC_CASE.truth;
 const accLow = (x) => x.charAt(0).toLowerCase() + x.slice(1);
 // The culprit's weapon and place, "with the X, in the Y.", the case card's last line.
-// KEEP: deployed places carry their own preposition (clue.ts, 29 of 63 cases take "on" or "at"); "in the" holds only for the two sample cases (1 and 13).
+// deployed places carry their own preposition (clue.ts, 29 of 63 cases take "on" or "at"); "in the" holds only for the two sample cases (1 and 13).
 export const accWithWhere = (cs = ACC_CASE) => 'with the ' + accLow(cs.truth[1]) + ', in the ' + accLow(cs.truth[2]) + '.';
 // A wrong accusation gets one part wrong: part 0 the suspect, 1 the weapon, 2 the place.
 export const accWrong = (part) => ACC_TRUTH.map((t, k) => (k === part ? [ACC_CASE.suspects, ACC_CASE.weapons, ACC_CASE.places][k].map((c) => c[0]).find((n) => n !== t) : t));
@@ -98,7 +98,7 @@ const AccIcon = ({ k }) => (k === 'clues'
   ? <span className="esx-mk" aria-hidden="true"><i className="esx-slip" /></span>
   : <span className="esx-mk acc-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="square" strokeLinejoin="miter"><path d={ACC_IC[k]} /></svg></span>);
 
-// KEEP: as Escape's sheet, no tab is open at first and the folder is shut; a tap on a tab opens the folder on its things, a tap on
+// as Escape's sheet, no tab is open at first and the folder is shut; a tap on a tab opens the folder on its things, a tap on
 // another swaps the contents and shuts the reader, and a tap on the open tab shuts the folder. A tab with nothing in it (Hints at 0)
 // is greyed out and does nothing. Below a 672px sheet each tab shows its icon and count only and the open tab's
 // name heads the folder, so six tabs fit across 358px without clipping a word.
@@ -142,7 +142,7 @@ const accLine = (x1, x2, y, r) => { const p = []; const n = Math.max(2, Math.rou
   for (let i = 0; i <= n; i++) { const t = i / n; p.push([x1 + (x2 - x1) * t, y + 0.8 * (t - 0.5) + (r() - 0.5) * 1.2]); } return accSmooth(p); };
 // Only the word itself is measured, not the hidden words for screen readers that follow it.
 const accRects = (el) => { const g = document.createRange(); g.selectNodeContents(el.firstChild); return [...g.getClientRects()].filter((q) => q.width > 1); };
-// KEEP: the pen marks are redrawn whenever the board changes size, and a ring never reaches more than 5px past its column, so it never
+// the pen marks are redrawn whenever the board changes size, and a ring never reaches more than 5px past its column, so it never
 // crosses into the next column's words.
 const accDraw = (host, ov) => {
   const H = host.getBoundingClientRect(); let out = '';

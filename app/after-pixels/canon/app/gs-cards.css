@@ -31,7 +31,7 @@
 .gs-host:has(.gs-titlebtn:focus-visible) { --on: 1; outline: 2px solid var(--off-white); outline-offset: 2px; }
 /* Banner ratio (2:1) the design system's GameArt lacks; used by the home hero. */
 .mcp-art-2 { aspect-ratio: 2 / 1; }
-/* KEEP: Motion art for Guess, Accuse, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
+/* Motion art for Guess, Accuse, Escape, Delve. Each piece is drawn on a centred 4:3 stage so it is never cropped; --u is 1/160 of the stage. Same --on, 400ms and --s stagger as the system's pieces. */
 .mcp-art.is-wine { background: var(--cover-bg-wine); }
 .mcp-art.is-forest { background: var(--cover-bg-forest); }
 .gs-st { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(100cqw, 133.333cqh); aspect-ratio: 4 / 3; container-type: size; --u: .625cqw; }
@@ -42,7 +42,7 @@
 .ga-e-door { --x: 60; --y: 26; --w: 44; --h: 134; --fill: var(--cover-teal); --s: 0; border-radius: calc(var(--on) * var(--u) * 22) calc(var(--on) * var(--u) * 22) 0 0; }
 .ga-e-knob { --x: 89; --y: 71; --w: 10; --h: 10; --fill: var(--cover-amber); --s: 50; border-radius: calc((1 - var(--on)) * 50%); transform: translateY(max(var(--on) * var(--u) * -5, -8px)); }
 .ga-e-win { --x: 22; --y: 22; --w: 16; --h: 16; --fill: var(--cover-cream); --s: 100; border-radius: calc(var(--on) * 50%); transform: translate(calc(var(--on) * min(var(--u) * 6, 10px)), calc(var(--on) * max(var(--u) * -6, -10px))); }
-/* KEEP: Delve's torches and Chain's chain sit inside x 20-140 of the 160-unit stage, the centre square that a square crop of the cover's link-preview image keeps; the torch flames span 24-136 and the chain 24-136, at rest and on hover. */
+/* Delve's torches and Chain's chain sit inside x 20-140 of the 160-unit stage, the centre square that a square crop of the cover's link-preview image keeps; the torch flames span 24-136 and the chain 24-136, at rest and on hover. */
 .ga-d-out { --x: 50; --y: 10; --w: 60; --h: 150; --fill: var(--cover-lilac); --s: 0; border-radius: calc(var(--u) * 30) calc(var(--u) * 30) 0 0; }
 .ga-d-in { --x: 64; --y: 36; --w: 32; --h: 124; --fill: var(--cover-bg-indigo); --s: 40; border-radius: calc(var(--u) * 16) calc(var(--u) * 16) 0 0; transform-origin: 50% calc(var(--u) * 84); transform: scale(calc(1 + var(--on) * .07)); }
 .ga-d-st { --x: 64; --y: 88; --w: 32; --h: 8; --fill: var(--cover-amber); --s: 0; }
@@ -58,7 +58,7 @@
 /* Chain: the two end words and their links are found; the three middle words are empty. The cream line grows inward from both ends and meets in the middle, and each word fills as the line reaches it (border thickens inward, so it never grows). */
 .ga-ch { --y: 52; --w: 16; --h: 16; --s: 0; }
 .ga-ch-1 { --x: 24; --fill: var(--cover-cream); } .ga-ch-5 { --x: 120; --fill: var(--cover-cream); }
-/* KEEP: The empty words are drawn with an inset shadow, not a border: the square never changes size, and at rest past half its width the shadow fills it edge to edge with no pixel-rounding gap. */
+/* The empty words are drawn with an inset shadow, not a border: the square never changes size, and at rest past half its width the shadow fills it edge to edge with no pixel-rounding gap. */
 .ga-ch-o { --fill: transparent; box-shadow: inset 0 0 0 max(var(--u) * (2.667 + var(--on) * 6.222), 1.333px + var(--on) * var(--u) * 8.889) var(--c); }
 .mcp-art i.ga-ch-o { transition: transform var(--time-art) var(--ease-art) 0ms, box-shadow var(--time-art) var(--ease-art) 0ms; }
 .ga-ch-2 { --x: 48; --c: var(--cover-orange); --s: 40; } .ga-ch-4 { --x: 96; --c: var(--cover-lilac); --s: 40; } .ga-ch-3 { --x: 72; --c: var(--cover-amber); --s: 100; }
@@ -66,7 +66,7 @@
 .ga-ch-l1 { --x: 32; --w: 49; transform-origin: 0 50%; transform: scaleX(calc(.3265 + var(--on) * .6735)); }
 .ga-ch-l2 { --x: 79; --w: 49; transform-origin: 100% 50%; transform: scaleX(calc(.3265 + var(--on) * .6735)); }
 /* Common: four shapes in a row on indigo, each a different shape and colour (an orange circle, a teal square, a lilac triangle, a cream diamond). On hover each turns one notch (90 degrees, the triangle 120) so it lands looking the same, and turns gold; there is no lift. Rotation and colour only, so it lands exactly at any size. */
-/* KEEP: Common's shapes span x 24-136 of the 160-unit stage, inside the centre square a square crop of the cover's link-preview image keeps, at rest and on hover; the triangle sits 1 unit lower and turns about its centre (50% 57.7%), so it reads level with the others. The colour change is a background-color transition kept beside transform: the system's pieces transition transform and border-radius only. */
+/* Common's shapes span x 24-136 of the 160-unit stage, inside the centre square a square crop of the cover's link-preview image keeps, at rest and on hover; the triangle sits 1 unit lower and turns about its centre (50% 57.7%), so it reads level with the others. The colour change is a background-color transition kept beside transform: the system's pieces transition transform and border-radius only. */
 .ga-cm { --y: 50; --w: 20; --h: 20; --fill: color-mix(in srgb, var(--c) calc((1 - var(--on)) * 100%), var(--cover-amber)); transform: rotate(calc(var(--on) * var(--r))); }
 .mcp-art i.ga-cm { transition: transform var(--time-art) var(--ease-art) 0ms, background-color var(--time-art) var(--ease-art) 0ms; }
 .ga-cm-1 { --x: 24; --c: var(--cover-orange); --r: 90deg; --s: 0; border-radius: 50%; }
@@ -92,11 +92,11 @@
   .dc-chips > button:active, .gs-coverbtn:hover .mcp-cover-art svg { transform: none; }
 }
 
-/* KEEP: SoonCard on a phone (owner, 2026-10-13; soon-card-phone option 2): below 480px the cover sits full width on top at 4:3, the text under it.
+/* SoonCard on a phone (owner, 2026-10-13; soon-card-phone option 2): below 480px the cover sits full width on top at 4:3, the text under it.
    Local until SoonCard carries it upstream; then delete this rule. */
 @container gs (max-width: 479px) {
   .mcp-soon { grid-template-columns: minmax(0, 1fr); }
-  /* KEEP: The cover runs the card's full width as a 2:1 band. The art keeps its 4:3 at the band's height, centred; its ground fills the sides. */
+  /* The cover runs the card's full width as a 2:1 band. The art keeps its 4:3 at the band's height, centred; its ground fills the sides. */
   .mcp-soon-art .mcp-cover.is-fill .mcp-cover-art::before { aspect-ratio: 2 / 1; }
   .mcp-soon-art .mcp-cover.is-fill .mcp-cover-art > * { width: auto; height: 100%; top: 0; bottom: auto; left: 50%; translate: -50% 0; }
 }

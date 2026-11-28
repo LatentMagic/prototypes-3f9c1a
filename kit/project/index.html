@@ -49,7 +49,7 @@
      bottom sheet that drills in. Its shell is .kit-config-dialog-*: the plain
      .kit-config-scrim / -modal / -head shell further down is the States and QA
      palettes'. */
-  /* KEEP: an opaque surface and a plain dim scrim; no blur, so every control
+  /* an opaque surface and a plain dim scrim; no blur, so every control
      reads at full contrast over any screen behind it. */
   .kit-config-dialog-scrim {
     position: fixed; inset: 0; z-index: 400;
@@ -130,7 +130,7 @@
     width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--radius-pill);
     background: transparent; color: var(--color-fg-3); cursor: pointer;
   }
-  /* KEEP: the mark is 16px but its hit area is 44px. */
+  /* the mark is 16px but its hit area is 44px. */
   .kit-config-info::after { content: ''; position: absolute; inset: -10px; }
   .kit-config-info:hover, .kit-config-info[aria-expanded="true"] { color: var(--color-fg-1); background: var(--color-surface-sunken); }
   .kit-config-tip {
@@ -139,7 +139,7 @@
     font: 400 var(--text-sm)/var(--leading-body) var(--font-sans); color: var(--color-fg-1); overflow-wrap: anywhere;
   }
 
-  /* KEEP: options are separate bordered chips straight on the surface (no
+  /* options are separate bordered chips straight on the surface (no
      track around them), wrapping when they run out of room, never scrolling
      sideways. The chosen one is filled near-black: unmistakable, no accent. */
   .kit-config-seg { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
@@ -189,7 +189,7 @@
     .kit-config-main { display: block; overflow: hidden; }
     .kit-config-dialog[data-view="list"] .kit-config-pane, .kit-config-dialog[data-view="section"] .kit-config-rail { display: none; }
     .kit-config-rail, .kit-config-pane { height: 100%; overflow-y: auto; overflow-x: hidden; }
-    /* KEEP: the sheet's last rows clear the home indicator. */
+    /* the sheet's last rows clear the home indicator. */
     .kit-config-rail { gap: 0; background: var(--color-surface); border: 0;
       padding: var(--space-2) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom)); }
     .kit-config-rail-label { padding: var(--space-6) 0 var(--space-2); }
