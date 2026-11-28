@@ -24,10 +24,10 @@ const GROW = 1.167;
 // the held roll's grey advantage hex is the die's own outline moved a fixed 2.5px up and left, whatever the die's size or shape (a natural 20's rim, a grown biggest hit, a plain hexagon), so it sits evenly behind the die; nothing else is drawn behind a die.
 const BEHIND_PX = 2.5;
 const grownHex = () => HP.map(([x, y]) => (CEN[0] + (x - CEN[0]) * GROW).toFixed(3) + ',' + (CEN[1] + (y - CEN[1]) * GROW).toFixed(3)).join(' ');
-// `even`: a key moment is one drawn size whether or not it is special, so a natural 20's rim or a grown biggest hit is drawn smaller until the die's drawn shape is as wide as a plain hexagon at `size` (the rim and ring are unchanged, only the die's size). `mini`: a pip, with no number, for the map; `size` is then the hexagon's own width.
-const EVEN = 36 / 42;
+// `even`: a key moment is one drawn size whether or not it is special, so a plain die is drawn larger until its hexagon is as wide as a natural 20's rim or a grown biggest hit at `size` (the rim and ring are unchanged, only the plain die's size). `mini`: a pip, with no number, for the map; `size` is then the hexagon's own width.
+const EVEN = 42 / 36;
 export function DelveDie({ kind = 'miss', value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = 'card', size: asked = 36, even = false, mini = false, className = '' }) {
-  const size = mini ? asked * 46 / 36 : even && (crit || (biggest && kind === 'strong')) ? asked * EVEN : asked;
+  const size = mini ? asked * 46 / 36 : even && !(crit || (biggest && kind === 'strong')) ? asked * EVEN : asked;
   const big = size >= 64;
   const ringed = biggest && kind === 'strong';
   const ring = ringed ? biggestRing(crit ? size : size * GROW) : null;

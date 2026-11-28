@@ -277,9 +277,9 @@
     };
     const GROW = 1.167;
     const grownHex = () => HP.map(([x, y]) => (CEN[0] + (x - CEN[0]) * GROW).toFixed(3) + "," + (CEN[1] + (y - CEN[1]) * GROW).toFixed(3)).join(" ");
-    const EVEN = 36 / 42;
+    const EVEN = 42 / 36;
     function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = "card", size: asked = 36, even = false, mini = false, className = "" }) {
-      const size = mini ? asked * 46 / 36 : even && (crit || biggest && kind === "strong") ? asked * EVEN : asked;
+      const size = mini ? asked * 46 / 36 : even && !(crit || biggest && kind === "strong") ? asked * EVEN : asked;
       const big = size >= 64;
       const ringed = biggest && kind === "strong";
       const ring = ringed ? biggestRing(crit ? size : size * GROW) : null;
@@ -3686,7 +3686,7 @@
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
   const DlDie = ({ r, size = 36, sel, behind = false, surface, even = false }) => r.lost ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { even, kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, behind, crit: r.crit, biggest: !!r.big && r.tier === "strong", fumble: r.fumble, selected: sel, surface, size });
-  const DlDieBtn = ({ r, size, act, on, lit }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, even: true, sel: act === r.t || lit === r.t }));
+  const DlDieBtn = ({ r, size, act, on, lit, even }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, even, sel: act === r.t || lit === r.t }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
@@ -3809,7 +3809,7 @@
       return has ? /* @__PURE__ */ React$1.createElement("button", { key: st.i, type: "button", className: cls, title: st.name, "aria-label": label, "aria-pressed": open === st.i, onClick: () => onOpen(st) }, box, /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st, phone })) : /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: cls, title: st.name, role: "img", "aria-label": label + (st.turns && st.turns.length ? "" : ", no rolls") }, box, m && /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st, phone }));
     })));
   };
-  const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st, " is-on"), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.filter((r) => !r.lost).map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
+  const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st, " is-on"), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.filter((r) => !r.lost).map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30, even: !!m.mom[r.t] })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
   const DlGlance = ({ m, act, setSel }) => {
     const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : m.stops.length - 1);
     const [lit, setLit] = React$1.useState(null);

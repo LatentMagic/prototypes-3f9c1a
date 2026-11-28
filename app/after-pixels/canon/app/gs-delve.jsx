@@ -183,9 +183,9 @@ const DlDie = ({ r, size = 36, sel, behind = false, surface, even = false }) => 
   : r.use
   ? <DS.DelveUseDie selected={sel} surface={surface} size={size} won={!!r.won} />
   : <DS.DelveDie even={even} kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} behind={behind} crit={r.crit} biggest={!!r.big && r.tier === 'strong'} fumble={r.fumble} selected={sel} surface={surface} size={size} />);
-const DlDieBtn = ({ r, size, act, on, lit }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
+const DlDieBtn = ({ r, size, act, on, lit, even }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
   <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
-    <DlDie r={r} size={size} even sel={act === r.t || lit === r.t} />
+    <DlDie r={r} size={size} even={even} sel={act === r.t || lit === r.t} />
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
@@ -317,7 +317,7 @@ const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
     <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.name}</span></p>
     {/* in the open room a key moment's die is drawn bigger (44px) than any other roll's (30px), as everywhere a key moment stands among other rolls (the user, 2026-11-25: "all big moments are big throughout relationally"); pressing a die only rings it, never resizes it. */}
-    <div className="dvG-dice">{st.turns.filter((r) => !r.lost).map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
+    <div className="dvG-dice">{st.turns.filter((r) => !r.lost).map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} even={!!m.mom[r.t]} />)}</div>
   </div>
   {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
 </div>);
