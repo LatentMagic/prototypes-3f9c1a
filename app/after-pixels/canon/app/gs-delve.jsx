@@ -178,14 +178,14 @@ const dlSay = (r, foe = true) => r.lost && r.over ? 'The threat filled in ' + dl
 // natural 1 red-edged, a use a quiet sparkle. Only the held roll's head draws the advantage die's grey hex behind the die (`behind`). DL_HEX and DL_RIM
 // still draw the sheet's hexes (stats, inspiration). ----
 const DL_HEX = '18,0 36,10 36,30 18,40 0,30 0,10'; const DL_RIM = '18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8';
-const DlDie = ({ r, size = 36, sel, behind = false, surface }) => (r.lost
+const DlDie = ({ r, size = 36, sel, behind = false, surface, even = false, num }) => (r.lost
   ? <svg className="dl-cross" viewBox="0 0 12 12" width={Math.round(size * 0.45)} height={Math.round(size * 0.45)} aria-hidden="true" focusable="false"><path d="M2 2l8 8M10 2l-8 8" /></svg>
   : r.use
   ? <DS.DelveUseDie selected={sel} surface={surface} size={size} won={!!r.won} />
-  : <DS.DelveDie kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} behind={behind} crit={r.crit} biggest={!!r.big && r.tier === 'strong'} fumble={r.fumble} selected={sel} surface={surface} size={size} />);
-const DlDieBtn = ({ r, size, act, on, lit }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
+  : <DS.DelveDie even={even} num={num} kind={r.tier} value={r.kept} other={r.two ? r.other : undefined} behind={behind} crit={r.crit} biggest={!!r.big && r.tier === 'strong'} fumble={r.fumble} selected={sel} surface={surface} size={size} />);
+const DlDieBtn = ({ r, size, act, on, lit, even, num }) => (r.lost ? <span className="dv2-lost" role="img" aria-label={dlSay(r)} style={{ width: size, height: Math.round(size * 40 / 36) }}><DlDie r={r} size={size} /></span> :
   <button type="button" className="dv2-dbtn" aria-pressed={act === r.t} aria-label={dlSay(r)} data-t={r.t} onClick={() => on.sel(r.t)} onMouseEnter={() => on.hov(r.t)} onMouseLeave={() => on.hov(null)}>
-    <DlDie r={r} size={size} sel={act === r.t || lit === r.t} />
+    <DlDie r={r} size={size} even={even} num={num} sel={act === r.t || lit === r.t} />
   </button>);
 
 // ---- The result statement, 3 · Band (owner, 2026-10-29): the ending word, a hairline, the setting's line. No tally. ----
@@ -227,15 +227,18 @@ const DlNamed = ({ s, total }) => (<span className="dvH-pn">
 const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(' · ');
 // the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"; a use that earned none is titled with its room), under it the roll's number on a key moment's (never its room, which the open room's heading names) and, when the turn beat or passed something, those words, and at its right the dice (the hero's d20 and the foe's diamond when it struck back). What a use was (its kind and name) is said only in the You label below, never in the strip. Under a 480px box the beaten or passed words take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
 // The empty margin round a die's drawn shape in its picture box, in die units (right, top; the same on the opposite side): the picture is 46 by 50, a hexagon leaves 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7.
-const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
+const dlInk = (r, key) => (r.crit ? [2, 1.5] : r.big || key ? [2, 1.7] : [5, 5]);
 // the held roll's dice are one drawn size on every roll it holds (a hexagon 25px wide), a key moment's included, so moving between rolls never changes their size: a die whose rim reaches further into its picture (a natural 20, a biggest hit) is drawn smaller to match (the user, 2026-11-25: "BETWEEN CARDS these are changing sizes"); the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
 const DL_HELD_DIE = 32;
+// A die's number is one size per surface, whatever the die. The map's number is decoration (the die marks the moment;
+// the held roll shows the roll at full size), so it may sit below ui-design.md's 11px text floor.
+const DL_MAP_NUM = 9; const DL_ROOM_NUM = 44 * 15 / 46;
 // A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
 const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
-const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? r.room : 'Roll ' + r.n]; const roll = x && !r.use ? 'Roll ' + r.n : '';
+const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r, !!x && !r.use)[0]); const foeSize = Math.round(DL_HELD_DIE * 40 / 46); const names = x ? x.kickers : [r.use ? r.room : 'Roll ' + r.n]; const roll = x && !r.use ? 'Roll ' + r.n : '';
   return (<div className="dvH-hd"><div className="dvH-tt"><p className="dvH-k">{dlTitle(names).split(' · ').map((name, i) => <React.Fragment key={name}>{i > 0 && ' · ' }<span>{name}</span></React.Fragment>)}</p>
       {(roll || dlBeat(r)) && <p className="dvH-rm">{roll}{roll && dlBeat(r) && <> <span className="dvH-sep">· </span></>}{dlBeat(r) && <span className="dvH-beat">{dlBeat(r)}</span>}</p>}</div>
-    <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" behind /></DlInkFrame>
+    <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r, !!x && !r.use)[0]) / 46} h={size * (50 - 2 * dlInk(r, !!x && !r.use)[1]) / 46}><DlDie r={r} size={size} even={!!x && !r.use} num={DL_HELD_DIE * 15 / 46} surface="popup" behind /></DlInkFrame>
       {r.foe && <DlInkFrame w={foeSize * 36 / 40} h={Math.round(foeSize * 44 / 40) * 40 / 44}><DlFoeDie f={r.foe} size={foeSize} /></DlInkFrame>}</div></div>); };
 // ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
 // a side is one tap chip, at least 44px tall, in Escape's tap card (esx-card) at its own size; the two sides share one row while the held roll is 452px wide or more, else they stack, You over Foe, each chip at full width; a lone side (a check, an option, a hero's attack the foe did not answer) has its chip take the row under 400px and its half above it, and its label the whole row. The chip's own width sets its shape: from 200px it is one row (hit, hairline, damage), which two rows always give it; the narrower shape (the damage on a second row under a hairline) stays for a chip below 200px. The d20 sum ("8 + 3") is not on the chip: in a chip of about 120px, where the hit and the damage already fill two rows, so the sum lives in the breakdown only, at every width.
@@ -300,7 +303,7 @@ const DL_SPARK = 'M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z';
 const dlRows = (items, most) => { const rows = Math.ceil(items.length / Math.max(1, most)); const base = Math.floor(items.length / rows); const longer = items.length % rows; let at = 0;
   return Array.from({ length: rows }, (_, i) => { const n = i < longer ? base + 1 : base; const row = items.slice(at, at + n); at += n; return row; }); };
 const DL_PIP_ROW = 4; const DL_PIP_ROW_PHONE = 3; const DL_PIP_PHONE_W = 480; const DL_KEY_ROW = 2;
-const DlMapMark = ({ m, r }) => (r.lost || m.mom[r.t] ? <DlDie r={r} size={20} /> : r.use ? <svg className="dvG-spark" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d={DL_SPARK} /></svg> : <i className={'dl-now-mark is-' + (r.tier || 'miss')} />);
+const DlMapMark = ({ m, r }) => (r.lost ? <DlDie r={r} size={20} /> : m.mom[r.t] ? <DlDie r={r} size={20} even num={DL_MAP_NUM} /> : r.use ? <svg className="dvG-spark" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d={DL_SPARK} /></svg> : <DS.DelveDie mini kind={r.tier || 'miss'} size={8} />);
 const DlMapMarks = ({ m, st, phone }) => { if (!st.turns.length) return null;
   const keys = st.turns.filter((r) => r.lost || m.mom[r.t]); const pips = st.turns.filter((r) => !r.lost && !m.mom[r.t]);
   const rows = [...dlRows(pips, phone ? DL_PIP_ROW_PHONE : DL_PIP_ROW), ...dlRows(keys, DL_KEY_ROW)];
@@ -317,7 +320,7 @@ const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
     <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.name}</span></p>
     {/* in the open room a key moment's die is drawn bigger (44px) than any other roll's (30px), as everywhere a key moment stands among other rolls (the user, 2026-11-25: "all big moments are big throughout relationally"); pressing a die only rings it, never resizes it. */}
-    <div className="dvG-dice">{st.turns.filter((r) => !r.lost).map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
+    <div className="dvG-dice">{st.turns.filter((r) => !r.lost).map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} even={!!m.mom[r.t]} num={DL_ROOM_NUM} />)}</div>
   </div>
   {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
 </div>);
@@ -508,7 +511,7 @@ const DlNowKeys = ({ m, keys }) => { const ref = React.useRef(null); const n = k
       ctx.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; setTwo(!names.every((x) => x.every((t) => ctx.measureText(t).width <= col))); };
     read(); const ro = new ResizeObserver(read); ro.observe(el); if (document.fonts && document.fonts.ready) document.fonts.ready.then(read); return () => ro.disconnect(); }, [sig, n]);
   return (<div ref={ref} className={'dl-now-keys' + (two ? ' is-two' : '')} style={{ '--k': n, '--col': DL_KEY_COL + 'px', '--kgap': DL_KEY_GAP + 'px' }}>{keys.map((r, i) => (
-    <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} /><span className="dl-now-name">{names[i].map((k) => <span key={k} className="dl-now-k">{k.split(' ').map((w, j) => <React.Fragment key={j}>{j > 0 && ' '}<span>{w}</span></React.Fragment>)}</span>)}</span></span>))}</div>); };
+    <span key={r.t} className="dl-now-key"><DlDie r={r} size={44} even /><span className="dl-now-name">{names[i].map((k) => <span key={k} className="dl-now-k">{k.split(' ').map((w, j) => <React.Fragment key={j}>{j > 0 && ' '}<span>{w}</span></React.Fragment>)}</span>)}</span></span>))}</div>); };
 const DlNowPic = ({ m }) => {
   const ref = React.useRef(null); const fit = useDlWidth(ref, dlNowFit, DL_NOW_MAX);
   const shown = m.stops.length ? m.stops.slice(-Math.min(DL_NOW_MAX, fit)) : dlEmptyStops(1);

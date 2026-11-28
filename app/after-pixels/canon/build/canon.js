@@ -239,8 +239,10 @@
     const SPARKLE = "M18 13 Q19 19 25 20 Q19 21 18 27 Q17 21 11 20 Q17 19 18 13Z";
     const HP = HEX.split(" ").map((p) => p.split(",").map(Number));
     const CEN = [18, 20];
+    const REF = 44;
     const RIM_W = 1.75;
     const RING_W = 1.5;
+    const rimPx = (size) => Math.max(1, RIM_W * size / REF);
     const sideNormals = (d) => HP.map((a, i) => {
       const b = HP[(i + 1) % 6];
       const dx = b[0] - a[0];
@@ -271,20 +273,22 @@
     const RIM_PTS = RIM.split(" ").map((p) => p.split(",").map(Number));
     const biggestRing = (size) => {
       const k = size / 46;
-      const gap = sideDist(RIM_PTS) * k - RIM_W / 2;
-      const band = -sideDist(HP.map(([x, y]) => [CEN[0] + (x - CEN[0]) * 0.8, CEN[1] + (y - CEN[1]) * 0.8])) * k - RING_W / 2;
+      const gap = sideDist(RIM_PTS) * k - rimPx(size) / 2;
+      const band = -sideDist(HP.map(([x, y]) => [CEN[0] + (x - CEN[0]) * 0.8, CEN[1] + (y - CEN[1]) * 0.8])) * k - RING_W * size / REF / 2;
       return { points: offHex(-(band + gap / 2) / k).map((p) => p[0].toFixed(3) + "," + p[1].toFixed(3)).join(" "), width: gap };
     };
     const GROW = 1.167;
     const grownHex = () => HP.map(([x, y]) => (CEN[0] + (x - CEN[0]) * GROW).toFixed(3) + "," + (CEN[1] + (y - CEN[1]) * GROW).toFixed(3)).join(" ");
-    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = "card", size = 36, className = "" }) {
+    function DelveDie({ kind = "miss", value, other, crit = false, fumble = false, biggest = false, won = false, behind = false, selected = false, surface = "card", size: asked = 36, even = false, mini = false, num, className = "" }) {
+      const size = mini ? asked * 46 / 36 : asked;
       const big = size >= 64;
       const ringed = biggest && kind === "strong";
+      const grown = even && !crit && !mini;
       const ring = ringed ? biggestRing(crit ? size : size * GROW) : null;
       const adv = other != null && behind && !big && !selected;
       const away = -2.5 * 46 / size;
-      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", ringed && "is-biggest", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
-      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: crit ? RIM : ringed ? grownHex() : HEX, transform: "translate(" + away.toFixed(3) + " " + away.toFixed(3) + ")" }), ringed && !crit ? /* @__PURE__ */ React2.createElement("g", { transform: "translate(18 20) scale(" + GROW + ") translate(-18 -20)" }, /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } })) : /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM }), ringed && crit && /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } }), kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5" }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
+      const cls = ["mcp-dl-die", "is-" + kind, crit && "is-crit", ringed && "is-biggest", fumble && "is-fumble", won && kind === "use" && "is-won", selected && "is-sel", mini && "is-mini", surface === "popup" && "is-popup", className].filter(Boolean).join(" ");
+      return /* @__PURE__ */ React2.createElement("svg", { className: cls, viewBox: "-5 -5 46 50", width: size, height: Math.round(size * 50 / 46), "aria-hidden": "true" }, adv && /* @__PURE__ */ React2.createElement("polygon", { className: "gh", points: crit ? RIM : grown ? grownHex() : HEX, transform: "translate(" + away.toFixed(3) + " " + away.toFixed(3) + ")" }), grown ? /* @__PURE__ */ React2.createElement("g", { transform: "translate(18 20) scale(" + GROW + ") translate(-18 -20)" }, /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), ringed && /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } })) : ringed && !crit ? /* @__PURE__ */ React2.createElement("g", { transform: "translate(18 20) scale(" + GROW + ") translate(-18 -20)" }, /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } })) : /* @__PURE__ */ React2.createElement("polygon", { className: "hx", points: HEX }), crit && /* @__PURE__ */ React2.createElement("polygon", { className: "rim", points: RIM, style: { strokeWidth: rimPx(size) + "px" } }), ringed && crit && /* @__PURE__ */ React2.createElement("polygon", { className: "cut", points: ring.points, style: { strokeWidth: ring.width + "px" } }), mini ? null : kind === "use" ? /* @__PURE__ */ React2.createElement("path", { className: "gl", d: SPARKLE }) : /* @__PURE__ */ React2.createElement("text", { className: "nm", x: "18", y: "20.5", style: num ? { fontSize: (num * 46 / size).toFixed(3) + "px" } : void 0 }, value), other != null && big && /* @__PURE__ */ React2.createElement("g", { className: "tw", transform: "translate(25 28) scale(.42)" }, /* @__PURE__ */ React2.createElement("polygon", { points: HEX }), /* @__PURE__ */ React2.createElement("text", { x: "18", y: "21" }, other)), /* @__PURE__ */ React2.createElement("polygon", { className: "sl", points: RIM }));
     }
     function DelveUseDie({ won = false, behind = false, selected = false, surface = "card", size = 36, className = "" }) {
       return /* @__PURE__ */ React2.createElement(DelveDie, { kind: "use", won, selected, surface, size, className });
@@ -3683,8 +3687,8 @@
   const dlSay = (r, foe = true) => r.lost && r.over ? "The threat filled in " + dlMid(r.room) + ": " + r.name : r.lost ? "Fell in " + dlMid(r.room) + ": " + r.name + ", " + r.harm + " damage, 0 hit points left" : r.use ? dlKindSay(r.what) + " used, " + r.room + ": " + r.name + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") : "Roll " + r.n + ", " + r.room + ": " + (r.action ? r.action + ", " : "") + r.stat + " " + r.total + " against " + r.dc + ", " + dlGrade(r).toLowerCase() + (r.crit ? ", natural 20" : r.fumble ? ", natural 1" : "") + (r.two ? ", two dice, the higher kept" : "") + (foe && r.foe ? r.foe.hit ? ", the foe hit back" : ", the foe missed back" : "") + (r.downed ? ", " + r.downed.name + " beaten" : "") + (r.passed ? ", " + r.passed + " passed" : "");
   const DL_HEX = "18,0 36,10 36,30 18,40 0,30 0,10";
   const DL_RIM = "18,-3.5 39,8 39,32 18,43.5 -3,32 -3,8";
-  const DlDie = ({ r, size = 36, sel, behind = false, surface }) => r.lost ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, behind, crit: r.crit, biggest: !!r.big && r.tier === "strong", fumble: r.fumble, selected: sel, surface, size });
-  const DlDieBtn = ({ r, size, act, on, lit }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, sel: act === r.t || lit === r.t }));
+  const DlDie = ({ r, size = 36, sel, behind = false, surface, even = false, num }) => r.lost ? /* @__PURE__ */ React$1.createElement("svg", { className: "dl-cross", viewBox: "0 0 12 12", width: Math.round(size * 0.45), height: Math.round(size * 0.45), "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: "M2 2l8 8M10 2l-8 8" })) : r.use ? /* @__PURE__ */ React$1.createElement(DS.DelveUseDie, { selected: sel, surface, size, won: !!r.won }) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { even, num, kind: r.tier, value: r.kept, other: r.two ? r.other : void 0, behind, crit: r.crit, biggest: !!r.big && r.tier === "strong", fumble: r.fumble, selected: sel, surface, size });
+  const DlDieBtn = ({ r, size, act, on, lit, even, num }) => r.lost ? /* @__PURE__ */ React$1.createElement("span", { className: "dv2-lost", role: "img", "aria-label": dlSay(r), style: { width: size, height: Math.round(size * 40 / 36) } }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size })) : /* @__PURE__ */ React$1.createElement("button", { type: "button", className: "dv2-dbtn", "aria-pressed": act === r.t, "aria-label": dlSay(r), "data-t": r.t, onClick: () => on.sel(r.t), onMouseEnter: () => on.hov(r.t), onMouseLeave: () => on.hov(null) }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, even, num, sel: act === r.t || lit === r.t }));
   const dlWord = (m) => ({ live: "In progress", fallen: "Fallen", won: "Triumphed", overrun: "Overwhelmed" })[m.end];
   const dlTone = (m) => m.end === "won" ? "ok" : m.end === "live" ? "live" : "bad";
   const DlResult = ({ s, m }) => {
@@ -3707,15 +3711,17 @@
   const dlFoeDmgSum = (f) => ({ d: f.dd ? [f.dd.v, f.dd.die] : null, m: [...f.dd && f.dd.extra ? [["+", f.dd.extra, f.dd.die]] : [], ...f.dd && f.dd.b ? [["+", f.dd.b, "Bonus"]] : [], ...f.dark ? [["+", 1, "Dark"]] : []], t: f.dmg });
   const DlNamed = ({ s, total }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, s.d[0]), s.drop != null && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-x", "aria-label": s.drop + ", dropped" }, s.drop)), " ", s.d[1]), s.m.map((p, i) => /* @__PURE__ */ React$1.createElement("span", { key: i, className: "dvH-c" }, p[0], " ", /* @__PURE__ */ React$1.createElement("b", null, p[1]), " ", p[2])), total != null && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, "= ", /* @__PURE__ */ React$1.createElement("b", null, total)));
   const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(" · ");
-  const dlInk = (r) => r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5];
+  const dlInk = (r, key) => r.crit ? [2, 1.5] : r.big || key ? [2, 1.7] : [5, 5];
   const DL_HELD_DIE = 32;
+  const DL_MAP_NUM = 9;
+  const DL_ROOM_NUM = 44 * 15 / 46;
   const DlInkFrame = ({ w, h, children }) => /* @__PURE__ */ React$1.createElement("span", { className: "dvH-ink", style: { width: w, height: h } }, children);
   const DlHeldHead = ({ r, x }) => {
-    const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r)[0]);
+    const size = DL_HELD_DIE * (46 - 2 * 5) / (46 - 2 * dlInk(r, !!x && !r.use)[0]);
     const foeSize = Math.round(DL_HELD_DIE * 40 / 46);
     const names = x ? x.kickers : [r.use ? r.room : "Roll " + r.n];
     const roll = x && !r.use ? "Roll " + r.n : "";
-    return /* @__PURE__ */ React$1.createElement("div", { className: "dvH-hd" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tt" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvH-k" }, dlTitle(names).split(" · ").map((name, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: name }, i > 0 && " · ", /* @__PURE__ */ React$1.createElement("span", null, name)))), (roll || dlBeat(r)) && /* @__PURE__ */ React$1.createElement("p", { className: "dvH-rm" }, roll, roll && dlBeat(r) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· ")), dlBeat(r) && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-beat" }, dlBeat(r)))), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-dd" }, /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: size * (46 - 2 * dlInk(r)[0]) / 46, h: size * (50 - 2 * dlInk(r)[1]) / 46 }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, surface: "popup", behind: true })), r.foe && /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: foeSize * 36 / 40, h: Math.round(foeSize * 44 / 40) * 40 / 44 }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe, size: foeSize }))));
+    return /* @__PURE__ */ React$1.createElement("div", { className: "dvH-hd" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvH-tt" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvH-k" }, dlTitle(names).split(" · ").map((name, i) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: name }, i > 0 && " · ", /* @__PURE__ */ React$1.createElement("span", null, name)))), (roll || dlBeat(r)) && /* @__PURE__ */ React$1.createElement("p", { className: "dvH-rm" }, roll, roll && dlBeat(r) && /* @__PURE__ */ React$1.createElement(React$1.Fragment, null, " ", /* @__PURE__ */ React$1.createElement("span", { className: "dvH-sep" }, "· ")), dlBeat(r) && /* @__PURE__ */ React$1.createElement("span", { className: "dvH-beat" }, dlBeat(r)))), /* @__PURE__ */ React$1.createElement("div", { className: "dvH-dd" }, /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: size * (46 - 2 * dlInk(r, !!x && !r.use)[0]) / 46, h: size * (50 - 2 * dlInk(r, !!x && !r.use)[1]) / 46 }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size, even: !!x && !r.use, num: DL_HELD_DIE * 15 / 46, surface: "popup", behind: true })), r.foe && /* @__PURE__ */ React$1.createElement(DlInkFrame, { w: foeSize * 36 / 40, h: Math.round(foeSize * 44 / 40) * 40 / 44 }, /* @__PURE__ */ React$1.createElement(DlFoeDie, { f: r.foe, size: foeSize }))));
   };
   const DlChipBreak = ({ atk, dmg }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvH-pnl" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvC-pr" }, dmg && /* @__PURE__ */ React$1.createElement("span", { className: "dvC-pk" }, "Attack"), /* @__PURE__ */ React$1.createElement(DlNamed, { s: atk, total: atk.t })), dmg && /* @__PURE__ */ React$1.createElement("div", { className: "dvC-pr" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvC-pk" }, "Damage", dmg.typ && dmg.typ.toLowerCase() !== "damage" ? " · " + dmg.typ : ""), dmg.d ? /* @__PURE__ */ React$1.createElement(DlNamed, { s: dmg, total: dmg.t }) : /* @__PURE__ */ React$1.createElement("span", { className: "dvH-pn" }, /* @__PURE__ */ React$1.createElement("span", { className: "dvH-c" }, /* @__PURE__ */ React$1.createElement("b", null, dmg.t)))));
   const DlChip = ({ id, label, atk, dmg, foe, lone, still, body }) => {
@@ -3788,7 +3794,7 @@
   const DL_PIP_ROW_PHONE = 3;
   const DL_PIP_PHONE_W = 480;
   const DL_KEY_ROW = 2;
-  const DlMapMark = ({ m, r }) => r.lost || m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 20 }) : r.use ? /* @__PURE__ */ React$1.createElement("svg", { className: "dvG-spark", viewBox: "0 0 10 10", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_SPARK })) : /* @__PURE__ */ React$1.createElement("i", { className: "dl-now-mark is-" + (r.tier || "miss") });
+  const DlMapMark = ({ m, r }) => r.lost ? /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 20 }) : m.mom[r.t] ? /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 20, even: true, num: DL_MAP_NUM }) : r.use ? /* @__PURE__ */ React$1.createElement("svg", { className: "dvG-spark", viewBox: "0 0 10 10", "aria-hidden": "true", focusable: "false" }, /* @__PURE__ */ React$1.createElement("path", { d: DL_SPARK })) : /* @__PURE__ */ React$1.createElement(DS.DelveDie, { mini: true, kind: r.tier || "miss", size: 8 });
   const DlMapMarks = ({ m, st, phone }) => {
     if (!st.turns.length) return null;
     const keys = st.turns.filter((r) => r.lost || m.mom[r.t]);
@@ -3807,7 +3813,7 @@
       return has ? /* @__PURE__ */ React$1.createElement("button", { key: st.i, type: "button", className: cls, title: st.name, "aria-label": label, "aria-pressed": open === st.i, onClick: () => onOpen(st) }, box, /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st, phone })) : /* @__PURE__ */ React$1.createElement("span", { key: st.i, className: cls, title: st.name, role: "img", "aria-label": label + (st.turns && st.turns.length ? "" : ", no rolls") }, box, m && /* @__PURE__ */ React$1.createElement(DlMapMarks, { m, st, phone }));
     })));
   };
-  const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st, " is-on"), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.filter((r) => !r.lost).map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30 })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
+  const DlOpenRoom = ({ m, st, act, lit, on }) => /* @__PURE__ */ React$1.createElement("div", { className: "dvG-open" }, /* @__PURE__ */ React$1.createElement("div", { className: "dvG-room" }, /* @__PURE__ */ React$1.createElement("p", { className: "dvG-th" }, /* @__PURE__ */ React$1.createElement("span", { className: dlNum(st, " is-on"), "aria-hidden": "true" }, st.back && /* @__PURE__ */ React$1.createElement(DlBackArrow, null), st.num), /* @__PURE__ */ React$1.createElement("span", { className: "dvG-name" }, st.name)), /* @__PURE__ */ React$1.createElement("div", { className: "dvG-dice" }, st.turns.filter((r) => !r.lost).map((r) => /* @__PURE__ */ React$1.createElement(DlDieBtn, { key: r.t, r, act, lit, on, size: m.mom[r.t] ? 44 : 30, even: !!m.mom[r.t], num: DL_ROOM_NUM })))), act && m.turns[act - 1].stop === st.i ? /* @__PURE__ */ React$1.createElement("div", { className: "dvG-held" }, /* @__PURE__ */ React$1.createElement(DlHeld, { m, act })) : null);
   const DlGlance = ({ m, act, setSel }) => {
     const [open, setOpen] = React$1.useState(() => act ? m.turns[act - 1].stop : m.stops.length - 1);
     const [lit, setLit] = React$1.useState(null);
@@ -4060,7 +4066,7 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(read);
       return () => ro.disconnect();
     }, [sig, n]);
-    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-keys" + (two ? " is-two" : ""), style: { "--k": n, "--col": DL_KEY_COL + "px", "--kgap": DL_KEY_GAP + "px" } }, keys.map((r, i) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dl-now-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44 }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-name" }, names[i].map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "dl-now-k" }, k.split(" ").map((w, j) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: j }, j > 0 && " ", /* @__PURE__ */ React$1.createElement("span", null, w)))))))));
+    return /* @__PURE__ */ React$1.createElement("div", { ref, className: "dl-now-keys" + (two ? " is-two" : ""), style: { "--k": n, "--col": DL_KEY_COL + "px", "--kgap": DL_KEY_GAP + "px" } }, keys.map((r, i) => /* @__PURE__ */ React$1.createElement("span", { key: r.t, className: "dl-now-key" }, /* @__PURE__ */ React$1.createElement(DlDie, { r, size: 44, even: true }), /* @__PURE__ */ React$1.createElement("span", { className: "dl-now-name" }, names[i].map((k) => /* @__PURE__ */ React$1.createElement("span", { key: k, className: "dl-now-k" }, k.split(" ").map((w, j) => /* @__PURE__ */ React$1.createElement(React$1.Fragment, { key: j }, j > 0 && " ", /* @__PURE__ */ React$1.createElement("span", null, w)))))))));
   };
   const DlNowPic = ({ m }) => {
     const ref = React$1.useRef(null);
@@ -12647,13 +12653,13 @@
   const keyMoments = (five) => dlRecord("Bryn the Fighter", 24, [
     ["chk", "Wisdom", "Search the lock-keeper's niche", "Perception", 11, 10],
     ["room", "the chime run"],
-    ["chk", "Strength", "Climb the bone stair", "Athletics", 1, 10, { harm: 3 }],
     ["chk", "Dexterity", "Slip past the chimes", null, 9, 10],
     ["room", "the warren"],
     ["raw", ["Turn", "The turncoat joins", GS_DV_TURNCOAT]],
     ["atk", 14, { faces: [3], foe: { roll: 3 } }],
     ["atk", 14, { faces: [3] }],
     ["room", "Snaggle's den"],
+    ["chk", "Strength", "Climb the bone stair", "Athletics", 1, 10, { harm: 3 }],
     ["atk", 12, { heavy: true, faces: [five ? 4 : 2], foe: { roll: 15, faces: [2] } }],
     ["atk", 9, { faces: [3], foe: { roll: 6, faces: [1] } }],
     ["atk", 20, { heavy: true, faces: five ? [1, 1] : [4, 3], foe: { roll: 16, faces: [3] } }],

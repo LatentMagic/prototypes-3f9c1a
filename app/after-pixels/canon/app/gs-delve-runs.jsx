@@ -50,11 +50,11 @@ export const dlLongRun = (n, live = false) => { const rec = longRoute(n, live); 
 const keyMoments = (five) => dlRecord('Bryn the Fighter', 24, [
   ['chk', 'Wisdom', "Search the lock-keeper's niche", 'Perception', 11, 10],
   ['room', 'the chime run'],
-  ['chk', 'Strength', 'Climb the bone stair', 'Athletics', 1, 10, { harm: 3 }],
   ['chk', 'Dexterity', 'Slip past the chimes', null, 9, 10],
   ['room', 'the warren'], ['raw', ['Turn', 'The turncoat joins', GS_DV_TURNCOAT]],
   ['atk', 14, { faces: [3], foe: { roll: 3 } }], ['atk', 14, { faces: [3] }],
   ['room', "Snaggle's den"],
+  ['chk', 'Strength', 'Climb the bone stair', 'Athletics', 1, 10, { harm: 3 }],
   ['atk', 12, { heavy: true, faces: [five ? 4 : 2], foe: { roll: 15, faces: [2] } }],
   ['atk', 9, { faces: [3], foe: { roll: 6, faces: [1] } }],
   ['atk', 20, { heavy: true, faces: five ? [1, 1] : [4, 3], foe: { roll: 16, faces: [3] } }],

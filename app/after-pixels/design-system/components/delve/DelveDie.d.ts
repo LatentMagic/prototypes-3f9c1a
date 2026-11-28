@@ -19,6 +19,12 @@ export interface DelveDieProps{
   surface?:'card'|'popup';
   /** Width in px; the height follows. Default 36. */
   size?:number;
+  /** Draw a key moment at one size: a plain key die's hexagon is grown to the footprint a natural 20's rim takes, in the same picture box. */
+  even?:boolean;
+  /** A pip with no number, for a map: `size` is the hexagon's own width. */
+  mini?:boolean;
+  /** The number's size in px, whatever the die's size or shape; default scales with the die. */
+  num?:number;
   className?:string;
 }
 export declare function DelveDie(props:DelveDieProps):JSX.Element;
