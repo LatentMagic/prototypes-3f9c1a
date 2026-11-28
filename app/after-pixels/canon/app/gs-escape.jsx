@@ -58,7 +58,7 @@ const esWord = (r) => (r.ok ? 'Open' : r.kind === 'mech' ? r.lit + ' of ' + r.sl
 
 // ---- Parts: the cover's door, shut; the exit door left open; the lock's number; one mark a try (lit when it opened; a
 // mechanism's split into its parts, lit as the room counted them). ----
-// KEEP: the open exit door's frame is filled with the page colour, so the bar never shows through it.
+// the open exit door's frame is filled with the page colour, so the bar never shows through it.
 const EsDoor = ({ w = 12, h = 20 }) => <span className="es-door" aria-hidden="true" style={{ width: w, height: h }}><i /></span>;
 const EsOpen = ({ w, h }) => <span className="es-od" style={{ width: w, height: h }} aria-hidden="true"><i><b /></i></span>;
 const EsNum = ({ n, size = 24 }) => <span className="es-num" style={{ '--n': size + 'px' }} aria-hidden="true">{n}</span>;
@@ -78,12 +78,12 @@ const useEsWidth = (ref) => {
 const esCanvas = document.createElement('canvas');
 const esMeasure = (text, font) => { const c = esCanvas.getContext('2d'); c.font = font; return Math.ceil(c.measureText(text).width); };
 const ES_FONT = '"Hanken Grotesk", system-ui, sans-serif';
-// KEEP: door labels never overlap: one that would sit within 12px of the last drops to a row below, with a leader up to its door.
+// door labels never overlap: one that would sit within 12px of the last drops to a row below, with a leader up to its door.
 const esRows = (items) => { const ends = []; return items.map((it) => { let r = 0; while (ends[r] != null && ends[r] + 12 > it.l) r += 1; ends[r] = it.l + it.w; return r; }); };
 
 // ---- The line: one bar from going in to getting out, the cover's door at the minute each lock gave way, par a tick above it.
 // card: the now card's smaller size. ----
-// KEEP: every door is a button. On the session page it picks its lock's lane. On the now card it opens the session page with that
+// every door is a button. On the session page it picks its lock's lane. On the now card it opens the session page with that
 // lock's lane picked, so a player goes from the card straight to the lock they want to see (owner, 2026-10-27: "brilliant").
 const EsLine = ({ m, sel, onSel, card }) => {
   const ref = React.useRef(null); const W = useEsWidth(ref); const [hov, setHov] = React.useState(null);
@@ -98,7 +98,7 @@ const EsLine = ({ m, sel, onSel, card }) => {
   const x = (t) => Math.round((t / span) * inner);
   const barT = TOP + 6 + OH; const barB = barT + BAR;
   const parX = x(m.par); const endX = x(end); const onPar = !m.live && m.min === m.par;
-  // KEEP: doors stay at least 32px apart at every width (a 32px hit area each), and a longer wait between two locks still looks
+  // doors stay at least 32px apart at every width (a 32px hit area each), and a longer wait between two locks still looks
   // longer; the first and last doors stay on their minute, those between may drift a little off it.
   const GAP = 32; const dx = m.locks.map((lk) => x(lk.minute)); const nd = dx.length;
   if (nd > 1 && dx.some((c, i) => i && c - dx[i - 1] < GAP)) {
@@ -116,7 +116,7 @@ const EsLine = ({ m, sel, onSel, card }) => {
     <div className={'es-line' + (card ? ' is-card' : '')} ref={ref} style={{ height: H }} aria-label={label} role="group">
       {W > 0 && <>
         <span className="es-ptxt" style={{ left: Math.round(parX - parW / 2), top: 0 }}>{parText}</span>
-        {/* KEEP: out exactly on par, the par tick stops short of the exit door that sits on it, and there is no tick under the bar. */}
+        {/* out exactly on par, the par tick stops short of the exit door that sits on it, and there is no tick under the bar. */}
         <span className="es-ptk" style={{ left: parX - 1, top: TOP, height: onPar ? Math.max(2, barT - OH - TOP - 10) : barT - TOP - 2 }} />
         {!onPar && <span className="es-ptk" style={{ left: parX - 1, top: barB + 2, height: OH + 2 }} />}
         <span className="es-track" style={{ top: barT, height: BAR, width: inner }} />
@@ -163,7 +163,7 @@ const esNowResult = (m) => (m.live ? { kind: 'live', label: 'In progress' } : { 
 
 // ---- Lanes: one per lock, each a small line: its tries and hints left to right, running on to the lock's door at the right edge.
 // A typed lock's wrong try has no word under its mark. ----
-// KEEP: two lanes to a row from 720px; on a phone only the lock you picked, so its door and its lane fit one screen.
+// two lanes to a row from 720px; on a phone only the lock you picked, so its door and its lane fit one screen.
 const EsLanes = ({ m, sel, onSel }) => (
   <div className="es-lanes">
     {m.locks.map((l) => (
@@ -179,7 +179,7 @@ const EsLanes = ({ m, sel, onSel }) => (
   </div>);
 
 // ---- The session page's own part, under the shared head. Every move is the store's plain list, collapsed. ----
-// KEEP: it opens on the lock the route names (a door pressed on the now card), else the way out.
+// it opens on the lock the route names (a door pressed on the now card), else the way out.
 const EsBody = ({ s, sid }) => {
   const gs = useGs(); const m = React.useMemo(() => esBuild(s), [s]);
   const def = (m.locks.find((l) => l.exit) || m.locks[m.locks.length - 1] || {}).key;

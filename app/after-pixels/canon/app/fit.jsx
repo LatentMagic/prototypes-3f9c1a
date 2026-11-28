@@ -40,7 +40,7 @@ export const fitForward = (key, v) => {
   if (w && w.pgSetFromParent) w.pgSetFromParent(key, v); else fr.src = fitFrameUrl();
 };
 
-// KEEP: Fit lays the page out 1280px wide, where every desktop rule in canon applies, and scales it down to the window (never up).
+// Fit lays the page out 1280px wide, where every desktop rule in canon applies, and scales it down to the window (never up).
 const FIT_WIDTH = 1280;
 export const FitView = () => {
   const box = React.useRef(null); const [size, setSize] = React.useState({ w: 0, h: 0 });

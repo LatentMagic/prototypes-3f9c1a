@@ -5,7 +5,7 @@
 .acn .lb-now-in > .lb-top > .gs-vd { font: 700 20px/1.35 var(--font-heading); }
 .acn .lb-now-in > .lb-top > :is(.lb-big, .gs-vd) { white-space: nowrap; }
 
-/* KEEP: on a phone the two cards sit side by side, as on the session page's panel: captions centred over each, both cards one height,
+/* on a phone the two cards sit side by side, as on the session page's panel: captions centred over each, both cards one height,
    the Hints card as narrow as its count and the case card up to 240px. */
 .acn-pic { align-self: center; justify-self: center; width: 100%; min-width: 0; display: grid; justify-items: center; }
 .acn-pair { display: grid; grid-template-columns: auto minmax(0, 240px); justify-content: center; column-gap: 12px; width: 100%; }
@@ -15,7 +15,7 @@
 .acn .acc-blank { width: min(160px, 80%); }
 .acn .acc-blank.is-s { width: min(190px, 92%); }
 
-/* KEEP: on a card whose content box is 675px wide or more (the card's padding is 24px on pages from 720px and 16px below, so a card of
+/* on a card whose content box is 675px wide or more (the card's padding is 24px on pages from 720px and 16px below, so a card of
    about 725px across at a 1160px page) the pair is one group centred on the whole card, head and action row included, with the body at
    the standard 132px as Guess's and Salvage's (gs-word.css, gs-salvage-now.css); the group may run taller than the body, into the head's
    and action row's height, so it needs a card wide enough for its 360px to clear the head's "#64" on the left and the action row's

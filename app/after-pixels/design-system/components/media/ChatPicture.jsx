@@ -62,7 +62,7 @@ export function chatRichWords(text,wordFn){
   return chatRuns(text).map((r,k)=><React.Fragment key={k}>{styled(r,r.s.split(/(\s+)/).map((w,x)=>!w||/^\s+$/.test(w)?w:<React.Fragment key={x}>{wordFn(w,j++)}</React.Fragment>),'r')}</React.Fragment>);
 }
 // Opens on the latest turn and scrolls back to the first. Once scrolled up, the top fades and the pill takes you back to the start.
-// KEEP: Stays at the latest turn while it lays out, until the reader scrolls it themselves.
+// Stays at the latest turn while it lays out, until the reader scrolls it themselves.
 // start="top": opens on the first turn instead; the pill then points down and scrolls to the latest turn, and hides once the body is at the bottom.
 export function useChatScroll(body,turns,start){
   const top=start==='top';

@@ -354,7 +354,7 @@ const KitApp = () => {
   const resetAndShow = buildStates && (() => { reset(); setLanding(null); setShown(null); });
 
   // The tab says what is shown: the open playground, else the open state, else index.html's own title.
-  // KEEP: the tab reads "<playground title> · playground · After Pixels" under ?pg=, else "<state id> · After Pixels" ("States · After Pixels" on the index), else "After Pixels".
+  // the tab reads "<playground title> · playground · After Pixels" under ?pg=, else "<state id> · After Pixels" ("States · After Pixels" on the index), else "After Pixels".
   const shownRef = useRef(shown); shownRef.current = shown;
   const retitle = () => {
     const pg = pgTabName(); const s = shownRef.current;
@@ -424,7 +424,7 @@ const KitApp = () => {
         </div>
       ) : appTree}
 
-      {/* KEEP: the Config pill stays fixed to the window in the phone frame too (mounted outside it: the frame's transform would capture position: fixed). */}
+      {/* the Config pill stays fixed to the window in the phone frame too (mounted outside it: the frame's transform would capture position: fixed). */}
       {ConfigLauncher && !isFramed() && !isDemoHidden() && <ConfigLauncher
         statesGroups={STATE_GROUPS} onGoState={goState}
         onOpenStatesIndex={() => { setLanding({ kind: 'index', name: 'index' }); setShown({ kind: 'index' }); }}

@@ -41,7 +41,7 @@ export const LbBackTo = ({ gid }) => {
   return <LbBack label={g.name} onClick={() => (fromLib ? gs.back() : gs.go(g.route, { page: 'record' }))} />;
 };
 // The library game page head: the design system's cover beside a heading (Cover.prompt.md).
-// KEEP: the cover fills to the text's height, never below 4:3, and the art keeps its scale on its ground (placed by its extend), so it is never stretched.
+// the cover fills to the text's height, never below 4:3, and the art keeps its scale on its ground (placed by its extend), so it is never stretched.
 // name and more: a seam for playgrounds (a test name, extra links).
 export const LbHead = ({ id, name, more }) => {
   const gs = useGs(); const g = GS_GAMES[id]; const a = GS_ART[g.art] || {};
@@ -65,13 +65,13 @@ export const LbResult = ({ s }) => (
 );
 
 // ---- The run: editions completed in a row join into one bar. ----
-// KEEP: under 480px only the last six editions show, so the run never overflows a phone.
+// under 480px only the last six editions show, so the run never overflows a phone.
 // weeks: oldest first, [{ id, day, mon, month, played, now }]; played here means completed (lbRunOf).
 // on / legend: the legend entries. A streak game says Completed / Failed / Not played;
 // 36,000 Summers Ago passes its own two (Played / Not played). failed: played and lost; it breaks the streak as a day not played does.
 export const LbRun = ({ n, unit, weeks: given, locked, figure, pass, on = 'Completed', legend }) => {
   const gs = useGs();
-  // KEEP: always ten slots; days before the player started are empty slots at the old end.
+  // always ten slots; days before the player started are empty slots at the old end.
   const weeks = Array.from({ length: Math.max(0, 10 - given.length) }, (_, i) => ({ id: 'empty' + i, day: '', mon: '', month: '', played: false, empty: true })).concat(given);
   const cut = weeks.length - 6;
   const streak = on === 'Completed';
@@ -175,7 +175,7 @@ export const LbChoice = ({ label, value, opts, onPick }) => (
 // Search and filters above a long list (History, Library, Discover).
 // Search stays on the page; every LbChoice moves into one Filters panel. The Game choice is a row that opens a search and
 // a list of games narrowed by Genre and Schedule.
-// KEEP: the Filters panel keeps its size however many games there are.
+// the Filters panel keeps its size however many games there are.
 // A seam: a playground may replace window.LbTools.
 const lbfParts = (children) => {
   let search = null; const choices = [];
@@ -237,11 +237,11 @@ const LbFilters = ({ children }) => {
 export const LbTools = LbFilters;
 const LbToolsColumn = ({ children }) => <aside className="lb-tools">{children}</aside>;
 // ---- Share: a panel with the text and Copy ------------------------------------------
-// KEEP: Copy works inside the preview iframe, which can refuse the Clipboard API silently: the textarea copy runs first, inside the click.
+// Copy works inside the preview iframe, which can refuse the Clipboard API silently: the textarea copy runs first, inside the click.
 // Returns true when copied, false when refused, or a promise of that when only the Clipboard API is left to try.
-// KEEP: ?copy=fail on the page's address forces every copy to be refused, so the refused state can be seen. A demo switch only: the platform reacts to the real clipboard refusal, never to a switch.
+// ?copy=fail on the page's address forces every copy to be refused, so the refused state can be seen. A demo switch only: the platform reacts to the real clipboard refusal, never to a switch.
 export const lbCopy = (lines) => {
-  // KEEP: after Copy, focus is back on the control pressed, never the page root.
+  // after Copy, focus is back on the control pressed, never the page root.
   const was = document.activeElement;
   const t = lines.join('\n'); const ta = document.createElement('textarea');
   ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';

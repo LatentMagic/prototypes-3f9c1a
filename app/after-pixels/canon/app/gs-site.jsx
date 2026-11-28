@@ -43,7 +43,7 @@ const GsWordmark = () => {
 };
 
 // ---- Loader ----
-// KEEP: a wait too short to notice shows no loader; once shown, it stays long enough not to flicker.
+// a wait too short to notice shows no loader; once shown, it stays long enough not to flicker.
 // gsSettle(start, fn) applies the hold to a finished wait.
 const GS_LOADER = { withhold: 300, minHold: 600 };
 const gsSettle = (start, fn) => {
@@ -89,7 +89,7 @@ export const GsFullLoader = ({ label, ms, onDone }) => {
 // ---- Pages and parts. One staged duration for every page and part load.
 // A page loads as a page on arrival (GsArrival, main.jsx); a part loads on its own
 // when its controls change (useGsPart). A state can hold either: route.hold = 'page' | 'part'.
-// KEEP: 1200 ms for a person. `?fast` on the page address skips the wait, for automated checks only; the settled page is identical.
+// 1200 ms for a person. `?fast` on the page address skips the wait, for automated checks only; the settled page is identical.
 export const GS_LOAD_MS = /[?&]fast(?:[=&]|$)/.test(window.location.search) ? 0 : 1200;
 export const useGsPart = (deps) => {
   const gs = useGs();

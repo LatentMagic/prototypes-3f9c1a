@@ -100,7 +100,7 @@ export const ConfigLauncher = ({ statesGroups, onGoState, onOpenStatesIndex,
     window.addEventListener('pointerup', up);
   };
 
-  // KEEP: the pill always sits inside the viewport, after a resize or with a position saved at another size.
+  // the pill always sits inside the viewport, after a resize or with a position saved at another size.
   useCEffect(() => {
     const clamp = () => setBtnPos(p => {
       if (!p) return p;
@@ -222,7 +222,7 @@ const ConfigInfo = ({ open, onToggle, label }) => (
 );
 
 // ---- Contract: one row of choices ----
-// KEEP: options are separate bordered chips that wrap onto a new line, never a track that scrolls sideways.
+// options are separate bordered chips that wrap onto a new line, never a track that scrolls sideways.
 export const ConfigRow = ({ label, value, onChange, options, hint }) => {
   const [hintOpen, setHintOpen] = useCState(false);
   return (
@@ -244,7 +244,7 @@ export const ConfigRow = ({ label, value, onChange, options, hint }) => {
 };
 
 // ---- Contract: a one-shot event. Rendered in its group's Events strip. ----
-// KEEP: the .kit-config-action class is what the modal's click-capture replays after closing, so an animated act plays on a clear screen.
+// the .kit-config-action class is what the modal's click-capture replays after closing, so an animated act plays on a clear screen.
 const ConfigAction = ({ label, onClick }) => (
   <button type="button" className="kit-config-action"
     onClick={() => { if (typeof onClick === 'function') onClick(); }}>
@@ -332,7 +332,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
     const target = el.querySelector(phone && drilled ? '.kit-config-back'
       : phone ? '.kit-config-rail-btn' : '.kit-config-rail-btn[aria-current="true"]');
     if (target) target.focus({ preventScroll: true });
-  }, [phone, drilled, sections.length > 1]); // KEEP: re-run once the feature sections have registered
+  }, [phone, drilled, sections.length > 1]); // re-run once the feature sections have registered
 
   useCEffect(() => {
     let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
@@ -346,7 +346,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
   // Lock whatever is scrolling behind the modal (app/primitives.jsx). Released on close.
   useCEffect(kitLockScroll, []);
 
-  // KEEP: one-shot events act on the app behind the modal, some with motion. Intercept, play the exit, replay the click on a clear screen, then close; the action's own handler never closes Config.
+  // one-shot events act on the app behind the modal, some with motion. Intercept, play the exit, replay the click on a clear screen, then close; the action's own handler never closes Config.
   const onPaneClickCapture = (e) => {
     const btn = e.target.closest && e.target.closest('.kit-config-action');
     if (!btn || btn.dataset.replay === '1') return;
@@ -413,7 +413,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
                       options={[{ value: 'auto', label: 'Auto' }, { value: 'desktop', label: 'Desktop' }, { value: 'mobile', label: 'Mobile' }]}
                       hint="Mobile frames every screen in a phone bezel, with no status bar." />}
                 </>}
-                {/* KEEP: Fit is a phone's setting (Joe): its row shows under 640px, or whenever Fit is on so it can be set Off. While fitted it is the only row: the others act on the hidden outer page. */}
+                {/* Fit is a phone's setting (Joe): its row shows under 640px, or whenever Fit is on so it can be set Off. While fitted it is the only row: the others act on the hidden outer page. */}
                 {(phone || fitted) && (
                   <ConfigRow label="Fit" value={fitted ? 'on' : 'off'} onChange={(v) => setFit(v === 'on')}
                     options={[{ value: 'off', label: 'Off' }, { value: 'on', label: 'On' }]}

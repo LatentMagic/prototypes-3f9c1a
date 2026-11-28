@@ -29,7 +29,7 @@ const GS_APPS = [
 ];
 const gsApp = (id) => GS_APPS.find((a) => a.id === id);
 const GS_SUB_LABEL = { grok: 'Grok app', grokbot: 'Grok Bot' };
-// KEEP: each app shows a mark of our own, never its real logo: the owners' terms need permission we are not asking for
+// each app shows a mark of our own, never its real logo: the owners' terms need permission we are not asking for
 // (the user, 2026-11-11). A mark is one cover shape, every app's different and none copying its logo, drawn in the tile's
 // text colour with no box, so the picker carries no colour of its own (the user, 2026-11-11: "one colour is aboslute bloody
 // perfection"). Other is the only outline.
@@ -79,12 +79,12 @@ export const GsCopyPrompt = ({ text, label, block }) => {
   return <DS.Button block={block} done={done} doneLabel="Copied" onClick={() => { Promise.resolve(lbCopy([text])).then((ok) => ok && setDone(true)); }}>{label || 'Copy prompt'}</DS.Button>;
 };
 export const GsHowLink = ({ label }) => { const gs = useGs(); return <button type="button" className="gs-inlink" onClick={() => (gs.playing ? gs.howFromPlay() : gs.go('connect'))}>{label || 'How it works'}</button>; };
-// KEEP: the text (the address, or a message to send) scrolls sideways under a finger so the whole of it can be read;
+// the text (the address, or a message to send) scrolls sideways under a finger so the whole of it can be read;
 // focus or a tap selects it for copying by hand. A box, not an input: an input's select-on-focus stops the swipe.
 const gsSelectAll = (el) => { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
-// KEEP: a copy box is one line at every width, with Copy beside it at its normal size: long text scrolls sideways inside the box
+// a copy box is one line at every width, with Copy beside it at its normal size: long text scrolls sideways inside the box
 // (no wrapping, no ellipsis), with a soft fade at the right edge while there is more to see. Copy copies the whole text.
-// KEEP: the address is short and must be read whole to be checked, so under 420px its box takes the full row with Copy under it.
+// the address is short and must be read whole to be checked, so under 420px its box takes the full row with Copy under it.
 // The refused-copy line, as deployed (connect-layout): the control never says "Copied", the text is selected so it can be copied by hand.
 const gsRefusedLine = (what) => 'Copy didn’t work. Select the ' + what + ' and copy it yourself.';
 const GsCopyBox = ({ text, label, address, what }) => {
@@ -147,7 +147,7 @@ export const GsPlayDialog = () => {
 // The words a player types, drawn as a sent message. A non-breaking space joins it to the word before, so "type" and the
 // bubble never split.
 // Every bubble on this page copies (`copy`).
-// KEEP: a copying bubble shows no refused line: on a refused copy it simply doesn't say "Copied" (the user, 2026-11-11). Its words stay unselectable, since a tap copies.
+// a copying bubble shows no refused line: on a refused copy it simply doesn't say "Copied" (the user, 2026-11-11). Its words stay unselectable, since a tap copies.
 const GsCopyBubble = ({ children, wrap, edge }) => <DS.SpeechBubble wrap={wrap} copy edge={edge} onCopy={(t) => lbCopy([t])}>{children}</DS.SpeechBubble>;
 // Every route's last step: the app may ask before each move, and the player may be able to stop that.
 const gsPermStep = (a) => 'If ' + (a.id === 'other' ? 'your AI' : a.name) + ' asks before each move, you may be able to change that in its permissions.';
@@ -170,7 +170,7 @@ const gsAppSteps = (a) => [
 ];
 
 // Setup: the design system's NotchPicker in its CardRow form, its heading the section's and its sentence asking for the app; the picked app's card under it.
-// KEEP: the tiles fill the row when all fit (about 700px and up); narrower, about 4½ show and the row swipes, with Previous
+// the tiles fill the row when all fit (about 700px and up); narrower, about 4½ show and the row swipes, with Previous
 // and Next, so the half tile says there is more. Every tile keeps its name at every width: our own marks don't name the app
 // (the user, 2026-11-11: "we can't lose the words anymore"). A tile picked while partly off the row's edge scrolls fully into view. The card's notch points at the picked tile and
 // follows it as the row scrolls, and hides once that tile is out of view. Pressing the picked tile again closes the card and
@@ -181,7 +181,7 @@ const GsSetup = () => {
   const [sub, setSub] = React.useState('grok');
   const t = gsApp(tile || 'chatgpt'); const a = gsApp(t.subs ? sub : t.id);
   const [copyLabel, copyText] = gsAppCopy(a);
-  // KEEP: no account sentence. The sign-in an AI app opens also offers sign-up, so a player with no account makes one while connecting (the user, 2026-11-11).
+  // no account sentence. The sign-in an AI app opens also offers sign-up, so a player with no account makes one while connecting (the user, 2026-11-11).
   const ask = 'Which app do you use?';
   const apps = GS_APPS.filter((x) => !x.sub).map((x) => ({ id: x.id, label: x.name, icon: <GsAiLogo ai={x.id} size={32} /> }));
   return (
@@ -208,12 +208,12 @@ const GsSetup = () => {
 // Start: three chat windows in one CardRow. The first types "Play After Pixels" and the AI lists the games; the second types
 // "Play Delve on After Pixels" and Delve opens; the third types two lines, asking how accusing works in Accuse and then "I’m stuck", and takes the hint. The replies are examples of what the AI sends: the game rows and their tags
 // are the deployed catalogue's; Delve's run is the deployed product page's edition, Orc Caves #40.
-// KEEP: from about 1000px wide the three pictures sit side by side in one row (three of the system's 300px chats fit), so Start reads as one set on desktop; where three do not fit (tablet and phone) the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
-// KEEP: each picture opens on its first turn, the typed line (ChatPicture start="top"), at the system's height, and scrolls to the reply.
-// KEEP: each chat's typed lines are copying SpeechBubbles (the third chat has two: the question and "I’m stuck"); the chat itself is inert, a picture.
-// KEEP: these four are a picture of the games list, not the live one: the real reply lists every game with the player's progress (games_library), so the build takes the list from there.
+// from about 1000px wide the three pictures sit side by side in one row (three of the system's 300px chats fit), so Start reads as one set on desktop; where three do not fit (tablet and phone) the CardRow scrolls sideways with the next chat peeking. The row's own Previous and Next move it.
+// each picture opens on its first turn, the typed line (ChatPicture start="top"), at the system's height, and scrolls to the reply.
+// each chat's typed lines are copying SpeechBubbles (the third chat has two: the question and "I’m stuck"); the chat itself is inert, a picture.
+// these four are a picture of the games list, not the live one: the real reply lists every game with the player's progress (games_library), so the build takes the list from there.
 const GS_START_GAMES = ['word', 'mystery', 'delve', 'salvage'];
-// KEEP: Start's Delve chat plays the deployed Delve product page's edition, Delve #40, The Orc Caves under Raven Hill (delve.page.ts, its first two chats, in this chat's shape), never a live run: the shop voice gives away no edition's story (the user, 2026-11-11: take the product page's; "happy with orc caves added to the chat"). The player picking Garrick and the AI's reply to it are Start's own lines; the deployed page has neither.
+// Start's Delve chat plays the deployed Delve product page's edition, Delve #40, The Orc Caves under Raven Hill (delve.page.ts, its first two chats, in this chat's shape), never a live run: the shop voice gives away no edition's story (the user, 2026-11-11: take the product page's; "happy with orc caves added to the chat"). The player picking Garrick and the AI's reply to it are Start's own lines; the deployed page has neither.
 const GS_START_DELVE = {
   title: 'Delve #40: The Orc Caves under Raven Hill',
   first: 'Orcs from the caves under Raven Hill have burned the watchtower above Brackenford. At dawn they march on the village.',
@@ -291,9 +291,9 @@ const GS_HW_PLAY = [
 
 // ---- The page's top: the first thing a visitor lands on, so it shows the games rather than describing them. ----
 // A band of game covers with the phrase to copy on it. No links: Setup follows straight after.
-// KEEP: no two neighbouring covers share a ground (forest, indigo, wine), across the repeat too; the first three are what a phone shows, so they lead with the strongest (Guess, Delve either side of the bubble).
+// no two neighbouring covers share a ground (forest, indigo, wine), across the repeat too; the first three are what a phone shows, so they lead with the strongest (Guess, Delve either side of the bubble).
 const GS_TOP_ART = ['word', 'escape', 'delve', 'casebook', 'where', 'barrow', 'derelict', 'hunter', 'murder'];
-// KEEP: the band is one row of square covers, as many as fit; the row is cut at its edge, never squeezed or wrapped.
+// the band is one row of square covers, as many as fit; the row is cut at its edge, never squeezed or wrapped.
 const GsBandCovers = () => <span className="hw-band-covers" aria-hidden="true">{[...GS_TOP_ART, ...GS_TOP_ART].map((a, i) => GS_ART[a] ? <span key={i} className="hw-band-cover" dangerouslySetInnerHTML={{ __html: GS_ART[a].svg }} /> : null)}</span>;
 const GsTop = () => (
   <header className="hw-top2">

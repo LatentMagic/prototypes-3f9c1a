@@ -46,7 +46,7 @@ input:focus-visible {
    A rail of sections beside the selected section's rows; below 640px a
    bottom sheet that drills in. Its shell is .kit-config-dialog-*; the palette
    shell further down is the States and QA palettes'. */
-/* KEEP: an opaque surface and a plain dim scrim; no blur, so every control reads at full contrast over any screen. */
+/* an opaque surface and a plain dim scrim; no blur, so every control reads at full contrast over any screen. */
 .kit-config-dialog-scrim {
   position: fixed; inset: 0; z-index: 400;
   background: color-mix(in srgb, var(--dim) 70%, transparent);
@@ -114,7 +114,7 @@ input:focus-visible {
   width: 24px; height: 24px; padding: 0; border: 0; border-radius: 0;
   background: transparent; color: var(--muted); cursor: pointer;
 }
-/* KEEP: the mark is 16px but its hit area is 44px. */
+/* the mark is 16px but its hit area is 44px. */
 .kit-config-info::after { content: ''; position: absolute; inset: -10px; }
 .kit-config-info:hover, .kit-config-info[aria-expanded="true"] { color: var(--text); background: var(--popup); }
 .kit-config-tip {
@@ -122,7 +122,7 @@ input:focus-visible {
   border-radius: 0; background: var(--popup);
   font: 400 var(--text-sm)/1.5 var(--font-text); color: var(--text); overflow-wrap: anywhere;
 }
-/* KEEP: options are separate bordered chips that wrap, never a track that scrolls sideways; the chosen one is filled near-black. */
+/* options are separate bordered chips that wrap, never a track that scrolls sideways; the chosen one is filled near-black. */
 .kit-config-seg { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .kit-config-seg-btn {
   min-height: 34px; padding: 0 var(--space-3); max-width: 100%; cursor: pointer;
@@ -164,7 +164,7 @@ input:focus-visible {
   .kit-config-main { display: block; overflow: hidden; }
   .kit-config-dialog[data-view="list"] .kit-config-pane, .kit-config-dialog[data-view="section"] .kit-config-rail { display: none; }
   .kit-config-rail, .kit-config-pane { height: 100%; overflow-y: auto; overflow-x: hidden; }
-  /* KEEP: the sheet's last rows clear the home indicator. */
+  /* the sheet's last rows clear the home indicator. */
   .kit-config-rail { gap: 0; background: var(--card); border: 0;
     padding: var(--space-2) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom)); }
   .kit-config-rail-label { padding: var(--space-6) 0 var(--space-2); }
@@ -199,7 +199,7 @@ input:focus-visible {
   border-radius: 0; box-shadow: 0 16px 40px var(--shadow-color);
   transition: opacity var(--duration-base) var(--ease-quiet), transform var(--duration-base) var(--ease-quiet);
 }
-/* KEEP: Below 640px the aids are panels, so bottom sheets (the design system's overlay kinds). */
+/* Below 640px the aids are panels, so bottom sheets (the design system's overlay kinds). */
 @media (max-width: 639px) {
   .kit-config-scrim { align-items: flex-end; padding: 0; }
   .kit-config-modal {
@@ -303,7 +303,7 @@ input:focus-visible {
 .kit-phone-clip {
   position: relative; width: 100%; height: 100%;
   border-radius: 42px; overflow: hidden; background: var(--color-canvas);
-  transform: translateZ(0); /* KEEP: containing block for position:fixed overlays — a
+  transform: translateZ(0); /* containing block for position:fixed overlays — a
      NON-scrolling wrapper with exactly the screen's bounds + corner radius, so
      sheets/scrims pin to the phone screen (and get clipped by its corners)
      instead of bleeding onto the bezel or riding the scrolled page */

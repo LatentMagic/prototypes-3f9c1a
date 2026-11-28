@@ -3,11 +3,11 @@
    panel's two cards (.acc-hc, .acc-case). */
 .acc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---- Notebook: folder tabs. KEEP: the open tab is the folder's own colour and runs into it (no rule between), so the tab and the
+/* ---- Notebook: folder tabs. The open tab is the folder's own colour and runs into it (no rule between), so the tab and the
    folder read as one piece; the closed tabs sit behind, on the card's colour. ---- */
 .acc-nb { gap: 0; }
 .acc-tabs { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; align-items: end; margin-top: 8px; }
-/* KEEP: a tab's top corners are cut at 45 degrees (8px), its edge drawn as a 1px outer shape behind a fill inset 1px, so the edge
+/* a tab's top corners are cut at 45 degrees (8px), its edge drawn as a 1px outer shape behind a fill inset 1px, so the edge
    follows the cut corners unbroken (a plain border is clipped off at the corners). */
 .acc-tab { --edge: var(--control-edge); --fill: var(--card); --cut: polygon(0 100%, 0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%);
   position: relative; display: grid; gap: 4px; justify-items: start; min-width: 0; margin-top: 4px; padding: 8px 10px 10px; background: var(--edge); border: 0; clip-path: var(--cut);
@@ -15,7 +15,7 @@
 .acc-tab::before { content: ''; position: absolute; inset: 1px 1px 0 1px; background: var(--fill); clip-path: polygon(0 100%, 0 7.6px, 7.6px 0, calc(100% - 7.6px) 0, 100% 7.6px, 100% 100%); }
 .acc-tab > * { position: relative; }
 @media (hover: hover) { .acc-tab:not(:disabled):not(.is-open):hover { --fill: color-mix(in srgb, var(--text) 6%, var(--card)); } }
-/* KEEP: the open tab stands 4px taller than the rest; the others keep 4px above them, so the row's height (and everything under
+/* the open tab stands 4px taller than the rest; the others keep 4px above them, so the row's height (and everything under
    it) does not move when a tab opens or shuts. */
 .acc-tab.is-open { --edge: var(--off-white); --fill: var(--page); margin-top: 0; padding-bottom: 14px; margin-bottom: -1px; z-index: 1; }
 .acc-tab:disabled { --edge: var(--line); color: var(--muted); cursor: default; }
@@ -24,12 +24,12 @@
 .acc-ic svg { width: 14px; height: 14px; color: var(--text); }
 .acc-tab:disabled .acc-ic svg, .acc-tab:disabled .esx-num { color: var(--muted); }
 .acc-tab .esx-num { font: 700 20px/22px var(--font-heading); height: 22px; }
-/* KEEP: with every tab shut, a rule in the tabs' own edge colour closes the row off along their feet, so the tabs don't read as open-bottomed boxes. */
+/* with every tab shut, a rule in the tabs' own edge colour closes the row off along their feet, so the tabs don't read as open-bottomed boxes. */
 .acc-tabs[data-open="n"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--control-edge); z-index: 2; }
-/* KEEP: the open tab and its folder share one off-white edge, the selection colour, so the pair reads as one piece. */
+/* the open tab and its folder share one off-white edge, the selection colour, so the pair reads as one piece. */
 .acc-folder { background: var(--page); border: 1px solid var(--off-white); padding: 0 12px 12px; }
 .acc-folder .esx-read { background: var(--card); }
-/* KEEP: below a 672px sheet each tab shows its icon and count only, and the open folder names itself. The longest name
+/* below a 672px sheet each tab shows its icon and count only, and the open folder names itself. The longest name
    (Suspects, with its icon: about 82px) needs a tab of about 102px with its padding; at 672px a tab is about 108px. Hidden any later,
    a name runs into the tab's cut corner. */
 .acc-fh { display: none; }
@@ -44,24 +44,24 @@
 /* ---- Board: the case's cards as three ruled columns, pen marks drawn over them. ---- */
 .acc-card .gs-sc-board { justify-items: stretch; width: 100%; }
 .acc-bd { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; width: 100%; }
-/* KEEP: from a 672px card (the shared session card's line, gs-sess-card.css), the board and the panel sit side by side and, as on
+/* from a 672px card (the shared session card's line, gs-sess-card.css), the board and the panel sit side by side and, as on
    Guess, Chain and Salvage, centre as one group in the card: the space left of the board equals the space right of the panel, and
    the rule is 64px from each. The board is as wide as its longest names, and shrinks before it pushes the panel out of the card. */
 @container dv2 (min-width: 672px) {
   .acc-card .gs-sc-duo { grid-template-columns: minmax(0, max-content) auto; }
 }
-/* KEEP: each row is as tall as its tallest name across the three columns, so the row rules run straight across the board; a
+/* each row is as tall as its tallest name across the three columns, so the row rules run straight across the board; a
    one-line name sits centred in its row. Subgrid: the columns and their lists share the board's five row tracks. */
 .acc-bd { grid-template-rows: repeat(5, auto); }
 .acc-col { display: grid; grid-row: span 5; grid-template-rows: subgrid; }
 .acc-bd ul { display: grid; grid-row: span 4; grid-template-rows: subgrid; list-style: none; margin: 8px 0 0; padding: 0; }
 .acc-bd li { display: flex; align-items: center; padding: 12px 2px; border-bottom: 1px solid var(--line); font: 400 16px/1.3 var(--font-text); color: var(--text); }
 .acc-bd li:first-child { border-top: 1px solid var(--line); }
-/* KEEP: the board's ruled rows already end in a line, so on a phone the panel drops the shared card's rule above it (gs-sess-card.css):
+/* the board's ruled rows already end in a line, so on a phone the panel drops the shared card's rule above it (gs-sess-card.css):
    a phone never shows the board's line and then a second rule. The session-page standard (Joe, 2026-11-06). From a 672px card the
    panel's left rule stays. */
 .acc-card .gs-sc-panel { border-top: 0; }
-/* KEEP: a name never runs past its column, on any window from 280px. Where the columns get narrow the board's gaps and type step
+/* a name never runs past its column, on any window from 280px. Where the columns get narrow the board's gaps and type step
    down: 14px names with 16px gaps on a phone and on a wide card under 752px (there the columns are about 90px, and the deployed
    cases' longest words, Conservatory and Clapperboard, are about 88px at 14px against 100px at 16px); 12px with 8px gaps under a
    251px card (a 280px window). A word still wider than its column breaks inside itself rather than run into the gap; the pen
@@ -96,7 +96,7 @@
   border: 1px solid var(--control-edge); background: var(--card); }
 .acc-hc.is-open { border-color: var(--line); }
 .acc-hc .slv-big b { font-size: 48px; }
-/* KEEP: as the groundwork card draws the panel: on a phone (a card under 672px) Hints and The culprit side by side under the board,
+/* as the groundwork card draws the panel: on a phone (a card under 672px) Hints and The culprit side by side under the board,
    both captions on one line and both cards one height, the Hints card as narrow as its count; from 672px, beside the board, Hints
    above The culprit, the two cards one width. */
 @container dv2 (max-width: 671px) {
@@ -104,11 +104,11 @@
   .acc-card .gs-sc-row { grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); justify-items: stretch; }
   .acc-card .gs-sc-row > .gs-sc-cap { justify-self: center; }
   .acc-card .acc-hc, .acc-card .acc-case { width: 100%; height: 100%; align-content: center; }
-  /* KEEP: The culprit's card is as wide as its share of the panel, never as wide as its longest line, so on a 320px or 375px
+  /* The culprit's card is as wide as its share of the panel, never as wide as its longest line, so on a 320px or 375px
      window its blank lines shrink to fit and nothing runs past the card. */
   .acc-card .acc-case { grid-template-columns: minmax(0, 1fr); }
 }
-/* KEEP: on a card 264px inside or narrower (a window of about 320px or narrower; 375px is 309px inside and stays side by side),
+/* on a card 264px inside or narrower (a window of about 320px or narrower; 375px is 309px inside and stays side by side),
    Hints sits above The culprit, the two cards one width, each as wide as the panel, captions centred: side by side, The culprit's
    column is under 140px, so its tag wraps and its sentence runs a word or two a line. */
 @container dv2 (max-width: 264px) {

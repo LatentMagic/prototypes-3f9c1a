@@ -1,6 +1,6 @@
 // After Pixels — Pricing (route `pass`). Re-publishes GsPass, replacing app/gs-billing.jsx's: canon's page with the pay line
 // in small type under the price and Choose a plan. The plan picker (`subscribe`) stays canon.
-// KEEP: the pay line is right-aligned while the button sits beside the price and left-aligned once the button is full width (640px, as .gs-pass-foot).
+// the pay line is right-aligned while the button sits beside the price and left-aligned once the button is full width (640px, as .gs-pass-foot).
 import React from 'react';
 import { useGs, DS, GS } from './gs-data.jsx';
 import { GsCompare } from './gs-parts.jsx';

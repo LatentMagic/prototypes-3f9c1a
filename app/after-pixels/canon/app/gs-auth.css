@@ -3,7 +3,7 @@
 
 /* auth, connect, checkout */
 .gs-auth { min-height: calc(100vh - 44px); display: flex; flex-direction: column; padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px)); }
-/* KEEP: In the phone frame the auth screen fills the screen it sits in (gs-root is a flex column at the screen's height), less the demo bar's spacer, not the browser window */
+/* In the phone frame the auth screen fills the screen it sits in (gs-root is a flex column at the screen's height), less the demo bar's spacer, not the browser window */
 .kit-phone-clip .gs-auth { min-height: 0; flex: 1 0 auto; }
 .gs-auth-col { width: 100%; max-width: 440px; margin: 0 auto; padding: 8px 16px 36px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
 .gs-auth-foot { margin-top: auto; padding-top: 24px; }

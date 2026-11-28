@@ -48,9 +48,9 @@ const CprHomeLine = () => {
   const gs = useGs(); const c = cprPassLine();
   return <>{c.p1.replace(/ with your account\. $/, ' free. ').replace(/(he) start of select games/i, '$1 first edition of select games')}{c.p1 ? 'Everything else' : 'Everything'} comes with <button type="button" className="gs-inlink" onClick={() => gs.go('pass')}>the Pass</button>.</>;
 };
-// KEEP: the Pass card is first in the row, so a phone shows it without scrolling. The whole card opens Pricing; the price is plain text in the chip line.
+// the Pass card is first in the row, so a phone shows it without scrolling. The whole card opens Pricing; the price is plain text in the chip line.
 // Salvage's board is too fine to read at mosaic size, so Guess takes its place (owner, 2026-10-21).
-// KEEP: no square shares its ground colour with the one beside or above it (four to a row).
+// no square shares its ground colour with the one beside or above it (four to a row).
 const cprMix = (ids) => {
   const ground = (k) => (GS_ART[GS_GAMES[k].art] || {}).ground; const out = []; const used = ids.map(() => false);
   const ok = (k, i) => !((i % 4 && ground(out[i - 1]) === ground(k)) || (i >= 4 && ground(out[i - 4]) === ground(k)));
@@ -107,7 +107,7 @@ export const GsHome = () => {
       </section>
 
       <section className="gs-band">
-        {/* KEEP: the free line sits under the cards (the user, 2026-11-11: "yes it will be part of our home work"), so the row's arrows
+        {/* the free line sits under the cards (the user, 2026-11-11: "yes it will be part of our home work"), so the row's arrows
             share the title line right above the cards and the line never shares a line with them. */}
         <DS.CardRow title="Available games" className="gs-row4">
           {[<CprPassCard key="pass" />, ...GS_HOME_GAMES.map((k) => <GsFeature key={k} id={k} />)]}

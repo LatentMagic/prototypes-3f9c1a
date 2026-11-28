@@ -91,7 +91,7 @@ const dlUse = (l, hero) => { if (l[0] === 'Weakness') { const w = /^(?:the |an? 
 const DL_END = { won: 'Winning blow', fallen: 'Last blow', overrun: 'Last roll', live: 'Latest roll' };
 // The key moments, keyed by turn: Best roll (a natural 20 on any roll, else the check with the widest margin), Closest call (the first roll whose total equals its target, an attack against the foe's AC included),
 // Worst roll (a natural 1, else the miss furthest below its target, attacks included), Biggest hit (the attack that dealt the most damage, the first on a tie), and the turn the run ended on (a roll or a use).
-// KEEP: a roll earns every moment it deserves, so one roll can be two or more (a natural 20 whose damage is the run's biggest is Best roll and Biggest hit); its held roll's title names each, capitalised and joined by a middle dot, in one row ("Best roll · Biggest hit"), and the die carries the marks of each.
+// a roll earns every moment it deserves, so one roll can be two or more (a natural 20 whose damage is the run's biggest is Best roll and Biggest hit); its held roll's title names each, capitalised and joined by a middle dot, in one row ("Best roll · Biggest hit"), and the die carries the marks of each.
 const DL_MOMENT_ORDER = ['Best roll', 'Closest call', 'Worst roll', 'Biggest hit'];
 const dlMoments = (T, end) => {
   if (!T.length) return [];
@@ -129,11 +129,11 @@ const dlBuild = (s) => {
     const u = dlUse(l, s.hero);
     if (u && wear && fo) { const dealt = Math.max(0, was - +wear[1]); if (dealt) u.dealt = dealt; }
     if (u) { const healed = /Healed (\d+)/i.exec(l.join(' · ')); if (healed) u.healed = +healed[1]; }
-    // KEEP: a use takes a turn on the route and in the held roll but is no roll: it has no roll number and breaks no streak. It is a key moment only as the run's last turn.
+    // a use takes a turn on the route and in the held roll but is no roll: it has no roll number and breaks no streak. It is a key moment only as the run's last turn.
     if (u) { u.t = turns.length + 1; u.stop = cur.i; u.room = cur.name; u.back = cur.back;
       u.harm = u.hp != null ? Math.max(0, hp - u.hp) : 0; if (u.hp != null) hp = u.hp;
       if (fo && u.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; u.foe = { ...u.foe, name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : max, max, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : max, max) }; }
-      // KEEP: a weakness strike has no foe roll, so its foe health is carried as `meter`, drawn as a kill's is ("health alone"), at the health after the blow.
+      // a weakness strike has no foe roll, so its foe health is carried as `meter`, drawn as a kill's is ("health alone"), at the health after the blow.
       if (fo && wear && !u.foe) u.meter = { name: fo.f[0], health: foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, max: foeMx, ...dlBand(fo.f, foeHp[fo.k] != null ? foeHp[fo.k] : foeMx, foeMx) };
       if (downed) { u.downed = downed; run = 0; } turns.push(u); cur.turns.push(u); return; }
     const r = dlRoll(l, (s.detail || {})[rolls.length + 1]); if (!r) return;
@@ -141,10 +141,10 @@ const dlBuild = (s) => {
     r.n = rolls.length + 1; r.t = turns.length + 1; r.stop = cur.i; r.room = cur.name; r.back = cur.back;
     r.harm = r.hp != null ? Math.max(0, hp - r.hp) : 0; if (r.hp != null) hp = r.hp;
     const hazard = !!fo && DL_HAZARDS.has(cur.name.toLowerCase()); const graded = !r.action && !r.fight;
-    // KEEP: an obstacle's turn draws the graded roll alone; the turn that gets past it (a success or a partial success, since its health is 1) says "<obstacle> passed" in the slot a beaten foe's name takes.
+    // an obstacle's turn draws the graded roll alone; the turn that gets past it (a success or a partial success, since its health is 1) says "<obstacle> passed" in the slot a beaten foe's name takes.
     const obstacle = DL_OBSTACLES[cur.name.toLowerCase()];
     if (obstacle && graded && !passedRooms.has(cur.key) && r.tier !== 'miss') { passedRooms.add(cur.key); r.passed = obstacle; }
-    // KEEP: a hazard's every turn draws its health bar, with no foe roll row; the room's name stays on the bar and at 0 the turn says "<hazard> beaten", as a killed foe does. A failure costs the hero and adds threat.
+    // a hazard's every turn draws its health bar, with no foe roll row; the room's name stays on the bar and at 0 the turn says "<hazard> beaten", as a killed foe does. A failure costs the hero and adds threat.
     if (hazard && graded) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const left = foeHp[fo.k] != null ? foeHp[fo.k] : max;
       foeHp[fo.k] = Math.max(0, left - (r.tier === 'strong' ? (r.crit ? 4 : 2) : r.tier === 'weak' ? 1 : 0));
       r.meter = { name: fo.f[0], health: foeHp[fo.k], max }; if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max };
@@ -154,19 +154,19 @@ const dlBuild = (s) => {
     // A foe stands in a fight room: each hit of the hero's own attack takes one health (two on a natural 20); a band takes the hero's damage (DL_HIT). Its roll back, where the line holds one, rides on the roll.
     if (fo && !hazard && (!r.action || r.action === 'Heavy attack')) { const left = foeHp[fo.k] != null ? foeHp[fo.k] : (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; const dmg = r.dmg ? r.dmg.total : (fo.f[2] ? DL_HIT[s.hero] || 4 : 1) * (r.crit ? 2 : 1); foeHp[fo.k] = r.tier === 'miss' ? left : Math.max(0, left - dmg); if (left > 0 && foeHp[fo.k] === 0) r.downed = { name: fo.f[0], max: foeMx, members: fo.f[2] };
       if (r.foe) { const max = (s.foeMax || {})[fo.k.toLowerCase()] || fo.f[1]; r.foe = { ...r.foe, name: fo.f[0], health: foeHp[fo.k], max, ...dlBand(fo.f, foeHp[fo.k], max) }; } }
-    // KEEP: a fight's hits add to the streak. The longest streak is the streak's highest point, the hit that beats the foe included (delve.md: Streak).
+    // a fight's hits add to the streak. The longest streak is the streak's highest point, the hit that beats the foe included (delve.md: Streak).
     const won = r.tier === 'strong'; run = won ? run + 1 : 0; best = Math.max(best, run);
     if (fo && !hazard && foeHp[fo.k] === 0) { run = 0; }
     rolls.push(r); turns.push(r); cur.rolls.push(r); cur.turns.push(r);
   });
   const end = s.live ? 'live' : s.end;
-  // KEEP: a run lost with no roll or use in its last room (a story turn killed the hero, or the threat filled on a story turn or on going back) ends on a plain grey cross
+  // a run lost with no roll or use in its last room (a story turn killed the hero, or the threat filled on a story turn or on going back) ends on a plain grey cross
   // on that room: no die outline, not pressable, nothing held open, and no "Last blow" or "Last roll" on an earlier roll. A roll that filled the threat keeps "Last roll". The record
   // keeps no turn for this, so the cross is no turn: it sits on the room and ends the key moments, and the roll before it competes for best, closest or worst like any other.
   const lost = cur && !s.live && s.lostOff ? { lost: true, over: !!s.lostOff.over, harm: s.lostOff.harm || 0, name: s.lostOff.name, t: turns.length + 1, stop: cur.i, room: cur.name, back: cur.back } : null;
   if (lost) { cur.turns.push(lost); hp = Math.max(0, hp - lost.harm); }
   const moments = dlMoments(lost ? [...turns, lost] : turns, end);
-  // KEEP: a closing use on a won run is drawn green (the one use that is not grey); on any other end it keeps the use's grey sparkle.
+  // a closing use on a won run is drawn green (the one use that is not grey); on any other end it keeps the use's grey sparkle.
   const closer = turns[turns.length - 1]; if (closer && closer.use && end === 'won') closer.won = true;
   return { stops, rolls, turns, lostMark: lost, hp, run, longest: best, end, lost: !!lost, mom: Object.fromEntries(moments.map((x) => [x.r.t, x])) };
 };
@@ -197,7 +197,7 @@ const DlResult = ({ s, m }) => { const line = m.end === 'live' ? null : s.result
 // ---- The held roll (a pressed die): its head, then the turn as sums. ----
 // The head: the title left (the key moment or moments the die earned, else "Roll n"), the dice right (the hero's d20, and the foe's diamond when it struck back), with one muted sentence under the title (the roll's number and the room).
 // The foe's turn is drawn the same way as the hero's: its attack, then its damage.
-// KEEP: a tile is a button in the box's own colour with the control edge (Escape's cards); hover, on a mouse only, turns it the panel's colour; open, its edge turns off-white and the named form (`20 d20 + 3 STR + 2 Martial ...`) opens under the side's tiles through the 220ms fold; one tile of a side is open at a time.
+// a tile is a button in the box's own colour with the control edge (Escape's cards); hover, on a mouse only, turns it the panel's colour; open, its edge turns off-white and the named form (`20 d20 + 3 STR + 2 Martial ...`) opens under the side's tiles through the 220ms fold; one tile of a side is open at a time.
 const DlFoeDie = ({ f, size = 34 }) => <DS.DelveFoeDie value={f.roll} other={f.other != null ? f.other : undefined} hit={f.hit} surface="popup" size={size} />;
 // The foe's health after the turn, or a band's count: a band's foe line is its name and "2 of 3 standing" in grey on one line, with no bar and never the band's health (delve.md: a band shows how many stand instead).
 const dlMeterOf = (r) => { const x = r.foe ? r.foe : r.meter ? r.meter : r.downed ? { name: r.downed.name, health: 0, max: r.downed.max, members: r.downed.members, standing: 0 } : null;
@@ -225,10 +225,10 @@ const DlNamed = ({ s, total }) => (<span className="dvH-pn">
 </span>);
 // A roll that earned more than one moment is titled with each of them, capitalised and joined by a middle dot: "Best roll · Biggest hit", "Best roll · Closest call · Biggest hit". "Latest roll" always comes first: "Latest roll · Best roll".
 const dlTitle = (names) => [...names.filter((n) => n === DL_END.live), ...names.filter((n) => n !== DL_END.live)].join(' · ');
-// KEEP: the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"; a use that earned none is titled with its room), under it the roll's number on a key moment's (never its room, which the open room's heading names) and, when the turn beat or passed something, those words, and at its right the dice (the hero's d20 and the foe's diamond when it struck back). What a use was (its kind and name) is said only in the You label below, never in the strip. Under a 480px box the beaten or passed words take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
+// the held roll opens with a small top strip: the title (the key moment or moments the die earned, else "Roll n"; a use that earned none is titled with its room), under it the roll's number on a key moment's (never its room, which the open room's heading names) and, when the turn beat or passed something, those words, and at its right the dice (the hero's d20 and the foe's diamond when it struck back). What a use was (its kind and name) is said only in the You label below, never in the strip. Under a 480px box the beaten or passed words take their own row, without the dot that joins them on a wider box, and each wraps between its words, so it fits a 280px box. The strip's dice sit in frames the size of their drawn shapes, so the drawn shape, not its empty picture margin, is 12px from the box's top and right edges, as the text is from its left.
 // The empty margin round a die's drawn shape in its picture box, in die units (right, top; the same on the opposite side): the picture is 46 by 50, a hexagon leaves 5 and 5, a natural 20's rim 2 and 1.5, a biggest hit grown 2 and 1.7.
 const dlInk = (r) => (r.crit ? [2, 1.5] : r.big ? [2, 1.7] : [5, 5]);
-// KEEP: the held roll's dice are one drawn size on every roll it holds (a hexagon 25px wide), a key moment's included, so moving between rolls never changes their size: a die whose rim reaches further into its picture (a natural 20, a biggest hit) is drawn smaller to match (the user, 2026-11-25: "BETWEEN CARDS these are changing sizes"); the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
+// the held roll's dice are one drawn size on every roll it holds (a hexagon 25px wide), a key moment's included, so moving between rolls never changes their size: a die whose rim reaches further into its picture (a natural 20, a biggest hit) is drawn smaller to match (the user, 2026-11-25: "BETWEEN CARDS these are changing sizes"); the foe's diamond is drawn the same visual size as the hexagon beside it, not only as tall.
 const DL_HELD_DIE = 32;
 // A die in a frame the size of its drawn shape: the picture is centred in it and its empty margin overflows, so the frame's edge is the shape's edge.
 const DlInkFrame = ({ w, h, children }) => <span className="dvH-ink" style={{ width: w, height: h }}>{children}</span>;
@@ -238,9 +238,9 @@ const DlHeldHead = ({ r, x }) => { const size = DL_HELD_DIE * (46 - 2 * 5) / (46
     <div className="dvH-dd"><DlInkFrame w={size * (46 - 2 * dlInk(r)[0]) / 46} h={size * (50 - 2 * dlInk(r)[1]) / 46}><DlDie r={r} size={size} surface="popup" behind /></DlInkFrame>
       {r.foe && <DlInkFrame w={foeSize * 36 / 40} h={Math.round(foeSize * 44 / 40) * 40 / 44}><DlFoeDie f={r.foe} size={foeSize} /></DlInkFrame>}</div></div>); };
 // ---- The held roll's chips (the user, 2026-11-25, "4. Split chip"): one row, "You" and "Foe", each side one chip, labelled above. A chip is the hit on the left (the total, its target, the result) and, when it dealt damage, a hairline and "N damage" on the right; a miss has no right part. ----
-// KEEP: a side is one tap chip, at least 44px tall, in Escape's tap card (esx-card) at its own size; the two sides share one row while the held roll is 452px wide or more, else they stack, You over Foe, each chip at full width; a lone side (a check, an option, a hero's attack the foe did not answer) has its chip take the row under 400px and its half above it, and its label the whole row. The chip's own width sets its shape: from 200px it is one row (hit, hairline, damage), which two rows always give it; the narrower shape (the damage on a second row under a hairline) stays for a chip below 200px. The d20 sum ("8 + 3") is not on the chip: in a chip of about 120px, where the hit and the damage already fill two rows, so the sum lives in the breakdown only, at every width.
-// KEEP: a chip's breakdown opens under the chip at the chip's own width through the 220ms fold, one per side at a time: the d20's named form with its total (`14 d20 + 3 Strength + 2 Martial = 19`, a dropped advantage die struck diagonally) and, for a hit that dealt damage, a second named form under a small "Damage" caption naming the type ("Damage · slashing") with the damage dice, then each bonus with its source and the total. A miss opens the d20's form alone, with no caption. The parts break only between one another.
-// KEEP: advantage is never written in a side's label ("You", "Foe"): the die in the strip's top right already shows it (the second die behind the first) and the opened breakdown shows it as the dropped number struck, with no "advantage" word (the user, 2026-11-26).
+// a side is one tap chip, at least 44px tall, in Escape's tap card (esx-card) at its own size; the two sides share one row while the held roll is 452px wide or more, else they stack, You over Foe, each chip at full width; a lone side (a check, an option, a hero's attack the foe did not answer) has its chip take the row under 400px and its half above it, and its label the whole row. The chip's own width sets its shape: from 200px it is one row (hit, hairline, damage), which two rows always give it; the narrower shape (the damage on a second row under a hairline) stays for a chip below 200px. The d20 sum ("8 + 3") is not on the chip: in a chip of about 120px, where the hit and the damage already fill two rows, so the sum lives in the breakdown only, at every width.
+// a chip's breakdown opens under the chip at the chip's own width through the 220ms fold, one per side at a time: the d20's named form with its total (`14 d20 + 3 Strength + 2 Martial = 19`, a dropped advantage die struck diagonally) and, for a hit that dealt damage, a second named form under a small "Damage" caption naming the type ("Damage · slashing") with the damage dice, then each bonus with its source and the total. A miss opens the d20's form alone, with no caption. The parts break only between one another.
+// advantage is never written in a side's label ("You", "Foe"): the die in the strip's top right already shows it (the second die behind the first) and the opened breakdown shows it as the dropped number struck, with no "advantage" word (the user, 2026-11-26).
 const DlChipBreak = ({ atk, dmg }) => (<div className="dvH-pnl">
   <div className="dvC-pr">{dmg && <span className="dvC-pk">Attack</span>}<DlNamed s={atk} total={atk.t} /></div>
   {dmg && <div className="dvC-pr"><span className="dvC-pk">Damage{dmg.typ && dmg.typ.toLowerCase() !== 'damage' ? ' · ' + dmg.typ : ''}</span>{dmg.d ? <DlNamed s={dmg} total={dmg.t} /> : <span className="dvH-pn"><span className="dvH-c"><b>{dmg.t}</b></span></span>}</div>}
@@ -262,9 +262,9 @@ const dlMoveSaid = (r) => (r.use ? (r.what === 'Weakness' ? ['Gear', 'Weak spot'
 const DlUseBody = ({ r }) => { const e = dlEffect(r); const item = r.what === 'Gear' || r.what === 'Weakness';
   const eff = e && <span className={'dvC-dm' + (item ? '' : ' is-solo')}><b>{e.sign + e.n}</b> {e.word}</span>;
   return <span className="dvC-in">{item || !eff ? <span className="dvC-item">{r.name}</span> : null}{eff}</span>; };
-// KEEP: the under-chip foe's health is one thin row (name, a 4px bar, the count) at the box's full width.
+// the under-chip foe's health is one thin row (name, a 4px bar, the count) at the box's full width.
 const DlHeldRoll = ({ r, x }) => { const mt = dlMeterOf(r); const cost = dlCost(r); const f = r.foe;
-  // KEEP: the You label names the turn after middle dots ("You · Heavy attack · Cleave", "You · Gear · Weak spot"; moves are named in the label, items in the box). A cost joins it only if the whole line fits: "You · Slip the trap · Cost · Threat +1"; else it drops to its own line, "Cost · Hit points −3 · Threat +3 · Light −3", wrapping only between whole parts ("Cost" never ends a line alone, "Hit points −3" never splits). "Cost" is bold white like "You"; its figures are grey like the action (the user, 2026-11-27).
+  // the You label names the turn after middle dots ("You · Heavy attack · Cleave", "You · Gear · Weak spot"; moves are named in the label, items in the box). A cost joins it only if the whole line fits: "You · Slip the trap · Cost · Threat +1"; else it drops to its own line, "Cost · Hit points −3 · Threat +3 · Light −3", wrapping only between whole parts ("Cost" never ends a line alone, "Hit points −3" never splits). "Cost" is bold white like "You"; its figures are grey like the action (the user, 2026-11-27).
   const parts = cost.split(' · ').filter(Boolean);
   const costSaid = parts.length ? <span className="dvH-cost"><span className="dvH-nb"><b>Cost</b>{'\u00a0· ' + parts[0]}</span>{parts.slice(1).map((c, i) => <React.Fragment key={i}>{'\u00a0· '}<span className="dvH-nb">{c}</span></React.Fragment>)}</span> : null;
   const said = dlMoveSaid(r);
@@ -283,12 +283,12 @@ const DlHeld = ({ m, act }) => { const r = act ? m.turns[act - 1] : null; if (!r
 // A room gone back to: a curved arrow drawn in the box's line, never the ↩ character (phones draw it as an emoji; Joe).
 const DlBackArrow = () => (<svg className="dv2-back" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
   <path d="M4.5 10.5 1.5 7.5l3-3M1.5 7.5h6a3 3 0 0 0 0-6H5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>);
-// KEEP: a stop's number is grey (muted text, the control edge) when nothing was rolled or used in it and white when anything was, a return or not; the back-arrow alone marks a return. A room not yet reached keeps its own fainter outline.
+// a stop's number is grey (muted text, the control edge) when nothing was rolled or used in it and white when anything was, a return or not; the back-arrow alone marks a return. A room not yet reached keeps its own fainter outline.
 const dlNone = (st) => !(st.turns && st.turns.some((r) => !r.lost));
 const dlNum = (st, extra = '') => 'dv2-num' + (st.back ? ' is-back' : '') + (dlNone(st) ? ' is-none' : '') + extra;
-// KEEP: the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. From 5 stops a map that fits one row spreads edge to edge, its first and last boxes on the card's content edges (the user, 2026-11-25: Spread); 1-4 stops sit centred, below; a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
+// the map's rows share the stops evenly (20 stops: one row of 20 on a wide card, two of 10 at about 900px), each stop a 44px column. From 5 stops a map that fits one row spreads edge to edge, its first and last boxes on the card's content edges (the user, 2026-11-25: Spread); 1-4 stops sit centred, below; a map on several rows keeps gaps of 6px to 76px, and its short last row ends early on the right.
 const DL_MAP_COL = 44; const DL_MAP_GAP = 6; const DL_MAP_GAP_MAX = 76; const DL_MAP_INSET = 8; const DL_MAP_FEW = 4; const DL_MAP_GAP_FEW = 32;
-// KEEP: a map of 1-4 stops sits centred at a 32px gap (less where a phone is too narrow), so a short run never stretches its boxes across the card; from 5 stops one row spreads edge to edge (the user, 2026-11-25).
+// a map of 1-4 stops sits centred at a 32px gap (less where a phone is too narrow), so a short run never stretches its boxes across the card; from 5 stops one row spreads edge to edge (the user, 2026-11-25).
 const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(1, Math.floor((w + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
   const rows = Math.ceil(n / per); const cols = Math.ceil(n / rows);
   const room = (w - cols * DL_MAP_COL) / Math.max(1, cols - 1); const gap = cols < 2 ? DL_MAP_GAP : n <= DL_MAP_FEW ? Math.max(DL_MAP_GAP, Math.min(DL_MAP_GAP_FEW, room)) : rows === 1 ? Math.max(DL_MAP_GAP, room) : Math.min(DL_MAP_GAP_MAX, Math.max(DL_MAP_GAP, room));
@@ -296,7 +296,7 @@ const dlMapOf = (n) => (el) => { const w = el.clientWidth; const per = Math.max(
 const useDlMap = (n) => { const ref = React.useRef(null); const measure = React.useMemo(() => dlMapOf(n), [n]); const v = useDlWidth(ref, measure, n + ':6'); const [cols, gap] = v.split(':').map(Number); return [ref, cols, gap]; };
 // What a stop shows on the map: its key moments as small dice, every other roll as a dot in its outcome's colour, a use as a grey sparkle (as the Now card of the deployed run draws one), the loss cross as itself.
 const DL_SPARK = 'M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z';
-// KEEP: a stop's marks stand in rows of at most 4 dots (3 on a phone, under 480px), balanced so no row is left with one (7 dots: 4 / 3 on a wide screen, 3 / 2 / 2 on a phone), and the room's key-moment dice come after the dots, two to a row, the loss cross with them; a room's dice have no play order (the user, 2026-11-26).
+// a stop's marks stand in rows of at most 4 dots (3 on a phone, under 480px), balanced so no row is left with one (7 dots: 4 / 3 on a wide screen, 3 / 2 / 2 on a phone), and the room's key-moment dice come after the dots, two to a row, the loss cross with them; a room's dice have no play order (the user, 2026-11-26).
 const dlRows = (items, most) => { const rows = Math.ceil(items.length / Math.max(1, most)); const base = Math.floor(items.length / rows); const longer = items.length % rows; let at = 0;
   return Array.from({ length: rows }, (_, i) => { const n = i < longer ? base + 1 : base; const row = items.slice(at, at + n); at += n; return row; }); };
 const DL_PIP_ROW = 4; const DL_PIP_ROW_PHONE = 3; const DL_PIP_PHONE_W = 480; const DL_KEY_ROW = 2;
@@ -312,18 +312,18 @@ const DlMap = ({ m, stops, open, onOpen, far }) => { const [ref, cols, gap] = us
     const cls = 'dvG-stop' + (i % cols === 0 ? ' is-rs' : '') + (i % cols === cols - 1 || i === stops.length - 1 ? ' is-re' : '') + (open === st.i ? ' is-on' : '') + (far && far(st) ? ' is-far' : '');
     return has ? <button key={st.i} type="button" className={cls} title={st.name} aria-label={label} aria-pressed={open === st.i} onClick={() => onOpen(st)}>{box}<DlMapMarks m={m} st={st} phone={phone} /></button>
       : <span key={st.i} className={cls} title={st.name} role="img" aria-label={label + (st.turns && st.turns.length ? '' : ', no rolls')}>{box}{m && <DlMapMarks m={m} st={st} phone={phone} />}</span>; })}</div></div>); };
-// KEEP: from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
+// from a board (the card's content) 700px wide the open room and the held roll share one row: the room's number, name and dice on the left, the held roll on the right edge at two thirds of the row; the space between them is allowed (the user, 2026-11-25). Below 700px the held roll sits under the room's dice.
 const DlOpenRoom = ({ m, st, act, lit, on }) => (<div className="dvG-open">
   <div className="dvG-room">
     <p className="dvG-th"><span className={dlNum(st, ' is-on')} aria-hidden="true">{st.back && <DlBackArrow />}{st.num}</span><span className="dvG-name">{st.name}</span></p>
-    {/* KEEP: in the open room a key moment's die is drawn bigger (44px) than any other roll's (30px), as everywhere a key moment stands among other rolls (the user, 2026-11-25: "all big moments are big throughout relationally"); pressing a die only rings it, never resizes it. */}
+    {/* in the open room a key moment's die is drawn bigger (44px) than any other roll's (30px), as everywhere a key moment stands among other rolls (the user, 2026-11-25: "all big moments are big throughout relationally"); pressing a die only rings it, never resizes it. */}
     <div className="dvG-dice">{st.turns.filter((r) => !r.lost).map((r) => <DlDieBtn key={r.t} r={r} act={act} lit={lit} on={on} size={m.mom[r.t] ? 44 : 30} />)}</div>
   </div>
   {act && m.turns[act - 1].stop === st.i ? <div className="dvG-held"><DlHeld m={m} act={act} /></div> : null}
 </div>);
 const DlGlance = ({ m, act, setSel }) => {
   const [open, setOpen] = React.useState(() => (act ? m.turns[act - 1].stop : m.stops.length - 1));
-  // KEEP: a mouse over a die rings it as the open room's selected die is ringed (the ring clears the second die's hex), but the held roll stays the pressed one's; touch gives no hover, so a tap never leaves a ring behind.
+  // a mouse over a die rings it as the open room's selected die is ringed (the ring clears the second die's hex), but the held roll stays the pressed one's; touch gives no hover, so a tap never leaves a ring behind.
   const [lit, setLit] = React.useState(null);
   const on = React.useMemo(() => ({ sel: setSel, hov: (t) => { if (t == null || window.matchMedia('(hover: hover)').matches) setLit(t); } }), [setSel]);
   // A room tapped on the map opens, and holds its first key moment, else its last roll.
@@ -339,7 +339,7 @@ const useDlWidth = (ref, measure, initial) => { const [value, setValue] = React.
 const dlEmptyStops = (n) => Array.from({ length: n }, (_, i) => ({ i, num: i + 1, back: false, name: 'Room ' + (i + 1) }));
 // The session page before the first roll: the run's rooms drawn empty on the map, the first reached, and nothing else: no open room and no held roll until there is a roll.
 const DlEmptyMap = ({ rooms }) => (<div className="dvG"><DlMap stops={dlEmptyStops(rooms).map((st) => ({ ...st, name: st.i === 0 ? 'First room' : 'Not reached', turns: [] }))} open={0} far={(st) => st.i > 0} /></div>);
-// KEEP: a run that ends on the loss cross opens nothing: the cross is not pressable and no roll is held until one is pressed. A press holds a roll and fills the held roll; it opens on the roll the route names (a die pressed on the now card), else the
+// a run that ends on the loss cross opens nothing: the cross is not pressable and no roll is held until one is pressed. A press holds a roll and fills the held roll; it opens on the roll the route names (a die pressed on the now card), else the
 // last roll. A hover only rings a die and never fills the held roll: a held roll
 // that follows the pointer changes the box's height, moves the map and the die from under the pointer, and the map flickers.
 const DlCard = ({ s, m, roll, turn }) => {
@@ -361,8 +361,8 @@ const dlSheet = (s, m) => {
     if (!g) { g = { name: n, kind: /key/i.test(n) ? 'key' : 'once', does: DL_GEAR_DOES[n] || '', state: 'held' }; gear.push(g); } return g; };
   (s.lines || []).forEach((l) => {
     if (l[0] === 'Gear') { const t = String(l[1]); if (/^Took /.test(t)) find(t.replace(/^Took /, '')); else if (/^Used /.test(t)) find(t.replace(/^Used /, '')).state = 'used'; }
-    // KEEP: a key opens its lock and is kept (delve.md, Gear), so it stays in the pack, noted with the lock it opened.
-    // KEEP: this item branch is for a gear weakness such as edition 1's lamp oil; a prepared-feature weakness (other editions) is not gear and must not be added to the pack.
+    // a key opens its lock and is kept (delve.md, Gear), so it stays in the pack, noted with the lock it opened.
+    // this item branch is for a gear weakness such as edition 1's lamp oil; a prepared-feature weakness (other editions) is not gear and must not be added to the pack.
     if (l[0] === 'Weakness') { const g = find(String(l[1])); if (g.kind !== 'key') g.state = 'used'; }
     if (l[0] === 'Lock') { const w = /^Opened (.+) with (.+)$/.exec(String(l[1])); if (w) find(w[2]).note = 'Opened ' + w[1]; }
   });
@@ -370,7 +370,7 @@ const dlSheet = (s, m) => {
   return { name: h.name, cls: h.cls, fightClass: h.fightClass, hp: m.hp, hpMax: s.hpMax, threat: s.threat, threatMax: s.threatMax, lightName: s.lightName, light: s.light, lightMax: s.lightMax, carry: DL_CARRY, gear,
     abilities: h.abilities.map((a) => ({ ...a, left: Math.max(0, a.of - (used[a.name] || 0)) })), insp: !!sh.insp,
     fight: h.fight || null, adv: { streak: m.run, longest: m.longest },
-    // KEEP: a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
+    // a trained skill's total is its stat's bonus plus the +2 training adds; only trained skills are listed (4 to 7), in the stats' order.
     skills: STAT_ORDER.flatMap((st) => (h.skills || []).filter((k) => k[1] === st).map((k) => ({ name: k[0], say: dlSigned(h.stats[st] + 2) + Math.abs(h.stats[st] + 2) }))), stats: Object.entries(h.stats).map(([k, n]) => ({ k, ab: k.slice(0, 3).toUpperCase(), say: (n < 0 ? '−' : '+') + Math.abs(n) })) };
 };
 // Glyphs, line-drawn as the shop's icons (1.75 stroke, square caps, mitred joins). Armour has its own: a shield.
@@ -381,16 +381,16 @@ const DlUses = ({ left, of }) => (<span className="dv4-uses" role="img" aria-lab
 const DlInsp = ({ on }) => (<span className="dv5-insw" role="img" aria-label={'Inspiration, ' + (on ? 'ready' : 'spent')}><svg className={'dv4-insp' + (on ? ' is-on' : '')} viewBox="-5 -5 46 50" width="28" height="30" aria-hidden="true">
   <polygon className="hx" points={DL_HEX} />{on && <polygon className="rim" points={DL_RIM} />}</svg></span>);
 const DlHex = ({ x }) => (<svg className="dv4-sx" viewBox="-5 -5 46 50" width="32" height="35" role="img" aria-label={x.say}><polygon className="hx" points={DL_HEX} /><text x="18" y="20.5">{x.say}</text></svg>);
-// KEEP: every piece below a group's heading is one cell (a fixed-height figure, one label under it), so the rows line up.
+// every piece below a group's heading is one cell (a fixed-height figure, one label under it), so the rows line up.
 const DlCell = ({ label, used, title, children }) => (<div className={'dv7-cell' + (used ? ' is-used' : '')} title={title}><span className="dv7-fig">{children}</span><span className="dv7-lb">{label}</span></div>);
-// KEEP: a meter's count is written 9/13, the short form, so the meters' column stays narrow (owner, 2026-10-29).
+// a meter's count is written 9/13, the short form, so the meters' column stays narrow (owner, 2026-10-29).
 const DlMeter = ({ label, n, of }) => (<div className="dv6-bar"><span>{label}</span><DS.ProgressBar label={label} value={n} max={of} showValue={false} /><small>{n + '/' + of}</small></div>);
 
 // 3B (owner, 2026-10-29): the hero; hit points, threat and, where the edition has the light module, its light stacked on one grid; then five tabs: Stats, Advantage, Pack (with its free slots), Ability and Fight. Clues and the bargain join once the record holds them.
 // The sheet's tabs are Escape's tap cards (esx-cards, EsxFold); a tab adds only its icon.
-// KEEP: the layout is chosen by the sheet's own content width, never the window, with four steps: one row of name, bars and five tabs from 796px; from 610px the name and bars side by side with the five tabs full width under them; from 340.02px the name line over the bars over the five tabs; at 340px and under the tabs become a list, icon beside word. A step's tabs are as wide as their share of the row, at most 140px, and their words remain at least 11px.
-// KEEP: every two-row layout opens folded to the name and bars; the whole header is the fold, its chevron centred on it. The one-row layout has no fold.
-// KEEP: the sheet card has no padding of its own: each part carries the 16px side gutter, so the header's hover tint runs edge to edge of the card. The layout steps are still measured on the card's width less that gutter, 796px and the rest.
+// the layout is chosen by the sheet's own content width, never the window, with four steps: one row of name, bars and five tabs from 796px; from 610px the name and bars side by side with the five tabs full width under them; from 340.02px the name line over the bars over the five tabs; at 340px and under the tabs become a list, icon beside word. A step's tabs are as wide as their share of the row, at most 140px, and their words remain at least 11px.
+// every two-row layout opens folded to the name and bars; the whole header is the fold, its chevron centred on it. The one-row layout has no fold.
+// the sheet card has no padding of its own: each part carries the 16px side gutter, so the header's hover tint runs edge to edge of the card. The layout steps are still measured on the card's width less that gutter, 796px and the rest.
 const DL_GUTTER = 16;
 const DL_ONE_ROW = 796;
 // Whether the sheet is wide enough for one row, read as the CSS container reads it, before paint and on every resize.
@@ -454,9 +454,9 @@ const DlHead = ({ c, folded, fold }) => (<div className="dl-head is-fold">
 const DlSheet = ({ c }) => { const ref = React.useRef(null); const one = useDlOneRow(ref); const [card, setCard] = React.useState(null); const [folded, setFolded] = React.useState(true);
   const [seen, setSeen] = React.useState(one); const [tap, setTap] = React.useState(null);
   const groups = dlTabGroups(c, dlSlots(c));
-  // KEEP: the sheet is the same sheet in either layout: switching between one row and two (a resize, a tablet turned) keeps the open tab and keeps the sheet unfolded if it was; a tab that is open always leaves the two-row sheet unfolded, since one row has no fold to carry that. No motion on the switch.
+  // the sheet is the same sheet in either layout: switching between one row and two (a resize, a tablet turned) keeps the open tab and keeps the sheet unfolded if it was; a tab that is open always leaves the two-row sheet unfolded, since one row has no fold to carry that. No motion on the switch.
   if (seen !== one) { setSeen(one); if (card !== null) setFolded(false); setTap(null); }
-  // KEEP: the fold and the tabs animate only for a tap: `is-tap` is on the sheet from the tap until the motion is over, and CSS gives every fold a transition only then, so a window resize across a breakpoint changes the layout without any motion.
+  // the fold and the tabs animate only for a tap: `is-tap` is on the sheet from the tap until the motion is over, and CSS gives every fold a transition only then, so a window resize across a breakpoint changes the layout without any motion.
   React.useEffect(() => { if (!tap) return undefined; const t = setTimeout(() => setTap(null), 600); return () => clearTimeout(t); }, [tap]);
   const fold = () => { setTap({}); setFolded(!folded); setCard(null); };
   const pick = (k) => { setTap({}); setCard(k); };
@@ -482,14 +482,14 @@ const DlBody = ({ s }) => {
 
 // ---- The now card on Delve's library game page, once this week's run is played or started: the shared frame (LbNowCard), with the
 // session page's ending word as its result and the run's latest stops over its key moments in place of the line and bar. No sheet, no held roll. Nothing in the picture is pressable: the card opens the session page.
-// KEEP: a stop is drawn as the session page's map draws it (a 28px number box, a return keeping its back-arrow) and is never shrunk or wrapped; the row shows the latest stops that fit at the session map's pitch (a 44px column and a 6px gap), up to 12, so a phone card shows fewer.
-// KEEP: from 5 stops the boxes spread edge to edge on the card's content width; fewer sit centred at a 56px gap, wider than the session map's 32px (the user, 2026-11-26: "on 2-4 can we have a slighter greater spread?"), and never wider than the card.
-// KEEP: the key dice are the session page's 44px, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
-// KEEP: a run started with no stop yet (nothing played) draws one stop box, [1], centred as the other stops are, and no dice row; "not started" is its own state, DlNowEmpty (the user, 2026-11-26: "i dont mind that we show just a [1] once its started ... the \"not started\" is just sort of its own state").
+// a stop is drawn as the session page's map draws it (a 28px number box, a return keeping its back-arrow) and is never shrunk or wrapped; the row shows the latest stops that fit at the session map's pitch (a 44px column and a 6px gap), up to 12, so a phone card shows fewer.
+// from 5 stops the boxes spread edge to edge on the card's content width; fewer sit centred at a 56px gap, wider than the session map's 32px (the user, 2026-11-26: "on 2-4 can we have a slighter greater spread?"), and never wider than the card.
+// the key dice are the session page's 44px, centred on the card, the latest first, each named beneath; a run with no key moment draws no dice row, so the card keeps no gap where it would stand.
+// a run started with no stop yet (nothing played) draws one stop box, [1], centred as the other stops are, and no dice row; "not started" is its own state, DlNowEmpty (the user, 2026-11-26: "i dont mind that we show just a [1] once its started ... the \"not started\" is just sort of its own state").
 const DL_NOW_MAX = 12; const DL_NOW_GAP_FEW = 56;
 // The roll that ended an overrun run is named "Latest roll" under its die, first among its names, whatever the held roll's title says.
 const dlNowNames = (kickers) => dlTitle(kickers.map((x) => x === DL_END.overrun ? DL_END.live : x)).split(' · ');
-// KEEP: the not-started card's picture is its own: the run's rooms as one strip of boxes on one row, none lit, as it was before the Now card took the latest stops. A strip too narrow for numbers (under 20px a room) draws each room as a small tick.
+// the not-started card's picture is its own: the run's rooms as one strip of boxes on one row, none lit, as it was before the Now card took the latest stops. A strip too narrow for numbers (under 20px a room) draws each room as a small tick.
 const DL_NOW_NUM_MIN = 20;
 const useDlNowWide = (n) => { const ref = React.useRef(null); const measure = React.useCallback((el) => el.clientWidth / n >= DL_NOW_NUM_MIN, [n]); return [ref, useDlWidth(ref, measure, true)]; };
 const DlNowRooms = ({ rooms }) => { const [ref, numbered] = useDlNowWide(rooms);
@@ -499,7 +499,7 @@ const DlNowRooms = ({ rooms }) => { const [ref, numbered] = useDlNowWide(rooms);
       : <i key={st.i} className="dl-now-tick" />))}</div>
       </div></div>); };
 const dlNowFit = (el) => Math.max(1, Math.floor((el.clientWidth + DL_MAP_INSET * 2 + DL_MAP_GAP) / (DL_MAP_COL + DL_MAP_GAP)));
-// KEEP: the key dice stand in one row at every width, in equal columns (no wider than 96px each, a few dice centred as one group), each die centred over its name; the names stay on one line while every name fits its column, else every name takes two lines together (each word on its own line), so no die's name is shorter than another's (the user, 2026-11-27: "it's one row", "even across them all"). The fit is measured on the page's own font, and again once fonts arrive.
+// the key dice stand in one row at every width, in equal columns (no wider than 96px each, a few dice centred as one group), each die centred over its name; the names stay on one line while every name fits its column, else every name takes two lines together (each word on its own line), so no die's name is shorter than another's (the user, 2026-11-27: "it's one row", "even across them all"). The fit is measured on the page's own font, and again once fonts arrive.
 const DL_KEY_COL = 96; const DL_KEY_GAP = 4;
 const DlNowKeys = ({ m, keys }) => { const ref = React.useRef(null); const n = keys.length; const [two, setTwo] = React.useState(false);
   const names = keys.map((r) => dlNowNames(m.mom[r.t].kickers)); const sig = names.map((x) => x.join('|')).join('/');

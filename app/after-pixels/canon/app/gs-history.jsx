@@ -124,7 +124,7 @@ const edMore = (gs, gid, list) => { const m = phMoreOn(gs) && PH_MORE[gid]; if (
 
 let PH_ALL;
 let PH_BROKEN;
-// KEEP: This edition's finished play, as Config → This edition picks it: the current edition's only; a free player's first Escape room is an older edition and keeps
+// This edition's finished play, as Config → This edition picks it: the current edition's only; a free player's first Escape room is an older edition and keeps
 // its own play. A play with `pick` reads its pick itself (Casebook's case);
 // the others read c.today (PZ) or gsEdPick, and a pick the game does not have leaves the seeded play.
 const phCur = (p, gs) => {
@@ -236,7 +236,7 @@ const phRecent = (gs, gid) => phVisible(gs).filter((p) => p.gid === gid).slice(0
   .map((p) => ({ key: p.pid, title: phParts(p, true).title, when: [phWhen(p.at) + ', ' + phTime(p.at), phWhen(p.at)], status: p.status, onOpen: () => p.open(gs) }));
 
 // ---- The library game page's plays card. "All…" opens History filtered to this game. ----
-// KEEP: on a phone the card shows the latest four plays; beside achievements, as many as fill it to achievements' height, so the row ends level.
+// on a phone the card shows the latest four plays; beside achievements, as many as fill it to achievements' height, so the row ends level.
 // A game never played shows the card's empty line only (library-mystery-never-played).
 export const LbRecent = (p) => {
   const gs = useGs(); const gid = gsGameOfRoute(gs.route.name);
@@ -268,7 +268,7 @@ const LbRecentList = ({ title, allLabel, empty }) => {
       if (list.current) { probe.current.style.right = 'auto'; probe.current.style.width = list.current.offsetWidth + 'px'; }
       const hs = Array.from(probe.current.firstElementChild.children).map((x) => x.offsetHeight);
       let k = 0; let sum = 0; while (k < hs.length && sum + hs[k] <= room + 1) { sum += hs[k]; k += 1; }
-      // KEEP: never fewer than four plays; a shorter neighbour grows to match instead.
+      // never fewer than four plays; a shorter neighbour grows to match instead.
       if (k < Math.min(4, hs.length)) return reset();
       setFit(k);
     };
@@ -286,7 +286,7 @@ const LbRecentList = ({ title, allLabel, empty }) => {
   );
 };
 
-// KEEP: the pager shows page numbers when they fit and "Page 3 of 9" when they don't (container query in the page CSS).
+// the pager shows page numbers when they fit and "Page 3 of 9" when they don't (container query in the page CSS).
 export const PhPages = ({ pg, pages, go }) => (pages > 1 ? (
   <nav className="lb-pages rp-pg" aria-label="Pages">
     {pg > 0 ? <button type="button" className="gs-iconbtn" aria-label="Previous page" onClick={() => go(pg - 1)}><DS.Icon name="next" style={{ transform: 'rotate(180deg)' }} /></button> : <span className="gs-iconbtn-space" />}

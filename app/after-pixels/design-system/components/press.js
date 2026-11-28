@@ -1,5 +1,5 @@
 import React from 'react';
-// KEEP: Holds the pressed look for at least 120ms so a quick tap still shows it (from the hand-off).
+// Holds the pressed look for at least 120ms so a quick tap still shows it (from the hand-off).
 export function usePress(){
   const [pressed,setPressed]=React.useState(false);
   const t=React.useRef(0);

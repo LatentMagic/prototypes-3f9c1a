@@ -38,7 +38,7 @@ export const WdRow = ({ g }) => (
   <div className="wd-row" role="img" aria-label={'Guess ' + g.n + ', ' + g.word + ': ' + g.word.split('').map((ch, i) => ch + ' ' + WD_SAY[g.marks[i]]).join(', ')}>
     {g.word.split('').map((ch, i) => <span key={i} className={'wd-t is-' + g.marks[i]} aria-hidden="true">{ch}</span>)}
   </div>);
-// KEEP: the hint tile starts at its letter's column, one tile wide; the empty spans either side hold its place.
+// the hint tile starts at its letter's column, one tile wide; the empty spans either side hold its place.
 const WdHint = ({ h }) => (
   <div className="wd-hrow" role="img" aria-label={'Hint, after guess ' + h.after + ': ' + h.text} style={{ '--p': h.pos }}>
     {h.pos > 0 && <span className="wd-dots is-l" aria-hidden="true" />}

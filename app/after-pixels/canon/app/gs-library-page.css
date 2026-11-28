@@ -12,26 +12,26 @@
 .lb-top > .gs-stack-xs { min-width: 0; flex: 1 1 240px; }
 /* The now card (LbNowCard): its head and the game's picture in one stack, the action row below it. */
 .lb-now-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
-/* KEEP: a now card's result chip holds the top right, on the row of the small label above the title, at every width. The title sits on the rows below and takes the card's full width, cut after 3 lines with "…", so a long title is never squeezed into a narrow column beside the chip. A long result takes at most half the row and wraps itself, right-aligned. Cards with no chip are unchanged. */
+/* a now card's result chip holds the top right, on the row of the small label above the title, at every width. The title sits on the rows below and takes the card's full width, cut after 3 lines with "…", so a long title is never squeezed into a narrow column beside the chip. A long result takes at most half the row and wraps itself, right-aligned. Cards with no chip are unchanged. */
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(50%); column-gap: 12px; row-gap: 4px; align-items: start; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > .gs-stack-xs { display: contents; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .gs-label { grid-column: 1; grid-row: 1; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) > :is(.lb-big, .gs-vd) { grid-column: 2; grid-row: 1; max-width: none; text-align: right; }
 .lb-now-in > .lb-top:has(> .lb-big, > .gs-vd) .mcp-t-sec { grid-column: 1 / -1; grid-row: 2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .lb-sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
-/* KEEP: A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
+/* A link in a card head keeps its 48px hit area but takes back the height around its text, so every card's heading sits at the same height */
 .lb-sechead > .mcp-lnk { margin-block: -12px; }
 .lb-v { display: inline-flex; align-items: center; gap: 6px; }
 .lb-v.is-ok { color: var(--success); }
 .lb-v.is-bad { color: var(--error); }
 .lb-big { font: 700 20px/1.25 var(--font-heading); letter-spacing: -.01em; }
-/* KEEP: A now card's action row (LbActions): the main button at the left, the slot line at the right; on a phone the button runs full width and the line sits centred under it.
+/* A now card's action row (LbActions): the main button at the left, the slot line at the right; on a phone the button runs full width and the line sits centred under it.
    The row is pinned to the card's foot with margin-top: auto, so a card stretched beside a taller one opens its extra space above the row, and it sits 24px below the content (the card's 16px gap plus 8px). */
 .lb-card:has(> .lb-foot) { display: flex; flex-direction: column; }
 .lb-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); margin-top: auto; padding-top: var(--space-2); }
 .lb-foot > .lb-slot { min-width: 0; text-wrap: pretty; }
 .lb-foot > .lb-slot > p { margin: 0; }
-/* KEEP: a row with no button (bare) keeps its slot at the right edge on desktop; on a phone the slot centres, as with a button. */
+/* a row with no button (bare) keeps its slot at the right edge on desktop; on a phone the slot centres, as with a button. */
 .lb-foot > .lb-slot:only-child { margin-left: auto; }
 @container gs (max-width: 639.98px) {
   .lb-foot { flex-direction: column; align-items: stretch; gap: var(--space-3); }
@@ -41,17 +41,17 @@
   .lbf-bar { flex-wrap: wrap; }
   .lbf-search { flex: 1 1 100%; max-width: none; }
 }
-/* KEEP: The Pass offer on a free first-edition card: its line and Get the Pass on one row, wrapping under the actions when narrow */
+/* The Pass offer on a free first-edition card: its line and Get the Pass on one row, wrapping under the actions when narrow */
 .lb-pass { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .lb-pass > .gs-muted { flex: 0 1 auto; min-width: 0; text-wrap: pretty; }
 .lb-pass > *:first-child { flex: none; }
-/* KEEP: The library game page head sits 24px above the first card, as the cards sit to each other (the page's own gap is 36px) */
+/* The library game page head sits 24px above the first card, as the cards sit to each other (the page's own gap is 36px) */
 .lb-head { margin-bottom: -12px; }
 .pge-panel { display: grid; gap: 16px; min-width: 0; }
 .pge-done { display: contents; }
 .pge-done > * { justify-self: start; }
 .pge-done > .mcp-btn { justify-self: stretch; }
-/* KEEP: A panel's scrolling body keeps 4px of room round its controls so a focus ring (2px, 2px out) is never clipped; the content stays where it was. */
+/* A panel's scrolling body keeps 4px of room round its controls so a focus ring (2px, 2px out) is never clipped; the content stays where it was. */
 .gs-root .mcp-pop.is-panel .mcp-pop-body, .mcp-pop.is-panel .mcp-pop-body { padding: 4px; margin: -4px; }
 .lb-streakhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
 .lb-legend { list-style: none; margin: 0; padding: 0; display: flex; gap: 16px; font: 400 14px/1.4 var(--font-text); color: var(--muted); }
@@ -64,13 +64,13 @@
 .lb-wk > em > b { font: inherit; }
 .lb-wk > i { display: block; height: 24px; margin: 0 2px; box-shadow: inset 0 0 0 1.5px var(--control-edge); }
 .lb-wk:first-child > i { margin-left: 0; }
-/* KEEP: A joined slot reaches 1px under the one before it. Slots sit at fractional widths (32.6px), and two boxes that only touch leave a hairline of the card between them on a high-density screen. */
+/* A joined slot reaches 1px under the one before it. Slots sit at fractional widths (32.6px), and two boxes that only touch leave a hairline of the card between them on a high-density screen. */
 .lb-wk.is-join > i { margin-left: -1px; }
 .lb-wk:last-child > i, .lb-wk:has(+ .is-join) > i { margin-right: 0; }
 .lb-wk.is-on > i { background: var(--off-white); box-shadow: none; }
 .lb-wk.is-fz > i { background: color-mix(in srgb, var(--off-white) 38%, var(--card)); box-shadow: none; }
 .lb-wk.is-join > em { padding-left: 0; }
-/* KEEP: A failed day: the Not played outline with a cross (failed-vs-missed-strip option 2). The legend's square takes a full X in the outline's colour. */
+/* A failed day: the Not played outline with a cross (failed-vs-missed-strip option 2). The legend's square takes a full X in the outline's colour. */
 .lb-wk > i:has(> svg) { display: grid; place-items: center; }
 .lb-wk.is-fail > i { color: var(--text); }
 .lb-legend i.is-fail { color: var(--control-edge); }
@@ -86,7 +86,7 @@
 .lb-list { list-style: none; margin: 0; padding: 0; display: grid; }
 .lb-list > li + li { border-top: 1px solid var(--line); }
 .lb-card > .lb-today { margin: 0 calc(-1 * var(--lb-pad)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-/* KEEP: The first row's own top padding (10px) is taken back, so the gap under the heading matches every other card's */
+/* The first row's own top padding (10px) is taken back, so the gap under the heading matches every other card's */
 .lb-card > .lb-recent { margin: -10px calc(-1 * var(--lb-pad)) calc(-1 * var(--lb-pad)); }
 
 
@@ -103,9 +103,9 @@
 .lb-st.is-none { color: var(--muted); }
 
 
-/* KEEP: The streak card's heading sits at the top, as every other card's does, in every state */
+/* The streak card's heading sits at the top, as every other card's does, in every state */
 .lb-runcard { display: flex; flex-direction: column; justify-content: flex-start; }
-/* KEEP: Ten slots (six on a phone), each 48px tall, never stretched or capped. Days before the player started are faint dashed empty slots. The strip and legend stay together (16px apart) and are centred in the space below the heading, however tall the now card makes the card. */
+/* Ten slots (six on a phone), each 48px tall, never stretched or capped. Days before the player started are faint dashed empty slots. The strip and legend stay together (16px apart) and are centred in the space below the heading, however tall the now card makes the card. */
 .lb-runcard { gap: 0; }
 .lb-runbody { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: 16px; padding-block: 16px; }
 .lb-runbody > .lb-run { flex: 0 0 auto; }
@@ -148,16 +148,16 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 }
 .lb-recentcard.is-fill { display: flex; flex-direction: column; overflow: hidden; }
 .lb-recentcard.is-fill > .lb-recent { flex: 1 1 0; min-height: 0; overflow: hidden; }
-/* KEEP: Each row keeps its own height (never stretched to fill the card); spare room sits under the last row */
+/* Each row keeps its own height (never stretched to fill the card); spare room sits under the last row */
 .lb-recentcard.is-fill > .lb-recent > .mcp-rows { grid-template-rows: repeat(var(--fit), max-content); align-content: start; }
 .lb-recentcard.is-fill .lb-recent .mcp-rows > li { display: grid; }
-/* KEEP: DS rows inside the page's own cards: inset to the card's padding, which grows to 24px from 720px. */
+/* DS rows inside the page's own cards: inset to the card's padding, which grows to 24px from 720px. */
 .lb-card .mcp-row, .lb-box .mcp-row { padding-left: var(--lb-pad); padding-right: var(--lb-pad); }
 .lb-box .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub { padding-left: calc(var(--lb-pad) + 52px); }
 @container mcp-rows (min-width: 640px) { .lb-box .mcp-rows .mcp-row.is-slots.is-sub, .lb-box .mcp-rows:has(.mcp-row-lead) .mcp-row.is-slots.is-sub { padding-left: var(--lb-pad); } }
 .lb-probe { position: absolute; left: 0; right: 0; top: 0; visibility: hidden; pointer-events: none; }
 .lb-achbtn { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; min-height: 64px; padding: 8px var(--lb-pad); background: none; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; position: relative; isolation: isolate; }
-/* KEEP: the hover and press band stops 8px short of the card's sides and 2px short of the row's top and bottom, so neighbouring shades never meet; rows keep their size (the shade is painted inset, not by growing the row), and the 120ms fade stays */
+/* the hover and press band stops 8px short of the card's sides and 2px short of the row's top and bottom, so neighbouring shades never meet; rows keep their size (the shade is painted inset, not by growing the row), and the 120ms fade stays */
 .lb-achbtn::before { content: ""; position: absolute; inset: calc(var(--space-2) / 4) var(--space-2); z-index: -1; pointer-events: none; background: transparent; transition: background-color var(--time-press) var(--ease); }
 .lb-achtx { display: grid; gap: 2px; min-width: 0; }
 @media (hover: hover) {
@@ -182,7 +182,7 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 .lb-ach > li { display: grid; min-width: 0; }
 .lb-ach-n { font-weight: 600; line-height: 1.3; text-wrap: pretty; }
 .lb-ach-sub { font: 400 14px/1.4 var(--font-text); color: var(--muted); }
-/* KEEP: an earned achievement shows no status line in the list, its coloured badge says it is earned (its date is in the pop-up); "Not earned yet" and progress (4 of 30) are the design system's caption type in --muted, smaller than the description */
+/* an earned achievement shows no status line in the list, its coloured badge says it is earned (its date is in the pop-up); "Not earned yet" and progress (4 of 30) are the design system's caption type in --muted, smaller than the description */
 .lb-ach-st { font: var(--type-caption); color: var(--muted); }
 .lb-badge { width: 40px; height: 40px; flex: none; display: block; }
 .lb-badge svg { width: 100%; height: 100%; display: block; }
@@ -252,16 +252,16 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
   .lb-card { padding: 24px; --lb-pad: 24px; }
   .lb-box { --lb-pad: 24px; }
 }
-/* KEEP: Below 900px the streak card is still the desktop card: ten slots (six under 480px) at the width they have at 1440 (32.6px, measured) and 48px tall, never stretched; the strip and legend are centred in the card, the heading stays top left. */
+/* Below 900px the streak card is still the desktop card: ten slots (six under 480px) at the width they have at 1440 (32.6px, measured) and 48px tall, never stretched; the strip and legend are centred in the card, the heading stays top left. */
 @container gs (max-width: 899px) {
   .lb-runbody { align-items: center; }
   .lb-runbody .lb-run { grid-template-columns: repeat(10, 32.6px) !important; }
   .lb-runbody .lb-legend { justify-content: center; }
-  /* KEEP: Stacked, the card need not match a row, so it is trimmed: square slots (a 30.6px box in a 32.6px column), the card's own padding, and tighter gaps, all from the spacing tokens. */
+  /* Stacked, the card need not match a row, so it is trimmed: square slots (a 30.6px box in a 32.6px column), the card's own padding, and tighter gaps, all from the spacing tokens. */
   .lb-runcard { padding: var(--space-4); }
   .lb-runbody { gap: var(--space-3); padding-block: var(--space-2); }
   .lb-runbody .lb-wk { grid-template-rows: 17px 30.6px auto; }
-  /* KEEP: Every slot is the same 30.6px square, centred in its 32.6px column, joined or not; a joined slot reaches back over the 2px gap (and 1px into the slot before) so a run of completed days still reads as one bar. */
+  /* Every slot is the same 30.6px square, centred in its 32.6px column, joined or not; a joined slot reaches back over the 2px gap (and 1px into the slot before) so a run of completed days still reads as one bar. */
   .lb-runbody .lb-run .lb-wk > i { width: 30.6px; margin: 0; justify-self: center; }
   .lb-runbody .lb-run .lb-wk.is-join > i { position: relative; }
   .lb-runbody .lb-run .lb-wk.is-join > i::before { content: ''; position: absolute; top: 0; bottom: 0; left: -3px; width: 3px; background: inherit; }
@@ -284,10 +284,10 @@ button.lb-tile:focus-visible { outline-offset: -2px; }
 
 /* C2: achievement items align to the top */
 .lb-achbtn { align-items: start; }
-/* KEEP: C1, C2: beside the plays card the achievements wrap into as many columns as fit, each at least 260px wide, so a description wraps to two lines at most and every achievement shows (Common has eight) */
+/* C1, C2: beside the plays card the achievements wrap into as many columns as fit, each at least 260px wide, so a description wraps to two lines at most and every achievement shows (Common has eight) */
 @container gs (min-width: 900px) { .lb-lay .lb-card > .lb-ach { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); } }
 
-/* KEEP: F6 (owner, 2026-10-13): the editions list's rows are one height, the played row's, so the Played line never makes a row taller than its neighbours */
+/* F6 (owner, 2026-10-13): the editions list's rows are one height, the played row's, so the Played line never makes a row taller than its neighbours */
 .ed-results .mcp-rows { display: grid; grid-auto-rows: 1fr; }
 .ed-results .mcp-rows > * { min-height: 0; }
 .ed-results .mcp-rows > * > .mcp-row, .ed-results .mcp-rows > .mcp-row { height: 100%; }

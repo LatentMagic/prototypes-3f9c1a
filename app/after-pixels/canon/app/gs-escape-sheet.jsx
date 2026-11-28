@@ -76,7 +76,7 @@ const esxGroups = (sid) => {
   ];
 };
 
-// KEEP: only a thing that opens something real is tappable: an object not yet looked at has no sentence yet, and a used item
+// only a thing that opens something real is tappable: an object not yet looked at has no sentence yet, and a used item
 // says its use in place, so both are static (no border, no underline, no tap).
 const esxOpens = (it) => (it.kind === 'thing' ? it.seen : it.kind === 'item' ? !it.used : true);
 const esxThings = (grp) => grp.items.filter((i) => i.kind === 'thing');
@@ -107,7 +107,7 @@ export const EsxFold = ({ open, children }) => {
   const kept = React.useRef(null); if (open) kept.current = children;
   return <div className={'esx-fold' + (open ? ' is-open' : '')}><div>{open ? children : kept.current}</div></div>;
 };
-// KEEP: opened text is never left under the prototype's floating aids: once it has opened, the page scrolls it up to clear the
+// opened text is never left under the prototype's floating aids: once it has opened, the page scrolls it up to clear the
 // bottom 150px, after every open and swap, but never lifts the sheet's top above 80px, so swaps cannot creep the sheet away.
 const esxReveal = (el, wait = 260) => setTimeout(() => { if (!el) return; const r = el.getBoundingClientRect(); const lim = window.innerHeight - 150;
   if (r.bottom > lim) window.scrollBy({ top: Math.max(0, Math.min(r.bottom - lim, el.closest('.esx-sheet').getBoundingClientRect().top - 80)), behavior: 'smooth' }); }, wait);
@@ -125,7 +125,7 @@ const EsxStill = ({ it }) => (
 const EsxChip = ({ it, sel, pick }) => (esxOpens(it)
   ? <button type="button" className="esx-chip" aria-expanded={sel === it.id} onClick={() => pick(it.id)}><EsxMark it={it} /><b>{esxShortName(it)}</b></button>
   : <EsxStill it={it} />);
-// KEEP: a thing opens into ONE reader under its chips, never under the tapped chip, so a swap never moves the chips.
+// a thing opens into ONE reader under its chips, never under the tapped chip, so a swap never moves the chips.
 const EsxReader = ({ it }) => { const read = React.useRef(null); useEsxReveal(read, it && it.id);
   return <div ref={read}><EsxFold open={!!it}>{it && <EsxRead it={it} />}</EsxFold></div>; };
 // A group opened: its things as chips in an even grid.

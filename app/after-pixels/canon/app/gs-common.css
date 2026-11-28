@@ -27,7 +27,7 @@
 .cm-row:last-child { padding-bottom: 0; }
 @container dv2 (min-width: 520px) { .cm-row { grid-template-columns: minmax(0, 1fr) 48px; grid-template-areas: "b p" "c ."; column-gap: 12px; } }
 
-/* KEEP: four tiles across from a 520px card, two by two under it; a tile is at least 48px tall under a 520px card and 64px from it and grows if
+/* four tiles across from a 520px card, two by two under it; a tile is at least 48px tall under a 520px card and 64px from it and grows if
    its words need more, so the tiles of a row end level. A long item wraps inside its tile (balanced) and never widens it. Items show
    as stored, in capitals. */
 .cm-tiles { --g: 6px; grid-area: b; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--g); }
@@ -58,14 +58,14 @@
 .cm-score b { font: 700 48px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
 .cm-score span { font: 600 16px/1 var(--font-text); color: var(--muted); }
 .cm-card { --q: 36px; }
-/* KEEP: the panel sits beside the board only from an 840px card. The shared card puts it beside from 672px, but the board (560px) and
+/* the panel sits beside the board only from an 840px card. The shared card puts it beside from 672px, but the board (560px) and
    the panel with its five 36px guesses need about 830px; narrower, the panel's figures were cut off. Between 672px and 840px it goes
    under the board, as on a phone. */
 @container dv2 (min-width: 672px) and (max-width: 839.98px) {
   .cm-card .gs-sc-duo { grid-template-columns: none; justify-content: normal; align-items: normal; column-gap: 24px; }
   .cm-card .gs-sc-panel { align-self: auto; align-content: normal; width: 100%; margin-top: 0; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); }
 }
-/* KEEP: under the board (card under 840px), score and guesses are one centred pair, not two half-width columns, so the wider guess row
+/* under the board (card under 840px), score and guesses are one centred pair, not two half-width columns, so the wider guess row
    never pulls the pair off centre; the squares shrink with the card (24px to 36px) and centre on the 48px score figure. */
 @container dv2 (max-width: 839.98px) {
   .cm-card .gs-sc-panel { grid-template-columns: auto auto; justify-content: center; column-gap: clamp(32px, 10cqi, 72px); }
@@ -91,7 +91,7 @@
 .cmn-score { display: flex; align-items: baseline; gap: 6px; }
 .cmn-score b { font: 700 48px/1 var(--font-heading); font-variant-numeric: tabular-nums; }
 .cmn-score span { font: 600 16px/1 var(--font-text); color: var(--muted); }
-/* KEEP: on a phone (card under 640px) the score and guesses go under the board as one centred row, the tiles 30px, the score 40px. */
+/* on a phone (card under 640px) the score and guesses go under the board as one centred row, the tiles 30px, the score 40px. */
 @container cmn (max-width: 639.98px) {
   .cmn-pic { flex-direction: column; gap: 14px; }
   .cmn-t { --s: 30px; }

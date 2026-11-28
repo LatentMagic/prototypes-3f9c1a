@@ -3,7 +3,7 @@
 
 /* The top bar's frame (gs-shell.css .gs-top) with a dashed foot, so it never reads as the product's own bar. */
 .pg-top { border-bottom-style: dashed; border-bottom-color: var(--control-edge); }
-/* KEEP: at every width the bar is one row, at most 56px tall, and never wraps; on a phone the dropdown's value ellipsizes so the
+/* at every width the bar is one row, at most 56px tall, and never wraps; on a phone the dropdown's value ellipsizes so the
    previous / next buttons and Config stay visible. */
 .pg-top-in { display: flex; position: relative; flex-wrap: nowrap; align-items: center; gap: 8px; min-height: 52px; padding-block: 6px; }
 /* The concept: previous, dropdown, next. */

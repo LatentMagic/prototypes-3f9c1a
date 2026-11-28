@@ -56,7 +56,7 @@ const GsRows = ({ rows }) => (
     {rows.map(([k, v], i) => <div key={i} className="gs-row-kv"><dt className="gs-muted">{k}</dt><dd className="gs-num-text">{v}</dd></div>)}
   </dl>
 );
-// KEEP: two actions stack with the primary first on a phone, and sit in one row (secondary left) when wider.
+// two actions stack with the primary first on a phone, and sit in one row (secondary left) when wider.
 export const GsActs = ({ children }) => <div className="gs-acts">{children}</div>;
 // A plain heading for a pop-up (the system's title renders as h3).
 export const GsPopTitle = ({ children }) => <h2 className="mcp-t-card">{children}</h2>;
@@ -248,7 +248,7 @@ export const GsSubscribe = () => {
             </label>
           ))}
         </fieldset>
-        {/* KEEP: the tax note shares the Due today row so the summary keeps its rhythm, and fits on one line down to 280 (the user, 2026-11-18). */}
+        {/* the tax note shares the Due today row so the summary keeps its rhythm, and fits on one line down to 280 (the user, 2026-11-18). */}
         <GsRows rows={[[<>Due today <span className="gs-row-note">· {GS.taxShort}</span></>, plan.due], ['Renews', gsLong(gsAddMonths(GS_DAY0, plan.months))]]} />
         <DS.Button block onClick={gs.getPass}>Get the Pass</DS.Button>
       </section>

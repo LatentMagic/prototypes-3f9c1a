@@ -3,7 +3,7 @@ import {CardRow} from './CardRow.jsx';
 // Options as tiles, one picked at a time, and the panel the picked one controls, with a notch on the panel's edge pointing at the picked tile.
 // The picker owns which option is picked, the pointer, and coping with more options than fit in the row. A page owns its own arrangement and content: it may draw the tiles itself (renderTile), put a box between tiles and panel (aside), and choose where the pointer lands.
 // A group of toggle buttons (aria-pressed), not ARIA tabs: a tablist may own only tabs, and a tile can hold an icon and a name.
-// KEEP: the notch is placed by measuring the picked tile (or the aside) against the panel, so it follows any arrangement, glides to a newly picked tile, tracks a row that scrolls sideways without trailing it, and hides once its tile is out of view.
+// the notch is placed by measuring the picked tile (or the aside) against the panel, so it follows any arrangement, glides to a newly picked tile, tracks a row that scrolls sideways without trailing it, and hides once its tile is out of view.
 const reveal=(el)=>{
   const tile=el.closest('[data-np-tile]')||el,track=tile.parentElement;
   if(!track||track.scrollWidth<=track.clientWidth+1)return;

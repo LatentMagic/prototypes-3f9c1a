@@ -32,7 +32,7 @@ const CmPool = ({ p }) => (
 
 // ---- The session page. A thread's row: the four item tiles, its points at the end, its connection under the tiles. Phone (card under
 // 520px): the tiles across the card, then the connection and the points on the line under them.
-// KEEP: the four tiles are equal columns (minmax(0, 1fr)) in one grid, two by two under a 520px card; a long item wraps inside its
+// the four tiles are equal columns (minmax(0, 1fr)) in one grid, two by two under a 520px card; a long item wraps inside its
 // tile and never widens it, and the tile grows past its minimum height rather than clip. ----
 const CmRow = ({ x }) => (
   <div className={'cm-row is-' + x.state + ' th-' + x.k}>

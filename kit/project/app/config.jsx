@@ -203,7 +203,7 @@ const ConfigInfo = ({ open, onToggle, label }) => (
 );
 
 // ---- Contract: one row of choices ----
-// KEEP: options are separate bordered chips that wrap onto a new line, never a
+// options are separate bordered chips that wrap onto a new line, never a
 // track that scrolls sideways; the chosen one is filled near-black.
 const ConfigRow = ({ label, value, onChange, options, hint }) => {
   const [hintOpen, setHintOpen] = useCState(false);
@@ -226,7 +226,7 @@ const ConfigRow = ({ label, value, onChange, options, hint }) => {
 };
 
 // ---- Contract: a one-shot event. Rendered in its group's Events strip. ----
-// KEEP: the .kit-config-action class is what the modal's click-capture replays
+// the .kit-config-action class is what the modal's click-capture replays
 // after closing, so an animated act plays on a clear screen.
 const ConfigAction = ({ label, onClick }) => (
   <button type="button" className="kit-config-action"
@@ -324,7 +324,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
     const target = el.querySelector(phone && drilled ? '.kit-config-back'
       : phone ? '.kit-config-rail-btn' : '.kit-config-rail-btn[aria-current="true"]');
     if (target) target.focus({ preventScroll: true });
-  }, [phone, drilled, sections.length > 1]); // KEEP: re-run once the feature sections have registered
+  }, [phone, drilled, sections.length > 1]); // re-run once the feature sections have registered
 
   useCEffect(() => {
     let r2; const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setShown(true)); });
@@ -338,7 +338,7 @@ const ConfigModal = ({ onReset, layout, onLayoutChange, platform, onPlatformChan
   // Lock whatever is scrolling behind the modal (app/primitives.jsx). Released on close.
   useCEffect(kitLockScroll, []);
 
-  // KEEP: one-shot events act on the app behind the modal, some with motion.
+  // one-shot events act on the app behind the modal, some with motion.
   // Intercept, play the exit, replay the click on a clear screen, then close;
   // the action's own handler never has to close Config.
   const onPaneClickCapture = (e) => {
